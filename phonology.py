@@ -1,6 +1,7 @@
 import itertools
 import unicodedata
 
+# Letters.
 consonants = (
     'p', 'b', 'pʰ', 'p’', 'm',
     'w', 'f', 'v', 't', 'd', 'tʰ', 't’', 'ţ', 'dh', 'n',
@@ -30,19 +31,59 @@ typing_consonants = (
     'l,', 'l',
 )
 vowels = (
-    'î', 'ü', 'û',
-    'i', 'u',
-    'ê', 'ë', 'ô',
-    'e', 'ö', 'o',
+    # Unmarked stress.
     'a', 'â',
+    'e', 'ê', 'ë',
+    'i', 'î',
+    'o', 'ô', 'ö',
+    'u', 'û', 'ü',
+    # Stressed vowels.
+    'á', 'ââ',
+    'é', 'êê', 'ëë',
+    'í', 'îî',
+    'ó', 'ôô', 'öö',
+    'ú', 'ûû', 'üü',
+    # Unstressed vowels.
+    'à',
+    'è',
+    'ì',
+    'ò',
+    'ù',
 )
 typing_vowels = (
-    'i^', 'u:', 'u^',
-    'i', 'u',
-    'e^', 'e:', 'o^',
-    'e', 'o:', 'o',
+    # Unmarked stress.
     'a', 'a^',
+    'e', 'e^', 'e:',
+    'i', 'i^',
+    'o', 'o^', 'o:',
+    'u', 'u^', 'u:',
+    # Stressed vowels.
+    'a/', 'a^/',
+    'e/', 'e^/', 'e:/',
+    'i/', 'i^/',
+    'o/', 'o^/', 'o:/',
+    'u/', 'u^/', 'u:/',
+    # Unstressed vowels.
+    'a\\',
+    'e\\',
+    'i\\',
+    'o\\',
+    'u\\',
 )
+
+_letter_conversion_table = {}
+for t, c in itertools.chain(
+    zip(typing_consonants, consonants),
+    zip(typing_vowels, vowels),
+):
+    _letter_conversion_table[t] = c
+    _letter_conversion_table[t.upper()] = c.upper()
+_max_combo_length = max(
+
+    len(t) for t in _letter_conversion_table.keys()
+)
+
+# Tones.
 tones = {
     'falling': '',
     'low': '_',
@@ -60,16 +101,11 @@ typing_tones = {
     'risingfalling': '^',
 }
 
-_conversion_table = {}
-for t, c in itertools.chain(
-    zip(typing_consonants, consonants),
-    zip(typing_vowels, vowels),
-):
-    _conversion_table[t] = c
-    _conversion_table[t.upper()] = c.upper()
-_max_combo_length = max(
-    len(t) for t in _conversion_table.keys()
-)
+_tone_conversion_table = {}
+for tone in tones.keys():
+    t = typing_tones[tone]
+    c = tones[tone]
+    _tone_conversion_table[t] = c
 
 def convert_typed(typed_text):
     """
@@ -81,9 +117,16 @@ def convert_typed(typed_text):
     'A’tukças tê oxnall'
     >>> convert_typed("U^b eikkradwa smou'ola^xh.")
     'Ûb eikkradwa smou’olâxh.'
-
-    #>>> convert_typed("=Sakc^'a to^ myicka zboack.")
-    #'ˉSakč’a tô myicka zboack.'
+    >>> convert_typed("=Sakc^'a to^ myicka zboack.")
+    '¯Sakč’a tô myicka zboack.'
+    >>> convert_typed("o\spa^tlo:k")
+    'òspâtlök'
+    >>> convert_typed("Aigwapskh eks^u/ll,")
+    'Aigwapskʰ ekšúlļ'
+    >>> convert_typed("a^pca^/l")
+    'âpcââl'
+    >>> convert_typed("a^pca^a^l")
+    'âpcââl'
     """
     result = []
     i = 0
@@ -92,11 +135,17 @@ def convert_typed(typed_text):
         # Try greedily matching combinations.
         for length in range(_max_combo_length, 0, -1):
             combo = typed_text[i:i+length]
-            converted = _conversion_table.get(combo)
+            converted = _letter_conversion_table.get(combo)
             if converted:
                 result.append(converted)
                 break
         else:
-            result.append(combo)
+            # Possibly add tone markers at the beginning of the word.
+            combo = typed_text[i]
+            converted = _tone_conversion_table.get(combo)
+            if converted and (i == 0 or typed_text[i-1].isspace()):
+                result.append(converted)
+            else:
+                result.append(combo)
         i += length
     return ''.join(result)
