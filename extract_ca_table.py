@@ -1,4 +1,5 @@
 import unicodedata
+import re
 from pyquery import PyQuery as pq
 
 SUPER_H = unicodedata.lookup('MODIFIER LETTER SMALL H')
@@ -8,4 +9,8 @@ html = open(filename).read()
 d = pq(html)
 
 for p in d('p.style36'):
-    print(pq(p).html().replace('<sup>h</sup>', SUPER_H).strip())
+    text = pq(p).html()
+    text = re.sub('\s', '', text)
+    text = text.replace('<sup>h</sup>', SUPER_H)
+    affixes = text.split('/')
+    print('|'.join(affixes))

@@ -28,9 +28,9 @@ pţ
 n
 nn
 ln
-r n
+rn
 nļ
-ř n
+řn
 sq
 šq
 qţ
@@ -210,7 +210,7 @@ zb
 ňç
 rň
 ňv
-ř ň
+řň
 ňf
 řtf
 řkf
@@ -384,7 +384,7 @@ scʰ
 sc’
 ňqf
 gb
-kkç/kçç
+kkç|kçç
 pļ
 tç
 xhp’
@@ -393,7 +393,7 @@ xhp’
 šč’
 vb
 dhz
-ppç/pçç
+ppç|pçç
 fst
 fc’
 fc
@@ -538,7 +538,7 @@ nčʰ
 mčʰ
 ňčʰ
 çq’
-pps/pss
+pps|pss
 rps
 lps
 rbz
@@ -547,7 +547,7 @@ lbz
 řbz
 ňss
 çtʰ
-ppš/pšš
+ppš|pšš
 rpš
 lpš
 rbž
@@ -556,7 +556,7 @@ lbž
 řbž
 ňšš
 çkʰ
-kks/    kss
+kks|kss
 rks
 lks
 rgz
@@ -565,7 +565,7 @@ lgz
 řgz
 ňzz
 çpʰ
-kkš/kšš
+kkš|kšš
 rkš
 lkš
 rgž
@@ -593,7 +593,7 @@ mst
 ňst
 sst
 pc
-bbz/bzz
+bbz|bzz
 lsp
 rsp
 nsp
@@ -602,7 +602,7 @@ msp
 ňsp
 ssp
 qc
-ggz/gzz
+ggz|gzz
 lsq
 rsq
 nsq
@@ -629,7 +629,7 @@ mšt
 ňšt
 ššt
 pč
-bbž/bžž
+bbž|bžž
 lšp
 ršp
 nšp
@@ -638,7 +638,7 @@ mšp
 ňšp
 ššp
 qč
-ggž/gžž
+ggž|gžž
 lšq
 ršq
 nšq
@@ -674,7 +674,7 @@ rqţ
 řpf
 gzd
 db
-ttç/tçç
+ttç|tçç
 ldhž
 rţš
 rkç
