@@ -4,6 +4,7 @@ from phonology import (
     tone_names, tones, typing_tones,
     convert_typed,
 )
+
 def format_help(width=80):
     output = []
 
@@ -40,7 +41,6 @@ def format_grid_lines(buf, width=80):
         del buf[:num_columns]
         output.append(''.join(line))
     return output
-
 
 if __name__ == '__main__':
     print('Type text to convert, "h" for help, or "q" to quit.')
