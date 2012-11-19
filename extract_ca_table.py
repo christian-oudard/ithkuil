@@ -8,4 +8,4 @@ html = open(filename).read()
 d = pq(html)
 
 for p in d('p.style36'):
-    print(pq(p).html().replace('<sup>h</sup>', SUPER_H))
+    print(pq(p).html().replace('<sup>h</sup>', SUPER_H).strip())
