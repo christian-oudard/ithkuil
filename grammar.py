@@ -26,10 +26,11 @@ def gen_ca_tables():
 
     ca_table = {}
     ca_table_reverse = {}
-    for ca, key in zip(lines, keys):
-        ca = ca.strip()
-        ca_table[key] = ca
-        ca_table_reverse[ca] = key
+    for affixes, key in zip(lines, keys):
+        affixes = affixes.split('|')
+        ca_table[key] = tuple(sorted(affixes))
+        for affix in affixes:
+            ca_table_reverse[affix] = key
     return ca_table, ca_table_reverse
 
 ca_table, ca_table_reverse = gen_ca_tables()
