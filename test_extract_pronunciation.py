@@ -19,11 +19,15 @@ class ExtractTest(TestCase):
             '<strong>ea<strong></strong></strong>',
             ['ea'],
         ),
+        (
+            '<strong>Auspal\xa0 ük<sup>h</sup>u\xa0 tô\xa0  myal. </strong>',
+            ['Auspal\xa0 ükʰu\xa0 tô\xa0  myal.']
+        ),
     ]
     def test_extract(self):
         for html, sentences in self.test_cases:
             self.assertEqual(
-                list(extract(pq(html))),
+                [text for text, element in extract(pq(html))],
                 sentences,
             )
 

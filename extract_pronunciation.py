@@ -3,8 +3,11 @@
 import sys
 import os
 import re
+import unicodedata
 from collections import defaultdict
 from pyquery import PyQuery as pq
+
+SUPER_H = unicodedata.lookup('MODIFIER LETTER SMALL H')
 
 def unwrap(t):
     contents = pq(t).html()
@@ -17,6 +20,11 @@ def extract(d):
     # Remove redundant strong tags.
     for t in reversed(d('strong strong')):
         unwrap(t)
+
+    # Replace super-h with the equivalent unicode.
+    for t in d('sup'):
+        if pq(t).html() == 'h':
+            pq(t).replaceWith(SUPER_H)
 
     for e in d('strong'):
         for piece in pq(e).text().split('/'):
