@@ -84,6 +84,14 @@ _max_combo_length = max(
 )
 
 # Tones.
+tone_names = [
+    'falling',
+    'low',
+    'high',
+    'rising',
+    'fallingrising',
+    'risingfalling',
+]
 tones = {
     'falling': '',
     'low': '_',
@@ -100,9 +108,13 @@ typing_tones = {
     'fallingrising': '~',
     'risingfalling': '^',
 }
-
+assert (
+    sorted(tone_names) ==
+    sorted(tones.keys()) ==
+    sorted(typing_tones.keys())
+)
 _tone_conversion_table = {}
-for tone in tones.keys():
+for tone in tone_names:
     t = typing_tones[tone]
     c = tones[tone]
     _tone_conversion_table[t] = c
