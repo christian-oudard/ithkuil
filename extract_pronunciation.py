@@ -71,5 +71,5 @@ if __name__ == '__main__':
     for cleaned in sorted(cleaned_to_original.keys()):
         originals = cleaned_to_original[cleaned]
         print(cleaned)
-        if len(originals) > 2 or originals[0] != cleaned:
-            print(originals)
+        #if len(originals) > 2 or originals[0] != cleaned:
+            #print(originals)
