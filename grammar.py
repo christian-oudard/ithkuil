@@ -32,6 +32,40 @@ def lines_to_tables(lines, keys):
             table_reverse[affix] = key
     return table, table_reverse
 
+def gen_vr_tables():
+    keys = [
+        (fu, pa, st)
+        for fu in functions
+        for pa in patterns
+        for st in stems
+    ]
+
+    with open('vr_table.dat') as f:
+        lines = f.read().splitlines()
+    assert len(lines) == len(keys)
+    assert len(set(lines)) == len(lines)
+
+    return lines_to_tables(lines, keys)
+vr_table, vr_table_reverse = gen_vr_tables()
+
+def gen_vc_tables():
+    keys = [
+        (ca,)
+        for ca in cases
+    ]
+
+    with open('vc_table.dat') as f:
+        lines = f.read().splitlines()
+    assert len(lines) == len(keys)
+    assert len(set(lines)) == len(lines)
+
+    # Handle Vr substitution for cases 51 - 71.
+    # For now, just always substitute "a".
+    lines = [line.replace('V', 'a') for line in lines]
+
+    return lines_to_tables(lines, keys)
+vc_table, vc_table_reverse = gen_vc_tables()
+
 def gen_ca_tables():
     keys = [
         (es, ex, pe, af, co)
@@ -50,33 +84,27 @@ def gen_ca_tables():
     return lines_to_tables(lines, keys)
 ca_table, ca_table_reverse = gen_ca_tables()
 
-def gen_vr_tables():
-    keys = [
-        (fu, pa, st)
-        for fu in functions
-        for pa in patterns
-        for st in stems
-    ]
-
-    with open('vr_table.dat') as f:
-        lines = f.read().splitlines()
-    assert len(lines) == len(keys)
-    assert len(set(lines)) == len(lines)
-
-    return lines_to_tables(lines, keys)
-vr_table, vr_table_reverse = gen_vr_tables()
 
 def lookup(query):
     """
     Lookup a bit of pronunciation or grammar. Accepts pronunciation fragments,
     IME text, grammar table keys, and string representations of table keys.
 
+    Simple affix lookup.
     >>> lookup('l')
     [('NRM', 'DEL', 'M', 'CSL', 'UNI')]
-    >>> lookup('o:')
-    [('STA', 'P2', 'S2')]
-    >>> lookup('ö')
-    [('STA', 'P2', 'S2')]
+    >>> lookup("ei'a")
+    [('PCR',)]
+
+    IME text works too.
+    >>> lookup('üö')
+    [('DSC', 'P3', 'S3')]
+    >>> lookup('u:o:')
+    [('DSC', 'P3', 'S3')]
+
+    Lookup of grammatical keys, in tuple and text format.
+    >>> lookup('PCR')
+    ['ei’a']
     >>> lookup(('NRM', 'DEL', 'M', 'CSL', 'UNI'))
     ['l']
     >>> lookup('NRM/DEL/m/CSL/DPX')
@@ -96,6 +124,7 @@ def lookup(query):
     # Try to interpret the query as an affix.
     for rtable in [
         vr_table_reverse,
+        vc_table_reverse,
         ca_table_reverse,
     ]:
         key = rtable.get(query)
@@ -118,6 +147,7 @@ def lookup_key(key):
     # Look up key in tables.
     for table in [
         vr_table,
+        vc_table,
         ca_table,
     ]:
         affixes = table.get(key)
