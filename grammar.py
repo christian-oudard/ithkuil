@@ -65,3 +65,63 @@ def gen_vr_tables():
 
     return lines_to_tables(lines, keys)
 vr_table, vr_table_reverse = gen_vr_tables()
+
+def lookup(query):
+    """
+    Lookup a bit of pronunciation or grammar. Accepts pronunciation fragments,
+    IME text, grammar table keys, and string representations of table keys.
+
+    >>> lookup('l')
+    [('NRM', 'DEL', 'M', 'CSL', 'UNI')]
+    >>> lookup('o:')
+    [('STA', 'P2', 'S2')]
+    >>> lookup('ö')
+    [('STA', 'P2', 'S2')]
+    >>> lookup(('NRM', 'DEL', 'M', 'CSL', 'UNI'))
+    ['l']
+    >>> lookup('NRM/DEL/m/CSL/DPX')
+    ['ll']
+    >>> lookup('nrm/del/m/csl/dpx')
+    ['ll']
+    """
+    result = []
+
+    if isinstance(query, (list, tuple)):
+         return lookup_key(query)
+
+    # If we have a string, first try to interpret it as IME text.
+    from phonology import convert_typed
+    query = convert_typed(query)
+
+    # Try to interpret the query as an affix.
+    for rtable in [
+        vr_table_reverse,
+        ca_table_reverse,
+    ]:
+        key = rtable.get(query)
+        if key is not None:
+            result.append(key)
+
+    # Try to interpret the query as slash-separated key values instead of tuple
+    # key values.
+    pieces = query.split('/')
+    result.extend(lookup_key(pieces))
+
+    return result
+
+def lookup_key(key):
+    result = []
+
+    # Normalize key case.
+    key = tuple(d.upper() for d in key)
+
+    # Look up key in tables.
+    for table in [
+        vr_table,
+        ca_table,
+    ]:
+        affixes = table.get(key)
+        if affixes is not None:
+            result.extend(affixes)
+
+    return result
