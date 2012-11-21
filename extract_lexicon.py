@@ -103,5 +103,7 @@ if __name__ == '__main__':
     for r in sorted(undefined_roots):
         print(r)
 
+    print(set(defined_roots) - set(roots))
+
     #for root, definition in definitions:
         #print('{}: {}'.format(root, definition))
