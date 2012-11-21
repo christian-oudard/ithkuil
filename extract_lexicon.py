@@ -18,10 +18,10 @@ root_pattern = r'-\s*([%s]+)\s*-' % consonant_pattern
 between = r'[\s:]*'
 
 definition_patterns = [
-    root_pattern + between + r"'(.*?)'",
-    root_pattern + between + r'(.*?)' + EN_DASH,
-    root_pattern + between + r'(.*?)' + EM_DASH,
-    root_pattern + between + r'(.*?)--',
+    '^' + root_pattern + between + r"'(.*?)'",
+    '^' + root_pattern + between + r'(.*?)' + EN_DASH,
+    '^' + root_pattern + between + r'(.*?)' + EM_DASH,
+    '^' + root_pattern + between + r'(.*?)--',
 ]
 
 root_re = re.compile(root_pattern, re.UNICODE|re.IGNORECASE)
@@ -70,13 +70,15 @@ def extract_definitions(html):
     # Extract definitions from tables.
     for table in d('table'):
         first_td = pq(table)('td:first')[0]
-        text = pq(first_td).text()
+        text = pq(first_td).text().strip()
         add_definitions(text)
 
     # Extract definitions from paragraphs.
     for paragraph in d('body p'):
-        text = pq(paragraph).text()
+        text = pq(paragraph).text().strip()
         roots = root_re.findall(text)
+        if 'dry' in roots:
+            print(text)
         if len(roots) > 0:
             add_definitions(text)
 
@@ -88,9 +90,10 @@ if __name__ == '__main__':
     roots = extract_roots(html)
     print('found {} roots'.format(len(roots)))
     definitions = extract_definitions(html)
-    print('found {} roots'.format(len(roots)))
+    print('found {} definitions'.format(len(definitions)))
 
     defined_roots = set(r for (r, d) in definitions)
+    assert len(defined_roots) == len(definitions)
     undefined_roots = set(
         r for r in roots
         if r not in defined_roots
