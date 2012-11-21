@@ -87,23 +87,25 @@ def extract_definitions(html):
 if __name__ == '__main__':
     filename = 'lexicon.htm'
     html = open(filename).read()
-    roots = extract_roots(html)
-    print('found {} roots'.format(len(roots)))
     definitions = extract_definitions(html)
-    print('found {} definitions'.format(len(definitions)))
 
-    defined_roots = set(r for (r, d) in definitions)
-    assert len(defined_roots) == len(definitions)
-    undefined_roots = set(
-        r for r in roots
-        if r not in defined_roots
-    )
-    print('defined roots', len(defined_roots))
-    print('undefined roots', len(undefined_roots))
-    for r in sorted(undefined_roots):
-        print(r)
+    check_correctness = False
+    if check_correctness:
+        roots = extract_roots(html)
+        print('found {} roots'.format(len(roots)))
+        print('found {} definitions'.format(len(definitions)))
 
-    print(set(defined_roots) - set(roots))
+        defined_roots = set(r for (r, d) in definitions)
+        assert len(defined_roots) == len(definitions)
+        undefined_roots = set(
+            r for r in roots
+            if r not in defined_roots
+        )
+        print('defined roots', len(defined_roots))
+        print('undefined roots', len(undefined_roots))
+        for r in sorted(undefined_roots):
+            print(r)
+        print(set(defined_roots) - set(roots))
 
-    #for root, definition in definitions:
-        #print('{}: {}'.format(root, definition))
+    for root, definition in definitions:
+        print('{}|{}'.format(root, definition))
