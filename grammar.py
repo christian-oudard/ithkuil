@@ -1,3 +1,6 @@
+import itertools
+from phonology import convert_typed
+
 functions = ('STA', 'DYN', 'MNF', 'DSC')
 patterns = ('P1', 'P2', 'P3')
 stems = ('S1', 'S2', 'S3')
@@ -21,6 +24,9 @@ essences = ('NRM', 'RPV')
 designations = ('FML', 'IFL')
 
 def lines_to_tables(lines, keys):
+    # Ignore order of multi-part keys.
+    keys = [frozenset(k) for k in keys]
+
     # Read each line, split multiple affixes, and create 
     # bidirectional dictionaries.
     table = {}
@@ -32,13 +38,10 @@ def lines_to_tables(lines, keys):
             table_reverse[affix] = key
     return table, table_reverse
 
+# Vr affix.
+vr_order = [functions, patterns, stems]
 def gen_vr_tables():
-    keys = [
-        (fu, pa, st)
-        for fu in functions
-        for pa in patterns
-        for st in stems
-    ]
+    keys = list(itertools.product(*vr_order))
 
     with open('vr_table.dat') as f:
         lines = f.read().splitlines()
@@ -48,11 +51,10 @@ def gen_vr_tables():
     return lines_to_tables(lines, keys)
 vr_table, vr_table_reverse = gen_vr_tables()
 
+# Vc affix.
+vc_order = [cases]
 def gen_vc_tables():
-    keys = [
-        (ca,)
-        for ca in cases
-    ]
+    keys = list(itertools.product(*vc_order))
 
     with open('vc_table.dat') as f:
         lines = f.read().splitlines()
@@ -66,15 +68,10 @@ def gen_vc_tables():
     return lines_to_tables(lines, keys)
 vc_table, vc_table_reverse = gen_vc_tables()
 
+# Ca affix.
+ca_order = [essences, extensions, perspectives, affiliations, configurations]
 def gen_ca_tables():
-    keys = [
-        (es, ex, pe, af, co)
-        for es in essences
-        for ex in extensions
-        for pe in perspectives
-        for af in affiliations
-        for co in configurations
-    ]
+    keys = list(itertools.product(*ca_order))
 
     with open('ca_table.dat') as f:
         lines = f.read().splitlines()
@@ -83,6 +80,16 @@ def gen_ca_tables():
 
     return lines_to_tables(lines, keys)
 ca_table, ca_table_reverse = gen_ca_tables()
+
+# Canonical key representations.
+canonical_keys = {}
+for ordering in [
+    vr_order,
+    vc_order,
+    ca_order,
+]:
+    for key in itertools.product(*ordering):
+        canonical_keys[frozenset(key)] = key
 
 
 def lookup(query):
@@ -111,17 +118,26 @@ def lookup(query):
     ['ll']
     >>> lookup('nrm/del/m/csl/dpx')
     ['ll']
+
+    Order is irrelevant.
+    >>> lookup('STA/P1/S1')
+    ['', 'a']
+    >>> lookup('P1/S1/STA')
+    ['', 'a']
     """
     result = []
 
-    if isinstance(query, (list, tuple)):
+    if isinstance(query, (list, tuple, set, frozenset)):
          return lookup_key(query)
 
-    # If we have a string, first try to interpret it as IME text.
-    from phonology import convert_typed
-    query = convert_typed(query)
+    # Try to interpret the query as slash-separated key values instead of tuple
+    # key values.
+    # Do this before adding phonology.
+    pieces = query.split('/')
+    result.extend(lookup_key(pieces))
 
     # Try to interpret the query as an affix.
+    query = convert_typed(query)
     for rtable in [
         vr_table_reverse,
         vc_table_reverse,
@@ -129,12 +145,7 @@ def lookup(query):
     ]:
         key = rtable.get(query)
         if key is not None:
-            result.append(key)
-
-    # Try to interpret the query as slash-separated key values instead of tuple
-    # key values.
-    pieces = query.split('/')
-    result.extend(lookup_key(pieces))
+            result.append(canonical_keys[key])
 
     return result
 
@@ -142,7 +153,7 @@ def lookup_key(key):
     result = []
 
     # Normalize key case.
-    key = tuple(d.upper() for d in key)
+    key = frozenset(d.upper() for d in key)
 
     # Look up key in tables.
     for table in [
