@@ -43,11 +43,7 @@ def clean_definition(text):
 
 def extract_roots(html):
     html = clean_html(html)
-
     text = pq(html).text()
-
-    #with open('lexicon_cleaned', 'w') as f:
-    #    f.write(text)
 
     roots = set()
     for match in root_re.finditer(text):
@@ -61,7 +57,6 @@ def extract_definitions(html):
     definitions = set()
 
     def add_definitions(text):
-        print(text)
         for pattern in definition_patterns:
             definition_re = re.compile(pattern, re.UNICODE|re.IGNORECASE)
             m = definition_re.search(text)
@@ -69,61 +64,22 @@ def extract_definitions(html):
                 root = m.group(1)
                 definition = m.group(2)
                 definition = clean_definition(definition)
-                print()
-                print(definition)
                 definitions.add((root, definition))
                 break
-        else:
-            print('-')
-
-        print('*'*80)
 
     # Extract definitions from tables.
-    #for table in d('table'):
-        #first_td = pq(table)('td:first')[0]
-        #text = pq(first_td).text()
-        #add_definitions(text)
+    for table in d('table'):
+        first_td = pq(table)('td:first')[0]
+        text = pq(first_td).text()
+        add_definitions(text)
 
     # Extract definitions from paragraphs.
     for paragraph in d('body p'):
         text = pq(paragraph).text()
         roots = root_re.findall(text)
         if len(roots) > 0:
-            print(roots)
-            #print('*'*80)
-            #print(text)
             add_definitions(text)
 
-    return definitions
-
-
-    definitions = set()
-    for pattern in definition_patterns:
-        definition_re = re.compile(pattern, re.UNICODE|re.IGNORECASE)
-        for match in definition_re.finditer(text):
-            definitions.add((
-                match.group(1), # root
-                match.group(2), # definition
-            ))
-    defined_roots = set(r for (r, d) in definitions)
-
-    undefined_roots = set(
-        r for r in roots
-        if r not in defined_roots
-    )
-
-    print('roots', len(roots))
-    print('definitions', len(definitions))
-    print('defined roots', len(defined_roots))
-    print('undefined roots', len(undefined_roots))
-    #for r in sorted(undefined_roots):
-    #    print(r)
-    #return
-
-    #roots = sorted(roots)
-    #definitions = sorted(definitions)
-
-    #return roots
     return sorted(definitions)
 
 if __name__ == '__main__':
@@ -132,5 +88,17 @@ if __name__ == '__main__':
     roots = extract_roots(html)
     print('found {} roots'.format(len(roots)))
     definitions = extract_definitions(html)
+    print('found {} roots'.format(len(roots)))
+
+    defined_roots = set(r for (r, d) in definitions)
+    undefined_roots = set(
+        r for r in roots
+        if r not in defined_roots
+    )
+    print('defined roots', len(defined_roots))
+    print('undefined roots', len(undefined_roots))
+    for r in sorted(undefined_roots):
+        print(r)
+
     #for root, definition in definitions:
         #print('{}: {}'.format(root, definition))
