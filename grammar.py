@@ -38,6 +38,16 @@ def lines_to_tables(lines, keys):
             table_reverse[affix] = key
     return table, table_reverse
 
+# Lexicon.
+def gen_lexicon():
+    lexicon_table = {}
+    with open('lexicon.dat') as f:
+        for line in f.readlines():
+            root, definition = line.strip().split('|')
+            lexicon_table[root] = definition
+    return lexicon_table
+lexicon_table = gen_lexicon()
+
 # Vr affix.
 vr_order = [functions, patterns, stems]
 def gen_vr_tables():
@@ -166,3 +176,12 @@ def lookup_key(key):
             result.extend(affixes)
 
     return result
+
+def lookup_lexicon(root):
+    """
+    >>> lookup_lexicon('ph')
+    'branched and / or leaved plant'
+    """
+    root = convert_typed(root)
+    root = root.upper()
+    return lexicon_table.get(root)
