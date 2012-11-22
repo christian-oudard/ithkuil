@@ -48,6 +48,11 @@ affiliations = ('CSL', 'ASO', 'VAR', 'COA')
 perspectives = ('M', 'U', 'N', 'A')
 extensions = ('DEL', 'PRX', 'ICP', 'TRM', 'DPL', 'GRA')
 essences = ('NRM', 'RPV')
+contexts = ('EXS', 'FNC', 'RPS', 'AMG')
+formats = (
+    'NOFORMAT', 'SCH', 'ISR', 'ATH', 'RSL',
+    'SBQ', 'CCM', 'OBJ', 'PRT', 'AFI',
+)
 versions = ('PRC', 'CPT', 'INE', 'INC', 'PST', 'EFC')
 designations = ('FML', 'IFL')
 
@@ -66,7 +71,7 @@ def lines_to_tables(lines, keys):
             table_reverse[affix] = key
     return table, table_reverse
 
-# Cr affix, lexical root.
+# Cr lexical root.
 def gen_lexicon():
     lexicon_table = {}
     with open('lexicon.dat') as f:
@@ -119,6 +124,19 @@ def gen_ca_tables():
     return lines_to_tables(lines, keys)
 ca_table, ca_table_reverse = gen_ca_tables()
 
+# Vf affix.
+vf_order = [contexts, formats]
+def gen_vf_tables():
+    keys = list(itertools.product(*vf_order))
+
+    with open('vf_table.dat') as f:
+        lines = f.read().splitlines()
+    assert len(lines) == len(keys)
+    assert len(set(lines)) == len(lines)
+
+    return lines_to_tables(lines, keys)
+vf_table, vf_table_reverse = gen_vf_tables()
+
 # Tone.
 version_table = {
     'PRC': tones['falling'],
@@ -136,6 +154,7 @@ for ordering in [
     vr_order,
     vc_order,
     ca_order,
+    vf_order,
 ]:
     for key in itertools.product(*ordering):
         canonical_keys[frozenset(key)] = key
@@ -232,7 +251,6 @@ def deconstruct_formative(word):
     Currently only handles the structure:
     Vr+Cr+Vc+Ca[+Tone]
 
-    >>> from pprint import pprint
     >>> for line in deconstruct_formative('eqal'):
     ...     print(line)
     ('Tone', 'falling', 'PRC')
@@ -240,9 +258,22 @@ def deconstruct_formative(word):
     ('Cr', 'q', 'higher order animal life')
     ('Vc', 'a', ('OBL',))
     ('Ca', 'l', ('NRM', 'DEL', 'M', 'CSL', 'UNI'))
+    ('Vf', '', ('EXS', 'NOFORMAT'))
+
+    >>> for line in deconstruct_formative('Ilmašqi'):
+    ...     print(line)
+    ('Tone', 'falling', 'PRC')
+    ('Vr', 'i', ('DYN', 'P1', 'S1'))
+    ('Cr', 'lm', 'music')
+    ('Vc', 'a', ('OBL',))
+    ('Ca', 'šq', ('NRM', 'DEL', 'M', 'COA', 'CST'))
+    ('Vf', 'i', ('FNC', 'NOFORMAT'))
     """
     word = convert_typed(word).lower()
-    tone, vr, cr, vc, ca = lex_formative(word)
+    lexed_word = lex_formative(word)
+    if lexed_word is None:
+        return None # Could not understand word structure.
+    tone, vr, cr, vc, ca, vf = lexed_word
     result = []
 
     version = version_table_reverse[tone]
@@ -260,18 +291,21 @@ def deconstruct_formative(word):
     ca_key = ca_table_reverse[ca]
     result.append(('Ca', ca, canonical_keys[ca_key]))
 
+    vf_key = vf_table_reverse[vf]
+    result.append(('Vf', vf, canonical_keys[vf_key]))
+
     return result
 
 def lex_formative(word):
     """
     >>> lex_formative('eqal')
-    ('', 'e', 'q', 'a', 'l')
+    ('', 'e', 'q', 'a', 'l', '')
     >>> lex_formative('eqall')
-    ('', 'e', 'q', 'a', 'll')
+    ('', 'e', 'q', 'a', 'll', '')
     >>> lex_formative('pʰal')
-    ('', '', 'pʰ', 'a', 'l')
+    ('', '', 'pʰ', 'a', 'l', '')
     >>> lex_formative('¯uakal')
-    ('¯', 'ua', 'k', 'a', 'l')
+    ('¯', 'ua', 'k', 'a', 'l', '')
     """
     m = word_regex.match(word)
     if m:
@@ -282,12 +316,16 @@ def build_word_regex():
     c = r'(?:{})+'.format('|'.join(consonants))
     v = r'(?:{})+'.format('|'.join(vowels))
     tone = r'(?:{})'.format('|'.join(tones.values()))
+    vf = r'(?:{})'.format('|'.join(vf_table_reverse.keys()))
     word_pattern = r'''
+        ^
         ({tone}) # Tone
         ({vr}) # Vr
         ({c}) # Cr
         ({v}) # Vc
         ({c}) # Ca
+        ({vf})? # Vf
+        $
     '''.format(**locals())
     return re.compile(word_pattern, re.UNICODE|re.IGNORECASE|re.VERBOSE)
 word_regex = build_word_regex()
