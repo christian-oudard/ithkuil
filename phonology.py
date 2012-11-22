@@ -84,37 +84,38 @@ _max_combo_length = max(
 )
 
 # Tones.
-tone_names = [
+tone_order = [
     'falling',
-    'low',
     'high',
     'rising',
+    'low',
     'fallingrising',
     'risingfalling',
 ]
 tones = {
     'falling': '',
-    'low': '_',
     'high': unicodedata.lookup('MACRON'),
     'rising': unicodedata.lookup('ACUTE ACCENT'),
+    'low': '_',
     'fallingrising': unicodedata.lookup('CARON'),
     'risingfalling': '^',
 }
+tone_names = {c: name for (name, c) in tones.items()}
 typing_tones = {
     'falling': '',
-    'low': '_',
     'high': '=',
     'rising': '/',
+    'low': '_',
     'fallingrising': '~',
     'risingfalling': '^',
 }
 assert (
-    sorted(tone_names) ==
+    sorted(tone_order) ==
     sorted(tones.keys()) ==
     sorted(typing_tones.keys())
 )
 _tone_conversion_table = {}
-for tone in tone_names:
+for tone in tone_order:
     t = typing_tones[tone]
     c = tones[tone]
     _tone_conversion_table[t] = c

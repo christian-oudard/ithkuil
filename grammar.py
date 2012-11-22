@@ -1,6 +1,12 @@
 import itertools
 import re
-from phonology import convert_typed, consonants, vowels
+from phonology import (
+    convert_typed,
+    consonants,
+    vowels,
+    tones,
+    tone_names,
+)
 
 """
 Formative structure:
@@ -42,6 +48,7 @@ affiliations = ('CSL', 'ASO', 'VAR', 'COA')
 perspectives = ('M', 'U', 'N', 'A')
 extensions = ('DEL', 'PRX', 'ICP', 'TRM', 'DPL', 'GRA')
 essences = ('NRM', 'RPV')
+versions = ('PRC', 'CPT', 'INE', 'INC', 'PST', 'EFC')
 designations = ('FML', 'IFL')
 
 def lines_to_tables(lines, keys):
@@ -111,6 +118,17 @@ def gen_ca_tables():
 
     return lines_to_tables(lines, keys)
 ca_table, ca_table_reverse = gen_ca_tables()
+
+# Tone.
+version_table = {
+    'PRC': tones['falling'],
+    'CPT': tones['high'],
+    'INE': tones['rising'],
+    'INC': tones['low'],
+    'PST': tones['fallingrising'],
+    'EFC': tones['risingfalling'],
+}
+version_table_reverse = {tone: version for (version, tone) in version_table.items()}
 
 # Canonical key representations.
 canonical_keys = {}
@@ -212,7 +230,7 @@ def deconstruct_formative(word):
     Deconstruct a formative into its root and affixes, and lookup the meaning of each.
 
     Currently only handles the structure:
-    Vr+Cr+Vc+Ca
+    Vr+Cr+Vc+Ca[+Tone]
 
     >>> from pprint import pprint
     >>> for line in deconstruct_formative('eqal'):
@@ -221,9 +239,10 @@ def deconstruct_formative(word):
     ('Cr', 'q', 'higher order animal life')
     ('Vc', 'a', ('OBL',))
     ('Ca', 'l', ('NRM', 'DEL', 'M', 'CSL', 'UNI'))
+    ('Tone', 'falling', 'PRC')
     """
     word = convert_typed(word).lower()
-    vr, cr, vc, ca = lex_formative(word)
+    tone, vr, cr, vc, ca = lex_formative(word)
     result = []
 
     vr_key = vr_table_reverse[vr]
@@ -238,13 +257,33 @@ def deconstruct_formative(word):
     ca_key = ca_table_reverse[ca]
     result.append(('Ca', ca, canonical_keys[ca_key]))
 
+    version = version_table_reverse[tone]
+    result.append(('Tone', tone_names[tone], version))
+
     return result
+
+def lex_formative(word):
+    """
+    >>> lex_formative('eqal')
+    ('', 'e', 'q', 'a', 'l')
+    >>> lex_formative('eqall')
+    ('', 'e', 'q', 'a', 'll')
+    >>> lex_formative('pʰal')
+    ('', '', 'pʰ', 'a', 'l')
+    >>> lex_formative('¯uakal')
+    ('¯', 'ua', 'k', 'a', 'l')
+    """
+    m = word_regex.match(word)
+    if m:
+        return tuple(m.groups())
 
 def build_word_regex():
     vr = r'(?:{})'.format('|'.join(vr_table_reverse.keys()))
     c = r'(?:{})+'.format('|'.join(consonants))
     v = r'(?:{})+'.format('|'.join(vowels))
+    tone = r'(?:{})'.format('|'.join(tones.values()))
     word_pattern = r'''
+        ({tone}) # Tone
         ({vr}) # Vr
         ({c}) # Cr
         ({v}) # Vc
@@ -252,16 +291,3 @@ def build_word_regex():
     '''.format(**locals())
     return re.compile(word_pattern, re.UNICODE|re.IGNORECASE|re.VERBOSE)
 word_regex = build_word_regex()
-
-def lex_formative(word):
-    """
-    >>> lex_formative('eqal')
-    ('e', 'q', 'a', 'l')
-    >>> lex_formative('eqall')
-    ('e', 'q', 'a', 'll')
-    >>> lex_formative('pʰal')
-    ('', 'pʰ', 'a', 'l')
-    """
-    m = word_regex.match(word)
-    if m:
-        return tuple(m.groups())
