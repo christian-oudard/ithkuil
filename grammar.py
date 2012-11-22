@@ -1,6 +1,26 @@
 import itertools
 from phonology import convert_typed
 
+"""
+Formative structure:
+(((Cv+)Vl+)Cg/Cs+)Vr+(Cx/Cv+Vp/Vl+)Cr+Vc(+Ci+Vi)+Ca(+VxC)(+Vf(+Cb))[+Tone][+Stress]
+Cv: Phase + Sanction (+ Illocution)
+Vl: Valence
+Cg/Cs: Validation OR Aspect (+ Mood)
+Vr: Pattern + Stem + Function
+Cx/Cv: Incorporated Root OR Phase + Sanction (+ Illocution)
+Vp/Vl: Pattern + Stem + Designation of Incorporated Root OR Valence
+Cr: Root
+Vc: Case
+Ci+Vi: Illocution + Mood
+Ca: Essence + Extension + Perspective + Configuration + Affiliation
+VxC: Derivational Suffix
+Vf: Context + Format
+Cb: Bias
+Tone: Version
+Stress: Designation + Relation
+"""
+
 functions = ('STA', 'DYN', 'MNF', 'DSC')
 patterns = ('P1', 'P2', 'P3')
 stems = ('S1', 'S2', 'S3')
@@ -38,7 +58,7 @@ def lines_to_tables(lines, keys):
             table_reverse[affix] = key
     return table, table_reverse
 
-# Lexicon.
+# Cr affix, lexical root.
 def gen_lexicon():
     lexicon_table = {}
     with open('lexicon.dat') as f:
