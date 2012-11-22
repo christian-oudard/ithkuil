@@ -1,5 +1,6 @@
 import itertools
-from phonology import convert_typed
+import re
+from phonology import convert_typed, consonants, vowels
 
 """
 Formative structure:
@@ -205,3 +206,62 @@ def lookup_lexicon(root):
     root = convert_typed(root)
     root = root.upper()
     return lexicon_table.get(root)
+
+def deconstruct_formative(word):
+    """
+    Deconstruct a formative into its root and affixes, and lookup the meaning of each.
+
+    Currently only handles the structure:
+    Vr+Cr+Vc+Ca
+
+    >>> from pprint import pprint
+    >>> for line in deconstruct_formative('eqal'):
+    ...     print(line)
+    ('Vr', 'e', ('STA', 'P1', 'S2'))
+    ('Cr', 'q', 'higher order animal life')
+    ('Vc', 'a', ('OBL',))
+    ('Ca', 'l', ('NRM', 'DEL', 'M', 'CSL', 'UNI'))
+    """
+    word = convert_typed(word).lower()
+    vr, cr, vc, ca = lex_formative(word)
+    result = []
+
+    vr_key = vr_table_reverse[vr]
+    result.append(('Vr', vr, canonical_keys[vr_key]))
+
+    meaning = lexicon_table[cr.upper()]
+    result.append(('Cr', cr, meaning))
+
+    vc_key = vc_table_reverse[vc]
+    result.append(('Vc', vc, canonical_keys[vc_key]))
+
+    ca_key = ca_table_reverse[ca]
+    result.append(('Ca', ca, canonical_keys[ca_key]))
+
+    return result
+
+def build_word_regex():
+    vr = r'(?:{})'.format('|'.join(vr_table_reverse.keys()))
+    c = r'(?:{})+'.format('|'.join(consonants))
+    v = r'(?:{})+'.format('|'.join(vowels))
+    word_pattern = r'''
+        ({vr}) # Vr
+        ({c}) # Cr
+        ({v}) # Vc
+        ({c}) # Ca
+    '''.format(**locals())
+    return re.compile(word_pattern, re.UNICODE|re.IGNORECASE|re.VERBOSE)
+word_regex = build_word_regex()
+
+def lex_formative(word):
+    """
+    >>> lex_formative('eqal')
+    ('e', 'q', 'a', 'l')
+    >>> lex_formative('eqall')
+    ('e', 'q', 'a', 'll')
+    >>> lex_formative('pʰal')
+    ('', 'pʰ', 'a', 'l')
+    """
+    m = word_regex.match(word)
+    if m:
+        return tuple(m.groups())
