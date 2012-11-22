@@ -235,15 +235,18 @@ def deconstruct_formative(word):
     >>> from pprint import pprint
     >>> for line in deconstruct_formative('eqal'):
     ...     print(line)
+    ('Tone', 'falling', 'PRC')
     ('Vr', 'e', ('STA', 'P1', 'S2'))
     ('Cr', 'q', 'higher order animal life')
     ('Vc', 'a', ('OBL',))
     ('Ca', 'l', ('NRM', 'DEL', 'M', 'CSL', 'UNI'))
-    ('Tone', 'falling', 'PRC')
     """
     word = convert_typed(word).lower()
     tone, vr, cr, vc, ca = lex_formative(word)
     result = []
+
+    version = version_table_reverse[tone]
+    result.append(('Tone', tone_names[tone], version))
 
     vr_key = vr_table_reverse[vr]
     result.append(('Vr', vr, canonical_keys[vr_key]))
@@ -256,9 +259,6 @@ def deconstruct_formative(word):
 
     ca_key = ca_table_reverse[ca]
     result.append(('Ca', ca, canonical_keys[ca_key]))
-
-    version = version_table_reverse[tone]
-    result.append(('Tone', tone_names[tone], version))
 
     return result
 
