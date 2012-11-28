@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20001102//EN" "http://www.w3.org/TR/2000/CR-SVG-20001102/DTD/svg-20001102.dtd" [
+
+<!-- == positions == -->
+
+<!ENTITY xleft "20">
+<!ENTITY ytop "380">
+
+<!-- top left -->
+<!ENTITY ptl "M&xleft;,&ytop;">
+
+<!-- == stroke types == -->
+
+<!-- horizontal stroke -->
+<!ENTITY hs "m-20,-20 l40,40 h260 l-40,-40, z">
+
+]>
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<title>Ithkuil Writing</title>
+
+<defs>
+<font horiz-adv-x="500" id="ithkuil-font">
+<font-face font-family="ithkuil" units-per-em="700"/>
+
+<glyph unicode="Template" d="
+    M0,0 h300
+    M0,200 h300
+    M0,400 h300
+" />
+
+<glyph unicode="Topbar" d="&ptl;&hs;" />
+
+</font>
+</defs>
+
+<g font-size="350px">
+    <g fill="none" stroke="#888" stroke-width="3" font-size="350px">
+        <text x="1em" y="2em" font-family="ithkuil">TemplateTemplateTemplateTemplate</text>
+    </g>
+    <g fill="#a00" font-size="350px">
+        <text x="1em" y="2em" font-family="ithkuil">TopbarTopbar</text>
+    </g>
+</g>
+
+</svg>
