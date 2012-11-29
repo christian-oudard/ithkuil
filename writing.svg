@@ -34,20 +34,28 @@
 
 <!-- == stroke bodies (b-) == -->
 <!-- horizontal -->
-<!ENTITY bh "m60,20 v-40 h140 v40 z m-60,-20">
-<!ENTITY bv "m-20,-60 h40 v-240 h-40 z m20,60">
+<!ENTITY bh "m60,20 v-40 h140 v40 z m-60,-20 m260,0">
+<!-- vertical -->
+<!ENTITY bv "m-20,-60 h40 v-240 h-40 z m20,60 m0,-360">
+<!ENTITY bv2 "m-20,-60 h40 v-110 h-40 z m20,60 m0,-230">
 <!-- diagonal down-right -->
-<!ENTITY bddr "m28,-56 l100,-100 l28,28 l-100,100 z m-28,56">
+<!ENTITY bddr "m28,-56 l28,28 l46,-46 l-28,-28 z m-28,56 m130,-130">
 
 <!-- == stroke joints (j-) == -->
 <!-- right and down -->
 <!ENTITY jrd "m-20,20 h80 v-40 h-40 v-40 h-40 z m20,-20">
+<!-- right and diagonal down-right -->
+<!ENTITY jrddr "m60,20 v-40 h-12 l8,-8 l-28,-28 l-76,76 z m-60,-20">
+<!-- diagonal up-left and down -->
+<!ENTITY jduld "m-20,-8 v-52 h40 v68 l-48,48 l-28,-28 z m20,8">
 
 <!-- == stroke endings (e-) = -->
 <!-- left normal -->
 <!ENTITY el0 "m20,20 h40 v-40 h-80 z m-20,-20">
 <!-- right normal -->
 <!ENTITY er0 "m-20,-20 h-40 v40 h80 z m20,20">
+<!-- right normal inverted -->
+<!ENTITY er0i "m-20,20 h-40 v-40 h80 z m20,-20">
 <!-- right zigzag under -->
 <!ENTITY er1 "&er0;m-20,-20 l-40,-40 h80 l40,40 z m-20,20">
 <!-- right diagonal up stroke down -->
@@ -76,11 +84,12 @@
 <!-- == consonantal characters (c-) == -->
 <glyph unicode="ctopbar|" d="&ptl;&el0;&bh;" />
 <glyph unicode="cvertline|" d="&ptm;&et0;&bv;" />
-<glyph unicode="ct|" d="&ptl;&jrd;&bh;&bv;" />
-<glyph unicode="cp|" d="&ptl;&bh;&bddr;" />
+<glyph unicode="ct|" d="&ptl;&bh;&ptl;&jrd;&bv;" />
+<glyph unicode="cp|" d="&ptl;&bh;&ptl;&jrddr;&bddr;&jduld;&bv2;" />
 
 <!-- == combining ending characters (e-) == -->
 <glyph unicode="er0_" d="&ptr;&er0;" horiz-adv-x="0"/>
+<glyph unicode="er0i_" d="&ptr;&er0i;" horiz-adv-x="0"/>
 <glyph unicode="er9_" d="&ptr;&er9;" horiz-adv-x="0"/>
 <glyph unicode="eb0l_" d="&pbl;&eb0;" horiz-adv-x="0"/>
 <glyph unicode="eb0m_" d="&pbm;&eb0;" horiz-adv-x="0"/>
@@ -107,13 +116,13 @@
 
 </defs>
 
-<g font-size="350px">
-    <g fill="#c00" stroke="#000" stroke-width="3">
+<g font-size="250px">
+    <g fill="#c00" stroke="#000" stroke-width="1">
         <text x="1em" y="1em" font-family="ithkuil">
-            ctopbar|er0_ctopbar|er1_ctopbar|cvertline|eb0m_ddoto_dbaru_cvertline|
+            er0i_eb0m_cp|er0_eb0l_ct|er9_eb6l_dbaru_ct|
         </text>
         <text x="1em" y="2em" font-family="ithkuil">
-            er0_eb0l_ct|er9_eb6l_dbaru_ct|cp|
+            ctopbar|er0_ctopbar|er1_ctopbar|cvertline|eb0m_ddoto_dbaru_cvertline|
         </text>
     </g>
     <g fill="none" stroke="#008" stroke-width="3" opacity="0.5">
