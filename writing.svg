@@ -40,7 +40,7 @@
 <!ENTITY bv2 "m-20,-60 h40 v-110 h-40 z m20,60 m0,-230">
 <!-- diagonal down-right -->
 <!ENTITY bddr "m28,-56 l28,28 l46,-46 l-28,-28 z m-28,56 m130,-130">
-<!-- slanting right -->
+<!-- slant-right -->
 <!--<!ENTITY bsr_template "m18,6 l-36,-12 l260,-720 l36,12 z m-18,-6 m130,-360">-->
 <!ENTITY bsr "m36,-48 l-36,-12 l94,-252 l36,12 z m-36,48 m130,-360">
 
@@ -51,6 +51,8 @@
 <!ENTITY jrddr "m60,20 v-40 h-12 l8,-8 l-28,-28 l-76,76 z m-60,-20">
 <!-- diagonal up-left and down -->
 <!ENTITY jduld "m-20,-8 v-52 h40 v68 l-48,48 l-28,-28 z m20,8">
+<!-- right and slant-right down-right -->
+<!ENTITY jrsr "m60,20 v-40 h-33 l9,-28 l-36,-12 l-27,80 z m-60,-20">
 
 <!-- == stroke endings (e-) = -->
 <!-- left normal -->
@@ -91,7 +93,7 @@
 <glyph unicode="cvertline|" d="&ptm;&et0;&bv;" />
 <glyph unicode="ct|" d="&ptl;&bh;&ptl;&jrd;&bv;" />
 <glyph unicode="cp|" d="&ptl;&bh;&ptl;&jrddr;&bddr;&jduld;&bv2;" />
-<glyph unicode="ck|" d="&ptl;&bh;&ptl;&bsr;" />
+<glyph unicode="ck|" d="&ptl;&bh;&ptl;&jrsr;&bsr;" />
 
 <!-- == combining ending characters (e-) == -->
 <glyph unicode="er0_" d="&ptr;&er0;" horiz-adv-x="0"/>
