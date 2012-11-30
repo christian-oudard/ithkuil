@@ -124,8 +124,6 @@ def convert_typed(typed_text):
     """
     >>> convert_typed("Ikc,as")
     'Ikças'
-    >>> convert_typed("Ikc,as")
-    'Ikças'
     >>> convert_typed("A'tukc,as te^ oxnall")
     'A’tukças tê oxnall'
     >>> convert_typed("U^b eikkradwa smou'ola^xh.")

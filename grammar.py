@@ -41,6 +41,8 @@ cases = (
     'ALP', 'INP', 'EPS', 'PLM', 'LIM', 'LOC', 'ORI', 'PSV', 'ALL', 'ABL',
     'NAV', 'VOC',
 )
+illocutions = ('ASR', 'DIR', 'IRG', 'ADM', 'HOR', 'DEC')
+moods = ('FAC', 'SUB', 'ASM', 'SPC', 'COU', 'HYP', 'IPL', 'ASC')
 configurations = (
     'UNI', 'DPX', 'DCT', 'AGG', 'SEG', 'CPN', 'COH', 'CST', 'MLT',
 )
@@ -93,6 +95,22 @@ def gen_vr_tables():
 
     return lines_to_tables(lines, keys)
 vr_table, vr_table_reverse = gen_vr_tables()
+
+# Ci+Vi affixes.
+civi_order = [illocutions, moods]
+def gen_civi_tables():
+    keys = list(itertools.product(*civi_order))
+
+    # The last 7 combinations do not occur.
+    keys = keys[:-7]
+
+    with open('civi_table.dat') as f:
+        lines = f.read().splitlines()
+    assert len(lines) == len(keys)
+    assert len(set(lines)) == len(lines)
+
+    return lines_to_tables(lines, keys)
+civi_table, civi_table_reverse = gen_civi_tables()
 
 # Vc affix.
 vc_order = [cases]
@@ -153,6 +171,7 @@ canonical_keys = {}
 for ordering in [
     vr_order,
     vc_order,
+    civi_order,
     ca_order,
     vf_order,
 ]:
@@ -248,8 +267,8 @@ def deconstruct_formative(word):
     """
     Deconstruct a formative into its root and affixes, and lookup the meaning of each.
 
-    Currently only handles the structure:
-    Vr+Cr+Vc+Ca[+Tone]
+    Currently only handles the simplified structure:
+    Vr+Cr+Vc(+Ci+Vi)+Ca(+Vf)[+Tone]
 
     >>> for line in deconstruct_formative('eqal'):
     ...     print(line)
@@ -257,6 +276,7 @@ def deconstruct_formative(word):
     ('Vr', 'e', ('STA', 'P1', 'S2'))
     ('Cr', 'q', 'higher order animal life')
     ('Vc', 'a', ('OBL',))
+    ('Ci+Vi', '', ('ASR', 'FAC'))
     ('Ca', 'l', ('NRM', 'DEL', 'M', 'CSL', 'UNI'))
     ('Vf', '', ('EXS', 'NOFORMAT'))
 
@@ -266,14 +286,25 @@ def deconstruct_formative(word):
     ('Vr', 'i', ('DYN', 'P1', 'S1'))
     ('Cr', 'lm', 'music')
     ('Vc', 'a', ('OBL',))
+    ('Ci+Vi', '', ('ASR', 'FAC'))
     ('Ca', 'šq', ('NRM', 'DEL', 'M', 'COA', 'CST'))
     ('Vf', 'i', ('FNC', 'NOFORMAT'))
+
+    >>> for line in deconstruct_formative('eglayës'):
+    ...     print(line)
+    ('Tone', 'falling', 'PRC')
+    ('Vr', 'e', ('STA', 'P1', 'S2'))
+    ('Cr', 'gl', 'state of health / illness / well-being')
+    ('Vc', 'a', ('OBL',))
+    ('Ci+Vi', 'yë', ('ASR', 'ASM'))
+    ('Ca', 's', ('NRM', 'PRX', 'M', 'CSL', 'UNI'))
+    ('Vf', '', ('EXS', 'NOFORMAT'))
     """
     word = convert_typed(word).lower()
-    lexed_word = lex_formative(word)
-    if lexed_word is None:
+    parsed_word = parse_formative(word)
+    if parsed_word is None:
         return None # Could not understand word structure.
-    tone, vr, cr, vc, ca, vf = lexed_word
+    tone, vr, cr, vc, civi, ca, vf = parsed_word
     result = []
 
     version = version_table_reverse[tone]
@@ -288,6 +319,9 @@ def deconstruct_formative(word):
     vc_key = vc_table_reverse[vc]
     result.append(('Vc', vc, canonical_keys[vc_key]))
 
+    civi_key = civi_table_reverse[civi]
+    result.append(('Ci+Vi', civi, canonical_keys[civi_key]))
+
     ca_key = ca_table_reverse[ca]
     result.append(('Ca', ca, canonical_keys[ca_key]))
 
@@ -296,33 +330,38 @@ def deconstruct_formative(word):
 
     return result
 
-def lex_formative(word):
+def parse_formative(word):
     """
-    >>> lex_formative('eqal')
-    ('', 'e', 'q', 'a', 'l', '')
-    >>> lex_formative('eqall')
-    ('', 'e', 'q', 'a', 'll', '')
-    >>> lex_formative('pʰal')
-    ('', '', 'pʰ', 'a', 'l', '')
-    >>> lex_formative('¯uakal')
-    ('¯', 'ua', 'k', 'a', 'l', '')
+    >>> parse_formative('eqal')
+    ('', 'e', 'q', 'a', '', 'l', '')
+    >>> parse_formative('eqall')
+    ('', 'e', 'q', 'a', '', 'll', '')
+    >>> parse_formative('pʰal')
+    ('', '', 'pʰ', 'a', '', 'l', '')
+    >>> parse_formative('¯uakal')
+    ('¯', 'ua', 'k', 'a', '', 'l', '')
+    >>> parse_formative('eglayës')
+    ('', 'e', 'gl', 'a', 'yë', 's', '')
     """
     m = word_regex.match(word)
     if m:
         return tuple(m.groups())
 
 def build_word_regex():
-    vr = r'(?:{})'.format('|'.join(vr_table_reverse.keys()))
     c = r'(?:{})+'.format('|'.join(consonants))
     v = r'(?:{})+'.format('|'.join(vowels))
-    tone = r'(?:{})'.format('|'.join(tones.values()))
+    vr = r'(?:{})'.format('|'.join(vr_table_reverse.keys()))
+    vc = r'(?:{})'.format('|'.join(vc_table_reverse.keys()))
+    civi = r'(?:{})'.format('|'.join(civi_table_reverse.keys()))
     vf = r'(?:{})'.format('|'.join(vf_table_reverse.keys()))
+    tone = r'(?:{})'.format('|'.join(tones.values()))
     word_pattern = r'''
         ^
         ({tone}) # Tone
         ({vr}) # Vr
         ({c}) # Cr
-        ({v}) # Vc
+        ({vc}) # Vc
+        ({civi})? # Ci + Vi
         ({c}) # Ca
         ({vf})? # Vf
         $
