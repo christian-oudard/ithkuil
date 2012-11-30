@@ -55,6 +55,14 @@ formats = (
     'NOFORMAT', 'SCH', 'ISR', 'ATH', 'RSL',
     'SBQ', 'CCM', 'OBJ', 'PRT', 'AFI',
 )
+biases = (
+    'NOBIAS',
+    'ASU', 'ASU+', 'HPB', 'HPB+', 'COI', 'COI+', 'ACP', 'ACP+', 'RAC', 'RAC+',
+    'STU', 'STU+', 'CTV', 'CTV+', 'DPV', 'DPV+', 'RVL', 'RVL+', 'GRT', 'GRT+',
+    'SOL', 'SOL+', 'SEL', 'SEL+', 'IRO', 'IRO+', 'EXA', 'EXA+', 'LTL', 'LTL+',
+    'CRR', 'CRR+', 'EUP', 'EUP+', 'SKP', 'SKP+', 'CYN', 'CYN+', 'CTP', 'CTP+',
+    'DSM', 'DSM+', 'IDG', 'IDG+', 'SGS', 'SGS+', 'PPV', 'PPV+',
+)
 versions = ('PRC', 'CPT', 'INE', 'INC', 'PST', 'EFC')
 designations = ('FML', 'IFL')
 
@@ -155,6 +163,19 @@ def gen_vf_tables():
     return lines_to_tables(lines, keys)
 vf_table, vf_table_reverse = gen_vf_tables()
 
+# Cb affix.
+cb_order = [biases]
+def gen_cb_tables():
+    keys = list(itertools.product(*cb_order))
+
+    with open('cb_table.dat') as f:
+        lines = f.read().splitlines()
+    assert len(lines) == len(keys)
+    assert len(set(lines)) == len(lines)
+
+    return lines_to_tables(lines, keys)
+cb_table, cb_table_reverse = gen_cb_tables()
+
 # Tone.
 version_table = {
     'PRC': tones['falling'],
@@ -174,6 +195,7 @@ for ordering in [
     civi_order,
     ca_order,
     vf_order,
+    cb_order,
 ]:
     for key in itertools.product(*ordering):
         canonical_keys[frozenset(key)] = key
@@ -279,6 +301,7 @@ def deconstruct_formative(word):
     ('Ci+Vi', '', ('ASR', 'FAC'))
     ('Ca', 'l', ('NRM', 'DEL', 'M', 'CSL', 'UNI'))
     ('Vf', '', ('EXS', 'NOFORMAT'))
+    ('Cb', '', ('NOBIAS',))
 
     >>> for line in deconstruct_formative('Ilmašqi'):
     ...     print(line)
@@ -289,6 +312,7 @@ def deconstruct_formative(word):
     ('Ci+Vi', '', ('ASR', 'FAC'))
     ('Ca', 'šq', ('NRM', 'DEL', 'M', 'COA', 'CST'))
     ('Vf', 'i', ('FNC', 'NOFORMAT'))
+    ('Cb', '', ('NOBIAS',))
 
     >>> for line in deconstruct_formative('eglayës'):
     ...     print(line)
@@ -299,12 +323,24 @@ def deconstruct_formative(word):
     ('Ci+Vi', 'yë', ('ASR', 'ASM'))
     ('Ca', 's', ('NRM', 'PRX', 'M', 'CSL', 'UNI'))
     ('Vf', '', ('EXS', 'NOFORMAT'))
+    ('Cb', '', ('NOBIAS',))
+
+    >>> for line in deconstruct_formative('isvala’kss'):
+    ...     print(line)
+    ('Tone', 'falling', 'PRC')
+    ('Vr', 'i', ('DYN', 'P1', 'S1'))
+    ('Cr', 'sv', 'fear / fright')
+    ('Vc', 'a', ('OBL',))
+    ('Ci+Vi', '', ('ASR', 'FAC'))
+    ('Ca', 'l', ('NRM', 'DEL', 'M', 'CSL', 'UNI'))
+    ('Vf', 'a', ('EXS', 'NOFORMAT'))
+    ('Cb', '’kss', ('SKP+',))
     """
     word = convert_typed(word).lower()
     parsed_word = parse_formative(word)
     if parsed_word is None:
         return None # Could not understand word structure.
-    tone, vr, cr, vc, civi, ca, vf = parsed_word
+    tone, vr, cr, vc, civi, ca, vf, cb = parsed_word
     result = []
 
     version = version_table_reverse[tone]
@@ -328,20 +364,25 @@ def deconstruct_formative(word):
     vf_key = vf_table_reverse[vf]
     result.append(('Vf', vf, canonical_keys[vf_key]))
 
+    cb_key = cb_table_reverse[cb]
+    result.append(('Cb', cb, canonical_keys[cb_key]))
+
     return result
 
 def parse_formative(word):
     """
     >>> parse_formative('eqal')
-    ('', 'e', 'q', 'a', '', 'l', '')
+    ('', 'e', 'q', 'a', '', 'l', '', '')
     >>> parse_formative('eqall')
-    ('', 'e', 'q', 'a', '', 'll', '')
+    ('', 'e', 'q', 'a', '', 'll', '', '')
     >>> parse_formative('pʰal')
-    ('', '', 'pʰ', 'a', '', 'l', '')
+    ('', '', 'pʰ', 'a', '', 'l', '', '')
     >>> parse_formative('¯uakal')
-    ('¯', 'ua', 'k', 'a', '', 'l', '')
+    ('¯', 'ua', 'k', 'a', '', 'l', '', '')
     >>> parse_formative('eglayës')
-    ('', 'e', 'gl', 'a', 'yë', 's', '')
+    ('', 'e', 'gl', 'a', 'yë', 's', '', '')
+    >>> parse_formative('isvala’kss')
+    ('', 'i', 'sv', 'a', '', 'l', 'a', '’kss')
     """
     m = word_regex.match(word)
     if m:
@@ -350,11 +391,16 @@ def parse_formative(word):
 def build_word_regex():
     c = r'(?:{})+'.format('|'.join(consonants))
     v = r'(?:{})+'.format('|'.join(vowels))
-    vr = r'(?:{})'.format('|'.join(vr_table_reverse.keys()))
-    vc = r'(?:{})'.format('|'.join(vc_table_reverse.keys()))
-    civi = r'(?:{})'.format('|'.join(civi_table_reverse.keys()))
-    vf = r'(?:{})'.format('|'.join(vf_table_reverse.keys()))
-    tone = r'(?:{})'.format('|'.join(tones.values()))
+    def choices_pattern(options):
+        return r'(?:{})'.format('|'.join(options))
+
+    vr = choices_pattern(vr_table_reverse.keys())
+    vc = choices_pattern(vc_table_reverse.keys())
+    civi = choices_pattern(civi_table_reverse.keys())
+    vf = choices_pattern(vf_table_reverse.keys())
+    cb = choices_pattern(cb_table_reverse.keys())
+    tone = choices_pattern(tones.values())
+
     word_pattern = r'''
         ^
         ({tone}) # Tone
@@ -364,6 +410,7 @@ def build_word_regex():
         ({civi})? # Ci + Vi
         ({c}) # Ca
         ({vf})? # Vf
+        ({cb})? # Cb
         $
     '''.format(**locals())
     return re.compile(word_pattern, re.UNICODE|re.IGNORECASE|re.VERBOSE)
