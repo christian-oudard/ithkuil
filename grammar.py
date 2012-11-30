@@ -84,7 +84,7 @@ def lines_to_tables(lines, keys):
 # Cr lexical root.
 def gen_lexicon():
     lexicon_table = {}
-    with open('lexicon.dat') as f:
+    with open('data/lexicon.dat') as f:
         for line in f.readlines():
             root, definition = line.strip().split('|')
             lexicon_table[root] = definition
@@ -96,7 +96,7 @@ vr_order = [functions, patterns, stems]
 def gen_vr_tables():
     keys = list(itertools.product(*vr_order))
 
-    with open('vr_table.dat') as f:
+    with open('data/vr_table.dat') as f:
         lines = f.read().splitlines()
     assert len(lines) == len(keys)
     assert len(set(lines)) == len(lines)
@@ -112,7 +112,7 @@ def gen_civi_tables():
     # The last 7 combinations do not occur.
     keys = keys[:-7]
 
-    with open('civi_table.dat') as f:
+    with open('data/civi_table.dat') as f:
         lines = f.read().splitlines()
     assert len(lines) == len(keys)
     assert len(set(lines)) == len(lines)
@@ -125,7 +125,7 @@ vc_order = [cases]
 def gen_vc_tables():
     keys = list(itertools.product(*vc_order))
 
-    with open('vc_table.dat') as f:
+    with open('data/vc_table.dat') as f:
         lines = f.read().splitlines()
     assert len(lines) == len(keys)
     assert len(set(lines)) == len(lines)
@@ -142,7 +142,7 @@ ca_order = [essences, extensions, perspectives, affiliations, configurations]
 def gen_ca_tables():
     keys = list(itertools.product(*ca_order))
 
-    with open('ca_table.dat') as f:
+    with open('data/ca_table.dat') as f:
         lines = f.read().splitlines()
     assert len(lines) == len(keys)
     assert len(set(lines)) == len(lines)
@@ -155,7 +155,7 @@ vf_order = [contexts, formats]
 def gen_vf_tables():
     keys = list(itertools.product(*vf_order))
 
-    with open('vf_table.dat') as f:
+    with open('data/vf_table.dat') as f:
         lines = f.read().splitlines()
     assert len(lines) == len(keys)
     assert len(set(lines)) == len(lines)
@@ -168,7 +168,7 @@ cb_order = [biases]
 def gen_cb_tables():
     keys = list(itertools.product(*cb_order))
 
-    with open('cb_table.dat') as f:
+    with open('data/cb_table.dat') as f:
         lines = f.read().splitlines()
     assert len(lines) == len(keys)
     assert len(set(lines)) == len(lines)
