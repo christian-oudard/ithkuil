@@ -10,7 +10,7 @@ from phonology import (
 
 """
 Formative structure:
-(((Cv+)Vl+)Cg/Cs+)Vr+(Cx/Cv+Vp/Vl+)Cr+Vc(+Ci+Vi)+Ca(+VxC)(+Vf(+Cb))[+Tone][+Stress]
+(((Cv+)Vl+)Cg/Cs+)Vr+(Cx/Cv+Vp/Vl+)Cr+Vc(+Ci+Vi)+Ca(+Vx+Cx)(+Vf(+Cb))[+Tone][+Stress]
 Cv: Phase + Sanction (+ Illocution)
 Vl: Valence
 Cg/Cs: Validation OR Aspect (+ Mood)
@@ -21,7 +21,7 @@ Cr: Root
 Vc: Case
 Ci+Vi: Illocution + Mood
 Ca: Essence + Extension + Perspective + Configuration + Affiliation
-VxC: Derivational Suffix
+Vx+Cx: Derivational Suffix(es)
 Vf: Context + Format
 Cb: Bias
 Tone: Version
@@ -52,11 +52,11 @@ extensions = ('DEL', 'PRX', 'ICP', 'TRM', 'DPL', 'GRA')
 essences = ('NRM', 'RPV')
 contexts = ('EXS', 'FNC', 'RPS', 'AMG')
 formats = (
-    'NOFORMAT', 'SCH', 'ISR', 'ATH', 'RSL',
+    'NOF', 'SCH', 'ISR', 'ATH', 'RSL',
     'SBQ', 'CCM', 'OBJ', 'PRT', 'AFI',
 )
 biases = (
-    'NOBIAS',
+    'NOB',
     'ASU', 'ASU+', 'HPB', 'HPB+', 'COI', 'COI+', 'ACP', 'ACP+', 'RAC', 'RAC+',
     'STU', 'STU+', 'CTV', 'CTV+', 'DPV', 'DPV+', 'RVL', 'RVL+', 'GRT', 'GRT+',
     'SOL', 'SOL+', 'SEL', 'SEL+', 'IRO', 'IRO+', 'EXA', 'EXA+', 'LTL', 'LTL+',
@@ -65,6 +65,25 @@ biases = (
 )
 versions = ('PRC', 'CPT', 'INE', 'INC', 'PST', 'EFC')
 designations = ('FML', 'IFL')
+
+categories = (
+    functions,
+    patterns,
+    stems,
+    cases,
+    illocutions,
+    moods,
+    configurations,
+    affiliations,
+    perspectives,
+    extensions,
+    essences,
+    contexts,
+    formats,
+    biases,
+    versions,
+    designations,
+)
 
 def lines_to_tables(lines, keys):
     # Ignore order of multi-part keys.
@@ -82,18 +101,18 @@ def lines_to_tables(lines, keys):
     return table, table_reverse
 
 # Cr lexical root.
-def gen_lexicon():
+def make_lexicon():
     lexicon_table = {}
     with open('data/lexicon.dat') as f:
         for line in f.readlines():
             root, definition = line.strip().split('|')
             lexicon_table[root] = definition
     return lexicon_table
-lexicon_table = gen_lexicon()
+lexicon_table = make_lexicon()
 
 # Vr affix.
 vr_order = [functions, patterns, stems]
-def gen_vr_tables():
+def make_vr_tables():
     keys = list(itertools.product(*vr_order))
 
     with open('data/vr_table.dat') as f:
@@ -102,11 +121,11 @@ def gen_vr_tables():
     assert len(set(lines)) == len(lines)
 
     return lines_to_tables(lines, keys)
-vr_table, vr_table_reverse = gen_vr_tables()
+vr_table, vr_table_reverse = make_vr_tables()
 
 # Ci+Vi affixes.
 civi_order = [illocutions, moods]
-def gen_civi_tables():
+def make_civi_tables():
     keys = list(itertools.product(*civi_order))
 
     # The last 7 combinations do not occur.
@@ -118,11 +137,11 @@ def gen_civi_tables():
     assert len(set(lines)) == len(lines)
 
     return lines_to_tables(lines, keys)
-civi_table, civi_table_reverse = gen_civi_tables()
+civi_table, civi_table_reverse = make_civi_tables()
 
 # Vc affix.
 vc_order = [cases]
-def gen_vc_tables():
+def make_vc_tables():
     keys = list(itertools.product(*vc_order))
 
     with open('data/vc_table.dat') as f:
@@ -135,11 +154,11 @@ def gen_vc_tables():
     lines = [line.replace('V', 'a') for line in lines]
 
     return lines_to_tables(lines, keys)
-vc_table, vc_table_reverse = gen_vc_tables()
+vc_table, vc_table_reverse = make_vc_tables()
 
 # Ca affix.
 ca_order = [essences, extensions, perspectives, affiliations, configurations]
-def gen_ca_tables():
+def make_ca_tables():
     keys = list(itertools.product(*ca_order))
 
     with open('data/ca_table.dat') as f:
@@ -148,11 +167,11 @@ def gen_ca_tables():
     assert len(set(lines)) == len(lines)
 
     return lines_to_tables(lines, keys)
-ca_table, ca_table_reverse = gen_ca_tables()
+ca_table, ca_table_reverse = make_ca_tables()
 
 # Vf affix.
 vf_order = [contexts, formats]
-def gen_vf_tables():
+def make_vf_tables():
     keys = list(itertools.product(*vf_order))
 
     with open('data/vf_table.dat') as f:
@@ -161,11 +180,11 @@ def gen_vf_tables():
     assert len(set(lines)) == len(lines)
 
     return lines_to_tables(lines, keys)
-vf_table, vf_table_reverse = gen_vf_tables()
+vf_table, vf_table_reverse = make_vf_tables()
 
 # Cb affix.
 cb_order = [biases]
-def gen_cb_tables():
+def make_cb_tables():
     keys = list(itertools.product(*cb_order))
 
     with open('data/cb_table.dat') as f:
@@ -174,16 +193,16 @@ def gen_cb_tables():
     assert len(set(lines)) == len(lines)
 
     return lines_to_tables(lines, keys)
-cb_table, cb_table_reverse = gen_cb_tables()
+cb_table, cb_table_reverse = make_cb_tables()
 
 # Tone.
 version_table = {
-    'PRC': tones['falling'],
-    'CPT': tones['high'],
-    'INE': tones['rising'],
-    'INC': tones['low'],
-    'PST': tones['fallingrising'],
-    'EFC': tones['risingfalling'],
+    ('PRC',): tones['falling'],
+    ('CPT',): tones['high'],
+    ('INE',): tones['rising'],
+    ('INC',): tones['low'],
+    ('PST',): tones['fallingrising'],
+    ('EFC',): tones['risingfalling'],
 }
 version_table_reverse = {tone: version for (version, tone) in version_table.items()}
 
@@ -331,11 +350,11 @@ def parse_formative(word):
         return tuple(m.groups())
 
 def build_word_regex():
-    c = r'(?:{})+'.format('|'.join(consonants))
-    v = r'(?:{})+'.format('|'.join(vowels))
     def choices_pattern(options):
         return r'(?:{})'.format('|'.join(options))
 
+    c = choices_pattern(consonants) + '+'
+    v = choices_pattern(vowels) + '+'
     vr = choices_pattern(vr_table_reverse.keys())
     vc = choices_pattern(vc_table_reverse.keys())
     civi = choices_pattern(civi_table_reverse.keys())

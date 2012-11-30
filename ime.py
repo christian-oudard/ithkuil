@@ -4,6 +4,8 @@ from phonology import (
     tone_names, tones, typing_tones,
     convert_typed,
 )
+from grammar import deconstruct_formative
+from abbreviations import abbreviation_table
 
 def format_help(width=80):
     output = []
@@ -54,5 +56,27 @@ if __name__ == '__main__':
         elif typed == 'h':
             print(format_help())
         else:
-            print(convert_typed(typed))
+            text = convert_typed(typed)
+            print(text)
+            for word in text.split():
+                word = word.strip()
+                if word == '':
+                    continue
+                print()
+                print('"{}"'.format(word))
+                deconstruction = deconstruct_formative(word)
+                if deconstruction is None:
+                    print('???')
+                else:
+                    for slot, value, meaning in deconstruction:
+                        if value == '':
+                            print('  {} empty'.format(slot))
+                        else:
+                            print('  {} = {}'.format(slot, value))
+                        if slot == 'Cr':
+                            print('    "{}"'.format(meaning))
+                        else:
+                            for abbr in meaning:
+                                desc = abbreviation_table[abbr]
+                                print('    {} : {}'.format(abbr, desc))
         print()
