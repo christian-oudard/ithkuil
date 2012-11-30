@@ -290,51 +290,7 @@ def deconstruct_formative(word):
     Deconstruct a formative into its root and affixes, and lookup the meaning of each.
 
     Currently only handles the simplified structure:
-    Vr+Cr+Vc(+Ci+Vi)+Ca(+Vf)[+Tone]
-
-    >>> for line in deconstruct_formative('eqal'):
-    ...     print(line)
-    ('Tone', 'falling', 'PRC')
-    ('Vr', 'e', ('STA', 'P1', 'S2'))
-    ('Cr', 'q', 'higher order animal life')
-    ('Vc', 'a', ('OBL',))
-    ('Ci+Vi', '', ('ASR', 'FAC'))
-    ('Ca', 'l', ('NRM', 'DEL', 'M', 'CSL', 'UNI'))
-    ('Vf', '', ('EXS', 'NOFORMAT'))
-    ('Cb', '', ('NOBIAS',))
-
-    >>> for line in deconstruct_formative('Ilmašqi'):
-    ...     print(line)
-    ('Tone', 'falling', 'PRC')
-    ('Vr', 'i', ('DYN', 'P1', 'S1'))
-    ('Cr', 'lm', 'music')
-    ('Vc', 'a', ('OBL',))
-    ('Ci+Vi', '', ('ASR', 'FAC'))
-    ('Ca', 'šq', ('NRM', 'DEL', 'M', 'COA', 'CST'))
-    ('Vf', 'i', ('FNC', 'NOFORMAT'))
-    ('Cb', '', ('NOBIAS',))
-
-    >>> for line in deconstruct_formative('eglayës'):
-    ...     print(line)
-    ('Tone', 'falling', 'PRC')
-    ('Vr', 'e', ('STA', 'P1', 'S2'))
-    ('Cr', 'gl', 'state of health / illness / well-being')
-    ('Vc', 'a', ('OBL',))
-    ('Ci+Vi', 'yë', ('ASR', 'ASM'))
-    ('Ca', 's', ('NRM', 'PRX', 'M', 'CSL', 'UNI'))
-    ('Vf', '', ('EXS', 'NOFORMAT'))
-    ('Cb', '', ('NOBIAS',))
-
-    >>> for line in deconstruct_formative('isvala’kss'):
-    ...     print(line)
-    ('Tone', 'falling', 'PRC')
-    ('Vr', 'i', ('DYN', 'P1', 'S1'))
-    ('Cr', 'sv', 'fear / fright')
-    ('Vc', 'a', ('OBL',))
-    ('Ci+Vi', '', ('ASR', 'FAC'))
-    ('Ca', 'l', ('NRM', 'DEL', 'M', 'CSL', 'UNI'))
-    ('Vf', 'a', ('EXS', 'NOFORMAT'))
-    ('Cb', '’kss', ('SKP+',))
+    Vr+Cr+Vc(+Ci+Vi)+Ca(+Vf(+Cb))[+Tone]
     """
     word = convert_typed(word).lower()
     parsed_word = parse_formative(word)
@@ -370,20 +326,6 @@ def deconstruct_formative(word):
     return result
 
 def parse_formative(word):
-    """
-    >>> parse_formative('eqal')
-    ('', 'e', 'q', 'a', '', 'l', '', '')
-    >>> parse_formative('eqall')
-    ('', 'e', 'q', 'a', '', 'll', '', '')
-    >>> parse_formative('pʰal')
-    ('', '', 'pʰ', 'a', '', 'l', '', '')
-    >>> parse_formative('¯uakal')
-    ('¯', 'ua', 'k', 'a', '', 'l', '', '')
-    >>> parse_formative('eglayës')
-    ('', 'e', 'gl', 'a', 'yë', 's', '', '')
-    >>> parse_formative('isvala’kss')
-    ('', 'i', 'sv', 'a', '', 'l', 'a', '’kss')
-    """
     m = word_regex.match(word)
     if m:
         return tuple(m.groups())
