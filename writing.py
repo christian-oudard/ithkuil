@@ -133,14 +133,27 @@ class SideNormal(SideEnding):
 
 if __name__ == '__main__':
     from canoepaddle import Pen
-    pen = Pen()
-    c = ConsT(SideNormal, BottomBend)
-    c = ConsK(SideNormal, BottomNormal)
-    c = ConsK(SideNormal, BottomLong)
-    c = ConsK(SideNormal, BottomBend)
-    c.draw(pen)
+    letters = [
+        ConsT(SideNormal, BottomBend),
+        ConsK(SideNormal, BottomNormal),
+        ConsK(SideNormal, BottomLong),
+        ConsK(SideNormal, BottomBend),
+    ]
 
-    path_data = pen.paper.to_svg_path_thick()
+    width = 10
+    max_width = 80
+    height = 14
+    x, y = x_start, y_start = 5, -10
+    path_data = []
+    for letter in letters:
+        pen = Pen(offset=(x, y))
+        letter.draw(pen)
+        x += width
+        if x >= max_width:
+            x = x_start
+            y -= height
+        path_data.append(pen.paper.to_svg_path_thick())
+    path_data = ''.join(path_data)
 
     from string import Template
     with open('template.svg') as f:
