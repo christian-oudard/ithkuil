@@ -1,5 +1,6 @@
-# Constants.
+from canoepaddle import Pen, flip_angle_x
 
+# Constants.
 WIDTH = 1.0
 HALFWIDTH = WIDTH / 2
 
@@ -14,6 +15,22 @@ BOTTOM = 0.0
 UNDER = -2.0
 
 
+def flip_ending_horizontal(cls):
+    # Replace the ending with one that is flipped in the x direction.
+    class Flipped(cls):
+        def angle(self):
+            a = cls.angle(self)
+            if a is not None:
+                return flip_angle_x(a)
+
+        def draw(self, pen):
+            pen.flip_x()
+            cls.draw(self, pen)
+            pen.flip_x()
+
+    return Flipped
+
+
 class ConsonantCharacter:
     bottom_type = NotImplemented # 'straight' or 'slanted'
     bottom_orientation = NotImplemented # 'left' or 'right'
@@ -21,6 +38,8 @@ class ConsonantCharacter:
 
     def __init__(self, side_ending_class, bottom_ending_class):
         self.side_ending = side_ending_class(self)
+        if self.bottom_slanted() and self.bottom_orientation == 'left':
+            bottom_ending_class = flip_ending_horizontal(bottom_ending_class)
         self.bottom_ending = bottom_ending_class(self)
 
     def bottom_straight(self):
@@ -86,6 +105,30 @@ class ConsK(ConsonantCharacter):
         pen.turn_toward((CENTER, BOTTOM))
         pen.stroke_to_y(
             BOTTOM + self.bottom_ending.offset_y(),
+            end_angle=self.bottom_ending.angle(),
+        )
+        self.bottom_ending.draw(pen)
+
+
+class ConsQ(ConsonantCharacter):
+    bottom_type = 'slanted'
+    bottom_orientation = 'left'
+    side_flipped = False
+    def draw(self, pen):
+        pen.move_to((RIGHT + self.side_ending.offset_x(), TOP))
+        self.side_ending.draw(pen)
+        pen.stroke_to(
+            (LEFT, TOP),
+            start_angle=self.side_ending.angle()
+        )
+        pen.turn_to(-45)
+        pen.stroke_to_y(MIDDLE, end_angle=0)
+        pen.turn_to(180)
+        pen.move_forward(pen.last_slant_width() / 2 + WIDTH / 2)
+        pen.turn_left(60)
+        pen.stroke_to_y(
+            BOTTOM + self.bottom_ending.offset_y(),
+            start_angle=0,
             end_angle=self.bottom_ending.angle(),
         )
         self.bottom_ending.draw(pen)
@@ -187,16 +230,31 @@ class SideNormal(SideEnding):
 if __name__ == '__main__':
     letters = []
     for consonant_class in ConsonantCharacter.__subclasses__():
-        for side_ending_class in SideEnding.__subclasses__():
-            for bottom_ending_class in BottomEnding.__subclasses__():
-                letters.append(
-                    consonant_class(
-                        side_ending_class,
-                        bottom_ending_class,
-                    )
+        letters.append(
+            consonant_class(
+                SideNormal,
+                BottomNormal,
+            )
+        )
+        for bottom_ending_class in BottomEnding.__subclasses__():
+            if bottom_ending_class == BottomNormal:
+                continue
+            letters.append(
+                consonant_class(
+                    SideNormal,
+                    bottom_ending_class,
                 )
+            )
+        for side_ending_class in SideEnding.__subclasses__():
+            if side_ending_class == SideNormal:
+                continue
+            letters.append(
+                consonant_class(
+                    side_ending_class,
+                    BottomNormal,
+                )
+            )
 
-    from canoepaddle import Pen
     width = 10
     max_width = 80
     height = 14
