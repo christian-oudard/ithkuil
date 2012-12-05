@@ -7,11 +7,11 @@ LEFT = 0.0
 CENTER = 3.0
 RIGHT = 6.0
 
-OVER = 8.5
+OVER = 9.0
 TOP = 7.0
 MIDDLE = 3.5
 BOTTOM = 0.0
-UNDER = -1.5
+UNDER = -2.0
 
 
 class ConsonantCharacter:
@@ -32,6 +32,26 @@ class ConsonantCharacter:
     def draw(self, pen):
         pass
 
+class ConsP(ConsonantCharacter):
+    bottom_type = 'straight'
+    bottom_orientation = 'left'
+    side_flipped = False
+    def draw(self, pen):
+        pen.move_to((RIGHT + self.side_ending.offset_x(), TOP))
+        self.side_ending.draw(pen)
+        pen.stroke_to(
+            (LEFT, TOP),
+            start_angle=self.side_ending.angle()
+        )
+        pen.turn_to(-45)
+        pen.stroke_to_x(CENTER)
+        pen.turn_to(-90)
+        pen.stroke_to_y(
+            BOTTOM + self.bottom_ending.offset_y(),
+            end_angle=self.bottom_ending.angle(),
+        )
+        self.bottom_ending.draw(pen)
+
 
 class ConsT(ConsonantCharacter):
     bottom_type = 'straight'
@@ -39,13 +59,12 @@ class ConsT(ConsonantCharacter):
     side_flipped = False
     def draw(self, pen):
         pen.move_to((RIGHT + self.side_ending.offset_x(), TOP))
-        pen.turn_to(0)
         self.side_ending.draw(pen)
         pen.stroke_to(
             (LEFT, TOP),
             start_angle=self.side_ending.angle()
         )
-        pen.turn_to(270)
+        pen.turn_to(-90)
         pen.stroke_to_y(
             BOTTOM + self.bottom_ending.offset_y(),
             end_angle=self.bottom_ending.angle(),
@@ -59,7 +78,6 @@ class ConsK(ConsonantCharacter):
     side_flipped = False
     def draw(self, pen):
         pen.move_to((RIGHT + self.side_ending.offset_x(), TOP))
-        pen.turn_to(0)
         self.side_ending.draw(pen)
         pen.stroke_to(
             (LEFT, TOP),
@@ -114,7 +132,7 @@ class BottomBend(BottomEnding):
             pen.turn_to(0)
             pen.stroke_forward(2, end_angle=-45)
         elif self.character.bottom_slanted():
-            pen.turn_to(270)
+            pen.turn_to(-90)
             pen.stroke_forward(2, end_angle=45)
 
 
@@ -132,14 +150,18 @@ class SideNormal(SideEnding):
 
 
 if __name__ == '__main__':
-    from canoepaddle import Pen
-    letters = [
-        ConsT(SideNormal, BottomBend),
-        ConsK(SideNormal, BottomNormal),
-        ConsK(SideNormal, BottomLong),
-        ConsK(SideNormal, BottomBend),
-    ]
+    letters = []
+    for consonant_class in ConsonantCharacter.__subclasses__():
+        for side_ending_class in SideEnding.__subclasses__():
+            for bottom_ending_class in BottomEnding.__subclasses__():
+                letters.append(
+                    consonant_class(
+                        side_ending_class,
+                        bottom_ending_class,
+                    )
+                )
 
+    from canoepaddle import Pen
     width = 10
     max_width = 80
     height = 14
