@@ -11,12 +11,14 @@
             stroke: black;
             stroke-width: 0.125;
             stroke-linecap: butt;
+            /*stroke-linejoin: round;*/
+            fill: none;
         }
         .solid {
             fill: #a00;
         }
     </style>
-    <path class="solid lines" d="
+    <path class="lines solid" d="
         $path_data
         " />
 </svg>

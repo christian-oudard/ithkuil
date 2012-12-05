@@ -1,3 +1,4 @@
+import math
 from canoepaddle import Pen, flip_angle_x
 
 # Constants.
@@ -13,6 +14,10 @@ TOP = 7.0
 MIDDLE = 3.5
 BOTTOM = 0.0
 UNDER = -2.0
+
+
+sqrt2 = math.sqrt(2)
+sqrt3 = math.sqrt(3)
 
 
 def flip_ending_horizontal(cls):
@@ -124,7 +129,7 @@ class ConsQ(ConsonantCharacter):
         pen.turn_to(-45)
         pen.stroke_to_y(MIDDLE, end_angle=0)
         pen.turn_to(180)
-        pen.move_forward(pen.last_slant_width() / 2 + WIDTH / 2)
+        pen.move_forward(pen.last_slant_width() / 2 + WIDTH / sqrt3)
         pen.turn_left(60)
         pen.stroke_to_y(
             BOTTOM + self.bottom_ending.offset_y(),
@@ -262,6 +267,7 @@ if __name__ == '__main__':
     path_data = []
     for letter in letters:
         pen = Pen(offset=(x, y))
+        pen.set_width(WIDTH)
         letter.draw(pen)
         x += width
         if x >= max_width:
