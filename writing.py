@@ -91,6 +91,26 @@ class ConsK(ConsonantCharacter):
         self.bottom_ending.draw(pen)
 
 
+class ConsL(ConsonantCharacter):
+    bottom_type = 'slanted'
+    bottom_orientation = 'right'
+    side_flipped = False
+    def draw(self, pen):
+        pen.move_to((RIGHT + self.side_ending.offset_x(), TOP))
+        self.side_ending.draw(pen)
+        pen.stroke_to(
+            (LEFT, TOP),
+            start_angle=self.side_ending.angle()
+        )
+        pen.stroke_to((LEFT, MIDDLE))
+        pen.turn_to(-45)
+        pen.stroke_to_y(
+            BOTTOM + self.bottom_ending.offset_y(),
+            end_angle=self.bottom_ending.angle(),
+        )
+        self.bottom_ending.draw(pen)
+
+
 class Ending:
     def __init__(self, character):
         self.character = character
@@ -134,6 +154,21 @@ class BottomBend(BottomEnding):
         elif self.character.bottom_slanted():
             pen.turn_to(-90)
             pen.stroke_forward(2, end_angle=45)
+
+
+class BottomDiagonalDownRight(BottomEnding):
+    # Consonant Prefix M
+    def angle(self):
+        return 45
+
+    def offset_y(self):
+        return +HALFWIDTH
+
+    def draw(self, pen):
+        pen.turn_to(45)
+        pen.move_forward(pen.last_slant_width() / 2 + WIDTH / 2)
+        pen.turn_to(-45)
+        pen.stroke_to_y(BOTTOM, end_angle=0)
 
 
 class SideEnding(Ending):
