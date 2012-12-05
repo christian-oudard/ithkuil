@@ -17,8 +17,18 @@
         .solid {
             fill: #a00;
         }
+        .template {
+            fill: none;
+            stroke: #88f;
+            stroke-width: 0.125;
+            opacity: 0.9;
+        }
     </style>
     <path class="lines solid" d="
-        $path_data
+        $character_path
         " />
+    <path class="template" d="
+        $template_path
+        " />
+
 </svg>
