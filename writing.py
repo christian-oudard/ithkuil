@@ -239,7 +239,7 @@ class BottomBend(BottomEnding):
             pen.stroke_forward(2, end_angle=45)
 
 
-class BottomDiagonalDownRight(BottomEnding):
+class BottomDiagonalDownOnRight(BottomEnding):
     # Consonant Prefix M
     def angle(self):
         return 45
@@ -252,6 +252,21 @@ class BottomDiagonalDownRight(BottomEnding):
         pen.move_forward(pen.last_slant_width() / 2 + WIDTH / 2)
         pen.turn_to(-45)
         pen.stroke_to_y(BOTTOM, end_angle=0)
+
+
+class BottomDownOnRight(BottomEnding):
+    # Consonant Prefix R
+    def angle(self):
+        return 45
+
+    def offset_y(self):
+        return +HALFWIDTH
+
+    def draw(self, pen):
+        pen.turn_to(45)
+        pen.move_forward(pen.last_slant_width() / 2 + sqrt2 * WIDTH / 2)
+        pen.turn_to(-90)
+        pen.stroke_forward(2, start_angle=45, end_angle=45)
 
 
 class SideEnding(Ending):
