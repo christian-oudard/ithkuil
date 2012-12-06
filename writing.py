@@ -437,12 +437,18 @@ class SideNormal(SideEnding):
         else:
             return 45
 
+    def offset_x(self):
+        return 0
+
 
 class SideRightOnBottom(SideEnding):
     # Unframed relation
     # Pattern 1, Stem 2
     def angle(self):
         return 45
+
+    def offset_x(self):
+        return 0
 
     def draw(self, pen):
         start = pen.position
@@ -469,6 +475,79 @@ class SideDownOnBottom(SideEnding):
         pen.turn_to(-90)
         pen.stroke_forward(2, start_angle=45, end_angle=45)
         pen.move_to(start)
+
+
+class SideDiagonalDownRightOnBottom(SideEnding):
+    # Unframed relation
+    # Pattern 2, Stem 3
+    def angle(self):
+        return 45
+
+    def offset_x(self):
+        return 0
+
+    def draw(self, pen):
+        start = pen.position
+        pen.turn_to(-135)
+        pen.move_forward(WIDTH * sqrt2 / 2 + WIDTH / 2)
+        pen.turn_to(-45)
+        pen.stroke_forward(2, start_angle=45, end_angle=90)
+        pen.move_to(start)
+
+
+class SideDiagonalDownLeft(SideEnding):
+    # Unframed relation
+    # Pattern 3, Stem 3
+    def angle(self):
+        return -45
+
+    def offset_x(self):
+        return 0
+
+    def draw(self, pen):
+        start = pen.position
+        pen.turn_to(-45)
+        pen.move_forward(WIDTH * sqrt2 / 2 + WIDTH / 2)
+        pen.turn_to(-135)
+        pen.stroke_forward(2, start_angle=-45, end_angle=90)
+        pen.move_to(start)
+
+
+class SideDownOnRight(SideEnding):
+    # Framed relation
+    # Pattern 1, Stem 1
+    def angle(self):
+        return 45
+
+    def offset_x(self):
+        return -0.5
+
+    def draw(self, pen):
+        start = pen.position
+        pen.turn_to(45)
+        pen.move_forward(WIDTH * sqrt2)
+        pen.turn_to(-90)
+        pen.stroke_forward(2, start_angle=45, end_angle=45)
+        pen.move_to(start)
+
+
+class SideAll(SideEnding):
+    def angle(self):
+        return None
+
+    def draw(self, pen):
+        start_position = pen.position
+        for side_ending_class in side_endings:
+            if side_ending_class == SideAll:
+                continue
+            side_ending = side_ending_class(self.character)
+            pen.move_to(start_position)
+            pen.turn_to(0)
+            pen.move_forward(side_ending.offset_x())
+            before_position = pen.position
+            side_ending.draw(pen)
+            assert pen.position == before_position
+        pen.move_to(start_position)
 
 
 def draw_template_path(x, y):
@@ -533,6 +612,10 @@ side_endings = [
     SideNormal,
     SideRightOnBottom,
     SideDownOnBottom,
+    SideDiagonalDownRightOnBottom,
+    SideDiagonalDownLeft,
+    SideDownOnRight,
+#    SideAll,
 ]
 bottom_endings = [
     BottomNormal,
