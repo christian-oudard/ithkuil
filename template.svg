@@ -24,11 +24,11 @@
             opacity: 0.9;
         }
     </style>
-    <path class="solid lines" d="
-        $character_path
-        " />
     <path class="template" d="
         $template_path
+        " />
+    <path class="solid lines" d="
+        $character_path
         " />
 
 </svg>

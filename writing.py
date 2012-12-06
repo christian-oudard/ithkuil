@@ -45,7 +45,13 @@ def flip_consonant_horizontal(cls):
     return Flipped
 
 
-class ConsonantCharacter:
+class Character:
+    def draw_character(self, pen):
+        self.draw(pen)
+        pen.paper.center_on_x(0)
+
+
+class ConsonantCharacter(Character):
     bottom_type = NotImplemented # 'straight' or 'slanted'
     bottom_orientation = NotImplemented # 'left' or 'right'
     side_flipped = NotImplemented # True for 45 angle, False for -45 angle.
@@ -405,22 +411,22 @@ class SideNormal(SideEnding):
 def draw_template_path(x, y):
     pen = Pen(offset=(x, y))
     pen.turn_to(0)
-    pen.move_to((1, UNDER))
-    pen.stroke_forward(3)
-    pen.move_to((0, BOTTOM))
+    pen.move_to((-1, UNDER))
+    pen.stroke_forward(2)
+    pen.move_to((-4, BOTTOM))
     pen.stroke_forward(8)
-    pen.move_to((0, MIDDLE))
+    pen.move_to((-4, MIDDLE))
     pen.stroke_forward(8)
-    pen.move_to((0, TOP))
+    pen.move_to((-4, TOP))
     pen.stroke_forward(8)
-    pen.move_to((1, OVER))
-    pen.stroke_forward(3)
+    pen.move_to((-1, OVER))
+    pen.stroke_forward(2)
     return pen.paper.to_svg_path(precision=5)
 
 def draw_letters(letters):
-    width = 14
-    max_width = 180
-    height = 14
+    width = 10
+    max_width = 190
+    height = 15
     x, y = x_start, y_start = 10, -14
     character_path = []
     template_path = []
@@ -430,7 +436,7 @@ def draw_letters(letters):
         pen.set_width(WIDTH)
 
         try:
-            letter.draw(pen)
+            letter.draw_character(pen)
             character_path.append(pen.paper.to_svg_path_thick(precision=5))
         except Exception:
             traceback.print_exc()
