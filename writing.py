@@ -10,8 +10,6 @@ LEFT = 0.0 # DEP
 CENTER = 3.0
 RIGHT = 6.0 # DEP
 
-TOP_BAR_LENGTH = 5.5
-
 OVER = 10
 TOP = 8
 MIDDLE = 4
@@ -79,7 +77,10 @@ class ConsP(ConsonantCharacter):
         pen.move_to((0, TOP - HALFWIDTH))
         self.side_ending.draw(pen)
         pen.turn_to(180)
-        pen.stroke_forward(TOP_BAR_LENGTH, start_angle=self.side_ending.angle())
+        pen.stroke_forward(
+            4.5 + self.side_ending.offset_x(),
+            start_angle=self.side_ending.angle(),
+        )
         pen.turn_to(-45)
         pen.stroke_to_y(MIDDLE + WIDTH)
         pen.turn_to(-90)
@@ -98,7 +99,7 @@ class ConsT(ConsonantCharacter):
         pen.move_to((0, TOP - HALFWIDTH))
         self.side_ending.draw(pen)
         pen.turn_to(180)
-        pen.stroke_forward(TOP_BAR_LENGTH, start_angle=self.side_ending.angle())
+        pen.stroke_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
         pen.turn_to(-90)
         pen.stroke_to_y(
             BOTTOM + self.bottom_ending.offset_y(pen),
@@ -115,7 +116,7 @@ class ConsK(ConsonantCharacter):
         pen.move_to((0, TOP - HALFWIDTH))
         self.side_ending.draw(pen)
         pen.turn_to(180)
-        pen.stroke_forward(TOP_BAR_LENGTH, start_angle=self.side_ending.angle())
+        pen.stroke_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
         pen.turn_to(-65)
         pen.stroke_to_y(
             BOTTOM + self.bottom_ending.offset_y(pen),
@@ -132,7 +133,7 @@ class ConsQ(ConsonantCharacter):
         pen.move_to((0, TOP - HALFWIDTH))
         self.side_ending.draw(pen)
         pen.turn_to(180)
-        pen.stroke_forward(TOP_BAR_LENGTH, start_angle=self.side_ending.angle())
+        pen.stroke_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
         pen.turn_to(-45)
         pen.stroke_to_y(MIDDLE, end_angle=0)
         pen.turn_to(180)
@@ -154,11 +155,11 @@ class ConsC(ConsonantCharacter):
         pen.move_to((0, TOP - HALFWIDTH))
         self.side_ending.draw(pen)
         pen.turn_to(180)
-        pen.stroke_forward(TOP_BAR_LENGTH, start_angle=self.side_ending.angle())
+        pen.stroke_forward(6 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
         pen.turn_to(-90)
         pen.stroke_to_y(MIDDLE + HALFWIDTH)
         pen.turn_to(0)
-        pen.stroke_forward(TOP_BAR_LENGTH / 2)
+        pen.stroke_forward(3)
         pen.turn_to(-90)
         pen.stroke_to_y(
             BOTTOM + self.bottom_ending.offset_y(pen),
@@ -175,11 +176,11 @@ class ConsCHacek(ConsonantCharacter):
         pen.move_to((0, TOP - HALFWIDTH))
         self.side_ending.draw(pen)
         pen.turn_to(180)
-        pen.stroke_forward(TOP_BAR_LENGTH, start_angle=self.side_ending.angle())
+        pen.stroke_forward(6 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
         pen.turn_to(-90)
         pen.stroke_to_y(MIDDLE + HALFWIDTH)
         pen.turn_to(0)
-        pen.stroke_forward(TOP_BAR_LENGTH * (3/4))
+        pen.stroke_forward(4)
         pen.turn_to(-135)
         pen.stroke_to_y(
             BOTTOM + self.bottom_ending.offset_y(pen),
@@ -196,7 +197,7 @@ class ConsL(ConsonantCharacter):
         pen.move_to((0, TOP - HALFWIDTH))
         self.side_ending.draw(pen)
         pen.turn_to(180)
-        pen.stroke_forward(TOP_BAR_LENGTH, start_angle=self.side_ending.angle())
+        pen.stroke_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
         pen.turn_to(-90)
         pen.stroke_to_y(MIDDLE)
         pen.turn_to(-45)
@@ -206,6 +207,7 @@ class ConsL(ConsonantCharacter):
         )
         self.bottom_ending.draw(pen)
 
+
 class ConsL(ConsonantCharacter):
     bottom_type = 'slanted'
     bottom_orientation = 'right'
@@ -214,10 +216,35 @@ class ConsL(ConsonantCharacter):
         pen.move_to((0, TOP - HALFWIDTH))
         self.side_ending.draw(pen)
         pen.turn_to(180)
-        pen.stroke_forward(TOP_BAR_LENGTH, start_angle=self.side_ending.angle())
+        pen.stroke_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
         pen.turn_to(-90)
         pen.stroke_to_y(MIDDLE)
         pen.turn_to(-45)
+        pen.stroke_to_y(
+            BOTTOM + self.bottom_ending.offset_y(pen),
+            end_angle=self.bottom_ending.angle(),
+        )
+        self.bottom_ending.draw(pen)
+
+
+class ConsH(ConsonantCharacter):
+    bottom_type = 'straight'
+    bottom_orientation = 'right'
+    side_flipped = False
+    def draw(self, pen):
+        pen.move_to((0, TOP - HALFWIDTH))
+        self.side_ending.draw(pen)
+        pen.turn_to(180)
+        pen.stroke_forward(
+            4 + self.side_ending.offset_x(),
+            start_angle=self.side_ending.angle(),
+            end_angle=45,
+        )
+        pen.turn_left(45)
+        pen.move_forward(pen.last_slant_width() / 2 + WIDTH / 2)
+        pen.turn_to(-45)
+        pen.stroke_to_y(MIDDLE)
+        pen.turn_to(-90)
         pen.stroke_to_y(
             BOTTOM + self.bottom_ending.offset_y(pen),
             end_angle=self.bottom_ending.angle(),
@@ -230,6 +257,7 @@ ConsD = flip_consonant_horizontal(ConsT)
 ConsG = flip_consonant_horizontal(ConsK)
 ConsZDot = flip_consonant_horizontal(ConsC)
 ConsJ = flip_consonant_horizontal(ConsCHacek)
+ConsStop = flip_consonant_horizontal(ConsH)
 
 
 class Ending:
@@ -401,11 +429,46 @@ class SideEnding(Ending):
 
 
 class SideNormal(SideEnding):
+    # Unframed relation
+    # Pattern 1, Stem 1
     def angle(self):
         if self.character.side_flipped:
             return -45
         else:
             return 45
+
+
+class SideRightOnBottom(SideEnding):
+    # Unframed relation
+    # Pattern 1, Stem 2
+    def angle(self):
+        return 45
+
+    def draw(self, pen):
+        start = pen.position
+        pen.turn_to(-135)
+        pen.move_forward(WIDTH * sqrt2)
+        pen.turn_to(0)
+        pen.stroke_forward(2, start_angle=45, end_angle=45)
+        pen.move_to(start)
+
+
+class SideDownOnBottom(SideEnding):
+    # Unframed relation
+    # Pattern 1, Stem 3
+    def angle(self):
+        return 45
+
+    def offset_x(self):
+        return +1
+
+    def draw(self, pen):
+        start = pen.position
+        pen.turn_to(-135)
+        pen.move_forward(WIDTH * sqrt2)
+        pen.turn_to(-90)
+        pen.stroke_forward(2, start_angle=45, end_angle=45)
+        pen.move_to(start)
 
 
 def draw_template_path(x, y):
@@ -460,11 +523,16 @@ consonants = [
     ConsB,
     ConsD,
     ConsG,
+    ConsStop,
     ConsZDot,
     ConsJ,
+
+    ConsH,
 ]
 side_endings = [
     SideNormal,
+    SideRightOnBottom,
+    SideDownOnBottom,
 ]
 bottom_endings = [
     BottomNormal,
@@ -477,6 +545,7 @@ bottom_endings = [
     BottomFold,
     BottomBarb,
 ]
+#bottom_endings = [BottomNormal]
 
 if __name__ == '__main__':
     letters = []
