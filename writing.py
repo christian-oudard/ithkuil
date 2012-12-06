@@ -34,7 +34,14 @@ def flip_ending_horizontal(cls):
             pen.flip_x()
             cls.draw(self, pen)
             pen.flip_x()
+    return Flipped
 
+def flip_consonant_horizontal(cls):
+    class Flipped(cls):
+        def draw(self, pen):
+            pen.flip_x()
+            cls.draw(self, pen)
+            pen.flip_x()
     return Flipped
 
 
@@ -192,6 +199,31 @@ class ConsL(ConsonantCharacter):
             end_angle=self.bottom_ending.angle(),
         )
         self.bottom_ending.draw(pen)
+
+class ConsL(ConsonantCharacter):
+    bottom_type = 'slanted'
+    bottom_orientation = 'right'
+    side_flipped = False
+    def draw(self, pen):
+        pen.move_to((0, TOP - HALFWIDTH))
+        self.side_ending.draw(pen)
+        pen.turn_to(180)
+        pen.stroke_forward(TOP_BAR_LENGTH, start_angle=self.side_ending.angle())
+        pen.turn_to(-90)
+        pen.stroke_to_y(MIDDLE)
+        pen.turn_to(-45)
+        pen.stroke_to_y(
+            BOTTOM + self.bottom_ending.offset_y(pen),
+            end_angle=self.bottom_ending.angle(),
+        )
+        self.bottom_ending.draw(pen)
+
+
+ConsB = flip_consonant_horizontal(ConsP)
+ConsD = flip_consonant_horizontal(ConsT)
+ConsG = flip_consonant_horizontal(ConsK)
+ConsZDot = flip_consonant_horizontal(ConsC)
+ConsJ = flip_consonant_horizontal(ConsCHacek)
 
 
 class Ending:
@@ -369,6 +401,7 @@ class SideNormal(SideEnding):
         else:
             return 45
 
+
 def draw_template_path(x, y):
     pen = Pen(offset=(x, y))
     pen.turn_to(0)
@@ -382,11 +415,11 @@ def draw_template_path(x, y):
     pen.stroke_forward(8)
     pen.move_to((1, OVER))
     pen.stroke_forward(3)
-    return pen.paper.to_svg_path()
+    return pen.paper.to_svg_path(precision=5)
 
 def draw_letters(letters):
-    width = 10
-    max_width = 160
+    width = 14
+    max_width = 180
     height = 14
     x, y = x_start, y_start = 10, -14
     character_path = []
@@ -398,7 +431,7 @@ def draw_letters(letters):
 
         try:
             letter.draw(pen)
-            character_path.append(pen.paper.to_svg_path_thick())
+            character_path.append(pen.paper.to_svg_path_thick(precision=5))
         except Exception:
             traceback.print_exc()
         template_path.append(draw_template_path(x, y))
@@ -410,6 +443,35 @@ def draw_letters(letters):
 
     return ''.join(character_path), ''.join(template_path)
 
+# Lists of character parts.
+consonants = [
+    ConsP,
+    ConsT,
+    ConsK,
+    ConsQ,
+    ConsC,
+    ConsCHacek,
+    ConsB,
+    ConsD,
+    ConsG,
+    ConsZDot,
+    ConsJ,
+]
+side_endings = [
+    SideNormal,
+]
+bottom_endings = [
+    BottomNormal,
+    BottomLong,
+    BottomDiagonalDownRightOnRight,
+    BottomDownOnRight,
+    BottomRightOnRight,
+    BottomDiagonalDownLeftOnRight,
+    BottomBend,
+    BottomFold,
+    BottomBarb,
+]
+
 if __name__ == '__main__':
     letters = []
     seen = set()
@@ -420,17 +482,11 @@ if __name__ == '__main__':
             seen.add((c, s, b))
         letters.append(c(s, b))
 
-    consonant_classes = ConsonantCharacter.__subclasses__()
-    bottom_ending_classes = BottomEnding.__subclasses__()#[-1:]
-    side_ending_classes = SideEnding.__subclasses__()
-
-    for consonant_class in consonant_classes:
-        for side_ending_class in side_ending_classes:
+    for consonant_class in consonants:
+        for side_ending_class in side_endings:
             add_letter(consonant_class, side_ending_class, BottomNormal)
-        for bottom_ending_class in bottom_ending_classes:
+        for bottom_ending_class in bottom_endings:
             add_letter(consonant_class, SideNormal, bottom_ending_class)
-
-    #letters = [ConsQ(SideNormal, BottomFold)]
 
     character_path, template_path = draw_letters(letters)
 
