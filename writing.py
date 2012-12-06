@@ -531,6 +531,24 @@ class SideDownOnRight(SideEnding):
         pen.move_to(start)
 
 
+class SideDiagonalDownRightOnTop(SideEnding):
+    # Framed relation
+    # Pattern 1, Stem 2
+    def angle(self):
+        return 45
+
+    def offset_x(self):
+        return -0.5
+
+    def draw(self, pen):
+        start = pen.position
+        pen.turn_to(45)
+        pen.move_forward(WIDTH * sqrt2 / 2 + WIDTH / 2)
+        pen.turn_to(-45)
+        pen.stroke_forward(WIDTH * sqrt2 + WIDTH / 2, start_angle=45, end_angle=0)
+        pen.move_to(start)
+
+
 class SideAll(SideEnding):
     def angle(self):
         return None
@@ -615,7 +633,8 @@ side_endings = [
     SideDiagonalDownRightOnBottom,
     SideDiagonalDownLeft,
     SideDownOnRight,
-#    SideAll,
+    SideDiagonalDownRightOnTop,
+    SideAll,
 ]
 bottom_endings = [
     BottomNormal,
@@ -628,7 +647,7 @@ bottom_endings = [
     BottomFold,
     BottomBarb,
 ]
-#bottom_endings = [BottomNormal]
+bottom_endings = [BottomNormal]
 
 if __name__ == '__main__':
     letters = []
