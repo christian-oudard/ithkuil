@@ -1,4 +1,5 @@
 import math
+import traceback
 from canoepaddle import Pen, flip_angle_x
 
 # Constants.
@@ -27,8 +28,7 @@ def flip_ending_horizontal(cls):
     class Flipped(cls):
         def angle(self):
             a = cls.angle(self)
-            if a is not None:
-                return flip_angle_x(a)
+            return flip_angle_x(a)
 
         def draw(self, pen):
             pen.flip_x()
@@ -225,29 +225,19 @@ class BottomLong(BottomEnding):
     angle = BottomNormal.angle
 
 
-class BottomBend(BottomEnding):
-    # Consonant Prefix S
-    def offset_y(self, pen):
-        return +HALFWIDTH
-
-    def draw(self, pen):
-        if self.character.bottom_straight():
-            pen.turn_to(0)
-            pen.stroke_forward(2, end_angle=-45)
-        elif self.character.bottom_slanted():
-            pen.turn_to(-90)
-            pen.stroke_forward(2, end_angle=45)
-
-
-class BottomDiagonalDownOnRight(BottomEnding):
+class BottomDiagonalDownRightOnRight(BottomEnding):
     # Consonant Prefix M
     def angle(self):
         return 45
 
     def offset_y(self, pen):
-        return +HALFWIDTH
+        return +WIDTH
 
     def draw(self, pen):
+        pen.stroke_to_y(
+            BOTTOM + pen.last_slant_width() / sqrt2 / 2,
+            end_angle=45,
+        )
         pen.turn_to(45)
         pen.move_forward(pen.last_slant_width() / 2 + WIDTH / 2)
         pen.turn_to(-45)
@@ -275,7 +265,7 @@ class BottomRightOnRight(BottomEnding):
         return 45
 
     def offset_y(self, pen):
-        return +HALFWIDTH
+        return +WIDTH
 
     def draw(self, pen):
         pen.stroke_to_y(
@@ -286,6 +276,67 @@ class BottomRightOnRight(BottomEnding):
         pen.move_to_y(BOTTOM + HALFWIDTH)
         pen.turn_to(0)
         pen.stroke_forward(2, start_angle=45, end_angle=45)
+
+
+class BottomDiagonalDownLeftOnRight(BottomEnding):
+    # Consonant Prefix N
+    def angle(self):
+        return 0
+
+    def offset_y(self, pen):
+        return 0
+
+    def draw(self, pen):
+        pen.turn_to(0)
+        pen.move_forward(pen.last_slant_width() / 2 + sqrt2 * WIDTH / 2)
+        pen.turn_to(-135)
+        pen.stroke_forward(2, start_angle=0, end_angle=0)
+
+
+class BottomBend(BottomEnding):
+    # Consonant Prefix S
+    def offset_y(self, pen):
+        return +HALFWIDTH
+
+    def draw(self, pen):
+        if self.character.bottom_straight():
+            pen.turn_to(0)
+            pen.stroke_forward(2, end_angle=-45)
+        elif self.character.bottom_slanted():
+            pen.turn_to(-90)
+            pen.stroke_forward(2, end_angle=45)
+
+
+class BottomFold(BottomEnding):
+    # Consonant Prefix S hacek
+    def angle(self):
+        if self.character.bottom_straight():
+            return -45
+        elif self.character.bottom_slanted():
+            return 45
+
+    def offset_y(self, pen):
+        return +WIDTH
+
+    def draw(self, pen):
+        if self.character.bottom_straight():
+            pen.stroke_to_y(
+                BOTTOM + pen.last_slant_width() / sqrt2 / 2,
+                end_angle=-45,
+            )
+            pen.turn_to(-45)
+            pen.move_forward(pen.last_slant_width() / 2 + sqrt2 * WIDTH / 2)
+            pen.turn_to(0)
+            pen.stroke_forward(2, start_angle=-45, end_angle=-45)
+        elif self.character.bottom_slanted():
+            pen.stroke_to_y(
+                BOTTOM + pen.last_slant_width() / sqrt2 / 2,
+                end_angle=45,
+            )
+            pen.turn_to(-135)
+            pen.move_forward(pen.last_slant_width() / 2 + sqrt2 * WIDTH / 2)
+            pen.turn_to(180)
+            pen.stroke_forward(2, start_angle=45, end_angle=45)
 
 
 class SideEnding(Ending):
@@ -300,50 +351,22 @@ class SideNormal(SideEnding):
         else:
             return 45
 
+def draw_template_path(x, y):
+    pen = Pen(offset=(x, y))
+    pen.turn_to(0)
+    pen.move_to((1, UNDER))
+    pen.stroke_forward(3)
+    pen.move_to((0, BOTTOM))
+    pen.stroke_forward(8)
+    pen.move_to((0, MIDDLE))
+    pen.stroke_forward(8)
+    pen.move_to((0, TOP))
+    pen.stroke_forward(8)
+    pen.move_to((1, OVER))
+    pen.stroke_forward(3)
+    return pen.paper.to_svg_path()
 
-if __name__ == '__main__':
-    letters = []
-    for consonant_class in ConsonantCharacter.__subclasses__():
-        letters.append(
-            consonant_class(
-                SideNormal,
-                BottomNormal,
-            )
-        )
-        for bottom_ending_class in BottomEnding.__subclasses__():
-            if bottom_ending_class == BottomNormal:
-                continue
-            letters.append(
-                consonant_class(
-                    SideNormal,
-                    bottom_ending_class,
-                )
-            )
-        for side_ending_class in SideEnding.__subclasses__():
-            if side_ending_class == SideNormal:
-                continue
-            letters.append(
-                consonant_class(
-                    side_ending_class,
-                    BottomNormal,
-                )
-            )
-
-    def draw_template_path(x, y):
-        pen = Pen(offset=(x, y))
-        pen.turn_to(0)
-        pen.move_to((1, UNDER))
-        pen.stroke_forward(1)
-        pen.move_to((0, BOTTOM))
-        pen.stroke_forward(3)
-        pen.move_to((0, MIDDLE))
-        pen.stroke_forward(3)
-        pen.move_to((0, TOP))
-        pen.stroke_forward(3)
-        pen.move_to((1, OVER))
-        pen.stroke_forward(1)
-        return pen.paper.to_svg_path()
-
+def draw_letters(letters):
     width = 10
     max_width = 160
     height = 14
@@ -354,9 +377,12 @@ if __name__ == '__main__':
     for letter in letters:
         pen = Pen(offset=(x, y))
         pen.set_width(WIDTH)
-        letter.draw(pen)
 
-        character_path.append(pen.paper.to_svg_path_thick())
+        try:
+            letter.draw(pen)
+            character_path.append(pen.paper.to_svg_path_thick())
+        except Exception:
+            traceback.print_exc()
         template_path.append(draw_template_path(x, y))
 
         x += width
@@ -364,8 +390,31 @@ if __name__ == '__main__':
             x = x_start
             y -= height
 
-    character_path = ''.join(character_path)
-    template_path = ''.join(template_path)
+    return ''.join(character_path), ''.join(template_path)
+
+if __name__ == '__main__':
+    letters = []
+    seen = set()
+    def add_letter(c, s, b):
+        if (c, s, b) in seen:
+            return
+        else:
+            seen.add((c, s, b))
+        letters.append(c(s, b))
+
+    consonant_classes = ConsonantCharacter.__subclasses__()
+    bottom_ending_classes = BottomEnding.__subclasses__()#[-1:]
+    side_ending_classes = SideEnding.__subclasses__()
+
+    for consonant_class in consonant_classes:
+        for side_ending_class in side_ending_classes:
+            add_letter(consonant_class, side_ending_class, BottomNormal)
+        for bottom_ending_class in bottom_ending_classes:
+            add_letter(consonant_class, SideNormal, bottom_ending_class)
+
+    #letters = [ConsQ(SideNormal, BottomFold)]
+
+    character_path, template_path = draw_letters(letters)
 
     from string import Template
     with open('template.svg') as f:

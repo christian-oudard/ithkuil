@@ -24,7 +24,7 @@
             opacity: 0.9;
         }
     </style>
-    <path class="lines solid" d="
+    <path class="solid lines" d="
         $character_path
         " />
     <path class="template" d="
