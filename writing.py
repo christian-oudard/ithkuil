@@ -309,6 +309,7 @@ class BottomBend(BottomEnding):
 
 class BottomFold(BottomEnding):
     # Consonant Prefix S hacek
+    # Consonant Prefix Z hacek
     def angle(self):
         if self.character.bottom_straight():
             return -45
@@ -337,6 +338,23 @@ class BottomFold(BottomEnding):
             pen.move_forward(pen.last_slant_width() / 2 + sqrt2 * WIDTH / 2)
             pen.turn_to(180)
             pen.stroke_forward(2, start_angle=45, end_angle=45)
+
+
+class BottomBarb(BottomEnding):
+    # Consonant Prefix N hacek
+    angle = BottomNormal.angle
+
+    def offset_y(self, pen):
+        return +WIDTH / 4
+
+    def draw(self, pen):
+        pen.set_width(WIDTH / 2)
+        if self.character.bottom_straight():
+            pen.turn_to(45)
+            pen.stroke_forward(WIDTH * 1.5, end_angle=20)
+        elif self.character.bottom_slanted():
+            pen.turn_to(180)
+            pen.stroke_forward(WIDTH * 1.5, end_angle=25)
 
 
 class SideEnding(Ending):
