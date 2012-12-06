@@ -36,9 +36,9 @@ def flip_ending_horizontal(cls):
 
 def flip_consonant_horizontal(cls):
     class Flipped(cls):
-        def draw(self, pen):
+        def draw_character(self, pen):
             pen.flip_x()
-            cls.draw(self, pen)
+            cls.draw_character(self, pen)
             pen.flip_x()
     return Flipped
 
@@ -66,29 +66,36 @@ class ConsonantCharacter(Character):
     def bottom_slanted(self):
         return self.bottom_type == 'slanted'
 
-    def draw(self, pen):
-        pass
+    def draw_character(self, pen):
+        endpoint = (0, TOP - HALFWIDTH)
+        pen.move_to(endpoint)
+        self.side_ending.draw(pen)
+        pen.move_to(endpoint)
+        self.draw(pen)
+        self.bottom_ending.draw(pen)
+        pen.paper.center_on_x(0)
+
 
 class ConsP(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
     side_flipped = True
+
     def draw(self, pen):
-        pen.move_to((0, TOP - HALFWIDTH))
-        self.side_ending.draw(pen)
         pen.turn_to(180)
         pen.stroke_forward(
             4.5 + self.side_ending.offset_x(),
             start_angle=self.side_ending.angle(),
         )
+
         pen.turn_to(-45)
         pen.stroke_to_y(MIDDLE + WIDTH)
         pen.turn_to(-90)
+
         pen.stroke_to_y(
             BOTTOM + self.bottom_ending.offset_y(pen),
             end_angle=self.bottom_ending.angle(),
         )
-        self.bottom_ending.draw(pen)
 
 
 class ConsT(ConsonantCharacter):
@@ -96,8 +103,6 @@ class ConsT(ConsonantCharacter):
     bottom_orientation = 'left'
     side_flipped = False
     def draw(self, pen):
-        pen.move_to((0, TOP - HALFWIDTH))
-        self.side_ending.draw(pen)
         pen.turn_to(180)
         pen.stroke_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
         pen.turn_to(-90)
@@ -105,7 +110,6 @@ class ConsT(ConsonantCharacter):
             BOTTOM + self.bottom_ending.offset_y(pen),
             end_angle=self.bottom_ending.angle(),
         )
-        self.bottom_ending.draw(pen)
 
 
 class ConsK(ConsonantCharacter):
@@ -113,8 +117,6 @@ class ConsK(ConsonantCharacter):
     bottom_orientation = 'right'
     side_flipped = False
     def draw(self, pen):
-        pen.move_to((0, TOP - HALFWIDTH))
-        self.side_ending.draw(pen)
         pen.turn_to(180)
         pen.stroke_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
         pen.turn_to(-65)
@@ -122,7 +124,6 @@ class ConsK(ConsonantCharacter):
             BOTTOM + self.bottom_ending.offset_y(pen),
             end_angle=self.bottom_ending.angle(),
         )
-        self.bottom_ending.draw(pen)
 
 
 class ConsQ(ConsonantCharacter):
@@ -130,8 +131,6 @@ class ConsQ(ConsonantCharacter):
     bottom_orientation = 'left'
     side_flipped = False
     def draw(self, pen):
-        pen.move_to((0, TOP - HALFWIDTH))
-        self.side_ending.draw(pen)
         pen.turn_to(180)
         pen.stroke_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
         pen.turn_to(-45)
@@ -144,7 +143,6 @@ class ConsQ(ConsonantCharacter):
             start_angle=0,
             end_angle=self.bottom_ending.angle(),
         )
-        self.bottom_ending.draw(pen)
 
 
 class ConsC(ConsonantCharacter):
@@ -152,8 +150,6 @@ class ConsC(ConsonantCharacter):
     bottom_orientation = 'left'
     side_flipped = False
     def draw(self, pen):
-        pen.move_to((0, TOP - HALFWIDTH))
-        self.side_ending.draw(pen)
         pen.turn_to(180)
         pen.stroke_forward(6 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
         pen.turn_to(-90)
@@ -165,7 +161,6 @@ class ConsC(ConsonantCharacter):
             BOTTOM + self.bottom_ending.offset_y(pen),
             end_angle=self.bottom_ending.angle(),
         )
-        self.bottom_ending.draw(pen)
 
 
 class ConsCHacek(ConsonantCharacter):
@@ -173,8 +168,6 @@ class ConsCHacek(ConsonantCharacter):
     bottom_orientation = 'left'
     side_flipped = False
     def draw(self, pen):
-        pen.move_to((0, TOP - HALFWIDTH))
-        self.side_ending.draw(pen)
         pen.turn_to(180)
         pen.stroke_forward(6 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
         pen.turn_to(-90)
@@ -186,7 +179,6 @@ class ConsCHacek(ConsonantCharacter):
             BOTTOM + self.bottom_ending.offset_y(pen),
             end_angle=self.bottom_ending.angle(),
         )
-        self.bottom_ending.draw(pen)
 
 
 class ConsL(ConsonantCharacter):
@@ -194,8 +186,6 @@ class ConsL(ConsonantCharacter):
     bottom_orientation = 'right'
     side_flipped = False
     def draw(self, pen):
-        pen.move_to((0, TOP - HALFWIDTH))
-        self.side_ending.draw(pen)
         pen.turn_to(180)
         pen.stroke_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
         pen.turn_to(-90)
@@ -205,7 +195,6 @@ class ConsL(ConsonantCharacter):
             BOTTOM + self.bottom_ending.offset_y(pen),
             end_angle=self.bottom_ending.angle(),
         )
-        self.bottom_ending.draw(pen)
 
 
 class ConsL(ConsonantCharacter):
@@ -213,8 +202,6 @@ class ConsL(ConsonantCharacter):
     bottom_orientation = 'right'
     side_flipped = False
     def draw(self, pen):
-        pen.move_to((0, TOP - HALFWIDTH))
-        self.side_ending.draw(pen)
         pen.turn_to(180)
         pen.stroke_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
         pen.turn_to(-90)
@@ -224,7 +211,6 @@ class ConsL(ConsonantCharacter):
             BOTTOM + self.bottom_ending.offset_y(pen),
             end_angle=self.bottom_ending.angle(),
         )
-        self.bottom_ending.draw(pen)
 
 
 class ConsH(ConsonantCharacter):
@@ -232,8 +218,6 @@ class ConsH(ConsonantCharacter):
     bottom_orientation = 'right'
     side_flipped = False
     def draw(self, pen):
-        pen.move_to((0, TOP - HALFWIDTH))
-        self.side_ending.draw(pen)
         pen.turn_to(180)
         pen.stroke_forward(
             4 + self.side_ending.offset_x(),
@@ -249,7 +233,6 @@ class ConsH(ConsonantCharacter):
             BOTTOM + self.bottom_ending.offset_y(pen),
             end_angle=self.bottom_ending.angle(),
         )
-        self.bottom_ending.draw(pen)
 
 
 ConsB = flip_consonant_horizontal(ConsP)
@@ -451,12 +434,10 @@ class SideRightOnBottom(SideEnding):
         return 0
 
     def draw(self, pen):
-        start = pen.position
         pen.turn_to(-135)
         pen.move_forward(WIDTH * sqrt2)
         pen.turn_to(0)
         pen.stroke_forward(2, start_angle=45, end_angle=45)
-        pen.move_to(start)
 
 
 class SideDownOnBottom(SideEnding):
@@ -469,12 +450,10 @@ class SideDownOnBottom(SideEnding):
         return +1
 
     def draw(self, pen):
-        start = pen.position
         pen.turn_to(-135)
         pen.move_forward(WIDTH * sqrt2)
         pen.turn_to(-90)
         pen.stroke_forward(2, start_angle=45, end_angle=45)
-        pen.move_to(start)
 
 
 class SideDiagonalDownRightOnBottom(SideEnding):
@@ -487,12 +466,10 @@ class SideDiagonalDownRightOnBottom(SideEnding):
         return 0
 
     def draw(self, pen):
-        start = pen.position
         pen.turn_to(-135)
         pen.move_forward(WIDTH * sqrt2 / 2 + WIDTH / 2)
         pen.turn_to(-45)
         pen.stroke_forward(2, start_angle=45, end_angle=90)
-        pen.move_to(start)
 
 
 class SideDiagonalDownLeft(SideEnding):
@@ -505,12 +482,10 @@ class SideDiagonalDownLeft(SideEnding):
         return 0
 
     def draw(self, pen):
-        start = pen.position
         pen.turn_to(-45)
         pen.move_forward(WIDTH * sqrt2 / 2 + WIDTH / 2)
         pen.turn_to(-135)
         pen.stroke_forward(2, start_angle=-45, end_angle=90)
-        pen.move_to(start)
 
 
 class SideDownOnRight(SideEnding):
@@ -523,12 +498,10 @@ class SideDownOnRight(SideEnding):
         return -0.5
 
     def draw(self, pen):
-        start = pen.position
         pen.turn_to(45)
         pen.move_forward(WIDTH * sqrt2)
         pen.turn_to(-90)
         pen.stroke_forward(2, start_angle=45, end_angle=45)
-        pen.move_to(start)
 
 
 class SideDiagonalDownRightOnTop(SideEnding):
@@ -541,12 +514,42 @@ class SideDiagonalDownRightOnTop(SideEnding):
         return -0.5
 
     def draw(self, pen):
-        start = pen.position
         pen.turn_to(45)
         pen.move_forward(WIDTH * sqrt2 / 2 + WIDTH / 2)
         pen.turn_to(-45)
         pen.stroke_forward(WIDTH * sqrt2 + WIDTH / 2, start_angle=45, end_angle=0)
-        pen.move_to(start)
+
+
+class SideFoldUp(SideEnding):
+    # Framed relation
+    # Pattern 1, Stem 3
+    def angle(self):
+        return 45
+
+    def offset_x(self):
+        return -0.5
+
+    def draw(self, pen):
+        pen.turn_to(45)
+        pen.move_forward(WIDTH * sqrt2)
+        pen.turn_to(90)
+        pen.stroke_forward(2, start_angle=45, end_angle=45)
+
+
+class SideUpOnRight(SideEnding):
+    # Framed relation
+    # Pattern 2, Stem 1
+    def angle(self):
+        return -45
+
+    def offset_x(self):
+        return -0.5
+
+    def draw(self, pen):
+        pen.turn_to(-45)
+        pen.move_forward(WIDTH * sqrt2)
+        pen.turn_to(90)
+        pen.stroke_forward(2, start_angle=-45, end_angle=-45)
 
 
 class SideAll(SideEnding):
@@ -564,7 +567,6 @@ class SideAll(SideEnding):
             pen.move_forward(side_ending.offset_x())
             before_position = pen.position
             side_ending.draw(pen)
-            assert pen.position == before_position
         pen.move_to(start_position)
 
 
@@ -634,7 +636,9 @@ side_endings = [
     SideDiagonalDownLeft,
     SideDownOnRight,
     SideDiagonalDownRightOnTop,
-    SideAll,
+    SideFoldUp,
+    SideUpOnRight,
+    #SideAll,
 ]
 bottom_endings = [
     BottomNormal,
@@ -647,7 +651,7 @@ bottom_endings = [
     BottomFold,
     BottomBarb,
 ]
-bottom_endings = [BottomNormal]
+#bottom_endings = [BottomNormal]
 
 if __name__ == '__main__':
     letters = []
