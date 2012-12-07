@@ -19,6 +19,7 @@ UNDER = -2
 
 sqrt2 = math.sqrt(2)
 sqrt3 = math.sqrt(3)
+slant75 = 1 / math.sin(math.radians(75))
 
 
 def flip_ending_horizontal(cls):
@@ -412,8 +413,7 @@ class SideEnding(Ending):
 
 
 class SideNormal(SideEnding):
-    # Unframed relation
-    # Pattern 1, Stem 1
+    # Unframed Relation, Pattern 1, Stem 1
     def angle(self):
         if self.character.side_flipped:
             return -45
@@ -425,8 +425,7 @@ class SideNormal(SideEnding):
 
 
 class SideRightOnBottom(SideEnding):
-    # Unframed relation
-    # Pattern 1, Stem 2
+    # Unframed Relation, Pattern 1, Stem 2
     def angle(self):
         return 45
 
@@ -441,8 +440,7 @@ class SideRightOnBottom(SideEnding):
 
 
 class SideDownOnBottom(SideEnding):
-    # Unframed relation
-    # Pattern 1, Stem 3
+    # Unframed Relation, Pattern 1, Stem 3
     def angle(self):
         return 45
 
@@ -456,9 +454,46 @@ class SideDownOnBottom(SideEnding):
         pen.stroke_forward(2, start_angle=45, end_angle=45)
 
 
+class SideCurveDownOnBottom(SideEnding):
+    # Unframed Relation, Pattern 2, Stem 1
+    def angle(self):
+        return 45
+
+    def offset_x(self):
+        return 0
+
+    def draw(self, pen):
+        pen.turn_to(-135)
+        pen.move_forward(WIDTH * sqrt2)
+        pen.turn_to(0)
+        pen.stroke_forward(1, start_angle=45)
+        pen.turn_right(30)
+        pen.set_width((3 / 4) * WIDTH)
+        pen.stroke_forward(1.25, end_angle=-60)
+        pen.set_width(WIDTH)
+
+
+class SideCurveUpOnBottom(SideEnding):
+    # Unframed Relation, Pattern 2, Stem 2
+    def angle(self):
+        return 45
+
+    def offset_x(self):
+        return 0
+
+    def draw(self, pen):
+        pen.turn_to(-135)
+        pen.move_forward(WIDTH * sqrt2 / 2 + WIDTH * slant75 / 2)
+        pen.turn_to(-60)
+        pen.stroke_forward(1, start_angle=45)
+        pen.turn_left(30)
+        pen.set_width((3 / 4) * WIDTH)
+        pen.stroke_forward(1.25, end_angle=0)
+        pen.set_width(WIDTH)
+
+
 class SideDiagonalDownRightOnBottom(SideEnding):
-    # Unframed relation
-    # Pattern 2, Stem 3
+    # Unframed Relation, Pattern 2, Stem 3
     def angle(self):
         return 45
 
@@ -472,9 +507,27 @@ class SideDiagonalDownRightOnBottom(SideEnding):
         pen.stroke_forward(2, start_angle=45, end_angle=90)
 
 
+class SideFoldCurveUpOnBottom(SideEnding):
+    # Unframed Relation, Pattern 3, Stem 1
+    def angle(self):
+        return -45
+
+    def offset_x(self):
+        return +1
+
+    def draw(self, pen):
+        pen.turn_to(-45)
+        pen.move_forward(WIDTH * sqrt2 / 2 + WIDTH * slant75 / 2)
+        pen.turn_to(-120)
+        pen.stroke_forward(1, start_angle=-45)
+        pen.turn_right(30)
+        pen.set_width((3 / 4) * WIDTH)
+        pen.stroke_forward(1.25, end_angle=0)
+        pen.set_width(WIDTH)
+
+
 class SideDiagonalDownLeft(SideEnding):
-    # Unframed relation
-    # Pattern 3, Stem 3
+    # Unframed Relation, Pattern 3, Stem 3
     def angle(self):
         return -45
 
@@ -489,8 +542,7 @@ class SideDiagonalDownLeft(SideEnding):
 
 
 class SideDownOnRight(SideEnding):
-    # Framed relation
-    # Pattern 1, Stem 1
+    # Framed Relation, Pattern 1, Stem 1
     def angle(self):
         return 45
 
@@ -505,8 +557,7 @@ class SideDownOnRight(SideEnding):
 
 
 class SideDiagonalDownRightOnTop(SideEnding):
-    # Framed relation
-    # Pattern 1, Stem 2
+    # Framed Relation, Pattern 1, Stem 2
     def angle(self):
         return 45
 
@@ -521,8 +572,7 @@ class SideDiagonalDownRightOnTop(SideEnding):
 
 
 class SideFoldUp(SideEnding):
-    # Framed relation
-    # Pattern 1, Stem 3
+    # Framed Relation, Pattern 1, Stem 3
     def angle(self):
         return 45
 
@@ -537,8 +587,7 @@ class SideFoldUp(SideEnding):
 
 
 class SideUpOnRight(SideEnding):
-    # Framed relation
-    # Pattern 2, Stem 1
+    # Framed Relation, Pattern 2, Stem 1
     def angle(self):
         return -45
 
@@ -638,7 +687,10 @@ side_endings = [
     SideDiagonalDownRightOnTop,
     SideFoldUp,
     SideUpOnRight,
-    #SideAll,
+    SideCurveDownOnBottom,
+    SideCurveUpOnBottom,
+    SideFoldCurveUpOnBottom,
+    SideAll,
 ]
 bottom_endings = [
     BottomNormal,
@@ -651,7 +703,7 @@ bottom_endings = [
     BottomFold,
     BottomBarb,
 ]
-#bottom_endings = [BottomNormal]
+bottom_endings = [BottomNormal]
 
 if __name__ == '__main__':
     letters = []
@@ -668,6 +720,8 @@ if __name__ == '__main__':
             add_letter(consonant_class, side_ending_class, BottomNormal)
         for bottom_ending_class in bottom_endings:
             add_letter(consonant_class, SideNormal, bottom_ending_class)
+
+    #letters = [ConsP(SideCurveDownOnBottom, BottomNormal)]
 
     character_path, template_path = draw_letters(letters)
 
