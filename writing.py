@@ -712,7 +712,10 @@ class BottomDiagonalDownLeftOnRight(BottomEnding):
 class BottomBend(BottomEnding):
     # Consonant Prefix S
     def offset_y(self, pen):
-        return +WIDTH / 2
+        if self.character.bottom_straight():
+            return +WIDTH / 2
+        elif self.character.bottom_slanted():
+            return 0
 
     def draw(self, pen):
         if self.character.bottom_straight():
@@ -801,6 +804,23 @@ class BottomDiagonalUpRight(BottomEnding):
             pen.move_to_y(WIDTH * slant60 / 2)
             pen.turn_to(30)
             pen.stroke_forward(2, start_angle=90, end_angle=90)
+
+
+class BottomAcute(BottomEnding):
+    # Consonant Prefix R Hacek
+    def offset_y(self, pen):
+        if self.character.bottom_straight():
+            return +WIDTH / slant60
+        elif self.character.bottom_slanted():
+            return +WIDTH / 2
+
+    def draw(self, pen):
+        if self.character.bottom_straight():
+            pen.turn_to(30)
+            pen.stroke_forward(2, end_angle=90)
+        elif self.character.bottom_slanted():
+            pen.turn_to(180)
+            pen.stroke_forward(2.5, end_angle=-45)
 
 
 class SideEnding(Ending):
@@ -1240,6 +1260,7 @@ bottom_endings = [
     BottomFold,
     BottomBarb,
     BottomDiagonalUpRight,
+    BottomAcute,
 ]
 #bottom_endings = [BottomNormal]
 
