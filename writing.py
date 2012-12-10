@@ -274,6 +274,34 @@ class ConsTStop(ConsonantCharacter):
         )
 
 
+class ConsKStop(ConsonantCharacter):
+    bottom_type = 'straight'
+    bottom_orientation = 'left'
+    side_flipped = True
+    def draw(self, pen):
+        pen.turn_to(180)
+        pen.stroke_forward(
+            5 + self.side_ending.offset_x(),
+            start_angle=self.side_ending.angle(),
+            end_angle=-45,
+        )
+        pen.turn_to(-45)
+        pen.move_forward(WIDTH * slant45)
+        pen.turn_to(180)
+
+        d = WIDTH * math.tan(math.radians(22.5)) + 0.1
+        pen.stroke_forward(WIDTH / 2 + d / 2, start_angle=-45)
+        pen.turn_left(45)
+        pen.stroke_forward(d)
+
+        pen.turn_to(-90)
+        pen.stroke_to_y(
+            BOTTOM + self.bottom_ending.offset_y(pen),
+            start_angle=-45,
+            end_angle=self.bottom_ending.angle(),
+        )
+
+
 ConsB = flip_consonant_horizontal(ConsP)
 ConsD = flip_consonant_horizontal(ConsT)
 ConsG = flip_consonant_horizontal(ConsK)
@@ -282,6 +310,7 @@ ConsJ = flip_consonant_horizontal(ConsCHacek)
 ConsStop = flip_consonant_horizontal(ConsH)
 ConsPh = flip_consonant_horizontal(ConsPStop)
 ConsTh = flip_consonant_horizontal(ConsTStop)
+ConsKh = flip_consonant_horizontal(ConsKStop)
 
 
 class Ending:
@@ -716,9 +745,11 @@ consonants = [
     ConsJ,
     ConsPStop,
     ConsTStop,
+    ConsKStop,
 
     ConsPh,
     ConsTh,
+    ConsKh,
 
     ConsH,
 ]
