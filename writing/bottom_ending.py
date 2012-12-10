@@ -99,7 +99,7 @@ class Bend(BottomEnding):
     def draw(self, pen):
         if self.character.bottom_straight():
             pen.turn_to(0)
-            pen.stroke_forward(2, end_angle=-45)
+            pen.stroke_forward(2.5, end_angle=-45)
         elif self.character.bottom_slanted():
             pen.turn_to(-90)
             pen.stroke_forward(2, end_angle=45)
@@ -204,7 +204,7 @@ class Acute(BottomEnding):
 
 
 class RightOnBottom(BottomEnding):
-    # Consonant Prefix L Cedilla
+    # Consonant Prefix C Cedilla
     def angle(self):
         return 45
 
@@ -213,13 +213,13 @@ class RightOnBottom(BottomEnding):
 
     def draw(self, pen):
         pen.stroke_to_y(
-            BOTTOM - pen.last_slant_width() / slant45 / 2,
+            BOTTOM + pen.last_slant_width() / slant45 / 2,
             end_angle=45,
         )
-        pen.turn_to(45)
-        pen.move_to_y(BOTTOM + WIDTH / 2)
+        pen.turn_to(-135)
+        pen.move_to_y(BOTTOM - WIDTH / 2)
         pen.turn_to(0)
-        pen.stroke_forward(2, start_angle=45, end_angle=45)
+        pen.stroke_forward(3, start_angle=45, end_angle=45)
 
 
 class BottomAll(BottomEnding):
@@ -259,4 +259,5 @@ bottom_endings = [
     Barb,
     DiagonalUpRight,
     Acute,
+    RightOnBottom,
 ]
