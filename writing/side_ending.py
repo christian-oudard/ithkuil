@@ -320,7 +320,7 @@ class SideAll(SideEnding):
 
 side_endings = [
     Normal,
-    SideAll, # DEBUG
+    #SideAll, # DEBUG
     RightOnBottom,
     DownOnBottom,
     CurveDownOnBottom,

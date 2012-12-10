@@ -2,6 +2,7 @@ import traceback
 
 from canoepaddle import Pen
 
+import common
 from common import WIDTH, UNDER, BOTTOM, MIDDLE, TOP, OVER
 from consonant import consonants
 from bottom_ending import bottom_endings
@@ -50,9 +51,10 @@ def draw_letters(letters):
 
 #DEBUG redefinition of parts lists for testing.
 import consonant as cons
-consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.T, cons.D, cons.K, cons.RHacek, cons.L, cons.J]
+consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.D, cons.T, cons.K, cons.RHacek, cons.L, cons.J]
 import side_ending
 side_endings = [side_ending.Normal]
+#side_endings = [side_ending.SideAll]
 import bottom_ending
 #bottom_endings = [bottom_ending.Normal]
 #bottom_endings = [bottom_ending.BottomAll]
@@ -67,10 +69,13 @@ if __name__ == '__main__':
             seen.add((c, s, b))
         letters.append(c(s, b))
 
-    for consonant_class in consonants:
-        for side_ending_class in side_endings:
-            add_letter(consonant_class, side_ending_class, bottom_endings[0])
-        for bottom_ending_class in bottom_endings:
+    #for consonant_class in consonants:
+    #    for side_ending_class in side_endings:
+    #        add_letter(consonant_class, side_ending_class, bottom_endings[0])
+    #    for bottom_ending_class in bottom_endings:
+    #        add_letter(consonant_class, side_endings[0], bottom_ending_class)
+    for bottom_ending_class in bottom_endings:
+        for consonant_class in consonants:
             add_letter(consonant_class, side_endings[0], bottom_ending_class)
 
     character_path, template_path = draw_letters(letters)
