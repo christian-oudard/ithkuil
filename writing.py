@@ -6,19 +6,14 @@ from canoepaddle import Pen, flip_angle_x
 WIDTH = 1
 HALFWIDTH = WIDTH / 2
 
-LEFT = 0.0 # DEP
-CENTER = 3.0
-RIGHT = 6.0 # DEP
-
 OVER = 10
 TOP = 8
 MIDDLE = 4
 BOTTOM = 0
 UNDER = -2
 
-
-sqrt2 = math.sqrt(2)
-sqrt3 = math.sqrt(3)
+slant45 = 1 / math.sin(math.radians(45))
+slant60 = 1 / math.sin(math.radians(60))
 slant75 = 1 / math.sin(math.radians(75))
 
 
@@ -137,7 +132,7 @@ class ConsQ(ConsonantCharacter):
         pen.turn_to(-45)
         pen.stroke_to_y(MIDDLE, end_angle=0)
         pen.turn_to(180)
-        pen.move_forward(pen.last_slant_width() / 2 + WIDTH / sqrt3)
+        pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant60 / 2)
         pen.turn_left(60)
         pen.stroke_to_y(
             BOTTOM + self.bottom_ending.offset_y(pen),
@@ -285,7 +280,7 @@ class BottomDiagonalDownRightOnRight(BottomEnding):
 
     def draw(self, pen):
         pen.stroke_to_y(
-            BOTTOM + pen.last_slant_width() / sqrt2 / 2,
+            BOTTOM + pen.last_slant_width() / slant45 / 2,
             end_angle=45,
         )
         pen.turn_to(45)
@@ -304,7 +299,7 @@ class BottomDownOnRight(BottomEnding):
 
     def draw(self, pen):
         pen.turn_to(45)
-        pen.move_forward(pen.last_slant_width() / 2 + sqrt2 * WIDTH / 2)
+        pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
         pen.turn_to(-90)
         pen.stroke_forward(2, start_angle=45, end_angle=45)
 
@@ -319,7 +314,7 @@ class BottomRightOnRight(BottomEnding):
 
     def draw(self, pen):
         pen.stroke_to_y(
-            BOTTOM - pen.last_slant_width() / sqrt2 / 2,
+            BOTTOM - pen.last_slant_width() / slant45 / 2,
             end_angle=45,
         )
         pen.turn_to(45)
@@ -338,7 +333,7 @@ class BottomDiagonalDownLeftOnRight(BottomEnding):
 
     def draw(self, pen):
         pen.turn_to(0)
-        pen.move_forward(pen.last_slant_width() / 2 + sqrt2 * WIDTH / 2)
+        pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
         pen.turn_to(-135)
         pen.stroke_forward(2, start_angle=0, end_angle=0)
 
@@ -372,20 +367,20 @@ class BottomFold(BottomEnding):
     def draw(self, pen):
         if self.character.bottom_straight():
             pen.stroke_to_y(
-                BOTTOM + pen.last_slant_width() / sqrt2 / 2,
+                BOTTOM + pen.last_slant_width() / slant45 / 2,
                 end_angle=-45,
             )
             pen.turn_to(-45)
-            pen.move_forward(pen.last_slant_width() / 2 + sqrt2 * WIDTH / 2)
+            pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
             pen.turn_to(0)
             pen.stroke_forward(2, start_angle=-45, end_angle=-45)
         elif self.character.bottom_slanted():
             pen.stroke_to_y(
-                BOTTOM + pen.last_slant_width() / sqrt2 / 2,
+                BOTTOM + pen.last_slant_width() / slant45 / 2,
                 end_angle=45,
             )
             pen.turn_to(-135)
-            pen.move_forward(pen.last_slant_width() / 2 + sqrt2 * WIDTH / 2)
+            pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
             pen.turn_to(180)
             pen.stroke_forward(2, start_angle=45, end_angle=45)
 
@@ -434,7 +429,7 @@ class SideRightOnBottom(SideEnding):
 
     def draw(self, pen):
         pen.turn_to(-135)
-        pen.move_forward(WIDTH * sqrt2)
+        pen.move_forward(WIDTH * slant45)
         pen.turn_to(0)
         pen.stroke_forward(2, start_angle=45, end_angle=45)
 
@@ -449,7 +444,7 @@ class SideDownOnBottom(SideEnding):
 
     def draw(self, pen):
         pen.turn_to(-135)
-        pen.move_forward(WIDTH * sqrt2)
+        pen.move_forward(WIDTH * slant45)
         pen.turn_to(-90)
         pen.stroke_forward(2, start_angle=45, end_angle=45)
 
@@ -464,7 +459,7 @@ class SideCurveDownOnBottom(SideEnding):
 
     def draw(self, pen):
         pen.turn_to(-135)
-        pen.move_forward(WIDTH * sqrt2)
+        pen.move_forward(WIDTH * slant45)
         pen.turn_to(0)
         pen.stroke_forward(1, start_angle=45)
         pen.turn_right(30)
@@ -483,7 +478,7 @@ class SideCurveUpOnBottom(SideEnding):
 
     def draw(self, pen):
         pen.turn_to(-135)
-        pen.move_forward(WIDTH * sqrt2 / 2 + WIDTH * slant75 / 2)
+        pen.move_forward(WIDTH * slant45 / 2 + WIDTH * slant75 / 2)
         pen.turn_to(-60)
         pen.stroke_forward(1, start_angle=45)
         pen.turn_left(30)
@@ -502,7 +497,7 @@ class SideDiagonalDownRightOnBottom(SideEnding):
 
     def draw(self, pen):
         pen.turn_to(-135)
-        pen.move_forward(WIDTH * sqrt2 / 2 + WIDTH / 2)
+        pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
         pen.turn_to(-45)
         pen.stroke_forward(2, start_angle=45, end_angle=90)
 
@@ -517,7 +512,7 @@ class SideFoldCurveUpOnBottom(SideEnding):
 
     def draw(self, pen):
         pen.turn_to(-45)
-        pen.move_forward(WIDTH * sqrt2 / 2 + WIDTH * slant75 / 2)
+        pen.move_forward(WIDTH * slant45 / 2 + WIDTH * slant75 / 2)
         pen.turn_to(-120)
         pen.stroke_forward(1, start_angle=-45)
         pen.turn_right(30)
@@ -536,7 +531,7 @@ class SideDiagonalDownLeft(SideEnding):
 
     def draw(self, pen):
         pen.turn_to(-45)
-        pen.move_forward(WIDTH * sqrt2 / 2 + WIDTH / 2)
+        pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
         pen.turn_to(-135)
         pen.stroke_forward(2, start_angle=-45, end_angle=90)
 
@@ -551,7 +546,7 @@ class SideDownOnRight(SideEnding):
 
     def draw(self, pen):
         pen.turn_to(45)
-        pen.move_forward(WIDTH * sqrt2)
+        pen.move_forward(WIDTH * slant45)
         pen.turn_to(-90)
         pen.stroke_forward(2, start_angle=45, end_angle=45)
 
@@ -566,9 +561,9 @@ class SideDiagonalDownRightOnTop(SideEnding):
 
     def draw(self, pen):
         pen.turn_to(45)
-        pen.move_forward(WIDTH * sqrt2 / 2 + WIDTH / 2)
+        pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
         pen.turn_to(-45)
-        pen.stroke_forward(WIDTH * sqrt2 + WIDTH / 2, start_angle=45, end_angle=0)
+        pen.stroke_forward(WIDTH * slant45 + WIDTH / 2, start_angle=45, end_angle=0)
 
 
 class SideFoldUp(SideEnding):
@@ -581,7 +576,7 @@ class SideFoldUp(SideEnding):
 
     def draw(self, pen):
         pen.turn_to(45)
-        pen.move_forward(WIDTH * sqrt2)
+        pen.move_forward(WIDTH * slant45)
         pen.turn_to(90)
         pen.stroke_forward(2, start_angle=45, end_angle=45)
 
@@ -596,7 +591,7 @@ class SideUpOnRight(SideEnding):
 
     def draw(self, pen):
         pen.turn_to(-45)
-        pen.move_forward(WIDTH * sqrt2)
+        pen.move_forward(WIDTH * slant45)
         pen.turn_to(90)
         pen.stroke_forward(2, start_angle=-45, end_angle=-45)
 
