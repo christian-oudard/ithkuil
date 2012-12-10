@@ -83,7 +83,7 @@ class K(ConsonantCharacter):
     def draw(self, pen):
         pen.turn_to(180)
         pen.stroke_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
-        pen.turn_to(-65)
+        pen.turn_to(-60)
         pen.stroke_to_y(
             BOTTOM + self.bottom_ending.offset_y(pen),
             end_angle=self.bottom_ending.angle(),

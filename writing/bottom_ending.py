@@ -1,5 +1,9 @@
 from common import Ending, WIDTH, BOTTOM, UNDER, slant60, slant45
 
+# A small amount added to some offsets to prevent illegal line crossings due to
+# round off error.
+smidgen = 0.001
+
 
 class BottomEnding(Ending):
     def offset_y(self, pen):
@@ -26,7 +30,7 @@ class DiagonalDownRightOnRight(BottomEnding):
     def angle(self):
         return 45
     def offset_y(self, pen):
-        return +1.1 * WIDTH
+        return +WIDTH + smidgen
 
     def draw(self, pen):
         pen.stroke_to_y(
@@ -118,7 +122,7 @@ class Fold(BottomEnding):
         if self.character.bottom_straight():
             return +WIDTH / 2
         elif self.character.bottom_slanted():
-            return +1.1 * WIDTH
+            return +WIDTH + smidgen
 
     def draw(self, pen):
         if self.character.bottom_straight():
@@ -209,7 +213,7 @@ class RightOnBottom(BottomEnding):
         return 45
 
     def offset_y(self, pen):
-        return +WIDTH
+        return +WIDTH + smidgen
 
     def draw(self, pen):
         pen.stroke_to_y(
@@ -220,6 +224,68 @@ class RightOnBottom(BottomEnding):
         pen.move_to_y(BOTTOM - WIDTH / 2)
         pen.turn_to(0)
         pen.stroke_forward(3, start_angle=45, end_angle=45)
+
+
+class StraightOnLeft(BottomEnding):
+    # Consonant Prefix C
+    # Consonant Prefix Z Dot
+    def angle(self):
+        if self.character.bottom_straight():
+            return -45
+        elif self.character.bottom_slanted():
+            return 0
+
+    def offset_y(self, pen):
+        if self.character.bottom_straight():
+            return -WIDTH / 2
+        elif self.character.bottom_slanted():
+            return 0
+
+    def draw(self, pen):
+        if self.character.bottom_straight():
+            pen.turn_to(135)
+            pen.move_forward(WIDTH * slant45)
+            pen.turn_to(-90)
+            pen.stroke_forward(2, start_angle=-45, end_angle=-45)
+        elif self.character.bottom_slanted():
+            original_heading = pen.heading
+            pen.turn_to(180)
+            pen.move_forward(pen.last_slant_width())
+            pen.turn_to(original_heading)
+            pen.stroke_forward(2, start_angle=0, end_angle=0)
+
+
+class BreakRightBendLeft(BottomEnding):
+    def angle(self):
+        if self.character.bottom_straight():
+            return 0
+        elif self.character.bottom_slanted():
+            return 90
+
+    def offset_y(self, pen):
+        if self.character.bottom_straight():
+            return 0
+        elif self.character.bottom_slanted():
+            if pen.heading % 360 in [360 - 45, 360 - 135]:
+                return +0.75 * WIDTH * slant45 + smidgen
+            else:
+                return +1.75 * WIDTH + smidgen
+
+    def draw(self, pen):
+        if self.character.bottom_straight():
+            pen.turn_to(180)
+            pen.move_forward(WIDTH / 2 + WIDTH * slant45 / 2)
+            pen.turn_to(-45)
+            pen.stroke_forward(2, start_angle=0, end_angle=0)
+        elif self.character.bottom_slanted():
+            pen.stroke_to_y(
+                BOTTOM + pen.last_slant_width() / 2,
+                end_angle=90
+            )
+            pen.turn_to(-90)
+            pen.move_to_y(BOTTOM - WIDTH * slant60 / 2)
+            pen.turn_to(30)
+            pen.stroke_forward(2, start_angle=90, end_angle=90)
 
 
 class BottomAll(BottomEnding):
@@ -260,4 +326,6 @@ bottom_endings = [
     DiagonalUpRight,
     Acute,
     RightOnBottom,
+    StraightOnLeft,
+    BreakRightBendLeft,
 ]
