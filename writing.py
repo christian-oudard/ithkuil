@@ -733,14 +733,13 @@ class BottomFold(BottomEnding):
             return 45
 
     def offset_y(self, pen):
-        return +1.1 * WIDTH
+        if self.character.bottom_straight():
+            return +WIDTH / 2
+        elif self.character.bottom_slanted():
+            return +1.1 * WIDTH
 
     def draw(self, pen):
         if self.character.bottom_straight():
-            pen.stroke_to_y(
-                BOTTOM + pen.last_slant_width() / slant45 / 2,
-                end_angle=-45,
-            )
             pen.turn_to(-45)
             pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
             pen.turn_to(0)
@@ -771,6 +770,37 @@ class BottomBarb(BottomEnding):
         elif self.character.bottom_slanted():
             pen.turn_to(180)
             pen.stroke_forward(WIDTH * 1.5, end_angle=25)
+
+
+class BottomDiagonalUpRight(BottomEnding):
+    # Consonant Prefix Z
+    def angle(self):
+        if self.character.bottom_straight():
+            return -45
+        elif self.character.bottom_slanted():
+            return 90
+
+    def offset_y(self, pen):
+        if self.character.bottom_straight():
+            return +WIDTH / 2
+        elif self.character.bottom_slanted():
+            return 0
+
+    def draw(self, pen):
+        if self.character.bottom_straight():
+            pen.turn_to(-45)
+            pen.move_forward(pen.last_slant_width() / 2 + WIDTH / 2)
+            pen.turn_to(45)
+            pen.stroke_forward(2, start_angle=-45, end_angle=0)
+        elif self.character.bottom_slanted():
+            pen.stroke_to_y(
+                BOTTOM - pen.last_slant_width() / 2,
+                end_angle=90
+            )
+            pen.turn_to(90)
+            pen.move_to_y(WIDTH * slant60 / 2)
+            pen.turn_to(30)
+            pen.stroke_forward(2, start_angle=90, end_angle=90)
 
 
 class SideEnding(Ending):
@@ -1132,16 +1162,16 @@ def draw_letters(letters):
 consonants = [
     #ConsP,
     ConsT,
-    #ConsK,
-    #ConsQ,
+    ConsK,
+    ConsQ,
     #ConsC,
-    #ConsCHacek,
+    ConsCHacek,
     #ConsB,
     ConsD,
-    #ConsG,
+    ConsG,
     #ConsStop,
     #ConsZDot,
-    #ConsJ,
+    ConsJ,
     #ConsPStop,
     #ConsTStop,
     #ConsKStop,
@@ -1163,13 +1193,13 @@ consonants = [
     #ConsV,
     #ConsDh,
     #ConsH,
-    #ConsRHacek,
+    ConsRHacek,
     #ConsZ,
     #ConsZHacek,
     #ConsW,
-    #ConsL,
+    ConsL,
     #ConsY,
-    #ConsLCedilla,
+    ConsLCedilla,
     #ConsR,
     #ConsCCedilla,
     #ConsM,
@@ -1198,7 +1228,7 @@ side_endings = [
     SideFoldUpCurveUp,
     SideDiagonalUpLeft,
 ]
-#side_endings = [SideNormal]
+side_endings = [SideNormal]
 bottom_endings = [
     BottomNormal,
     BottomLong,
@@ -1209,8 +1239,9 @@ bottom_endings = [
     BottomBend,
     BottomFold,
     BottomBarb,
+    BottomDiagonalUpRight,
 ]
-bottom_endings = [BottomNormal]
+#bottom_endings = [BottomNormal]
 
 if __name__ == '__main__':
     letters = []
