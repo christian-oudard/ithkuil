@@ -873,7 +873,7 @@ class SideDiagonalDownRightOnBottom(SideEnding):
         pen.stroke_forward(2, start_angle=45, end_angle=90)
 
 
-class SideFoldCurveUpOnBottom(SideEnding):
+class SideFoldDownCurveUp(SideEnding):
     # Unframed Relation, Pattern 3, Stem 1
     def angle(self):
         return -45
@@ -889,6 +889,25 @@ class SideFoldCurveUpOnBottom(SideEnding):
         pen.turn_right(30)
         pen.set_width((3 / 4) * WIDTH)
         pen.stroke_forward(1.25, end_angle=0)
+        pen.set_width(WIDTH)
+
+
+class SideFoldDownCurveDown(SideEnding):
+    # Unframed Relation, Pattern 3, Stem 2
+    def angle(self):
+        return -45
+
+    def offset_x(self):
+        return +1
+
+    def draw(self, pen):
+        pen.turn_to(-45)
+        pen.move_forward(WIDTH * slant45 / 2 + WIDTH * slant75 / 2)
+        pen.turn_to(-150)
+        pen.stroke_forward(1, start_angle=-45)
+        pen.turn_left(30)
+        pen.set_width((3 / 4) * WIDTH)
+        pen.stroke_forward(1.25, end_angle=90)
         pen.set_width(WIDTH)
 
 
@@ -919,7 +938,7 @@ class SideDownOnRight(SideEnding):
         pen.turn_to(45)
         pen.move_forward(WIDTH * slant45)
         pen.turn_to(-90)
-        pen.stroke_forward(2, start_angle=45, end_angle=45)
+        pen.stroke_forward(2.5, start_angle=45, end_angle=45)
 
 
 class SideDiagonalDownRightOnTop(SideEnding):
@@ -934,7 +953,7 @@ class SideDiagonalDownRightOnTop(SideEnding):
         pen.turn_to(45)
         pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
         pen.turn_to(-45)
-        pen.stroke_forward(WIDTH * slant45 + WIDTH / 2, start_angle=45, end_angle=0)
+        pen.stroke_to_y(TOP - WIDTH, start_angle=45, end_angle=0)
 
 
 class SideFoldUp(SideEnding):
@@ -964,7 +983,90 @@ class SideUpOnRight(SideEnding):
         pen.turn_to(-45)
         pen.move_forward(WIDTH * slant45)
         pen.turn_to(90)
+        pen.stroke_forward(2.5, start_angle=-45, end_angle=-45)
+
+
+class SideDiagonalUpRightOnTop(SideEnding):
+    # Framed Relation, Pattern 2, Stem 2
+    def angle(self):
+        return -45
+
+    def offset_x(self):
+        return -0.5
+
+    def draw(self, pen):
+        pen.turn_to(-45)
+        pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
+        pen.turn_to(45)
+        pen.stroke_to_y(TOP, start_angle=-45, end_angle=0)
+
+
+class SideFoldDown(SideEnding):
+    # Framed Relation, Pattern 2, Stem 3
+    def angle(self):
+        return -45
+
+    def offset_x(self):
+        return -0.5
+
+    def draw(self, pen):
+        pen.turn_to(-45)
+        pen.move_forward(WIDTH * slant45)
+        pen.turn_to(-90)
         pen.stroke_forward(2, start_angle=-45, end_angle=-45)
+
+
+class SideFoldUpCurveDown(SideEnding):
+    # Framed Relation, Pattern 3, Stem 1
+    def angle(self):
+        return 45
+
+    def offset_x(self):
+        return 0
+
+    def draw(self, pen):
+        pen.turn_to(45)
+        pen.move_forward(WIDTH * slant45 / 2 + WIDTH * slant75 / 2)
+        pen.turn_to(120)
+        pen.stroke_forward(1, start_angle=45)
+        pen.turn_left(30)
+        pen.set_width((3 / 4) * WIDTH)
+        pen.stroke_forward(1.25, end_angle=0)
+        pen.set_width(WIDTH)
+
+
+class SideFoldUpCurveUp(SideEnding):
+    # Framed Relation, Pattern 3, Stem 2
+    def angle(self):
+        return 45
+
+    def offset_x(self):
+        return 0
+
+    def draw(self, pen):
+        pen.turn_to(45)
+        pen.move_forward(WIDTH * slant45 / 2 + WIDTH * slant75 / 2)
+        pen.turn_to(150)
+        pen.stroke_forward(1, start_angle=45)
+        pen.turn_right(30)
+        pen.set_width((3 / 4) * WIDTH)
+        pen.stroke_forward(1.25, end_angle=90)
+        pen.set_width(WIDTH)
+
+
+class SideDiagonalUpLeft(SideEnding):
+    # Framed Relation, Pattern 3, Stem 3
+    def angle(self):
+        return 45
+
+    def offset_x(self):
+        return 0
+
+    def draw(self, pen):
+        pen.turn_to(45)
+        pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
+        pen.turn_to(135)
+        pen.stroke_forward(2, start_angle=45, end_angle=90)
 
 
 class SideAll(SideEnding):
@@ -1028,69 +1130,75 @@ def draw_letters(letters):
 
 # Lists of character parts.
 consonants = [
-    ConsP,
+    #ConsP,
     ConsT,
-    ConsK,
-    ConsQ,
-    ConsC,
-    ConsCHacek,
-    ConsB,
+    #ConsK,
+    #ConsQ,
+    #ConsC,
+    #ConsCHacek,
+    #ConsB,
     ConsD,
-    ConsG,
-    ConsStop,
-    ConsZDot,
-    ConsJ,
-    ConsPStop,
-    ConsTStop,
-    ConsKStop,
-    ConsQStop,
-    ConsCStop,
-    ConsCHacekStop,
-    ConsPH,
-    ConsTH,
-    ConsKH,
-    ConsQH,
-    ConsCH,
-    ConsCHacekH,
-    ConsF,
-    ConsTCedilla,
-    ConsX,
-    ConsXh,
-    ConsS,
-    ConsSHacek,
-    ConsV,
-    ConsDh,
-    ConsH,
-    ConsRHacek,
-    ConsZ,
-    ConsZHacek,
-    ConsW,
-    ConsL,
-    ConsY,
-    ConsLCedilla,
-    ConsR,
-    ConsCCedilla,
-    ConsM,
-    ConsN,
-    ConsNHacek,
-    ConsTLCedilla,
+    #ConsG,
+    #ConsStop,
+    #ConsZDot,
+    #ConsJ,
+    #ConsPStop,
+    #ConsTStop,
+    #ConsKStop,
+    #ConsQStop,
+    #ConsCStop,
+    #ConsCHacekStop,
+    #ConsPH,
+    #ConsTH,
+    #ConsKH,
+    #ConsQH,
+    #ConsCH,
+    #ConsCHacekH,
+    #ConsF,
+    #ConsTCedilla,
+    #ConsX,
+    #ConsXh,
+    #ConsS,
+    #ConsSHacek,
+    #ConsV,
+    #ConsDh,
+    #ConsH,
+    #ConsRHacek,
+    #ConsZ,
+    #ConsZHacek,
+    #ConsW,
+    #ConsL,
+    #ConsY,
+    #ConsLCedilla,
+    #ConsR,
+    #ConsCCedilla,
+    #ConsM,
+    #ConsN,
+    #ConsNHacek,
+    #ConsTLCedilla,
 ]
 side_endings = [
     SideNormal,
+    SideAll,
     SideRightOnBottom,
     SideDownOnBottom,
+    SideCurveDownOnBottom,
+    SideCurveUpOnBottom,
     SideDiagonalDownRightOnBottom,
+    SideFoldDownCurveUp,
+    SideFoldDownCurveDown,
     SideDiagonalDownLeft,
     SideDownOnRight,
     SideDiagonalDownRightOnTop,
     SideFoldUp,
     SideUpOnRight,
-    SideCurveDownOnBottom,
-    SideCurveUpOnBottom,
-    SideFoldCurveUpOnBottom,
-    SideAll,
+    SideDiagonalUpRightOnTop,
+    SideFoldDown,
+    SideFoldUpCurveDown,
+    SideFoldUpCurveUp,
+    SideDiagonalUpLeft,
 ]
-side_endings = [SideNormal]
+#side_endings = [SideNormal]
 bottom_endings = [
     BottomNormal,
     BottomLong,
