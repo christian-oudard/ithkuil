@@ -483,6 +483,29 @@ class ConsSHacek(ConsonantCharacter):
         )
 
 
+class ConsR(ConsonantCharacter):
+    bottom_type = 'straight'
+    bottom_orientation = 'left'
+    side_flipped = False
+    def draw(self, pen):
+        pen.turn_to(180)
+        pen.stroke_forward(
+            5.5 + self.side_ending.offset_x(),
+            start_angle=self.side_ending.angle(),
+        )
+        left_side = pen.position.x - WIDTH / 2 / math.tan(math.radians(22.5))
+        pen.turn_to(-45)
+        pen.stroke_to_y(MIDDLE + WIDTH / 2)
+        pen.turn_to(180)
+        #pen.stroke_to_x(left_side + WIDTH / 2)
+        pen.stroke_forward(3.5)
+        pen.turn_to(-90)
+        pen.stroke_to_y(
+            BOTTOM + self.bottom_ending.offset_y(pen),
+            end_angle=self.bottom_ending.angle(),
+        )
+
+
 ConsB = flip_consonant_horizontal(ConsP)
 ConsD = flip_consonant_horizontal(ConsT)
 ConsG = flip_consonant_horizontal(ConsK)
@@ -501,6 +524,8 @@ ConsDh = flip_consonant_horizontal(ConsTCedilla)
 ConsXh = flip_consonant_horizontal(ConsX)
 ConsZ = flip_consonant_horizontal(ConsS)
 ConsZHacek = flip_consonant_horizontal(ConsSHacek)
+ConsCCedilla = flip_consonant_horizontal(ConsR)
+
 
 class Ending:
     def __init__(self, character):
@@ -539,7 +564,7 @@ class BottomDiagonalDownRightOnRight(BottomEnding):
         return 45
 
     def offset_y(self, pen):
-        return +WIDTH
+        return +1.1 * WIDTH
 
     def draw(self, pen):
         pen.stroke_to_y(
@@ -558,7 +583,7 @@ class BottomDownOnRight(BottomEnding):
         return 45
 
     def offset_y(self, pen):
-        return WIDTH / 2
+        return +WIDTH / 2
 
     def draw(self, pen):
         pen.turn_to(45)
@@ -604,7 +629,7 @@ class BottomDiagonalDownLeftOnRight(BottomEnding):
 class BottomBend(BottomEnding):
     # Consonant Prefix S
     def offset_y(self, pen):
-        return WIDTH / 2
+        return +WIDTH / 2
 
     def draw(self, pen):
         if self.character.bottom_straight():
@@ -625,7 +650,7 @@ class BottomFold(BottomEnding):
             return 45
 
     def offset_y(self, pen):
-        return +WIDTH
+        return +1.1 * WIDTH
 
     def draw(self, pen):
         if self.character.bottom_straight():
@@ -934,28 +959,31 @@ consonants = [
 #    ConsJ,
 #    ConsPStop,
 #    ConsTStop,
-    ConsKStop,
+#    ConsKStop,
 #    ConsQStop,
 #    ConsCStop,
 #    ConsCHacekStop,
 #    ConsPH,
 #    ConsTH,
-    ConsKH,
+#    ConsKH,
 #    ConsQH,
 #    ConsCH,
 #    ConsCHacekH,
-    ConsF,
-    ConsTCedilla,
-    ConsX,
-    ConsXh,
-    ConsS,
-    ConsSHacek,
-    ConsV,
-    ConsDh,
-    ConsH,
-    ConsRHacek,
-    ConsZ,
-    ConsZHacek,
+#    ConsF,
+#    ConsTCedilla,
+#    ConsX,
+#    ConsXh,
+#    ConsS,
+#    ConsSHacek,
+#    ConsV,
+#    ConsDh,
+#    ConsH,
+#    ConsRHacek,
+#    ConsZ,
+#    ConsZHacek,
+
+    ConsR,
+    ConsCCedilla,
 ]
 side_endings = [
     SideNormal,
