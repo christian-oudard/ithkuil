@@ -50,7 +50,7 @@ def draw_letters(letters):
 
 #DEBUG redefinition of parts lists for testing.
 import consonant as cons
-#consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.T, cons.D, cons.K, cons.RHacek, cons.L, cons.J]
+consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.T, cons.D, cons.K, cons.RHacek, cons.L, cons.J]
 import side_ending
 side_endings = [side_ending.Normal]
 import bottom_ending

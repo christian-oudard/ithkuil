@@ -288,6 +288,32 @@ class BreakRightBendLeft(BottomEnding):
             pen.stroke_forward(2, start_angle=90, end_angle=90)
 
 
+class BreakRightBendRight(BottomEnding):
+    def angle(self):
+        if self.character.bottom_straight():
+            return -45
+        elif self.character.bottom_slanted():
+            return 0
+
+    def offset_y(self, pen):
+        if self.character.bottom_straight():
+            return -WIDTH / 2
+        elif self.character.bottom_slanted():
+            return 0
+
+    def draw(self, pen):
+        if self.character.bottom_straight():
+            pen.turn_to(135)
+            pen.move_forward(WIDTH * slant45)
+            pen.turn_to(180)
+            pen.stroke_forward(2, start_angle=-45, end_angle=-45)
+        elif self.character.bottom_slanted():
+            pen.turn_to(180)
+            pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
+            pen.turn_to(-135)
+            pen.stroke_forward(2, start_angle=0, end_angle=0)
+
+
 class BottomAll(BottomEnding):
     """
     A debug ending showing every one of the endings superimposed.
@@ -314,18 +340,19 @@ class BottomAll(BottomEnding):
 
 bottom_endings = [
     Normal,
-    BottomAll, #DEBUG
-    Long,
-    DiagonalDownRightOnRight,
-    DownOnRight,
-    RightOnRight,
-    DiagonalDownLeftOnRight,
-    Bend,
-    Fold,
-    Barb,
-    DiagonalUpRight,
-    Acute,
-    RightOnBottom,
-    StraightOnLeft,
-    BreakRightBendLeft,
+    #BottomAll, #DEBUG
+    #Long,
+    #DiagonalDownRightOnRight,
+    #DownOnRight,
+    #RightOnRight,
+    #DiagonalDownLeftOnRight,
+    #Bend,
+    #Fold,
+    #Barb,
+    #DiagonalUpRight,
+    #Acute,
+    #RightOnBottom,
+    #StraightOnLeft,
+    #BreakRightBendLeft,
+    BreakRightBendRight,
 ]
