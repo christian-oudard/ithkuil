@@ -1,4 +1,5 @@
 from common import (
+    Character,
     WIDTH,
     TOP,
     MIDDLE,
@@ -6,9 +7,9 @@ from common import (
     bevel_distance,
     slant45,
     slant60,
-    flip_consonant_horizontal,
+    slant75,
+    flip_consonant_horizontal as flip,
     flip_ending_horizontal,
-    Character,
 )
 
 
@@ -39,7 +40,7 @@ class ConsonantCharacter(Character):
         pen.paper.center_on_x(0)
 
 
-class ConsP(ConsonantCharacter):
+class P(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
     side_flipped = True
@@ -61,7 +62,7 @@ class ConsP(ConsonantCharacter):
         )
 
 
-class ConsT(ConsonantCharacter):
+class T(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
     side_flipped = False
@@ -75,7 +76,7 @@ class ConsT(ConsonantCharacter):
         )
 
 
-class ConsK(ConsonantCharacter):
+class K(ConsonantCharacter):
     bottom_type = 'slanted'
     bottom_orientation = 'right'
     side_flipped = False
@@ -89,7 +90,7 @@ class ConsK(ConsonantCharacter):
         )
 
 
-class ConsQ(ConsonantCharacter):
+class Q(ConsonantCharacter):
     bottom_type = 'slanted'
     bottom_orientation = 'left'
     side_flipped = False
@@ -108,7 +109,7 @@ class ConsQ(ConsonantCharacter):
         )
 
 
-class ConsC(ConsonantCharacter):
+class C(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
     side_flipped = False
@@ -126,7 +127,7 @@ class ConsC(ConsonantCharacter):
         )
 
 
-class ConsCHacek(ConsonantCharacter):
+class CHacek(ConsonantCharacter):
     bottom_type = 'slanted'
     bottom_orientation = 'left'
     side_flipped = False
@@ -144,7 +145,7 @@ class ConsCHacek(ConsonantCharacter):
         )
 
 
-class ConsL(ConsonantCharacter):
+class L(ConsonantCharacter):
     bottom_type = 'slanted'
     bottom_orientation = 'right'
     side_flipped = False
@@ -160,7 +161,7 @@ class ConsL(ConsonantCharacter):
         )
 
 
-class ConsL(ConsonantCharacter):
+class L(ConsonantCharacter):
     bottom_type = 'slanted'
     bottom_orientation = 'right'
     side_flipped = False
@@ -176,7 +177,7 @@ class ConsL(ConsonantCharacter):
         )
 
 
-class ConsH(ConsonantCharacter):
+class H(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
     side_flipped = False
@@ -198,7 +199,7 @@ class ConsH(ConsonantCharacter):
         )
 
 
-class ConsPStop(ConsonantCharacter):
+class PStop(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
     side_flipped = False
@@ -220,7 +221,7 @@ class ConsPStop(ConsonantCharacter):
         )
 
 
-class ConsTStop(ConsonantCharacter):
+class TStop(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
     side_flipped = True
@@ -241,7 +242,7 @@ class ConsTStop(ConsonantCharacter):
         )
 
 
-class ConsKStop(ConsonantCharacter):
+class KStop(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
     side_flipped = True
@@ -265,7 +266,7 @@ class ConsKStop(ConsonantCharacter):
         )
 
 
-class ConsQStop(ConsonantCharacter):
+class QStop(ConsonantCharacter):
     bottom_type = 'slanted'
     bottom_orientation = 'right'
     side_flipped = False
@@ -287,7 +288,7 @@ class ConsQStop(ConsonantCharacter):
         )
 
 
-class ConsCStop(ConsonantCharacter):
+class CStop(ConsonantCharacter):
     bottom_type = 'slanted'
     bottom_orientation = 'right'
     side_flipped = False
@@ -309,7 +310,7 @@ class ConsCStop(ConsonantCharacter):
         )
 
 
-class ConsCHacekStop(ConsonantCharacter):
+class CHacekStop(ConsonantCharacter):
     bottom_type = 'slanted'
     bottom_orientation = 'left'
     side_flipped = True
@@ -334,7 +335,7 @@ class ConsCHacekStop(ConsonantCharacter):
         )
 
 
-class ConsF(ConsonantCharacter):
+class F(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
     side_flipped = True
@@ -356,7 +357,7 @@ class ConsF(ConsonantCharacter):
         )
 
 
-class ConsTCedilla(ConsonantCharacter):
+class TCedilla(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
     side_flipped = False
@@ -378,7 +379,7 @@ class ConsTCedilla(ConsonantCharacter):
         )
 
 
-class ConsX(ConsonantCharacter):
+class X(ConsonantCharacter):
     bottom_type = 'slanted'
     bottom_orientation = 'left'
     side_flipped = False
@@ -400,7 +401,7 @@ class ConsX(ConsonantCharacter):
         )
 
 
-class ConsS(ConsonantCharacter):
+class S(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
     side_flipped = False
@@ -425,7 +426,7 @@ class ConsS(ConsonantCharacter):
         )
 
 
-class ConsSHacek(ConsonantCharacter):
+class SHacek(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
     side_flipped = True
@@ -450,7 +451,7 @@ class ConsSHacek(ConsonantCharacter):
         )
 
 
-class ConsR(ConsonantCharacter):
+class R(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
     side_flipped = False
@@ -471,7 +472,7 @@ class ConsR(ConsonantCharacter):
         )
 
 
-class ConsW(ConsonantCharacter):
+class W(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
     side_flipped = False
@@ -492,7 +493,7 @@ class ConsW(ConsonantCharacter):
         )
 
 
-class ConsL(ConsonantCharacter):
+class L(ConsonantCharacter):
     bottom_type = 'slanted'
     bottom_orientation = 'right'
     side_flipped = False
@@ -511,7 +512,7 @@ class ConsL(ConsonantCharacter):
         )
 
 
-class ConsM(ConsonantCharacter):
+class M(ConsonantCharacter):
     bottom_type = 'slanted'
     bottom_orientation = 'left'
     side_flipped = False
@@ -530,7 +531,7 @@ class ConsM(ConsonantCharacter):
         )
 
 
-class ConsNHacek(ConsonantCharacter):
+class NHacek(ConsonantCharacter):
     bottom_type = 'slanted'
     bottom_orientation = 'right'
     side_flipped = True
@@ -552,76 +553,76 @@ class ConsNHacek(ConsonantCharacter):
         )
 
 
-ConsB = flip_consonant_horizontal(ConsP)
-ConsD = flip_consonant_horizontal(ConsT)
-ConsG = flip_consonant_horizontal(ConsK)
-ConsRHacek = flip_consonant_horizontal(ConsQ)
-ConsZDot = flip_consonant_horizontal(ConsC)
-ConsJ = flip_consonant_horizontal(ConsCHacek)
-ConsStop = flip_consonant_horizontal(ConsH)
-ConsPH = flip_consonant_horizontal(ConsPStop)
-ConsTH = flip_consonant_horizontal(ConsTStop)
-ConsKH = flip_consonant_horizontal(ConsKStop)
-ConsQH = flip_consonant_horizontal(ConsQStop)
-ConsCH = flip_consonant_horizontal(ConsCStop)
-ConsCHacekH = flip_consonant_horizontal(ConsCHacekStop)
-ConsV = flip_consonant_horizontal(ConsF)
-ConsDh = flip_consonant_horizontal(ConsTCedilla)
-ConsXh = flip_consonant_horizontal(ConsX)
-ConsZ = flip_consonant_horizontal(ConsS)
-ConsZHacek = flip_consonant_horizontal(ConsSHacek)
-ConsY = flip_consonant_horizontal(ConsW)
-ConsLCedilla = flip_consonant_horizontal(ConsL)
-ConsCCedilla = flip_consonant_horizontal(ConsR)
-ConsN = flip_consonant_horizontal(ConsM)
-ConsTLCedilla = flip_consonant_horizontal(ConsNHacek)
+B = flip(P)
+D = flip(T)
+G = flip(K)
+RHacek = flip(Q)
+ZDot = flip(C)
+J = flip(CHacek)
+Stop = flip(H)
+PH = flip(PStop)
+TH = flip(TStop)
+KH = flip(KStop)
+QH = flip(QStop)
+CH = flip(CStop)
+CHacekH = flip(CHacekStop)
+V = flip(F)
+Dh = flip(TCedilla)
+Xh = flip(X)
+Z = flip(S)
+ZHacek = flip(SHacek)
+Y = flip(W)
+LCedilla = flip(L)
+CCedilla = flip(R)
+N = flip(M)
+TLCedilla = flip(NHacek)
 
 
 consonants = [
-    ConsP,
-    ConsT,
-    ConsK,
-    ConsQ,
-    ConsC,
-    ConsCHacek,
-    ConsB,
-    ConsD,
-    ConsG,
-    ConsStop,
-    ConsZDot,
-    ConsJ,
-    ConsPStop,
-    ConsTStop,
-    ConsKStop,
-    ConsQStop,
-    ConsCStop,
-    ConsCHacekStop,
-    ConsPH,
-    ConsTH,
-    ConsKH,
-    ConsQH,
-    ConsCH,
-    ConsCHacekH,
-    ConsF,
-    ConsTCedilla,
-    ConsX,
-    ConsXh,
-    ConsS,
-    ConsSHacek,
-    ConsV,
-    ConsDh,
-    ConsH,
-    ConsRHacek,
-    ConsZ,
-    ConsZHacek,
-    ConsW,
-    ConsL,
-    ConsY,
-    ConsLCedilla,
-    ConsR,
-    ConsCCedilla,
-    ConsM,
-    ConsN,
-    ConsNHacek,
-    ConsTLCedilla,
+    P,
+    T,
+    K,
+    Q,
+    C,
+    CHacek,
+    B,
+    D,
+    G,
+    Stop,
+    ZDot,
+    J,
+    PStop,
+    TStop,
+    KStop,
+    QStop,
+    CStop,
+    CHacekStop,
+    PH,
+    TH,
+    KH,
+    QH,
+    CH,
+    CHacekH,
+    F,
+    TCedilla,
+    X,
+    Xh,
+    S,
+    SHacek,
+    V,
+    Dh,
+    H,
+    RHacek,
+    Z,
+    ZHacek,
+    W,
+    L,
+    Y,
+    LCedilla,
+    R,
+    CCedilla,
+    M,
+    N,
+    NHacek,
+    TLCedilla,
 ]

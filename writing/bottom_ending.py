@@ -6,7 +6,7 @@ class BottomEnding(Ending):
         return 0
 
 
-class BottomNormal(BottomEnding):
+class Normal(BottomEnding):
     def angle(self):
         if self.character.bottom_straight():
             return 45
@@ -14,14 +14,14 @@ class BottomNormal(BottomEnding):
             return 0
 
 
-class BottomLong(BottomEnding):
+class Long(BottomEnding):
     # Consonant Prefix L
     def offset_y(self, pen):
         return UNDER - BOTTOM
-    angle = BottomNormal.angle
+    angle = Normal.angle
 
 
-class BottomDiagonalDownRightOnRight(BottomEnding):
+class DiagonalDownRightOnRight(BottomEnding):
     # Consonant Prefix M
     def angle(self):
         return 45
@@ -39,7 +39,7 @@ class BottomDiagonalDownRightOnRight(BottomEnding):
         pen.stroke_to_y(BOTTOM, end_angle=0)
 
 
-class BottomDownOnRight(BottomEnding):
+class DownOnRight(BottomEnding):
     # Consonant Prefix R
     def angle(self):
         return 45
@@ -54,7 +54,7 @@ class BottomDownOnRight(BottomEnding):
         pen.stroke_forward(2, start_angle=45, end_angle=45)
 
 
-class BottomRightOnRight(BottomEnding):
+class RightOnRight(BottomEnding):
     # Consonant Prefix L Cedilla
     def angle(self):
         return 45
@@ -73,7 +73,7 @@ class BottomRightOnRight(BottomEnding):
         pen.stroke_forward(2, start_angle=45, end_angle=45)
 
 
-class BottomDiagonalDownLeftOnRight(BottomEnding):
+class DiagonalDownLeftOnRight(BottomEnding):
     # Consonant Prefix N
     def angle(self):
         return 0
@@ -88,7 +88,7 @@ class BottomDiagonalDownLeftOnRight(BottomEnding):
         pen.stroke_forward(2, start_angle=0, end_angle=0)
 
 
-class BottomBend(BottomEnding):
+class Bend(BottomEnding):
     # Consonant Prefix S
     def offset_y(self, pen):
         if self.character.bottom_straight():
@@ -105,7 +105,7 @@ class BottomBend(BottomEnding):
             pen.stroke_forward(2, end_angle=45)
 
 
-class BottomFold(BottomEnding):
+class Fold(BottomEnding):
     # Consonant Prefix S hacek
     # Consonant Prefix Z hacek
     def angle(self):
@@ -137,9 +137,9 @@ class BottomFold(BottomEnding):
             pen.stroke_forward(2, start_angle=45, end_angle=45)
 
 
-class BottomBarb(BottomEnding):
+class Barb(BottomEnding):
     # Consonant Prefix N hacek
-    angle = BottomNormal.angle
+    angle = Normal.angle
 
     def offset_y(self, pen):
         return +WIDTH / 4
@@ -152,9 +152,10 @@ class BottomBarb(BottomEnding):
         elif self.character.bottom_slanted():
             pen.turn_to(180)
             pen.stroke_forward(WIDTH * 1.5, end_angle=25)
+        pen.set_width(WIDTH)
 
 
-class BottomDiagonalUpRight(BottomEnding):
+class DiagonalUpRight(BottomEnding):
     # Consonant Prefix Z
     def angle(self):
         if self.character.bottom_straight():
@@ -185,7 +186,7 @@ class BottomDiagonalUpRight(BottomEnding):
             pen.stroke_forward(2, start_angle=90, end_angle=90)
 
 
-class BottomAcute(BottomEnding):
+class Acute(BottomEnding):
     # Consonant Prefix R Hacek
     def offset_y(self, pen):
         if self.character.bottom_straight():
@@ -196,22 +197,66 @@ class BottomAcute(BottomEnding):
     def draw(self, pen):
         if self.character.bottom_straight():
             pen.turn_to(30)
-            pen.stroke_forward(2, end_angle=90)
+            pen.stroke_forward(2.5, end_angle=90)
         elif self.character.bottom_slanted():
             pen.turn_to(180)
-            pen.stroke_forward(2.5, end_angle=-45)
+            pen.stroke_forward(3, end_angle=-45)
+
+
+class RightOnBottom(BottomEnding):
+    # Consonant Prefix L Cedilla
+    def angle(self):
+        return 45
+
+    def offset_y(self, pen):
+        return +WIDTH
+
+    def draw(self, pen):
+        pen.stroke_to_y(
+            BOTTOM - pen.last_slant_width() / slant45 / 2,
+            end_angle=45,
+        )
+        pen.turn_to(45)
+        pen.move_to_y(BOTTOM + WIDTH / 2)
+        pen.turn_to(0)
+        pen.stroke_forward(2, start_angle=45, end_angle=45)
+
+
+class BottomAll(BottomEnding):
+    """
+    A debug ending showing every one of the endings superimposed.
+    """
+    def angle(self):
+        return None
+
+    def offset_y(self, pen):
+        return 0
+
+    def draw(self, pen):
+        start_position = pen.position
+        start_heading = pen.heading
+        for bottom_ending_class in bottom_endings:
+            if bottom_ending_class == BottomAll:
+                continue
+            bottom_ending = bottom_ending_class(self.character)
+            pen.move_to(start_position)
+            pen.turn_to(start_heading)
+            pen.move_to_y(3)
+            pen.stroke_to_y(bottom_ending.offset_y(pen), end_angle=bottom_ending.angle())
+            bottom_ending.draw(pen)
 
 
 bottom_endings = [
-    BottomNormal,
-    BottomLong,
-    BottomDiagonalDownRightOnRight,
-    BottomDownOnRight,
-    BottomRightOnRight,
-    BottomDiagonalDownLeftOnRight,
-    BottomBend,
-    BottomFold,
-    BottomBarb,
-    BottomDiagonalUpRight,
-    BottomAcute,
+    Normal,
+    BottomAll, #DEBUG
+    Long,
+    DiagonalDownRightOnRight,
+    DownOnRight,
+    RightOnRight,
+    DiagonalDownLeftOnRight,
+    Bend,
+    Fold,
+    Barb,
+    DiagonalUpRight,
+    Acute,
 ]

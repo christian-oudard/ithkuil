@@ -1,4 +1,4 @@
-from common import Ending
+from common import Ending, WIDTH, TOP, slant45, slant75
 
 
 class SideEnding(Ending):
@@ -6,7 +6,7 @@ class SideEnding(Ending):
         return 0
 
 
-class SideNormal(SideEnding):
+class Normal(SideEnding):
     # Unframed Relation, Pattern 1, Stem 1
     def angle(self):
         if self.character.side_flipped:
@@ -18,7 +18,7 @@ class SideNormal(SideEnding):
         return 0
 
 
-class SideRightOnBottom(SideEnding):
+class RightOnBottom(SideEnding):
     # Unframed Relation, Pattern 1, Stem 2
     def angle(self):
         return 45
@@ -33,7 +33,7 @@ class SideRightOnBottom(SideEnding):
         pen.stroke_forward(2, start_angle=45, end_angle=45)
 
 
-class SideDownOnBottom(SideEnding):
+class DownOnBottom(SideEnding):
     # Unframed Relation, Pattern 1, Stem 3
     def angle(self):
         return 45
@@ -48,7 +48,7 @@ class SideDownOnBottom(SideEnding):
         pen.stroke_forward(2, start_angle=45, end_angle=45)
 
 
-class SideCurveDownOnBottom(SideEnding):
+class CurveDownOnBottom(SideEnding):
     # Unframed Relation, Pattern 2, Stem 1
     def angle(self):
         return 45
@@ -67,7 +67,7 @@ class SideCurveDownOnBottom(SideEnding):
         pen.set_width(WIDTH)
 
 
-class SideCurveUpOnBottom(SideEnding):
+class CurveUpOnBottom(SideEnding):
     # Unframed Relation, Pattern 2, Stem 2
     def angle(self):
         return 45
@@ -86,7 +86,7 @@ class SideCurveUpOnBottom(SideEnding):
         pen.set_width(WIDTH)
 
 
-class SideDiagonalDownRightOnBottom(SideEnding):
+class DiagonalDownRightOnBottom(SideEnding):
     # Unframed Relation, Pattern 2, Stem 3
     def angle(self):
         return 45
@@ -101,7 +101,7 @@ class SideDiagonalDownRightOnBottom(SideEnding):
         pen.stroke_forward(2, start_angle=45, end_angle=90)
 
 
-class SideFoldDownCurveUp(SideEnding):
+class FoldDownCurveUp(SideEnding):
     # Unframed Relation, Pattern 3, Stem 1
     def angle(self):
         return -45
@@ -120,7 +120,7 @@ class SideFoldDownCurveUp(SideEnding):
         pen.set_width(WIDTH)
 
 
-class SideFoldDownCurveDown(SideEnding):
+class FoldDownCurveDown(SideEnding):
     # Unframed Relation, Pattern 3, Stem 2
     def angle(self):
         return -45
@@ -139,7 +139,7 @@ class SideFoldDownCurveDown(SideEnding):
         pen.set_width(WIDTH)
 
 
-class SideDiagonalDownLeft(SideEnding):
+class DiagonalDownLeft(SideEnding):
     # Unframed Relation, Pattern 3, Stem 3
     def angle(self):
         return -45
@@ -154,7 +154,7 @@ class SideDiagonalDownLeft(SideEnding):
         pen.stroke_forward(2, start_angle=-45, end_angle=90)
 
 
-class SideDownOnRight(SideEnding):
+class DownOnRight(SideEnding):
     # Framed Relation, Pattern 1, Stem 1
     def angle(self):
         return 45
@@ -169,7 +169,7 @@ class SideDownOnRight(SideEnding):
         pen.stroke_forward(2.5, start_angle=45, end_angle=45)
 
 
-class SideDiagonalDownRightOnTop(SideEnding):
+class DiagonalDownRightOnTop(SideEnding):
     # Framed Relation, Pattern 1, Stem 2
     def angle(self):
         return 45
@@ -184,7 +184,7 @@ class SideDiagonalDownRightOnTop(SideEnding):
         pen.stroke_to_y(TOP - WIDTH, start_angle=45, end_angle=0)
 
 
-class SideFoldUp(SideEnding):
+class FoldUp(SideEnding):
     # Framed Relation, Pattern 1, Stem 3
     def angle(self):
         return 45
@@ -199,7 +199,7 @@ class SideFoldUp(SideEnding):
         pen.stroke_forward(2, start_angle=45, end_angle=45)
 
 
-class SideUpOnRight(SideEnding):
+class UpOnRight(SideEnding):
     # Framed Relation, Pattern 2, Stem 1
     def angle(self):
         return -45
@@ -214,7 +214,7 @@ class SideUpOnRight(SideEnding):
         pen.stroke_forward(2.5, start_angle=-45, end_angle=-45)
 
 
-class SideDiagonalUpRightOnTop(SideEnding):
+class DiagonalUpRightOnTop(SideEnding):
     # Framed Relation, Pattern 2, Stem 2
     def angle(self):
         return -45
@@ -229,7 +229,7 @@ class SideDiagonalUpRightOnTop(SideEnding):
         pen.stroke_to_y(TOP, start_angle=-45, end_angle=0)
 
 
-class SideFoldDown(SideEnding):
+class FoldDown(SideEnding):
     # Framed Relation, Pattern 2, Stem 3
     def angle(self):
         return -45
@@ -244,7 +244,7 @@ class SideFoldDown(SideEnding):
         pen.stroke_forward(2, start_angle=-45, end_angle=-45)
 
 
-class SideFoldUpCurveDown(SideEnding):
+class FoldUpCurveDown(SideEnding):
     # Framed Relation, Pattern 3, Stem 1
     def angle(self):
         return 45
@@ -263,7 +263,7 @@ class SideFoldUpCurveDown(SideEnding):
         pen.set_width(WIDTH)
 
 
-class SideFoldUpCurveUp(SideEnding):
+class FoldUpCurveUp(SideEnding):
     # Framed Relation, Pattern 3, Stem 2
     def angle(self):
         return 45
@@ -282,7 +282,7 @@ class SideFoldUpCurveUp(SideEnding):
         pen.set_width(WIDTH)
 
 
-class SideDiagonalUpLeft(SideEnding):
+class DiagonalUpLeft(SideEnding):
     # Framed Relation, Pattern 3, Stem 3
     def angle(self):
         return 45
@@ -319,23 +319,23 @@ class SideAll(SideEnding):
 
 
 side_endings = [
-    SideNormal,
+    Normal,
     SideAll, # DEBUG
-    SideRightOnBottom,
-    SideDownOnBottom,
-    SideCurveDownOnBottom,
-    SideCurveUpOnBottom,
-    SideDiagonalDownRightOnBottom,
-    SideFoldDownCurveUp,
-    SideFoldDownCurveDown,
-    SideDiagonalDownLeft,
-    SideDownOnRight,
-    SideDiagonalDownRightOnTop,
-    SideFoldUp,
-    SideUpOnRight,
-    SideDiagonalUpRightOnTop,
-    SideFoldDown,
-    SideFoldUpCurveDown,
-    SideFoldUpCurveUp,
-    SideDiagonalUpLeft,
+    RightOnBottom,
+    DownOnBottom,
+    CurveDownOnBottom,
+    CurveUpOnBottom,
+    DiagonalDownRightOnBottom,
+    FoldDownCurveUp,
+    FoldDownCurveDown,
+    DiagonalDownLeft,
+    DownOnRight,
+    DiagonalDownRightOnTop,
+    FoldUp,
+    UpOnRight,
+    DiagonalUpRightOnTop,
+    FoldDown,
+    FoldUpCurveDown,
+    FoldUpCurveUp,
+    DiagonalUpLeft,
 ]

@@ -2,7 +2,7 @@ import traceback
 
 from canoepaddle import Pen
 
-from common import UNDER, BOTTOM, MIDDLE, TOP, OVER
+from common import WIDTH, UNDER, BOTTOM, MIDDLE, TOP, OVER
 from consonant import consonants
 from bottom_ending import bottom_endings
 from side_ending import side_endings
@@ -48,23 +48,14 @@ def draw_letters(letters):
 
     return ''.join(character_path), ''.join(template_path)
 
-#DEBUG redefinition of parts lists.
-from consonant import *
-consonants = [
-    ConsT,
-    ConsK,
-    ConsQ,
-    ConsCHacek,
-    ConsD,
-    ConsG,
-    ConsJ,
-    ConsRHacek,
-    ConsL,
-    ConsLCedilla,
-]
-from side_ending import *
-side_endings = [SideNormal]
-#bottom_endings = [BottomNormal]
+#DEBUG redefinition of parts lists for testing.
+import consonant as cons
+consonants = [cons.T, cons.K, cons.Q, cons.CHacek, cons.D, cons.G, cons.J, cons.RHacek, cons.L, cons.LCedilla]
+import side_ending
+side_endings = [side_ending.Normal]
+import bottom_ending
+#bottom_endings = [bottom_ending.Normal]
+#bottom_endings = [bottom_ending.BottomAll]
 
 if __name__ == '__main__':
     letters = []
@@ -81,8 +72,6 @@ if __name__ == '__main__':
             add_letter(consonant_class, side_ending_class, bottom_endings[0])
         for bottom_ending_class in bottom_endings:
             add_letter(consonant_class, side_endings[0], bottom_ending_class)
-
-    #letters = [ConsP(SideCurveDownOnBottom, BottomNormal)]
 
     character_path, template_path = draw_letters(letters)
 
