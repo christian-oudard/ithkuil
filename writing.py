@@ -15,6 +15,7 @@ UNDER = -2
 slant45 = 1 / math.sin(math.radians(45))
 slant60 = 1 / math.sin(math.radians(60))
 slant75 = 1 / math.sin(math.radians(75))
+bevel_distance = WIDTH * math.tan(math.radians(22.5)) + 0.1
 
 
 def flip_ending_horizontal(cls):
@@ -288,16 +289,57 @@ class ConsKStop(ConsonantCharacter):
         pen.turn_to(-45)
         pen.move_forward(WIDTH * slant45)
         pen.turn_to(180)
-
-        d = WIDTH * math.tan(math.radians(22.5)) + 0.1
-        pen.stroke_forward(WIDTH / 2 + d / 2, start_angle=-45)
+        pen.stroke_forward(WIDTH / 2 + bevel_distance / 2, start_angle=-45)
         pen.turn_left(45)
-        pen.stroke_forward(d)
-
+        pen.stroke_forward(bevel_distance)
         pen.turn_to(-90)
         pen.stroke_to_y(
             BOTTOM + self.bottom_ending.offset_y(pen),
             start_angle=-45,
+            end_angle=self.bottom_ending.angle(),
+        )
+
+
+class ConsQStop(ConsonantCharacter):
+    bottom_type = 'slanted'
+    bottom_orientation = 'right'
+    side_flipped = False
+    def draw(self, pen):
+        pen.turn_to(180)
+        pen.stroke_forward(
+            5 + self.side_ending.offset_x(),
+            start_angle=self.side_ending.angle(),
+        )
+        pen.turn_to(-60)
+        pen.stroke_to_y(MIDDLE, end_angle=0)
+        pen.turn_to(180)
+        pen.move_forward(WIDTH * slant60)
+        pen.turn_to(-60)
+        pen.stroke_to_y(
+            BOTTOM + self.bottom_ending.offset_y(pen),
+            start_angle=0,
+            end_angle=self.bottom_ending.angle(),
+        )
+
+
+class ConsCStop(ConsonantCharacter):
+    bottom_type = 'slanted'
+    bottom_orientation = 'right'
+    side_flipped = False
+    def draw(self, pen):
+        pen.turn_to(180)
+        pen.stroke_forward(
+            5 + self.side_ending.offset_x(),
+            start_angle=self.side_ending.angle(),
+        )
+        pen.turn_to(-90)
+        pen.stroke_to_y(MIDDLE + WIDTH / 2, end_angle=45)
+        pen.turn_to(45)
+        pen.move_forward(WIDTH * slant45 / 2 + WIDTH * slant75 / 2)
+        pen.turn_to(-60)
+        pen.stroke_to_y(
+            BOTTOM + self.bottom_ending.offset_y(pen),
+            start_angle=45,
             end_angle=self.bottom_ending.angle(),
         )
 
@@ -311,6 +353,8 @@ ConsStop = flip_consonant_horizontal(ConsH)
 ConsPh = flip_consonant_horizontal(ConsPStop)
 ConsTh = flip_consonant_horizontal(ConsTStop)
 ConsKh = flip_consonant_horizontal(ConsKStop)
+ConsQh = flip_consonant_horizontal(ConsQStop)
+ConsCh = flip_consonant_horizontal(ConsCStop)
 
 
 class Ending:
@@ -746,10 +790,14 @@ consonants = [
     ConsPStop,
     ConsTStop,
     ConsKStop,
+    ConsQStop,
+    ConsCStop,
 
     ConsPh,
     ConsTh,
     ConsKh,
+    ConsQh,
+    ConsCh,
 
     ConsH,
 ]
