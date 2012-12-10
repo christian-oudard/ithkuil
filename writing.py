@@ -294,7 +294,6 @@ class ConsKStop(ConsonantCharacter):
         pen.turn_to(-90)
         pen.stroke_to_y(
             BOTTOM + self.bottom_ending.offset_y(pen),
-            start_angle=-45,
             end_angle=self.bottom_ending.angle(),
         )
 
@@ -434,6 +433,31 @@ class ConsX(ConsonantCharacter):
         )
 
 
+class ConsS(ConsonantCharacter):
+    bottom_type = 'straight'
+    bottom_orientation = 'left'
+    side_flipped = False
+    def draw(self, pen):
+        pen.turn_to(180)
+        pen.stroke_forward(
+            5 + self.side_ending.offset_x(),
+            start_angle=self.side_ending.angle(),
+        )
+        pen.turn_to(-90)
+        pen.stroke_to_y(MIDDLE - WIDTH / 2, end_angle=45)
+        pen.turn_to(45)
+        pen.move_forward(WIDTH * slant45)
+        pen.turn_to(0)
+        pen.stroke_forward(WIDTH / 2 + 1 + bevel_distance / 2, start_angle=45)
+        pen.turn_right(45)
+        pen.stroke_forward(bevel_distance)
+        pen.turn_to(-90)
+        pen.stroke_to_y(
+            BOTTOM + self.bottom_ending.offset_y(pen),
+            end_angle=self.bottom_ending.angle(),
+        )
+
+
 class ConsSHacek(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
@@ -462,6 +486,7 @@ class ConsSHacek(ConsonantCharacter):
 ConsB = flip_consonant_horizontal(ConsP)
 ConsD = flip_consonant_horizontal(ConsT)
 ConsG = flip_consonant_horizontal(ConsK)
+ConsRHacek = flip_consonant_horizontal(ConsQ)
 ConsZDot = flip_consonant_horizontal(ConsC)
 ConsJ = flip_consonant_horizontal(ConsCHacek)
 ConsStop = flip_consonant_horizontal(ConsH)
@@ -471,11 +496,11 @@ ConsKH = flip_consonant_horizontal(ConsKStop)
 ConsQH = flip_consonant_horizontal(ConsQStop)
 ConsCH = flip_consonant_horizontal(ConsCStop)
 ConsCHacekH = flip_consonant_horizontal(ConsCHacekStop)
-ConsZHacek = flip_consonant_horizontal(ConsSHacek)
 ConsV = flip_consonant_horizontal(ConsF)
 ConsDh = flip_consonant_horizontal(ConsTCedilla)
 ConsXh = flip_consonant_horizontal(ConsX)
-
+ConsZ = flip_consonant_horizontal(ConsS)
+ConsZHacek = flip_consonant_horizontal(ConsSHacek)
 
 class Ending:
     def __init__(self, character):
@@ -909,13 +934,13 @@ consonants = [
 #    ConsJ,
 #    ConsPStop,
 #    ConsTStop,
-#    ConsKStop,
+    ConsKStop,
 #    ConsQStop,
 #    ConsCStop,
 #    ConsCHacekStop,
 #    ConsPH,
 #    ConsTH,
-#    ConsKH,
+    ConsKH,
 #    ConsQH,
 #    ConsCH,
 #    ConsCHacekH,
@@ -923,14 +948,13 @@ consonants = [
     ConsTCedilla,
     ConsX,
     ConsXh,
-
+    ConsS,
     ConsSHacek,
-
     ConsV,
     ConsDh,
-
     ConsH,
-
+    ConsRHacek,
+    ConsZ,
     ConsZHacek,
 ]
 side_endings = [
@@ -948,6 +972,7 @@ side_endings = [
     SideFoldCurveUpOnBottom,
     SideAll,
 ]
+#side_endings = [SideNormal]
 bottom_endings = [
     BottomNormal,
     BottomLong,
