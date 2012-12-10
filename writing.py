@@ -368,6 +368,72 @@ class ConsCHacekStop(ConsonantCharacter):
         )
 
 
+class ConsF(ConsonantCharacter):
+    bottom_type = 'straight'
+    bottom_orientation = 'left'
+    side_flipped = True
+    def draw(self, pen):
+        pen.turn_to(180)
+        pen.stroke_forward(
+            4.5 + self.side_ending.offset_x(),
+            start_angle=self.side_ending.angle(),
+        )
+        pen.turn_to(-45)
+        pen.stroke_to_y(TOP - 2 * WIDTH, end_angle=0)
+        pen.turn_to(180)
+        pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
+        pen.turn_to(-90)
+        pen.stroke_to_y(
+            BOTTOM + self.bottom_ending.offset_y(pen),
+            start_angle=0,
+            end_angle=self.bottom_ending.angle(),
+        )
+
+
+class ConsTCedilla(ConsonantCharacter):
+    bottom_type = 'straight'
+    bottom_orientation = 'left'
+    side_flipped = False
+    def draw(self, pen):
+        pen.turn_to(180)
+        pen.stroke_forward(
+            5 + self.side_ending.offset_x(),
+            start_angle=self.side_ending.angle(),
+        )
+        pen.turn_to(-90)
+        pen.stroke_to_y(MIDDLE - WIDTH / 2, end_angle=45)
+        pen.turn_to(45)
+        pen.move_forward(WIDTH * slant45)
+        pen.turn_to(-90)
+        pen.stroke_to_y(
+            BOTTOM + self.bottom_ending.offset_y(pen),
+            start_angle=45,
+            end_angle=self.bottom_ending.angle(),
+        )
+
+
+class ConsX(ConsonantCharacter):
+    bottom_type = 'slanted'
+    bottom_orientation = 'left'
+    side_flipped = False
+    def draw(self, pen):
+        pen.turn_to(180)
+        pen.stroke_forward(
+            5.5 + self.side_ending.offset_x(),
+            start_angle=self.side_ending.angle(),
+        )
+        pen.turn_to(-60)
+        pen.stroke_to_y(MIDDLE, end_angle=0)
+        pen.turn_to(0)
+        pen.move_forward(WIDTH * slant60)
+        pen.turn_to(-120)
+        pen.stroke_to_y(
+            BOTTOM + self.bottom_ending.offset_y(pen),
+            start_angle=0,
+            end_angle=self.bottom_ending.angle(),
+        )
+
+
 class ConsSHacek(ConsonantCharacter):
     bottom_type = 'straight'
     bottom_orientation = 'left'
@@ -406,6 +472,9 @@ ConsQH = flip_consonant_horizontal(ConsQStop)
 ConsCH = flip_consonant_horizontal(ConsCStop)
 ConsCHacekH = flip_consonant_horizontal(ConsCHacekStop)
 ConsZHacek = flip_consonant_horizontal(ConsSHacek)
+ConsV = flip_consonant_horizontal(ConsF)
+ConsDh = flip_consonant_horizontal(ConsTCedilla)
+ConsXh = flip_consonant_horizontal(ConsX)
 
 
 class Ending:
@@ -474,7 +543,7 @@ class BottomDownOnRight(BottomEnding):
 
 
 class BottomRightOnRight(BottomEnding):
-    # Consonant Prefix L cedilla
+    # Consonant Prefix L Cedilla
     def angle(self):
         return 45
 
@@ -826,33 +895,39 @@ def draw_letters(letters):
 
 # Lists of character parts.
 consonants = [
-    ConsP,
-    ConsT,
-    ConsK,
-    ConsQ,
-    ConsC,
-    ConsCHacek,
-    ConsB,
-    ConsD,
-    ConsG,
-    ConsStop,
-    ConsZDot,
-    ConsJ,
-    ConsPStop,
-    ConsTStop,
-    ConsKStop,
-    ConsQStop,
-    ConsCStop,
-    ConsCHacekStop,
-
-    ConsPH,
-    ConsTH,
-    ConsKH,
-    ConsQH,
-    ConsCH,
-    ConsCHacekH,
+#    ConsP,
+#    ConsT,
+#    ConsK,
+#    ConsQ,
+#    ConsC,
+#    ConsCHacek,
+#    ConsB,
+#    ConsD,
+#    ConsG,
+#    ConsStop,
+#    ConsZDot,
+#    ConsJ,
+#    ConsPStop,
+#    ConsTStop,
+#    ConsKStop,
+#    ConsQStop,
+#    ConsCStop,
+#    ConsCHacekStop,
+#    ConsPH,
+#    ConsTH,
+#    ConsKH,
+#    ConsQH,
+#    ConsCH,
+#    ConsCHacekH,
+    ConsF,
+    ConsTCedilla,
+    ConsX,
+    ConsXh,
 
     ConsSHacek,
+
+    ConsV,
+    ConsDh,
 
     ConsH,
 
