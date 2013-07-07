@@ -2,26 +2,27 @@ import traceback
 
 from canoepaddle import Pen
 
-import common
-from common import WIDTH, UNDER, BOTTOM, MIDDLE, TOP, OVER
-from consonant import consonants
-from bottom_ending import bottom_endings
-from side_ending import side_endings
+from .common import WIDTH, UNDER, BOTTOM, MIDDLE, TOP, OVER
+from .consonant import consonants
+from .bottom_ending import bottom_endings
+from .side_ending import side_endings
+
 
 def draw_template_path(x, y):
     pen = Pen(offset=(x, y))
     pen.turn_to(0)
     pen.move_to((-1, UNDER))
-    pen.stroke_forward(2)
+    pen.line_forward(2)
     pen.move_to((-4, BOTTOM))
-    pen.stroke_forward(8)
+    pen.line_forward(8)
     pen.move_to((-4, MIDDLE))
-    pen.stroke_forward(8)
+    pen.line_forward(8)
     pen.move_to((-4, TOP))
-    pen.stroke_forward(8)
+    pen.line_forward(8)
     pen.move_to((-1, OVER))
-    pen.stroke_forward(2)
+    pen.line_forward(2)
     return pen.paper.to_svg_path(precision=5)
+
 
 def draw_letters(letters):
     width = 10
@@ -50,12 +51,12 @@ def draw_letters(letters):
     return ''.join(character_path), ''.join(template_path)
 
 #DEBUG redefinition of parts lists for testing.
-import consonant as cons
+import writing.consonant as cons
 consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.D, cons.T, cons.K, cons.RHacek, cons.L, cons.J]
-import side_ending
+import writing.side_ending as side_ending
 side_endings = [side_ending.Normal]
 #side_endings = [side_ending.SideAll]
-import bottom_ending
+import writing.bottom_ending as bottom_ending
 #bottom_endings = [bottom_ending.Normal]
 #bottom_endings = [bottom_ending.BottomAll]
 

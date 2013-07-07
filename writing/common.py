@@ -1,5 +1,5 @@
 import math
-from canoepaddle import flip_angle_x
+from canoepaddle.pen import flip_angle_x
 
 # Constants.
 WIDTH = 1

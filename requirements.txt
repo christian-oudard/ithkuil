@@ -1,1 +1,3 @@
 -e git+git@github.com:christian-oudard/canoepaddle.git#egg=canoepaddle
+-e git+git@github.com:christian-oudard/vec.git#egg=vec
+pyquery

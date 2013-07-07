@@ -1,4 +1,4 @@
-from common import Ending, WIDTH, TOP, slant45, slant75
+from .common import Ending, WIDTH, TOP, slant45, slant75
 
 
 class SideEnding(Ending):

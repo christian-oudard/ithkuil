@@ -1,4 +1,4 @@
-from common import Ending, WIDTH, BOTTOM, UNDER, slant60, slant45
+from .common import Ending, WIDTH, BOTTOM, UNDER, slant60, slant45
 
 # A small amount added to some offsets to prevent illegal line crossings due to
 # round off error.
