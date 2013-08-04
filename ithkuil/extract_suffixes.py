@@ -1,7 +1,7 @@
 import re
 import unicodedata
 from pyquery import PyQuery as pq
-from phonology import consonants
+from .phonology import consonants
 
 
 SUPER_H = unicodedata.lookup('MODIFIER LETTER SMALL H')

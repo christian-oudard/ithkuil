@@ -240,7 +240,7 @@ def make_abbreviation_table():
 abbreviation_table = make_abbreviation_table()
 
 def verify_abbreviations():
-    from grammar import categories
+    from .grammar import categories
     all_abbreviations = [
         a for c in categories for a in c
     ]
@@ -312,7 +312,7 @@ personal reference:  Abstract referent
 ACC
 Accordative modality
 ACQ
-Suffix: Acquisition 
+Suffix: Acquisition
 ADV
 Advocative modality
 AFM

@@ -1,6 +1,6 @@
 import itertools
 import re
-from phonology import (
+from .phonology import (
     convert_typed,
     consonants,
     vowels,

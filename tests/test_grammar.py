@@ -1,5 +1,5 @@
 from nose.tools import assert_equal
-from grammar import deconstruct_formative
+from ithkuil.grammar import deconstruct_formative
 
 cases = [
     (

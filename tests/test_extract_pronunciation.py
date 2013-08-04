@@ -4,9 +4,11 @@ import unittest
 from unittest import TestCase
 
 from pyquery import PyQuery as pq
-from extract_pronunciation import extract, clean, unwrap
+from ithkuil.extract_pronunciation import extract, unwrap
+
 
 class ExtractTest(TestCase):
+
     test_cases = [
         (
             '<strong><img src="images/5-10-33c.jpg" width="133" eight="46" /><br />\nAr-ryigrawilei&#355;rar&nbsp;  eglul&ocirc;n. </strong><span class="style25">&rarr; </span><strong>&Ccedil;tar-rya&nbsp; <strong>ei<strong><strong>r</strong></strong>&#355;</strong> <strong>&nbsp;</strong>igralar&nbsp;  eglul&ocirc;n.</strong>',

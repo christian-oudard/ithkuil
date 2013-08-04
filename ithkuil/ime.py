@@ -1,11 +1,11 @@
-from phonology import (
+from .phonology import (
     consonants, typing_consonants,
     vowels, typing_vowels,
     tone_names, tones, typing_tones,
     convert_typed,
 )
-from grammar import deconstruct_formative
-from abbreviations import abbreviation_table
+from .grammar import deconstruct_formative
+from .abbreviations import abbreviation_table
 
 def format_help(width=80):
     output = []
