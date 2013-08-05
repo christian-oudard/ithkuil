@@ -33,14 +33,14 @@ class DiagonalDownRightOnRight(BottomEnding):
         return +WIDTH + smidgen
 
     def draw(self, pen):
-        pen.stroke_to_y(
+        pen.line_to_y(
             BOTTOM + pen.last_slant_width() / slant45 / 2,
             end_angle=45,
         )
         pen.turn_to(45)
         pen.move_forward(pen.last_slant_width() / 2 + WIDTH / 2)
         pen.turn_to(-45)
-        pen.stroke_to_y(BOTTOM, end_angle=0)
+        pen.line_to_y(BOTTOM, end_angle=0)
 
 
 class DownOnRight(BottomEnding):
@@ -55,7 +55,7 @@ class DownOnRight(BottomEnding):
         pen.turn_to(45)
         pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
         pen.turn_to(-90)
-        pen.stroke_forward(2, start_angle=45, end_angle=45)
+        pen.line_forward(2, start_angle=45, end_angle=45)
 
 
 class RightOnRight(BottomEnding):
@@ -67,14 +67,14 @@ class RightOnRight(BottomEnding):
         return +WIDTH
 
     def draw(self, pen):
-        pen.stroke_to_y(
+        pen.line_to_y(
             BOTTOM - pen.last_slant_width() / slant45 / 2,
             end_angle=45,
         )
         pen.turn_to(45)
         pen.move_to_y(BOTTOM + WIDTH / 2)
         pen.turn_to(0)
-        pen.stroke_forward(2, start_angle=45, end_angle=45)
+        pen.line_forward(2, start_angle=45, end_angle=45)
 
 
 class DiagonalDownLeftOnRight(BottomEnding):
@@ -89,7 +89,7 @@ class DiagonalDownLeftOnRight(BottomEnding):
         pen.turn_to(0)
         pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
         pen.turn_to(-135)
-        pen.stroke_forward(2, start_angle=0, end_angle=0)
+        pen.line_forward(2, start_angle=0, end_angle=0)
 
 
 class Bend(BottomEnding):
@@ -103,10 +103,10 @@ class Bend(BottomEnding):
     def draw(self, pen):
         if self.character.bottom_straight():
             pen.turn_to(0)
-            pen.stroke_forward(2.5, end_angle=-45)
+            pen.line_forward(2.5, end_angle=-45)
         elif self.character.bottom_slanted():
             pen.turn_to(-90)
-            pen.stroke_forward(2, end_angle=45)
+            pen.line_forward(2, end_angle=45)
 
 
 class Fold(BottomEnding):
@@ -129,16 +129,16 @@ class Fold(BottomEnding):
             pen.turn_to(-45)
             pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
             pen.turn_to(0)
-            pen.stroke_forward(2, start_angle=-45, end_angle=-45)
+            pen.line_forward(2, start_angle=-45, end_angle=-45)
         elif self.character.bottom_slanted():
-            pen.stroke_to_y(
+            pen.line_to_y(
                 BOTTOM + pen.last_slant_width() / slant45 / 2,
                 end_angle=45,
             )
             pen.turn_to(-135)
             pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
             pen.turn_to(180)
-            pen.stroke_forward(2, start_angle=45, end_angle=45)
+            pen.line_forward(2, start_angle=45, end_angle=45)
 
 
 class Barb(BottomEnding):
@@ -149,14 +149,14 @@ class Barb(BottomEnding):
         return +WIDTH / 4
 
     def draw(self, pen):
-        pen.set_width(WIDTH / 2)
+        pen.stroke_mode(WIDTH / 2)
         if self.character.bottom_straight():
             pen.turn_to(45)
-            pen.stroke_forward(WIDTH * 1.5, end_angle=20)
+            pen.line_forward(WIDTH * 1.5, end_angle=20)
         elif self.character.bottom_slanted():
             pen.turn_to(180)
-            pen.stroke_forward(WIDTH * 1.5, end_angle=25)
-        pen.set_width(WIDTH)
+            pen.line_forward(WIDTH * 1.5, end_angle=25)
+        pen.stroke_mode(WIDTH)
 
 
 class DiagonalUpRight(BottomEnding):
@@ -178,16 +178,16 @@ class DiagonalUpRight(BottomEnding):
             pen.turn_to(-45)
             pen.move_forward(pen.last_slant_width() / 2 + WIDTH / 2)
             pen.turn_to(45)
-            pen.stroke_forward(2, start_angle=-45, end_angle=0)
+            pen.line_forward(2, start_angle=-45, end_angle=0)
         elif self.character.bottom_slanted():
-            pen.stroke_to_y(
+            pen.line_to_y(
                 BOTTOM - pen.last_slant_width() / 2,
                 end_angle=90
             )
             pen.turn_to(90)
             pen.move_to_y(WIDTH * slant60 / 2)
             pen.turn_to(30)
-            pen.stroke_forward(2, start_angle=90, end_angle=90)
+            pen.line_forward(2, start_angle=90, end_angle=90)
 
 
 class Acute(BottomEnding):
@@ -201,10 +201,10 @@ class Acute(BottomEnding):
     def draw(self, pen):
         if self.character.bottom_straight():
             pen.turn_to(30)
-            pen.stroke_forward(2.5, end_angle=90)
+            pen.line_forward(2.5, end_angle=90)
         elif self.character.bottom_slanted():
             pen.turn_to(180)
-            pen.stroke_forward(3, end_angle=-45)
+            pen.line_forward(3, end_angle=-45)
 
 
 class RightOnBottom(BottomEnding):
@@ -216,14 +216,14 @@ class RightOnBottom(BottomEnding):
         return +WIDTH + smidgen
 
     def draw(self, pen):
-        pen.stroke_to_y(
+        pen.line_to_y(
             BOTTOM + pen.last_slant_width() / slant45 / 2,
             end_angle=45,
         )
         pen.turn_to(-135)
         pen.move_to_y(BOTTOM - WIDTH / 2)
         pen.turn_to(0)
-        pen.stroke_forward(3, start_angle=45, end_angle=45)
+        pen.line_forward(3, start_angle=45, end_angle=45)
 
 
 class StraightOnLeft(BottomEnding):
@@ -246,13 +246,13 @@ class StraightOnLeft(BottomEnding):
             pen.turn_to(135)
             pen.move_forward(WIDTH * slant45)
             pen.turn_to(-90)
-            pen.stroke_forward(2, start_angle=-45, end_angle=-45)
+            pen.line_forward(2, start_angle=-45, end_angle=-45)
         elif self.character.bottom_slanted():
             original_heading = pen.heading
             pen.turn_to(180)
             pen.move_forward(pen.last_slant_width())
             pen.turn_to(original_heading)
-            pen.stroke_forward(2, start_angle=0, end_angle=0)
+            pen.line_forward(2, start_angle=0, end_angle=0)
 
 
 class BreakRightBendLeft(BottomEnding):
@@ -276,16 +276,16 @@ class BreakRightBendLeft(BottomEnding):
             pen.turn_to(180)
             pen.move_forward(WIDTH / 2 + WIDTH * slant45 / 2)
             pen.turn_to(-45)
-            pen.stroke_forward(2, start_angle=0, end_angle=0)
+            pen.line_forward(2, start_angle=0, end_angle=0)
         elif self.character.bottom_slanted():
-            pen.stroke_to_y(
+            pen.line_to_y(
                 BOTTOM + pen.last_slant_width() / 2,
                 end_angle=90
             )
             pen.turn_to(-90)
             pen.move_to_y(BOTTOM - WIDTH * slant60 / 2)
             pen.turn_to(30)
-            pen.stroke_forward(2, start_angle=90, end_angle=90)
+            pen.line_forward(2, start_angle=90, end_angle=90)
 
 
 class BreakRightBendRight(BottomEnding):
@@ -306,12 +306,12 @@ class BreakRightBendRight(BottomEnding):
             pen.turn_to(135)
             pen.move_forward(WIDTH * slant45)
             pen.turn_to(180)
-            pen.stroke_forward(2, start_angle=-45, end_angle=-45)
+            pen.line_forward(2, start_angle=-45, end_angle=-45)
         elif self.character.bottom_slanted():
             pen.turn_to(180)
             pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
             pen.turn_to(-135)
-            pen.stroke_forward(2, start_angle=0, end_angle=0)
+            pen.line_forward(2, start_angle=0, end_angle=0)
 
 
 class BottomAll(BottomEnding):
@@ -334,7 +334,7 @@ class BottomAll(BottomEnding):
             pen.move_to(start_position)
             pen.turn_to(start_heading)
             pen.move_to_y(3)
-            pen.stroke_to_y(bottom_ending.offset_y(pen), end_angle=bottom_ending.angle())
+            pen.line_to_y(bottom_ending.offset_y(pen), end_angle=bottom_ending.angle())
             bottom_ending.draw(pen)
 
 

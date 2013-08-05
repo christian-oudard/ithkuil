@@ -1,3 +1,10 @@
+# TODO: Typesetting.
+# TODO: Kerning by taking the convex hull of the written letter then finding a
+# spot where they're the right distance apart. This function should be strictly
+# increasing because of the convex hull thing.
+# TODO: Make really nice pronunciation charts for the writing system and give
+# them to John Quijada.
+
 import math
 from canoepaddle.pen import flip_angle_x
 
@@ -15,6 +22,7 @@ slant60 = 1 / math.sin(math.radians(60))
 slant75 = 1 / math.sin(math.radians(75))
 bevel_distance = WIDTH * math.tan(math.radians(22.5)) + 0.1
 
+
 def flip_ending_horizontal(cls):
     # Replace the ending with one that is flipped in the x direction.
     class Flipped(cls):
@@ -28,6 +36,7 @@ def flip_ending_horizontal(cls):
             pen.flip_x()
     return Flipped
 
+
 def flip_consonant_horizontal(cls):
     class Flipped(cls):
         def draw_character(self, pen):
@@ -40,7 +49,6 @@ def flip_consonant_horizontal(cls):
 class Character:
     def draw_character(self, pen):
         self.draw(pen)
-        pen.paper.center_on_x(0)
 
 
 class Ending:
