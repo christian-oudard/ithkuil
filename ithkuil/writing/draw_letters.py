@@ -8,11 +8,11 @@ from ithkuil.writing.typeset import typeset
 import ithkuil.writing.consonant as cons
 #consonants = [cons.T, cons.K]
 import ithkuil.writing.side_ending as side_ending
-side_endings = [side_ending.Normal]
-#side_endings = [side_ending.SideAll]
+#side_endings = [side_ending.Normal]
+side_endings = [side_ending.SideAll]
 import ithkuil.writing.bottom_ending as bottom_ending
-bottom_endings = [bottom_ending.Normal]
-#bottom_endings = [bottom_ending.BottomAll]
+#bottom_endings = [bottom_ending.Normal]
+bottom_endings = [bottom_ending.BottomAll]
 
 if __name__ == '__main__':
     letters = []

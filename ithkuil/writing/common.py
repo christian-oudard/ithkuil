@@ -10,13 +10,14 @@ import math
 from canoepaddle.pen import flip_angle_x
 
 # Constants.
-WIDTH = 1
+WIDTH = 1.0
 
-OVER = 10
-TOP = 8
-MIDDLE = 4
+HALF_HEIGHT = 3.6
 BOTTOM = 0
-UNDER = -2
+MIDDLE = BOTTOM + HALF_HEIGHT
+TOP = MIDDLE + HALF_HEIGHT
+UNDER = BOTTOM - 2.0
+OVER = TOP + 2.0
 
 CHAR_MARGIN = 1
 CHAR_HEIGHT = OVER - UNDER + WIDTH
