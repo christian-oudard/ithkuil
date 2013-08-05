@@ -1,48 +1,66 @@
+# TODO: boustrophedon
+# TODO: half-character indent at right and left to indicate direction?
+
 import traceback
 
 from .common import (
     WIDTH, UNDER, BOTTOM, MIDDLE, TOP, OVER,
+    CHAR_MARGIN, LINE_HEIGHT, PAGE_MARGIN
 )
 from canoepaddle import Pen, Paper
 
 
-def typeset(letters):
-    resolution = 10  # Pixels / unit.
-    char_width = 10
-    char_height = 15
-    page_width = char_width * 7 + 1
-    page_height = 130
-    x, y = x_start, y_start = 10, -14
+def typeset(letters, line_width=None, resolution=10, show_templates=False):
+    """
+    Arrange letters on the page.
 
+    If page width is None, then the line will not ever wrap.
+    """
     paper = Paper()
-    paper.set_pixel_size(resolution * page_width, resolution * page_height)
-    paper.set_view_box(0, 0, page_width, -page_height)
+
+    x = x_start = PAGE_MARGIN
+    y = -PAGE_MARGIN
 
     for letter in letters:
-        # Draw template.
-        pen = Pen()
-        pen.stroke_mode(0.125, '#88f')
-        draw_template_path(pen)
-        pen.paper.translate((x, y))
-        paper.merge(pen.paper)
+        letter_paper = Paper()
+
+        if show_templates:
+            pen = Pen()
+            pen.stroke_mode(0.125, '#88f')
+            draw_template_path(pen)
+            template_paper = pen.paper
 
         # Draw letter.
         pen = Pen()
         try:
             pen.stroke_mode(WIDTH, '#f51700')
             letter.draw_character(pen)
-            pen.outline_mode(WIDTH, 0.2, 'black')
-            letter.draw_character(pen)
+            #pen.outline_mode(WIDTH, 0.2, '#1d0603')
+            #letter.draw_character(pen)
         except Exception:
             traceback.print_exc()
         pen.paper.center_on_x(0)
-        pen.paper.translate((x, y))
-        paper.merge(pen.paper)
+        letter_paper.merge(pen.paper)
 
-        x += char_width
-        if x >= (page_width - char_width):
+        bounds = letter_paper.bounds()
+        letter_paper = template_paper.merge(letter_paper)
+
+        letter_paper.translate((-bounds.left, -OVER))
+        letter_paper.translate((x, y))
+
+        paper.merge(letter_paper)
+
+        x += bounds.width + WIDTH + CHAR_MARGIN
+        if line_width is not None and (x - x_start) > line_width:
             x = x_start
-            y -= char_height
+            y -= LINE_HEIGHT
+
+    page_bounds = paper.bounds()
+    page_width = page_bounds.width + 2 * PAGE_MARGIN
+    page_height = page_bounds.height + 2 * PAGE_MARGIN
+
+    paper.set_pixel_size(resolution * page_width, resolution * page_height)
+    paper.set_view_box(0, 0, page_width, -page_height)
 
     return paper
 
