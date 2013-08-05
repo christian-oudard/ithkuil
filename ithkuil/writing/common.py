@@ -1,3 +1,4 @@
+# TODO: Test suite to try drawing all possible characters.
 # TODO: Typesetting.
 # TODO: Kerning by taking the convex hull of the written letter then finding a
 # spot where they're the right distance apart. This function should be strictly
@@ -16,6 +17,13 @@ TOP = 8
 MIDDLE = 4
 BOTTOM = 0
 UNDER = -2
+
+CHAR_WIDTH = 10
+CHAR_MARGIN = 1
+CHAR_HEIGHT = OVER - UNDER + WIDTH
+LINE_SPACING = 1.25
+LINE_HEIGHT = CHAR_HEIGHT * LINE_SPACING
+
 
 slant45 = 1 / math.sin(math.radians(45))
 slant60 = 1 / math.sin(math.radians(60))
