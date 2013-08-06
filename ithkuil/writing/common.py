@@ -10,7 +10,12 @@ import math
 from canoepaddle.pen import flip_angle_x
 
 # Constants.
+slant45 = 1 / math.sin(math.radians(45))
+slant60 = 1 / math.sin(math.radians(60))
+slant75 = 1 / math.sin(math.radians(75))
+
 WIDTH = 1.0
+HOOK_BASE_WIDTH = 1.25 * WIDTH
 
 HALF_HEIGHT = 3.6
 BOTTOM = 0
@@ -25,10 +30,6 @@ LINE_SPACING = 1.25
 LINE_HEIGHT = CHAR_HEIGHT * LINE_SPACING
 PAGE_MARGIN = 5
 
-
-slant45 = 1 / math.sin(math.radians(45))
-slant60 = 1 / math.sin(math.radians(60))
-slant75 = 1 / math.sin(math.radians(75))
 bevel_distance = WIDTH * math.tan(math.radians(22.5)) + 0.1
 
 

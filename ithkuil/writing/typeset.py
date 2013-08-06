@@ -34,7 +34,8 @@ def typeset(letters, line_width=None, resolution=10, show_templates=False):
         # Draw letter.
         pen = Pen()
         try:
-            pen.set_mode(StrokeOutlineMode(WIDTH, 0.2, '#f51700', '#1d0603'))
+            pen.set_mode(StrokeOutlineMode(WIDTH, 0.2 * WIDTH, '#f51700', '#1d0603'))
+            #pen.stroke_mode(WIDTH, '#f51700')
             letter.draw_character(pen)
         except Exception:
             traceback.print_exc()

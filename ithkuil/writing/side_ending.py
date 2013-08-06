@@ -1,5 +1,4 @@
-from .common import Ending, WIDTH, TOP, slant45, slant75
-
+from .common import Ending, WIDTH, HOOK_BASE_WIDTH, TOP, slant45, slant75 
 
 class SideEnding(Ending):
     def offset_x(self):
@@ -66,7 +65,7 @@ class CurveDownOnBottom(SideEnding):
         a = pen.position
 
         # Mark tip of hook.
-        pen.move_forward(WIDTH * slant45 / 2)
+        pen.move_forward(HOOK_BASE_WIDTH / 2)
         pen.move_relative((2.5 * WIDTH, -1.5 * WIDTH))
         tip = pen.position
 
@@ -80,7 +79,7 @@ class CurveDownOnBottom(SideEnding):
         # Draw the hook.
         pen.move_to(a)
         pen.turn_to(-135)
-        pen.line_forward(WIDTH * slant45)
+        pen.line_forward(HOOK_BASE_WIDTH)
         pen.turn_to(0)
         pen.arc_to(tip)
         pen.turn_to(heading + 180)
