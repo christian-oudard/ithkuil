@@ -8,6 +8,7 @@ from .common import (
     CHAR_MARGIN, LINE_HEIGHT, PAGE_MARGIN
 )
 from canoepaddle import Pen, Paper
+from canoepaddle.mode import StrokeOutlineMode
 
 
 def typeset(letters, line_width=None, resolution=10, show_templates=False):
@@ -33,10 +34,8 @@ def typeset(letters, line_width=None, resolution=10, show_templates=False):
         # Draw letter.
         pen = Pen()
         try:
-            pen.stroke_mode(WIDTH, '#f51700')
+            pen.set_mode(StrokeOutlineMode(WIDTH, 0.2, '#f51700', '#1d0603'))
             letter.draw_character(pen)
-            #pen.outline_mode(WIDTH, 0.2, '#1d0603')
-            #letter.draw_character(pen)
         except Exception:
             traceback.print_exc()
         pen.paper.center_on_x(0)

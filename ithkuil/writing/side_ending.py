@@ -57,14 +57,36 @@ class CurveDownOnBottom(SideEnding):
         return 0
 
     def draw(self, pen):
+        old_mode = pen.mode
+        pen.set_mode(old_mode.outliner_mode())
+
+        # Mark top of hook base.
         pen.turn_to(-135)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(WIDTH * slant45 / 2)
+        a = pen.position
+
+        # Mark tip of hook.
+        pen.move_forward(WIDTH * slant45 / 2)
+        pen.move_relative((2.5 * WIDTH, -1.5 * WIDTH))
+        tip = pen.position
+
+        # Mark the correct heading to leave the hook at.
+        pen.move_to(a)
         pen.turn_to(0)
-        pen.line_forward(1, start_angle=45)
-        pen.turn_right(30)
-        pen.stroke_mode((3 / 4) * WIDTH)
-        pen.line_forward(1.25, end_angle=-60)
-        pen.stroke_mode(WIDTH)
+        pen.arc_to(tip)
+        heading = pen.heading
+        pen.undo()
+
+        # Draw the hook.
+        pen.move_to(a)
+        pen.turn_to(-135)
+        pen.line_forward(WIDTH * slant45)
+        pen.turn_to(0)
+        pen.arc_to(tip)
+        pen.turn_to(heading + 180)
+        pen.arc_to(a)
+
+        pen.set_mode(old_mode)
 
 
 class CurveUpOnBottom(SideEnding):
