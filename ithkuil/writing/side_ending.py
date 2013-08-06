@@ -65,8 +65,7 @@ class CurveDownOnBottom(SideEnding):
         a = pen.position
 
         # Mark tip of hook.
-        pen.move_forward(HOOK_BASE_WIDTH / 2)
-        pen.move_relative((2.5 * WIDTH, -1.5 * WIDTH))
+        pen.move_relative((2 * WIDTH, -2 * WIDTH))
         tip = pen.position
 
         # Mark the correct heading to leave the hook at.
@@ -97,15 +96,36 @@ class CurveUpOnBottom(SideEnding):
         return 0
 
     def draw(self, pen):
-        pen.turn_to(-135)
-        pen.move_forward(WIDTH * slant45 / 2 + WIDTH * slant75 / 2)
-        pen.turn_to(-60)
-        pen.line_forward(1, start_angle=45)
-        pen.turn_left(30)
-        pen.stroke_mode((3 / 4) * WIDTH)
-        pen.line_forward(1.25, end_angle=0)
-        pen.stroke_mode(WIDTH)
+        old_mode = pen.mode
+        pen.set_mode(old_mode.outliner_mode())
 
+        # Mark top of hook base.
+        pen.turn_to(-135)
+        pen.move_forward(WIDTH * slant45 / 2)
+        a = pen.position
+
+        # Mark tip of hook.
+        pen.line_forward(HOOK_BASE_WIDTH)
+        pen.move_relative((3 * WIDTH, 0))
+        tip = pen.position
+
+        # Mark the correct heading to leave the hook at.
+        pen.move_to(a)
+        pen.turn_to(-45)
+        pen.arc_to(tip)
+        heading = pen.heading
+        pen.undo()
+
+        # Draw the hook.
+        pen.move_to(a)
+        pen.turn_to(-135)
+        pen.line_forward(HOOK_BASE_WIDTH)
+        pen.turn_to(-45)
+        pen.arc_to(tip)
+        pen.turn_to(heading + 180)
+        pen.arc_to(a)
+
+        pen.set_mode(old_mode)
 
 class DiagonalDownRightOnBottom(SideEnding):
     # Unframed Relation, Pattern 2, Stem 3
