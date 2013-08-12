@@ -1,5 +1,4 @@
 # TODO: Test suite to try drawing all possible characters.
-# TODO: Typesetting.
 # TODO: Kerning by taking the convex hull of the written letter then finding a
 # spot where they're the right distance apart. This function should be strictly
 # increasing because of the convex hull thing.
@@ -7,7 +6,6 @@
 # them to John Quijada.
 
 import math
-from canoepaddle.pen import flip_angle_x
 
 # Constants.
 slant45 = 1 / math.sin(math.radians(45))
@@ -41,18 +39,26 @@ def flip_ending_horizontal(cls):
             return flip_angle_x(a)
 
         def draw(self, pen):
-            pen.flip_x()
             cls.draw(self, pen)
-            pen.flip_x()
     return Flipped
 
 
 def flip_consonant_horizontal(cls):
+
     class Flipped(cls):
-        def draw_character(self, pen):
-            pen.flip_x()
-            cls.draw_character(self, pen)
-            pen.flip_x()
+
+        def draw_character(self, mode):
+            paper = cls.draw_character(self, mode)
+            paper.mirror_x(0)
+            return paper
+
+        def __str__(self):
+            return 'Flipped(consonant.{})({}, {})'.format(
+                cls.__name__,
+                self.side_ending,
+                self.bottom_ending,
+            )
+
     return Flipped
 
 

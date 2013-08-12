@@ -11,12 +11,13 @@ from .common import (
     flip_consonant_horizontal as flip,
     flip_ending_horizontal,
 )
+from canoepaddle import Pen, Paper
 
 
 class ConsonantCharacter(Character):
-    bottom_type = NotImplemented # 'straight' or 'slanted'
-    bottom_orientation = NotImplemented # 'left' or 'right'
-    side_flipped = NotImplemented # True for 45 angle, False for -45 angle.
+    bottom_type = NotImplemented  # 'straight' or 'slanted'
+    bottom_orientation = NotImplemented  # 'left' or 'right'
+    side_flipped = NotImplemented  # True for 45 angle, False for -45 angle.
 
     def __init__(self, side_ending_class, bottom_ending_class):
         self.side_ending = side_ending_class(self)
@@ -24,19 +25,53 @@ class ConsonantCharacter(Character):
             bottom_ending_class = flip_ending_horizontal(bottom_ending_class)
         self.bottom_ending = bottom_ending_class(self)
 
+    def __str__(self):
+        return 'consonant.{}({}, {})'.format(
+            self.__class__.__name__,
+            self.side_ending,
+            self.bottom_ending,
+        )
+
     def bottom_straight(self):
         return self.bottom_type == 'straight'
 
     def bottom_slanted(self):
         return self.bottom_type == 'slanted'
 
-    def draw_character(self, pen):
-        endpoint = (0, TOP - WIDTH / 2)
-        pen.move_to(endpoint)
-        self.side_ending.draw(pen)
-        pen.move_to(endpoint)
+    def draw_character(self, mode):
+        paper = Paper()
+
+        # When drawing the body of the consonant, subclasses will start
+        # where the side ending is, and end where the bottom ending is.
+        pen = Pen()
+        pen.set_mode(mode)
+        pen.move_to((0, TOP - WIDTH / 2))
+        side_ending_position = pen.position
         self.draw(pen)
+        bottom_ending_position = pen.position
+        bottom_ending_heading = pen.heading
+        paper.merge(pen.paper)
+
+        # Draw the side ending.
+        pen = Pen()
+        pen.set_mode(mode)
+        pen.move_to(side_ending_position)
+        pen.turn_to(0)
+        self.side_ending.draw(pen)
+        paper.merge(pen.paper)
+
+        # Draw the bottom ending.
+        pen = Pen()
+        pen.set_mode(mode)
+        pen.move_to(bottom_ending_position)
+        pen.turn_to(bottom_ending_heading)
         self.bottom_ending.draw(pen)
+        paper.merge(pen.paper)
+
+        #paper.join_paths()
+        #paper.fuse_paths()
+
+        return paper
 
 
 class P(ConsonantCharacter):
@@ -46,19 +81,12 @@ class P(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(
-            4.5 + self.side_ending.offset_x(),
-            start_angle=self.side_ending.angle(),
-        )
+        pen.line_forward(4)
 
         pen.turn_to(-45)
         pen.line_to_y(MIDDLE + WIDTH)
         pen.turn_to(-90)
-
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            end_angle=self.bottom_ending.angle(),
-        )
+        pen.line_forward(WIDTH)
 
 
 class T(ConsonantCharacter):

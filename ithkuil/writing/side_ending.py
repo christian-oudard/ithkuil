@@ -4,6 +4,9 @@ class SideEnding(Ending):
     def offset_x(self):
         return 0
 
+    def __str__(self):
+        return 'side_ending.{}'.format(self.__class__.__name__)
+
 
 class Normal(SideEnding):
     # Unframed Relation, Pattern 1, Stem 1
@@ -15,6 +18,9 @@ class Normal(SideEnding):
 
     def offset_x(self):
         return 0
+
+    def draw(self, pen):
+        pen.line_forward(WIDTH / 2, end_angle=self.angle())
 
 
 class RightOnBottom(SideEnding):

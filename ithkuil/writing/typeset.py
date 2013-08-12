@@ -1,6 +1,7 @@
 # TODO: boustrophedon
 # TODO: half-character indent at right and left to indicate direction?
 
+import sys
 import traceback
 
 from .common import (
@@ -23,8 +24,6 @@ def typeset(letters, line_width=None, resolution=10, show_templates=False):
     y = -PAGE_MARGIN
 
     for letter in letters:
-        letter_paper = Paper()
-
         if show_templates:
             pen = Pen()
             pen.stroke_mode(0.125, '#88f')
@@ -33,22 +32,21 @@ def typeset(letters, line_width=None, resolution=10, show_templates=False):
 
         # Draw letter.
         pen = Pen()
+        print(str(letter), file=sys.stderr)
         try:
-            pen.set_mode(StrokeOutlineMode(WIDTH, 0.2 * WIDTH, '#f51700', '#1d0603'))
-            #pen.stroke_mode(WIDTH, '#f51700')
-            letter.draw_character(pen)
+            mode = StrokeOutlineMode(WIDTH, 0.2 * WIDTH, '#f51700', '#1d0603')
+            letter_paper = letter.draw_character(mode)
         except Exception:
             traceback.print_exc()
-        pen.paper.center_on_x(0)
-        letter_paper.merge(pen.paper)
+        else:
+            letter_paper.center_on_x(0)
+            template_paper.merge(letter_paper)
 
-        bounds = letter_paper.bounds()
-        letter_paper = template_paper.merge(letter_paper)
+        bounds = template_paper.bounds()
+        template_paper.translate((-bounds.left, -OVER))
+        template_paper.translate((x, y))
 
-        letter_paper.translate((-bounds.left, -OVER))
-        letter_paper.translate((x, y))
-
-        paper.merge(letter_paper)
+        paper.merge(template_paper)
 
         x += bounds.width + WIDTH + CHAR_MARGIN
         if line_width is not None and (x - x_start) > line_width:

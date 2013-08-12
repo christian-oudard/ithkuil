@@ -1,3 +1,4 @@
+#TODO: remove smidgen, canoepaddle should not crash on these situations.
 from .common import Ending, WIDTH, BOTTOM, UNDER, slant60, slant45
 
 # A small amount added to some offsets to prevent illegal line crossings due to
@@ -6,11 +7,22 @@ smidgen = 0.001
 
 
 class BottomEnding(Ending):
+
+    def __str__(self):
+        return 'bottom_ending.{}'.format(self.__class__.__name__)
+
+    def draw(self, pen):
+        pen.line_to_y(
+            BOTTOM + self.offset_y(pen),
+            end_angle=self.angle(),
+        )
+
     def offset_y(self, pen):
         return 0
 
 
 class Normal(BottomEnding):
+
     def angle(self):
         if self.character.bottom_straight():
             return 45

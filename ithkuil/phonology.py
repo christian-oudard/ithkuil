@@ -120,6 +120,7 @@ for tone in tone_order:
     c = tones[tone]
     _tone_conversion_table[t] = c
 
+
 def convert_typed(typed_text):
     """
     >>> convert_typed("Ikc,as")
