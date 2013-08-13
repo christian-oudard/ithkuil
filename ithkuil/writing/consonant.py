@@ -179,79 +179,52 @@ class CHacek(ConsonantCharacter):
 
 
 class L(ConsonantCharacter):
+
     bottom_type = 'slanted'
     bottom_orientation = 'right'
     side_flipped = False
+
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
+        pen.line_forward(4)
         pen.turn_to(-90)
         pen.line_to_y(MIDDLE)
         pen.turn_to(-45)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            end_angle=self.bottom_ending.angle(),
-        )
-
-
-class L(ConsonantCharacter):
-    bottom_type = 'slanted'
-    bottom_orientation = 'right'
-    side_flipped = False
-    def draw(self, pen):
-        pen.turn_to(180)
-        pen.line_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
-        pen.turn_to(-90)
-        pen.line_to_y(MIDDLE)
-        pen.turn_to(-45)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            end_angle=self.bottom_ending.angle(),
-        )
+        pen.line_forward(WIDTH)
 
 
 class H(ConsonantCharacter):
+
     bottom_type = 'straight'
-    bottom_orientation = 'left'
+    bottom_orientation = 'right'
     side_flipped = False
+
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(
-            4 + self.side_ending.offset_x(),
-            start_angle=self.side_ending.angle(),
-            end_angle=45,
-        )
+        pen.line_forward(3, end_angle=45)
         pen.turn_left(45)
         pen.move_forward(pen.last_slant_width() / 2 + WIDTH / 2)
         pen.turn_to(-45)
         pen.line_to_y(MIDDLE)
         pen.turn_to(-90)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            end_angle=self.bottom_ending.angle(),
-        )
+        pen.line_forward(WIDTH)
 
 
 class PStop(ConsonantCharacter):
+
     bottom_type = 'straight'
-    bottom_orientation = 'left'
+    bottom_orientation = 'right'
     side_flipped = False
+
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(
-            4.5 + self.side_ending.offset_x(),
-            start_angle=self.side_ending.angle(),
-        )
+        pen.line_forward(3.5)
         pen.turn_to(-60)
         pen.line_to_y(MIDDLE - pen.last_slant_width() / slant45 / 2, end_angle=45)
         pen.turn_to(45)
         pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
         pen.turn_to(-90)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            start_angle=45,
-            end_angle=self.bottom_ending.angle(),
-        )
+        pen.line_forward(WIDTH, start_angle=45)
 
 
 class TStop(ConsonantCharacter):
