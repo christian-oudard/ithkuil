@@ -20,7 +20,7 @@ class Normal(SideEnding):
         return 0
 
     def draw(self, pen):
-        pen.line_forward(WIDTH / 2, end_angle=self.angle())
+        pen.line_forward(WIDTH, end_angle=self.angle())
 
 
 class RightOnBottom(SideEnding):

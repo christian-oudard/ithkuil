@@ -13,10 +13,14 @@ from .common import (
 )
 from canoepaddle import Pen, Paper
 
+import sys
+
 
 class ConsonantCharacter(Character):
+
     bottom_type = NotImplemented  # 'straight' or 'slanted'
     bottom_orientation = NotImplemented  # 'left' or 'right'
+    bottom_heading = None  # None or in the range (-90, 0].
     side_flipped = NotImplemented  # True for 45 angle, False for -45 angle.
 
     def __init__(self, side_ending_class, bottom_ending_class):
@@ -64,76 +68,79 @@ class ConsonantCharacter(Character):
         pen = Pen()
         pen.set_mode(mode)
         pen.move_to(bottom_ending_position)
-        pen.turn_to(bottom_ending_heading)
+        if self.bottom_heading is not None:
+            pen.turn_to(self.bottom_heading)
+        else:
+            pen.turn_to(bottom_ending_heading)
         self.bottom_ending.draw(pen)
+        if self.bottom_orientation == 'left':
+            pen.paper.mirror_x(bottom_ending_position.x)
         paper.merge(pen.paper)
 
-        #paper.join_paths()
-        #paper.fuse_paths()
+        paper.join_paths()
+        paper.fuse_paths()
 
         return paper
 
 
 class P(ConsonantCharacter):
+
     bottom_type = 'straight'
-    bottom_orientation = 'left'
+    bottom_orientation = 'right'
     side_flipped = True
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(4)
+        pen.line_forward(3.5)
 
         pen.turn_to(-45)
         pen.line_to_y(MIDDLE + WIDTH)
         pen.turn_to(-90)
-        pen.line_forward(WIDTH)
+        pen.line_to_y(MIDDLE)
 
 
 class T(ConsonantCharacter):
+
     bottom_type = 'straight'
-    bottom_orientation = 'left'
+    bottom_orientation = 'right'
     side_flipped = False
+
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
-        pen.turn_to(-90)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            end_angle=self.bottom_ending.angle(),
-        )
+        pen.line_forward(4)
+        pen.turn_left(90)
+        pen.line_to_y(MIDDLE)
 
 
 class K(ConsonantCharacter):
+
     bottom_type = 'slanted'
     bottom_orientation = 'right'
     side_flipped = False
+
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
+        pen.line_forward(4.5)
         pen.turn_to(-60)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            end_angle=self.bottom_ending.angle(),
-        )
+        pen.line_to_y(MIDDLE)
 
 
 class Q(ConsonantCharacter):
+
     bottom_type = 'slanted'
     bottom_orientation = 'left'
+    bottom_heading = -60
     side_flipped = False
+
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(5.5 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
+        pen.line_forward(4.5)
         pen.turn_to(-45)
         pen.line_to_y(MIDDLE, end_angle=0)
         pen.turn_to(180)
         pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant60 / 2)
         pen.turn_left(60)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            start_angle=0,
-            end_angle=self.bottom_ending.angle(),
-        )
+        pen.line_forward(WIDTH, start_angle=0)
 
 
 class C(ConsonantCharacter):

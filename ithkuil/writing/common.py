@@ -1,3 +1,5 @@
+# TODO: bottom ending DiagonalDownRightOnRight is messing up the
+# outline joins on top when flipped, it has a little flat spot.
 # TODO: Test suite to try drawing all possible characters.
 # TODO: Kerning by taking the convex hull of the written letter then finding a
 # spot where they're the right distance apart. This function should be strictly
@@ -35,8 +37,9 @@ def flip_ending_horizontal(cls):
     # Replace the ending with one that is flipped in the x direction.
     class Flipped(cls):
         def angle(self):
-            a = cls.angle(self)
-            return flip_angle_x(a)
+            return cls.angle(self)  # STUB
+            #a = cls.angle(self)
+            #return flip_angle_x(a)
 
         def draw(self, pen):
             cls.draw(self, pen)

@@ -41,16 +41,24 @@ class DiagonalDownRightOnRight(BottomEnding):
     # Consonant Prefix M
     def angle(self):
         return 45
+
     def offset_y(self, pen):
         return +WIDTH + smidgen
 
     def draw(self, pen):
+        old_position = pen.position
+        pen.line_to_y(BOTTOM, end_angle=45)
+        slant_width = pen.last_slant_width()
+        pen.undo()
+        pen.move_to(old_position)
         pen.line_to_y(
-            BOTTOM + pen.last_slant_width() / slant45 / 2,
+            BOTTOM + slant_width / slant45 / 2,
             end_angle=45,
         )
+
         pen.turn_to(45)
         pen.move_forward(pen.last_slant_width() / 2 + WIDTH / 2)
+
         pen.turn_to(-45)
         pen.line_to_y(BOTTOM, end_angle=0)
 
