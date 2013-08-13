@@ -6,6 +6,7 @@
 # increasing because of the convex hull thing.
 # TODO: Make really nice pronunciation charts for the writing system and give
 # them to John Quijada.
+# TODO: Make a program to write your name in phonetic ithkuil.
 
 import math
 

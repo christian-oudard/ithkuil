@@ -20,8 +20,8 @@ class ConsonantCharacter(Character):
 
     bottom_type = NotImplemented  # 'straight' or 'slanted'
     bottom_orientation = NotImplemented  # 'left' or 'right'
-    bottom_heading = None  # None or in the range (-90, 0].
     side_flipped = NotImplemented  # True for 45 angle, False for -45 angle.
+    bottom_heading = None  # None or in the range (-90, 0].
 
     def __init__(self, side_ending_class, bottom_ending_class):
         self.side_ending = side_ending_class(self)
@@ -144,39 +144,38 @@ class Q(ConsonantCharacter):
 
 
 class C(ConsonantCharacter):
+
     bottom_type = 'straight'
-    bottom_orientation = 'left'
+    bottom_orientation = 'right'
     side_flipped = False
+
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(6 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
+        pen.line_forward(5)
         pen.turn_to(-90)
         pen.line_to_y(MIDDLE + WIDTH / 2)
         pen.turn_to(0)
         pen.line_forward(3)
         pen.turn_to(-90)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            end_angle=self.bottom_ending.angle(),
-        )
+        pen.line_forward(WIDTH)
 
 
 class CHacek(ConsonantCharacter):
+
     bottom_type = 'slanted'
     bottom_orientation = 'left'
+    bottom_heading = -45
     side_flipped = False
+
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(6 + self.side_ending.offset_x(), start_angle=self.side_ending.angle())
+        pen.line_forward(5)
         pen.turn_to(-90)
         pen.line_to_y(MIDDLE + WIDTH / 2)
         pen.turn_to(0)
         pen.line_forward(4)
         pen.turn_to(-135)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            end_angle=self.bottom_ending.angle(),
-        )
+        pen.line_forward(1.5 * WIDTH)
 
 
 class L(ConsonantCharacter):
