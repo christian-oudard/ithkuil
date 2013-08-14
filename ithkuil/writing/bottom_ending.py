@@ -25,7 +25,10 @@ class Normal(BottomEnding):
 
     def angle(self):
         if self.character.bottom_straight():
-            return 45
+            if not self.character.bottom_flipped:
+                return 45
+            else:
+                return -45
         elif self.character.bottom_slanted():
             return 0
 
