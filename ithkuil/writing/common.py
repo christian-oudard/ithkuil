@@ -16,6 +16,7 @@ slant60 = 1 / math.sin(math.radians(60))
 slant75 = 1 / math.sin(math.radians(75))
 
 WIDTH = 1.0
+#WIDTH = 0.5
 HOOK_BASE_WIDTH = 1.25 * WIDTH
 
 HALF_HEIGHT = 3.6

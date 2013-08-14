@@ -1,3 +1,4 @@
+#TODO: refactor into type={straight, left, right}
 from .common import (
     Character,
     WIDTH,
@@ -246,7 +247,7 @@ class TStop(ConsonantCharacter):
 class KStop(ConsonantCharacter):
 
     bottom_type = 'straight'
-    bottom_orientation = 'left'
+    bottom_orientation = 'right'
     side_flipped = True
 
     def draw(self, pen):
@@ -361,40 +362,32 @@ class X(ConsonantCharacter):
 
 
 class S(ConsonantCharacter):
+
     bottom_type = 'straight'
-    bottom_orientation = 'left'
+    bottom_orientation = 'right'
+
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(
-            5 + self.side_ending.offset_x(),
-            start_angle=self.side_ending.angle(),
-        )
+        pen.line_forward(4)
         pen.turn_to(-90)
         pen.line_to_y(MIDDLE - WIDTH / 2, end_angle=45)
         pen.turn_to(45)
         pen.move_forward(WIDTH * slant45)
         pen.turn_to(0)
-        pen.line_forward(WIDTH / 2 + 1 + bevel_distance / 2, start_angle=45)
-        pen.turn_right(45)
-        pen.line_forward(bevel_distance)
-        pen.turn_to(-90)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            end_angle=self.bottom_ending.angle(),
-        )
+        pen.line_forward(1.5 * WIDTH, start_angle=45)
+        pen.arc_right(90, WIDTH / 2)
+        pen.line_forward(WIDTH)
 
 
 class SHacek(ConsonantCharacter):
+
     bottom_type = 'straight'
-    bottom_orientation = 'left'
+    bottom_orientation = 'right'
     side_flipped = True
+
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(
-            5 + self.side_ending.offset_x(),
-            start_angle=self.side_ending.angle(),
-            end_angle=-45,
-        )
+        pen.line_forward(4, end_angle=-45)
         pen.turn_to(-45)
         pen.move_forward(WIDTH * slant45)
         pen.turn_to(-90)
@@ -402,91 +395,71 @@ class SHacek(ConsonantCharacter):
         pen.turn_to(0)
         pen.line_forward(2)
         pen.turn_to(-90)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            start_angle=-45,
-            end_angle=self.bottom_ending.angle(),
-        )
+        pen.line_forward(WIDTH)
 
 
 class R(ConsonantCharacter):
+
     bottom_type = 'straight'
-    bottom_orientation = 'left'
+    bottom_orientation = 'right'
+
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(
-            5.5 + self.side_ending.offset_x(),
-            start_angle=self.side_ending.angle(),
-        )
+        pen.line_forward(4.5)
+        a = pen.position
         pen.turn_to(-45)
         pen.line_to_y(MIDDLE + WIDTH / 2)
         pen.turn_to(180)
-        pen.line_forward(3.5)
+        # Line up the left point of the top bar with the side of the
+        # down stroke.
+        pen.line_to_x(a.x - WIDTH * slant60 + WIDTH / 2)
         pen.turn_to(-90)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            end_angle=self.bottom_ending.angle(),
-        )
+        pen.line_forward(WIDTH)
 
 
 class W(ConsonantCharacter):
+
     bottom_type = 'straight'
-    bottom_orientation = 'left'
+    bottom_orientation = 'right'
+
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(
-            4.5 + self.side_ending.offset_x(),
-            start_angle=self.side_ending.angle(),
-            end_angle=45,
-        )
+        pen.line_forward(3.5, end_angle=45)
         pen.turn_left(45)
         pen.move_forward(WIDTH * slant45)
         pen.turn_to(-90)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            end_angle=self.bottom_ending.angle(),
-            start_angle=45,
-        )
+        pen.line_to_y(MIDDLE, start_angle=45)
 
 
 class M(ConsonantCharacter):
+
     bottom_type = 'slanted'
     bottom_orientation = 'left'
+
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(
-            5.5 + self.side_ending.offset_x(),
-            start_angle=self.side_ending.angle(),
-        )
+        pen.line_forward(4.5)
         pen.turn_to(-45)
         pen.line_to_y(MIDDLE)
         pen.turn_to(-120)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            end_angle=self.bottom_ending.angle(),
-        )
+        pen.line_forward(WIDTH)
 
 
 class NHacek(ConsonantCharacter):
+
     bottom_type = 'slanted'
     bottom_orientation = 'right'
     side_flipped = True
+
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(
-            5 + self.side_ending.offset_x(),
-            start_angle=self.side_ending.angle(),
-            end_angle=-45,
-        )
+        pen.line_forward(4, end_angle=-45)
         pen.turn_to(-45)
         pen.move_forward(WIDTH * slant45)
         pen.turn_to(-90)
         pen.line_to_y(MIDDLE - WIDTH / 2, start_angle=-45)
         pen.turn_to(-45)
-        pen.line_to_y(
-            BOTTOM + self.bottom_ending.offset_y(pen),
-            end_angle=self.bottom_ending.angle(),
-        )
+        pen.line_forward(WIDTH)
 
 
 B = flip(P)
