@@ -1,4 +1,3 @@
-# TODO: fixed-width typesetting
 # TODO: boustrophedon
 # TODO: half-character indent at right and left to indicate direction?
 
@@ -27,6 +26,7 @@ def typeset(
     If line_width is None, then the line will not ever wrap.
     """
     paper = Paper()
+    letter_bounds_list = []
 
     x = x_start = PAGE_MARGIN
     y = -PAGE_MARGIN
@@ -36,6 +36,8 @@ def typeset(
 
         # Locate the letter on the page.
         bounds = letter_paper.bounds()
+        bounds.bottom = UNDER
+        bounds.top = OVER
 
         if show_bounds:
             pen = Pen()
@@ -47,6 +49,9 @@ def typeset(
         letter_paper.translate((-bounds.left, -OVER))
         letter_paper.translate((x, y))
 
+        bounds.translate((x, y))
+        letter_bounds_list.append(bounds)
+
         paper.merge(letter_paper)
 
         x += bounds.width + CHAR_MARGIN
@@ -54,7 +59,7 @@ def typeset(
             x = x_start
             y -= LINE_HEIGHT
 
-    page_bounds = paper.bounds()
+    page_bounds = Bounds.union_all(letter_bounds_list)
     page_width = page_bounds.width + 2 * PAGE_MARGIN
     page_height = page_bounds.height + 2 * PAGE_MARGIN
 
