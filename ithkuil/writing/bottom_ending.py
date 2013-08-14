@@ -142,9 +142,6 @@ class Barb(BottomEnding):
     # Consonant Prefix N hacek
     angle = Normal.angle
 
-    def offset_y(self, pen):
-        return +WIDTH / 4
-
     def draw(self, pen):
         pen.line_to_y(BOTTOM + WIDTH / 4, end_angle=self.angle())
 
@@ -169,27 +166,17 @@ class Barb(BottomEnding):
 
 class DiagonalUpRight(BottomEnding):
     # Consonant Prefix Z
-    def angle(self):
-        if self.character.bottom_straight():
-            return -45
-        elif self.character.bottom_slanted():
-            return 90
-
-    def offset_y(self, pen):
-        if self.character.bottom_straight():
-            return +WIDTH / 2
-        elif self.character.bottom_slanted():
-            return 0
-
     def draw(self, pen):
         if self.character.bottom_straight():
+            pen.line_to_y(BOTTOM + WIDTH / 2, end_angle=-45)
             pen.turn_to(-45)
             pen.move_forward(pen.last_slant_width() / 2 + WIDTH / 2)
             pen.turn_to(45)
             pen.line_forward(2, start_angle=-45, end_angle=0)
         elif self.character.bottom_slanted():
+            slant_width = self.predict_slant_width(pen, 90)
             pen.line_to_y(
-                BOTTOM - pen.last_slant_width() / 2,
+                BOTTOM - slant_width / 2,
                 end_angle=90
             )
             pen.turn_to(90)
@@ -200,17 +187,13 @@ class DiagonalUpRight(BottomEnding):
 
 class Acute(BottomEnding):
     # Consonant Prefix R Hacek
-    def offset_y(self, pen):
-        if self.character.bottom_straight():
-            return +WIDTH / slant60
-        elif self.character.bottom_slanted():
-            return +WIDTH / 2
-
     def draw(self, pen):
         if self.character.bottom_straight():
+            pen.line_to_y(BOTTOM + WIDTH / slant60)
             pen.turn_to(30)
             pen.line_forward(2.5, end_angle=90)
         elif self.character.bottom_slanted():
+            pen.line_to_y(BOTTOM + WIDTH / 2)
             pen.turn_to(180)
             pen.line_forward(3, end_angle=-45)
 
@@ -224,8 +207,9 @@ class RightOnBottom(BottomEnding):
         return +WIDTH + smidgen
 
     def draw(self, pen):
+        slant_width = self.predict_slant_width(pen, 45)
         pen.line_to_y(
-            BOTTOM + pen.last_slant_width() / slant45 / 2,
+            BOTTOM + slant_width / slant45 / 2,
             end_angle=45,
         )
         pen.turn_to(-135)
@@ -237,25 +221,15 @@ class RightOnBottom(BottomEnding):
 class StraightOnLeft(BottomEnding):
     # Consonant Prefix C
     # Consonant Prefix Z Dot
-    def angle(self):
-        if self.character.bottom_straight():
-            return -45
-        elif self.character.bottom_slanted():
-            return 0
-
-    def offset_y(self, pen):
-        if self.character.bottom_straight():
-            return -WIDTH / 2
-        elif self.character.bottom_slanted():
-            return 0
-
     def draw(self, pen):
         if self.character.bottom_straight():
+            pen.line_to_y(BOTTOM - WIDTH / 2, end_angle=-45)
             pen.turn_to(135)
             pen.move_forward(WIDTH * slant45)
             pen.turn_to(-90)
             pen.line_forward(2, start_angle=-45, end_angle=-45)
         elif self.character.bottom_slanted():
+            pen.line_to_y(BOTTOM, end_angle=0)
             original_heading = pen.heading
             pen.turn_to(180)
             pen.move_forward(pen.last_slant_width())
@@ -264,30 +238,19 @@ class StraightOnLeft(BottomEnding):
 
 
 class BreakRightBendLeft(BottomEnding):
-    def angle(self):
-        if self.character.bottom_straight():
-            return 0
-        elif self.character.bottom_slanted():
-            return 90
-
-    def offset_y(self, pen):
-        if self.character.bottom_straight():
-            return 0
-        elif self.character.bottom_slanted():
-            if pen.heading % 360 in [360 - 45, 360 - 135]:
-                return +0.75 * WIDTH * slant45 + smidgen
-            else:
-                return +1.75 * WIDTH + smidgen
-
+    # Consonant Prefix C Hacek
+    # Consonant Prefix J
     def draw(self, pen):
         if self.character.bottom_straight():
+            pen.line_to_y(BOTTOM, end_angle=0)
             pen.turn_to(180)
             pen.move_forward(WIDTH / 2 + WIDTH * slant45 / 2)
             pen.turn_to(-45)
             pen.line_forward(2, start_angle=0, end_angle=0)
         elif self.character.bottom_slanted():
+            slant_width = self.predict_slant_width(pen, 90)
             pen.line_to_y(
-                BOTTOM + pen.last_slant_width() / 2,
+                BOTTOM + slant_width / 2,
                 end_angle=90
             )
             pen.turn_to(-90)
@@ -297,25 +260,16 @@ class BreakRightBendLeft(BottomEnding):
 
 
 class BreakRightBendRight(BottomEnding):
-    def angle(self):
-        if self.character.bottom_straight():
-            return -45
-        elif self.character.bottom_slanted():
-            return 0
-
-    def offset_y(self, pen):
-        if self.character.bottom_straight():
-            return -WIDTH / 2
-        elif self.character.bottom_slanted():
-            return 0
-
+    # Consonant Prefix Z Hacek
     def draw(self, pen):
         if self.character.bottom_straight():
+            pen.line_to_y(BOTTOM - WIDTH / 2, end_angle=-45)
             pen.turn_to(135)
             pen.move_forward(WIDTH * slant45)
             pen.turn_to(180)
             pen.line_forward(2, start_angle=-45, end_angle=-45)
         elif self.character.bottom_slanted():
+            pen.line_to_y(BOTTOM, end_angle=0)
             pen.turn_to(180)
             pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
             pen.turn_to(-135)

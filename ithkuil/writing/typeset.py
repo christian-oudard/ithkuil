@@ -9,7 +9,7 @@ from .common import (
     CHAR_MARGIN, LINE_HEIGHT, PAGE_MARGIN
 )
 from canoepaddle import Pen, Paper
-from canoepaddle.mode import StrokeOutlineMode
+from canoepaddle.mode import StrokeOutlineMode, StrokeMode
 from canoepaddle.bounds import Bounds
 
 
@@ -143,6 +143,7 @@ def draw_letter(letter, show_template=False):
     pen = Pen()
     try:
         mode = StrokeOutlineMode(WIDTH, 0.2 * WIDTH, '#f51700', '#1d0603')
+        #mode = StrokeMode(WIDTH, '#f51700')
         character_paper = letter.draw_character(mode)
     except Exception:
         traceback.print_exc()

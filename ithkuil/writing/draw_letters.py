@@ -8,14 +8,14 @@ from ithkuil.writing.typeset import typeset, typeset_fixed
 import ithkuil.writing.consonant as cons
 #consonants = consonants[-6:]
 consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.D, cons.T, cons.K, cons.RHacek, cons.L, cons.J]
-import ithkuil.writing.side_ending as side_ending
-#side_endings = [side_ending.Normal, side_ending.RightOnBottom, side_ending.CurveDownOnBottom, side_ending.CurveUpOnBottom]#, side_ending.SideAll]
-#side_endings = [side_ending.Normal, side_ending.SideAll]
-side_endings = [side_ending.Normal]
-import ithkuil.writing.bottom_ending as bottom_ending
-bottom_endings = bottom_endings[4:9]
-#bottom_endings = [bottom_ending.Normal]
-#bottom_endings = [bottom_ending.Normal, bottom_ending.BottomAll]
+import ithkuil.writing.side_ending as se
+#side_endings = [se.Normal, se.RightOnBottom, se.CurveDownOnBottom, se.CurveUpOnBottom]#, se.SideAll]
+#side_endings = [se.Normal, se.SideAll]
+side_endings = [se.Normal]
+import ithkuil.writing.bottom_ending as be
+bottom_endings = bottom_endings[-4:]
+#bottom_endings = [be.Normal]
+#bottom_endings = [be.Normal, be.BottomAll]
 
 if __name__ == '__main__':
     letters = []
