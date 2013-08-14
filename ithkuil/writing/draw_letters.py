@@ -2,7 +2,7 @@ from ithkuil.writing.consonant import consonants
 from ithkuil.writing.bottom_ending import bottom_endings
 from ithkuil.writing.side_ending import side_endings
 from ithkuil.writing.typeset import typeset, typeset_fixed
-
+from canoepaddle.mode import *
 
 #DEBUG redefinition of parts lists for testing.
 import ithkuil.writing.consonant as cons
@@ -13,7 +13,7 @@ import ithkuil.writing.side_ending as se
 #side_endings = [se.Normal, se.SideAll]
 side_endings = [se.Normal]
 import ithkuil.writing.bottom_ending as be
-bottom_endings = bottom_endings[-2:]
+bottom_endings = bottom_endings[-2:] + [be.DiagonalDownRightOnRight]
 #bottom_endings = [be.Normal]
 #bottom_endings = [be.Normal, be.BottomAll]
 
@@ -36,5 +36,11 @@ if __name__ == '__main__':
             add_letter(consonant_class, side_ending_class, bottom_endings[0])
 
     #paper = typeset(letters, 100)
-    paper = typeset_fixed(letters, 10, 10, show_templates=True)
+    paper = typeset_fixed(
+        letters,
+        letter_width=10,
+        letters_per_line=10,
+        mode=StrokeMode(1.0),
+        show_templates=False,
+    )
     print(paper.format_svg(4))

@@ -12,11 +12,14 @@ from canoepaddle import Pen, Paper
 from canoepaddle.mode import StrokeOutlineMode, StrokeMode
 from canoepaddle.bounds import Bounds
 
+DEFAULT_MODE = StrokeOutlineMode(WIDTH, 0.1 * WIDTH, '#f51700', '#1d0603')
+
 
 def typeset(
     letters,
     line_width=None,
     resolution=10,
+    mode=None,
     show_templates=False,
     show_bounds=False,
 ):
@@ -25,6 +28,9 @@ def typeset(
 
     If line_width is None, then the line will not ever wrap.
     """
+    if mode is None:
+        mode = DEFAULT_MODE
+
     paper = Paper()
     letter_bounds_list = []
 
@@ -32,7 +38,7 @@ def typeset(
     y = -PAGE_MARGIN
 
     for letter in letters:
-        letter_paper = draw_letter(letter, show_template=show_templates)
+        letter_paper = draw_letter(letter, mode=mode, show_template=show_templates)
 
         # Locate the letter on the page.
         bounds = letter_paper.bounds()
@@ -74,6 +80,7 @@ def typeset_fixed(
     letter_width,
     letters_per_line=None,
     resolution=10,
+    mode=None,
     show_templates=False,
     show_bounds=False,
 ):
@@ -82,6 +89,9 @@ def typeset_fixed(
 
     If letters_per_line is None, then the line will not ever wrap.
     """
+    if mode is None:
+        mode = DEFAULT_MODE
+
     paper = Paper()
     letter_bounds_list = []
 
@@ -90,7 +100,7 @@ def typeset_fixed(
     line_size = 0
 
     for letter in letters:
-        letter_paper = draw_letter(letter, show_template=show_templates)
+        letter_paper = draw_letter(letter, mode=mode, show_template=show_templates)
 
         # Locate the letter on the page.
         bounds = Bounds(-letter_width / 2, UNDER, +letter_width / 2, OVER)
@@ -123,7 +133,7 @@ def typeset_fixed(
     return paper
 
 
-def draw_letter(letter, show_template=False):
+def draw_letter(letter, mode, show_template=False):
     """
     Draw the given letter and return a Paper.
 
@@ -142,8 +152,6 @@ def draw_letter(letter, show_template=False):
 
     pen = Pen()
     try:
-        mode = StrokeOutlineMode(WIDTH, 0.2 * WIDTH, '#f51700', '#1d0603')
-        #mode = StrokeMode(WIDTH, '#f51700')
         character_paper = letter.draw_character(mode)
     except Exception:
         traceback.print_exc()

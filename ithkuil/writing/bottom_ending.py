@@ -311,7 +311,7 @@ class CurveUpOnRight(BottomEnding):
 
         # Mark the correct heading to leave the hook at.
         pen.move_to(a)
-        pen.turn_to(-60)
+        pen.turn_to(-75)
         pen.arc_to(tip)
         heading = pen.heading
         pen.undo()
@@ -320,7 +320,7 @@ class CurveUpOnRight(BottomEnding):
         pen.move_to(a)
         pen.turn_to(45)
         pen.line_forward(WIDTH)
-        pen.turn_to(-60)
+        pen.turn_to(-75)
         pen.arc_to(tip)
         pen.turn_to(heading + 180)
         pen.arc_to(a)
