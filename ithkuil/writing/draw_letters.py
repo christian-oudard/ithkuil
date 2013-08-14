@@ -1,7 +1,7 @@
 from ithkuil.writing.consonant import consonants
 from ithkuil.writing.bottom_ending import bottom_endings
 from ithkuil.writing.side_ending import side_endings
-from ithkuil.writing.typeset import typeset
+from ithkuil.writing.typeset import typeset, typeset_fixed
 
 
 #DEBUG redefinition of parts lists for testing.
@@ -34,5 +34,6 @@ if __name__ == '__main__':
         for bottom_ending_class in bottom_endings:
             add_letter(consonant_class, side_endings[0], bottom_ending_class)
 
-    paper = typeset(letters, 100, show_bounds=True)
+    #paper = typeset(letters, 100)
+    paper = typeset_fixed(letters, 15, 6)
     print(paper.format_svg(4))
