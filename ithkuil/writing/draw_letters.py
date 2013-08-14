@@ -13,7 +13,7 @@ import ithkuil.writing.side_ending as se
 #side_endings = [se.Normal, se.SideAll]
 side_endings = [se.Normal]
 import ithkuil.writing.bottom_ending as be
-bottom_endings = bottom_endings[-4:]
+bottom_endings = bottom_endings[-2:]
 #bottom_endings = [be.Normal]
 #bottom_endings = [be.Normal, be.BottomAll]
 

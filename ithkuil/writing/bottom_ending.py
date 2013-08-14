@@ -1,5 +1,13 @@
 #TODO: remove smidgen, canoepaddle should not crash on these situations.
-from .common import Ending, WIDTH, BOTTOM, UNDER, slant60, slant45
+from .common import (
+    Ending,
+    slant45,
+    slant60,
+    WIDTH,
+    HOOK_BASE_WIDTH,
+    BOTTOM,
+    UNDER,
+)
 
 # A small amount added to some offsets to prevent illegal line crossings due to
 # round off error.
@@ -276,6 +284,50 @@ class BreakRightBendRight(BottomEnding):
             pen.line_forward(2, start_angle=0, end_angle=0)
 
 
+class CurveUpOnRight(BottomEnding):
+    # Consonant Prefix K
+    # Consonant Prefix G
+    def draw(self, pen):
+        slant_width = self.predict_slant_width(pen, 45)
+        pen.line_to_y(
+            BOTTOM + slant_width / slant45 / 2,
+            end_angle=45,
+        )
+        pen.turn_to(45)
+
+        old_mode = pen.mode
+        pen.set_mode(old_mode.outliner_mode())
+
+        # Mark bottom of hook base.
+        pen.turn_to(45)
+        pen.move_forward(slant_width / 2)
+        a = pen.position
+
+        # Mark tip of hook.
+        pen.turn_to(-90)
+        pen.move_to_y(BOTTOM)
+        pen.move_relative((2.5 * WIDTH, 0))
+        tip = pen.position
+
+        # Mark the correct heading to leave the hook at.
+        pen.move_to(a)
+        pen.turn_to(-60)
+        pen.arc_to(tip)
+        heading = pen.heading
+        pen.undo()
+
+        # Draw the hook.
+        pen.move_to(a)
+        pen.turn_to(45)
+        pen.line_forward(WIDTH)
+        pen.turn_to(-60)
+        pen.arc_to(tip)
+        pen.turn_to(heading + 180)
+        pen.arc_to(a)
+
+        pen.set_mode(old_mode)
+
+
 class BottomAll(BottomEnding):
     """
     A debug ending showing every one of the endings superimposed.
@@ -317,4 +369,5 @@ bottom_endings = [
     StraightOnLeft,
     BreakRightBendLeft,
     BreakRightBendRight,
+    CurveUpOnRight,
 ]
