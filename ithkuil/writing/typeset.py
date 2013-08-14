@@ -16,7 +16,7 @@ def typeset(letters, line_width=None, resolution=10, show_templates=False):
     """
     Arrange letters on the page.
 
-    If page width is None, then the line will not ever wrap.
+    If line_width is None, then the line will not ever wrap.
     """
     paper = Paper()
 
@@ -24,29 +24,32 @@ def typeset(letters, line_width=None, resolution=10, show_templates=False):
     y = -PAGE_MARGIN
 
     for letter in letters:
+        letter_paper = Paper()
+
         if show_templates:
             pen = Pen()
             pen.stroke_mode(0.125, '#88f')
             draw_template_path(pen)
-            template_paper = pen.paper
+            letter_paper.merge(pen.paper)
 
         # Draw letter.
         pen = Pen()
         print(str(letter), file=sys.stderr)
         try:
             mode = StrokeOutlineMode(WIDTH, 0.2 * WIDTH, '#f51700', '#1d0603')
-            letter_paper = letter.draw_character(mode)
+            character_paper = letter.draw_character(mode)
         except Exception:
             traceback.print_exc()
         else:
-            letter_paper.center_on_x(0)
-            template_paper.merge(letter_paper)
+            character_paper.center_on_x(0)
+            letter_paper.merge(character_paper)
 
-        bounds = template_paper.bounds()
-        template_paper.translate((-bounds.left, -OVER))
-        template_paper.translate((x, y))
+        # Locate the letter on the page.
+        bounds = letter_paper.bounds()
+        letter_paper.translate((-bounds.left, -OVER))
+        letter_paper.translate((x, y))
 
-        paper.merge(template_paper)
+        paper.merge(letter_paper)
 
         x += bounds.width + WIDTH + CHAR_MARGIN
         if line_width is not None and (x - x_start) > line_width:

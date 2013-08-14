@@ -88,8 +88,8 @@ class ConsonantCharacter(Character):
             pen.paper.mirror_x(bottom_ending_position.x)
         paper.merge(pen.paper)
 
-        #paper.join_paths()
-        #paper.fuse_paths()
+        paper.join_paths()
+        paper.fuse_paths()
 
         return paper
 
