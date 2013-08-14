@@ -34,5 +34,5 @@ if __name__ == '__main__':
         for bottom_ending_class in bottom_endings:
             add_letter(consonant_class, side_endings[0], bottom_ending_class)
 
-    paper = typeset(letters, 100, show_templates=False)
+    paper = typeset(letters, 100, show_bounds=True)
     print(paper.format_svg(4))

@@ -1,3 +1,4 @@
+# TODO: fixed-width typesetting
 # TODO: boustrophedon
 # TODO: half-character indent at right and left to indicate direction?
 
@@ -12,7 +13,7 @@ from canoepaddle import Pen, Paper
 from canoepaddle.mode import StrokeOutlineMode
 
 
-def typeset(letters, line_width=None, resolution=10, show_templates=False):
+def typeset(letters, line_width=None, resolution=10, show_templates=False, show_bounds=False):
     """
     Arrange letters on the page.
 
@@ -24,34 +25,24 @@ def typeset(letters, line_width=None, resolution=10, show_templates=False):
     y = -PAGE_MARGIN
 
     for letter in letters:
-        letter_paper = Paper()
-
-        if show_templates:
-            pen = Pen()
-            pen.stroke_mode(0.125, '#88f')
-            draw_template_path(pen)
-            letter_paper.merge(pen.paper)
-
-        # Draw letter.
-        pen = Pen()
-        print(str(letter), file=sys.stderr)
-        try:
-            mode = StrokeOutlineMode(WIDTH, 0.2 * WIDTH, '#f51700', '#1d0603')
-            character_paper = letter.draw_character(mode)
-        except Exception:
-            traceback.print_exc()
-        else:
-            character_paper.center_on_x(0)
-            letter_paper.merge(character_paper)
+        letter_paper = draw_letter(letter, show_template=show_templates)
 
         # Locate the letter on the page.
         bounds = letter_paper.bounds()
+
+        if show_bounds:
+            pen = Pen()
+            pen.fill_mode('#888')
+            bounds.draw(pen)
+            pen.paper.merge(letter_paper)
+            letter_paper = pen.paper
+
         letter_paper.translate((-bounds.left, -OVER))
         letter_paper.translate((x, y))
 
         paper.merge(letter_paper)
 
-        x += bounds.width + WIDTH + CHAR_MARGIN
+        x += bounds.width + CHAR_MARGIN
         if line_width is not None and (x - x_start) > line_width:
             x = x_start
             y -= LINE_HEIGHT
@@ -64,6 +55,45 @@ def typeset(letters, line_width=None, resolution=10, show_templates=False):
     paper.set_view_box(0, 0, page_width, -page_height)
 
     return paper
+
+
+def typeset_fixed(letters, letter_width, letters_per_line=None, show_templates=False):
+    """
+    Arrange letters on the page in a grid.
+
+    If letters_per_line is None, then the line will not ever wrap.
+    """
+    pass
+
+
+def draw_letter(letter, show_template=False):
+    """
+    Draw the given letter and return a Paper.
+
+    The letter is located centered on x=0, and with y=0 as the
+    character baseline.
+    """
+    print(str(letter), file=sys.stderr)
+
+    letter_paper = Paper()
+
+    if show_template:
+        pen = Pen()
+        pen.stroke_mode(0.125, '#88f')
+        draw_template_path(pen)
+        letter_paper.merge(pen.paper)
+
+    pen = Pen()
+    try:
+        mode = StrokeOutlineMode(WIDTH, 0.2 * WIDTH, '#f51700', '#1d0603')
+        character_paper = letter.draw_character(mode)
+    except Exception:
+        traceback.print_exc()
+    else:
+        character_paper.center_on_x(0)
+        letter_paper.merge(character_paper)
+
+    return letter_paper
 
 
 def draw_template_path(pen):
