@@ -1,17 +1,68 @@
-#TODO: remove smidgen, canoepaddle should not crash on these situations.
+import math
+
 from .common import (
     Ending,
     slant45,
     slant60,
     WIDTH,
-    HOOK_BASE_WIDTH,
     BOTTOM,
     UNDER,
 )
 
-# A small amount added to some offsets to prevent illegal line crossings due to
-# round off error.
-smidgen = 0.001
+
+# TODO: change base width based on angles so the hook looks more consistent.
+
+def hook(pen, start_heading, end_heading, distance):
+    # Calculate the radius.
+    arc_angle = end_heading - start_heading
+    circumference = distance / (arc_angle / 360)
+    radius = circumference / (2 * math.pi)
+
+    # The pen starts at the "left" corner of the hook, facing along the
+    # base of the hook.
+    base_heading = pen.heading
+    left_corner = pen.position
+    pen.move_forward(WIDTH)
+    right_corner = pen.position
+
+    # We drop into fill mode temporarily to draw the hook outline.
+    old_mode = pen.mode
+    pen.set_mode(old_mode.outliner_mode())
+
+    # Find the tip of the hook.
+    # From the center of the base, make an arc to the tip.
+    # Positive arc angles curve to the left, and negative arc angles
+    pen.move_forward(-WIDTH / 2)
+    pen.turn_to(start_heading)
+    pen.arc_left(arc_angle, radius)
+    tip = pen.position
+    pen.undo()
+
+    # Find the correct headings for the side arcs.
+    pen.move_to(left_corner)
+    pen.turn_to(start_heading)
+    pen.arc_to(tip)
+    seg = pen.paper.elements[-1].segments[-1]
+    left_end_heading = seg.end_heading
+    pen.undo()
+
+    pen.move_to(right_corner)
+    pen.turn_to(start_heading)
+    pen.arc_to(tip)
+    seg = pen.paper.elements[-1].segments[-1]
+    right_start_heading = seg.start_heading
+    pen.undo()
+
+    # Draw the hook.
+    pen.move_to(left_corner)
+    pen.line_to(right_corner)
+    pen.turn_to(right_start_heading)
+    pen.arc_to(tip)
+    pen.turn_to(left_end_heading + 180)
+    pen.arc_to(left_corner)
+
+    pen.set_mode(old_mode)
+
 
 
 class BottomEnding(Ending):
@@ -208,12 +259,6 @@ class Acute(BottomEnding):
 
 class RightOnBottom(BottomEnding):
     # Consonant Prefix C Cedilla
-    def angle(self):
-        return 45
-
-    def offset_y(self, pen):
-        return +WIDTH + smidgen
-
     def draw(self, pen):
         slant_width = self.predict_slant_width(pen, 45)
         pen.line_to_y(
@@ -284,7 +329,7 @@ class BreakRightBendRight(BottomEnding):
             pen.line_forward(2, start_angle=0, end_angle=0)
 
 
-class CurveUpOnRight(BottomEnding):
+class HookLeftOnRight(BottomEnding):
     # Consonant Prefix K
     # Consonant Prefix G
     def draw(self, pen):
@@ -294,38 +339,63 @@ class CurveUpOnRight(BottomEnding):
             end_angle=45,
         )
         pen.turn_to(45)
+        pen.move_forward(slant_width / 2)
+        hook(pen, -90, -15, 2.5)
 
-        old_mode = pen.mode
-        pen.set_mode(old_mode.outliner_mode())
 
-        # Mark bottom of hook base.
+
+class HookRightOnRight(BottomEnding):
+    # Consonant Prefix P
+    # Consonant Prefix B
+    def draw(self, pen):
+        slant_width = self.predict_slant_width(pen, 45)
+        pen.line_to_y(
+            BOTTOM + slant_width / slant45 / 2,
+            end_angle=45,
+        )
         pen.turn_to(45)
         pen.move_forward(slant_width / 2)
-        a = pen.position
+        hook(pen, -30, -105, 2.5)
 
-        # Mark tip of hook.
-        pen.turn_to(-90)
-        pen.move_to_y(BOTTOM)
-        pen.move_relative((2.5 * WIDTH, 0))
-        tip = pen.position
 
-        # Mark the correct heading to leave the hook at.
-        pen.move_to(a)
-        pen.turn_to(-75)
-        pen.arc_to(tip)
-        heading = pen.heading
-        pen.undo()
+class FoldHookRight(BottomEnding):
+    # Consonant Prefix Q
+    def draw(self, pen):
+        if self.character.bottom_straight():
+            pen.line_to_y(
+                BOTTOM + WIDTH / 2,
+                end_angle=-45,
+            )
+            pen.turn_to(-45)
+            pen.move_forward(WIDTH * slant45 / 2)
+            hook(pen, 45, -30, 2.5)
+        elif self.character.bottom_slanted():
+            pen.line_to_y(BOTTOM, end_angle=0)
+            pen.turn_to(0)
+            pen.move_forward(pen.last_slant_width() / 2)
+            hook(pen, 75, 0, 2.5)
 
-        # Draw the hook.
-        pen.move_to(a)
-        pen.turn_to(45)
-        pen.line_forward(WIDTH)
-        pen.turn_to(-75)
-        pen.arc_to(tip)
-        pen.turn_to(heading + 180)
-        pen.arc_to(a)
 
-        pen.set_mode(old_mode)
+bottom_endings = [
+    Normal,
+    Long,
+    DiagonalDownRightOnRight,
+    DownOnRight,
+    RightOnRight,
+    DiagonalDownLeftOnRight,
+    Bend,
+    Fold,
+    Barb,
+    DiagonalUpRight,
+    Acute,
+    RightOnBottom,
+    StraightOnLeft,
+    BreakRightBendLeft,
+    BreakRightBendRight,
+    HookLeftOnRight,
+    HookRightOnRight,
+    FoldHookRight,
+]
 
 
 class BottomAll(BottomEnding):
@@ -350,24 +420,3 @@ class BottomAll(BottomEnding):
             pen.move_to_y(3)
             pen.line_to_y(bottom_ending.offset_y(pen), end_angle=bottom_ending.angle())
             bottom_ending.draw(pen)
-
-
-bottom_endings = [
-    Normal,
-    #BottomAll, #DEBUG
-    Long,
-    DiagonalDownRightOnRight,
-    DownOnRight,
-    RightOnRight,
-    DiagonalDownLeftOnRight,
-    Bend,
-    Fold,
-    Barb,
-    DiagonalUpRight,
-    Acute,
-    RightOnBottom,
-    StraightOnLeft,
-    BreakRightBendLeft,
-    BreakRightBendRight,
-    CurveUpOnRight,
-]

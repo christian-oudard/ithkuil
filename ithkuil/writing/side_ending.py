@@ -344,30 +344,8 @@ class DiagonalUpLeft(SideEnding):
         pen.line_forward(2, start_angle=45, end_angle=90)
 
 
-class SideAll(SideEnding):
-    """
-    A debug ending showing every one of the endings superimposed.
-    """
-    def angle(self):
-        return None
-
-    def draw(self, pen):
-        start_position = pen.position
-        for side_ending_class in side_endings:
-            if side_ending_class == SideAll:
-                continue
-            side_ending = side_ending_class(self.character)
-            pen.move_to(start_position)
-            pen.turn_to(0)
-            pen.move_forward(side_ending.offset_x())
-            before_position = pen.position
-            side_ending.draw(pen)
-        pen.move_to(start_position)
-
-
 side_endings = [
     Normal,
-    #SideAll, # DEBUG
     RightOnBottom,
     DownOnBottom,
     CurveDownOnBottom,
@@ -386,3 +364,23 @@ side_endings = [
     FoldUpCurveUp,
     DiagonalUpLeft,
 ]
+
+
+class SideAll(SideEnding):
+    """
+    A debug ending showing every one of the endings superimposed.
+    """
+    def angle(self):
+        return None
+
+    def draw(self, pen):
+        start_position = pen.position
+        for side_ending_class in side_endings:
+            if side_ending_class == SideAll:
+                continue
+            side_ending = side_ending_class(self.character)
+            pen.move_to(start_position)
+            pen.turn_to(0)
+            pen.move_forward(side_ending.offset_x())
+            side_ending.draw(pen)
+        pen.move_to(start_position)

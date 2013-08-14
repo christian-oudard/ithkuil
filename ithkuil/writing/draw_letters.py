@@ -9,11 +9,10 @@ import ithkuil.writing.consonant as cons
 #consonants = consonants[-6:]
 consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.D, cons.T, cons.K, cons.RHacek, cons.L, cons.J]
 import ithkuil.writing.side_ending as se
-#side_endings = [se.Normal, se.RightOnBottom, se.CurveDownOnBottom, se.CurveUpOnBottom]#, se.SideAll]
 #side_endings = [se.Normal, se.SideAll]
 side_endings = [se.Normal]
 import ithkuil.writing.bottom_ending as be
-bottom_endings = bottom_endings[-2:] + [be.DiagonalDownRightOnRight]
+bottom_endings = bottom_endings[-3:]
 #bottom_endings = [be.Normal]
 #bottom_endings = [be.Normal, be.BottomAll]
 
@@ -40,7 +39,7 @@ if __name__ == '__main__':
         letters,
         letter_width=10,
         letters_per_line=10,
-        mode=StrokeMode(1.0),
-        show_templates=False,
+        #mode=StrokeMode(1.0),
+        show_templates=True,
     )
     print(paper.format_svg(4))
