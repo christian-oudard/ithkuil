@@ -11,14 +11,13 @@ class BottomEnding(Ending):
     def __str__(self):
         return 'bottom_ending.{}'.format(self.__class__.__name__)
 
-    def draw(self, pen):
-        pen.line_to_y(
-            BOTTOM + self.offset_y(pen),
-            end_angle=self.angle(),
-        )
-
-    def offset_y(self, pen):
-        return 0
+    def predict_slant_width(self, pen, end_angle):
+        old_position = pen.position
+        pen.line_to_y(BOTTOM, end_angle=end_angle)
+        slant_width = pen.last_slant_width()
+        pen.undo()
+        pen.move_to(old_position)
+        return slant_width
 
 
 class Normal(BottomEnding):
@@ -32,28 +31,22 @@ class Normal(BottomEnding):
         elif self.character.bottom_slanted():
             return 0
 
+    def draw(self, pen):
+        pen.line_to_y(BOTTOM, end_angle=self.angle())
 
-class Long(BottomEnding):
+
+class Long(Normal):
     # Consonant Prefix L
-    def offset_y(self, pen):
-        return UNDER - BOTTOM
     angle = Normal.angle
+
+    def draw(self, pen):
+        pen.line_to_y(UNDER, end_angle=self.angle())
 
 
 class DiagonalDownRightOnRight(BottomEnding):
     # Consonant Prefix M
-    def angle(self):
-        return 45
-
-    def offset_y(self, pen):
-        return +WIDTH + smidgen
-
     def draw(self, pen):
-        old_position = pen.position
-        pen.line_to_y(BOTTOM, end_angle=45)
-        slant_width = pen.last_slant_width()
-        pen.undo()
-        pen.move_to(old_position)
+        slant_width = self.predict_slant_width(pen, 45)
         pen.line_to_y(
             BOTTOM + slant_width / slant45 / 2,
             end_angle=45,
@@ -68,32 +61,29 @@ class DiagonalDownRightOnRight(BottomEnding):
 
 class DownOnRight(BottomEnding):
     # Consonant Prefix R
-    def angle(self):
-        return 45
-
-    def offset_y(self, pen):
-        return +WIDTH / 2
-
     def draw(self, pen):
+        slant_width = self.predict_slant_width(pen, 45)
+        pen.line_to_y(
+            BOTTOM - slant_width / slant45 / 2,
+            end_angle=45,
+        )
+
         pen.turn_to(45)
         pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
+
         pen.turn_to(-90)
         pen.line_forward(2, start_angle=45, end_angle=45)
 
 
 class RightOnRight(BottomEnding):
     # Consonant Prefix L Cedilla
-    def angle(self):
-        return 45
-
-    def offset_y(self, pen):
-        return +WIDTH
-
     def draw(self, pen):
+        slant_width = self.predict_slant_width(pen, 45)
         pen.line_to_y(
-            BOTTOM - pen.last_slant_width() / slant45 / 2,
+            BOTTOM - slant_width / slant45 / 2,
             end_angle=45,
         )
+
         pen.turn_to(45)
         pen.move_to_y(BOTTOM + WIDTH / 2)
         pen.turn_to(0)
@@ -102,13 +92,8 @@ class RightOnRight(BottomEnding):
 
 class DiagonalDownLeftOnRight(BottomEnding):
     # Consonant Prefix N
-    def angle(self):
-        return 0
-
-    def offset_y(self, pen):
-        return 0
-
     def draw(self, pen):
+        pen.line_to_y(BOTTOM, end_angle=0)
         pen.turn_to(0)
         pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
         pen.turn_to(-135)
@@ -117,17 +102,13 @@ class DiagonalDownLeftOnRight(BottomEnding):
 
 class Bend(BottomEnding):
     # Consonant Prefix S
-    def offset_y(self, pen):
-        if self.character.bottom_straight():
-            return +WIDTH / 2
-        elif self.character.bottom_slanted():
-            return 0
-
     def draw(self, pen):
         if self.character.bottom_straight():
+            pen.line_to_y(BOTTOM + WIDTH / 2, end_angle=0)
             pen.turn_to(0)
             pen.line_forward(2.5, end_angle=-45)
         elif self.character.bottom_slanted():
+            pen.line_to_y(BOTTOM, end_angle=0)
             pen.turn_to(-90)
             pen.line_forward(2, end_angle=45)
 
@@ -135,27 +116,20 @@ class Bend(BottomEnding):
 class Fold(BottomEnding):
     # Consonant Prefix S hacek
     # Consonant Prefix Z hacek
-    def angle(self):
-        if self.character.bottom_straight():
-            return -45
-        elif self.character.bottom_slanted():
-            return 45
-
-    def offset_y(self, pen):
-        if self.character.bottom_straight():
-            return +WIDTH / 2
-        elif self.character.bottom_slanted():
-            return +WIDTH + smidgen
-
     def draw(self, pen):
         if self.character.bottom_straight():
+            pen.line_to_y(
+                BOTTOM + WIDTH / 2,
+                end_angle=-45,
+            )
             pen.turn_to(-45)
-            pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
+            pen.move_forward(WIDTH * slant45)
             pen.turn_to(0)
             pen.line_forward(2, start_angle=-45, end_angle=-45)
         elif self.character.bottom_slanted():
+            slant_width = self.predict_slant_width(pen, 45)
             pen.line_to_y(
-                BOTTOM + pen.last_slant_width() / slant45 / 2,
+                BOTTOM + slant_width / slant45 / 2,
                 end_angle=45,
             )
             pen.turn_to(-135)
@@ -172,14 +146,25 @@ class Barb(BottomEnding):
         return +WIDTH / 4
 
     def draw(self, pen):
-        pen.stroke_mode(WIDTH / 2)
+        pen.line_to_y(BOTTOM + WIDTH / 4, end_angle=self.angle())
+
+        old_mode = pen.mode
+        new_mode = old_mode.copy()
+        new_mode.width = WIDTH / 2
+        pen.set_mode(new_mode)
+
         if self.character.bottom_straight():
             pen.turn_to(45)
-            pen.line_forward(WIDTH * 1.5, end_angle=20)
+            pen.line_forward(2 * WIDTH)
+            seg = pen.paper.elements[-1].segments[-1]
+            seg.b_left = seg.a_left
         elif self.character.bottom_slanted():
             pen.turn_to(180)
-            pen.line_forward(WIDTH * 1.5, end_angle=25)
-        pen.stroke_mode(WIDTH)
+            pen.line_forward(2 * WIDTH)
+            seg = pen.paper.elements[-1].segments[-1]
+            seg.b_right = seg.a_right
+
+        pen.set_mode(old_mode)
 
 
 class DiagonalUpRight(BottomEnding):

@@ -21,14 +21,13 @@ def flip_angle_x(angle):
 
 class ConsonantCharacter(Character):
 
-    bottom_type = NotImplemented  # 'straight' or 'slanted'
-    bottom_orientation = NotImplemented  # 'left' or 'right'
+    bottom_type = NotImplemented  # 'straight', 'left' or 'right'.
     side_flipped = False
     bottom_flipped = False
 
     def __init__(self, side_ending_class, bottom_ending_class):
         self.side_ending = side_ending_class(self)
-        if self.bottom_slanted() and self.bottom_orientation == 'left':
+        if self.bottom_type == 'left':
             bottom_ending_class = flip_ending_horizontal(bottom_ending_class)
         self.bottom_ending = bottom_ending_class(self)
 
@@ -43,7 +42,7 @@ class ConsonantCharacter(Character):
         return self.bottom_type == 'straight'
 
     def bottom_slanted(self):
-        return self.bottom_type == 'slanted'
+        return self.bottom_type in ['left', 'right']
 
     def draw_character(self, mode):
         paper = Paper()
@@ -75,16 +74,13 @@ class ConsonantCharacter(Character):
         # If the bottom orientation is slanted left, then we have to
         # start the bottom ending from a flipped heading so when it flips
         # again later it will be correct.
-        if (
-            self.bottom_type == 'slanted' and
-            self.bottom_orientation == 'left'
-        ):
+        if self.bottom_type == 'left':
             bottom_ending_heading = flip_angle_x(bottom_ending_heading)
         pen.turn_to(bottom_ending_heading)
 
         # Draw the ending, and maybe flip it horizontally.
         self.bottom_ending.draw(pen)
-        if self.bottom_orientation == 'left':
+        if self.bottom_type == 'left':
             pen.paper.mirror_x(bottom_ending_position.x)
         paper.merge(pen.paper)
 
@@ -97,7 +93,6 @@ class ConsonantCharacter(Character):
 class P(ConsonantCharacter):
 
     bottom_type = 'straight'
-    bottom_orientation = 'right'
     side_flipped = True
 
     def draw(self, pen):
@@ -113,7 +108,6 @@ class P(ConsonantCharacter):
 class T(ConsonantCharacter):
 
     bottom_type = 'straight'
-    bottom_orientation = 'right'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -124,8 +118,7 @@ class T(ConsonantCharacter):
 
 class K(ConsonantCharacter):
 
-    bottom_type = 'slanted'
-    bottom_orientation = 'right'
+    bottom_type = 'right'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -136,8 +129,7 @@ class K(ConsonantCharacter):
 
 class Q(ConsonantCharacter):
 
-    bottom_type = 'slanted'
-    bottom_orientation = 'left'
+    bottom_type = 'left'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -153,7 +145,6 @@ class Q(ConsonantCharacter):
 class C(ConsonantCharacter):
 
     bottom_type = 'straight'
-    bottom_orientation = 'right'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -168,8 +159,7 @@ class C(ConsonantCharacter):
 
 class CHacek(ConsonantCharacter):
 
-    bottom_type = 'slanted'
-    bottom_orientation = 'left'
+    bottom_type = 'left'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -184,8 +174,7 @@ class CHacek(ConsonantCharacter):
 
 class L(ConsonantCharacter):
 
-    bottom_type = 'slanted'
-    bottom_orientation = 'right'
+    bottom_type = 'right'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -199,7 +188,6 @@ class L(ConsonantCharacter):
 class H(ConsonantCharacter):
 
     bottom_type = 'straight'
-    bottom_orientation = 'right'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -215,7 +203,6 @@ class H(ConsonantCharacter):
 class PStop(ConsonantCharacter):
 
     bottom_type = 'straight'
-    bottom_orientation = 'right'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -231,7 +218,6 @@ class PStop(ConsonantCharacter):
 class TStop(ConsonantCharacter):
 
     bottom_type = 'straight'
-    bottom_orientation = 'right'
     side_flipped = True
     bottom_flipped = True
 
@@ -247,7 +233,6 @@ class TStop(ConsonantCharacter):
 class KStop(ConsonantCharacter):
 
     bottom_type = 'straight'
-    bottom_orientation = 'right'
     side_flipped = True
 
     def draw(self, pen):
@@ -263,8 +248,7 @@ class KStop(ConsonantCharacter):
 
 class QStop(ConsonantCharacter):
 
-    bottom_type = 'slanted'
-    bottom_orientation = 'right'
+    bottom_type = 'right'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -279,8 +263,7 @@ class QStop(ConsonantCharacter):
 
 class CStop(ConsonantCharacter):
 
-    bottom_type = 'slanted'
-    bottom_orientation = 'right'
+    bottom_type = 'right'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -295,8 +278,7 @@ class CStop(ConsonantCharacter):
 
 class CHacekStop(ConsonantCharacter):
 
-    bottom_type = 'slanted'
-    bottom_orientation = 'left'
+    bottom_type = 'left'
     side_flipped = True
 
     def draw(self, pen):
@@ -315,7 +297,6 @@ class CHacekStop(ConsonantCharacter):
 class F(ConsonantCharacter):
 
     bottom_type = 'straight'
-    bottom_orientation = 'right'
     side_flipped = True
 
     def draw(self, pen):
@@ -332,7 +313,6 @@ class F(ConsonantCharacter):
 class TCedilla(ConsonantCharacter):
 
     bottom_type = 'straight'
-    bottom_orientation = 'right'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -347,8 +327,7 @@ class TCedilla(ConsonantCharacter):
 
 class X(ConsonantCharacter):
 
-    bottom_type = 'slanted'
-    bottom_orientation = 'left'
+    bottom_type = 'left'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -364,7 +343,6 @@ class X(ConsonantCharacter):
 class S(ConsonantCharacter):
 
     bottom_type = 'straight'
-    bottom_orientation = 'right'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -382,7 +360,6 @@ class S(ConsonantCharacter):
 class SHacek(ConsonantCharacter):
 
     bottom_type = 'straight'
-    bottom_orientation = 'right'
     side_flipped = True
 
     def draw(self, pen):
@@ -401,7 +378,6 @@ class SHacek(ConsonantCharacter):
 class R(ConsonantCharacter):
 
     bottom_type = 'straight'
-    bottom_orientation = 'right'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -420,7 +396,6 @@ class R(ConsonantCharacter):
 class W(ConsonantCharacter):
 
     bottom_type = 'straight'
-    bottom_orientation = 'right'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -433,8 +408,7 @@ class W(ConsonantCharacter):
 
 class M(ConsonantCharacter):
 
-    bottom_type = 'slanted'
-    bottom_orientation = 'left'
+    bottom_type = 'left'
 
     def draw(self, pen):
         pen.turn_to(180)
@@ -447,8 +421,7 @@ class M(ConsonantCharacter):
 
 class NHacek(ConsonantCharacter):
 
-    bottom_type = 'slanted'
-    bottom_orientation = 'right'
+    bottom_type = 'right'
     side_flipped = True
 
     def draw(self, pen):
