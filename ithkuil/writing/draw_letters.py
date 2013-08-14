@@ -17,7 +17,14 @@ consonants = [
     cons.H, cons.Stop,
     cons.PStop, cons.PH,
     cons.TStop, cons.TH,
-][-4:]
+    cons.KStop, cons.KH,
+    cons.QStop, cons.QH,
+    cons.CStop, cons.CH,
+    cons.CHacekStop, cons.CHacekH,
+    cons.F, cons.V,
+    cons.TCedilla, cons.Dh,
+    cons.X, cons.Xh,
+][-6:]
 #consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.D, cons.T, cons.K, cons.RHacek, cons.L, cons.J]
 import ithkuil.writing.side_ending as side_ending
 #side_endings = [side_ending.Normal, side_ending.RightOnBottom, side_ending.CurveDownOnBottom, side_ending.CurveUpOnBottom]#, side_ending.SideAll]
