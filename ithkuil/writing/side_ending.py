@@ -20,7 +20,7 @@ class Normal(SideEnding):
         return 0
 
     def draw(self, pen):
-        pen.line_forward(WIDTH, end_angle=self.angle())
+        pen.line_forward(WIDTH, end_slant=self.angle())
 
 
 class RightOnBottom(SideEnding):
@@ -35,7 +35,7 @@ class RightOnBottom(SideEnding):
         pen.turn_to(-135)
         pen.move_forward(WIDTH * slant45)
         pen.turn_to(0)
-        pen.line_forward(2, start_angle=45, end_angle=45)
+        pen.line_forward(2, start_slant=45, end_slant=45)
 
 
 class DownOnBottom(SideEnding):
@@ -50,7 +50,7 @@ class DownOnBottom(SideEnding):
         pen.turn_to(-135)
         pen.move_forward(WIDTH * slant45)
         pen.turn_to(-90)
-        pen.line_forward(2, start_angle=45, end_angle=45)
+        pen.line_forward(2, start_slant=45, end_slant=45)
 
 
 class CurveDownOnBottom(SideEnding):
@@ -145,7 +145,7 @@ class DiagonalDownRightOnBottom(SideEnding):
         pen.turn_to(-135)
         pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
         pen.turn_to(-45)
-        pen.line_forward(2, start_angle=45, end_angle=90)
+        pen.line_forward(2, start_slant=45, end_slant=90)
 
 
 class FoldDownCurveUp(SideEnding):
@@ -160,10 +160,10 @@ class FoldDownCurveUp(SideEnding):
         pen.turn_to(-45)
         pen.move_forward(WIDTH * slant45 / 2 + WIDTH * slant75 / 2)
         pen.turn_to(-120)
-        pen.line_forward(1, start_angle=-45)
+        pen.line_forward(1, start_slant=-45)
         pen.turn_right(30)
         pen.stroke_mode((3 / 4) * WIDTH)
-        pen.line_forward(1.25, end_angle=0)
+        pen.line_forward(1.25, end_slant=0)
         pen.stroke_mode(WIDTH)
 
 
@@ -179,10 +179,10 @@ class FoldDownCurveDown(SideEnding):
         pen.turn_to(-45)
         pen.move_forward(WIDTH * slant45 / 2 + WIDTH * slant75 / 2)
         pen.turn_to(-150)
-        pen.line_forward(1, start_angle=-45)
+        pen.line_forward(1, start_slant=-45)
         pen.turn_left(30)
         pen.stroke_mode((3 / 4) * WIDTH)
-        pen.line_forward(1.25, end_angle=90)
+        pen.line_forward(1.25, end_slant=90)
         pen.stroke_mode(WIDTH)
 
 
@@ -198,7 +198,7 @@ class DiagonalDownLeft(SideEnding):
         pen.turn_to(-45)
         pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
         pen.turn_to(-135)
-        pen.line_forward(2, start_angle=-45, end_angle=90)
+        pen.line_forward(2, start_slant=-45, end_slant=90)
 
 
 class DownOnRight(SideEnding):
@@ -213,7 +213,7 @@ class DownOnRight(SideEnding):
         pen.turn_to(45)
         pen.move_forward(WIDTH * slant45)
         pen.turn_to(-90)
-        pen.line_forward(2.5, start_angle=45, end_angle=45)
+        pen.line_forward(2.5, start_slant=45, end_slant=45)
 
 
 class DiagonalDownRightOnTop(SideEnding):
@@ -228,7 +228,7 @@ class DiagonalDownRightOnTop(SideEnding):
         pen.turn_to(45)
         pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
         pen.turn_to(-45)
-        pen.line_to_y(TOP - WIDTH, start_angle=45, end_angle=0)
+        pen.line_to_y(TOP - WIDTH, start_slant=45, end_slant=0)
 
 
 class FoldUp(SideEnding):
@@ -243,7 +243,7 @@ class FoldUp(SideEnding):
         pen.turn_to(45)
         pen.move_forward(WIDTH * slant45)
         pen.turn_to(90)
-        pen.line_forward(2, start_angle=45, end_angle=45)
+        pen.line_forward(2, start_slant=45, end_slant=45)
 
 
 class UpOnRight(SideEnding):
@@ -258,7 +258,7 @@ class UpOnRight(SideEnding):
         pen.turn_to(-45)
         pen.move_forward(WIDTH * slant45)
         pen.turn_to(90)
-        pen.line_forward(2.5, start_angle=-45, end_angle=-45)
+        pen.line_forward(2.5, start_slant=-45, end_slant=-45)
 
 
 class DiagonalUpRightOnTop(SideEnding):
@@ -273,7 +273,7 @@ class DiagonalUpRightOnTop(SideEnding):
         pen.turn_to(-45)
         pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
         pen.turn_to(45)
-        pen.line_to_y(TOP, start_angle=-45, end_angle=0)
+        pen.line_to_y(TOP, start_slant=-45, end_slant=0)
 
 
 class FoldDown(SideEnding):
@@ -288,7 +288,7 @@ class FoldDown(SideEnding):
         pen.turn_to(-45)
         pen.move_forward(WIDTH * slant45)
         pen.turn_to(-90)
-        pen.line_forward(2, start_angle=-45, end_angle=-45)
+        pen.line_forward(2, start_slant=-45, end_slant=-45)
 
 
 class FoldUpCurveDown(SideEnding):
@@ -303,10 +303,10 @@ class FoldUpCurveDown(SideEnding):
         pen.turn_to(45)
         pen.move_forward(WIDTH * slant45 / 2 + WIDTH * slant75 / 2)
         pen.turn_to(120)
-        pen.line_forward(1, start_angle=45)
+        pen.line_forward(1, start_slant=45)
         pen.turn_left(30)
         pen.stroke_mode((3 / 4) * WIDTH)
-        pen.line_forward(1.25, end_angle=0)
+        pen.line_forward(1.25, end_slant=0)
         pen.stroke_mode(WIDTH)
 
 
@@ -322,10 +322,10 @@ class FoldUpCurveUp(SideEnding):
         pen.turn_to(45)
         pen.move_forward(WIDTH * slant45 / 2 + WIDTH * slant75 / 2)
         pen.turn_to(150)
-        pen.line_forward(1, start_angle=45)
+        pen.line_forward(1, start_slant=45)
         pen.turn_right(30)
         pen.stroke_mode((3 / 4) * WIDTH)
-        pen.line_forward(1.25, end_angle=90)
+        pen.line_forward(1.25, end_slant=90)
         pen.stroke_mode(WIDTH)
 
 
@@ -341,7 +341,7 @@ class DiagonalUpLeft(SideEnding):
         pen.turn_to(45)
         pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
         pen.turn_to(135)
-        pen.line_forward(2, start_angle=45, end_angle=90)
+        pen.line_forward(2, start_slant=45, end_slant=90)
 
 
 side_endings = [

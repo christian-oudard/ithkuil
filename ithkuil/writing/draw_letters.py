@@ -39,7 +39,7 @@ if __name__ == '__main__':
         letters,
         letter_width=10,
         letters_per_line=10,
-        #mode=StrokeMode(1.0),
+        mode=StrokeMode(1.0),
         show_templates=True,
     )
     print(paper.format_svg(4))
