@@ -1,8 +1,9 @@
 from ithkuil.writing.consonant import consonants
 from ithkuil.writing.bottom_ending import bottom_endings
 from ithkuil.writing.side_ending import side_endings
-from ithkuil.writing.typeset import typeset, typeset_fixed
-from canoepaddle.mode import *
+from ithkuil.writing.typeset import typeset, draw_letter
+
+from canoepaddle.mode import OutlineMode
 
 #DEBUG redefinition of parts lists for testing.
 import ithkuil.writing.consonant as cons
@@ -34,12 +35,20 @@ if __name__ == '__main__':
         for consonant_class in consonants:
             add_letter(consonant_class, side_ending_class, bottom_endings[0])
 
-    #paper = typeset(letters, 100)
-    paper = typeset_fixed(
-        letters,
-        letter_width=10,
+    papers = [
+        draw_letter(
+            letter,
+            mode=OutlineMode(1.0, 0.1),
+            fixed_width=10.0,
+            show_template=True,
+            #show_bounds=True,
+        )
+        for letter in letters
+    ]
+    page = typeset(
+        papers,
+        letter_spacing=2.0,
         letters_per_line=10,
-        mode=StrokeMode(1.0),
-        show_templates=True,
+        page_margin=5.0,
     )
-    print(paper.format_svg(4))
+    print(page.format_svg(6))

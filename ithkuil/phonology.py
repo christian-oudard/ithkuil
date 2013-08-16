@@ -121,23 +121,23 @@ for tone in tone_order:
     _tone_conversion_table[t] = c
 
 
-def convert_typed(typed_text):
+def convert_ascii(typed_text):
     """
-    >>> convert_typed("Ikc,as")
+    >>> convert_ascii("Ikc,as")
     'Ikças'
-    >>> convert_typed("A'tukc,as te^ oxnall")
+    >>> convert_ascii("A'tukc,as te^ oxnall")
     'A’tukças tê oxnall'
-    >>> convert_typed("U^b eikkradwa smou'ola^xh.")
+    >>> convert_ascii("U^b eikkradwa smou'ola^xh.")
     'Ûb eikkradwa smou’olâxh.'
-    >>> convert_typed("=Sakc^'a to^ myicka zboack.")
+    >>> convert_ascii("=Sakc^'a to^ myicka zboack.")
     '¯Sakč’a tô myicka zboack.'
-    >>> convert_typed("o\spa^tlo:k")
+    >>> convert_ascii("o\spa^tlo:k")
     'òspâtlök'
-    >>> convert_typed("Aigwapskh eks^u/ll,")
+    >>> convert_ascii("Aigwapskh eks^u/ll,")
     'Aigwapskʰ ekšúlļ'
-    >>> convert_typed("a^pca^/l")
+    >>> convert_ascii("a^pca^/l")
     'âpcââl'
-    >>> convert_typed("a^pca^a^l")
+    >>> convert_ascii("a^pca^a^l")
     'âpcââl'
     """
     result = []

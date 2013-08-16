@@ -17,6 +17,7 @@ from canoepaddle import Pen, Paper
 
 class ConsonantCharacter(Character):
 
+    pronunciation = NotImplemented
     bottom_type = NotImplemented  # 'straight', 'left' or 'right'.
     side_flipped = False
     bottom_flipped = False
@@ -80,14 +81,15 @@ class ConsonantCharacter(Character):
             pen.paper.mirror_x(bottom_ending_position.x)
         paper.merge(pen.paper)
 
-        #paper.join_paths()
-        #paper.fuse_paths()
+        paper.join_paths()
+        paper.fuse_paths()
 
         return paper
 
 
 class P(ConsonantCharacter):
 
+    pronunciation = 'p'
     bottom_type = 'straight'
     side_flipped = True
 
@@ -103,6 +105,7 @@ class P(ConsonantCharacter):
 
 class T(ConsonantCharacter):
 
+    pronunciation = 't'
     bottom_type = 'straight'
 
     def draw(self, pen):
@@ -114,6 +117,7 @@ class T(ConsonantCharacter):
 
 class K(ConsonantCharacter):
 
+    pronunciation = 'k'
     bottom_type = 'right'
 
     def draw(self, pen):
@@ -125,6 +129,7 @@ class K(ConsonantCharacter):
 
 class Q(ConsonantCharacter):
 
+    pronunciation = 'q'
     bottom_type = 'left'
 
     def draw(self, pen):
@@ -140,6 +145,7 @@ class Q(ConsonantCharacter):
 
 class C(ConsonantCharacter):
 
+    pronunciation = 'c'
     bottom_type = 'straight'
 
     def draw(self, pen):
@@ -155,6 +161,7 @@ class C(ConsonantCharacter):
 
 class CHacek(ConsonantCharacter):
 
+    pronunciation = 'c^'
     bottom_type = 'left'
 
     def draw(self, pen):
@@ -170,6 +177,7 @@ class CHacek(ConsonantCharacter):
 
 class L(ConsonantCharacter):
 
+    pronunciation = 'l'
     bottom_type = 'right'
 
     def draw(self, pen):
@@ -183,6 +191,7 @@ class L(ConsonantCharacter):
 
 class H(ConsonantCharacter):
 
+    pronunciation = 'h'
     bottom_type = 'straight'
 
     def draw(self, pen):
@@ -198,6 +207,7 @@ class H(ConsonantCharacter):
 
 class PStop(ConsonantCharacter):
 
+    pronunciation = "p'"
     bottom_type = 'straight'
 
     def draw(self, pen):
@@ -213,6 +223,7 @@ class PStop(ConsonantCharacter):
 
 class TStop(ConsonantCharacter):
 
+    pronunciation = "t'"
     bottom_type = 'straight'
     side_flipped = True
     bottom_flipped = True
@@ -228,6 +239,7 @@ class TStop(ConsonantCharacter):
 
 class KStop(ConsonantCharacter):
 
+    pronunciation = "k'"
     bottom_type = 'straight'
     side_flipped = True
 
@@ -244,6 +256,7 @@ class KStop(ConsonantCharacter):
 
 class QStop(ConsonantCharacter):
 
+    pronunciation = "q'"
     bottom_type = 'right'
 
     def draw(self, pen):
@@ -259,6 +272,7 @@ class QStop(ConsonantCharacter):
 
 class CStop(ConsonantCharacter):
 
+    pronunciation = "c'"
     bottom_type = 'right'
 
     def draw(self, pen):
@@ -274,6 +288,7 @@ class CStop(ConsonantCharacter):
 
 class CHacekStop(ConsonantCharacter):
 
+    pronunciation = "c^'"
     bottom_type = 'left'
     side_flipped = True
 
@@ -292,6 +307,7 @@ class CHacekStop(ConsonantCharacter):
 
 class F(ConsonantCharacter):
 
+    pronunciation = 'f'
     bottom_type = 'straight'
     side_flipped = True
 
@@ -308,6 +324,7 @@ class F(ConsonantCharacter):
 
 class TCedilla(ConsonantCharacter):
 
+    pronunciation = 't,'
     bottom_type = 'straight'
 
     def draw(self, pen):
@@ -323,6 +340,7 @@ class TCedilla(ConsonantCharacter):
 
 class X(ConsonantCharacter):
 
+    pronunciation = 'x'
     bottom_type = 'left'
 
     def draw(self, pen):
@@ -338,6 +356,7 @@ class X(ConsonantCharacter):
 
 class S(ConsonantCharacter):
 
+    pronunciation = 's'
     bottom_type = 'straight'
 
     def draw(self, pen):
@@ -355,6 +374,7 @@ class S(ConsonantCharacter):
 
 class SHacek(ConsonantCharacter):
 
+    pronunciation = 's^'
     bottom_type = 'straight'
     side_flipped = True
 
@@ -373,6 +393,7 @@ class SHacek(ConsonantCharacter):
 
 class R(ConsonantCharacter):
 
+    pronunciation = 'r'
     bottom_type = 'straight'
 
     def draw(self, pen):
@@ -391,6 +412,7 @@ class R(ConsonantCharacter):
 
 class W(ConsonantCharacter):
 
+    pronunciation = 'w'
     bottom_type = 'straight'
 
     def draw(self, pen):
@@ -404,6 +426,7 @@ class W(ConsonantCharacter):
 
 class M(ConsonantCharacter):
 
+    pronunciation = 'm'
     bottom_type = 'left'
 
     def draw(self, pen):
@@ -417,6 +440,7 @@ class M(ConsonantCharacter):
 
 class NHacek(ConsonantCharacter):
 
+    pronunciation = 'n^'
     bottom_type = 'right'
     side_flipped = True
 
@@ -432,28 +456,51 @@ class NHacek(ConsonantCharacter):
 
 
 B = flip(P)
+B.pronunciation = 'b'
 D = flip(T)
+D.pronunciation = 'd'
 G = flip(K)
+G.pronunciation = 'g'
 RHacek = flip(Q)
+RHacek.pronunciation = 'r^'
 ZDot = flip(C)
+ZDot.pronunciation = 'dz'
 J = flip(CHacek)
+J.pronunciation = 'j'
 Stop = flip(H)
+Stop.pronunciation = "'"
 PH = flip(PStop)
+PH.pronunciation = 'ph'
 TH = flip(TStop)
+TH.pronunciation = 'th'
 KH = flip(KStop)
+KH.pronunciation = 'kh'
 QH = flip(QStop)
+QH.pronunciation = 'qh'
 CH = flip(CStop)
+CH.pronunciation = 'ch'
 CHacekH = flip(CHacekStop)
+CHacekH.pronunciation = "c^h"
 V = flip(F)
+V.pronunciation = 'v'
 Dh = flip(TCedilla)
+Dh.pronunciation = 'dh'
 Xh = flip(X)
+Xh.pronunciation = 'xh'
 Z = flip(S)
+Z.pronunciation = 'z'
 ZHacek = flip(SHacek)
+ZHacek.pronunciation = 'z^'
 Y = flip(W)
+Y.pronunciation = 'y'
 LCedilla = flip(L)
+LCedilla.pronunciation = 'l,'
 CCedilla = flip(R)
+CCedilla.pronunciation = 'c,'
 N = flip(M)
+N.pronunciation = 'n'
 TLCedilla = flip(NHacek)
+TLCedilla.pronunciation = 'tl,'
 
 
 consonants = [

@@ -4,7 +4,7 @@ from ithkuil.phonology import (
     consonants, typing_consonants,
     vowels, typing_vowels,
     tone_order, tones, typing_tones,
-    convert_typed,
+    convert_ascii,
 )
 from ithkuil.grammar import deconstruct_formative
 from ithkuil.abbreviations import abbreviation_table
@@ -61,7 +61,7 @@ if __name__ == '__main__':
         elif typed == 'h':
             print(format_help())
         else:
-            text = convert_typed(typed)
+            text = convert_ascii(typed)
             print(text)
             for word in text.split():
                 word = word.strip()

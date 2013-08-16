@@ -112,9 +112,6 @@ def hook(pen, start_heading, end_heading, distance):
 
     pen.set_mode(old_mode)
 
-    import sys
-    print(hook_deviation, vec.mag(vec.vfrom(a, b)), file=sys.stderr)
-
 
 class BottomEnding(Ending):
 

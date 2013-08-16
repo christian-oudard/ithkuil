@@ -4,174 +4,162 @@
 import sys
 import traceback
 
-from .common import (
-    WIDTH, UNDER, BOTTOM, MIDDLE, TOP, OVER,
-    CHAR_MARGIN, LINE_HEIGHT, PAGE_MARGIN
+from ithkuil.writing.common import (
+    OVER, TOP, MIDDLE, BOTTOM, UNDER,
 )
 from canoepaddle import Pen, Paper
-from canoepaddle.mode import StrokeOutlineMode, StrokeMode
-from canoepaddle.bounds import Bounds
 
-DEFAULT_MODE = StrokeOutlineMode(WIDTH, 0.1 * WIDTH, '#f51700', '#1d0603')
+DEBUG_OUTPUT = True
 
 
 def typeset(
-    letters,
+    papers,
+    letter_spacing=0,
     line_width=None,
+    letters_per_line=None,
+    line_spacing=0,
+    page_margin=0,
     resolution=10,
-    mode=None,
-    show_templates=False,
-    show_bounds=False,
 ):
     """
     Arrange letters on the page.
 
-    If line_width is None, then the line will not ever wrap.
+    Takes a list of paper objects.
+
+    `letter_spacing` is how much space to leave between successive letters.
+    `line_width` is how wide each line is before it wraps. A value of None
+        means to not wrap based on this at all.
+    `letters_per_line` is how many characters to place before wrapping. A
+        value of None means to not wrap based on this at all.
+    `line_spacing` is the vertical space left between lines.
+    `page_margin` is how much space to leave around the edge of the page.
+    `resolution` is the number of pixels per one unit.
     """
-    if mode is None:
-        mode = DEFAULT_MODE
-
-    paper = Paper()
-    letter_bounds_list = []
-
-    x = x_start = PAGE_MARGIN
-    y = -PAGE_MARGIN
-
-    for letter in letters:
-        letter_paper = draw_letter(letter, mode=mode, show_template=show_templates)
-
-        # Locate the letter on the page.
+    # The letters are arranged into lines first, then the lines are arranged on
+    # the page. The coordinates on each line have x=0 as the left edge, and y=0
+    # as the text baseline. We trust each letter to be arranged correctly with
+    # regard to the baseline.
+    lines = [Paper()]
+    letter_count = 0
+    x = 0
+    for letter_paper in papers:
         bounds = letter_paper.bounds()
-        bounds.bottom = UNDER
-        bounds.top = OVER
+        letter_paper.translate((-bounds.left, 0))
 
-        if show_bounds:
-            pen = Pen()
-            pen.fill_mode('#888')
-            bounds.draw(pen)
-            pen.paper.merge(letter_paper)
-            letter_paper = pen.paper
+        # Start a new line if needed. Keep at least one letter per line.
+        line_break = False
+        if line_width is not None:
+            if bounds.right + x > line_width:
+                line_break = True
+        if letters_per_line is not None:
+            if letter_count >= letters_per_line:
+                line_break = True
+        if letter_count == 0:
+            line_break = False
 
-        letter_paper.translate((-bounds.left, -OVER))
-        letter_paper.translate((x, y))
+        if not line_break:
+            letter_count += 1
+        else:
+            letter_count = 0
+            x = 0
+            lines.append(Paper())
 
-        bounds.translate((x, y))
-        letter_bounds_list.append(bounds)
+        letter_paper.translate((x, 0))
+        lines[-1].merge(letter_paper)
 
-        paper.merge(letter_paper)
+        x += bounds.width + letter_spacing
 
-        x += bounds.width + CHAR_MARGIN
-        if line_width is not None and (x - x_start) > line_width:
-            x = x_start
-            y -= LINE_HEIGHT
+    # Now we arrange completed lines on the page.
+    page = Paper()
+    y = 0
+    for line in lines:
+        bounds = line.bounds()
+        line.translate((0, y))
+        page.merge(line)
+        y -= bounds.height + line_spacing
 
-    page_bounds = Bounds.union_all(letter_bounds_list)
-    page_width = page_bounds.width + 2 * PAGE_MARGIN
-    page_height = page_bounds.height + 2 * PAGE_MARGIN
+    # Set page margins and pixel size.
+    page_bounds = page.bounds()
+    page_bounds.left -= page_margin
+    page_bounds.right += page_margin
+    page_bounds.bottom -= page_margin
+    page_bounds.top += page_margin
+    page.override_bounds(page_bounds)
 
-    paper.set_pixel_size(resolution * page_width, resolution * page_height)
-    paper.set_view_box(0, 0, page_width, -page_height)
-
-    return paper
+    return page
 
 
-def typeset_fixed(
-    letters,
-    letter_width,
-    letters_per_line=None,
-    resolution=10,
+def draw_letter(
+    letter,
     mode=None,
-    show_templates=False,
+    fixed_width=None,
+    show_template=False,
     show_bounds=False,
 ):
-    """
-    Arrange letters on the page in a grid.
-
-    If letters_per_line is None, then the line will not ever wrap.
-    """
-    if mode is None:
-        mode = DEFAULT_MODE
-
-    paper = Paper()
-    letter_bounds_list = []
-
-    x = x_start = PAGE_MARGIN + (letter_width / 2)
-    y = -PAGE_MARGIN - OVER
-    line_size = 0
-
-    for letter in letters:
-        letter_paper = draw_letter(letter, mode=mode, show_template=show_templates)
-
-        # Locate the letter on the page.
-        bounds = Bounds(-letter_width / 2, UNDER, +letter_width / 2, OVER)
-
-        if show_bounds:
-            pen = Pen()
-            pen.fill_mode('#888')
-            bounds.draw(pen)
-            letter_paper.merge_under(pen.paper)
-
-        letter_paper.translate((x, y))
-        paper.merge(letter_paper)
-        bounds.translate((x, y))
-        letter_bounds_list.append(bounds)
-
-        x += letter_width + CHAR_MARGIN
-        line_size += 1
-        if letters_per_line is not None and line_size >= letters_per_line:
-            x = x_start
-            y -= LINE_HEIGHT
-            line_size = 0
-
-    page_bounds = Bounds.union_all(letter_bounds_list)
-    page_width = page_bounds.width + 2 * PAGE_MARGIN
-    page_height = page_bounds.height + 2 * PAGE_MARGIN
-
-    paper.set_pixel_size(resolution * page_width, resolution * page_height)
-    paper.set_view_box(0, 0, page_width, -page_height)
-
-    return paper
-
-
-def draw_letter(letter, mode, show_template=False):
     """
     Draw the given letter and return a Paper.
 
     The letter is located centered on x=0, and with y=0 as the
     character baseline.
+
+    If `fixed_width` is specified, use that for the paper width.
     """
-    print(str(letter), file=sys.stderr)
+    if DEBUG_OUTPUT:
+        print(str(letter), file=sys.stderr)
 
-    letter_paper = Paper()
-
-    if show_template:
-        pen = Pen()
-        pen.stroke_mode(0.125, '#88f')
-        draw_template_path(pen)
-        letter_paper.merge(pen.paper)
-
-    pen = Pen()
     try:
         character_paper = letter.draw_character(mode)
     except Exception:
-        traceback.print_exc()
+        if DEBUG_OUTPUT:
+            character_paper = Paper()
+            traceback.print_exc()
+        else:
+            raise
+    character_paper.center_on_x(0)
+    if fixed_width is not None:
+        bounds = character_paper.bounds()
+        bounds.left = -fixed_width / 2
+        bounds.right = +fixed_width / 2
+        character_paper.override_bounds(bounds)
+
+    template_paper = Paper()
+    if show_template:
+        template_paper = draw_template_path()
     else:
-        character_paper.center_on_x(0)
-        letter_paper.merge(character_paper)
+        template_paper = Paper()
+
+    letter_paper = Paper()
+    letter_paper.merge(template_paper)
+    letter_paper.merge(character_paper)
+
+    # Set proper bounds for typesetting.
+    # We keep left and right bounds the same, but top and bottom bounds
+    # are set to accomodate full line height. Use the character bounds as our
+    # basis so the template doesn't increase the size.
+    bounds = character_paper.bounds()
+    bounds.bottom = UNDER
+    bounds.top = OVER
+
+    letter_paper.override_bounds(bounds)
+
+    if show_bounds:
+        pen = Pen()
+        pen.fill_mode('#aaa')
+        bounds.draw(pen)
+        letter_paper.merge_under(pen.paper)
 
     return letter_paper
 
 
-def draw_template_path(pen):
-    pen.move_to((0, 0))
+def draw_template_path():
+    pen = Pen()
+    pen.stroke_mode(0.1, '#263144')
     pen.turn_to(0)
-    pen.move_to((-1, UNDER))
-    pen.line_forward(2)
-    pen.move_to((-4, BOTTOM))
-    pen.line_forward(8)
-    pen.move_to((-4, MIDDLE))
-    pen.line_forward(8)
-    pen.move_to((-4, TOP))
-    pen.line_forward(8)
-    pen.move_to((-1, OVER))
-    pen.line_forward(2)
+    pen.move_to((0, BOTTOM))
+    pen.line_forward(10)
+    pen.move_to((0, MIDDLE))
+    pen.line_forward(10)
+    pen.move_to((0, TOP))
+    pen.line_forward(10)
+    pen.paper.center_on_x(0)
+    return pen.paper

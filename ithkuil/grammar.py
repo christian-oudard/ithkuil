@@ -1,7 +1,7 @@
 import itertools
 import re
 from .phonology import (
-    convert_typed,
+    convert_ascii,
     consonants,
     vowels,
     tones,
@@ -265,7 +265,7 @@ def lookup(query):
     result.extend(lookup_key(pieces))
 
     # Try to interpret the query as an affix.
-    query = convert_typed(query)
+    query = convert_ascii(query)
     for rtable in [
         vr_table_reverse,
         vc_table_reverse,
@@ -300,7 +300,7 @@ def lookup_lexicon(root):
     >>> lookup_lexicon('ph')
     'branched and / or leaved plant'
     """
-    root = convert_typed(root)
+    root = convert_ascii(root)
     root = root.upper()
     return lexicon_table.get(root)
 
@@ -311,7 +311,7 @@ def deconstruct_formative(word):
     Currently only handles the simplified structure:
     Vr+Cr+Vc(+Ci+Vi)+Ca(+Vf(+Cb))[+Tone]
     """
-    word = convert_typed(word).lower()
+    word = convert_ascii(word).lower()
     parsed_word = parse_formative(word)
     if parsed_word is None:
         return None # Could not understand word structure.
