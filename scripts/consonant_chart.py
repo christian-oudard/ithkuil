@@ -35,4 +35,4 @@ page = typeset(
 # Draw text.
 # STUB, typeset papers with real letters
 
-print(page.format_svg(4, resolution=6))
+print(page.format_svg(4))

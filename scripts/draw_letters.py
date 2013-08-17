@@ -17,38 +17,37 @@ bottom_endings = bottom_endings[-3:]
 #bottom_endings = [be.Normal]
 #bottom_endings = [be.Normal, be.BottomAll]
 
-if __name__ == '__main__':
-    letters = []
-    seen = set()
+letters = []
+seen = set()
 
-    def add_letter(c, s, b):
-        if (c, s, b) in seen:
-            return
-        else:
-            seen.add((c, s, b))
-        letters.append(c(s, b))
+def add_letter(c, s, b):
+    if (c, s, b) in seen:
+        return
+    else:
+        seen.add((c, s, b))
+    letters.append(c(s, b))
 
-    for bottom_ending_class in bottom_endings:
-        for consonant_class in consonants:
-            add_letter(consonant_class, side_endings[0], bottom_ending_class)
-    for side_ending_class in side_endings:
-        for consonant_class in consonants:
-            add_letter(consonant_class, side_ending_class, bottom_endings[0])
+for bottom_ending_class in bottom_endings:
+    for consonant_class in consonants:
+        add_letter(consonant_class, side_endings[0], bottom_ending_class)
+for side_ending_class in side_endings:
+    for consonant_class in consonants:
+        add_letter(consonant_class, side_ending_class, bottom_endings[0])
 
-    papers = [
-        draw_letter(
-            letter,
-            mode=OutlineMode(1.0, 0.1),
-            fixed_width=10.0,
-            show_template=True,
-            #show_bounds=True,
-        )
-        for letter in letters
-    ]
-    page = typeset(
-        papers,
-        letter_spacing=2.0,
-        letters_per_line=10,
-        page_margin=5.0,
+papers = [
+    draw_letter(
+        letter,
+        mode=OutlineMode(1.0, 0.1),
+        fixed_width=10.0,
+        show_template=True,
+        #show_bounds=True,
     )
-    print(page.format_svg(6))
+    for letter in letters
+]
+page = typeset(
+    papers,
+    letter_spacing=2.0,
+    letters_per_line=10,
+    page_margin=5.0,
+)
+print(page.format_svg(6))

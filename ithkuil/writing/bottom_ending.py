@@ -1,9 +1,5 @@
 import math
 
-import vec
-from canoepaddle.geometry import intersect_circle_line, closest_point_to
-from canoepaddle.heading import Heading
-
 from .common import (
     Ending,
     slant45,
@@ -12,105 +8,6 @@ from .common import (
     BOTTOM,
     UNDER,
 )
-
-
-# TODO: change base width based on angles so the hook looks more consistent.
-
-def hook(pen, start_heading, end_heading, distance):
-    start_heading = Heading(start_heading)
-    end_heading = Heading(end_heading)
-
-    # We drop into fill mode temporarily to draw the hook outline.
-    old_mode = pen.mode
-    pen.set_mode(old_mode.outliner_mode())
-
-    # The pen starts at the "left" corner of the hook, facing along the
-    # base of the hook.
-    base_heading = pen.heading
-    left_corner = pen.position
-    pen.move_forward(WIDTH)
-    right_corner = pen.position
-
-    # Calculate the radius.
-    arc_angle = end_heading - start_heading
-    if arc_angle > 180:
-        arc_angle -= 360
-    circumference = distance / (arc_angle.theta / 360)
-    radius = circumference / (2 * math.pi)
-
-    # Find the tip of the hook.
-    # From the center of the base, make an arc to the tip.
-    # Positive arc angles curve to the left, and negative arc angles
-    pen.move_forward(-WIDTH / 2)
-    pen.turn_to(start_heading)
-    pen.arc_left(arc_angle, radius)
-    tip = pen.position
-    pen.undo()
-
-    # Find the correct headings for the side arcs.
-    pen.move_to(left_corner)
-    pen.turn_to(start_heading)
-    pen.arc_to(tip)
-    left_end_heading = pen.last_segment().end_heading
-    pen.undo()
-
-    pen.move_to(right_corner)
-    pen.turn_to(start_heading)
-    pen.arc_to(tip)
-    right_start_heading = pen.last_segment().start_heading
-    pen.undo()
-
-    # Draw the hook.
-    pen.move_to(left_corner)
-    pen.line_to(right_corner)
-    pen.turn_to(right_start_heading)
-    pen.arc_to(tip)
-    right_arc = pen.last_segment()
-    pen.turn_to(left_end_heading + 180)
-    pen.arc_to(left_corner)
-    left_arc = pen.last_segment()
-
-    # Figure out how wide the arc is.
-    slant_angle = (start_heading - base_heading)
-    if slant_angle > 180:
-        slant_angle -= 360
-    hook_deviation = abs(slant_angle) - 90
-    right_arc_behind = hook_deviation < 0
-
-    ##DEBUG
-    if not right_arc_behind:
-        pen.stroke_mode(0.03, '#faa')
-    else:
-        pen.stroke_mode(0.03, '#aaa')
-    pen.move_to(left_arc.center)
-    pen.circle(0.2)
-    pen.circle(left_arc.radius)
-
-    if right_arc_behind:
-        pen.stroke_mode(0.03, '#faa')
-    else:
-        pen.stroke_mode(0.03, '#aaa')
-    pen.move_to(right_arc.center)
-    pen.circle(0.2)
-    pen.circle(right_arc.radius)
-    ##
-
-    if right_arc_behind:
-        c = left_arc.center
-        a = right_corner
-        other_arc = left_arc
-    else:
-        c = right_arc.center
-        a = left_corner
-        other_arc = right_arc
-
-    points = intersect_circle_line(other_arc.center, other_arc.radius, a, c)
-    b = closest_point_to(a, points)
-    pen.stroke_mode(0.03, '#faa')
-    pen.move_to(a)
-    pen.line_to(b)
-
-    pen.set_mode(old_mode)
 
 
 class BottomEnding(Ending):
