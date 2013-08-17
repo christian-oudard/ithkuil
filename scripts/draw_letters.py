@@ -16,6 +16,7 @@ import ithkuil.writing.bottom_ending as be
 bottom_endings = bottom_endings[-3:]
 #bottom_endings = [be.Normal]
 #bottom_endings = [be.Normal, be.BottomAll]
+#bottom_endings = [be.HookLeftOnRight]
 
 letters = []
 seen = set()
@@ -37,7 +38,7 @@ for side_ending_class in side_endings:
 papers = [
     draw_letter(
         letter,
-        mode=OutlineMode(1.0, 0.1),
+        mode=OutlineMode(1.0, 0.2),
         fixed_width=10.0,
         show_template=True,
         #show_bounds=True,
@@ -48,6 +49,7 @@ page = typeset(
     papers,
     letter_spacing=2.0,
     letters_per_line=10,
+    line_spacing=3.0,
     page_margin=5.0,
 )
 print(page.format_svg(6))

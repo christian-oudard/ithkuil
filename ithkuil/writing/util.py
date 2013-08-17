@@ -2,10 +2,11 @@ import math
 
 import vec
 
-from canoepaddle.geometry import intersect_circle_line, closest_point_to
-from canoepaddle.heading import Heading, Angle
+from canoepaddle.geometry import intersect_circle_line
+from canoepaddle.heading import Angle
 
 
+# TODO: make distance central, not on the inside edge.
 def hook(pen, slant_angle, arc_angle, distance):
     """
     Draw a hook shape.
@@ -103,38 +104,5 @@ def hook(pen, slant_angle, arc_angle, distance):
     # Inner arc.
     pen.turn_to(inside_end_heading + 180)
     pen.arc_to(inside_corner)
-
-    ###DEBUG
-    #pen.stroke_mode(0.07, '#aaa')
-
-    #pen.move_to(inside_center)
-    #pen.circle(0.2)
-    #pen.circle(inside_arc.radius)
-    #pen.circle(abs(inside_arc.radius) + hook_width)
-
-    #for p in points:
-        #pen.move_to(p)
-        #pen.circle(0.2)
-
-    #pen.move_to(inside_center)
-    #pen.turn_toward(inside_arc.a)
-    #pen.line_forward(10)
-
-    #pen.move_to(inside_center)
-    #pen.turn_toward(inside_arc.b)
-    #pen.line_forward(10)
-
-    #pen.move_to(inside_corner)
-    #pen.turn_to(base_heading)
-    #pen.move_forward(-5)
-    #pen.line_forward(10)
-
-    #v = vec.vfrom(outside_corner, inside_center)
-    #v = vec.norm(v, hook_width)
-    #inside_widest = vec.add(outside_corner, v)
-    #pen.stroke_mode(0.07, '#afa')
-    #pen.move_to(outside_corner)
-    #pen.line_to(inside_widest)
-    ###
 
     pen.set_mode(old_mode)

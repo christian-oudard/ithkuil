@@ -57,9 +57,7 @@ def typeset(
         if letter_count == 0:
             line_break = False
 
-        if not line_break:
-            letter_count += 1
-        else:
+        if line_break:
             letter_count = 0
             x = 0
             lines.append(Paper())
@@ -67,6 +65,7 @@ def typeset(
         letter_paper.translate((x, 0))
         lines[-1].merge(letter_paper)
 
+        letter_count += 1
         x += bounds.width + letter_spacing
 
     # Now we arrange completed lines on the page.
@@ -111,8 +110,12 @@ def draw_letter(
         character_paper = letter.draw_character(mode)
     except Exception:
         if DEBUG_OUTPUT:
-            character_paper = Paper()
             traceback.print_exc()
+            # Return an error pattern.
+            pen = Pen()
+            pen.fill_mode()
+            pen.square(1)
+            character_paper = pen.paper
         else:
             raise
     character_paper.center_on_x(0)
@@ -153,7 +156,7 @@ def draw_letter(
 
 def draw_template_path():
     pen = Pen()
-    pen.stroke_mode(0.1, '#263144')
+    pen.stroke_mode(0.05, '#466184')
     pen.turn_to(0)
     pen.move_to((0, BOTTOM))
     pen.line_forward(10)

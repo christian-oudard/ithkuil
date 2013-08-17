@@ -1,5 +1,3 @@
-import math
-
 from .common import (
     Ending,
     slant45,
@@ -8,6 +6,7 @@ from .common import (
     BOTTOM,
     UNDER,
 )
+from .util import hook
 
 
 class BottomEnding(Ending):
@@ -285,8 +284,7 @@ class HookLeftOnRight(BottomEnding):
         )
         pen.turn_to(45)
         pen.move_forward(slant_width / 2)
-        hook(pen, -90, -15, 2.5)
-
+        hook(pen, -135, 90, 2.5)
 
 
 class HookRightOnRight(BottomEnding):
@@ -300,7 +298,7 @@ class HookRightOnRight(BottomEnding):
         )
         pen.turn_to(45)
         pen.move_forward(slant_width / 2)
-        hook(pen, -30, -105, 2.5)
+        hook(pen, -45, -90, 2.5)
 
 
 class FoldHookRight(BottomEnding):
@@ -313,12 +311,12 @@ class FoldHookRight(BottomEnding):
             )
             pen.turn_to(-45)
             pen.move_forward(WIDTH * slant45 / 2)
-            hook(pen, 45, -30, 2.5)
+            hook(pen, 90, -75, 2.25)
         elif self.character.bottom_slanted():
             pen.line_to_y(BOTTOM, end_slant=0)
             pen.turn_to(0)
             pen.move_forward(pen.last_slant_width() / 2)
-            hook(pen, 75, 0, 2.5)
+            hook(pen, 75, -75, 2.0)
 
 
 bottom_endings = [
