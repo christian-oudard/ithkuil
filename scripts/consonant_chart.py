@@ -13,7 +13,7 @@ for consonant_class in consonants:
     letter_paper = draw_letter(
         letter,
         mode=StrokeOutlineMode(1.0, 0.1, '#c60416', '#3b0006'),
-        fixed_width=25,
+        fixed_width=27.0,
         show_template=True,
     )
     letter_paper.translate((5, 0), bounds=False)
@@ -34,8 +34,8 @@ page = typeset(
     papers,
     letter_spacing=1.0,
     letters_per_line=6,
-    line_spacing=2.0,
-    page_margin=3.0,
+    line_spacing=3.5,
+    page_margin=5.0,
 )
 
 print(page.format_svg(4))
