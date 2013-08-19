@@ -165,4 +165,7 @@ def convert_ascii(ascii_text):
 
 def convert_ascii_to_html(ascii_text):
     unicode_text = convert_ascii(ascii_text)
-    return unicode_text.replace('ʰ', '<sup>h</sup>')
+    return unicode_text.replace('ʰ', (
+        '<tspan baseline-shift="45%" font-size="58.3%" '
+        'font-weight="bold">h</tspan>'
+    ))
