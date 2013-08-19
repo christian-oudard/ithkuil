@@ -118,7 +118,7 @@ def draw_letter(
             character_paper = pen.paper
         else:
             raise
-    character_paper.center_on_x(0)
+
     if fixed_width is not None:
         bounds = character_paper.bounds()
         bounds.left = -fixed_width / 2

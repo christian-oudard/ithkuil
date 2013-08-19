@@ -84,6 +84,10 @@ class ConsonantCharacter(Character):
         paper.join_paths()
         paper.fuse_paths()
 
+        # We need to center on x=0 here because otherwise flipped
+        # consonants wouldn't flip at the right x value.
+        paper.center_on_x(0)
+
         return paper
 
 

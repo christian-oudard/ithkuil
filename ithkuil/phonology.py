@@ -121,7 +121,7 @@ for tone in tone_order:
     _tone_conversion_table[t] = c
 
 
-def convert_ascii(typed_text):
+def convert_ascii(ascii_text):
     """
     >>> convert_ascii("Ikc,as")
     'Ikças'
@@ -142,22 +142,27 @@ def convert_ascii(typed_text):
     """
     result = []
     i = 0
-    typed_length = len(typed_text)
+    typed_length = len(ascii_text)
     while i < typed_length:
         # Try greedily matching combinations.
         for length in range(_max_combo_length, 0, -1):
-            combo = typed_text[i:i+length]
+            combo = ascii_text[i:i+length]
             converted = _letter_conversion_table.get(combo)
             if converted:
                 result.append(converted)
                 break
         else:
             # Possibly add tone markers at the beginning of the word.
-            combo = typed_text[i]
+            combo = ascii_text[i]
             converted = _tone_conversion_table.get(combo)
-            if converted and (i == 0 or typed_text[i-1].isspace()):
+            if converted and (i == 0 or ascii_text[i-1].isspace()):
                 result.append(converted)
             else:
                 result.append(combo)
         i += length
     return ''.join(result)
+
+
+def convert_ascii_to_html(ascii_text):
+    unicode_text = convert_ascii(ascii_text)
+    return unicode_text.replace('ʰ', '<sup>h</sup>')
