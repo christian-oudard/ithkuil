@@ -2,9 +2,11 @@
 from .common import (
     Character,
     WIDTH,
+    OVER,
     TOP,
     MIDDLE,
     BOTTOM,
+    UNDER,
     bevel_distance,
     slant45,
     slant60,
@@ -83,6 +85,12 @@ class ConsonantCharacter(Character):
 
         paper.join_paths()
         paper.fuse_paths()
+
+        # Override the bounds so that the letter reaches the full line height.
+        bounds = paper.bounds()
+        bounds.bottom = UNDER
+        bounds.top = OVER
+        paper.override_bounds(bounds)
 
         # We need to center on x=0 here because otherwise flipped
         # consonants wouldn't flip at the right x value.
@@ -555,3 +563,57 @@ consonants = [
     NHacek,
     TLCedilla,
 ]
+
+
+class SideEndingStub(ConsonantCharacter):
+
+    def __init__(self, side_ending_class, bottom_ending_class):
+        self.side_ending = side_ending_class(self)
+        self.bottom_ending = None
+
+    def draw_character(self, mode):
+        paper = Paper()
+
+        pen = Pen()
+
+        pen.fill_mode('white')
+        pen.move_to((0, TOP - WIDTH / 2))
+        pen.square(mode.width * 2)
+        paper.merge(pen.paper)
+
+        pen = Pen()
+        pen.set_mode(mode)
+        pen.move_to((0, TOP - WIDTH / 2))
+        pen.turn_to(0)
+        pen.line_forward(WIDTH + 2.0)
+        self.side_ending.draw(pen)
+        paper.merge_under(pen.paper)
+
+        bounds = paper.bounds()
+        bounds.top = OVER
+        bounds.bottom = MIDDLE
+        bounds.left = 0
+        paper.override_bounds(bounds)
+        paper.translate((-2.0, 0))
+
+        return paper
+
+
+class VerticalBar(ConsonantCharacter):
+
+    bottom_type = 'straight'
+
+    def __init__(self, side_ending_class, bottom_ending_class):
+        self.side_ending = None
+        self.bottom_ending = bottom_ending_class(self)
+
+    def draw_character(self, mode):
+        pen = Pen()
+        pen.set_mode(mode)
+        pen.move_to((0, TOP))
+        pen.turn_to(-90)
+        pen.line_to_y(MIDDLE, start_slant=45)
+        self.bottom_ending.draw(pen)
+        pen.paper.fuse_paths()
+        pen.paper.center_on_x(0)
+        return pen.paper

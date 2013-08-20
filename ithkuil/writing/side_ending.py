@@ -33,7 +33,6 @@ class DownOnBottom(SideEnding):
     # Unframed Relation, Pattern 1, Stem 3
     def draw(self, pen):
         pen.line_forward(2 * WIDTH, end_slant=45)
-        pen.break_stroke()  # TEMP
         pen.turn_to(-135)
         pen.move_forward(WIDTH * slant45)
         pen.turn_to(-90)

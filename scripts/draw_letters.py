@@ -8,20 +8,21 @@ from canoepaddle.mode import OutlineMode
 #DEBUG redefinition of parts lists for testing.
 import ithkuil.writing.consonant as cons
 #consonants = consonants[-6:]
-#consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.D, cons.T, cons.K, cons.RHacek, cons.L, cons.J]
-consonants = [cons.T]
+#consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.D, cons.VerticalBar, cons.T, cons.K, cons.RHacek, cons.L, cons.J]
+consonants = [cons.SideEndingStub]
 import ithkuil.writing.side_ending as se
-#side_endings = side_endings[3:5]
 #side_endings = [se.Normal, se.SideAll]
 #side_endings = [se.Normal]
+#side_endings = side_endings[3:5]
 import ithkuil.writing.bottom_ending as be
-#bottom_endings = bottom_endings[-3:]
 bottom_endings = [be.Normal]
 #bottom_endings = [be.Normal, be.BottomAll]
 #bottom_endings = [be.HookLeftOnRight]
+#bottom_endings = bottom_endings[-3:]
 
 letters = []
 seen = set()
+
 
 def add_letter(c, s, b):
     if (c, s, b) in seen:

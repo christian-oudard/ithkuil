@@ -135,14 +135,9 @@ def draw_letter(
     letter_paper.merge(template_paper)
     letter_paper.merge(character_paper)
 
-    # Set proper bounds for typesetting.
-    # We keep left and right bounds the same, but top and bottom bounds
-    # are set to accomodate full line height. Use the character bounds as our
-    # basis so the template doesn't increase the size.
+    # Set proper bounds for typesetting. Use the character bounds as our basis
+    # so the template doesn't increase the size.
     bounds = character_paper.bounds()
-    bounds.bottom = UNDER
-    bounds.top = OVER
-
     letter_paper.override_bounds(bounds)
 
     if show_bounds:
