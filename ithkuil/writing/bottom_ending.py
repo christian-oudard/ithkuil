@@ -2,11 +2,13 @@ from .common import (
     Ending,
     slant45,
     slant60,
-    WIDTH,
     BOTTOM,
     UNDER,
 )
 from .util import hook
+
+
+WIDTH = 1.0 #TEMP
 
 
 class BottomEnding(Ending):

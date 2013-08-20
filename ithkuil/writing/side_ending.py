@@ -1,4 +1,4 @@
-from .common import Ending, WIDTH, TOP, slant45, slant75
+from .common import Ending, TOP, slant45, slant75
 from .util import hook
 
 
@@ -7,9 +7,6 @@ class SideEnding(Ending):
     pattern = NotImplemented
     stem = NotImplemented
     relation = NotImplemented
-
-    def offset_x(self):
-        return 0
 
     def __str__(self):
         return 'side_ending.{}'.format(self.__class__.__name__)
@@ -23,9 +20,9 @@ class Normal(SideEnding):
 
     def draw(self, pen):
         if self.character.side_flipped:
-            pen.line_forward(WIDTH, end_slant=-45)
+            pen.line_forward(self.width, end_slant=-45)
         else:
-            pen.line_forward(WIDTH, end_slant=45)
+            pen.line_forward(self.width, end_slant=45)
 
 
 class RightOnBottom(SideEnding):
@@ -35,9 +32,9 @@ class RightOnBottom(SideEnding):
     relation = 'UNFRAMED'
 
     def draw(self, pen):
-        pen.line_forward(WIDTH, end_slant=45)
+        pen.line_forward(self.width, end_slant=45)
         pen.turn_to(-135)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(self.width * slant45)
         pen.turn_to(0)
         pen.line_forward(2, start_slant=45, end_slant=45)
 
@@ -49,9 +46,9 @@ class DownOnBottom(SideEnding):
     relation = 'UNFRAMED'
 
     def draw(self, pen):
-        pen.line_forward(2 * WIDTH, end_slant=45)
+        pen.line_forward(2 * self.width, end_slant=45)
         pen.turn_to(-135)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(self.width * slant45)
         pen.turn_to(-90)
         pen.line_forward(2, start_slant=45, end_slant=45)
 
@@ -63,9 +60,9 @@ class HookRightOnBottom(SideEnding):
     relation = 'UNFRAMED'
 
     def draw(self, pen):
-        pen.line_forward(WIDTH, end_slant=45)
+        pen.line_forward(self.width, end_slant=45)
         pen.turn_to(-135)
-        pen.move_forward(WIDTH * slant45 / 2)
+        pen.move_forward(self.width * slant45 / 2)
         hook(pen, 120, -30, 2.5, adjust_inside=15)
 
 
@@ -76,9 +73,9 @@ class HookLeftOnBottom(SideEnding):
     relation = 'UNFRAMED'
 
     def draw(self, pen):
-        pen.line_forward(WIDTH, end_slant=45)
+        pen.line_forward(self.width, end_slant=45)
         pen.turn_to(-135)
-        pen.move_forward(WIDTH * slant45 / 2)
+        pen.move_forward(self.width * slant45 / 2)
         hook(pen, 90, 30, 2.5, adjust_inside=15)
 
 
@@ -89,9 +86,9 @@ class DiagonalDownRightOnBottom(SideEnding):
     relation = 'UNFRAMED'
 
     def draw(self, pen):
-        pen.line_forward(WIDTH, end_slant=45)
+        pen.line_forward(self.width, end_slant=45)
         pen.turn_to(-135)
-        pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
+        pen.move_forward(self.width * slant45 / 2 + self.width / 2)
         pen.turn_to(-45)
         pen.line_forward(2, start_slant=45, end_slant=90)
 
@@ -103,9 +100,9 @@ class FoldDownHookRight(SideEnding):
     relation = 'UNFRAMED'
 
     def draw(self, pen):
-        pen.line_forward(2 * WIDTH, end_slant=-45)
+        pen.line_forward(2 * self.width, end_slant=-45)
         pen.turn_to(-45)
-        pen.move_forward(WIDTH * slant45 / 2)
+        pen.move_forward(self.width * slant45 / 2)
         hook(pen, -90, -30, 2.5, adjust_inside=15)
 
 
@@ -116,9 +113,9 @@ class FoldDownHookLeft(SideEnding):
     relation = 'UNFRAMED'
 
     def draw(self, pen):
-        pen.line_forward(2 * WIDTH, end_slant=-45)
+        pen.line_forward(2 * self.width, end_slant=-45)
         pen.turn_to(-45)
-        pen.move_forward(WIDTH * slant45 / 2)
+        pen.move_forward(self.width * slant45 / 2)
         hook(pen, -105, 30, 2.5, adjust_inside=15)
 
 
@@ -129,9 +126,9 @@ class DiagonalDownLeft(SideEnding):
     relation = 'UNFRAMED'
 
     def draw(self, pen):
-        pen.line_forward(WIDTH, end_slant=-45)
+        pen.line_forward(self.width, end_slant=-45)
         pen.turn_to(-45)
-        pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
+        pen.move_forward(self.width * slant45 / 2 + self.width / 2)
         pen.turn_to(-135)
         pen.line_forward(2, start_slant=-45, end_slant=90)
 
@@ -143,9 +140,9 @@ class DownOnRight(SideEnding):
     relation = 'FRAMED'
 
     def draw(self, pen):
-        pen.line_forward(WIDTH / 2, end_slant=45)
+        pen.line_forward(self.width / 2, end_slant=45)
         pen.turn_to(45)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(self.width * slant45)
         pen.turn_to(-90)
         pen.line_forward(2.5, start_slant=45, end_slant=45)
 
@@ -157,11 +154,11 @@ class DiagonalDownRightOnTop(SideEnding):
     relation = 'FRAMED'
 
     def draw(self, pen):
-        pen.line_forward(WIDTH / 2, end_slant=45)
+        pen.line_forward(self.width / 2, end_slant=45)
         pen.turn_to(45)
-        pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
+        pen.move_forward(self.width * slant45 / 2 + self.width / 2)
         pen.turn_to(-45)
-        pen.line_to_y(TOP - WIDTH, start_slant=45, end_slant=0)
+        pen.line_to_y(TOP - self.width, start_slant=45, end_slant=0)
 
 
 class FoldUp(SideEnding):
@@ -171,9 +168,9 @@ class FoldUp(SideEnding):
     relation = 'FRAMED'
 
     def draw(self, pen):
-        pen.line_forward(WIDTH / 2, end_slant=45)
+        pen.line_forward(self.width / 2, end_slant=45)
         pen.turn_to(45)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(self.width * slant45)
         pen.turn_to(90)
         pen.line_forward(2, start_slant=45, end_slant=45)
 
@@ -185,9 +182,9 @@ class UpOnRight(SideEnding):
     relation = 'FRAMED'
 
     def draw(self, pen):
-        pen.line_forward(WIDTH / 2, end_slant=-45)
+        pen.line_forward(self.width / 2, end_slant=-45)
         pen.turn_to(-45)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(self.width * slant45)
         pen.turn_to(90)
         pen.line_forward(2.5, start_slant=-45, end_slant=-45)
 
@@ -199,9 +196,9 @@ class DiagonalUpRightOnTop(SideEnding):
     relation = 'FRAMED'
 
     def draw(self, pen):
-        pen.line_forward(WIDTH / 2, end_slant=-45)
+        pen.line_forward(self.width / 2, end_slant=-45)
         pen.turn_to(-45)
-        pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
+        pen.move_forward(self.width * slant45 / 2 + self.width / 2)
         pen.turn_to(45)
         pen.line_to_y(TOP, start_slant=-45, end_slant=0)
 
@@ -213,9 +210,9 @@ class FoldDown(SideEnding):
     relation = 'FRAMED'
 
     def draw(self, pen):
-        pen.line_forward(WIDTH / 2, end_slant=-45)
+        pen.line_forward(self.width / 2, end_slant=-45)
         pen.turn_to(-45)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(self.width * slant45)
         pen.turn_to(-90)
         pen.line_forward(2, start_slant=-45, end_slant=-45)
 
@@ -227,9 +224,9 @@ class FoldUpHookLeft(SideEnding):
     relation = 'FRAMED'
 
     def draw(self, pen):
-        pen.line_forward(WIDTH, end_slant=45)
+        pen.line_forward(self.width, end_slant=45)
         pen.turn_to(45)
-        pen.move_forward(WIDTH * slant45 / 2)
+        pen.move_forward(self.width * slant45 / 2)
         hook(pen, 90, 30, 2.5, adjust_inside=15)
 
 
@@ -240,9 +237,9 @@ class FoldUpHookRight(SideEnding):
     relation = 'FRAMED'
 
     def draw(self, pen):
-        pen.line_forward(WIDTH, end_slant=45)
+        pen.line_forward(self.width, end_slant=45)
         pen.turn_to(45)
-        pen.move_forward(WIDTH * slant45 / 2)
+        pen.move_forward(self.width * slant45 / 2)
         hook(pen, 105, -30, 2.5, adjust_inside=15)
 
 
@@ -253,9 +250,9 @@ class DiagonalUpLeft(SideEnding):
     relation = 'FRAMED'
 
     def draw(self, pen):
-        pen.line_forward(WIDTH, end_slant=45)
+        pen.line_forward(self.width, end_slant=45)
         pen.turn_to(45)
-        pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
+        pen.move_forward(self.width * slant45 / 2 + self.width / 2)
         pen.turn_to(135)
         pen.line_forward(2, start_slant=45, end_slant=0)
 
@@ -303,9 +300,8 @@ class SideAll(SideEnding):
         for side_ending_class in side_endings:
             if side_ending_class == SideAll:
                 continue
-            side_ending = side_ending_class(self.character)
+            side_ending = side_ending_class(self.character, self.mode)
             pen.move_to(start_position)
             pen.turn_to(0)
-            pen.move_forward(side_ending.offset_x())
             side_ending.draw(pen)
         pen.move_to(start_position)

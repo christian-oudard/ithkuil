@@ -15,23 +15,12 @@ slant45 = 1 / math.sin(math.radians(45))
 slant60 = 1 / math.sin(math.radians(60))
 slant75 = 1 / math.sin(math.radians(75))
 
-WIDTH = 1.0
-#WIDTH = 0.5
-HOOK_BASE_WIDTH = 1.25 * WIDTH
-
-HALF_HEIGHT = 3.6
+HALF_HEIGHT = 3.5
 BOTTOM = 0
 MIDDLE = BOTTOM + HALF_HEIGHT
 TOP = MIDDLE + HALF_HEIGHT
 UNDER = BOTTOM - 2.0
 OVER = TOP + 2.0
-
-CHAR_MARGIN = 1.5
-CHAR_HEIGHT = OVER - UNDER + WIDTH
-LINE_HEIGHT = CHAR_HEIGHT * 1.2
-PAGE_MARGIN = 5
-
-bevel_distance = WIDTH * math.tan(math.radians(22.5)) + 0.1
 
 
 def flip_ending_horizontal(cls):
@@ -51,8 +40,8 @@ def flip_consonant_horizontal(cls):
 
     class Flipped(cls):
 
-        def draw_character(self, mode):
-            paper = cls.draw_character(self, mode)
+        def draw_character(self, **kwargs):
+            paper = cls.draw_character(self, **kwargs)
             paper.mirror_x(0)
             return paper
 
@@ -67,13 +56,19 @@ def flip_consonant_horizontal(cls):
 
 
 class Character:
-    def draw_character(self, pen):
-        self.draw(pen)
+    def __init__(self, mode):
+        self.mode = mode
+        self.width = mode.width
+
+    def draw_character(self, **kwargs):
+        raise NotImplementedError()
 
 
 class Ending:
-    def __init__(self, character):
+    def __init__(self, character, mode):
         self.character = character
+        self.mode = mode
+        self.width = mode.width
 
     def angle(self):
         return None

@@ -16,10 +16,9 @@ mode = StrokeOutlineMode(1.0, 0.2, red, black)
 
 papers = []
 for consonant_class in consonants:
-    letter = consonant_class(se.Normal, be.Normal)
+    letter = consonant_class(se.Normal, be.Normal, mode)
     letter_paper = draw_letter(
         letter,
-        mode=mode,
         fixed_width=27.0,
         show_template=True,
     )

@@ -13,13 +13,13 @@ gray = '#233042'
 mode = StrokeOutlineMode(1.0, 0.2, red, black)
 
 letters = [
-    cons.SideEndingStub(side_ending, None)
+    cons.SideEndingStub(side_ending, None, mode)
     for side_ending in side_endings
 ]
 
 papers = []
 for letter in letters:
-    paper = draw_letter(letter, mode=mode)
+    paper = draw_letter(letter)
 
     # Override bounds to be asymmetrical fixed width.
     bounds = paper.bounds()

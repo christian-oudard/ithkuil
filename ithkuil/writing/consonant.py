@@ -1,13 +1,10 @@
 #TODO: refactor into type={straight, left, right}
 from .common import (
     Character,
-    WIDTH,
     OVER,
     TOP,
     MIDDLE,
-    BOTTOM,
     UNDER,
-    bevel_distance,
     slant45,
     slant60,
     slant75,
@@ -24,11 +21,12 @@ class ConsonantCharacter(Character):
     side_flipped = False
     bottom_flipped = False
 
-    def __init__(self, side_ending_class, bottom_ending_class):
-        self.side_ending = side_ending_class(self)
+    def __init__(self, side_ending_class, bottom_ending_class, mode):
+        super().__init__(mode)
+        self.side_ending = side_ending_class(self, mode)
         if self.bottom_type == 'left':
             bottom_ending_class = flip_ending_horizontal(bottom_ending_class)
-        self.bottom_ending = bottom_ending_class(self)
+        self.bottom_ending = bottom_ending_class(self, mode)
 
     def __str__(self):
         return 'consonant.{}({}, {})'.format(
@@ -43,14 +41,14 @@ class ConsonantCharacter(Character):
     def bottom_slanted(self):
         return self.bottom_type in ['left', 'right']
 
-    def draw_character(self, mode):
+    def draw_character(self, fuse=True):
         paper = Paper()
 
         # When drawing the body of the consonant, subclasses will start
         # where the side ending is, and end where the bottom ending is.
         pen = Pen()
-        pen.set_mode(mode)
-        pen.move_to((0, TOP - WIDTH / 2))
+        pen.set_mode(self.mode)
+        pen.move_to((0, TOP - self.width / 2))
         side_ending_position = pen.position
         self.draw(pen)
         bottom_ending_position = pen.position
@@ -59,7 +57,7 @@ class ConsonantCharacter(Character):
 
         # Draw the side ending.
         pen = Pen()
-        pen.set_mode(mode)
+        pen.set_mode(self.mode)
         pen.move_to(side_ending_position)
         pen.turn_to(0)
         self.side_ending.draw(pen)
@@ -67,7 +65,7 @@ class ConsonantCharacter(Character):
 
         # Draw the bottom ending.
         pen = Pen()
-        pen.set_mode(mode)
+        pen.set_mode(self.mode)
         pen.move_to(bottom_ending_position)
 
         # If the bottom orientation is slanted left, then we have to
@@ -83,8 +81,9 @@ class ConsonantCharacter(Character):
             pen.paper.mirror_x(bottom_ending_position.x)
         paper.merge(pen.paper)
 
-        paper.join_paths()
-        paper.fuse_paths()
+        if fuse:
+            paper.join_paths()
+            paper.fuse_paths()
 
         # Override the bounds so that the letter reaches the full line height.
         bounds = paper.bounds()
@@ -110,7 +109,7 @@ class P(ConsonantCharacter):
         pen.line_forward(3.5)
 
         pen.turn_to(-45)
-        pen.line_to_y(MIDDLE + WIDTH)
+        pen.line_to_y(MIDDLE + 1.0)
         pen.turn_to(-90)
         pen.line_to_y(MIDDLE)
 
@@ -122,7 +121,7 @@ class T(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(4)
+        pen.line_forward(3.5)
         pen.turn_left(90)
         pen.line_to_y(MIDDLE)
 
@@ -134,7 +133,7 @@ class K(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(4.5)
+        pen.line_forward(4.0)
         pen.turn_to(-60)
         pen.line_to_y(MIDDLE)
 
@@ -146,13 +145,13 @@ class Q(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(4.5)
+        pen.line_forward(4.25)
         pen.turn_to(-45)
         pen.line_to_y(MIDDLE, end_slant=0)
         pen.turn_to(180)
-        pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant60 / 2)
+        pen.move_forward(pen.last_slant_width() / 2 + self.width * slant60 / 2)
         pen.turn_left(60)
-        pen.line_forward(WIDTH, start_slant=0)
+        pen.line_forward(self.width, start_slant=0)
 
 
 class C(ConsonantCharacter):
@@ -162,13 +161,13 @@ class C(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(5)
+        pen.line_forward(4.25)
         pen.turn_to(-90)
-        pen.line_to_y(MIDDLE + WIDTH / 2)
+        pen.line_to_y(MIDDLE + self.width / 2)
         pen.turn_to(0)
-        pen.line_forward(3)
+        pen.line_forward(2.75)
         pen.turn_to(-90)
-        pen.line_forward(WIDTH)
+        pen.line_forward(self.width)
 
 
 class CHacek(ConsonantCharacter):
@@ -178,13 +177,13 @@ class CHacek(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(5)
+        pen.line_forward(5.0)
         pen.turn_to(-90)
-        pen.line_to_y(MIDDLE + WIDTH / 2)
+        pen.line_to_y(MIDDLE + self.width / 2)
         pen.turn_to(0)
-        pen.line_forward(4)
+        pen.line_forward(3.5)
         pen.turn_to(-135)
-        pen.line_forward(1.5 * WIDTH)
+        pen.line_forward(1.5 * self.width)
 
 
 class L(ConsonantCharacter):
@@ -194,11 +193,11 @@ class L(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(4)
+        pen.line_forward(3.5)
         pen.turn_to(-90)
         pen.line_to_y(MIDDLE)
         pen.turn_to(-45)
-        pen.line_forward(WIDTH)
+        pen.line_forward(self.width)
 
 
 class H(ConsonantCharacter):
@@ -208,13 +207,13 @@ class H(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(3, end_slant=45)
+        pen.line_forward(2.5, end_slant=45)
         pen.turn_left(45)
-        pen.move_forward(pen.last_slant_width() / 2 + WIDTH / 2)
+        pen.move_forward(pen.last_slant_width() / 2 + self.width / 2)
         pen.turn_to(-45)
         pen.line_to_y(MIDDLE)
         pen.turn_to(-90)
-        pen.line_forward(WIDTH)
+        pen.line_forward(self.width)
 
 
 class PStop(ConsonantCharacter):
@@ -228,9 +227,9 @@ class PStop(ConsonantCharacter):
         pen.turn_to(-60)
         pen.line_to_y(MIDDLE - pen.last_slant_width() / slant45 / 2, end_slant=45)
         pen.turn_to(45)
-        pen.move_forward(pen.last_slant_width() / 2 + WIDTH * slant45 / 2)
+        pen.move_forward(pen.last_slant_width() / 2 + self.width * slant45 / 2)
         pen.turn_to(-90)
-        pen.line_forward(WIDTH, start_slant=45)
+        pen.line_forward(self.width, start_slant=45)
 
 
 class TStop(ConsonantCharacter):
@@ -244,7 +243,7 @@ class TStop(ConsonantCharacter):
         pen.turn_to(180)
         pen.line_forward(4, end_slant=-45)
         pen.turn_to(-45)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(self.width * slant45)
         pen.turn_to(-90)
         pen.line_to_y(MIDDLE, start_slant=-45)
 
@@ -257,12 +256,12 @@ class KStop(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(4, end_slant=-45)
+        pen.line_forward(3.5, end_slant=-45)
         pen.turn_to(-45)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(self.width * slant45)
         pen.turn_to(180)
-        pen.line_forward(WIDTH / 2, start_slant=-45)
-        pen.arc_left(90, WIDTH / 2)
+        pen.line_forward(self.width / 2, start_slant=-45)
+        pen.arc_left(90, self.width / 2)
         pen.line_to_y(MIDDLE)
 
 
@@ -273,13 +272,13 @@ class QStop(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(4)
+        pen.line_forward(3.5)
         pen.turn_to(-60)
         pen.line_to_y(MIDDLE, end_slant=0)
         pen.turn_to(180)
-        pen.move_forward(WIDTH * slant60)
+        pen.move_forward(self.width * slant60)
         pen.turn_to(-60)
-        pen.line_forward(WIDTH, start_slant=0)
+        pen.line_forward(self.width, start_slant=0)
 
 
 class CStop(ConsonantCharacter):
@@ -291,9 +290,9 @@ class CStop(ConsonantCharacter):
         pen.turn_to(180)
         pen.line_forward(4)
         pen.turn_to(-90)
-        pen.line_to_y(MIDDLE + WIDTH / 2, end_slant=45)
+        pen.line_to_y(MIDDLE + self.width / 2, end_slant=45)
         pen.turn_to(45)
-        pen.move_forward(WIDTH * slant45 / 2 + WIDTH * slant75 / 2)
+        pen.move_forward(self.width * slant45 / 2 + self.width * slant75 / 2)
         pen.turn_to(-60)
         pen.line_to_y(MIDDLE, start_slant=45)
 
@@ -306,15 +305,15 @@ class CHacekStop(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(4, end_slant=-45)
+        pen.line_forward(4.5, end_slant=-45)
         pen.turn_to(-45)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(self.width * slant45)
         pen.turn_to(-90)
-        pen.line_to_y(MIDDLE - WIDTH / 2, start_slant=-45)
+        pen.line_to_y(MIDDLE - self.width / 2, start_slant=-45)
         pen.turn_to(0)
         pen.line_forward(2.5)
         pen.turn_to(-135)
-        pen.line_forward(1.5 * WIDTH)
+        pen.line_forward(1.5 * self.width)
 
 
 class F(ConsonantCharacter):
@@ -327,9 +326,9 @@ class F(ConsonantCharacter):
         pen.turn_to(180)
         pen.line_forward(3.5)
         pen.turn_to(-45)
-        pen.line_to_y(TOP - 2 * WIDTH, end_slant=0)
+        pen.line_to_y(TOP - 2 * self.width, end_slant=0)
         pen.turn_to(180)
-        pen.move_forward(WIDTH * slant45 / 2 + WIDTH / 2)
+        pen.move_forward(self.width * slant45 / 2 + self.width / 2)
         pen.turn_to(-90)
         pen.line_to_y(MIDDLE, start_slant=0)
 
@@ -341,13 +340,13 @@ class TCedilla(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(4)
+        pen.line_forward(3.5)
         pen.turn_to(-90)
-        pen.line_to_y(MIDDLE - WIDTH / 2, end_slant=45)
+        pen.line_to_y(MIDDLE - self.width / 2, end_slant=45)
         pen.turn_to(45)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(self.width * slant45)
         pen.turn_to(-90)
-        pen.line_forward(WIDTH, start_slant=45)
+        pen.line_forward(self.width, start_slant=45)
 
 
 class X(ConsonantCharacter):
@@ -357,13 +356,13 @@ class X(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(4.5)
+        pen.line_forward(4.0)
         pen.turn_to(-60)
         pen.line_to_y(MIDDLE, end_slant=0)
         pen.turn_to(0)
-        pen.move_forward(WIDTH * slant60)
+        pen.move_forward(self.width * slant60)
         pen.turn_to(-120)
-        pen.line_forward(WIDTH, start_slant=0)
+        pen.line_forward(self.width, start_slant=0)
 
 
 class S(ConsonantCharacter):
@@ -375,13 +374,13 @@ class S(ConsonantCharacter):
         pen.turn_to(180)
         pen.line_forward(4)
         pen.turn_to(-90)
-        pen.line_to_y(MIDDLE - WIDTH / 2, end_slant=45)
+        pen.line_to_y(MIDDLE - self.width / 2, end_slant=45)
         pen.turn_to(45)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(self.width * slant45)
         pen.turn_to(0)
-        pen.line_forward(1.5 * WIDTH, start_slant=45)
-        pen.arc_right(90, WIDTH / 2)
-        pen.line_forward(WIDTH)
+        pen.line_forward(1.5 * self.width, start_slant=45)
+        pen.arc_right(90, self.width / 2)
+        pen.line_forward(self.width)
 
 
 class SHacek(ConsonantCharacter):
@@ -394,13 +393,13 @@ class SHacek(ConsonantCharacter):
         pen.turn_to(180)
         pen.line_forward(4, end_slant=-45)
         pen.turn_to(-45)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(self.width * slant45)
         pen.turn_to(-90)
-        pen.line_to_y(MIDDLE - WIDTH / 2, start_slant=-45)
+        pen.line_to_y(MIDDLE - self.width / 2, start_slant=-45)
         pen.turn_to(0)
         pen.line_forward(2)
         pen.turn_to(-90)
-        pen.line_forward(WIDTH)
+        pen.line_forward(self.width)
 
 
 class R(ConsonantCharacter):
@@ -410,16 +409,13 @@ class R(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(4.5)
-        a = pen.position
+        pen.line_forward(4.0)
         pen.turn_to(-45)
-        pen.line_to_y(MIDDLE + WIDTH / 2)
+        pen.line_to_y(MIDDLE + self.width / 2)
         pen.turn_to(180)
-        # Line up the left point of the top bar with the side of the
-        # down stroke.
-        pen.line_to_x(a.x - WIDTH * slant60 + WIDTH / 2)
+        pen.line_to_x(pen.paper.bounds().left + self.width / 2)
         pen.turn_to(-90)
-        pen.line_forward(WIDTH)
+        pen.line_forward(self.width)
 
 
 class W(ConsonantCharacter):
@@ -431,7 +427,7 @@ class W(ConsonantCharacter):
         pen.turn_to(180)
         pen.line_forward(3.5, end_slant=45)
         pen.turn_left(45)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(self.width * slant45)
         pen.turn_to(-90)
         pen.line_to_y(MIDDLE, start_slant=45)
 
@@ -443,11 +439,11 @@ class M(ConsonantCharacter):
 
     def draw(self, pen):
         pen.turn_to(180)
-        pen.line_forward(4.5)
+        pen.line_forward(4.0)
         pen.turn_to(-45)
         pen.line_to_y(MIDDLE)
         pen.turn_to(-120)
-        pen.line_forward(WIDTH)
+        pen.line_forward(self.width)
 
 
 class NHacek(ConsonantCharacter):
@@ -460,11 +456,11 @@ class NHacek(ConsonantCharacter):
         pen.turn_to(180)
         pen.line_forward(4, end_slant=-45)
         pen.turn_to(-45)
-        pen.move_forward(WIDTH * slant45)
+        pen.move_forward(self.width * slant45)
         pen.turn_to(-90)
-        pen.line_to_y(MIDDLE - WIDTH / 2, start_slant=-45)
+        pen.line_to_y(MIDDLE - self.width / 2, start_slant=-45)
         pen.turn_to(-45)
-        pen.line_forward(WIDTH)
+        pen.line_forward(self.width)
 
 
 B = flip(P)
@@ -567,25 +563,26 @@ consonants = [
 
 class SideEndingStub(ConsonantCharacter):
 
-    def __init__(self, side_ending_class, bottom_ending_class):
-        self.side_ending = side_ending_class(self)
+    def __init__(self, side_ending_class, bottom_ending_class, mode):
+        Character.__init__(self, mode)
+        self.side_ending = side_ending_class(self, mode)
         self.bottom_ending = None
 
-    def draw_character(self, mode):
+    def draw_character(self, **kwargs):
         paper = Paper()
 
         pen = Pen()
 
         pen.fill_mode('white')
-        pen.move_to((0, TOP - WIDTH / 2))
-        pen.square(mode.width * 2)
+        pen.move_to((0, TOP - self.width / 2))
+        pen.square(self.width * 2)
         paper.merge(pen.paper)
 
         pen = Pen()
-        pen.set_mode(mode)
-        pen.move_to((0, TOP - WIDTH / 2))
+        pen.set_mode(self.mode)
+        pen.move_to((0, TOP - self.width / 2))
         pen.turn_to(0)
-        pen.line_forward(WIDTH + 2.0)
+        pen.line_forward(self.width + 2.0)
         self.side_ending.draw(pen)
         paper.merge_under(pen.paper)
 
@@ -602,17 +599,19 @@ class VerticalBar(ConsonantCharacter):
 
     bottom_type = 'straight'
 
-    def __init__(self, side_ending_class, bottom_ending_class):
+    def __init__(self, side_ending_class, bottom_ending_class, mode):
+        Character.__init__(self, mode)
         self.side_ending = None
-        self.bottom_ending = bottom_ending_class(self)
+        self.bottom_ending = bottom_ending_class(self, mode)
 
-    def draw_character(self, mode):
+    def draw_character(self, fuse=True):
         pen = Pen()
-        pen.set_mode(mode)
+        pen.set_mode(self.mode)
         pen.move_to((0, TOP))
         pen.turn_to(-90)
         pen.line_to_y(MIDDLE, start_slant=45)
         self.bottom_ending.draw(pen)
-        pen.paper.fuse_paths()
+        if fuse:
+            pen.paper.fuse_paths()
         pen.paper.center_on_x(0)
         return pen.paper

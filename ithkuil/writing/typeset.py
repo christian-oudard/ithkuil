@@ -90,10 +90,10 @@ def typeset(
 
 def draw_letter(
     letter,
-    mode=None,
     fixed_width=None,
     show_template=False,
     show_bounds=False,
+    fuse=True,
 ):
     """
     Draw the given letter and return a Paper.
@@ -107,7 +107,7 @@ def draw_letter(
         print(str(letter), file=sys.stderr)
 
     try:
-        character_paper = letter.draw_character(mode)
+        character_paper = letter.draw_character(fuse=fuse)
     except Exception:
         if DEBUG_OUTPUT:
             traceback.print_exc()
