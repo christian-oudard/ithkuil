@@ -7,12 +7,19 @@ from ithkuil.phonology import convert_ascii_to_html
 import ithkuil.writing.side_ending as se
 import ithkuil.writing.bottom_ending as be
 
+font = 'Caudex'
+font_size = 8
+red = '#d6041a'
+black = '#260003'
+gray = '#233042'
+mode = StrokeOutlineMode(1.0, 0.2, red, black)
+
 papers = []
 for consonant_class in consonants:
     letter = consonant_class(se.Normal, be.Normal)
     letter_paper = draw_letter(
         letter,
-        mode=StrokeOutlineMode(1.0, 0.1, '#c60416', '#3b0006'),
+        mode=mode,
         fixed_width=27.0,
         show_template=True,
     )
@@ -38,4 +45,4 @@ page = typeset(
     page_margin=5.0,
 )
 
-print(page.format_svg(4))
+print(page.format_svg(4, resolution=1000 / page.bounds().width))
