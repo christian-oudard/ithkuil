@@ -8,9 +8,10 @@ from canoepaddle.mode import OutlineMode
 #DEBUG redefinition of parts lists for testing.
 import ithkuil.writing.consonant as cons
 #consonants = consonants[-6:]
-consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.D, cons.T, cons.K, cons.RHacek, cons.L, cons.J]
+#consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.D, cons.T, cons.K, cons.RHacek, cons.L, cons.J]
+consonants = [cons.T]
 import ithkuil.writing.side_ending as se
-side_endings = side_endings[:3]
+#side_endings = side_endings[3:5]
 #side_endings = [se.Normal, se.SideAll]
 #side_endings = [se.Normal]
 import ithkuil.writing.bottom_ending as be
@@ -49,7 +50,7 @@ papers = [
 page = typeset(
     papers,
     letter_spacing=2.0,
-    letters_per_line=10,
+    letters_per_line=9,
     line_spacing=3.0,
     page_margin=5.0,
 )
