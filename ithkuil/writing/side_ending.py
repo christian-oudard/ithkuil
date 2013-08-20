@@ -3,6 +3,11 @@ from .util import hook
 
 
 class SideEnding(Ending):
+
+    pattern = NotImplemented
+    stem = NotImplemented
+    relation = NotImplemented
+
     def offset_x(self):
         return 0
 
@@ -11,7 +16,11 @@ class SideEnding(Ending):
 
 
 class Normal(SideEnding):
-    # Unframed Relation, Pattern 1, Stem 1
+
+    pattern = 'P1'
+    stem = 'S1'
+    relation = 'UNFRAMED'
+
     def draw(self, pen):
         if self.character.side_flipped:
             pen.line_forward(WIDTH, end_slant=-45)
@@ -20,7 +29,11 @@ class Normal(SideEnding):
 
 
 class RightOnBottom(SideEnding):
-    # Unframed Relation, Pattern 1, Stem 2
+
+    pattern = 'P1'
+    stem = 'S2'
+    relation = 'UNFRAMED'
+
     def draw(self, pen):
         pen.line_forward(WIDTH, end_slant=45)
         pen.turn_to(-135)
@@ -30,7 +43,11 @@ class RightOnBottom(SideEnding):
 
 
 class DownOnBottom(SideEnding):
-    # Unframed Relation, Pattern 1, Stem 3
+
+    pattern = 'P1'
+    stem = 'S3'
+    relation = 'UNFRAMED'
+
     def draw(self, pen):
         pen.line_forward(2 * WIDTH, end_slant=45)
         pen.turn_to(-135)
@@ -40,7 +57,11 @@ class DownOnBottom(SideEnding):
 
 
 class HookRightOnBottom(SideEnding):
-    # Unframed Relation, Pattern 2, Stem 1
+
+    pattern = 'P2'
+    stem = 'S1'
+    relation = 'UNFRAMED'
+
     def draw(self, pen):
         pen.line_forward(WIDTH, end_slant=45)
         pen.turn_to(-135)
@@ -49,7 +70,11 @@ class HookRightOnBottom(SideEnding):
 
 
 class HookLeftOnBottom(SideEnding):
-    # Unframed Relation, Pattern 2, Stem 2
+
+    pattern = 'P2'
+    stem = 'S2'
+    relation = 'UNFRAMED'
+
     def draw(self, pen):
         pen.line_forward(WIDTH, end_slant=45)
         pen.turn_to(-135)
@@ -58,7 +83,11 @@ class HookLeftOnBottom(SideEnding):
 
 
 class DiagonalDownRightOnBottom(SideEnding):
-    # Unframed Relation, Pattern 2, Stem 3
+
+    pattern = 'P2'
+    stem = 'S3'
+    relation = 'UNFRAMED'
+
     def draw(self, pen):
         pen.line_forward(WIDTH, end_slant=45)
         pen.turn_to(-135)
@@ -68,7 +97,11 @@ class DiagonalDownRightOnBottom(SideEnding):
 
 
 class FoldDownHookRight(SideEnding):
-    # Unframed Relation, Pattern 3, Stem 1
+
+    pattern = 'P3'
+    stem = 'S1'
+    relation = 'UNFRAMED'
+
     def draw(self, pen):
         pen.line_forward(2 * WIDTH, end_slant=-45)
         pen.turn_to(-45)
@@ -77,7 +110,11 @@ class FoldDownHookRight(SideEnding):
 
 
 class FoldDownHookLeft(SideEnding):
-    # Unframed Relation, Pattern 3, Stem 2
+
+    pattern = 'P3'
+    stem = 'S2'
+    relation = 'UNFRAMED'
+
     def draw(self, pen):
         pen.line_forward(2 * WIDTH, end_slant=-45)
         pen.turn_to(-45)
@@ -86,7 +123,11 @@ class FoldDownHookLeft(SideEnding):
 
 
 class DiagonalDownLeft(SideEnding):
-    # Unframed Relation, Pattern 3, Stem 3
+
+    pattern = 'P3'
+    stem = 'S3'
+    relation = 'UNFRAMED'
+
     def draw(self, pen):
         pen.line_forward(WIDTH, end_slant=-45)
         pen.turn_to(-45)
@@ -96,7 +137,11 @@ class DiagonalDownLeft(SideEnding):
 
 
 class DownOnRight(SideEnding):
-    # Framed Relation, Pattern 1, Stem 1
+
+    pattern = 'P1'
+    stem = 'S1'
+    relation = 'FRAMED'
+
     def draw(self, pen):
         pen.line_forward(WIDTH / 2, end_slant=45)
         pen.turn_to(45)
@@ -106,7 +151,11 @@ class DownOnRight(SideEnding):
 
 
 class DiagonalDownRightOnTop(SideEnding):
-    # Framed Relation, Pattern 1, Stem 2
+
+    pattern = 'P1'
+    stem = 'S2'
+    relation = 'FRAMED'
+
     def draw(self, pen):
         pen.line_forward(WIDTH / 2, end_slant=45)
         pen.turn_to(45)
@@ -116,7 +165,11 @@ class DiagonalDownRightOnTop(SideEnding):
 
 
 class FoldUp(SideEnding):
-    # Framed Relation, Pattern 1, Stem 3
+
+    pattern = 'P1'
+    stem = 'S3'
+    relation = 'FRAMED'
+
     def draw(self, pen):
         pen.line_forward(WIDTH / 2, end_slant=45)
         pen.turn_to(45)
@@ -126,7 +179,11 @@ class FoldUp(SideEnding):
 
 
 class UpOnRight(SideEnding):
-    # Framed Relation, Pattern 2, Stem 1
+
+    pattern = 'P2'
+    stem = 'S1'
+    relation = 'FRAMED'
+
     def draw(self, pen):
         pen.line_forward(WIDTH / 2, end_slant=-45)
         pen.turn_to(-45)
@@ -136,7 +193,11 @@ class UpOnRight(SideEnding):
 
 
 class DiagonalUpRightOnTop(SideEnding):
-    # Framed Relation, Pattern 2, Stem 2
+
+    pattern = 'P2'
+    stem = 'S2'
+    relation = 'FRAMED'
+
     def draw(self, pen):
         pen.line_forward(WIDTH / 2, end_slant=-45)
         pen.turn_to(-45)
@@ -146,7 +207,11 @@ class DiagonalUpRightOnTop(SideEnding):
 
 
 class FoldDown(SideEnding):
-    # Framed Relation, Pattern 2, Stem 3
+
+    pattern = 'P2'
+    stem = 'S3'
+    relation = 'FRAMED'
+
     def draw(self, pen):
         pen.line_forward(WIDTH / 2, end_slant=-45)
         pen.turn_to(-45)
@@ -156,7 +221,11 @@ class FoldDown(SideEnding):
 
 
 class FoldUpHookLeft(SideEnding):
-    # Framed Relation, Pattern 3, Stem 1
+
+    pattern = 'P3'
+    stem = 'S1'
+    relation = 'FRAMED'
+
     def draw(self, pen):
         pen.line_forward(WIDTH, end_slant=45)
         pen.turn_to(45)
@@ -165,7 +234,11 @@ class FoldUpHookLeft(SideEnding):
 
 
 class FoldUpHookRight(SideEnding):
-    # Framed Relation, Pattern 3, Stem 2
+
+    pattern = 'P3'
+    stem = 'S2'
+    relation = 'FRAMED'
+
     def draw(self, pen):
         pen.line_forward(WIDTH, end_slant=45)
         pen.turn_to(45)
@@ -174,7 +247,11 @@ class FoldUpHookRight(SideEnding):
 
 
 class DiagonalUpLeft(SideEnding):
-    # Framed Relation, Pattern 3, Stem 3
+
+    pattern = 'P3'
+    stem = 'S3'
+    relation = 'FRAMED'
+
     def draw(self, pen):
         pen.line_forward(WIDTH, end_slant=45)
         pen.turn_to(45)

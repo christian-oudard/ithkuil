@@ -227,7 +227,12 @@ abbreviations = {
         'FML': 'formal',
         'IFL': 'informal',
     },
+    'relation': {
+        'UNFRAMED': 'unframed',
+        'FRAMED': 'framed',
+    }
 }
+
 
 def make_abbreviation_table():
     abbreviation_table = {}
@@ -559,8 +564,6 @@ FMS
 Suffix: Material States/Forms (non-solid or quasi-solid) 
 FNS
 Suffix:  Material States/Forms (solids) 
-FRAMED
-Framed relation
 FRC
 Suffix:  Degree of Physical Force Exerted
 FRE
@@ -971,8 +974,6 @@ ua
 personal reference:  unbounded animate 3rd party
 ui
 personal reference:  unbounded inanimate 3rd party
-UNFRAMED
-Unframed relation
 UNQ
 Suffix:  Degree of Specialness or Uniqueness
 UTE

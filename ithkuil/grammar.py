@@ -65,6 +65,7 @@ biases = (
 )
 versions = ('PRC', 'CPT', 'INE', 'INC', 'PST', 'EFC')
 designations = ('FML', 'IFL')
+relations = ('UNFRAMED', 'FRAMED')
 
 categories = (
     functions,
