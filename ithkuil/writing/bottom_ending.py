@@ -284,7 +284,7 @@ class HookLeftOnRight(BottomEnding):
         )
         pen.turn_to(45)
         pen.move_forward(slant_width / 2)
-        hook(pen, -135, 90, 2.5)
+        hook(pen, -90, 30, 2.5, adjust_inside=15)
 
 
 class HookRightOnRight(BottomEnding):
@@ -298,7 +298,7 @@ class HookRightOnRight(BottomEnding):
         )
         pen.turn_to(45)
         pen.move_forward(slant_width / 2)
-        hook(pen, -45, -90, 2.5)
+        hook(pen, -90, -30, 2.5, adjust_inside=15)
 
 
 class FoldHookRight(BottomEnding):
@@ -311,12 +311,12 @@ class FoldHookRight(BottomEnding):
             )
             pen.turn_to(-45)
             pen.move_forward(WIDTH * slant45 / 2)
-            hook(pen, 90, -75, 2.25)
+            hook(pen, 90, -30, 2.5, adjust_inside=15)
         elif self.character.bottom_slanted():
             pen.line_to_y(BOTTOM, end_slant=0)
             pen.turn_to(0)
             pen.move_forward(pen.last_slant_width() / 2)
-            hook(pen, 75, -75, 2.0)
+            hook(pen, 60, -30, 2.5, adjust_inside=15)
 
 
 bottom_endings = [
