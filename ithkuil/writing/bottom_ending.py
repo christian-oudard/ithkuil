@@ -193,12 +193,12 @@ class Acute(BottomEnding):
     def draw(self, pen):
         if self.character.bottom_straight():
             pen.line_to_y(BOTTOM + WIDTH / slant60)
-            pen.turn_to(30)
-            pen.line_forward(2.5, end_slant=90)
+            pen.turn_to(22.5)
+            pen.line_forward(2.0, end_slant=90)
         elif self.character.bottom_slanted():
             pen.line_to_y(BOTTOM + WIDTH / 2)
             pen.turn_to(180)
-            pen.line_forward(3, end_slant=-45)
+            pen.line_forward(2.5, end_slant=-45)
 
 
 class RightOnBottom(BottomEnding):
@@ -360,6 +360,5 @@ class BottomAll(BottomEnding):
             bottom_ending = bottom_ending_class(self.character)
             pen.move_to(start_position)
             pen.turn_to(start_heading)
-            pen.move_to_y(3)
-            pen.line_to_y(bottom_ending.offset_y(pen), end_slant=bottom_ending.angle())
+            pen.break_stroke()
             bottom_ending.draw(pen)
