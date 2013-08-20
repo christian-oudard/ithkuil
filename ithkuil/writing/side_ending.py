@@ -282,6 +282,15 @@ side_endings = [
 ]
 
 
+def make_side_endings_by_psr():
+    table = {}
+    for se in side_endings:
+        key = (se.pattern, se.stem, se.relation)
+        table[key] = se
+    return table
+side_endings_by_psr = make_side_endings_by_psr()
+
+
 class SideAll(SideEnding):
     """
     A debug ending showing every one of the endings superimposed.

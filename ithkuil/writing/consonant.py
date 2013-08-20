@@ -594,7 +594,6 @@ class SideEndingStub(ConsonantCharacter):
         bounds.bottom = MIDDLE
         bounds.left = 0
         paper.override_bounds(bounds)
-        paper.translate((-2.0, 0))
 
         return paper
 
