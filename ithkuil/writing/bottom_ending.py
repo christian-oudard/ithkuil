@@ -13,6 +13,8 @@ WIDTH = 1.0 #TEMP
 
 class BottomEnding(Ending):
 
+    pronunciation = NotImplemented
+
     def __str__(self):
         return 'bottom_ending.{}'.format(self.__class__.__name__)
 
@@ -23,6 +25,8 @@ class BottomEnding(Ending):
 
 
 class Normal(BottomEnding):
+
+    pronunciation = ''
 
     def angle(self):
         if self.character.bottom_straight():
@@ -38,7 +42,9 @@ class Normal(BottomEnding):
 
 
 class Long(Normal):
-    # Consonant Prefix L
+
+    pronunciation = 'l-'
+
     angle = Normal.angle
 
     def draw(self, pen):
@@ -46,7 +52,9 @@ class Long(Normal):
 
 
 class DiagonalDownRightOnRight(BottomEnding):
-    # Consonant Prefix M
+
+    pronunciation = 'm-'
+
     def draw(self, pen):
         slant_width = self.predict_slant_width(pen, 45)
         pen.line_to_y(
@@ -62,7 +70,9 @@ class DiagonalDownRightOnRight(BottomEnding):
 
 
 class DownOnRight(BottomEnding):
-    # Consonant Prefix R
+
+    pronunciation = 'r-'
+
     def draw(self, pen):
         slant_width = self.predict_slant_width(pen, 45)
         pen.line_to_y(
@@ -78,7 +88,9 @@ class DownOnRight(BottomEnding):
 
 
 class RightOnRight(BottomEnding):
-    # Consonant Prefix L Cedilla
+
+    pronunciation = 'l,-'
+
     def draw(self, pen):
         slant_width = self.predict_slant_width(pen, 45)
         pen.line_to_y(
@@ -93,7 +105,9 @@ class RightOnRight(BottomEnding):
 
 
 class DiagonalDownLeftOnRight(BottomEnding):
-    # Consonant Prefix N
+
+    pronunciation = 'n-'
+
     def draw(self, pen):
         pen.line_to_y(BOTTOM, end_slant=0)
         pen.turn_to(0)
@@ -103,7 +117,9 @@ class DiagonalDownLeftOnRight(BottomEnding):
 
 
 class Bend(BottomEnding):
-    # Consonant Prefix S
+
+    pronunciation = 's-'
+
     def draw(self, pen):
         if self.character.bottom_straight():
             pen.line_to_y(BOTTOM + WIDTH / 2, end_slant=0)
@@ -116,8 +132,9 @@ class Bend(BottomEnding):
 
 
 class Fold(BottomEnding):
-    # Consonant Prefix S hacek
-    # Consonant Prefix Z hacek
+
+    pronunciation = ('s^-', 'z^-')
+
     def draw(self, pen):
         if self.character.bottom_straight():
             pen.line_to_y(
@@ -141,7 +158,9 @@ class Fold(BottomEnding):
 
 
 class Barb(BottomEnding):
-    # Consonant Prefix N hacek
+
+    pronunciation = 'n^-'
+
     angle = Normal.angle
 
     def draw(self, pen):
@@ -167,7 +186,9 @@ class Barb(BottomEnding):
 
 
 class DiagonalUpRight(BottomEnding):
-    # Consonant Prefix Z
+
+    pronunciation = 'z-'
+
     def draw(self, pen):
         if self.character.bottom_straight():
             pen.line_to_y(BOTTOM + WIDTH / 2, end_slant=-45)
@@ -188,7 +209,9 @@ class DiagonalUpRight(BottomEnding):
 
 
 class Acute(BottomEnding):
-    # Consonant Prefix R Hacek
+
+    pronunciation = 'r^-'
+
     def draw(self, pen):
         if self.character.bottom_straight():
             pen.line_to_y(BOTTOM + WIDTH / slant60)
@@ -201,7 +224,9 @@ class Acute(BottomEnding):
 
 
 class RightOnBottom(BottomEnding):
-    # Consonant Prefix C Cedilla
+
+    pronunciation = 'c,-'
+
     def draw(self, pen):
         slant_width = self.predict_slant_width(pen, 45)
         pen.line_to_y(
@@ -214,9 +239,10 @@ class RightOnBottom(BottomEnding):
         pen.line_forward(3, start_slant=45, end_slant=45)
 
 
-class StraightOnLeft(BottomEnding):
-    # Consonant Prefix C
-    # Consonant Prefix Z Dot
+class BreakStraight(BottomEnding):
+
+    pronunciation = ('c-', 'dz-')
+
     def draw(self, pen):
         if self.character.bottom_straight():
             pen.line_to_y(BOTTOM - WIDTH / 2, end_slant=-45)
@@ -233,9 +259,10 @@ class StraightOnLeft(BottomEnding):
             pen.line_forward(2, start_slant=0, end_slant=0)
 
 
-class BreakRightBendLeft(BottomEnding):
-    # Consonant Prefix C Hacek
-    # Consonant Prefix J
+class BreakTurnLeft(BottomEnding):
+
+    pronunciation = ('c^-', 'j-')
+
     def draw(self, pen):
         if self.character.bottom_straight():
             pen.line_to_y(BOTTOM, end_slant=0)
@@ -255,8 +282,10 @@ class BreakRightBendLeft(BottomEnding):
             pen.line_forward(2, start_slant=90, end_slant=90)
 
 
-class BreakRightBendRight(BottomEnding):
-    # Consonant Prefix Z Hacek
+class BreakTurnRight(BottomEnding):
+
+    pronunciation = 'z^-'
+
     def draw(self, pen):
         if self.character.bottom_straight():
             pen.line_to_y(BOTTOM - WIDTH / 2, end_slant=-45)
@@ -273,8 +302,9 @@ class BreakRightBendRight(BottomEnding):
 
 
 class HookLeftOnRight(BottomEnding):
-    # Consonant Prefix K
-    # Consonant Prefix G
+
+    pronunciation = ('k-', 'g-')
+
     def draw(self, pen):
         slant_width = self.predict_slant_width(pen, 45)
         pen.line_to_y(
@@ -287,8 +317,9 @@ class HookLeftOnRight(BottomEnding):
 
 
 class HookRightOnRight(BottomEnding):
-    # Consonant Prefix P
-    # Consonant Prefix B
+
+    pronunciation = ('p-', 'b-')
+
     def draw(self, pen):
         slant_width = self.predict_slant_width(pen, 45)
         pen.line_to_y(
@@ -301,7 +332,9 @@ class HookRightOnRight(BottomEnding):
 
 
 class FoldHookRight(BottomEnding):
-    # Consonant Prefix Q
+
+    pronunciation = 'q-'
+
     def draw(self, pen):
         if self.character.bottom_straight():
             pen.line_to_y(
@@ -318,6 +351,41 @@ class FoldHookRight(BottomEnding):
             hook(pen, 60, -30, 2.5, adjust_inside=15)
 
 
+class FoldHookLeft(BottomEnding):
+
+    pronunciation = ('t-', 'd-')
+
+    def draw(self, pen):
+        if self.character.bottom_straight():
+            pen.line_to_y(
+                BOTTOM + WIDTH / 2,
+                end_slant=-45,
+            )
+            pen.turn_to(-45)
+            pen.move_forward(WIDTH * slant45 / 2)
+            hook(pen, 60, 30, 2.5, adjust_inside=15)
+        elif self.character.bottom_slanted():
+            pen.line_to_y(BOTTOM, end_slant=0)
+            pen.turn_to(0)
+            pen.move_forward(pen.last_slant_width() / 2)
+            hook(pen, 60, 30, 2.5, adjust_inside=15)
+
+
+class TowardRightHookLeft(BottomEnding):
+
+    pronunciation = 'x-'
+
+    def draw(self, pen):
+        slant_width = self.predict_slant_width(pen, 45)
+        pen.line_to_y(
+            BOTTOM + slant_width / slant45 / 2,
+            end_slant=45,
+        )
+        pen.turn_to(-135)
+        pen.move_to_y(BOTTOM)
+        hook(pen, 120, 30, 3.5, adjust_inside=5)
+
+
 bottom_endings = [
     Normal,
     Long,
@@ -331,12 +399,14 @@ bottom_endings = [
     DiagonalUpRight,
     Acute,
     RightOnBottom,
-    StraightOnLeft,
-    BreakRightBendLeft,
-    BreakRightBendRight,
+    BreakStraight,
+    BreakTurnLeft,
+    BreakTurnRight,
     HookLeftOnRight,
     HookRightOnRight,
     FoldHookRight,
+    FoldHookLeft,
+    TowardRightHookLeft,
 ]
 
 

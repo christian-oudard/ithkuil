@@ -55,7 +55,7 @@ papers = [
 page = typeset(
     papers,
     letter_spacing=2.0,
-    letters_per_line=12,
+    letters_per_line=10,
     #line_width=100,
     line_spacing=3.0,
     page_margin=5.0,
