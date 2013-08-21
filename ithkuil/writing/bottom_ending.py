@@ -118,7 +118,7 @@ class DiagonalDownLeftOnRight(BottomEnding):
 
 class Bend(BottomEnding):
 
-    pronunciation = 's-'
+    pronunciation = ('s-', 'z-')
 
     def draw(self, pen):
         if self.character.bottom_straight():
@@ -239,7 +239,7 @@ class RightOnBottom(BottomEnding):
         pen.line_forward(3, start_slant=45, end_slant=45)
 
 
-class BreakStraight(BottomEnding):
+class Break(BottomEnding):
 
     pronunciation = ('c-', 'dz-')
 
@@ -386,6 +386,110 @@ class TowardRightHookLeft(BottomEnding):
         hook(pen, 120, 30, 3.5, adjust_inside=5)
 
 
+class TowardLeftHookLeft(BottomEnding):
+
+    pronunciation = ('t,-', 'dh-')
+
+    def draw(self, pen):
+        pass
+
+
+class TowardLeftHookRight(BottomEnding):
+
+    pronunciation = ('f,-', 'v-')
+
+    def draw(self, pen):
+        pass
+
+
+class TowardRightHookRight(BottomEnding):
+
+    pronunciation = 'xh-'
+
+    def draw(self, pen):
+        pass
+
+
+class BendBreak(BottomEnding):
+
+    pronunciation = 'GEMINATE'
+
+    def draw(self, pen):
+        pass
+
+
+class Scythe(BottomEnding):
+
+    pronunciation = '-w'
+
+    def draw(self, pen):
+        pass
+
+
+class AcuteFold(BottomEnding):
+
+    pronunciation = '-y'
+
+    def draw(self, pen):
+        pass
+
+
+class BendBarb(BottomEnding):
+
+    pronunciation = '-l'
+
+    def draw(self, pen):
+        pass
+
+
+class AcuteBarb(BottomEnding):
+
+    pronunciation = '-r'
+
+    def draw(self, pen):
+        pass
+
+
+class AcuteBreak(BottomEnding):
+
+    pronunciation = '-r^'
+
+    def draw(self, pen):
+        pass
+
+
+class AcuteLineHigh(BottomEnding):
+
+    pronunciation = '-m'
+
+    def draw(self, pen):
+        pass
+
+
+class AcuteLineLow(BottomEnding):
+
+    pronunciation = '-n'
+
+    def draw(self, pen):
+        pass
+
+
+class DoubleBend(BottomEnding):
+
+    pronunciation = '-v'
+
+    def draw(self, pen):
+        pass
+
+
+class BreakSlightRight(BottomEnding):
+
+    pronunciation = '-n^'
+
+    def draw(self, pen):
+        pass
+
+
 bottom_endings = [
     Normal,
     Long,
@@ -399,7 +503,7 @@ bottom_endings = [
     DiagonalUpRight,
     Acute,
     RightOnBottom,
-    BreakStraight,
+    Break,
     BreakTurnLeft,
     BreakTurnRight,
     HookLeftOnRight,
@@ -407,6 +511,19 @@ bottom_endings = [
     FoldHookRight,
     FoldHookLeft,
     TowardRightHookLeft,
+    TowardLeftHookLeft,
+    TowardLeftHookRight,
+    TowardRightHookRight,
+    BendBreak,
+    Scythe,
+    AcuteFold,
+    BendBarb,
+    AcuteBarb,
+    AcuteBreak,
+    AcuteLineHigh,
+    AcuteLineLow,
+    DoubleBend,
+    BreakSlightRight,
 ]
 
 

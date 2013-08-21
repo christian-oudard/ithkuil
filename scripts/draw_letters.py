@@ -20,7 +20,7 @@ import ithkuil.writing.bottom_ending as be
 #bottom_endings = [be.Normal]
 #bottom_endings = [be.Normal, be.BottomAll]
 #bottom_endings = [be.HookLeftOnRight]
-bottom_endings = bottom_endings[-3:]
+#bottom_endings = bottom_endings[-3:]
 
 mode = StrokeMode(1.0)
 
