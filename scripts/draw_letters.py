@@ -7,19 +7,20 @@ from canoepaddle.mode import *
 
 #DEBUG redefinition of parts lists for testing.
 import ithkuil.writing.consonant as cons
-consonants = consonants + [cons.VerticalBar, cons.SideEndingStub]
+#consonants = consonants + [cons.VerticalBar, cons.SideEndingStub]
 #consonants = consonants[-6:]
 #consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.D, cons.VerticalBar, cons.T, cons.K, cons.RHacek, cons.L, cons.J]
 #consonants = [cons.SideEndingStub]
+consonants = [cons.T, cons.L]
 import ithkuil.writing.side_ending as se
-side_endings = [se.Normal, se.SideAll]
-#side_endings = [se.Normal]
+#side_endings = [se.Normal, se.SideAll]
+side_endings = [se.Normal]
 #side_endings = side_endings[3:5]
 import ithkuil.writing.bottom_ending as be
-bottom_endings = [be.Normal]
+#bottom_endings = [be.Normal]
 #bottom_endings = [be.Normal, be.BottomAll]
 #bottom_endings = [be.HookLeftOnRight]
-#bottom_endings = bottom_endings[-3:]
+bottom_endings = bottom_endings[-3:]
 
 mode = StrokeMode(1.0)
 
