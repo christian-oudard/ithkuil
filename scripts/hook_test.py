@@ -35,7 +35,7 @@ distance = 5.0
 for slant_angle in [60, -60, 120, -120]:
     for arc_angle in [75, -75]:
         for adjust_inside in [0, 30]:
-            for adjust_outside in [0, 30]:
+            for adjust_outside in [0, 10]:
                 pen = get_pen()
                 draw(
                     pen,
@@ -46,12 +46,11 @@ for slant_angle in [60, -60, 120, -120]:
                     adjust_outside,
                 )
                 papers.append(pen.paper)
-
 page = typeset(
     papers,
     letter_spacing=2.0,
     letters_per_line=4,
-    line_spacing=2.0,
+    #line_spacing=2.0,
     page_margin=5.0,
 )
 print(page.format_svg(6, resolution=30))

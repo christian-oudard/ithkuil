@@ -106,16 +106,16 @@ def hook(pen, slant_angle, arc_angle, distance, adjust_inside=0, adjust_outside=
     # Outer arc.
     pen.turn_toward(center)
     if arc_angle > 0:
-        pen.turn_right(90 + adjust_inside)
+        pen.turn_right(90 + adjust_outside)
     else:
-        pen.turn_left(90 + adjust_inside)
+        pen.turn_left(90 + adjust_outside)
     pen.arc_to(tip)
     # Inner arc.
     pen.turn_to(center_arc.end_heading + 180)
     if arc_angle > 0:
-        pen.turn_right(adjust_outside)
+        pen.turn_right(adjust_inside)
     else:
-        pen.turn_left(adjust_outside)
+        pen.turn_left(adjust_inside)
 
     pen.arc_to(inside_corner)
 
