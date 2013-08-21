@@ -84,6 +84,7 @@ categories = (
     biases,
     versions,
     designations,
+    relations,
 )
 
 def lines_to_tables(lines, keys):
