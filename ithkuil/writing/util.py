@@ -46,10 +46,10 @@ def hook(pen, slant_angle, arc_angle, distance, adjust_inside=0, adjust_outside=
 
     # Trace the inside curve to find the hook tip and some other
     # important points.
-    pen.turn_left(slant_angle)
-    pen.arc_left(arc_angle, radius)
-    center_arc = pen.last_segment()
-    pen.undo()
+    temp_pen = pen.copy()
+    temp_pen.turn_left(slant_angle)
+    temp_pen.arc_left(arc_angle, radius)
+    center_arc = temp_pen.last_segment()
 
     tip = center_arc.b
     center = center_arc.center

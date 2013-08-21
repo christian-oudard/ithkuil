@@ -17,12 +17,9 @@ class BottomEnding(Ending):
         return 'bottom_ending.{}'.format(self.__class__.__name__)
 
     def predict_slant_width(self, pen, end_angle):
-        old_position = pen.position
-        pen.line_to_y(BOTTOM, end_slant=end_angle)
-        slant_width = pen.last_slant_width()
-        pen.undo()
-        pen.move_to(old_position)
-        return slant_width
+        temp_pen = pen.copy()
+        temp_pen.line_to_y(BOTTOM, end_slant=end_angle)
+        return temp_pen.last_slant_width()
 
 
 class Normal(BottomEnding):
