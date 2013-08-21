@@ -2,8 +2,7 @@ from ithkuil.writing.side_ending import side_endings
 from ithkuil.writing.typeset import typeset, draw_letter
 import ithkuil.writing.consonant as cons
 
-from canoepaddle import Pen
-from canoepaddle.mode import StrokeOutlineMode
+from canoepaddle import Pen, StrokeOutlineMode
 
 font = 'Caudex'
 font_size = 3

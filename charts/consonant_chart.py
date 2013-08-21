@@ -1,5 +1,4 @@
-from canoepaddle import Pen
-from canoepaddle.mode import StrokeOutlineMode
+from canoepaddle import Pen, StrokeOutlineMode
 
 from ithkuil.writing.consonant import consonants
 from ithkuil.writing.typeset import draw_letter, typeset

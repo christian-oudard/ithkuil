@@ -1,9 +1,9 @@
+from canoepaddle import *
 from ithkuil.writing.consonant import consonants
 from ithkuil.writing.bottom_ending import bottom_endings
 from ithkuil.writing.side_ending import side_endings
 from ithkuil.writing.typeset import typeset, draw_letter
 
-from canoepaddle.mode import *
 
 #DEBUG redefinition of parts lists for testing.
 import ithkuil.writing.consonant as cons

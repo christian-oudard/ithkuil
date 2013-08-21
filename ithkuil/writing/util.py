@@ -2,8 +2,8 @@ import math
 
 import vec
 
+from canoepaddle import Angle
 from canoepaddle.geometry import intersect_circle_line
-from canoepaddle.heading import Angle
 
 
 # TODO: make distance central, not on the inside edge.
