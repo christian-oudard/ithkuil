@@ -73,7 +73,7 @@ def typeset(
     y = 0
     for line in lines:
         bounds = line.bounds()
-        line.translate((0, y))
+        line.translate((0, -bounds.top + y))
         page.merge(line)
         y -= bounds.height + line_spacing
 
