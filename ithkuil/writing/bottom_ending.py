@@ -313,7 +313,7 @@ class HookLeftOnRight(BottomEnding):
         )
         pen.turn_to(45)
         pen.move_forward(slant_width / 2)
-        hook(pen, -90, 30, 2.5, adjust_inside=15)
+        hook(pen, -90, 30, 2.5, adjust_outside=15)
 
 
 class HookRightOnRight(BottomEnding):
@@ -328,7 +328,7 @@ class HookRightOnRight(BottomEnding):
         )
         pen.turn_to(45)
         pen.move_forward(slant_width / 2)
-        hook(pen, -90, -30, 2.5, adjust_inside=15)
+        hook(pen, -90, -30, 2.5, adjust_outside=15)
 
 
 class FoldHookRight(BottomEnding):
@@ -343,12 +343,12 @@ class FoldHookRight(BottomEnding):
             )
             pen.turn_to(-45)
             pen.move_forward(WIDTH * slant45 / 2)
-            hook(pen, 90, -30, 2.5, adjust_inside=15)
+            hook(pen, 90, -30, 2.5, adjust_outside=15)
         elif self.character.bottom_slanted():
             pen.line_to_y(BOTTOM, end_slant=0)
             pen.turn_to(0)
             pen.move_forward(pen.last_slant_width() / 2)
-            hook(pen, 60, -30, 2.5, adjust_inside=15)
+            hook(pen, 60, -30, 2.5, adjust_outside=15)
 
 
 class FoldHookLeft(BottomEnding):
@@ -363,12 +363,12 @@ class FoldHookLeft(BottomEnding):
             )
             pen.turn_to(-45)
             pen.move_forward(WIDTH * slant45 / 2)
-            hook(pen, 60, 30, 2.5, adjust_inside=15)
+            hook(pen, 60, 30, 2.5, adjust_outside=15)
         elif self.character.bottom_slanted():
             pen.line_to_y(BOTTOM, end_slant=0)
             pen.turn_to(0)
             pen.move_forward(pen.last_slant_width() / 2)
-            hook(pen, 60, 30, 2.5, adjust_inside=15)
+            hook(pen, 60, 30, 2.5, adjust_outside=15)
 
 
 class TowardRightHookLeft(BottomEnding):
@@ -383,7 +383,7 @@ class TowardRightHookLeft(BottomEnding):
         )
         pen.turn_to(-135)
         pen.move_to_y(BOTTOM)
-        hook(pen, 120, 30, 3.5, adjust_inside=5)
+        hook(pen, 120, 30, 3.5, adjust_outside=5)
 
 
 class TowardLeftHookLeft(BottomEnding):
@@ -391,7 +391,19 @@ class TowardLeftHookLeft(BottomEnding):
     pronunciation = ('t,-', 'dh-')
 
     def draw(self, pen):
-        pass
+        if self.character.bottom_straight():
+            pen.line_to_y(
+                BOTTOM + WIDTH / 2,
+                end_slant=-45,
+            )
+            pen.turn_to(-45)
+            pen.move_forward(WIDTH * slant45 / 2)
+            hook(pen, -120, 30, 2.5, adjust_outside=15)
+        elif self.character.bottom_slanted():
+            pen.line_to_y(BOTTOM, end_slant=0)
+            pen.turn_to(0)
+            pen.move_forward(pen.last_slant_width() / 2)
+            hook(pen, -120, 30, 2.5, adjust_outside=15)
 
 
 class TowardLeftHookRight(BottomEnding):
@@ -399,7 +411,19 @@ class TowardLeftHookRight(BottomEnding):
     pronunciation = ('f,-', 'v-')
 
     def draw(self, pen):
-        pass
+        if self.character.bottom_straight():
+            pen.line_to_y(
+                BOTTOM + WIDTH / 2,
+                end_slant=-45,
+            )
+            pen.turn_to(-45)
+            pen.move_forward(WIDTH * slant45 / 2)
+            hook(pen, -120, -45, 3.0, adjust_outside=5)
+        elif self.character.bottom_slanted():
+            pen.line_to_y(BOTTOM, end_slant=0)
+            pen.turn_to(0)
+            pen.move_forward(pen.last_slant_width() / 2)
+            hook(pen, -120, -45, 3.0, adjust_outside=5)
 
 
 class TowardRightHookRight(BottomEnding):
@@ -407,7 +431,14 @@ class TowardRightHookRight(BottomEnding):
     pronunciation = 'xh-'
 
     def draw(self, pen):
-        pass
+        slant_width = self.predict_slant_width(pen, 45)
+        pen.line_to_y(
+            BOTTOM + slant_width / slant45 / 2,
+            end_slant=45,
+        )
+        pen.turn_to(-135)
+        pen.move_to_y(BOTTOM)
+        hook(pen, 120, -30, 3.5, adjust_outside=15)
 
 
 class BendBreak(BottomEnding):
