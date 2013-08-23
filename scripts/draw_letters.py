@@ -10,7 +10,7 @@ import ithkuil.writing.consonant as cons
 #consonants = consonants[-6:]
 #consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.D, cons.VerticalBar, cons.T, cons.K, cons.RHacek, cons.L, cons.J]
 #consonants = [cons.SideEndingStub]
-consonants = [cons.T, cons.L]
+consonants = [cons.LCedilla, cons.D, cons.T, cons.L]
 import ithkuil.writing.side_ending as se
 #side_endings = [se.Normal, se.SideAll]
 side_endings = [se.Normal]
@@ -18,10 +18,15 @@ side_endings = [se.Normal]
 import ithkuil.writing.bottom_ending as be
 #bottom_endings = [be.Normal]
 #bottom_endings = [be.Normal, be.BottomAll]
-#bottom_endings = [be.HookLeftOnRight]
-bottom_endings = bottom_endings[19:23]
+#bottom_endings = [be.BendBreak]
+#bottom_endings = bottom_endings[24:25]
+bottom_endings = bottom_endings[:4]
 
 mode = StrokeMode(1.0)
+#mode = OutlineMode(1.0, 0.1)
+#mode = StrokeMode(0.6)
+#mode = OutlineMode(0.6, 0.1)
+#mode = StrokeMode(1.2)
 
 letters = []
 seen = set()
@@ -47,7 +52,7 @@ papers = [
         fixed_width=10.0,
         show_template=True,
         #show_bounds=True,
-        fuse=False,
+        #fuse=False,
     )
     for letter in letters
 ]
@@ -59,4 +64,5 @@ page = typeset(
     line_spacing=3.0,
     page_margin=5.0,
 )
-print(page.format_svg(6))
+print(page.format_svg(3))
+#print(page.format_svg(6, resolution=100))

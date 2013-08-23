@@ -23,19 +23,6 @@ UNDER = BOTTOM - 2.0
 OVER = TOP + 2.0
 
 
-def flip_ending_horizontal(cls):
-    # Replace the ending with one that is flipped in the x direction.
-    class Flipped(cls):
-        def angle(self):
-            return cls.angle(self)  # STUB
-            #a = cls.angle(self)
-            #return flip_angle_x(a)
-
-        def draw(self, pen):
-            cls.draw(self, pen)
-    return Flipped
-
-
 def flip_consonant_horizontal(cls):
 
     class Flipped(cls):

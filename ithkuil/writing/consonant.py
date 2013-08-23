@@ -9,7 +9,6 @@ from .common import (
     slant60,
     slant75,
     flip_consonant_horizontal as flip,
-    flip_ending_horizontal,
 )
 from canoepaddle import Pen, Paper
 
@@ -24,8 +23,6 @@ class ConsonantCharacter(Character):
     def __init__(self, side_ending_class, bottom_ending_class, mode):
         super().__init__(mode)
         self.side_ending = side_ending_class(self, mode)
-        if self.bottom_type == 'left':
-            bottom_ending_class = flip_ending_horizontal(bottom_ending_class)
         self.bottom_ending = bottom_ending_class(self, mode)
 
     def __str__(self):
