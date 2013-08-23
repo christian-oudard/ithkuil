@@ -23,9 +23,9 @@ UNDER = BOTTOM - 2.0
 OVER = TOP + 2.0
 
 
-def flip_consonant_horizontal(cls):
+def mirror_consonant_horizontal(cls):
 
-    class Flipped(cls):
+    class MirroredHorizontal(cls):
 
         def draw_character(self, **kwargs):
             paper = cls.draw_character(self, **kwargs)
@@ -33,13 +33,13 @@ def flip_consonant_horizontal(cls):
             return paper
 
         def __str__(self):
-            return 'Flipped(consonant.{})({}, {})'.format(
+            return 'MirroredHorizontal(consonant.{})({}, {})'.format(
                 cls.__name__,
                 self.side_ending,
                 self.bottom_ending,
             )
 
-    return Flipped
+    return MirroredHorizontal
 
 
 class Character:

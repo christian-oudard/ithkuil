@@ -8,7 +8,7 @@ from .common import (
     slant45,
     slant60,
     slant75,
-    flip_consonant_horizontal as flip,
+    mirror_consonant_horizontal as mirror,
 )
 from canoepaddle import Pen, Paper
 
@@ -460,51 +460,51 @@ class NHacek(ConsonantCharacter):
         pen.line_forward(self.width)
 
 
-B = flip(P)
+B = mirror(P)
 B.pronunciation = 'b'
-D = flip(T)
+D = mirror(T)
 D.pronunciation = 'd'
-G = flip(K)
+G = mirror(K)
 G.pronunciation = 'g'
-RHacek = flip(Q)
+RHacek = mirror(Q)
 RHacek.pronunciation = 'r^'
-ZDot = flip(C)
+ZDot = mirror(C)
 ZDot.pronunciation = 'dz'
-J = flip(CHacek)
+J = mirror(CHacek)
 J.pronunciation = 'j'
-Stop = flip(H)
+Stop = mirror(H)
 Stop.pronunciation = "'"
-PH = flip(PStop)
+PH = mirror(PStop)
 PH.pronunciation = 'ph'
-TH = flip(TStop)
+TH = mirror(TStop)
 TH.pronunciation = 'th'
-KH = flip(KStop)
+KH = mirror(KStop)
 KH.pronunciation = 'kh'
-QH = flip(QStop)
+QH = mirror(QStop)
 QH.pronunciation = 'qh'
-CH = flip(CStop)
+CH = mirror(CStop)
 CH.pronunciation = 'ch'
-CHacekH = flip(CHacekStop)
+CHacekH = mirror(CHacekStop)
 CHacekH.pronunciation = "c^h"
-V = flip(F)
+V = mirror(F)
 V.pronunciation = 'v'
-Dh = flip(TCedilla)
+Dh = mirror(TCedilla)
 Dh.pronunciation = 'dh'
-Xh = flip(X)
+Xh = mirror(X)
 Xh.pronunciation = 'xh'
-Z = flip(S)
+Z = mirror(S)
 Z.pronunciation = 'z'
-ZHacek = flip(SHacek)
+ZHacek = mirror(SHacek)
 ZHacek.pronunciation = 'z^'
-Y = flip(W)
+Y = mirror(W)
 Y.pronunciation = 'y'
-LCedilla = flip(L)
+LCedilla = mirror(L)
 LCedilla.pronunciation = 'l,'
-CCedilla = flip(R)
+CCedilla = mirror(R)
 CCedilla.pronunciation = 'c,'
-N = flip(M)
+N = mirror(M)
 N.pronunciation = 'n'
-TLCedilla = flip(NHacek)
+TLCedilla = mirror(NHacek)
 TLCedilla.pronunciation = 'tl,'
 
 
