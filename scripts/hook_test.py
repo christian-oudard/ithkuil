@@ -46,6 +46,7 @@ for slant_angle in [60, -60, 120, -120]:
                     adjust_outside,
                 )
                 papers.append(pen.paper)
+
 page = typeset(
     papers,
     letter_spacing=2.0,

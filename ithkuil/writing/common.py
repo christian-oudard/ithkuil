@@ -23,9 +23,11 @@ UNDER = BOTTOM - 2.0
 OVER = TOP + 2.0
 
 
-def mirror_consonant_horizontal(cls):
+def mirror_consonant_x(cls):
 
-    class MirroredHorizontal(cls):
+    class MirroredX(cls):
+
+        mirrored_x = True
 
         def draw_character(self, **kwargs):
             paper = cls.draw_character(self, **kwargs)
@@ -33,16 +35,41 @@ def mirror_consonant_horizontal(cls):
             return paper
 
         def __str__(self):
-            return 'MirroredHorizontal(consonant.{})({}, {})'.format(
+            return 'MirroredX(consonant.{})({}, {})'.format(
                 cls.__name__,
                 self.side_ending,
                 self.bottom_ending,
             )
 
-    return MirroredHorizontal
+    return MirroredX
+
+
+def mirror_consonant_y(cls):
+
+    class MirroredY(cls):
+
+        mirrored_y = True
+
+        def draw_character(self, **kwargs):
+            paper = cls.draw_character(self, **kwargs)
+            paper.mirror_y(MIDDLE)
+            return paper
+
+        def __str__(self):
+            return 'MirroredY(consonant.{})({}, {})'.format(
+                cls.__name__,
+                self.side_ending,
+                self.bottom_ending,
+            )
+
+    return MirroredY
 
 
 class Character:
+
+    mirrored_x = False
+    mirrored_y = False
+
     def __init__(self, mode):
         self.mode = mode
         self.width = mode.width
@@ -52,6 +79,7 @@ class Character:
 
 
 class Ending:
+
     def __init__(self, character, mode):
         self.character = character
         self.mode = mode
