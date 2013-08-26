@@ -558,38 +558,6 @@ consonants = [
 ]
 
 
-class SideEndingStub(ConsonantCharacter):
-
-    def __init__(self, side_ending_class, bottom_ending_class, mode):
-        Character.__init__(self, mode)
-        self.side_ending = side_ending_class(self, mode)
-        self.bottom_ending = None
-
-    def draw_character(self, **kwargs):
-        paper = Paper()
-
-        pen = Pen()
-        pen.set_mode(self.mode)
-        pen.move_to((0, TOP - self.width / 2))
-        pen.turn_to(0)
-        pen.line_forward(2.0)
-
-        def stub_cap(pen, end):
-            pen.move_to(end)
-        pen.last_segment().start_cap = stub_cap
-
-        self.side_ending.draw(pen)
-        paper.merge_under(pen.paper)
-
-        bounds = paper.bounds()
-        bounds.top = OVER
-        bounds.bottom = MIDDLE
-        bounds.left = 0
-        paper.override_bounds(bounds)
-
-        return paper
-
-
 class VerticalBar(ConsonantCharacter):
 
     bottom_type = 'straight'
@@ -610,3 +578,80 @@ class VerticalBar(ConsonantCharacter):
             pen.paper.fuse_paths()
         pen.paper.center_on_x(0)
         return pen.paper
+
+
+def stub_cap(pen, end):
+    pen.move_to(end)
+
+
+class SideEndingStub(ConsonantCharacter):
+
+    def __init__(self, side_ending_class, bottom_ending_class, mode):
+        Character.__init__(self, mode)
+        self.side_ending = side_ending_class(self, mode)
+        self.bottom_ending = None
+
+    def draw_character(self, **kwargs):
+        paper = Paper()
+
+        pen = Pen()
+        pen.set_mode(self.mode)
+        pen.move_to((0, TOP - self.width / 2))
+        pen.turn_to(0)
+        pen.line_forward(2.0)
+        pen.last_segment().start_cap = stub_cap
+
+        self.side_ending.draw(pen)
+        paper.merge(pen.paper)
+
+        bounds = paper.bounds()
+        bounds.top = OVER
+        bounds.bottom = MIDDLE
+        bounds.left = 0
+        paper.override_bounds(bounds)
+
+        return paper
+
+
+class BottomEndingStub(ConsonantCharacter):
+
+    def __init__(self, side_ending_class, bottom_ending_class, mode):
+        Character.__init__(self, mode)
+        self.side_ending = None
+        self.bottom_ending = bottom_ending_class(self, mode)
+
+    def draw_character(self, **kwargs):
+        pen = Pen()
+        pen.set_mode(self.mode)
+        pen.move_to((0, MIDDLE - 0.5))
+        self.draw(pen)
+        self.bottom_ending.draw(pen)
+
+        paper = pen.paper
+
+        bounds = paper.bounds()
+        bounds.top = MIDDLE
+        bounds.bottom = UNDER
+        paper.override_bounds(bounds)
+
+        return paper
+
+
+class BottomEndingStraightStub(BottomEndingStub):
+
+    bottom_type = 'straight'
+
+    def draw(self, pen):
+        pen.turn_to(-90)
+        pen.line_forward(1.0, start_slant=0)
+        pen.last_segment().start_cap = stub_cap
+
+
+class BottomEndingSlantedStub(BottomEndingStub):
+
+    bottom_type = 'right'
+
+    def draw(self, pen):
+        pen.turn_to(-45)
+        pen.line_forward(1.0, start_slant=0)
+        pen.last_segment().start_cap = stub_cap
