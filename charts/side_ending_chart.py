@@ -22,11 +22,15 @@ for letter in letters:
 
     # Override bounds to be asymmetrical fixed width.
     bounds = paper.bounds()
-    bounds.left = 0
-    bounds.right = 7
-    bounds.top = 18
+    bounds.left = -2
+    bounds.right = 5
+    bounds.bottom = 3
+    if letter.side_ending.relation == 'UNFRAMED':
+        bounds.top = 18
+    else:
+        bounds.top = 20
     paper.override_bounds(bounds)
-    paper.translate((-1.5, 0))
+    paper.translate((-0.5, 0))
 
     # Generate text indicating pattern and stem.
     pen = Pen()
@@ -47,9 +51,9 @@ for letter in letters:
 
 page = typeset(
     papers,
-    letter_spacing=5.0,
+    letter_spacing=4.0,
     letters_per_line=9,
-    line_spacing=7.0,
+    line_spacing=5.0,
     page_margin=5.0,
 )
 
@@ -58,9 +62,9 @@ page_bounds = page.bounds()
 pen = Pen()
 pen.paper = page
 page_x_center = (page_bounds.left + page_bounds.right) / 2
-pen.move_to((page_x_center, 14.0))
+pen.move_to((page_x_center, -3.0))
 pen.text('Unframed Relation', font_size, font, gray, centered=True)
-pen.move_to((page_x_center, -5.0))
+pen.move_to((page_x_center, -23.0))
 pen.text('Framed Relation', font_size, font, gray, centered=True)
 
 print(page.format_svg(4, resolution=1000 / page.bounds().width))

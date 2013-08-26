@@ -569,17 +569,15 @@ class SideEndingStub(ConsonantCharacter):
         paper = Paper()
 
         pen = Pen()
-
-        pen.fill_mode('white')
-        pen.move_to((0, TOP - self.width / 2))
-        pen.square(self.width * 2)
-        paper.merge(pen.paper)
-
-        pen = Pen()
         pen.set_mode(self.mode)
         pen.move_to((0, TOP - self.width / 2))
         pen.turn_to(0)
-        pen.line_forward(self.width + 2.0)
+        pen.line_forward(2.0)
+
+        def stub_cap(pen, end):
+            pen.move_to(end)
+        pen.last_segment().start_cap = stub_cap
+
         self.side_ending.draw(pen)
         paper.merge_under(pen.paper)
 
