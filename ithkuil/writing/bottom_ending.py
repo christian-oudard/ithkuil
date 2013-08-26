@@ -673,35 +673,77 @@ class AcuteBreak(Acute):
         elif self.character.bottom_slanted():
             pen.line_to_y(BOTTOM + self.width / 2)
             pen.turn_to(180)
-            pen.line_forward(2.5, end_slant=-45)
+            pen.line_forward(2.0, end_slant=-45)
             pen.turn_to(-45)
             pen.move_forward(self.width * slant45)
             pen.turn_to(180)
-            pen.line_forward(2.5, start_slant=-45, end_slant=-45)
+            pen.line_forward(2.0, start_slant=-45, end_slant=-45)
 
 
-class AcuteLineHigh(BottomEnding):
+class AcuteLineHigh(Acute):
 
     pronunciation = '-m'
 
     def draw(self, pen):
-        pass
+        if self.character.bottom_straight():
+            self.straight_acute(pen, 22.5)
+            x = self.width / math.tan(pen.heading.rad)
+            pen.line_to_x(pen.position.x - self.width / 2 + x, end_slant=90)
+            pen.turn_to(-90)
+            pen.move_to_y(BOTTOM + self.width / 2)
+            pen.turn_to(0)
+            pen.line_forward(2.0, start_slant=90, end_slant=-45)
+        elif self.character.bottom_slanted():
+            pen.line_to_y(BOTTOM + self.width / 2)
+            pen.turn_to(180)
+            pen.line_forward(2.0, end_slant=-45)
+            pen.turn_to(-45)
+            pen.move_forward(self.width * slant45 / 2 + self.width / 2)
+            pen.turn_to(-135)
+            pen.line_forward(2.0, start_slant=-45, end_slant=90)
 
 
-class AcuteLineLow(BottomEnding):
+class AcuteLineLow(Acute):
 
     pronunciation = '-n'
 
     def draw(self, pen):
-        pass
+        if self.character.bottom_straight():
+            self.straight_acute(pen, 30)
+            x = self.width * slant60 / math.tan(pen.heading.rad)
+            pen.line_to_x(pen.position.x - self.width / 2 + x, end_slant=90)
+            pen.turn_to(-90)
+            pen.move_to_y(BOTTOM + self.width * slant60 / 2)
+            pen.turn_to(-30)
+            pen.line_forward(2.0, start_slant=90, end_slant=90)
+        elif self.character.bottom_slanted():
+            pen.line_to_y(BOTTOM + self.width / 2)
+            pen.turn_to(180)
+            pen.line_forward(2.0, end_slant=-45)
+            pen.turn_to(-45)
+            pen.move_forward(self.width * slant45)
+            pen.turn_to(-90)
+            pen.line_forward(2.0, start_slant=-45, end_slant=-45)
 
 
-class DoubleBend(BottomEnding):
+class DoubleBend(Acute):
 
     pronunciation = '-v'
 
     def draw(self, pen):
-        pass
+        if self.character.bottom_straight():
+            self.straight_acute(pen, 22.5)
+            pen.line_forward(1.5)
+            pen.turn_to(-22.5)
+            slant_width = self.predict_slant_width(pen, 90)
+            pen.line_to_y(BOTTOM + slant_width / 2, end_slant=90)
+        elif self.character.bottom_slanted():
+            start_heading = pen.heading
+            pen.line_to_y(BOTTOM + self.width / 2)
+            pen.turn_to(180)
+            pen.line_forward(2.0)
+            pen.turn_to(start_heading)
+            pen.line_to_y(BOTTOM - 1.0, end_slant=0)
 
 
 class BreakSlightRight(BottomEnding):
@@ -709,7 +751,24 @@ class BreakSlightRight(BottomEnding):
     pronunciation = '-n^'
 
     def draw(self, pen):
-        pass
+        if self.character.bottom_straight():
+            slant_width = self.predict_slant_width(pen, -45)
+            pen.line_to_y(
+                BOTTOM + slant_width / slant45 / 2,
+                end_slant=-45,
+            )
+
+            pen.turn_to(135)
+            pen.move_forward(pen.last_slant_width() / 2 + self.width / 2)
+            pen.turn_to(-135)
+            pen.line_to_y(BOTTOM, end_slant=0)
+        else:
+            pen.line_to_y(BOTTOM, end_slant=0)
+            pen.turn_to(180)
+            pen.move_forward(pen.last_slant_width() / 2 + self.width / 2)
+            pen.turn_to(-90)
+            pen.line_forward(2.0, start_slant=0, end_slant=-45)
+
 
 
 bottom_endings = [

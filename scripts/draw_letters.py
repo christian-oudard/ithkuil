@@ -6,12 +6,12 @@ from ithkuil.writing.typeset import typeset, draw_letter
 
 #DEBUG redefinition of parts lists for testing.
 import ithkuil.writing.consonant as cons
-#consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.D, cons.T, cons.K, cons.RHacek, cons.L, cons.J]
+consonants = [cons.CHacek, cons.LCedilla, cons.Q, cons.G, cons.D, cons.T, cons.K, cons.RHacek, cons.L, cons.J]
 #consonants = [cons.LCedilla, cons.D, cons.T, cons.L]
 #consonants = consonants + [cons.VerticalBar, cons.SideEndingStub]
 #consonants = consonants[-6:]
 #consonants = [cons.T]
-consonants = [c for c in consonants if not c.mirrored_x]
+#consonants = [c for c in consonants if not c.mirrored_x]
 import ithkuil.writing.side_ending as se
 #side_endings = [se.Normal, se.SideAll]
 side_endings = [se.Normal]
@@ -19,8 +19,8 @@ side_endings = [se.Normal]
 import ithkuil.writing.bottom_ending as be
 #bottom_endings = [be.Normal]
 #bottom_endings = [be.Normal, be.BottomAll]
-bottom_endings = [be.Acute, be.AcuteBreak, be.AcuteFold, be.AcuteBarb]
-#bottom_endings = bottom_endings[24:25]
+#bottom_endings = [be.Acute, be.DoubleBend]
+bottom_endings = bottom_endings[29:]
 
 mode = StrokeMode(1.0)
 #mode = OutlineMode(1.0, 0.1)
