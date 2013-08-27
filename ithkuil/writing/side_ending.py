@@ -7,6 +7,7 @@ class SideEnding(Ending):
     pattern = NotImplemented
     stem = NotImplemented
     relation = NotImplemented
+    transliteration = NotImplemented
 
     def __init__(self, character, mode, flipped):
         super().__init__(character, mode)
@@ -21,6 +22,7 @@ class Normal(SideEnding):
     pattern = 'P1'
     stem = 'S1'
     relation = 'UNFRAMED'
+    transliteration = ''
 
     def draw(self, pen):
         if self.flipped:
@@ -34,6 +36,7 @@ class RightOnBottom(SideEnding):
     pattern = 'P1'
     stem = 'S2'
     relation = 'UNFRAMED'
+    transliteration = 'a'
 
     def draw(self, pen):
         pen.line_forward(self.width, end_slant=45)
@@ -48,6 +51,7 @@ class DownOnBottom(SideEnding):
     pattern = 'P1'
     stem = 'S3'
     relation = 'UNFRAMED'
+    transliteration = 'ae'
 
     def draw(self, pen):
         pen.line_forward(2 * self.width, end_slant=45)
@@ -62,6 +66,7 @@ class HookRightOnBottom(SideEnding):
     pattern = 'P2'
     stem = 'S1'
     relation = 'UNFRAMED'
+    transliteration = 'a^'
 
     def draw(self, pen):
         pen.line_forward(self.width, end_slant=45)
@@ -75,6 +80,7 @@ class HookLeftOnBottom(SideEnding):
     pattern = 'P2'
     stem = 'S2'
     relation = 'UNFRAMED'
+    transliteration = 'o'
 
     def draw(self, pen):
         pen.line_forward(self.width, end_slant=45)
@@ -88,6 +94,7 @@ class DiagonalDownRightOnBottom(SideEnding):
     pattern = 'P2'
     stem = 'S3'
     relation = 'UNFRAMED'
+    transliteration = 'o^'
 
     def draw(self, pen):
         pen.line_forward(self.width, end_slant=45)
@@ -102,6 +109,7 @@ class FoldDownHookRight(SideEnding):
     pattern = 'P3'
     stem = 'S1'
     relation = 'UNFRAMED'
+    transliteration = 'e'
 
     def draw(self, pen):
         pen.line_forward(2 * self.width, end_slant=-45)
@@ -115,6 +123,7 @@ class FoldDownHookLeft(SideEnding):
     pattern = 'P3'
     stem = 'S2'
     relation = 'UNFRAMED'
+    transliteration = 'e^'
 
     def draw(self, pen):
         pen.line_forward(2 * self.width, end_slant=-45)
@@ -128,6 +137,7 @@ class DiagonalDownLeft(SideEnding):
     pattern = 'P3'
     stem = 'S3'
     relation = 'UNFRAMED'
+    transliteration = 'i'
 
     def draw(self, pen):
         pen.line_forward(self.width, end_slant=-45)
@@ -142,6 +152,7 @@ class DownOnRight(SideEnding):
     pattern = 'P1'
     stem = 'S1'
     relation = 'FRAMED'
+    transliteration = 'i^'
 
     def draw(self, pen):
         pen.line_forward(self.width / 2, end_slant=45)
@@ -156,6 +167,7 @@ class DiagonalDownRightOnTop(SideEnding):
     pattern = 'P1'
     stem = 'S2'
     relation = 'FRAMED'
+    transliteration = 'e:'
 
     def draw(self, pen):
         pen.line_forward(self.width / 2, end_slant=45)
@@ -170,6 +182,7 @@ class FoldUp(SideEnding):
     pattern = 'P1'
     stem = 'S3'
     relation = 'FRAMED'
+    transliteration = 'u'
 
     def draw(self, pen):
         pen.line_forward(self.width / 2, end_slant=45)
@@ -184,6 +197,7 @@ class UpOnRight(SideEnding):
     pattern = 'P2'
     stem = 'S1'
     relation = 'FRAMED'
+    transliteration = 'u^'
 
     def draw(self, pen):
         pen.line_forward(self.width / 2, end_slant=-45)
@@ -198,6 +212,7 @@ class DiagonalUpRightOnTop(SideEnding):
     pattern = 'P2'
     stem = 'S2'
     relation = 'FRAMED'
+    transliteration = 'y'
 
     def draw(self, pen):
         pen.line_forward(self.width / 2, end_slant=-45)
@@ -212,6 +227,7 @@ class FoldDown(SideEnding):
     pattern = 'P2'
     stem = 'S3'
     relation = 'FRAMED'
+    transliteration = 'u:'
 
     def draw(self, pen):
         pen.line_forward(self.width / 2, end_slant=-45)
@@ -226,6 +242,7 @@ class FoldUpHookLeft(SideEnding):
     pattern = 'P3'
     stem = 'S1'
     relation = 'FRAMED'
+    transliteration = 'o:'
 
     def draw(self, pen):
         pen.line_forward(self.width, end_slant=45)
@@ -239,6 +256,7 @@ class FoldUpHookRight(SideEnding):
     pattern = 'P3'
     stem = 'S2'
     relation = 'FRAMED'
+    transliteration = 'o%'
 
     def draw(self, pen):
         pen.line_forward(self.width, end_slant=45)
@@ -252,6 +270,7 @@ class DiagonalUpLeft(SideEnding):
     pattern = 'P3'
     stem = 'S3'
     relation = 'FRAMED'
+    transliteration = 'i+'
 
     def draw(self, pen):
         pen.line_forward(self.width, end_slant=45)
@@ -260,6 +279,8 @@ class DiagonalUpLeft(SideEnding):
         pen.turn_to(135)
         pen.line_forward(2, start_slant=45, end_slant=0)
 
+
+# Character list.
 
 side_endings = [
     Normal,
@@ -290,6 +311,15 @@ def make_side_endings_by_psr():
         table[key] = se
     return table
 side_endings_by_psr = make_side_endings_by_psr()
+
+
+def make_side_endings_by_transliteration():
+    table = {}
+    for se in side_endings:
+        if se.transliteration != '':
+            table[se.transliteration] = se
+    return table
+side_endings_by_transliteration = make_side_endings_by_transliteration()
 
 
 class SideAll(SideEnding):

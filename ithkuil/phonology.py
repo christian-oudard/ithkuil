@@ -1,5 +1,8 @@
-import itertools
+import re
 import unicodedata
+
+from .util import choices_pattern
+
 
 # Letters.
 consonants = (
@@ -49,6 +52,10 @@ vowels = (
     'ì',
     'ò',
     'ù',
+    # Transliteration only.
+    'æ',
+    'ø',
+    'ɨ',
 )
 typing_vowels = (
     # Unmarked stress.
@@ -69,18 +76,10 @@ typing_vowels = (
     'i\\',
     'o\\',
     'u\\',
-)
-
-_letter_conversion_table = {}
-for t, c in itertools.chain(
-    zip(typing_consonants, consonants),
-    zip(typing_vowels, vowels),
-):
-    _letter_conversion_table[t] = c
-    _letter_conversion_table[t.upper()] = c.upper()
-_max_combo_length = max(
-
-    len(t) for t in _letter_conversion_table.keys()
+    # Transliteration only.
+    'ae',
+    'o%',
+    'i+',
 )
 
 # Tones.
@@ -114,11 +113,63 @@ assert (
     sorted(tones.keys()) ==
     sorted(typing_tones.keys())
 )
-_tone_conversion_table = {}
-for tone in tone_order:
-    t = typing_tones[tone]
-    c = tones[tone]
-    _tone_conversion_table[t] = c
+
+
+def make_conversion_table():
+    table = {}
+    for t, c in zip(typing_consonants + typing_vowels, consonants + vowels):
+        table[t] = c
+        table[t.upper()] = c.upper()
+    for tone in tone_order:
+        t = typing_tones[tone]
+        c = tones[tone]
+        table[t] = c
+    return table
+typing_conversion_table = make_conversion_table()
+
+
+def _build_letter_regex():
+    letters = list(typing_consonants + typing_vowels)
+    for tone in tone_order:
+        t = typing_tones[tone]
+        if t != '':
+            letters.append(t)
+    pattern = choices_pattern(letters, split=True)
+    return re.compile(pattern, re.IGNORECASE)
+letter_regex = _build_letter_regex()
+
+
+def _build_typing_vowel_regex():
+    letters = list(typing_vowels)
+    pattern = choices_pattern(letters, split=True)
+    return re.compile(pattern, re.IGNORECASE)
+typing_vowel_regex = _build_typing_vowel_regex()
+
+
+def _build_typing_consonant_regex():
+    letters = list(typing_consonants)
+    pattern = choices_pattern(letters, split=True)
+    return re.compile(pattern, re.IGNORECASE)
+typing_consonant_regex = _build_typing_consonant_regex()
+
+
+def split_ascii(ascii_text):
+    """
+    >>> split_ascii("Ikc,as")
+    ['I', 'k', 'c,', 'a', 's']
+    >>> split_ascii("=Sakc^'a")
+    ['=', 'S', 'a', 'k', "c^'", 'a']
+
+    Also works for transliterations.
+    >>> split_ascii('kaet')
+    ['k', 'ae', 't']
+    >>> split_ascii('no%t')
+    ['n', 'o%', 't']
+    """
+    return [
+        s for s in letter_regex.split(ascii_text)
+        if s != ''
+    ]
 
 
 def convert_ascii(ascii_text):
@@ -139,28 +190,17 @@ def convert_ascii(ascii_text):
     'âpcââl'
     >>> convert_ascii("a^pca^a^l")
     'âpcââl'
+    >>> convert_ascii('kaet')
+    'kæt'
+    >>> convert_ascii('no%t')
+    'nøt'
+    >>> convert_ascii('dzi+')
+    'żɨ'
     """
-    result = []
-    i = 0
-    typed_length = len(ascii_text)
-    while i < typed_length:
-        # Try greedily matching combinations.
-        for length in range(_max_combo_length, 0, -1):
-            combo = ascii_text[i:i+length]
-            converted = _letter_conversion_table.get(combo)
-            if converted:
-                result.append(converted)
-                break
-        else:
-            # Possibly add tone markers at the beginning of the word.
-            combo = ascii_text[i]
-            converted = _tone_conversion_table.get(combo)
-            if converted and (i == 0 or ascii_text[i-1].isspace()):
-                result.append(converted)
-            else:
-                result.append(combo)
-        i += length
-    return ''.join(result)
+    return ''.join(
+        typing_conversion_table.get(s, s)
+        for s in split_ascii(ascii_text)
+    )
 
 
 def convert_ascii_to_html(ascii_text):

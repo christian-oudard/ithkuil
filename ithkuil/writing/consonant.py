@@ -501,57 +501,7 @@ N = mx(M, 'N', pronunciation='n')
 TLCedilla = mx(NHacek, 'TLCedilla', pronunciation='tl,')
 
 
-# Character list.
-
-consonants = [
-    P,
-    T,
-    K,
-    Q,
-    C,
-    CHacek,
-    B,
-    D,
-    G,
-    Stop,
-    ZDot,
-    J,
-    PStop,
-    TStop,
-    KStop,
-    QStop,
-    CStop,
-    CHacekStop,
-    PH,
-    TH,
-    KH,
-    QH,
-    CH,
-    CHacekH,
-    F,
-    TCedilla,
-    X,
-    Xh,
-    S,
-    SHacek,
-    V,
-    Dh,
-    H,
-    RHacek,
-    Z,
-    ZHacek,
-    W,
-    L,
-    Y,
-    LCedilla,
-    R,
-    CCedilla,
-    M,
-    N,
-    NHacek,
-    TLCedilla,
-]
-
+# Special characters.
 
 class VerticalBar(ConsonantCharacter):
 
@@ -656,3 +606,55 @@ class BottomEndingSlantedStub(BottomEndingStub):
         pen.turn_to(-45)
         pen.line_forward(1.0, start_slant=0)
         pen.last_segment().start_cap = stub_cap
+
+
+# Character list.
+
+consonants = [
+    P,
+    T,
+    K,
+    Q,
+    C,
+    CHacek,
+    B,
+    D,
+    G,
+    Stop,
+    ZDot,
+    J,
+    PStop,
+    TStop,
+    KStop,
+    QStop,
+    CStop,
+    CHacekStop,
+    PH,
+    TH,
+    KH,
+    QH,
+    CH,
+    CHacekH,
+    F,
+    TCedilla,
+    X,
+    Xh,
+    S,
+    SHacek,
+    V,
+    Dh,
+    H,
+    RHacek,
+    Z,
+    ZHacek,
+    W,
+    L,
+    Y,
+    LCedilla,
+    R,
+    CCedilla,
+    M,
+    N,
+    NHacek,
+    TLCedilla,
+]

@@ -7,6 +7,7 @@ from .phonology import (
     tones,
     tone_names,
 )
+from .util import choices_pattern
 
 """
 Formative structure:
@@ -90,11 +91,39 @@ categories = (
     relations,
 )
 
+
+# Orderings.
+
+vr_order = [functions, patterns, stems]
+vc_order = [cases]
+civi_order = [illocutions, moods]
+ca_order = [essences, extensions, perspectives, affiliations, configurations]
+vf_order = [contexts, formats]
+cb_order = [biases]
+
+
+# Canonical key representations.
+
+canonical_keys = {}
+for ordering in [
+    vr_order,
+    vc_order,
+    civi_order,
+    ca_order,
+    vf_order,
+    cb_order,
+]:
+    for key in itertools.product(*ordering):
+        canonical_keys[frozenset(key)] = key
+
+
+# Tables.
+
 def lines_to_tables(lines, keys):
     # Ignore order of multi-part keys.
     keys = [frozenset(k) for k in keys]
 
-    # Read each line, split multiple affixes, and create 
+    # Read each line, split multiple affixes, and create
     # bidirectional dictionaries.
     table = {}
     table_reverse = {}
@@ -104,6 +133,7 @@ def lines_to_tables(lines, keys):
         for affix in affixes:
             table_reverse[affix] = key
     return table, table_reverse
+
 
 # Cr lexical root.
 def make_lexicon():
@@ -115,8 +145,8 @@ def make_lexicon():
     return lexicon_table
 lexicon_table = make_lexicon()
 
+
 # Vr affix.
-vr_order = [functions, patterns, stems]
 def make_vr_tables():
     keys = list(itertools.product(*vr_order))
 
@@ -128,24 +158,8 @@ def make_vr_tables():
     return lines_to_tables(lines, keys)
 vr_table, vr_table_reverse = make_vr_tables()
 
-# Ci+Vi affixes.
-civi_order = [illocutions, moods]
-def make_civi_tables():
-    keys = list(itertools.product(*civi_order))
-
-    # The last 7 combinations do not occur.
-    keys = keys[:-7]
-
-    with open('data/civi_table.dat') as f:
-        lines = f.read().splitlines()
-    assert len(lines) == len(keys)
-    assert len(set(lines)) == len(lines)
-
-    return lines_to_tables(lines, keys)
-civi_table, civi_table_reverse = make_civi_tables()
 
 # Vc affix.
-vc_order = [cases]
 def make_vc_tables():
     keys = list(itertools.product(*vc_order))
 
@@ -161,8 +175,24 @@ def make_vc_tables():
     return lines_to_tables(lines, keys)
 vc_table, vc_table_reverse = make_vc_tables()
 
+
+# Ci+Vi affixes.
+def make_civi_tables():
+    keys = list(itertools.product(*civi_order))
+
+    # The last 7 combinations do not occur.
+    keys = keys[:-7]
+
+    with open('data/civi_table.dat') as f:
+        lines = f.read().splitlines()
+    assert len(lines) == len(keys)
+    assert len(set(lines)) == len(lines)
+
+    return lines_to_tables(lines, keys)
+civi_table, civi_table_reverse = make_civi_tables()
+
+
 # Ca affix.
-ca_order = [essences, extensions, perspectives, affiliations, configurations]
 def make_ca_tables():
     keys = list(itertools.product(*ca_order))
 
@@ -174,8 +204,9 @@ def make_ca_tables():
     return lines_to_tables(lines, keys)
 ca_table, ca_table_reverse = make_ca_tables()
 
+
 # Vf affix.
-vf_order = [contexts, formats]
+
 def make_vf_tables():
     keys = list(itertools.product(*vf_order))
 
@@ -185,10 +216,11 @@ def make_vf_tables():
     assert len(set(lines)) == len(lines)
 
     return lines_to_tables(lines, keys)
+
 vf_table, vf_table_reverse = make_vf_tables()
 
+
 # Cb affix.
-cb_order = [biases]
 def make_cb_tables():
     keys = list(itertools.product(*cb_order))
 
@@ -200,6 +232,7 @@ def make_cb_tables():
     return lines_to_tables(lines, keys)
 cb_table, cb_table_reverse = make_cb_tables()
 
+
 # Tone.
 version_table = {
     ('PRC',): tones['falling'],
@@ -210,19 +243,6 @@ version_table = {
     ('EFC',): tones['risingfalling'],
 }
 version_table_reverse = {tone: version for (version, tone) in version_table.items()}
-
-# Canonical key representations.
-canonical_keys = {}
-for ordering in [
-    vr_order,
-    vc_order,
-    civi_order,
-    ca_order,
-    vf_order,
-    cb_order,
-]:
-    for key in itertools.product(*ordering):
-        canonical_keys[frozenset(key)] = key
 
 
 def lookup(query):
@@ -261,7 +281,7 @@ def lookup(query):
     result = []
 
     if isinstance(query, (list, tuple, set, frozenset)):
-         return lookup_key(query)
+        return lookup_key(query)
 
     # Try to interpret the query as slash-separated key values instead of tuple
     # key values.
@@ -282,6 +302,7 @@ def lookup(query):
 
     return result
 
+
 def lookup_key(key):
     result = []
 
@@ -300,6 +321,7 @@ def lookup_key(key):
 
     return result
 
+
 def lookup_lexicon(root):
     """
     >>> lookup_lexicon('ph')
@@ -308,6 +330,7 @@ def lookup_lexicon(root):
     root = convert_ascii(root)
     root = root.upper()
     return lexicon_table.get(root)
+
 
 def deconstruct_formative(word):
     """
@@ -319,7 +342,7 @@ def deconstruct_formative(word):
     word = convert_ascii(word).lower()
     parsed_word = parse_formative(word)
     if parsed_word is None:
-        return None # Could not understand word structure.
+        return None  # Could not understand word structure.
     tone, vr, cr, vc, civi, ca, vf, cb = parsed_word
     result = []
 
@@ -349,24 +372,8 @@ def deconstruct_formative(word):
 
     return result
 
-def parse_formative(word):
-    m = word_regex.match(word)
-    if m:
-        return tuple(m.groups())
 
-def build_word_regex():
-    def choices_pattern(options):
-        return r'(?:{})'.format('|'.join(options))
-
-    c = choices_pattern(consonants) + '+'
-    v = choices_pattern(vowels) + '+'
-    vr = choices_pattern(vr_table_reverse.keys())
-    vc = choices_pattern(vc_table_reverse.keys())
-    civi = choices_pattern(civi_table_reverse.keys())
-    vf = choices_pattern(vf_table_reverse.keys())
-    cb = choices_pattern(cb_table_reverse.keys())
-    tone = choices_pattern(tones.values())
-
+def _build_word_regex():
     word_pattern = r'''
         ^
         ({tone}) # Tone
@@ -378,6 +385,21 @@ def build_word_regex():
         ({vf})? # Vf
         ({cb})? # Cb
         $
-    '''.format(**locals())
-    return re.compile(word_pattern, re.UNICODE|re.IGNORECASE|re.VERBOSE)
-word_regex = build_word_regex()
+    '''.format(
+        c=choices_pattern(consonants) + '+',
+        v=choices_pattern(vowels) + '+',
+        vr=choices_pattern(vr_table_reverse.keys()),
+        vc=choices_pattern(vc_table_reverse.keys()),
+        civi=choices_pattern(civi_table_reverse.keys()),
+        vf=choices_pattern(vf_table_reverse.keys()),
+        cb=choices_pattern(cb_table_reverse.keys()),
+        tone=choices_pattern(tones.values()),
+    )
+    return re.compile(word_pattern, re.UNICODE | re.IGNORECASE | re.VERBOSE)
+word_regex = _build_word_regex()
+
+
+def parse_formative(word):
+    m = word_regex.match(word)
+    if m:
+        return tuple(m.groups())
