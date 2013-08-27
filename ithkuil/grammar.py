@@ -40,6 +40,9 @@ cases = (
     'SML', 'ASS', 'CNR', 'ACS', 'DFF', 'PER', 'PRO', 'PCV', 'PCR', 'ELP',
     'ALP', 'INP', 'EPS', 'PLM', 'LIM', 'LOC', 'ORI', 'PSV', 'ALL', 'ABL',
     'NAV', 'VOC',
+    'CMP1A', 'CMP2A', 'CMP3A', 'CMP4A', 'CMP5A', 'CMP6A', 'CMP7A', 'CMP8A',
+    'CMP1B', 'CMP2B', 'CMP3B', 'CMP4B', 'CMP5B', 'CMP6B', 'CMP7B', 'CMP8B',
+    'CMP1C', 'CMP2C', 'CMP3C', 'CMP4C', 'CMP5C', 'CMP6C', 'CMP7C', 'CMP8C',
 )
 illocutions = ('ASR', 'DIR', 'IRG', 'ADM', 'HOR', 'DEC')
 moods = ('FAC', 'SUB', 'ASM', 'SPC', 'COU', 'HYP', 'IPL', 'ASC')

@@ -88,6 +88,30 @@ abbreviations = {
         'ABL': 'ablative',
         'NAV': 'navigative',
         'VOC': 'vocative',
+        'CMP1A': 'comparative 1a',
+        'CMP2A': 'comparative 2a',
+        'CMP3A': 'comparative 3a',
+        'CMP4A': 'comparative 4a',
+        'CMP5A': 'comparative 5a',
+        'CMP6A': 'comparative 6a',
+        'CMP7A': 'comparative 7a',
+        'CMP8A': 'comparative 8a',
+        'CMP1B': 'comparative 1b',
+        'CMP2B': 'comparative 2b',
+        'CMP3B': 'comparative 3b',
+        'CMP4B': 'comparative 4b',
+        'CMP5B': 'comparative 5b',
+        'CMP6B': 'comparative 6b',
+        'CMP7B': 'comparative 7b',
+        'CMP8B': 'comparative 8b',
+        'CMP1C': 'comparative 1c',
+        'CMP2C': 'comparative 2c',
+        'CMP3C': 'comparative 3c',
+        'CMP4C': 'comparative 4c',
+        'CMP5C': 'comparative 5c',
+        'CMP6C': 'comparative 6c',
+        'CMP7C': 'comparative 7c',
+        'CMP8C': 'comparative 8c',
     },
     'illocution': {
         'ASR': 'assertive',
@@ -366,54 +390,6 @@ CLS
 Compulsory modality
 CML
 Compulsive modality
-CMP1A
-Comparative 1A case
-CMP1B
-Comparative 1B case
-CMP1C
-Comparative 1C case
-CMP2A
-Comparative 2A case
-CMP2B
-Comparative 2B case
-CMP2C
-Comparative 2C case
-CMP3A
-Comparative 3A case
-CMP3B
-Comparative 3B case
-CMP3C
-Comparative 3C case
-CMP4A
-Comparative 4A case
-CMP4B
-Comparative 4B case
-CMP4C
-Comparative 4C case
-CMP5A
-Comparative 5A case
-CMP5B
-Comparative 5B case
-CMP5C
-Comparative 5C case
-CMP6A
-Comparative 6A case
-CMP6B
-Comparative 6B case
-CMP6C
-Comparative 6C case
-CMP7A
-Comparative 7A case
-CMP7B
-Comparative 7B case
-CMP7C
-Comparative 7C case
-CMP8A
-Comparative 8A case
-CMP8B
-Comparative 8B case
-CMP8C
-Comparative 8C case
 CNC
 Suffix:  Degree of Concern or Consideration
 CNF
@@ -555,15 +531,15 @@ Expectative modality
 FAM
 Suffix:  Degree Of Familiarity
 FEA
-Suffix: Featural Properties 
+Suffix: Featural Properties
 FLC
 Fluctuative phase
 FLS
 Suffix:  Degree of Fluctuation/Stability
 FMS
-Suffix: Material States/Forms (non-solid or quasi-solid) 
+Suffix: Material States/Forms (non-solid or quasi-solid)
 FNS
-Suffix:  Material States/Forms (solids) 
+Suffix:  Material States/Forms (solids)
 FRC
 Suffix:  Degree of Physical Force Exerted
 FRE
@@ -607,7 +583,7 @@ Impositive modality
 IMT
 Imitative valence
 INB
-Suffix: Inability/Incapacity Due To 
+Suffix: Inability/Incapacity Due To
 INF
 Inferential validation
 INL
@@ -761,7 +737,7 @@ Nonrelational valence
 NTR
 Suffix:  Degree of Notoriety, Acceptance, Respect, Honor
 OAU
-Suffix: Origin/Association/Utilization 
+Suffix: Origin/Association/Utilization
 OBG
 Obligative modality
 Obv
@@ -791,7 +767,7 @@ Suffix:  Degree of Physical Control
 PLA
 Suffix:  Place, State, Setting Where…
 PLE
-Suffix: Degree of (Un-)Pleasantness (of Effect or Result) 
+Suffix: Degree of (Un-)Pleasantness (of Effect or Result)
 PLV
 Suffix:  polarity / logical valence values
 PMP
@@ -869,7 +845,7 @@ Refutative sanction
 RGR
 Regressive aspect
 RNC
-Suffix: Renunciation 
+Suffix: Renunciation
 ROL
 Suffix:  Role
 RPN
@@ -917,7 +893,7 @@ Suffix:  Degree of Sophistication
 SPL
 Superlative level
 SPS
-Suffix: Supersets/Multi-Level Gestalts 
+Suffix: Supersets/Multi-Level Gestalts
 SQC
 Suffix:  Sequence of Cause and Effect
 SQN
@@ -939,7 +915,7 @@ Surpassive level
 SWR
 Suffix:  Switch-reference
 TAL
-Suffix: Degree of Capacity or Talent For 
+Suffix: Degree of Capacity or Talent For
 TEM
 Suffix:  Alternative Temporal Aspects
 TEN
@@ -955,7 +931,7 @@ Temporary aspect
 TNS
 Transitional aspect
 TPD
-Suffix: Temporary Duration 
+Suffix: Temporary Duration
 TPF
 Suffix:  Topic, Frame and Focus
 TPI
@@ -981,7 +957,7 @@ Suffix:  Utilitative or Enabling Means
 VOL
 Voluntative modality
 VWP
-Suffix: From Viewpoint/Perspective Of 
+Suffix: From Viewpoint/Perspective Of
 WAK
 Suffix:  Spread/wake/trail/area/expanse created by passage of entity
 XPT

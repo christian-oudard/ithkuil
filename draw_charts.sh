@@ -9,5 +9,6 @@ for file in charts/*.svg; do
     base=${file/%.svg/}
     inkscape $base.svg --export-png=$base.png
     pngcrush $base.png $base.crushed.png
+    mv $base.crushed.png $base.png
     convert $base.png $base.gif
 done

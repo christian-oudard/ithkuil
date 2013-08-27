@@ -476,52 +476,29 @@ class NHacek(ConsonantCharacter):
 
 mx = mirror_character_x
 
-B = mx(P)
-B.pronunciation = 'b'
-D = mx(T)
-D.pronunciation = 'd'
-G = mx(K)
-G.pronunciation = 'g'
-RHacek = mx(Q)
-RHacek.pronunciation = 'r^'
-ZDot = mx(C)
-ZDot.pronunciation = 'dz'
-J = mx(CHacek)
-J.pronunciation = 'j'
-Stop = mx(H)
-Stop.pronunciation = "'"
-PH = mx(PStop)
-PH.pronunciation = 'ph'
-TH = mx(TStop)
-TH.pronunciation = 'th'
-KH = mx(KStop)
-KH.pronunciation = 'kh'
-QH = mx(QStop)
-QH.pronunciation = 'qh'
-CH = mx(CStop)
-CH.pronunciation = 'ch'
-CHacekH = mx(CHacekStop)
-CHacekH.pronunciation = "c^h"
-V = mx(F)
-V.pronunciation = 'v'
-Dh = mx(TCedilla)
-Dh.pronunciation = 'dh'
-Xh = mx(X)
-Xh.pronunciation = 'xh'
-Z = mx(S)
-Z.pronunciation = 'z'
-ZHacek = mx(SHacek)
-ZHacek.pronunciation = 'z^'
-Y = mx(W)
-Y.pronunciation = 'y'
-LCedilla = mx(L)
-LCedilla.pronunciation = 'l,'
-CCedilla = mx(R)
-CCedilla.pronunciation = 'c,'
-N = mx(M)
-N.pronunciation = 'n'
-TLCedilla = mx(NHacek)
-TLCedilla.pronunciation = 'tl,'
+B = mx(P, 'B', pronunciation='b')
+D = mx(T, 'D', pronunciation='d')
+G = mx(K, 'G', pronunciation='g')
+RHacek = mx(Q, 'RHacek', pronunciation='r^')
+ZDot = mx(C, 'ZDot', pronunciation='dz')
+J = mx(CHacek, 'J', pronunciation='j')
+Stop = mx(H, 'Stop', pronunciation="'")
+PH = mx(PStop, 'PH', pronunciation='ph')
+TH = mx(TStop, 'TH', pronunciation='th')
+KH = mx(KStop, 'KH', pronunciation='kh')
+QH = mx(QStop, 'QH', pronunciation='qh')
+CH = mx(CStop, 'CH', pronunciation='ch')
+CHacekH = mx(CHacekStop, 'CHacekH', pronunciation="c^h")
+V = mx(F, 'V', pronunciation='v')
+Dh = mx(TCedilla, 'Dh', pronunciation='dh')
+Xh = mx(X, 'Xh', pronunciation='xh')
+Z = mx(S, 'Z', pronunciation='z')
+ZHacek = mx(SHacek, 'ZHacek', pronunciation='z^')
+Y = mx(W, 'Y', pronunciation='y')
+LCedilla = mx(L, 'LCedilla', pronunciation='l,')
+CCedilla = mx(R, 'CCedilla', pronunciation='c,')
+N = mx(M, 'N', pronunciation='n')
+TLCedilla = mx(NHacek, 'TLCedilla', pronunciation='tl,')
 
 
 consonants = [
