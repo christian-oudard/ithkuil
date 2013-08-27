@@ -8,6 +8,7 @@ from .common import (
     slant45,
     slant60,
     slant75,
+    mirror_character_x,
 )
 
 
@@ -40,8 +41,6 @@ class ConsonantCharacter(Character):
         )
 
     def draw_character(self, fuse=True):
-        if isinstance(self, K):
-            pass#import pdb; pdb.set_trace()
         paper = Paper()
 
         # When drawing the body of the consonant, subclasses will start
@@ -473,96 +472,55 @@ class NHacek(ConsonantCharacter):
         pen.line_forward(self.width)
 
 
-# Mirrored consonants.
+# Mirrored characters.
 
-def mirror_consonant_x(cls):
+mx = mirror_character_x
 
-    class MirroredX(cls):
-
-        mirrored_x = True
-
-        def draw_character(self, **kwargs):
-            paper = cls.draw_character(self, **kwargs)
-            paper.mirror_x(0)
-            return paper
-
-        def __str__(self):
-            return 'MirroredX(consonant.{})({}, {})'.format(
-                cls.__name__,
-                self.side_ending,
-                self.bottom_ending,
-            )
-
-    return MirroredX
-
-
-def mirror_consonant_y(cls):
-
-    class MirroredY(cls):
-
-        mirrored_y = True
-
-        def draw_character(self, **kwargs):
-            paper = cls.draw_character(self, **kwargs)
-            paper.mirror_y(MIDDLE)
-            return paper
-
-        def __str__(self):
-            return 'MirroredY(consonant.{})({}, {})'.format(
-                cls.__name__,
-                self.side_ending,
-                self.bottom_ending,
-            )
-
-    return MirroredY
-
-
-m = mirror_consonant_x
-B = m(P)
+B = mx(P)
 B.pronunciation = 'b'
-D = m(T)
+D = mx(T)
 D.pronunciation = 'd'
-G = m(K)
+G = mx(K)
 G.pronunciation = 'g'
-RHacek = m(Q)
+RHacek = mx(Q)
 RHacek.pronunciation = 'r^'
-ZDot = m(C)
+ZDot = mx(C)
 ZDot.pronunciation = 'dz'
-J = m(CHacek)
+J = mx(CHacek)
 J.pronunciation = 'j'
-Stop = m(H)
+Stop = mx(H)
 Stop.pronunciation = "'"
-PH = m(PStop)
+PH = mx(PStop)
 PH.pronunciation = 'ph'
-TH = m(TStop)
+TH = mx(TStop)
 TH.pronunciation = 'th'
-KH = m(KStop)
+KH = mx(KStop)
 KH.pronunciation = 'kh'
-QH = m(QStop)
+QH = mx(QStop)
 QH.pronunciation = 'qh'
-CH = m(CStop)
+CH = mx(CStop)
 CH.pronunciation = 'ch'
-CHacekH = m(CHacekStop)
+CHacekH = mx(CHacekStop)
 CHacekH.pronunciation = "c^h"
-V = m(F)
+V = mx(F)
 V.pronunciation = 'v'
-Dh = m(TCedilla)
+Dh = mx(TCedilla)
 Dh.pronunciation = 'dh'
-Xh = m(X)
+Xh = mx(X)
 Xh.pronunciation = 'xh'
-Z = m(S)
+Z = mx(S)
 Z.pronunciation = 'z'
-ZHacek = m(SHacek)
+ZHacek = mx(SHacek)
 ZHacek.pronunciation = 'z^'
-Y = m(W)
+Y = mx(W)
 Y.pronunciation = 'y'
-LCedilla = m(L)
+LCedilla = mx(L)
 LCedilla.pronunciation = 'l,'
-CCedilla = m(R)
+CCedilla = mx(R)
 CCedilla.pronunciation = 'c,'
-N = m(M)
+N = mx(M)
 N.pronunciation = 'n'
-TLCedilla = m(NHacek)
+TLCedilla = mx(NHacek)
 TLCedilla.pronunciation = 'tl,'
 
 

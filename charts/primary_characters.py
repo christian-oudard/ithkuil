@@ -1,3 +1,4 @@
+# TODO: please refactor canoepaddle .text
 # TODO: template color doesn't match between this and bottom ending chart
 from canoepaddle import Pen, StrokeOutlineMode
 
@@ -17,16 +18,25 @@ for primary_class in primary_characters:
     letter = primary_class(be.Normal, be.Normal, mode)
     letter_paper = draw_letter(
         letter,
-        fixed_width=27.0,
+        fixed_width=30.0,
         show_template=True,
+        fuse=False,
     )
     letter_paper.translate((5, 0), bounds=False)
 
     p = Pen()
-    p.move_to((-5, 0))
+    p.move_to((-8, 3))
     p.text(
-        'X',
-        8.0,
+        letter.case,
+        6.0,
+        'Caudex',
+        '#233042',
+        centered=True,
+    )
+    p.move_to((-8, -3))
+    p.text(
+        letter.pronunciation,
+        6.0,
         'Caudex',
         '#233042',
         centered=True,

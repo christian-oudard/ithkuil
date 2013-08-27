@@ -2,16 +2,17 @@ from canoepaddle import Pen, Paper
 from .common import (
     Character,
     OVER,
-    TOP,
     MIDDLE,
-    BOTTOM,
     UNDER,
+    mirror_character_x,
+    mirror_character_y,
 )
 
 
 class PrimaryCharacter(Character):
 
     case = NotImplemented
+    pronunciation = NotImplemented
     top_straight = NotImplemented
     top_flipped = False
     bottom_straight = NotImplemented
@@ -91,6 +92,7 @@ class PrimaryCharacter(Character):
 class Oblique(PrimaryCharacter):
 
     case = 'OBL'
+    pronunciation = '-a-'
     top_straight = False
     top_flipped = False
     bottom_straight = False
@@ -110,6 +112,50 @@ class Oblique(PrimaryCharacter):
         return top_pen, bottom_pen
 
 
+class Inducive(PrimaryCharacter):
+
+    case = 'IND'
+    pronunciation = '-u-'
+    top_straight = False
+    top_flipped = False
+    bottom_straight = True
+    bottom_flipped = False
+
+    def draw(self, pen):
+        pen.move_to((0, MIDDLE + 1.5 * self.width))
+        pen.turn_to(-135)
+        top_pen = pen.copy()
+        top_pen.turn_left(180)
+
+        pen.line_to_y(MIDDLE + self.width / 2)
+        pen.turn_to(0)
+        pen.line_forward(3.0)
+        pen.turn_to(-90)
+        pen.line_forward(self.width)
+        bottom_pen = pen.copy()
+
+        return top_pen, bottom_pen
+
+
+# Mirrored characters.
+
+mx = mirror_character_x
+my = mirror_character_y
+
+Purposive = mx(Oblique, 'Purposive', case='PUR', pronunciation="-e'-")
+Considerative = mx(Inducive, 'Considerative', case='CSD', pronunciation = "-o'-")
+# ...
+Aversive = my(Inducive, 'Aversive', case='AVR', pronunciation="-eu'-")
+# ...
+#CMP1B = mxy(Inducive)
+
+
 primary_characters = [
     Oblique,
+    Inducive,
+    # ...
+    Purposive,
+    Considerative,
+    # ...
+    Aversive,
 ]

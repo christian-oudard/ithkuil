@@ -48,3 +48,45 @@ class Ending:
 
     def draw(self, pen):
         return
+
+
+def mirror_character_x(cls, name, **cls_attributes):
+
+    class MirroredX(cls):
+
+        mirrored_x = True
+
+        def draw_character(self, **kwargs):
+            paper = cls.draw_character(self, **kwargs)
+            paper.mirror_x(0)
+            return paper
+
+        def __str__(self):
+            return '{}({})'.format(name, cls.__str__(self))
+
+    cls_attributes['__name__'] = name
+    for key, value in cls_attributes.items():
+        setattr(MirroredX, key, value)
+
+    return MirroredX
+
+
+def mirror_character_y(cls, name, **cls_attributes):
+
+    class MirroredY(cls):
+
+        mirrored_y = True
+
+        def draw_character(self, **kwargs):
+            paper = cls.draw_character(self, **kwargs)
+            paper.mirror_y(MIDDLE)
+            return paper
+
+        def __str__(self):
+            return '{}({})'.format(name, cls.__str__(self))
+
+    cls_attributes['__name__'] = name
+    for key, value in cls_attributes.items():
+        setattr(MirroredY, key, value)
+
+    return MirroredY
