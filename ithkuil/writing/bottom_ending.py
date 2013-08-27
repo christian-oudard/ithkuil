@@ -818,19 +818,18 @@ class BottomAll(BottomEnding):
     """
     A debug ending showing every one of the endings superimposed.
     """
-    def angle(self):
-        return None
-
-    def offset_y(self, pen):
-        return 0
-
     def draw(self, pen):
         start_position = pen.position
         start_heading = pen.heading
         for bottom_ending_class in bottom_endings:
             if bottom_ending_class == BottomAll:
                 continue
-            bottom_ending = bottom_ending_class(self.character)
+            bottom_ending = bottom_ending_class(
+                self.character,
+                self.mode,
+                self.straight,
+                self.flipped,
+            )
             pen.move_to(start_position)
             pen.turn_to(start_heading)
             pen.break_stroke()
