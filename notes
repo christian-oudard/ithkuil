@@ -1,2 +1,3 @@
 TODO:
 - reimplement barb in terms of custom endcaps
+- redo entire ithkuil website as ReST python documentation format. host it on readthedocs?

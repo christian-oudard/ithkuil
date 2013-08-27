@@ -1,4 +1,4 @@
-from .common import Ending, TOP, slant45, slant75
+from .common import Ending, TOP, slant45
 from .util import hook
 
 
@@ -7,6 +7,10 @@ class SideEnding(Ending):
     pattern = NotImplemented
     stem = NotImplemented
     relation = NotImplemented
+
+    def __init__(self, character, mode, flipped):
+        super().__init__(character, mode)
+        self.flipped = flipped
 
     def __str__(self):
         return 'side_ending.{}'.format(self.__class__.__name__)
@@ -19,7 +23,7 @@ class Normal(SideEnding):
     relation = 'UNFRAMED'
 
     def draw(self, pen):
-        if self.character.side_flipped:
+        if self.flipped:
             pen.line_forward(self.width, end_slant=-45)
         else:
             pen.line_forward(self.width, end_slant=45)
