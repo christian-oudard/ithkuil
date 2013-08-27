@@ -61,9 +61,6 @@ def mirror_character_x(cls, name, **cls_attributes):
             paper.mirror_x(0)
             return paper
 
-        def __str__(self):
-            return '{}({})'.format(name, cls.__str__(self))
-
     cls_attributes['__name__'] = name
     for key, value in cls_attributes.items():
         setattr(MirroredX, key, value)
@@ -81,9 +78,6 @@ def mirror_character_y(cls, name, **cls_attributes):
             paper = cls.draw_character(self, **kwargs)
             paper.mirror_y(MIDDLE)
             return paper
-
-        def __str__(self):
-            return '{}({})'.format(name, cls.__str__(self))
 
     cls_attributes['__name__'] = name
     for key, value in cls_attributes.items():
@@ -103,9 +97,6 @@ def mirror_character_xy(cls, name, **cls_attributes):
             paper.mirror_x(0)
             paper.mirror_y(MIDDLE)
             return paper
-
-        def __str__(self):
-            return '{}({})'.format(name, cls.__str__(self))
 
     cls_attributes['__name__'] = name
     for key, value in cls_attributes.items():

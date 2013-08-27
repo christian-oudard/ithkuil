@@ -13,7 +13,6 @@ from .common import (
 class PrimaryCharacter(Character):
 
     case = NotImplemented
-    pronunciation = NotImplemented
     top_straight = NotImplemented
     top_flipped = False
     bottom_straight = NotImplemented
@@ -54,19 +53,22 @@ class PrimaryCharacter(Character):
         bottom_start_position = bottom_pen.position
 
         # Draw the endings.
+        # If the ending orientations are to the left, then we have to flip them
+        # horizontally.
         # The top ending is drawn as if it were a bottom ending, so
         # mirror it to the top.
+        if self.top_flipped:
+            top_pen.turn_to(top_pen.heading.flipped_x())
         top_pen.move_to(top_pen.position.flipped_y(MIDDLE))
         top_pen.turn_to(top_pen.heading.flipped_y())
         self.top_ending.draw(top_pen)
         top_pen.paper.mirror_y(MIDDLE)
-
-        self.bottom_ending.draw(bottom_pen)
-
-        # If the ending orientations are to the left, then we have to flip them
-        # horizontally.
         if self.top_flipped:
             top_pen.paper.mirror_x(top_start_position.x)
+
+        if self.bottom_flipped:
+            bottom_pen.turn_to(bottom_pen.heading.flipped_x())
+        self.bottom_ending.draw(bottom_pen)
         if self.bottom_flipped:
             bottom_pen.paper.mirror_x(bottom_start_position.x)
 
@@ -93,7 +95,6 @@ class PrimaryCharacter(Character):
 class Oblique(PrimaryCharacter):
 
     case = 'OBL'
-    pronunciation = '-a-'
     top_straight = False
     top_flipped = False
     bottom_straight = False
@@ -116,7 +117,6 @@ class Oblique(PrimaryCharacter):
 class Inducive(PrimaryCharacter):
 
     case = 'IND'
-    pronunciation = '-u-'
     top_straight = False
     top_flipped = False
     bottom_straight = True
@@ -138,6 +138,30 @@ class Inducive(PrimaryCharacter):
         return top_pen, bottom_pen
 
 
+class Absolutive(PrimaryCharacter):
+
+    case = 'ABS'
+    top_straight = False
+    top_flipped = False
+    bottom_straight = False
+    bottom_flipped = True
+
+    def draw(self, pen):
+        pen.move_to((0, MIDDLE + 1.5 * self.width))
+        pen.turn_to(-135)
+        top_pen = pen.copy()
+        top_pen.turn_left(180)
+
+        pen.line_to_y(MIDDLE + self.width / 2)
+        pen.turn_to(0)
+        pen.line_forward(3.0)
+        pen.turn_to(-135)
+        pen.line_to_y(MIDDLE - self.width / 2)
+        bottom_pen = pen.copy()
+
+        return top_pen, bottom_pen
+
+
 # Mirrored characters.
 
 mx = mirror_character_x
@@ -146,18 +170,23 @@ mxy = mirror_character_xy
 
 Purposive = mx(Oblique, 'Purposive', case='PUR')
 Considerative = mx(Inducive, 'Considerative', case='CSD')
+Essive = mx(Absolutive, 'Essive', case='ESS')
 # ...
 Aversive = my(Inducive, 'Aversive', case='AVR')
 # ...
 Comparative1B = mxy(Inducive, 'Comparative1B', case='CMP1B')
 
 
+# Character list.
+
 primary_characters = [
     Oblique,
     Inducive,
+    Absolutive,
     # ...
     Purposive,
     Considerative,
+    Essive,
     # ...
     Aversive,
     # ...

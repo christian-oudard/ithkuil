@@ -12,11 +12,19 @@ font_size = 8
 red = '#d6041a'
 black = '#260003'
 gray = '#233042'
-mode = StrokeOutlineMode(1.0, 0.2, red, black)
 
-papers = []
-for primary_class in primary_characters:
-    letter = primary_class(be.Normal, be.Normal, mode)
+modes = [
+    StrokeOutlineMode(1.0, 0.2, red, black),
+    #StrokeOutlineMode(0.6, 0.2, red, black),
+    #StrokeOutlineMode(1.2, 0.2, red, black),
+]
+
+##
+#primary_characters = primary_characters[2:3]
+##
+
+
+def handle_letter(letter):
     letter_paper = draw_letter(
         letter,
         fixed_width=30.0,
@@ -30,20 +38,27 @@ for primary_class in primary_characters:
     p.text(
         letter.case,
         6.0,
-        'Caudex',
-        '#233042',
+        font,
+        gray,
         centered=True,
     )
     p.move_to((-8, -3))
     p.text(
         ', '.join(lookup(letter.case)),
         6.0,
-        'Caudex',
-        '#233042',
+        font,
+        gray,
         centered=True,
     )
     letter_paper.merge(p.paper)
-    papers.append(letter_paper)
+
+    return letter_paper
+
+papers = []
+for mode in modes:
+    for primary_class in primary_characters:
+        letter = primary_class(be.Normal, be.Normal, mode)
+        papers.append(handle_letter(letter))
 
 page = typeset(
     papers,
