@@ -6,6 +6,7 @@ from .common import (
     UNDER,
     mirror_character_x,
     mirror_character_y,
+    mirror_character_xy,
 )
 
 
@@ -141,13 +142,14 @@ class Inducive(PrimaryCharacter):
 
 mx = mirror_character_x
 my = mirror_character_y
+mxy = mirror_character_xy
 
-Purposive = mx(Oblique, 'Purposive', case='PUR', pronunciation="-e'-")
-Considerative = mx(Inducive, 'Considerative', case='CSD', pronunciation = "-o'-")
+Purposive = mx(Oblique, 'Purposive', case='PUR')
+Considerative = mx(Inducive, 'Considerative', case='CSD')
 # ...
-Aversive = my(Inducive, 'Aversive', case='AVR', pronunciation="-eu'-")
+Aversive = my(Inducive, 'Aversive', case='AVR')
 # ...
-#CMP1B = mxy(Inducive)
+Comparative1B = mxy(Inducive, 'Comparative1B', case='CMP1B')
 
 
 primary_characters = [
@@ -158,4 +160,6 @@ primary_characters = [
     Considerative,
     # ...
     Aversive,
+    # ...
+    Comparative1B,
 ]

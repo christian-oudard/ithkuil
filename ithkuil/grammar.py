@@ -151,7 +151,7 @@ def make_vc_tables():
     assert len(lines) == len(keys)
     assert len(set(lines)) == len(lines)
 
-    # Handle Vr substitution for cases 51 - 71.
+    # TODO: Handle Vr substitution for cases 51 - 71.
     # For now, just always substitute "a".
     lines = [line.replace('V', 'a') for line in lines]
 

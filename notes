@@ -1,3 +1,6 @@
 TODO:
 - reimplement barb in terms of custom endcaps
 - redo entire ithkuil website as ReST python documentation format. host it on readthedocs?
+- refactor cr_table et al to show the abbreviation in line with the pronunciation.
+- refactor data files to be yaml
+- make abbreviations sheet a yaml data file

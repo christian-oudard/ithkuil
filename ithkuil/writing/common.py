@@ -90,3 +90,25 @@ def mirror_character_y(cls, name, **cls_attributes):
         setattr(MirroredY, key, value)
 
     return MirroredY
+
+
+def mirror_character_xy(cls, name, **cls_attributes):
+
+    class MirroredXY(cls):
+
+        mirrored_xy = True
+
+        def draw_character(self, **kwargs):
+            paper = cls.draw_character(self, **kwargs)
+            paper.mirror_x(0)
+            paper.mirror_y(MIDDLE)
+            return paper
+
+        def __str__(self):
+            return '{}({})'.format(name, cls.__str__(self))
+
+    cls_attributes['__name__'] = name
+    for key, value in cls_attributes.items():
+        setattr(MirroredXY, key, value)
+
+    return MirroredXY

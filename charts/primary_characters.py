@@ -2,6 +2,7 @@
 # TODO: template color doesn't match between this and bottom ending chart
 from canoepaddle import Pen, StrokeOutlineMode
 
+from ithkuil.grammar import lookup
 from ithkuil.writing.primary import primary_characters
 from ithkuil.writing.typeset import draw_letter, typeset
 import ithkuil.writing.bottom_ending as be
@@ -35,7 +36,7 @@ for primary_class in primary_characters:
     )
     p.move_to((-8, -3))
     p.text(
-        letter.pronunciation,
+        ', '.join(lookup(letter.case)),
         6.0,
         'Caudex',
         '#233042',
