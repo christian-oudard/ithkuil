@@ -4,3 +4,8 @@ TODO:
 - refactor cr_table et al to show the abbreviation in line with the pronunciation.
 - refactor data files to be yaml
 - make abbreviations sheet a yaml data file
+- Test suite to try drawing all possible characters.
+- Kerning by taking the convex hull of the written letter then finding a
+  spot where they're the right distance apart. This function should be
+  strictly increasing because of the convex hull thing.
+- Automatically write your name in phonetic ithkuil. For tattoos and such.

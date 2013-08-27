@@ -1,13 +1,3 @@
-# TODO: bottom ending DiagonalDownRightOnRight is messing up the
-# outline joins on top when flipped, it has a little flat spot.
-# TODO: Test suite to try drawing all possible characters.
-# TODO: Kerning by taking the convex hull of the written letter then finding a
-# spot where they're the right distance apart. This function should be strictly
-# increasing because of the convex hull thing.
-# TODO: Make really nice pronunciation charts for the writing system and give
-# them to John Quijada.
-# TODO: Make a program to write your name in phonetic ithkuil.
-
 import math
 
 # Constants.

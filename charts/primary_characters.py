@@ -1,7 +1,7 @@
 # TODO: please refactor canoepaddle .text
 # TODO: template color doesn't match between this and bottom ending chart
-from canoepaddle import Pen, StrokeOutlineMode
 
+from canoepaddle import Pen, StrokeOutlineMode
 from ithkuil.grammar import lookup
 from ithkuil.writing.primary import primary_characters
 from ithkuil.writing.typeset import draw_letter, typeset

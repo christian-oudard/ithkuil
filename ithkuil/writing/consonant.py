@@ -501,6 +501,8 @@ N = mx(M, 'N', pronunciation='n')
 TLCedilla = mx(NHacek, 'TLCedilla', pronunciation='tl,')
 
 
+# Character list.
+
 consonants = [
     P,
     T,
