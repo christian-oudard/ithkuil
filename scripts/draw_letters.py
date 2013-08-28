@@ -10,7 +10,7 @@ import ithkuil.writing.consonant as cons
 #consonants = [cons.LCedilla, cons.D, cons.T, cons.L]
 #consonants = consonants + [cons.VerticalBar, cons.SideEndingStub]
 #consonants = consonants[-6:]
-consonants = [cons.BottomEndingStub]
+consonants = [cons.BottomEndingStraightStub]
 #consonants = [c for c in consonants if not c.mirrored_x]
 import ithkuil.writing.side_ending as se
 #side_endings = [se.Normal, se.SideAll]
@@ -37,7 +37,7 @@ def add_letter(c, s, b):
         return
     else:
         seen.add((c, s, b))
-    letters.append(c(s, b, mode))
+    letters.append(c(s, b))
 
 for bottom_ending_class in bottom_endings:
     for consonant_class in consonants:
@@ -49,6 +49,7 @@ for side_ending_class in side_endings:
 papers = [
     draw_letter(
         letter,
+        mode,
         fixed_width=10.0,
         show_template=True,
         #show_bounds=True,

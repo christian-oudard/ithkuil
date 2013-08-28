@@ -24,9 +24,10 @@ modes = [
 ##
 
 
-def handle_letter(letter):
+def handle_letter(letter, mode):
     letter_paper = draw_letter(
         letter,
+        mode,
         fixed_width=30.0,
         show_template=True,
         fuse=False,
@@ -57,8 +58,8 @@ def handle_letter(letter):
 papers = []
 for mode in modes:
     for primary_class in primary_characters:
-        letter = primary_class(be.Normal, be.Normal, mode)
-        papers.append(handle_letter(letter))
+        letter = primary_class(be.Normal, be.Normal)
+        papers.append(handle_letter(letter, mode))
 
 page = typeset(
     papers,

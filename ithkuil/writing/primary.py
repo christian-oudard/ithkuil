@@ -18,35 +18,36 @@ class PrimaryCharacter(Character):
     bottom_straight = NotImplemented
     bottom_flipped = False
 
-    def __init__(self, top_ending_class, bottom_ending_class, mode):
-        super().__init__(mode)
-        self.top_ending = top_ending_class(
+    def __init__(self, top_ending_class, bottom_ending_class):
+        super().__init__()
+        self.top_ending_class = top_ending_class
+        self.bottom_ending_class = bottom_ending_class
+
+    def __str__(self):
+        return '{}({}, {})'.format(
+            self.__class__.__name__,
+            self.top_ending_class,
+            self.bottom_ending_class,
+        )
+
+    def draw_character(self, mode, fuse=True):
+        paper = Paper()
+
+        top_ending = self.top_ending_class(
             self,
-            mode,
             self.top_straight,
             self.top_flipped,
         )
-        self.bottom_ending = bottom_ending_class(
+        bottom_ending = self.bottom_ending_class(
             self,
-            mode,
             self.bottom_straight,
             self.bottom_flipped,
         )
 
-    def __str__(self):
-        return 'primary.{}({}, {})'.format(
-            self.__class__.__name__,
-            self.top_ending,
-            self.bottom_ending,
-        )
-
-    def draw_character(self, fuse=True):
-        paper = Paper()
-
         # While drawing the body of the primary character, two copies of the
         # pen are created, one ready to draw each of the endings.
         pen = Pen()
-        pen.set_mode(self.mode)
+        pen.set_mode(mode)
 
         top_pen, bottom_pen = self.draw(pen)
         top_start_position = top_pen.position
@@ -61,14 +62,14 @@ class PrimaryCharacter(Character):
             top_pen.turn_to(top_pen.heading.flipped_x())
         top_pen.move_to(top_pen.position.flipped_y(MIDDLE))
         top_pen.turn_to(top_pen.heading.flipped_y())
-        self.top_ending.draw(top_pen)
+        top_ending.draw(top_pen)
         top_pen.paper.mirror_y(MIDDLE)
         if self.top_flipped:
             top_pen.paper.mirror_x(top_start_position.x)
 
         if self.bottom_flipped:
             bottom_pen.turn_to(bottom_pen.heading.flipped_x())
-        self.bottom_ending.draw(bottom_pen)
+        bottom_ending.draw(bottom_pen)
         if self.bottom_flipped:
             bottom_pen.paper.mirror_x(bottom_start_position.x)
 
@@ -101,14 +102,14 @@ class Oblique(PrimaryCharacter):
     bottom_flipped = False
 
     def draw(self, pen):
-        pen.move_to((0, MIDDLE + self.width))
+        pen.move_to((0, MIDDLE + pen.mode.width))
         pen.turn_to(-135)
         top_pen = pen.copy()
         top_pen.turn_left(180)
 
         pen.line_to_y(MIDDLE)
         pen.turn_to(-45)
-        pen.line_to_y(MIDDLE - self.width)
+        pen.line_to_y(MIDDLE - pen.mode.width)
         bottom_pen = pen.copy()
 
         return top_pen, bottom_pen
@@ -123,16 +124,16 @@ class Inducive(PrimaryCharacter):
     bottom_flipped = False
 
     def draw(self, pen):
-        pen.move_to((0, MIDDLE + 1.5 * self.width))
+        pen.move_to((0, MIDDLE + 1.5 * pen.mode.width))
         pen.turn_to(-135)
         top_pen = pen.copy()
         top_pen.turn_left(180)
 
-        pen.line_to_y(MIDDLE + self.width / 2)
+        pen.line_to_y(MIDDLE + pen.mode.width / 2)
         pen.turn_to(0)
         pen.line_forward(3.0)
         pen.turn_to(-90)
-        pen.line_forward(self.width)
+        pen.line_forward(pen.mode.width)
         bottom_pen = pen.copy()
 
         return top_pen, bottom_pen
@@ -147,16 +148,16 @@ class Absolutive(PrimaryCharacter):
     bottom_flipped = True
 
     def draw(self, pen):
-        pen.move_to((0, MIDDLE + 1.5 * self.width))
+        pen.move_to((0, MIDDLE + 1.5 * pen.mode.width))
         pen.turn_to(-135)
         top_pen = pen.copy()
         top_pen.turn_left(180)
 
-        pen.line_to_y(MIDDLE + self.width / 2)
+        pen.line_to_y(MIDDLE + pen.mode.width / 2)
         pen.turn_to(0)
         pen.line_forward(3.0)
         pen.turn_to(-135)
-        pen.line_to_y(MIDDLE - self.width / 2)
+        pen.line_to_y(MIDDLE - pen.mode.width / 2)
         bottom_pen = pen.copy()
 
         return top_pen, bottom_pen

@@ -1,4 +1,10 @@
 TODO:
+- change __str__ methods for consonant and primary. return self.format([self.side_ending_class, self.bottom_ending_class])
+- rename chart files
+- adjust AcuteFold to be shorter, maybe 2.5
+- adjust hooks on side endings, should be adjust_outside
+- adjust CHacek consonant to make its top bar longer with width
+- extend bolding to 1.4
 - reimplement barb in terms of custom endcaps
 - redo entire ithkuil website as ReST python documentation format. host it on readthedocs?
 - refactor cr_table et al to show the abbreviation in line with the pronunciation.
@@ -9,3 +15,4 @@ TODO:
   spot where they're the right distance apart. This function should be
   strictly increasing because of the convex hull thing.
 - Automatically write your name in phonetic ithkuil. For tattoos and such.
+- we need an alphabet song

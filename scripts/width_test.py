@@ -11,15 +11,17 @@ import ithkuil.writing.side_ending as se
 import ithkuil.writing.bottom_ending as be
 
 
-letters = []
-for width in (0.4, 0.6, 0.8, 1.0, 1.2, 1.4):
-    mode = StrokeMode(width)
-    letters.append(cons.Q(se.DiagonalDownRightOnTop, be.HookLeftOnRight, mode))
-
-papers = [
-    draw_letter(letter)
-    for letter in letters
+letters = [
+    cons.Q(se.DiagonalDownRightOnTop, be.HookLeftOnRight),
+    cons.CHacekStop(se.HookRightOnBottom, be.AcuteFold),
 ]
+
+papers = []
+for letter in letters:
+    for width in (0.4, 0.6, 0.8, 1.0, 1.2, 1.4):
+        mode = StrokeMode(width)
+        papers.append(draw_letter(letter, mode))
+
 page = typeset(
     papers,
     letter_spacing=2.0,

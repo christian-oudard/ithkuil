@@ -7,21 +7,22 @@ import ithkuil.writing.bottom_ending as be
 consonants = [c for c in consonants if not c.mirrored_x]
 
 letters = []
+for consonant_class in consonants:
+    letters.append(consonant_class(se.SideAll, be.BottomAll))
+
+papers = []
 for width in [0.6, 1.0, 1.2]:
     mode = StrokeMode(width)
-    for consonant_class in consonants:
-        letters.append(consonant_class(se.SideAll, be.BottomAll, mode))
+    for letter in letters:
+        papers.append(draw_letter(
+            letter,
+            mode,
+            fixed_width=10.0,
+            show_template=True,
+            #show_bounds=True,
+            fuse=False,
+        ))
 
-papers = [
-    draw_letter(
-        letter,
-        fixed_width=10.0,
-        show_template=True,
-        #show_bounds=True,
-        fuse=False,
-    )
-    for letter in letters
-]
 page = typeset(
     papers,
     letter_spacing=2.0,

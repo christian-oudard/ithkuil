@@ -12,20 +12,20 @@ gray = '#233042'
 mode = StrokeOutlineMode(1.0, 0.2, red, black)
 
 letters = [
-    cons.SideEndingStub(side_ending, None, mode)
+    cons.SideEndingStub(side_ending, None)
     for side_ending in side_endings
 ]
 
 papers = []
 for letter in letters:
-    paper = draw_letter(letter)
+    paper = draw_letter(letter, mode)
 
     # Override bounds to be asymmetrical fixed width.
     bounds = paper.bounds()
     bounds.left = -2
     bounds.right = 5
     bounds.bottom = 3
-    if letter.side_ending.relation == 'UNFRAMED':
+    if letter.side_ending_class.relation == 'UNFRAMED':
         bounds.top = 18
     else:
         bounds.top = 20
@@ -35,14 +35,14 @@ for letter in letters:
     # Generate text indicating pattern and stem.
     pen = Pen()
     pen.paper = paper
-    if letter.side_ending.relation == 'UNFRAMED':
+    if letter.side_ending_class.relation == 'UNFRAMED':
         pen.move_to((2, 9.5))
     else:
         pen.move_to((2, 11.5))
 
     text = '{} {}'.format(
-        letter.side_ending.pattern,
-        letter.side_ending.stem,
+        letter.side_ending_class.pattern,
+        letter.side_ending_class.stem,
     )
     pen.text(text, font_size, font, gray, centered=True)
 

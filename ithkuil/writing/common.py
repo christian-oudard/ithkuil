@@ -18,20 +18,17 @@ class Character:
     mirrored_x = False
     mirrored_y = False
 
-    def __init__(self, mode):
-        self.mode = mode
-        self.width = mode.width
+    def __init__(self):
+        pass
 
-    def draw_character(self, **kwargs):
+    def draw_character(self, mode, **kwargs):
         raise NotImplementedError()
 
 
 class Ending:
 
-    def __init__(self, character, mode):
+    def __init__(self, character):
         self.character = character
-        self.mode = mode
-        self.width = mode.width
 
     def angle(self):
         return None
@@ -46,8 +43,8 @@ def mirror_character_x(cls, name, **cls_attributes):
 
         mirrored_x = True
 
-        def draw_character(self, **kwargs):
-            paper = cls.draw_character(self, **kwargs)
+        def draw_character(self, mode, **kwargs):
+            paper = cls.draw_character(self, mode, **kwargs)
             paper.mirror_x(0)
             return paper
 
@@ -64,8 +61,8 @@ def mirror_character_y(cls, name, **cls_attributes):
 
         mirrored_y = True
 
-        def draw_character(self, **kwargs):
-            paper = cls.draw_character(self, **kwargs)
+        def draw_character(self, mode, **kwargs):
+            paper = cls.draw_character(self, mode, **kwargs)
             paper.mirror_y(MIDDLE)
             return paper
 
@@ -82,8 +79,8 @@ def mirror_character_xy(cls, name, **cls_attributes):
 
         mirrored_xy = True
 
-        def draw_character(self, **kwargs):
-            paper = cls.draw_character(self, **kwargs)
+        def draw_character(self, mode, **kwargs):
+            paper = cls.draw_character(self, mode, **kwargs)
             paper.mirror_x(0)
             paper.mirror_y(MIDDLE)
             return paper

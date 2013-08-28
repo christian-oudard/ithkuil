@@ -15,18 +15,18 @@ mode = StrokeOutlineMode(1.0, 0.2, red, black)
 pairs = []
 for bottom_ending_class in bottom_endings:
     pairs.append((
-        cons.BottomEndingStraightStub(None, bottom_ending_class, mode),
-        cons.BottomEndingSlantedStub(None, bottom_ending_class, mode),
+        cons.BottomEndingStraightStub(None, bottom_ending_class),
+        cons.BottomEndingSlantedStub(None, bottom_ending_class),
     ))
 
 papers = []
 for straight_letter, slanted_letter in pairs:
     paper = Paper()
-    straight_paper = draw_letter(straight_letter)
-    slanted_paper = draw_letter(slanted_letter)
+    straight_paper = draw_letter(straight_letter, mode)
+    slanted_paper = draw_letter(slanted_letter, mode)
 
     # Adjust for scythe bottom ending.
-    if isinstance(straight_letter.bottom_ending, be.Scythe):
+    if straight_letter.bottom_ending_class == be.Scythe:
         for letter_paper in [straight_paper, slanted_paper]:
             bounds = letter_paper.bounds()
             bounds.right += 2.0
