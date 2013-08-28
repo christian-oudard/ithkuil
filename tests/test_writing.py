@@ -16,10 +16,9 @@ def test_split_dotted_text():
 
 def test_write_consonant_cluster():
     assert_equal(
-        write_consonant_cluster('p'),
-        []
+        str(write_consonant_cluster('p')[0]),
+        'P(side=Normal, bottom=Normal)'
     )
-
 
 
 def test_transliteration():

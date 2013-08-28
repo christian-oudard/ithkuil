@@ -21,6 +21,16 @@ class Character:
     def __init__(self):
         pass
 
+    def format(self, **kwargs):
+        arg_strings = []
+        for key, value in kwargs.items():
+            value_string = getattr(value, '__name__', str(value))
+            arg_strings.append('{}={}'.format(key, value_string))
+        return '{}({})'.format(
+            self.__class__.__name__,
+            ', '.join(arg_strings)
+        )
+
     def draw_character(self, mode, **kwargs):
         raise NotImplementedError()
 

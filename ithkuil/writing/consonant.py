@@ -25,10 +25,9 @@ class ConsonantCharacter(Character):
         self.bottom_ending_class = bottom_ending_class
 
     def __str__(self):
-        return '{}({}, {})'.format(
-            self.__class__.__name__,
-            self.side_ending_class,
-            self.bottom_ending_class,
+        return self.format(
+            side=self.side_ending_class,
+            bottom=self.bottom_ending_class,
         )
 
     def draw_character(self, mode, fuse=True):
