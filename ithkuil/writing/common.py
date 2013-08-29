@@ -21,11 +21,12 @@ class Character:
     def __init__(self):
         pass
 
-    def format(self, **kwargs):
+    def __str__(self):
         arg_strings = []
-        for key, value in kwargs.items():
+        for field in self.str_fields:
+            value = getattr(self, field)
             value_string = getattr(value, '__name__', str(value))
-            arg_strings.append('{}={}'.format(key, value_string))
+            arg_strings.append(value_string)
         return '{}({})'.format(
             self.__class__.__name__,
             ', '.join(arg_strings)

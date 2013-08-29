@@ -49,12 +49,37 @@ transliteration_vowels = {
 }
 
 
+def _make_consonant_clusters():
+    result = []
+
+    def assemble(cluster, affix, letter):
+        if affix == 'GEMINATE':
+            cluster = cluster + cluster
+        elif affix.endswith('-'):  # Prefix.
+            cluster = affix + cluster
+        elif affix.startswith('-'):  # Suffix.
+            cluster = cluster + affix
+        result.append((cluster, letter))
+
+    for cons in consonants:
+        for be in bottom_endings:
+            letter = cons(None, be)
+            cluster = cons.pronunciation
+            affix = be.pronunciation
+            if not isinstance(affix, tuple):
+                affix = (affix,)
+            for a in affix:
+                assemble(cluster, a, letter)
+
+    return result
+
+consonant_clusters = _make_consonant_clusters()
+
+
 # Writing functions.
 
 def write_consonant_cluster(text):
-    if text in basic_consonants:
-        cons = basic_consonants[text]
-        return [cons(BottomNormal, SideNormal)]
+    pass
 
 
 def write_transliteration(text):

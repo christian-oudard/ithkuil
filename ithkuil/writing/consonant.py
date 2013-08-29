@@ -14,6 +14,8 @@ from .common import (
 
 class ConsonantCharacter(Character):
 
+    str_fields = ['side_ending_class', 'bottom_ending_class']
+
     pronunciation = NotImplemented
     side_flipped = False
     bottom_straight = NotImplemented
@@ -23,12 +25,6 @@ class ConsonantCharacter(Character):
         super().__init__()
         self.side_ending_class = side_ending_class
         self.bottom_ending_class = bottom_ending_class
-
-    def __str__(self):
-        return self.format(
-            side=self.side_ending_class,
-            bottom=self.bottom_ending_class,
-        )
 
     def draw_character(self, mode, fuse=True):
         side_ending = self.side_ending_class(self, self.side_flipped)

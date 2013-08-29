@@ -1,5 +1,5 @@
 TODO:
-- change __str__ methods for consonant and primary. return self.format([self.side_ending_class, self.bottom_ending_class])
+- change Character.__str__ to use kwargs
 - rename chart files
 - adjust AcuteFold to be shorter, maybe 2.5
 - adjust hooks on side endings, should be adjust_outside

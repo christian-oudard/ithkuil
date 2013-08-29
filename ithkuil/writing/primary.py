@@ -12,6 +12,8 @@ from .common import (
 
 class PrimaryCharacter(Character):
 
+    str_fields = ['top_ending_class', 'bottom_ending_class']
+
     case = NotImplemented
     top_straight = NotImplemented
     top_flipped = False
@@ -22,12 +24,6 @@ class PrimaryCharacter(Character):
         super().__init__()
         self.top_ending_class = top_ending_class
         self.bottom_ending_class = bottom_ending_class
-
-    def __str__(self):
-        return self.format(
-            top=self.top_ending_class,
-            bottom=self.bottom_ending_class,
-        )
 
     def draw_character(self, mode, fuse=True):
         paper = Paper()
