@@ -133,7 +133,7 @@ def make_conversion_tables():
         table[a] = u
         reverse_table[u] = a
     return table, reverse_table
-ascii_table, unicode_table = make_conversion_tables()
+ascii_table, ascii_table_reverse = make_conversion_tables()
 
 
 def _build_ascii_regex():
@@ -165,10 +165,24 @@ def split_ascii(ascii_text):
     ]
 
 
+def split_unicode(unicode_text):
+    return [
+        s for s in unicode_regex.split(unicode_text)
+        if s != ''
+    ]
+
+
 def convert_ascii(ascii_text):
     return ''.join(
         ascii_table.get(s, s)
         for s in split_ascii(ascii_text)
+    )
+
+
+def convert_ascii_reverse(unicode_text):
+    return ''.join(
+        ascii_table_reverse.get(s, s)
+        for s in split_unicode(unicode_text)
     )
 
 
