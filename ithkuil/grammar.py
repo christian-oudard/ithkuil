@@ -248,34 +248,6 @@ def lookup(query):
     """
     Lookup a bit of pronunciation or grammar. Accepts pronunciation fragments,
     IME text, grammar table keys, and string representations of table keys.
-
-    Simple affix lookup.
-    >>> lookup('l')
-    [('NRM', 'DEL', 'M', 'CSL', 'UNI')]
-    >>> lookup("ei'a")
-    [('PCR',)]
-
-    IME text works too.
-    >>> lookup('üö')
-    [('DSC', 'P3', 'S3')]
-    >>> lookup('u:o:')
-    [('DSC', 'P3', 'S3')]
-
-    Lookup of grammatical keys, in tuple and text format.
-    >>> lookup('PCR')
-    ['ei’a']
-    >>> lookup(('NRM', 'DEL', 'M', 'CSL', 'UNI'))
-    ['l']
-    >>> lookup('NRM/DEL/m/CSL/DPX')
-    ['ll']
-    >>> lookup('nrm/del/m/csl/dpx')
-    ['ll']
-
-    Order is irrelevant.
-    >>> lookup('STA/P1/S1')
-    ['', 'a']
-    >>> lookup('P1/S1/STA')
-    ['', 'a']
     """
     result = []
 
@@ -322,10 +294,6 @@ def lookup_key(key):
 
 
 def lookup_lexicon(root):
-    """
-    >>> lookup_lexicon('ph')
-    'branched and / or leaved plant'
-    """
     root = convert_ascii(root)
     root = root.upper()
     return lexicon_table.get(root)

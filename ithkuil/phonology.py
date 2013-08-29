@@ -159,18 +159,6 @@ unicode_regex = _build_unicode_regex()
 
 
 def split_ascii(ascii_text):
-    """
-    >>> split_ascii("Ikc,as")
-    ['I', 'k', 'c,', 'a', 's']
-    >>> split_ascii("=Sakc^'a")
-    ['=', 'S', 'a', 'k', "c^'", 'a']
-
-    Also works for transliterations.
-    >>> split_ascii('kaet')
-    ['k', 'ae', 't']
-    >>> split_ascii('no%t')
-    ['n', 'o%', 't']
-    """
     return [
         s for s in ascii_regex.split(ascii_text)
         if s != ''
@@ -178,30 +166,6 @@ def split_ascii(ascii_text):
 
 
 def convert_ascii(ascii_text):
-    """
-    >>> convert_ascii("Ikc,as")
-    'Ikças'
-    >>> convert_ascii("A'tukc,as te^ oxnall")
-    'A’tukças tê oxnall'
-    >>> convert_ascii("U^b eikkradwa smou'ola^xh.")
-    'Ûb eikkradwa smou’olâxh.'
-    >>> convert_ascii("=Sakc^'a to^ myicka zboack.")
-    '¯Sakč’a tô myicka zboack.'
-    >>> convert_ascii("o\spa^tlo:k")
-    'òspâtlök'
-    >>> convert_ascii("Aigwapskh eks^u/ll,")
-    'Aigwapskʰ ekšúlļ'
-    >>> convert_ascii("a^pca^/l")
-    'âpcââl'
-    >>> convert_ascii("a^pca^a^l")
-    'âpcââl'
-    >>> convert_ascii('kaet')
-    'kæt'
-    >>> convert_ascii('no%t')
-    'nøt'
-    >>> convert_ascii('dzi+')
-    'żɨ'
-    """
     return ''.join(
         ascii_table.get(s, s)
         for s in split_ascii(ascii_text)
