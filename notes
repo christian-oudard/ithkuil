@@ -1,22 +1,45 @@
 TODO:
-- change tables to use typed ascii representation, and update grammar.py
-- change Character.__str__ to use kwargs
-- rename chart files
+- Automatically write your name in phonetic ithkuil. For tattoos and such.
+    - "how do I pronounce this consonant?"
+        @
+        - change tables to use typed ascii representation, and update grammar.py
+        - change Character.__str__ to use kwargs
+        - rename chart files
 - adjust AcuteFold to be shorter, maybe 2.5
 - adjust hooks on side endings, should be adjust_outside
 - adjust CHacek consonant to make its top bar longer with width
+- more charts
+    - Vr table chart, showing just side ending and diacritic
 - extend bolding to 1.4 units
-- reimplement barb in terms of custom endcaps
+- reimplement barb in terms of custom endcaps?
 - redo entire ithkuil website as ReST python documentation format. host it on readthedocs?
 - refactor cr_table et al to show the abbreviation in line with the pronunciation.
 - refactor data files to be yaml
 - make abbreviations sheet a yaml data file
 - Test suite to try drawing all possible characters.
+
 - Kerning by taking the convex hull of the written letter then finding a
   spot where they're the right distance apart. This function should be
   strictly increasing because of the convex hull thing.
-- Automatically write your name in phonetic ithkuil. For tattoos and such.
 - we need an alphabet song
+- collapsing Vc values,  opral (leg) -> opra'al -> pra'ol (at the same time as leg)
+- add lexicon addendum
+- derivational suffixes, VxC
+- valence
+- web interface
+    - a word-builder to quickly construct words
+        - click on a piece, and it shows you all the other options
+    - a tool for looking up words
+        - type in IME
+        - deconstructs, and links to all the pieces, including lexicon.
+- invalid words
+    - bias Cb without Cf
+- internal representation of a formative that can be outputted in raw format, phonetic format, or ithkuil script format.
+- automated flashcard creator
+    constructs random words, and quizzes you
+    can give a yes or no to keep that card around for later
+- basic survival phrase book
+- enhance lexicon with lots of example translations from english
 
 
 consonant cluster affix notes
@@ -25,3 +48,273 @@ The clusters SQ(cook) and ZQ(slippery) cannot be written as Q(bottom=Bend), beca
 They must be written as Q(diacritic=HookRight) and Q(diacritic=AngleDownRight)
 
 for f-/v- pairs, it always seems to match voiceness with the following unvoiced/voiced plosive
+
+
+
+notes from Paul Donnelly
+
+The chief issues I run into when searching the Ithkuil grammar in my
+browser are a lack of centralization, meaning I have to search
+suffixes and roots separately, a lack of summarization, indiscriminate
+searching (that is, I get random chunks of definitions when I want
+glosses), duplicate results from repeated words, and a lot of
+substring matches when I wanted whole words.
+
+Most of these look easy to avoid in a dictionary design so I don't
+think I need to spend time on them. Some of them, like indiscriminate
+searching, could actually be assets if the results were organized
+better. Substring matches would probably not be an issue if the
+results were organized better, and if matches in glosses were listed
+first.
+
+Since there's not much to say about the above, I'll move on to how I
+think a dictionary should work for optimal use. Ithkuil expresses so
+much through its morphology that I think a dictionary should contain
+more than just roots and stems--suffixes and cases could also be
+included to good effect. Looking to the future, if it were possible to
+include whole words, this would probably prove useful, but I think a
+well-designed program could fairly easily be modular enough to add
+whole words and any other kind of record at a later date. Roots,
+stems, suffixes, and cases are of primary importance.
+
+I also think it's vital that a dictionary be user-editable, at least
+by users with some kind of account. Dictionary development is such a
+big job that it needs every hand it can get. On that subject, below I
+propose quite a few data fields that could probably not be populated
+mechanically. Personally, I think it's okay to start out with a lot of
+blank spaces, and only the core data filled in. Better to have spaces
+to fill than to find a very helpful feature is missing.
+
+I think the best user interface for a dictionary is the one that does
+the most with the least user input, to wit, a search box and a
+well-organized result list and listing format. Accordingly, diagrams
+of the UI will show what features are useful.
+
+Example search results, drawn from manually searching for "light" on
+the relevant pages of ithkuil.net:
+
+________________________________________________________________________
+Search for: [..light......] Search!
+
+In gloss:
+-k'- light/radiant energy
+
+In definition:
+-kç FRC Degree of Physical Force Exerted (4 matches)
+D1 too light(ly)/too soft(ly)/too delicate(ly)
+D2 light as a feather/baby soft; extremely delicately or lightly or...
+
+-kss- hadrons (composite fermions or composite bosons)
+P1 S2 FORMAL light unflavored meson/effect (i.e., nuclear int...
+P2 S2 FORMAL light unflavored meson
+P3 S2 FORMAL effect of light unflavored meson (i.e. nuclear...
+
+-kw- color/hue (18 matches)
+P1 S2 INFORMAL something light-colored plus the color
+P2 S2 INFORMAL something having a light color
+
+In SSD:
+-blw- P1-3 S1-3 INFORMAL/FORMAL aquamarine
+SSD1 extra light
+
+-br- P1-3 S1-3 INFORMAL/FORMAL aquamarine
+SSD1 extra light
+
+-fr- P1S3-INF portion of a day
+SSD7 twilight
+
+In example:
+-i- AFF The Affective Case
+"The lightning startled her"
+
+-io- -uo- CPS The Compositive Case
+"He reads by candle(light)."
+
+No results in notes.
+No results in tags.
+________________________________________________________________________
+
+Perhaps this isn't the best layout, but something like it, drawing
+from all the information in the dictionary would be good. I think it's
+important to sort results by the field they occur in and the
+"top-level" (that is, stem, suffix, or case) listing they occur under,
+or you could drown in results. But at the same time, it's good to see
+in the results list which specific matches you have.
+
+"In gloss" is the list of listings which have matches in their gloss
+words (it's assumed that each entry has a list of gloss words, except
+possibly some cases which are hard to gloss, or those words that
+nobody has glossed yet).
+
+"In definition" lists matches in definitions, sorted by the root or
+suffix they occur under, with the specific stems or degrees they occur
+in listed (probably not in full, you'll see "-kç" only lists 2 of 4
+matches).
+
+"In SSD" refers to matches for stem specific derivatives made with the
+SSD suffix. It's assumed that each stem listing has a space storing
+its stem specific derivatives, if any.
+
+"In example" lists matches in the example sentences for the
+listing. It's assumed that several types of listings have a space
+where example sentences, in Ithkuil and their translations to the
+dictionary language, can be stored. Here, there are no translations,
+because ithkuil.net doesn't provide any.
+
+I also assume listings have space provided for notes people might want
+to include, and tags for categorization (e.g. "feelings" or
+"animals"), but in this search, there were no matches in these fields.
+
+Then, there would also be a page to view a specific dictionary
+listing, be that a root, stem, suffix, or case. Stems should probably
+be listed on their root's page.
+
+An example root page:
+
+________________________________________________________________________
+
+ ---/
+   /
+  |
+  |
+
+-b- want/desire/request
+Tags: feeling
+
+| STA   | DYN     | MNF     | DSC     | Informal                        | Formal                   |
+|-------+---------+---------+---------+---------------------------------+--------------------------|
+| ab-   | ib-     | uib-    | oib-    | affective (i.e., unwilled) want | request                  |
+| eb-   | aib-    | ü/oub-  | eöb-    | conscious desire based on need  | need + thing needed      |
+| ub-   | eib-    | ëib-    | eöb-    | hope/wish                       | ambition/goal/aspiration |
+|-------+---------+---------+---------+---------------------------------+--------------------------|
+| ob-   | aub-    | aeb-    | oeb-    |                                 |                          |
+| öb-   | eub-    | eab-    | öeb-    |                                 |                          |
+| î/ûb- | iub-    | oab-    | ëub-    |                                 |                          |
+|-------+---------+---------+---------+---------------------------------+--------------------------|
+| âb-   | ia/uab- | üa/aìb- | üo/oìb- |                                 |                          |
+| êb-   | ie/ueb- | iù/uìb- | üe/eìb- |                                 |                          |
+| ôb-   | io/uob- | iö/uöb- | üö/aùb- |                                 |                          |
+
+Notes: EXAMPLE MORPHOLOGICAL DERIVATIVES FROM THE ABOVE STEMS: whim,
+fancy, inclination, appetite, “hunger”, greed, covet, propensity,
+aptness, eagerness, longing, crave, urge, passion, attract, tempt,
+persuade, allure, popularity, demand
+
+No examples.
+
+________________________________________________________________________
+
+At the very top you see an ASCII-art depiction of a rendering of the
+character for the root, which is obviously non-critical but would be
+very nice to have, in my opinion. And perhaps not so much work since
+you already have written code to render characters. Below that is the
+root's romanization, and its glosses. If it was patterned after
+another root, that would be listed here. Tags follow.
+
+After this is a table presenting information about the stems. There
+are a lot of ways this could be done, all with different
+advantages. I'll look at this in a moment.
+
+Next comes any notes there might be for this root, in this case there
+are some example derivatives.
+
+After that would be any example sentences. I wouldn't expect many of
+these for roots, although there might be some for many of the cases,
+since they're provided on the case morphology page and translating the
+English examples would be a fun project.
+
+Now, the question of how to list stems comes up. I think the spatial
+arrangement used in the lexicon has advantages especially as a
+mnemonic for which stem means what, but on the other hand I find it
+very easy to get lost in the table, especially between the
+formal/informal side. If the headings for patterns 1, 2, and 3 were
+changed to include those numbers and names, I think it would be
+easier. I also think that putting patterns 2 and 3 above one another
+so you didn't get the odd S2,S3,S2,S3 pattern on the bottom row would
+be helpful, so that's how I arranged things above.
+
+There's quite a bit of information about stems it would be good to
+include and store (definition, glosses, stem-specific derivatives,
+notes, and tags), but which would be awkward to fit in this
+table. Perhaps the table could contain definitions only and the other
+stuff could go below (especially since a lot of that information is
+likely not to be provided, or to apply to only one stem, or to all
+stems, thus not amounting to a lot of text). I like the idea of
+listing stems as combined VrCr values, but since there are four (STA
+DYN MNF DSC) for each stem I'm not sure that's practical. Just to try
+it out, my mockup above lists them that way (I trimmed the definitions
+just to make it more readable in ASCII).
+
+Cases and suffixes would need a slightly different format for their
+page, of course. It would be nice but not crucial if cases showed the
+relevant primary and secondary characters. Cases are a little harder
+to include in a dictionary, since not all of them have simple glosses,
+but some can and should be (e.g. ABL: "from", "out of"; LOC: "on",
+"in", "by"; LIM: "in time for"; ELP: "ago"; EXC: "except", and so
+on). Plus there are a lot of cases, just like there are a lot of
+suffixes and roots/stems, so some searchability would be good.
+
+Here's an example scheme for storing dictionary information, that
+illustrates what information I think would be good to store.
+
+Root
+| root            | The consonantal root itself                                                      |
+| patterned_after | The root it is patterned after, if any                                           |
+| glosses         | A list of English gloss words                                                    |
+| notes           | A free-form block of text for notes on the root, e.g. example morph. derivatives |
+| tags            | A list of tag words for free-form categorization                                 |
+| stems           | Either a list of stems, or the fields required for all 18 stems                  |
+| examples        | A list of example sentences                                                      |
+Applying examples to roots is specific enough. Like suffixes and
+degrees, a root will only ever appear in specific stems, and no one
+will write examples for every stem.
+
+Stem
+| pattern    | The pattern, 1-3, that the stem belongs to                   |
+| stem       | The number, 1-3, of this stem in its pattern                 |
+| formal     | Whether the stem is formal or informal                       |
+| definition | A free-form string giving its meaning                        |
+| glosses    | A list of English gloss words                                |
+| ssd        | A list of stem-specific derivatives (format defined below ?) |
+| notes      | A free form block of text for notes on the stem              |
+| tags       | A list of tag words for free-form categorization             |
+I think both roots and stems deserve a space for notes; since these
+are the most basic part of a word, they are also subject to the most
+inflection and varied use. Cases need notes less than suffixes or
+roots, since their definitions are more like descriptions, but I think
+it's good to have a place for information about a case that isn't
+officially part of its definition.
+
+Ssd
+| definitions | A list of definitions, one for each degree |
+
+Suffix
+| forms        | A list of consonantal forms for the suffix (some have 2) |
+| abbreviation | The abbreviation used to refer to the suffix, e.g. "DEF" |
+| name         | The name given, e.g. "Degree Of Definiteness"            |
+| notes        | A block of text for notes                                |
+| degrees      | Definitions for the 9 degrees of the suffix              |
+| examples     | A list of example sentences                              |
+I think suffix examples should apply to suffixes and not degrees. It's
+not likely to be useful to have an example for every degree, and
+examples are already specific to degree, since they occur in a
+specific degree. I put notes here rather than in Degree because I
+don't think per-degree notes are especially likely, and also because
+notes are likely to apply to multiple degrees.
+
+Degree
+| definition | The definition given in the grammar  |
+| glosses    | A list of glosses for a given degree |
+
+Case
+| forms        | A list of vowel forms for the case (some have 2) |
+| abbreviation | The abbreviation used to refer to the case       |
+| name         | The case's name                                  |
+| definition   | The case's definition                            |
+| glosses      | A list of glosses                                |
+| examples     | A list of example sentences                      |
+| notes        | A block of text for notes                        |
+
+Example
+| ithkuil     | A sentence in Ithkuil using the feature                  |
+| translation | A translation to whatever language the dictionary is for |
