@@ -1,9 +1,7 @@
-import sys
-
 from ithkuil.phonology import (
-    consonants, typing_consonants,
-    vowels, typing_vowels,
-    tone_order, tones, typing_tones,
+    unicode_consonants, ascii_consonants,
+    unicode_vowels, ascii_vowels,
+    tone_order, unicode_tones, ascii_tones,
     convert_ascii,
 )
 from ithkuil.grammar import deconstruct_formative
@@ -15,14 +13,14 @@ def format_help(width=80):
 
     output.append('Consonants')
     buf = []
-    for c, t in sorted(zip(consonants, typing_consonants)):
+    for c, t in sorted(zip(unicode_consonants, ascii_consonants)):
         if c != t:
             buf.append('{:<2} - {:<3}   '.format(c, t))
     output.extend(format_grid_lines(buf, width=width))
 
     output.append('Vowels')
     buf = []
-    for c, t in sorted(zip(vowels, typing_vowels)):
+    for c, t in sorted(zip(unicode_vowels, ascii_vowels)):
         if c != t:
             buf.append('{:<2} - {:<3}   '.format(c, t))
     output.extend(format_grid_lines(buf, width=width))
@@ -30,8 +28,8 @@ def format_help(width=80):
     output.append('Tones (at beginning of word)')
     buf = []
     for tone_name in tone_order:
-        c = tones[tone_name]
-        t = typing_tones[tone_name]
+        c = unicode_tones[tone_name]
+        t = ascii_tones[tone_name]
         if c:
             output.append('{:<13}  {!r} - {!r}   '.format(tone_name, c, t))
 

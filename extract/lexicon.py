@@ -1,7 +1,8 @@
+import os
 import re
 import unicodedata
 from pyquery import PyQuery as pq
-from .phonology import consonants
+from ithkuil.phonology import consonants
 
 # Should find 924 roots.
 
@@ -24,7 +25,8 @@ definition_patterns = [
     '^' + root_pattern + between + r'(.*?)--',
 ]
 
-root_re = re.compile(root_pattern, re.UNICODE|re.IGNORECASE)
+root_re = re.compile(root_pattern, re.UNICODE | re.IGNORECASE)
+
 
 def clean_html(html):
     html = html.replace('<strong>', '')
@@ -85,7 +87,12 @@ def extract_definitions(html):
     return sorted(definitions)
 
 if __name__ == '__main__':
-    filename = 'lexicon.htm'
+    filename = os.path.abspath(
+        os.path.join(
+            os.path.basename(__file__),
+            '../source_material/lexicon.htm'
+        )
+    )
     html = open(filename).read()
     definitions = extract_definitions(html)
 
@@ -108,4 +115,5 @@ if __name__ == '__main__':
         print(set(defined_roots) - set(roots))
 
     for root, definition in definitions:
+        # TODO: convert to ascii tables
         print('{}|{}'.format(root, definition))

@@ -1,10 +1,11 @@
 TODO:
+- change tables to use typed ascii representation
 - change Character.__str__ to use kwargs
 - rename chart files
 - adjust AcuteFold to be shorter, maybe 2.5
 - adjust hooks on side endings, should be adjust_outside
 - adjust CHacek consonant to make its top bar longer with width
-- extend bolding to 1.4
+- extend bolding to 1.4 units
 - reimplement barb in terms of custom endcaps
 - redo entire ithkuil website as ReST python documentation format. host it on readthedocs?
 - refactor cr_table et al to show the abbreviation in line with the pronunciation.

@@ -2,10 +2,9 @@ import itertools
 import re
 from .phonology import (
     convert_ascii,
-    consonants,
-    vowels,
-    tones,
-    tone_names,
+    unicode_consonants,
+    unicode_tones,
+    unicode_tone_names,
 )
 from .util import choices_pattern
 
@@ -235,12 +234,12 @@ cb_table, cb_table_reverse = make_cb_tables()
 
 # Tone.
 version_table = {
-    ('PRC',): tones['falling'],
-    ('CPT',): tones['high'],
-    ('INE',): tones['rising'],
-    ('INC',): tones['low'],
-    ('PST',): tones['fallingrising'],
-    ('EFC',): tones['risingfalling'],
+    ('PRC',): unicode_tones['falling'],
+    ('CPT',): unicode_tones['high'],
+    ('INE',): unicode_tones['rising'],
+    ('INC',): unicode_tones['low'],
+    ('PST',): unicode_tones['fallingrising'],
+    ('EFC',): unicode_tones['risingfalling'],
 }
 version_table_reverse = {tone: version for (version, tone) in version_table.items()}
 
@@ -347,7 +346,7 @@ def deconstruct_formative(word):
     result = []
 
     version = version_table_reverse[tone]
-    result.append(('Tone', tone_names[tone], version))
+    result.append(('Tone', unicode_tone_names[tone], version))
 
     vr_key = vr_table_reverse[vr]
     result.append(('Vr', vr, canonical_keys[vr_key]))
@@ -386,14 +385,13 @@ def _build_word_regex():
         ({cb})? # Cb
         $
     '''.format(
-        c=choices_pattern(consonants) + '+',
-        v=choices_pattern(vowels) + '+',
+        c=choices_pattern(unicode_consonants) + '+',
         vr=choices_pattern(vr_table_reverse.keys()),
         vc=choices_pattern(vc_table_reverse.keys()),
         civi=choices_pattern(civi_table_reverse.keys()),
         vf=choices_pattern(vf_table_reverse.keys()),
         cb=choices_pattern(cb_table_reverse.keys()),
-        tone=choices_pattern(tones.values()),
+        tone=choices_pattern(unicode_tones.values()),
     )
     return re.compile(word_pattern, re.UNICODE | re.IGNORECASE | re.VERBOSE)
 word_regex = _build_word_regex()

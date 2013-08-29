@@ -5,7 +5,7 @@ from .util import choices_pattern
 
 
 # Letters.
-consonants = (
+unicode_consonants = (
     'p', 'b', 'pʰ', 'p’', 'm',
     'w', 'f', 'v', 't', 'd', 'tʰ', 't’', 'ţ', 'dh', 'n',
     'c', 'ż', 'cʰ', 'c’', 's', 'z',
@@ -18,7 +18,7 @@ consonants = (
     'h',
     'ļ', 'l',
 )
-typing_consonants = (
+ascii_consonants = (
     'p', 'b', 'ph', "p'", 'm',
     'w',
     'f', 'v',
@@ -33,7 +33,7 @@ typing_consonants = (
     'h',
     'l,', 'l',
 )
-vowels = (
+unicode_vowels = (
     # Unmarked stress.
     'a', 'â',
     'e', 'ê', 'ë',
@@ -57,7 +57,7 @@ vowels = (
     'ø',
     'ɨ',
 )
-typing_vowels = (
+ascii_vowels = (
     # Unmarked stress.
     'a', 'a^',
     'e', 'e^', 'e:',
@@ -91,7 +91,7 @@ tone_order = [
     'fallingrising',
     'risingfalling',
 ]
-tones = {
+unicode_tones = {
     'falling': '',
     'high': unicodedata.lookup('MACRON'),
     'rising': unicodedata.lookup('ACUTE ACCENT'),
@@ -99,8 +99,7 @@ tones = {
     'fallingrising': unicodedata.lookup('CARON'),
     'risingfalling': '^',
 }
-tone_names = {c: name for (name, c) in tones.items()}
-typing_tones = {
+ascii_tones = {
     'falling': '',
     'high': '=',
     'rising': '/',
@@ -108,49 +107,55 @@ typing_tones = {
     'fallingrising': '~',
     'risingfalling': '^',
 }
+unicode_tone_names = {u: name for (name, u) in unicode_tones.items()}
+ascii_tone_names = {a: name for (name, a) in ascii_tones.items()}
 assert (
-    sorted(tone_order) ==
-    sorted(tones.keys()) ==
-    sorted(typing_tones.keys())
+    set(tone_order) ==
+    set(unicode_tones.keys()) ==
+    set(ascii_tones.keys())
 )
 
 
-def make_conversion_table():
+def make_conversion_tables():
     table = {}
-    for t, c in zip(typing_consonants + typing_vowels, consonants + vowels):
-        table[t] = c
-        table[t.upper()] = c.upper()
+    reverse_table = {}
+    for a, u in zip(
+        ascii_consonants + ascii_vowels,
+        unicode_consonants + unicode_vowels
+    ):
+        table[a] = u
+        table[a.upper()] = u.upper()
+        reverse_table[u] = a
+        reverse_table[u.upper()] = a.upper()
     for tone in tone_order:
-        t = typing_tones[tone]
-        c = tones[tone]
-        table[t] = c
-    return table
-typing_conversion_table = make_conversion_table()
+        a = ascii_tones[tone]
+        u = unicode_tones[tone]
+        table[a] = u
+        reverse_table[u] = a
+    return table, reverse_table
+ascii_table, unicode_table = make_conversion_tables()
 
 
-def _build_letter_regex():
-    letters = list(typing_consonants + typing_vowels)
+def _build_ascii_regex():
+    letters = list(ascii_consonants + ascii_vowels)
     for tone in tone_order:
-        t = typing_tones[tone]
-        if t != '':
-            letters.append(t)
+        a = ascii_tones[tone]
+        if a != '':
+            letters.append(a)
     pattern = choices_pattern(letters, split=True)
     return re.compile(pattern, re.IGNORECASE)
-letter_regex = _build_letter_regex()
+ascii_regex = _build_ascii_regex()
 
 
-def _build_typing_vowel_regex():
-    letters = list(typing_vowels)
+def _build_unicode_regex():
+    letters = list(unicode_consonants + unicode_vowels)
+    for tone in tone_order:
+        a = unicode_tones[tone]
+        if a != '':
+            letters.append(a)
     pattern = choices_pattern(letters, split=True)
-    return re.compile(pattern, re.IGNORECASE)
-typing_vowel_regex = _build_typing_vowel_regex()
-
-
-def _build_typing_consonant_regex():
-    letters = list(typing_consonants)
-    pattern = choices_pattern(letters, split=True)
-    return re.compile(pattern, re.IGNORECASE)
-typing_consonant_regex = _build_typing_consonant_regex()
+    return re.compile(pattern, re.IGNORECASE | re.UNICODE)
+unicode_regex = _build_unicode_regex()
 
 
 def split_ascii(ascii_text):
@@ -167,7 +172,7 @@ def split_ascii(ascii_text):
     ['n', 'o%', 't']
     """
     return [
-        s for s in letter_regex.split(ascii_text)
+        s for s in ascii_regex.split(ascii_text)
         if s != ''
     ]
 
@@ -198,7 +203,7 @@ def convert_ascii(ascii_text):
     'żɨ'
     """
     return ''.join(
-        typing_conversion_table.get(s, s)
+        ascii_table.get(s, s)
         for s in split_ascii(ascii_text)
     )
 
