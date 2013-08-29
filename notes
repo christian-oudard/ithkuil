@@ -1,5 +1,5 @@
 TODO:
-- change tables to use typed ascii representation
+- change tables to use typed ascii representation, and update grammar.py
 - change Character.__str__ to use kwargs
 - rename chart files
 - adjust AcuteFold to be shorter, maybe 2.5
@@ -17,3 +17,11 @@ TODO:
   strictly increasing because of the convex hull thing.
 - Automatically write your name in phonetic ithkuil. For tattoos and such.
 - we need an alphabet song
+
+
+consonant cluster affix notes
+
+The clusters SQ(cook) and ZQ(slippery) cannot be written as Q(bottom=Bend), because it would be ambiguous.
+They must be written as Q(diacritic=HookRight) and Q(diacritic=AngleDownRight)
+
+for f-/v- pairs, it always seems to match voiceness with the following unvoiced/voiced plosive

@@ -2,7 +2,7 @@ import os
 import re
 import unicodedata
 from pyquery import PyQuery as pq
-from ithkuil.phonology import consonants
+from ithkuil.phonology import unicode_consonants, convert_ascii_reverse
 
 # Should find 924 roots.
 
@@ -11,7 +11,7 @@ EN_DASH = unicodedata.lookup('EM DASH')
 EM_DASH = unicodedata.lookup('EM DASH')
 
 stem_letters = set()
-for c in consonants:
+for c in unicode_consonants:
     stem_letters.update(c)
 
 consonant_pattern = ''.join(sorted(stem_letters))
@@ -36,12 +36,14 @@ def clean_html(html):
     html = re.sub('\s+', ' ', html)
     return html
 
+
 def clean_definition(text):
     text = text.lower().strip()
     text = text.replace('[', '(')
     text = text.replace(']', ')')
     text = re.sub(r'(\w)\/(\w)', r'\1 / \2', text)
     return text
+
 
 def extract_roots(html):
     html = clean_html(html)
@@ -52,6 +54,7 @@ def extract_roots(html):
         roots.add(match.group(1))
     return(sorted(roots))
 
+
 def extract_definitions(html):
     html = clean_html(html)
     d = pq(html)
@@ -60,7 +63,7 @@ def extract_definitions(html):
 
     def add_definitions(text):
         for pattern in definition_patterns:
-            definition_re = re.compile(pattern, re.UNICODE|re.IGNORECASE)
+            definition_re = re.compile(pattern, re.UNICODE | re.IGNORECASE)
             m = definition_re.search(text)
             if m:
                 root = m.group(1)
@@ -85,6 +88,7 @@ def extract_definitions(html):
             add_definitions(text)
 
     return sorted(definitions)
+
 
 if __name__ == '__main__':
     filename = os.path.abspath(
@@ -115,5 +119,5 @@ if __name__ == '__main__':
         print(set(defined_roots) - set(roots))
 
     for root, definition in definitions:
-        # TODO: convert to ascii tables
+        root = convert_ascii_reverse(root)
         print('{}|{}'.format(root, definition))
