@@ -2,7 +2,7 @@ TODO:
 - Automatically write your name in phonetic ithkuil. For tattoos and such.
     - "how do I pronounce this consonant?"
         @
-        - change tables to use typed ascii representation, and update grammar.py
+        - change tables to use typed ascii representation and yaml, and update grammar.py
         - change Character.__str__ to use kwargs
         - rename chart files
 - adjust AcuteFold to be shorter, maybe 2.5

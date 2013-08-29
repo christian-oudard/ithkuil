@@ -1,12 +1,12 @@
 import itertools
 import re
-from .phonology import (
+from ithkuil.phonology import (
     convert_ascii,
     unicode_consonants,
     unicode_tones,
     unicode_tone_names,
 )
-from .util import choices_pattern
+from ithkuil.util import choices_pattern
 
 """
 Formative structure:

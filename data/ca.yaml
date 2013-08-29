@@ -1,0 +1,3467 @@
+NRM/DEL/M/CSL/UNI:
+  - l
+NRM/DEL/M/CSL/DPX:
+  - ll
+NRM/DEL/M/CSL/DCT:
+  - tl,
+NRM/DEL/M/CSL/AGG:
+  - l,
+NRM/DEL/M/CSL/SEG:
+  - l,l,
+NRM/DEL/M/CSL/CPN:
+  - r^l,
+NRM/DEL/M/CSL/COH:
+  - sk
+NRM/DEL/M/CSL/CST:
+  - s^k
+NRM/DEL/M/CSL/MLT:
+  - kt,
+NRM/DEL/M/ASO/UNI:
+  - r
+NRM/DEL/M/ASO/DPX:
+  - rr
+NRM/DEL/M/ASO/DCT:
+  - ll,
+NRM/DEL/M/ASO/AGG:
+  - rl
+NRM/DEL/M/ASO/SEG:
+  - rl,
+NRM/DEL/M/ASO/CPN:
+  - r^l
+NRM/DEL/M/ASO/COH:
+  - st
+NRM/DEL/M/ASO/CST:
+  - s^t
+NRM/DEL/M/ASO/MLT:
+  - kc,
+NRM/DEL/M/VAR/UNI:
+  - m
+NRM/DEL/M/VAR/DPX:
+  - mm
+NRM/DEL/M/VAR/DCT:
+  - lm
+NRM/DEL/M/VAR/AGG:
+  - rm
+NRM/DEL/M/VAR/SEG:
+  - ml,
+NRM/DEL/M/VAR/CPN:
+  - r^m
+NRM/DEL/M/VAR/COH:
+  - sp
+NRM/DEL/M/VAR/CST:
+  - s^p
+NRM/DEL/M/VAR/MLT:
+  - pt,
+NRM/DEL/M/COA/UNI:
+  - n
+NRM/DEL/M/COA/DPX:
+  - nn
+NRM/DEL/M/COA/DCT:
+  - ln
+NRM/DEL/M/COA/AGG:
+  - rn
+NRM/DEL/M/COA/SEG:
+  - nl,
+NRM/DEL/M/COA/CPN:
+  - r^n
+NRM/DEL/M/COA/COH:
+  - sq
+NRM/DEL/M/COA/CST:
+  - s^q
+NRM/DEL/M/COA/MLT:
+  - qt,
+NRM/DEL/U/CSL/UNI:
+  - t
+NRM/DEL/U/CSL/DPX:
+  - l,t
+NRM/DEL/U/CSL/DCT:
+  - lt
+NRM/DEL/U/CSL/AGG:
+  - rt
+NRM/DEL/U/CSL/SEG:
+  - nt
+NRM/DEL/U/CSL/CPN:
+  - r^t
+NRM/DEL/U/CSL/COH:
+  - n^t
+NRM/DEL/U/CSL/CST:
+  - n^d
+NRM/DEL/U/CSL/MLT:
+  - c,t
+NRM/DEL/U/ASO/UNI:
+  - k
+NRM/DEL/U/ASO/DPX:
+  - l,k
+NRM/DEL/U/ASO/DCT:
+  - lk
+NRM/DEL/U/ASO/AGG:
+  - rk
+NRM/DEL/U/ASO/SEG:
+  - n^k
+NRM/DEL/U/ASO/CPN:
+  - r^k
+NRM/DEL/U/ASO/COH:
+  - kt
+NRM/DEL/U/ASO/CST:
+  - xt
+NRM/DEL/U/ASO/MLT:
+  - c,k
+NRM/DEL/U/VAR/UNI:
+  - p
+NRM/DEL/U/VAR/DPX:
+  - l,p
+NRM/DEL/U/VAR/DCT:
+  - lp
+NRM/DEL/U/VAR/AGG:
+  - rp
+NRM/DEL/U/VAR/SEG:
+  - mp
+NRM/DEL/U/VAR/CPN:
+  - r^p
+NRM/DEL/U/VAR/COH:
+  - pt
+NRM/DEL/U/VAR/CST:
+  - ft
+NRM/DEL/U/VAR/MLT:
+  - c,p
+NRM/DEL/U/COA/UNI:
+  - q
+NRM/DEL/U/COA/DPX:
+  - l,q
+NRM/DEL/U/COA/DCT:
+  - lq
+NRM/DEL/U/COA/AGG:
+  - rq
+NRM/DEL/U/COA/SEG:
+  - n^q
+NRM/DEL/U/COA/CPN:
+  - r^q
+NRM/DEL/U/COA/COH:
+  - qt
+NRM/DEL/U/COA/CST:
+  - xht
+NRM/DEL/U/COA/MLT:
+  - c,q
+NRM/DEL/N/CSL/UNI:
+  - t,
+NRM/DEL/N/CSL/DPX:
+  - t,t,
+NRM/DEL/N/CSL/DCT:
+  - lt,
+NRM/DEL/N/CSL/AGG:
+  - rt,
+NRM/DEL/N/CSL/SEG:
+  - nt,
+NRM/DEL/N/CSL/CPN:
+  - r^t,
+NRM/DEL/N/CSL/COH:
+  - st,
+NRM/DEL/N/CSL/CST:
+  - s^t,
+NRM/DEL/N/CSL/MLT:
+  - tf
+NRM/DEL/N/ASO/UNI:
+  - x
+NRM/DEL/N/ASO/DPX:
+  - xx
+NRM/DEL/N/ASO/DCT:
+  - lx
+NRM/DEL/N/ASO/AGG:
+  - rx
+NRM/DEL/N/ASO/SEG:
+  - n^x
+NRM/DEL/N/ASO/CPN:
+  - mx
+NRM/DEL/N/ASO/COH:
+  - sx
+NRM/DEL/N/ASO/CST:
+  - s^x
+NRM/DEL/N/ASO/MLT:
+  - kf
+NRM/DEL/N/VAR/UNI:
+  - f
+NRM/DEL/N/VAR/DPX:
+  - ff
+NRM/DEL/N/VAR/DCT:
+  - lf
+NRM/DEL/N/VAR/AGG:
+  - rf
+NRM/DEL/N/VAR/SEG:
+  - mf
+NRM/DEL/N/VAR/CPN:
+  - r^f
+NRM/DEL/N/VAR/COH:
+  - sf
+NRM/DEL/N/VAR/CST:
+  - s^f
+NRM/DEL/N/VAR/MLT:
+  - pf
+NRM/DEL/N/COA/UNI:
+  - xh
+NRM/DEL/N/COA/DPX:
+  - xxh
+NRM/DEL/N/COA/DCT:
+  - lxh
+NRM/DEL/N/COA/AGG:
+  - rxh
+NRM/DEL/N/COA/SEG:
+  - n^xh
+NRM/DEL/N/COA/CPN:
+  - mxh
+NRM/DEL/N/COA/COH:
+  - sxh
+NRM/DEL/N/COA/CST:
+  - s^xh
+NRM/DEL/N/COA/MLT:
+  - qf
+NRM/DEL/A/CSL/UNI:
+  - c
+NRM/DEL/A/CSL/DPX:
+  - cc
+NRM/DEL/A/CSL/DCT:
+  - lc
+NRM/DEL/A/CSL/AGG:
+  - rc
+NRM/DEL/A/CSL/SEG:
+  - ns
+NRM/DEL/A/CSL/CPN:
+  - r^c
+NRM/DEL/A/CSL/COH:
+  - sc
+NRM/DEL/A/CSL/CST:
+  - fk
+NRM/DEL/A/CSL/MLT:
+  - fq
+NRM/DEL/A/ASO/UNI:
+  - c^
+NRM/DEL/A/ASO/DPX:
+  - c^c^
+NRM/DEL/A/ASO/DCT:
+  - lc^
+NRM/DEL/A/ASO/AGG:
+  - rc^
+NRM/DEL/A/ASO/SEG:
+  - ns^
+NRM/DEL/A/ASO/CPN:
+  - r^c^
+NRM/DEL/A/ASO/COH:
+  - s^c^
+NRM/DEL/A/ASO/CST:
+  - t,k
+NRM/DEL/A/ASO/MLT:
+  - t,q
+NRM/DEL/A/VAR/UNI:
+  - dz
+NRM/DEL/A/VAR/DPX:
+  - dzdz
+NRM/DEL/A/VAR/DCT:
+  - ldz
+NRM/DEL/A/VAR/AGG:
+  - rdz
+NRM/DEL/A/VAR/SEG:
+  - nz
+NRM/DEL/A/VAR/CPN:
+  - r^dz
+NRM/DEL/A/VAR/COH:
+  - t,f
+NRM/DEL/A/VAR/CST:
+  - t,s
+NRM/DEL/A/VAR/MLT:
+  - t,c
+NRM/DEL/A/COA/UNI:
+  - j
+NRM/DEL/A/COA/DPX:
+  - jj
+NRM/DEL/A/COA/DCT:
+  - lj
+NRM/DEL/A/COA/AGG:
+  - rj
+NRM/DEL/A/COA/SEG:
+  - nz^
+NRM/DEL/A/COA/CPN:
+  - r^j
+NRM/DEL/A/COA/COH:
+  - ft,
+NRM/DEL/A/COA/CST:
+  - t,s^
+NRM/DEL/A/COA/MLT:
+  - t,c^
+NRM/PRX/M/CSL/UNI:
+  - s
+NRM/PRX/M/CSL/DPX:
+  - ss
+NRM/PRX/M/CSL/DCT:
+  - ls
+NRM/PRX/M/CSL/AGG:
+  - rs
+NRM/PRX/M/CSL/SEG:
+  - fs
+NRM/PRX/M/CSL/CPN:
+  - r^s
+NRM/PRX/M/CSL/COH:
+  - n^s
+NRM/PRX/M/CSL/CST:
+  - ms
+NRM/PRX/M/CSL/MLT:
+  - mss
+NRM/PRX/M/ASO/UNI:
+  - s^
+NRM/PRX/M/ASO/DPX:
+  - s^s^
+NRM/PRX/M/ASO/DCT:
+  - ls^
+NRM/PRX/M/ASO/AGG:
+  - rs^
+NRM/PRX/M/ASO/SEG:
+  - fs^
+NRM/PRX/M/ASO/CPN:
+  - r^s^
+NRM/PRX/M/ASO/COH:
+  - n^s^
+NRM/PRX/M/ASO/CST:
+  - ms^
+NRM/PRX/M/ASO/MLT:
+  - ms^s^
+NRM/PRX/M/VAR/UNI:
+  - z
+NRM/PRX/M/VAR/DPX:
+  - zz
+NRM/PRX/M/VAR/DCT:
+  - lz
+NRM/PRX/M/VAR/AGG:
+  - rz
+NRM/PRX/M/VAR/SEG:
+  - vz
+NRM/PRX/M/VAR/CPN:
+  - r^z
+NRM/PRX/M/VAR/COH:
+  - n^z
+NRM/PRX/M/VAR/CST:
+  - mz
+NRM/PRX/M/VAR/MLT:
+  - mzz
+NRM/PRX/M/COA/UNI:
+  - z^
+NRM/PRX/M/COA/DPX:
+  - z^z^
+NRM/PRX/M/COA/DCT:
+  - lz^
+NRM/PRX/M/COA/AGG:
+  - rz^
+NRM/PRX/M/COA/SEG:
+  - vz^
+NRM/PRX/M/COA/CPN:
+  - r^z^
+NRM/PRX/M/COA/COH:
+  - n^z^
+NRM/PRX/M/COA/CST:
+  - mz^
+NRM/PRX/M/COA/MLT:
+  - mz^z^
+NRM/PRX/U/CSL/UNI:
+  - d
+NRM/PRX/U/CSL/DPX:
+  - dv
+NRM/PRX/U/CSL/DCT:
+  - ld
+NRM/PRX/U/CSL/AGG:
+  - rd
+NRM/PRX/U/CSL/SEG:
+  - nd
+NRM/PRX/U/CSL/CPN:
+  - r^d
+NRM/PRX/U/CSL/COH:
+  - md
+NRM/PRX/U/CSL/CST:
+  - zd
+NRM/PRX/U/CSL/MLT:
+  - z^d
+NRM/PRX/U/ASO/UNI:
+  - g
+NRM/PRX/U/ASO/DPX:
+  - gv
+NRM/PRX/U/ASO/DCT:
+  - lg
+NRM/PRX/U/ASO/AGG:
+  - rg
+NRM/PRX/U/ASO/SEG:
+  - n^g
+NRM/PRX/U/ASO/CPN:
+  - r^g
+NRM/PRX/U/ASO/COH:
+  - n^kf
+NRM/PRX/U/ASO/CST:
+  - zg
+NRM/PRX/U/ASO/MLT:
+  - z^g
+NRM/PRX/U/VAR/UNI:
+  - b
+NRM/PRX/U/VAR/DPX:
+  - bv
+NRM/PRX/U/VAR/DCT:
+  - lb
+NRM/PRX/U/VAR/AGG:
+  - rb
+NRM/PRX/U/VAR/SEG:
+  - mb
+NRM/PRX/U/VAR/CPN:
+  - r^b
+NRM/PRX/U/VAR/COH:
+  - ntf
+NRM/PRX/U/VAR/CST:
+  - zb
+NRM/PRX/U/VAR/MLT:
+  - z^b
+NRM/PRX/U/COA/UNI:
+  - n^
+NRM/PRX/U/COA/DPX:
+  - n^n^
+NRM/PRX/U/COA/DCT:
+  - n^c,
+NRM/PRX/U/COA/AGG:
+  - rn^
+NRM/PRX/U/COA/SEG:
+  - n^v
+NRM/PRX/U/COA/CPN:
+  - r^n^
+NRM/PRX/U/COA/COH:
+  - n^f
+NRM/PRX/U/COA/CST:
+  - r^tf
+NRM/PRX/U/COA/MLT:
+  - r^kf
+NRM/PRX/N/CSL/UNI:
+  - dh
+NRM/PRX/N/CSL/DPX:
+  - ddh
+NRM/PRX/N/CSL/DCT:
+  - ldh
+NRM/PRX/N/CSL/AGG:
+  - rdh
+NRM/PRX/N/CSL/SEG:
+  - ndh
+NRM/PRX/N/CSL/CPN:
+  - r^dh
+NRM/PRX/N/CSL/COH:
+  - mdh
+NRM/PRX/N/CSL/CST:
+  - t,x
+NRM/PRX/N/CSL/MLT:
+  - t,xh
+NRM/PRX/N/ASO/UNI:
+  - c,
+NRM/PRX/N/ASO/DPX:
+  - c,c,
+NRM/PRX/N/ASO/DCT:
+  - lc,
+NRM/PRX/N/ASO/AGG:
+  - rc,
+NRM/PRX/N/ASO/SEG:
+  - nc,
+NRM/PRX/N/ASO/CPN:
+  - r^c,
+NRM/PRX/N/ASO/COH:
+  - mc,
+NRM/PRX/N/ASO/CST:
+  - fx
+NRM/PRX/N/ASO/MLT:
+  - fxh
+NRM/PRX/N/VAR/UNI:
+  - v
+NRM/PRX/N/VAR/DPX:
+  - vv
+NRM/PRX/N/VAR/DCT:
+  - lv
+NRM/PRX/N/VAR/AGG:
+  - rv
+NRM/PRX/N/VAR/SEG:
+  - mv
+NRM/PRX/N/VAR/CPN:
+  - r^v
+NRM/PRX/N/VAR/COH:
+  - ndv
+NRM/PRX/N/VAR/CST:
+  - xf
+NRM/PRX/N/VAR/MLT:
+  - xt,
+NRM/PRX/N/COA/UNI:
+  - r^
+NRM/PRX/N/COA/DPX:
+  - r^r^
+NRM/PRX/N/COA/DCT:
+  - rbv
+NRM/PRX/N/COA/AGG:
+  - rdv
+NRM/PRX/N/COA/SEG:
+  - rgv
+NRM/PRX/N/COA/CPN:
+  - r^xh
+NRM/PRX/N/COA/COH:
+  - mt,
+NRM/PRX/N/COA/CST:
+  - xhf
+NRM/PRX/N/COA/MLT:
+  - xht,
+NRM/PRX/A/CSL/UNI:
+  - ck
+NRM/PRX/A/CSL/DPX:
+  - c^k
+NRM/PRX/A/CSL/DCT:
+  - ps
+NRM/PRX/A/CSL/AGG:
+  - ks
+NRM/PRX/A/CSL/SEG:
+  - gd
+NRM/PRX/A/CSL/CPN:
+  - psk
+NRM/PRX/A/CSL/COH:
+  - ps^k
+NRM/PRX/A/CSL/CST:
+  - ksk
+NRM/PRX/A/CSL/MLT:
+  - ks^k
+NRM/PRX/A/ASO/UNI:
+  - ct
+NRM/PRX/A/ASO/DPX:
+  - c^t
+NRM/PRX/A/ASO/DCT:
+  - ps^
+NRM/PRX/A/ASO/AGG:
+  - ks^
+NRM/PRX/A/ASO/SEG:
+  - bd
+NRM/PRX/A/ASO/CPN:
+  - pst
+NRM/PRX/A/ASO/COH:
+  - ps^t
+NRM/PRX/A/ASO/CST:
+  - tx
+NRM/PRX/A/ASO/MLT:
+  - txh
+NRM/PRX/A/VAR/UNI:
+  - cp
+NRM/PRX/A/VAR/DPX:
+  - c^p
+NRM/PRX/A/VAR/DCT:
+  - bz
+NRM/PRX/A/VAR/AGG:
+  - gz
+NRM/PRX/A/VAR/SEG:
+  - pc,
+NRM/PRX/A/VAR/CPN:
+  - ksp
+NRM/PRX/A/VAR/COH:
+  - ks^p
+NRM/PRX/A/VAR/CST:
+  - px
+NRM/PRX/A/VAR/MLT:
+  - pxh
+NRM/PRX/A/COA/UNI:
+  - cq
+NRM/PRX/A/COA/DPX:
+  - c^q
+NRM/PRX/A/COA/DCT:
+  - bz^
+NRM/PRX/A/COA/AGG:
+  - gz^
+NRM/PRX/A/COA/SEG:
+  - r^qf
+NRM/PRX/A/COA/CPN:
+  - kst
+NRM/PRX/A/COA/COH:
+  - ks^t
+NRM/PRX/A/COA/CST:
+  - psq
+NRM/PRX/A/COA/MLT:
+  - ps^q
+NRM/ICP/M/CSL/UNI:
+  - mt
+NRM/ICP/M/CSL/DPX:
+  - mt'
+NRM/ICP/M/CSL/DCT:
+  - skh
+NRM/ICP/M/CSL/AGG:
+  - sk'
+NRM/ICP/M/CSL/SEG:
+  - mth
+NRM/ICP/M/CSL/CPN:
+  - pst'
+NRM/ICP/M/CSL/COH:
+  - psth
+NRM/ICP/M/CSL/CST:
+  - ps^t'
+NRM/ICP/M/CSL/MLT:
+  - ps^th
+NRM/ICP/M/ASO/UNI:
+  - mk
+NRM/ICP/M/ASO/DPX:
+  - mk'
+NRM/ICP/M/ASO/DCT:
+  - sth
+NRM/ICP/M/ASO/AGG:
+  - st'
+NRM/ICP/M/ASO/SEG:
+  - mkh
+NRM/ICP/M/ASO/CPN:
+  - kst'
+NRM/ICP/M/ASO/COH:
+  - ksth
+NRM/ICP/M/ASO/CST:
+  - ks^t'
+NRM/ICP/M/ASO/MLT:
+  - ks^th
+NRM/ICP/M/VAR/UNI:
+  - n^p
+NRM/ICP/M/VAR/DPX:
+  - n^p'
+NRM/ICP/M/VAR/DCT:
+  - sph
+NRM/ICP/M/VAR/AGG:
+  - sp'
+NRM/ICP/M/VAR/SEG:
+  - n^ph
+NRM/ICP/M/VAR/CPN:
+  - psk'
+NRM/ICP/M/VAR/COH:
+  - pskh
+NRM/ICP/M/VAR/CST:
+  - ps^k'
+NRM/ICP/M/VAR/MLT:
+  - ps^kh
+NRM/ICP/M/COA/UNI:
+  - mq
+NRM/ICP/M/COA/DPX:
+  - mq'
+NRM/ICP/M/COA/DCT:
+  - sqh
+NRM/ICP/M/COA/AGG:
+  - sq'
+NRM/ICP/M/COA/SEG:
+  - mqh
+NRM/ICP/M/COA/CPN:
+  - ksp'
+NRM/ICP/M/COA/COH:
+  - ksph
+NRM/ICP/M/COA/CST:
+  - ks^p'
+NRM/ICP/M/COA/MLT:
+  - ks^ph
+NRM/ICP/U/CSL/UNI:
+  - pk
+NRM/ICP/U/CSL/DPX:
+  - pk'
+NRM/ICP/U/CSL/DCT:
+  - s^kh
+NRM/ICP/U/CSL/AGG:
+  - s^k'
+NRM/ICP/U/CSL/SEG:
+  - pkh
+NRM/ICP/U/CSL/CPN:
+  - fk'
+NRM/ICP/U/CSL/COH:
+  - fkh
+NRM/ICP/U/CSL/CST:
+  - psq'
+NRM/ICP/U/CSL/MLT:
+  - psqh
+NRM/ICP/U/ASO/UNI:
+  - tk
+NRM/ICP/U/ASO/DPX:
+  - tk'
+NRM/ICP/U/ASO/DCT:
+  - s^th
+NRM/ICP/U/ASO/AGG:
+  - s^t'
+NRM/ICP/U/ASO/SEG:
+  - tkh
+NRM/ICP/U/ASO/CPN:
+  - t,k'
+NRM/ICP/U/ASO/COH:
+  - t,kh
+NRM/ICP/U/ASO/CST:
+  - ksk'
+NRM/ICP/U/ASO/MLT:
+  - kskh
+NRM/ICP/U/VAR/UNI:
+  - tp
+NRM/ICP/U/VAR/DPX:
+  - tp'
+NRM/ICP/U/VAR/DCT:
+  - s^ph
+NRM/ICP/U/VAR/AGG:
+  - s^p'
+NRM/ICP/U/VAR/SEG:
+  - tph
+NRM/ICP/U/VAR/CPN:
+  - t,p'
+NRM/ICP/U/VAR/COH:
+  - t,ph
+NRM/ICP/U/VAR/CST:
+  - ps^q'
+NRM/ICP/U/VAR/MLT:
+  - ps^qh
+NRM/ICP/U/COA/UNI:
+  - kp
+NRM/ICP/U/COA/DPX:
+  - kp'
+NRM/ICP/U/COA/DCT:
+  - s^qh
+NRM/ICP/U/COA/AGG:
+  - s^q'
+NRM/ICP/U/COA/SEG:
+  - kph
+NRM/ICP/U/COA/CPN:
+  - xp'
+NRM/ICP/U/COA/COH:
+  - xph
+NRM/ICP/U/COA/CST:
+  - ks^k'
+NRM/ICP/U/COA/MLT:
+  - ks^kh
+NRM/ICP/N/CSL/UNI:
+  - pq
+NRM/ICP/N/CSL/DPX:
+  - pq'
+NRM/ICP/N/CSL/DCT:
+  - fg
+NRM/ICP/N/CSL/AGG:
+  - bg
+NRM/ICP/N/CSL/SEG:
+  - pqh
+NRM/ICP/N/CSL/CPN:
+  - vg
+NRM/ICP/N/CSL/COH:
+  - fp
+NRM/ICP/N/CSL/CST:
+  - fq'
+NRM/ICP/N/CSL/MLT:
+  - fqh
+NRM/ICP/N/ASO/UNI:
+  - tq
+NRM/ICP/N/ASO/DPX:
+  - tq'
+NRM/ICP/N/ASO/DCT:
+  - t,g
+NRM/ICP/N/ASO/AGG:
+  - dg
+NRM/ICP/N/ASO/SEG:
+  - tqh
+NRM/ICP/N/ASO/CPN:
+  - dhg
+NRM/ICP/N/ASO/COH:
+  - vd
+NRM/ICP/N/ASO/CST:
+  - t,q'
+NRM/ICP/N/ASO/MLT:
+  - t,qh
+NRM/ICP/N/VAR/UNI:
+  - qp
+NRM/ICP/N/VAR/DPX:
+  - qp'
+NRM/ICP/N/VAR/DCT:
+  - xhp
+NRM/ICP/N/VAR/AGG:
+  - xp
+NRM/ICP/N/VAR/SEG:
+  - sch
+NRM/ICP/N/VAR/CPN:
+  - sc'
+NRM/ICP/N/VAR/COH:
+  - n^qf
+NRM/ICP/N/VAR/CST:
+  - gb
+NRM/ICP/N/VAR/MLT:
+  - kkc,
+  - kc,c,
+NRM/ICP/N/COA/UNI:
+  - pl,
+NRM/ICP/N/COA/DPX:
+  - tc,
+NRM/ICP/N/COA/DCT:
+  - xhp'
+NRM/ICP/N/COA/AGG:
+  - t,p
+NRM/ICP/N/COA/SEG:
+  - s^c^h
+NRM/ICP/N/COA/CPN:
+  - s^c^'
+NRM/ICP/N/COA/COH:
+  - vb
+NRM/ICP/N/COA/CST:
+  - dhz
+NRM/ICP/N/COA/MLT:
+  - ppc,
+  - pc,c,
+NRM/ICP/A/CSL/UNI:
+  - fst
+NRM/ICP/A/CSL/DPX:
+  - fc'
+NRM/ICP/A/CSL/DCT:
+  - fc
+NRM/ICP/A/CSL/AGG:
+  - lfs
+NRM/ICP/A/CSL/SEG:
+  - xc'
+NRM/ICP/A/CSL/CPN:
+  - t,c'
+NRM/ICP/A/CSL/COH:
+  - ltf
+NRM/ICP/A/CSL/CST:
+  - fst'
+NRM/ICP/A/CSL/MLT:
+  - fsth
+NRM/ICP/A/ASO/UNI:
+  - fs^t
+NRM/ICP/A/ASO/DPX:
+  - fc^'
+NRM/ICP/A/ASO/DCT:
+  - fc^
+NRM/ICP/A/ASO/AGG:
+  - lfs^
+NRM/ICP/A/ASO/SEG:
+  - xc^'
+NRM/ICP/A/ASO/CPN:
+  - t,c^'
+NRM/ICP/A/ASO/COH:
+  - lkf
+NRM/ICP/A/ASO/CST:
+  - fs^t'
+NRM/ICP/A/ASO/MLT:
+  - fs^th
+NRM/ICP/A/VAR/UNI:
+  - fsk
+NRM/ICP/A/VAR/DPX:
+  - fch
+NRM/ICP/A/VAR/DCT:
+  - rfs
+NRM/ICP/A/VAR/AGG:
+  - fsq
+NRM/ICP/A/VAR/SEG:
+  - xch
+NRM/ICP/A/VAR/CPN:
+  - t,ch
+NRM/ICP/A/VAR/COH:
+  - xhph
+NRM/ICP/A/VAR/CST:
+  - fsk'
+NRM/ICP/A/VAR/MLT:
+  - fskh
+NRM/ICP/A/COA/UNI:
+  - fs^k
+NRM/ICP/A/COA/DPX:
+  - fc^h
+NRM/ICP/A/COA/DCT:
+  - rfs^
+NRM/ICP/A/COA/AGG:
+  - fs^q
+NRM/ICP/A/COA/SEG:
+  - xc^h
+NRM/ICP/A/COA/CPN:
+  - t,c^h
+NRM/ICP/A/COA/COH:
+  - qph
+NRM/ICP/A/COA/CST:
+  - fs^k'
+NRM/ICP/A/COA/MLT:
+  - fs^kh
+NRM/TRM/M/CSL/UNI:
+  - t'
+NRM/TRM/M/CSL/DPX:
+  - l,t'
+NRM/TRM/M/CSL/DCT:
+  - lt'
+NRM/TRM/M/CSL/AGG:
+  - rt'
+NRM/TRM/M/CSL/SEG:
+  - nt'
+NRM/TRM/M/CSL/CPN:
+  - r^t'
+NRM/TRM/M/CSL/COH:
+  - t,sk'
+NRM/TRM/M/CSL/CST:
+  - kt'
+NRM/TRM/M/CSL/MLT:
+  - n^t'
+NRM/TRM/M/ASO/UNI:
+  - k'
+NRM/TRM/M/ASO/DPX:
+  - l,k'
+NRM/TRM/M/ASO/DCT:
+  - lk'
+NRM/TRM/M/ASO/AGG:
+  - rk'
+NRM/TRM/M/ASO/SEG:
+  - n^k'
+NRM/TRM/M/ASO/CPN:
+  - r^k'
+NRM/TRM/M/ASO/COH:
+  - t,s^k'
+NRM/TRM/M/ASO/CST:
+  - ft'
+NRM/TRM/M/ASO/MLT:
+  - xt'
+NRM/TRM/M/VAR/UNI:
+  - p'
+NRM/TRM/M/VAR/DPX:
+  - l,p'
+NRM/TRM/M/VAR/DCT:
+  - lp'
+NRM/TRM/M/VAR/AGG:
+  - rp'
+NRM/TRM/M/VAR/SEG:
+  - mp'
+NRM/TRM/M/VAR/CPN:
+  - r^p'
+NRM/TRM/M/VAR/COH:
+  - fsq'
+NRM/TRM/M/VAR/CST:
+  - pt'
+NRM/TRM/M/VAR/MLT:
+  - fp'
+NRM/TRM/M/COA/UNI:
+  - q'
+NRM/TRM/M/COA/DPX:
+  - l,q'
+NRM/TRM/M/COA/DCT:
+  - lq'
+NRM/TRM/M/COA/AGG:
+  - rq'
+NRM/TRM/M/COA/SEG:
+  - n^q'
+NRM/TRM/M/COA/CPN:
+  - r^q'
+NRM/TRM/M/COA/COH:
+  - fs^q'
+NRM/TRM/M/COA/CST:
+  - xht'
+NRM/TRM/M/COA/MLT:
+  - qt'
+NRM/TRM/U/CSL/UNI:
+  - th
+NRM/TRM/U/CSL/DPX:
+  - l,th
+NRM/TRM/U/CSL/DCT:
+  - lth
+NRM/TRM/U/CSL/AGG:
+  - rth
+NRM/TRM/U/CSL/SEG:
+  - nth
+NRM/TRM/U/CSL/CPN:
+  - r^th
+NRM/TRM/U/CSL/COH:
+  - t,skh
+NRM/TRM/U/CSL/CST:
+  - kth
+NRM/TRM/U/CSL/MLT:
+  - n^th
+NRM/TRM/U/ASO/UNI:
+  - kh
+NRM/TRM/U/ASO/DPX:
+  - l,kh
+NRM/TRM/U/ASO/DCT:
+  - lkh
+NRM/TRM/U/ASO/AGG:
+  - rkh
+NRM/TRM/U/ASO/SEG:
+  - n^kh
+NRM/TRM/U/ASO/CPN:
+  - r^kh
+NRM/TRM/U/ASO/COH:
+  - t,s^kh
+NRM/TRM/U/ASO/CST:
+  - fth
+NRM/TRM/U/ASO/MLT:
+  - xth
+NRM/TRM/U/VAR/UNI:
+  - ph
+NRM/TRM/U/VAR/DPX:
+  - l,ph
+NRM/TRM/U/VAR/DCT:
+  - lph
+NRM/TRM/U/VAR/AGG:
+  - rph
+NRM/TRM/U/VAR/SEG:
+  - mph
+NRM/TRM/U/VAR/CPN:
+  - r^ph
+NRM/TRM/U/VAR/COH:
+  - fsqh
+NRM/TRM/U/VAR/CST:
+  - pth
+NRM/TRM/U/VAR/MLT:
+  - fph
+NRM/TRM/U/COA/UNI:
+  - qh
+NRM/TRM/U/COA/DPX:
+  - l,qh
+NRM/TRM/U/COA/DCT:
+  - lqh
+NRM/TRM/U/COA/AGG:
+  - rqh
+NRM/TRM/U/COA/SEG:
+  - n^qh
+NRM/TRM/U/COA/CPN:
+  - r^qh
+NRM/TRM/U/COA/COH:
+  - fs^qh
+NRM/TRM/U/COA/CST:
+  - xhth
+NRM/TRM/U/COA/MLT:
+  - qth
+NRM/TRM/N/CSL/UNI:
+  - c'
+NRM/TRM/N/CSL/DPX:
+  - cc'
+NRM/TRM/N/CSL/DCT:
+  - lc'
+NRM/TRM/N/CSL/AGG:
+  - rc'
+NRM/TRM/N/CSL/SEG:
+  - nc'
+NRM/TRM/N/CSL/CPN:
+  - r^c'
+NRM/TRM/N/CSL/COH:
+  - mc'
+NRM/TRM/N/CSL/CST:
+  - n^c'
+NRM/TRM/N/CSL/MLT:
+  - c,t'
+NRM/TRM/N/ASO/UNI:
+  - c^'
+NRM/TRM/N/ASO/DPX:
+  - c^c^'
+NRM/TRM/N/ASO/DCT:
+  - lc^'
+NRM/TRM/N/ASO/AGG:
+  - rc^'
+NRM/TRM/N/ASO/SEG:
+  - nc^'
+NRM/TRM/N/ASO/CPN:
+  - r^c^'
+NRM/TRM/N/ASO/COH:
+  - mc^'
+NRM/TRM/N/ASO/CST:
+  - n^c^'
+NRM/TRM/N/ASO/MLT:
+  - c,k'
+NRM/TRM/N/VAR/UNI:
+  - ch
+NRM/TRM/N/VAR/DPX:
+  - cch
+NRM/TRM/N/VAR/DCT:
+  - lch
+NRM/TRM/N/VAR/AGG:
+  - rch
+NRM/TRM/N/VAR/SEG:
+  - nch
+NRM/TRM/N/VAR/CPN:
+  - r^ch
+NRM/TRM/N/VAR/COH:
+  - mch
+NRM/TRM/N/VAR/CST:
+  - n^ch
+NRM/TRM/N/VAR/MLT:
+  - c,p'
+NRM/TRM/N/COA/UNI:
+  - c^h
+NRM/TRM/N/COA/DPX:
+  - c^c^h
+NRM/TRM/N/COA/DCT:
+  - lc^h
+NRM/TRM/N/COA/AGG:
+  - rc^h
+NRM/TRM/N/COA/SEG:
+  - nc^h
+NRM/TRM/N/COA/CPN:
+  - c^r^ʰ
+NRM/TRM/N/COA/COH:
+  - mc^h
+NRM/TRM/N/COA/CST:
+  - n^c^h
+NRM/TRM/N/COA/MLT:
+  - c,q'
+NRM/TRM/A/CSL/UNI:
+  - pps
+  - pss
+NRM/TRM/A/CSL/DPX:
+  - rps
+NRM/TRM/A/CSL/DCT:
+  - lps
+NRM/TRM/A/CSL/AGG:
+  - rbz
+NRM/TRM/A/CSL/SEG:
+  - lbz
+NRM/TRM/A/CSL/CPN:
+  - r^ps
+NRM/TRM/A/CSL/COH:
+  - r^bz
+NRM/TRM/A/CSL/CST:
+  - n^ss
+NRM/TRM/A/CSL/MLT:
+  - c,th
+NRM/TRM/A/ASO/UNI:
+  - pps^
+  - ps^s^
+NRM/TRM/A/ASO/DPX:
+  - rps^
+NRM/TRM/A/ASO/DCT:
+  - lps^
+NRM/TRM/A/ASO/AGG:
+  - rbz^
+NRM/TRM/A/ASO/SEG:
+  - lbz^
+NRM/TRM/A/ASO/CPN:
+  - r^ps^
+NRM/TRM/A/ASO/COH:
+  - r^bz^
+NRM/TRM/A/ASO/CST:
+  - n^s^s^
+NRM/TRM/A/ASO/MLT:
+  - c,kh
+NRM/TRM/A/VAR/UNI:
+  - kks
+  - kss
+NRM/TRM/A/VAR/DPX:
+  - rks
+NRM/TRM/A/VAR/DCT:
+  - lks
+NRM/TRM/A/VAR/AGG:
+  - rgz
+NRM/TRM/A/VAR/SEG:
+  - lgz
+NRM/TRM/A/VAR/CPN:
+  - r^ks
+NRM/TRM/A/VAR/COH:
+  - r^gz
+NRM/TRM/A/VAR/CST:
+  - n^zz
+NRM/TRM/A/VAR/MLT:
+  - c,ph
+NRM/TRM/A/COA/UNI:
+  - kks^
+  - ks^s^
+NRM/TRM/A/COA/DPX:
+  - rks^
+NRM/TRM/A/COA/DCT:
+  - lks^
+NRM/TRM/A/COA/AGG:
+  - rgz^
+NRM/TRM/A/COA/SEG:
+  - lgz^
+NRM/TRM/A/COA/CPN:
+  - r^ks^
+NRM/TRM/A/COA/COH:
+  - r^gz^
+NRM/TRM/A/COA/CST:
+  - n^z^z^
+NRM/TRM/A/COA/MLT:
+  - c,qh
+NRM/DPL/M/CSL/UNI:
+  - kc
+NRM/DPL/M/CSL/DPX:
+  - lkc,
+NRM/DPL/M/CSL/DCT:
+  - lsk
+NRM/DPL/M/CSL/AGG:
+  - rsk
+NRM/DPL/M/CSL/SEG:
+  - nsk
+NRM/DPL/M/CSL/CPN:
+  - r^sk
+NRM/DPL/M/CSL/COH:
+  - msk
+NRM/DPL/M/CSL/CST:
+  - n^sk
+NRM/DPL/M/CSL/MLT:
+  - ssk
+NRM/DPL/M/ASO/UNI:
+  - dzd
+NRM/DPL/M/ASO/DPX:
+  - lt,s
+NRM/DPL/M/ASO/DCT:
+  - lst
+NRM/DPL/M/ASO/AGG:
+  - rst
+NRM/DPL/M/ASO/SEG:
+  - nst
+NRM/DPL/M/ASO/CPN:
+  - r^st
+NRM/DPL/M/ASO/COH:
+  - mst
+NRM/DPL/M/ASO/CST:
+  - n^st
+NRM/DPL/M/ASO/MLT:
+  - sst
+NRM/DPL/M/VAR/UNI:
+  - pc
+NRM/DPL/M/VAR/DPX:
+  - bbz
+  - bzz
+NRM/DPL/M/VAR/DCT:
+  - lsp
+NRM/DPL/M/VAR/AGG:
+  - rsp
+NRM/DPL/M/VAR/SEG:
+  - nsp
+NRM/DPL/M/VAR/CPN:
+  - r^sp
+NRM/DPL/M/VAR/COH:
+  - msp
+NRM/DPL/M/VAR/CST:
+  - n^sp
+NRM/DPL/M/VAR/MLT:
+  - ssp
+NRM/DPL/M/COA/UNI:
+  - qc
+NRM/DPL/M/COA/DPX:
+  - ggz
+  - gzz
+NRM/DPL/M/COA/DCT:
+  - lsq
+NRM/DPL/M/COA/AGG:
+  - rsq
+NRM/DPL/M/COA/SEG:
+  - nsq
+NRM/DPL/M/COA/CPN:
+  - r^sq
+NRM/DPL/M/COA/COH:
+  - msq
+NRM/DPL/M/COA/CST:
+  - n^sq
+NRM/DPL/M/COA/MLT:
+  - ssq
+NRM/DPL/U/CSL/UNI:
+  - kc^
+NRM/DPL/U/CSL/DPX:
+  - rc,c,
+NRM/DPL/U/CSL/DCT:
+  - ls^k
+NRM/DPL/U/CSL/AGG:
+  - rs^k
+NRM/DPL/U/CSL/SEG:
+  - ns^k
+NRM/DPL/U/CSL/CPN:
+  - r^s^k
+NRM/DPL/U/CSL/COH:
+  - ms^k
+NRM/DPL/U/CSL/CST:
+  - n^s^k
+NRM/DPL/U/CSL/MLT:
+  - s^s^k
+NRM/DPL/U/ASO/UNI:
+  - jd
+NRM/DPL/U/ASO/DPX:
+  - lt,s^
+NRM/DPL/U/ASO/DCT:
+  - ls^t
+NRM/DPL/U/ASO/AGG:
+  - rs^t
+NRM/DPL/U/ASO/SEG:
+  - ns^t
+NRM/DPL/U/ASO/CPN:
+  - r^s^t
+NRM/DPL/U/ASO/COH:
+  - ms^t
+NRM/DPL/U/ASO/CST:
+  - n^s^t
+NRM/DPL/U/ASO/MLT:
+  - s^s^t
+NRM/DPL/U/VAR/UNI:
+  - pc^
+NRM/DPL/U/VAR/DPX:
+  - bbz^
+  - bz^z^
+NRM/DPL/U/VAR/DCT:
+  - ls^p
+NRM/DPL/U/VAR/AGG:
+  - rs^p
+NRM/DPL/U/VAR/SEG:
+  - ns^p
+NRM/DPL/U/VAR/CPN:
+  - r^s^p
+NRM/DPL/U/VAR/COH:
+  - ms^p
+NRM/DPL/U/VAR/CST:
+  - n^s^p
+NRM/DPL/U/VAR/MLT:
+  - s^s^p
+NRM/DPL/U/COA/UNI:
+  - qc^
+NRM/DPL/U/COA/DPX:
+  - ggz^
+  - gz^z^
+NRM/DPL/U/COA/DCT:
+  - ls^q
+NRM/DPL/U/COA/AGG:
+  - rs^q
+NRM/DPL/U/COA/SEG:
+  - ns^q
+NRM/DPL/U/COA/CPN:
+  - r^s^q
+NRM/DPL/U/COA/COH:
+  - ms^q
+NRM/DPL/U/COA/CST:
+  - n^s^q
+NRM/DPL/U/COA/MLT:
+  - s^s^q
+NRM/DPL/N/CSL/UNI:
+  - bdh
+NRM/DPL/N/CSL/DPX:
+  - xpf
+NRM/DPL/N/CSL/DCT:
+  - lvz
+NRM/DPL/N/CSL/AGG:
+  - rvz
+NRM/DPL/N/CSL/SEG:
+  - rbdh
+NRM/DPL/N/CSL/CPN:
+  - r^pt,
+NRM/DPL/N/CSL/COH:
+  - lpf
+NRM/DPL/N/CSL/CST:
+  - rpf
+NRM/DPL/N/CSL/MLT:
+  - bzd
+NRM/DPL/N/ASO/UNI:
+  - gdh
+NRM/DPL/N/ASO/DPX:
+  - n^dh
+NRM/DPL/N/ASO/DCT:
+  - lvz^
+NRM/DPL/N/ASO/AGG:
+  - rvz^
+NRM/DPL/N/ASO/SEG:
+  - rgdh
+NRM/DPL/N/ASO/CPN:
+  - r^kt,
+NRM/DPL/N/ASO/COH:
+  - lpc,
+NRM/DPL/N/ASO/CST:
+  - rpc,
+NRM/DPL/N/ASO/MLT:
+  - bz^d
+NRM/DPL/N/VAR/UNI:
+  - t,t
+NRM/DPL/N/VAR/DPX:
+  - dhd
+NRM/DPL/N/VAR/DCT:
+  - ldhz
+NRM/DPL/N/VAR/AGG:
+  - rt,s
+NRM/DPL/N/VAR/SEG:
+  - rqt,
+NRM/DPL/N/VAR/CPN:
+  - r^qt,
+NRM/DPL/N/VAR/COH:
+  - n^kc,
+NRM/DPL/N/VAR/CST:
+  - r^pf
+NRM/DPL/N/VAR/MLT:
+  - gzd
+NRM/DPL/N/COA/UNI:
+  - db
+NRM/DPL/N/COA/DPX:
+  - ttc,
+  - tc,c,
+NRM/DPL/N/COA/DCT:
+  - ldhz^
+NRM/DPL/N/COA/AGG:
+  - rt,s^
+NRM/DPL/N/COA/SEG:
+  - rkc,
+NRM/DPL/N/COA/CPN:
+  - r^kc,
+NRM/DPL/N/COA/COH:
+  - mpc,
+NRM/DPL/N/COA/CST:
+  - r^pc,
+NRM/DPL/N/COA/MLT:
+  - gz^d
+NRM/DPL/A/CSL/UNI:
+  - bdz
+NRM/DPL/A/CSL/DPX:
+  - rpss
+NRM/DPL/A/CSL/DCT:
+  - lzb
+NRM/DPL/A/CSL/AGG:
+  - rzb
+NRM/DPL/A/CSL/SEG:
+  - nzb
+NRM/DPL/A/CSL/CPN:
+  - r^zb
+NRM/DPL/A/CSL/COH:
+  - mzb
+NRM/DPL/A/CSL/CST:
+  - r^pss
+NRM/DPL/A/CSL/MLT:
+  - gzb
+NRM/DPL/A/ASO/UNI:
+  - gdz
+NRM/DPL/A/ASO/DPX:
+  - rkss
+NRM/DPL/A/ASO/DCT:
+  - lz^b
+NRM/DPL/A/ASO/AGG:
+  - rz^b
+NRM/DPL/A/ASO/SEG:
+  - nz^b
+NRM/DPL/A/ASO/CPN:
+  - r^z^b
+NRM/DPL/A/ASO/COH:
+  - mz^b
+NRM/DPL/A/ASO/CST:
+  - r^kss
+NRM/DPL/A/ASO/MLT:
+  - gz^b
+NRM/DPL/A/VAR/UNI:
+  - bj
+NRM/DPL/A/VAR/DPX:
+  - rps^s^
+NRM/DPL/A/VAR/DCT:
+  - lzg
+NRM/DPL/A/VAR/AGG:
+  - rzg
+NRM/DPL/A/VAR/SEG:
+  - nzg
+NRM/DPL/A/VAR/CPN:
+  - r^zg
+NRM/DPL/A/VAR/COH:
+  - mzg
+NRM/DPL/A/VAR/CST:
+  - r^ps^s^
+NRM/DPL/A/VAR/MLT:
+  - bzg
+NRM/DPL/A/COA/UNI:
+  - gj
+NRM/DPL/A/COA/DPX:
+  - rks^s^
+NRM/DPL/A/COA/DCT:
+  - lz^g
+NRM/DPL/A/COA/AGG:
+  - rz^g
+NRM/DPL/A/COA/SEG:
+  - nz^g
+NRM/DPL/A/COA/CPN:
+  - r^z^g
+NRM/DPL/A/COA/COH:
+  - mz^g
+NRM/DPL/A/COA/CST:
+  - r^ks^s^
+NRM/DPL/A/COA/MLT:
+  - bz^g
+NRM/GRA/M/CSL/UNI:
+  - kc'
+NRM/GRA/M/CSL/DPX:
+  - ck'
+NRM/GRA/M/CSL/DCT:
+  - lsk'
+NRM/GRA/M/CSL/AGG:
+  - rsk'
+NRM/GRA/M/CSL/SEG:
+  - nsk'
+NRM/GRA/M/CSL/CPN:
+  - r^sk'
+NRM/GRA/M/CSL/COH:
+  - msk'
+NRM/GRA/M/CSL/CST:
+  - n^sk'
+NRM/GRA/M/CSL/MLT:
+  - ssk'
+NRM/GRA/M/ASO/UNI:
+  - dzb
+NRM/GRA/M/ASO/DPX:
+  - ct'
+NRM/GRA/M/ASO/DCT:
+  - lst'
+NRM/GRA/M/ASO/AGG:
+  - rst'
+NRM/GRA/M/ASO/SEG:
+  - nst'
+NRM/GRA/M/ASO/CPN:
+  - r^st'
+NRM/GRA/M/ASO/COH:
+  - mst'
+NRM/GRA/M/ASO/CST:
+  - n^st'
+NRM/GRA/M/ASO/MLT:
+  - sst'
+NRM/GRA/M/VAR/UNI:
+  - pc'
+NRM/GRA/M/VAR/DPX:
+  - cp'
+NRM/GRA/M/VAR/DCT:
+  - lsp'
+NRM/GRA/M/VAR/AGG:
+  - rsp'
+NRM/GRA/M/VAR/SEG:
+  - nsp'
+NRM/GRA/M/VAR/CPN:
+  - r^sp'
+NRM/GRA/M/VAR/COH:
+  - msp'
+NRM/GRA/M/VAR/CST:
+  - n^sp'
+NRM/GRA/M/VAR/MLT:
+  - ssp'
+NRM/GRA/M/COA/UNI:
+  - qc'
+NRM/GRA/M/COA/DPX:
+  - cq'
+NRM/GRA/M/COA/DCT:
+  - lsq'
+NRM/GRA/M/COA/AGG:
+  - rsq'
+NRM/GRA/M/COA/SEG:
+  - nsq'
+NRM/GRA/M/COA/CPN:
+  - r^sq'
+NRM/GRA/M/COA/COH:
+  - msq'
+NRM/GRA/M/COA/CST:
+  - n^sq'
+NRM/GRA/M/COA/MLT:
+  - ssq'
+NRM/GRA/U/CSL/UNI:
+  - kc^'
+NRM/GRA/U/CSL/DPX:
+  - c^k'
+NRM/GRA/U/CSL/DCT:
+  - ls^k'
+NRM/GRA/U/CSL/AGG:
+  - rs^k'
+NRM/GRA/U/CSL/SEG:
+  - ns^k'
+NRM/GRA/U/CSL/CPN:
+  - r^s^k'
+NRM/GRA/U/CSL/COH:
+  - ms^k'
+NRM/GRA/U/CSL/CST:
+  - n^s^k'
+NRM/GRA/U/CSL/MLT:
+  - s^s^k'
+NRM/GRA/U/ASO/UNI:
+  - jb
+NRM/GRA/U/ASO/DPX:
+  - c^t'
+NRM/GRA/U/ASO/DCT:
+  - ls^t'
+NRM/GRA/U/ASO/AGG:
+  - rs^t'
+NRM/GRA/U/ASO/SEG:
+  - ns^t'
+NRM/GRA/U/ASO/CPN:
+  - r^s^t'
+NRM/GRA/U/ASO/COH:
+  - ms^t'
+NRM/GRA/U/ASO/CST:
+  - n^s^t'
+NRM/GRA/U/ASO/MLT:
+  - s^s^t'
+NRM/GRA/U/VAR/UNI:
+  - pc^'
+NRM/GRA/U/VAR/DPX:
+  - c^p'
+NRM/GRA/U/VAR/DCT:
+  - ls^p'
+NRM/GRA/U/VAR/AGG:
+  - rs^p'
+NRM/GRA/U/VAR/SEG:
+  - ns^p'
+NRM/GRA/U/VAR/CPN:
+  - r^s^p'
+NRM/GRA/U/VAR/COH:
+  - ms^p'
+NRM/GRA/U/VAR/CST:
+  - n^s^p'
+NRM/GRA/U/VAR/MLT:
+  - s^s^p'
+NRM/GRA/U/COA/UNI:
+  - qc^'
+NRM/GRA/U/COA/DPX:
+  - c^q'
+NRM/GRA/U/COA/DCT:
+  - ls^q'
+NRM/GRA/U/COA/AGG:
+  - rs^q'
+NRM/GRA/U/COA/SEG:
+  - ns^q'
+NRM/GRA/U/COA/CPN:
+  - r^s^q'
+NRM/GRA/U/COA/COH:
+  - ms^q'
+NRM/GRA/U/COA/CST:
+  - n^s^q'
+NRM/GRA/U/COA/MLT:
+  - s^s^q'
+NRM/GRA/N/CSL/UNI:
+  - kch
+NRM/GRA/N/CSL/DPX:
+  - ckh
+NRM/GRA/N/CSL/DCT:
+  - lskh
+NRM/GRA/N/CSL/AGG:
+  - rskh
+NRM/GRA/N/CSL/SEG:
+  - nskh
+NRM/GRA/N/CSL/CPN:
+  - r^skh
+NRM/GRA/N/CSL/COH:
+  - mskh
+NRM/GRA/N/CSL/CST:
+  - n^skh
+NRM/GRA/N/CSL/MLT:
+  - sskh
+NRM/GRA/N/ASO/UNI:
+  - dzg
+NRM/GRA/N/ASO/DPX:
+  - cth
+NRM/GRA/N/ASO/DCT:
+  - lsth
+NRM/GRA/N/ASO/AGG:
+  - rsth
+NRM/GRA/N/ASO/SEG:
+  - nsth
+NRM/GRA/N/ASO/CPN:
+  - r^sth
+NRM/GRA/N/ASO/COH:
+  - msth
+NRM/GRA/N/ASO/CST:
+  - n^sth
+NRM/GRA/N/ASO/MLT:
+  - ssth
+NRM/GRA/N/VAR/UNI:
+  - pch
+NRM/GRA/N/VAR/DPX:
+  - cph
+NRM/GRA/N/VAR/DCT:
+  - lsph
+NRM/GRA/N/VAR/AGG:
+  - rsph
+NRM/GRA/N/VAR/SEG:
+  - nsph
+NRM/GRA/N/VAR/CPN:
+  - r^sph
+NRM/GRA/N/VAR/COH:
+  - msph
+NRM/GRA/N/VAR/CST:
+  - n^sph
+NRM/GRA/N/VAR/MLT:
+  - ssph
+NRM/GRA/N/COA/UNI:
+  - qch
+NRM/GRA/N/COA/DPX:
+  - cqh
+NRM/GRA/N/COA/DCT:
+  - lsqh
+NRM/GRA/N/COA/AGG:
+  - rsqh
+NRM/GRA/N/COA/SEG:
+  - nsqh
+NRM/GRA/N/COA/CPN:
+  - r^sqh
+NRM/GRA/N/COA/COH:
+  - msqh
+NRM/GRA/N/COA/CST:
+  - n^sqh
+NRM/GRA/N/COA/MLT:
+  - ssqh
+NRM/GRA/A/CSL/UNI:
+  - kc^h
+NRM/GRA/A/CSL/DPX:
+  - c^kh
+NRM/GRA/A/CSL/DCT:
+  - ls^kh
+NRM/GRA/A/CSL/AGG:
+  - rs^kh
+NRM/GRA/A/CSL/SEG:
+  - ns^kh
+NRM/GRA/A/CSL/CPN:
+  - r^s^kh
+NRM/GRA/A/CSL/COH:
+  - ms^kh
+NRM/GRA/A/CSL/CST:
+  - n^s^kh
+NRM/GRA/A/CSL/MLT:
+  - s^s^kh
+NRM/GRA/A/ASO/UNI:
+  - jg
+NRM/GRA/A/ASO/DPX:
+  - c^th
+NRM/GRA/A/ASO/DCT:
+  - ls^th
+NRM/GRA/A/ASO/AGG:
+  - rs^th
+NRM/GRA/A/ASO/SEG:
+  - ns^th
+NRM/GRA/A/ASO/CPN:
+  - r^s^th
+NRM/GRA/A/ASO/COH:
+  - ms^th
+NRM/GRA/A/ASO/CST:
+  - n^s^th
+NRM/GRA/A/ASO/MLT:
+  - s^s^th
+NRM/GRA/A/VAR/UNI:
+  - pc^h
+NRM/GRA/A/VAR/DPX:
+  - c^ph
+NRM/GRA/A/VAR/DCT:
+  - ls^ph
+NRM/GRA/A/VAR/AGG:
+  - rs^ph
+NRM/GRA/A/VAR/SEG:
+  - ns^ph
+NRM/GRA/A/VAR/CPN:
+  - r^s^ph
+NRM/GRA/A/VAR/COH:
+  - ms^ph
+NRM/GRA/A/VAR/CST:
+  - n^s^ph
+NRM/GRA/A/VAR/MLT:
+  - s^s^ph
+NRM/GRA/A/COA/UNI:
+  - qc^h
+NRM/GRA/A/COA/DPX:
+  - c^qh
+NRM/GRA/A/COA/DCT:
+  - ls^qh
+NRM/GRA/A/COA/AGG:
+  - rs^qh
+NRM/GRA/A/COA/SEG:
+  - ns^qh
+NRM/GRA/A/COA/CPN:
+  - r^s^qh
+NRM/GRA/A/COA/COH:
+  - ms^qh
+NRM/GRA/A/COA/CST:
+  - n^s^qh
+NRM/GRA/A/COA/MLT:
+  - s^s^qh
+RPV/DEL/M/CSL/UNI:
+  - tt
+RPV/DEL/M/CSL/DPX:
+  - tt'
+RPV/DEL/M/CSL/DCT:
+  - tth
+RPV/DEL/M/CSL/AGG:
+  - lpt'
+RPV/DEL/M/CSL/SEG:
+  - rpt'
+RPV/DEL/M/CSL/CPN:
+  - r^pt'
+RPV/DEL/M/CSL/COH:
+  - lpth
+RPV/DEL/M/CSL/CST:
+  - rpth
+RPV/DEL/M/CSL/MLT:
+  - r^pth
+RPV/DEL/M/ASO/UNI:
+  - kk
+RPV/DEL/M/ASO/DPX:
+  - kk'
+RPV/DEL/M/ASO/DCT:
+  - kkh
+RPV/DEL/M/ASO/AGG:
+  - lkt'
+RPV/DEL/M/ASO/SEG:
+  - rkt'
+RPV/DEL/M/ASO/CPN:
+  - r^kt'
+RPV/DEL/M/ASO/COH:
+  - lkth
+RPV/DEL/M/ASO/CST:
+  - rkth
+RPV/DEL/M/ASO/MLT:
+  - r^kth
+RPV/DEL/M/VAR/UNI:
+  - pp
+RPV/DEL/M/VAR/DPX:
+  - pp'
+RPV/DEL/M/VAR/DCT:
+  - pph
+RPV/DEL/M/VAR/AGG:
+  - lpk'
+RPV/DEL/M/VAR/SEG:
+  - rpk'
+RPV/DEL/M/VAR/CPN:
+  - r^pk'
+RPV/DEL/M/VAR/COH:
+  - lpkh
+RPV/DEL/M/VAR/CST:
+  - rpkh
+RPV/DEL/M/VAR/MLT:
+  - r^pkh
+RPV/DEL/M/COA/UNI:
+  - qq
+RPV/DEL/M/COA/DPX:
+  - qq'
+RPV/DEL/M/COA/DCT:
+  - qqh
+RPV/DEL/M/COA/AGG:
+  - ltk'
+RPV/DEL/M/COA/SEG:
+  - rtk'
+RPV/DEL/M/COA/CPN:
+  - r^tk'
+RPV/DEL/M/COA/COH:
+  - ltkh
+RPV/DEL/M/COA/CST:
+  - rtkh
+RPV/DEL/M/COA/MLT:
+  - r^tkh
+RPV/DEL/U/CSL/UNI:
+  - dd
+RPV/DEL/U/CSL/DPX:
+  - nc,w
+RPV/DEL/U/CSL/DCT:
+  - pc,w
+RPV/DEL/U/CSL/AGG:
+  - lft'
+RPV/DEL/U/CSL/SEG:
+  - rft'
+RPV/DEL/U/CSL/CPN:
+  - r^ft'
+RPV/DEL/U/CSL/COH:
+  - lfth
+RPV/DEL/U/CSL/CST:
+  - rfth
+RPV/DEL/U/CSL/MLT:
+  - r^fth
+RPV/DEL/U/ASO/UNI:
+  - gg
+RPV/DEL/U/ASO/DPX:
+  - n^c,w
+RPV/DEL/U/ASO/DCT:
+  - kfw
+RPV/DEL/U/ASO/AGG:
+  - lxt'
+RPV/DEL/U/ASO/SEG:
+  - rxt'
+RPV/DEL/U/ASO/CPN:
+  - r^xt'
+RPV/DEL/U/ASO/COH:
+  - lxth
+RPV/DEL/U/ASO/CST:
+  - rxth
+RPV/DEL/U/ASO/MLT:
+  - r^xth
+RPV/DEL/U/VAR/UNI:
+  - bb
+RPV/DEL/U/VAR/DPX:
+  - mc,w
+RPV/DEL/U/VAR/DCT:
+  - pfw
+RPV/DEL/U/VAR/AGG:
+  - lfk'
+RPV/DEL/U/VAR/SEG:
+  - rfk'
+RPV/DEL/U/VAR/CPN:
+  - r^fk'
+RPV/DEL/U/VAR/COH:
+  - lfkh
+RPV/DEL/U/VAR/CST:
+  - rfkh
+RPV/DEL/U/VAR/MLT:
+  - r^fkh
+RPV/DEL/U/COA/UNI:
+  - cf
+RPV/DEL/U/COA/DPX:
+  - c^f
+RPV/DEL/U/COA/DCT:
+  - qfw
+RPV/DEL/U/COA/AGG:
+  - lt,k'
+RPV/DEL/U/COA/SEG:
+  - rt,k'
+RPV/DEL/U/COA/CPN:
+  - r^t,k'
+RPV/DEL/U/COA/COH:
+  - lt,kh
+RPV/DEL/U/COA/CST:
+  - rt,kh
+RPV/DEL/U/COA/MLT:
+  - r^t,kh
+RPV/DEL/N/CSL/UNI:
+  - t,w
+RPV/DEL/N/CSL/DPX:
+  - dhw
+RPV/DEL/N/CSL/DCT:
+  - lt,w
+RPV/DEL/N/CSL/AGG:
+  - rt,w
+RPV/DEL/N/CSL/SEG:
+  - mt,w
+RPV/DEL/N/CSL/CPN:
+  - r^t,w
+RPV/DEL/N/CSL/COH:
+  - nt,w
+RPV/DEL/N/CSL/CST:
+  - ldhw
+RPV/DEL/N/CSL/MLT:
+  - rdhw
+RPV/DEL/N/ASO/UNI:
+  - xw
+RPV/DEL/N/ASO/DPX:
+  - n^w
+RPV/DEL/N/ASO/DCT:
+  - lxw
+RPV/DEL/N/ASO/AGG:
+  - rxw
+RPV/DEL/N/ASO/SEG:
+  - mxw
+RPV/DEL/N/ASO/CPN:
+  - r^xw
+RPV/DEL/N/ASO/COH:
+  - n^xw
+RPV/DEL/N/ASO/CST:
+  - ln^w
+RPV/DEL/N/ASO/MLT:
+  - rn^w
+RPV/DEL/N/VAR/UNI:
+  - fw
+RPV/DEL/N/VAR/DPX:
+  - vw
+RPV/DEL/N/VAR/DCT:
+  - lfw
+RPV/DEL/N/VAR/AGG:
+  - rfw
+RPV/DEL/N/VAR/SEG:
+  - n^fw
+RPV/DEL/N/VAR/CPN:
+  - r^fw
+RPV/DEL/N/VAR/COH:
+  - mfw
+RPV/DEL/N/VAR/CST:
+  - lvw
+RPV/DEL/N/VAR/MLT:
+  - rvw
+RPV/DEL/N/COA/UNI:
+  - xhw
+RPV/DEL/N/COA/DPX:
+  - c,w
+RPV/DEL/N/COA/DCT:
+  - lxhw
+RPV/DEL/N/COA/AGG:
+  - rxhw
+RPV/DEL/N/COA/SEG:
+  - mxhw
+RPV/DEL/N/COA/CPN:
+  - tc,w
+RPV/DEL/N/COA/COH:
+  - n^xhw
+RPV/DEL/N/COA/CST:
+  - lc,w
+RPV/DEL/N/COA/MLT:
+  - rc,w
+RPV/DEL/A/CSL/UNI:
+  - sw
+RPV/DEL/A/CSL/DPX:
+  - cw
+RPV/DEL/A/CSL/DCT:
+  - lsw
+RPV/DEL/A/CSL/AGG:
+  - rsw
+RPV/DEL/A/CSL/SEG:
+  - msw
+RPV/DEL/A/CSL/CPN:
+  - r^sw
+RPV/DEL/A/CSL/COH:
+  - nsw
+RPV/DEL/A/CSL/CST:
+  - n^sw
+RPV/DEL/A/CSL/MLT:
+  - ssw
+RPV/DEL/A/ASO/UNI:
+  - s^w
+RPV/DEL/A/ASO/DPX:
+  - c^w
+RPV/DEL/A/ASO/DCT:
+  - ls^w
+RPV/DEL/A/ASO/AGG:
+  - rs^w
+RPV/DEL/A/ASO/SEG:
+  - ms^w
+RPV/DEL/A/ASO/CPN:
+  - r^s^w
+RPV/DEL/A/ASO/COH:
+  - ns^w
+RPV/DEL/A/ASO/CST:
+  - n^s^w
+RPV/DEL/A/ASO/MLT:
+  - s^s^w
+RPV/DEL/A/VAR/UNI:
+  - zw
+RPV/DEL/A/VAR/DPX:
+  - dzw
+RPV/DEL/A/VAR/DCT:
+  - lzw
+RPV/DEL/A/VAR/AGG:
+  - rzw
+RPV/DEL/A/VAR/SEG:
+  - mzw
+RPV/DEL/A/VAR/CPN:
+  - r^zw
+RPV/DEL/A/VAR/COH:
+  - nzw
+RPV/DEL/A/VAR/CST:
+  - n^zw
+RPV/DEL/A/VAR/MLT:
+  - zzw
+RPV/DEL/A/COA/UNI:
+  - z^w
+RPV/DEL/A/COA/DPX:
+  - jw
+RPV/DEL/A/COA/DCT:
+  - lz^w
+RPV/DEL/A/COA/AGG:
+  - rz^w
+RPV/DEL/A/COA/SEG:
+  - mz^w
+RPV/DEL/A/COA/CPN:
+  - r^z^w
+RPV/DEL/A/COA/COH:
+  - nz^w
+RPV/DEL/A/COA/CST:
+  - n^z^w
+RPV/DEL/A/COA/MLT:
+  - z^z^w
+RPV/PRX/M/CSL/UNI:
+  - tw
+RPV/PRX/M/CSL/DPX:
+  - ttw
+RPV/PRX/M/CSL/DCT:
+  - thw
+RPV/PRX/M/CSL/AGG:
+  - t'w
+RPV/PRX/M/CSL/SEG:
+  - tt'w
+RPV/PRX/M/CSL/CPN:
+  - tthw
+RPV/PRX/M/CSL/COH:
+  - ltw
+RPV/PRX/M/CSL/CST:
+  - rtw
+RPV/PRX/M/CSL/MLT:
+  - ntw
+RPV/PRX/M/ASO/UNI:
+  - kw
+RPV/PRX/M/ASO/DPX:
+  - kkw
+RPV/PRX/M/ASO/DCT:
+  - khw
+RPV/PRX/M/ASO/AGG:
+  - k'w
+RPV/PRX/M/ASO/SEG:
+  - kk'w
+RPV/PRX/M/ASO/CPN:
+  - kkhw
+RPV/PRX/M/ASO/COH:
+  - lkw
+RPV/PRX/M/ASO/CST:
+  - rkw
+RPV/PRX/M/ASO/MLT:
+  - n^kw
+RPV/PRX/M/VAR/UNI:
+  - pw
+RPV/PRX/M/VAR/DPX:
+  - ppw
+RPV/PRX/M/VAR/DCT:
+  - phw
+RPV/PRX/M/VAR/AGG:
+  - p'w
+RPV/PRX/M/VAR/SEG:
+  - pp'w
+RPV/PRX/M/VAR/CPN:
+  - pphw
+RPV/PRX/M/VAR/COH:
+  - lpw
+RPV/PRX/M/VAR/CST:
+  - rpw
+RPV/PRX/M/VAR/MLT:
+  - mpw
+RPV/PRX/M/COA/UNI:
+  - qw
+RPV/PRX/M/COA/DPX:
+  - qqw
+RPV/PRX/M/COA/DCT:
+  - qhw
+RPV/PRX/M/COA/AGG:
+  - q'w
+RPV/PRX/M/COA/SEG:
+  - qq'w
+RPV/PRX/M/COA/CPN:
+  - qqhw
+RPV/PRX/M/COA/COH:
+  - lqw
+RPV/PRX/M/COA/CST:
+  - rqw
+RPV/PRX/M/COA/MLT:
+  - n^qw
+RPV/PRX/U/CSL/UNI:
+  - ty
+RPV/PRX/U/CSL/DPX:
+  - tty
+RPV/PRX/U/CSL/DCT:
+  - lty
+RPV/PRX/U/CSL/AGG:
+  - t,y
+RPV/PRX/U/CSL/SEG:
+  - nty
+RPV/PRX/U/CSL/CPN:
+  - r^ty
+RPV/PRX/U/CSL/COH:
+  - rty
+RPV/PRX/U/CSL/CST:
+  - pty
+RPV/PRX/U/CSL/MLT:
+  - tky
+RPV/PRX/U/ASO/UNI:
+  - ky
+RPV/PRX/U/ASO/DPX:
+  - kky
+RPV/PRX/U/ASO/DCT:
+  - lky
+RPV/PRX/U/ASO/AGG:
+  - dzy
+RPV/PRX/U/ASO/SEG:
+  - n^ky
+RPV/PRX/U/ASO/CPN:
+  - r^ky
+RPV/PRX/U/ASO/COH:
+  - rky
+RPV/PRX/U/ASO/CST:
+  - kty
+RPV/PRX/U/ASO/MLT:
+  - kpy
+RPV/PRX/U/VAR/UNI:
+  - py
+RPV/PRX/U/VAR/DPX:
+  - ppy
+RPV/PRX/U/VAR/DCT:
+  - lpy
+RPV/PRX/U/VAR/AGG:
+  - fy
+RPV/PRX/U/VAR/SEG:
+  - npy
+RPV/PRX/U/VAR/CPN:
+  - r^py
+RPV/PRX/U/VAR/COH:
+  - rpy
+RPV/PRX/U/VAR/CST:
+  - tpy
+RPV/PRX/U/VAR/MLT:
+  - pky
+RPV/PRX/U/COA/UNI:
+  - my
+RPV/PRX/U/COA/DPX:
+  - fty
+RPV/PRX/U/COA/DCT:
+  - ptw
+RPV/PRX/U/COA/AGG:
+  - mw
+RPV/PRX/U/COA/SEG:
+  - ftw
+RPV/PRX/U/COA/CPN:
+  - ptr
+RPV/PRX/U/COA/COH:
+  - ftr
+RPV/PRX/U/COA/CST:
+  - pkw
+RPV/PRX/U/COA/MLT:
+  - fkw
+RPV/PRX/N/CSL/UNI:
+  - dw
+RPV/PRX/N/CSL/DPX:
+  - ddw
+RPV/PRX/N/CSL/DCT:
+  - ldw
+RPV/PRX/N/CSL/AGG:
+  - tv
+RPV/PRX/N/CSL/SEG:
+  - ndw
+RPV/PRX/N/CSL/CPN:
+  - r^dw
+RPV/PRX/N/CSL/COH:
+  - bdw
+RPV/PRX/N/CSL/CST:
+  - dgw
+RPV/PRX/N/CSL/MLT:
+  - rdw
+RPV/PRX/N/ASO/UNI:
+  - gw
+RPV/PRX/N/ASO/DPX:
+  - ggw
+RPV/PRX/N/ASO/DCT:
+  - lgw
+RPV/PRX/N/ASO/AGG:
+  - kv
+RPV/PRX/N/ASO/SEG:
+  - n^gw
+RPV/PRX/N/ASO/CPN:
+  - r^gw
+RPV/PRX/N/ASO/COH:
+  - gdw
+RPV/PRX/N/ASO/CST:
+  - gbw
+RPV/PRX/N/ASO/MLT:
+  - rgw
+RPV/PRX/N/VAR/UNI:
+  - bw
+RPV/PRX/N/VAR/DPX:
+  - bbw
+RPV/PRX/N/VAR/DCT:
+  - lbw
+RPV/PRX/N/VAR/AGG:
+  - pv
+RPV/PRX/N/VAR/SEG:
+  - mbw
+RPV/PRX/N/VAR/CPN:
+  - r^bw
+RPV/PRX/N/VAR/COH:
+  - dbw
+RPV/PRX/N/VAR/CST:
+  - bgw
+RPV/PRX/N/VAR/MLT:
+  - rbw
+RPV/PRX/N/COA/UNI:
+  - lw
+RPV/PRX/N/COA/DPX:
+  - ly
+RPV/PRX/N/COA/DCT:
+  - ry
+RPV/PRX/N/COA/AGG:
+  - rw
+RPV/PRX/N/COA/SEG:
+  - l,w
+RPV/PRX/N/COA/CPN:
+  - r^y
+RPV/PRX/N/COA/COH:
+  - tl,w
+RPV/PRX/N/COA/CST:
+  - r^w
+RPV/PRX/N/COA/MLT:
+  - lr^
+RPV/PRX/A/CSL/UNI:
+  - dy
+RPV/PRX/A/CSL/DPX:
+  - ddy
+RPV/PRX/A/CSL/DCT:
+  - ldy
+RPV/PRX/A/CSL/AGG:
+  - dhy
+RPV/PRX/A/CSL/SEG:
+  - ndy
+RPV/PRX/A/CSL/CPN:
+  - r^dy
+RPV/PRX/A/CSL/COH:
+  - rdy
+RPV/PRX/A/CSL/CST:
+  - bdy
+RPV/PRX/A/CSL/MLT:
+  - dgy
+RPV/PRX/A/ASO/UNI:
+  - gy
+RPV/PRX/A/ASO/DPX:
+  - ggy
+RPV/PRX/A/ASO/DCT:
+  - lgy
+RPV/PRX/A/ASO/AGG:
+  - jy
+RPV/PRX/A/ASO/SEG:
+  - n^gy
+RPV/PRX/A/ASO/CPN:
+  - r^gy
+RPV/PRX/A/ASO/COH:
+  - rgy
+RPV/PRX/A/ASO/CST:
+  - gdy
+RPV/PRX/A/ASO/MLT:
+  - gby
+RPV/PRX/A/VAR/UNI:
+  - by
+RPV/PRX/A/VAR/DPX:
+  - bby
+RPV/PRX/A/VAR/DCT:
+  - lby
+RPV/PRX/A/VAR/AGG:
+  - vy
+RPV/PRX/A/VAR/SEG:
+  - mby
+RPV/PRX/A/VAR/CPN:
+  - r^by
+RPV/PRX/A/VAR/COH:
+  - rby
+RPV/PRX/A/VAR/CST:
+  - dby
+RPV/PRX/A/VAR/MLT:
+  - bgy
+RPV/PRX/A/COA/UNI:
+  - ny
+RPV/PRX/A/COA/DPX:
+  - xty
+RPV/PRX/A/COA/DCT:
+  - ktw
+RPV/PRX/A/COA/AGG:
+  - nw
+RPV/PRX/A/COA/SEG:
+  - xtw
+RPV/PRX/A/COA/CPN:
+  - ktr
+RPV/PRX/A/COA/COH:
+  - xtr
+RPV/PRX/A/COA/CST:
+  - tkw
+RPV/PRX/A/COA/MLT:
+  - t,kw
+RPV/ICP/M/CSL/UNI:
+  - tl
+RPV/ICP/M/CSL/DPX:
+  - ttl
+RPV/ICP/M/CSL/DCT:
+  - ltl
+RPV/ICP/M/CSL/AGG:
+  - rtl
+RPV/ICP/M/CSL/SEG:
+  - ntl
+RPV/ICP/M/CSL/CPN:
+  - r^tl
+RPV/ICP/M/CSL/COH:
+  - mtl
+RPV/ICP/M/CSL/CST:
+  - l,tl
+RPV/ICP/M/CSL/MLT:
+  - kc,w
+RPV/ICP/M/ASO/UNI:
+  - kl
+RPV/ICP/M/ASO/DPX:
+  - kkl
+RPV/ICP/M/ASO/DCT:
+  - lkl
+RPV/ICP/M/ASO/AGG:
+  - rkl
+RPV/ICP/M/ASO/SEG:
+  - n^kl
+RPV/ICP/M/ASO/CPN:
+  - r^kl
+RPV/ICP/M/ASO/COH:
+  - mkl
+RPV/ICP/M/ASO/CST:
+  - l,kl
+RPV/ICP/M/ASO/MLT:
+  - c'w
+RPV/ICP/M/VAR/UNI:
+  - pl
+RPV/ICP/M/VAR/DPX:
+  - ppl
+RPV/ICP/M/VAR/DCT:
+  - lpl
+RPV/ICP/M/VAR/AGG:
+  - rpl
+RPV/ICP/M/VAR/SEG:
+  - mpl
+RPV/ICP/M/VAR/CPN:
+  - r^pl
+RPV/ICP/M/VAR/COH:
+  - n^pl
+RPV/ICP/M/VAR/CST:
+  - l,pl
+RPV/ICP/M/VAR/MLT:
+  - tfw
+RPV/ICP/M/COA/UNI:
+  - ql
+RPV/ICP/M/COA/DPX:
+  - qql
+RPV/ICP/M/COA/DCT:
+  - lql
+RPV/ICP/M/COA/AGG:
+  - rql
+RPV/ICP/M/COA/SEG:
+  - n^ql
+RPV/ICP/M/COA/CPN:
+  - r^ql
+RPV/ICP/M/COA/COH:
+  - mql
+RPV/ICP/M/COA/CST:
+  - l,ql
+RPV/ICP/M/COA/MLT:
+  - c^'w
+RPV/ICP/U/CSL/UNI:
+  - dl
+RPV/ICP/U/CSL/DPX:
+  - ddl
+RPV/ICP/U/CSL/DCT:
+  - ldl
+RPV/ICP/U/CSL/AGG:
+  - rdl
+RPV/ICP/U/CSL/SEG:
+  - ndl
+RPV/ICP/U/CSL/CPN:
+  - r^dl
+RPV/ICP/U/CSL/COH:
+  - bdl
+RPV/ICP/U/CSL/CST:
+  - dgl
+RPV/ICP/U/CSL/MLT:
+  - vbl
+RPV/ICP/U/ASO/UNI:
+  - gl
+RPV/ICP/U/ASO/DPX:
+  - ggl
+RPV/ICP/U/ASO/DCT:
+  - lgl
+RPV/ICP/U/ASO/AGG:
+  - rgl
+RPV/ICP/U/ASO/SEG:
+  - n^gl
+RPV/ICP/U/ASO/CPN:
+  - r^gl
+RPV/ICP/U/ASO/COH:
+  - gdl
+RPV/ICP/U/ASO/CST:
+  - gbl
+RPV/ICP/U/ASO/MLT:
+  - vgl
+RPV/ICP/U/VAR/UNI:
+  - bl
+RPV/ICP/U/VAR/DPX:
+  - bbl
+RPV/ICP/U/VAR/DCT:
+  - lbl
+RPV/ICP/U/VAR/AGG:
+  - rbl
+RPV/ICP/U/VAR/SEG:
+  - mbl
+RPV/ICP/U/VAR/CPN:
+  - r^bl
+RPV/ICP/U/VAR/COH:
+  - dbl
+RPV/ICP/U/VAR/CST:
+  - bgl
+RPV/ICP/U/VAR/MLT:
+  - vdl
+RPV/ICP/U/COA/UNI:
+  - ml
+RPV/ICP/U/COA/DPX:
+  - mr^
+RPV/ICP/U/COA/DCT:
+  - n^l
+RPV/ICP/U/COA/AGG:
+  - nl
+RPV/ICP/U/COA/SEG:
+  - t,r^
+RPV/ICP/U/COA/CPN:
+  - fr^
+RPV/ICP/U/COA/COH:
+  - pr^
+RPV/ICP/U/COA/CST:
+  - tr^
+RPV/ICP/U/COA/MLT:
+  - lr
+RPV/ICP/N/CSL/UNI:
+  - skl
+RPV/ICP/N/CSL/DPX:
+  - ckl
+RPV/ICP/N/CSL/DCT:
+  - ckw
+RPV/ICP/N/CSL/AGG:
+  - skw
+RPV/ICP/N/CSL/SEG:
+  - sskw
+RPV/ICP/N/CSL/CPN:
+  - c,kw
+RPV/ICP/N/CSL/COH:
+  - sk'w
+RPV/ICP/N/CSL/CST:
+  - ck'w
+RPV/ICP/N/CSL/MLT:
+  - sskl
+RPV/ICP/N/ASO/UNI:
+  - stl
+RPV/ICP/N/ASO/DPX:
+  - ctl
+RPV/ICP/N/ASO/DCT:
+  - ctw
+RPV/ICP/N/ASO/AGG:
+  - stw
+RPV/ICP/N/ASO/SEG:
+  - sstw
+RPV/ICP/N/ASO/CPN:
+  - c,tw
+RPV/ICP/N/ASO/COH:
+  - st'w
+RPV/ICP/N/ASO/CST:
+  - ct'w
+RPV/ICP/N/ASO/MLT:
+  - sstl
+RPV/ICP/N/VAR/UNI:
+  - spl
+RPV/ICP/N/VAR/DPX:
+  - cpl
+RPV/ICP/N/VAR/DCT:
+  - cpw
+RPV/ICP/N/VAR/AGG:
+  - spw
+RPV/ICP/N/VAR/SEG:
+  - sspw
+RPV/ICP/N/VAR/CPN:
+  - c,pw
+RPV/ICP/N/VAR/COH:
+  - sp'w
+RPV/ICP/N/VAR/CST:
+  - cp'w
+RPV/ICP/N/VAR/MLT:
+  - sspl
+RPV/ICP/N/COA/UNI:
+  - sql
+RPV/ICP/N/COA/DPX:
+  - cql
+RPV/ICP/N/COA/DCT:
+  - cqw
+RPV/ICP/N/COA/AGG:
+  - sqw
+RPV/ICP/N/COA/SEG:
+  - ssqw
+RPV/ICP/N/COA/CPN:
+  - c,qw
+RPV/ICP/N/COA/COH:
+  - sq'w
+RPV/ICP/N/COA/CST:
+  - cq'w
+RPV/ICP/N/COA/MLT:
+  - ssql
+RPV/ICP/A/CSL/UNI:
+  - s^kl
+RPV/ICP/A/CSL/DPX:
+  - c^kl
+RPV/ICP/A/CSL/DCT:
+  - c^kw
+RPV/ICP/A/CSL/AGG:
+  - s^kw
+RPV/ICP/A/CSL/SEG:
+  - s^s^kw
+RPV/ICP/A/CSL/CPN:
+  - xxw
+RPV/ICP/A/CSL/COH:
+  - s^k'w
+RPV/ICP/A/CSL/CST:
+  - c^k'w
+RPV/ICP/A/CSL/MLT:
+  - s^s^kl
+RPV/ICP/A/ASO/UNI:
+  - s^tl
+RPV/ICP/A/ASO/DPX:
+  - c^tl
+RPV/ICP/A/ASO/DCT:
+  - c^tw
+RPV/ICP/A/ASO/AGG:
+  - s^tw
+RPV/ICP/A/ASO/SEG:
+  - s^s^tw
+RPV/ICP/A/ASO/CPN:
+  - t,t,w
+RPV/ICP/A/ASO/COH:
+  - s^t'w
+RPV/ICP/A/ASO/CST:
+  - c^t'w
+RPV/ICP/A/ASO/MLT:
+  - s^s^tl
+RPV/ICP/A/VAR/UNI:
+  - s^pl
+RPV/ICP/A/VAR/DPX:
+  - c^pl
+RPV/ICP/A/VAR/DCT:
+  - c^pw
+RPV/ICP/A/VAR/AGG:
+  - s^pw
+RPV/ICP/A/VAR/SEG:
+  - s^s^pw
+RPV/ICP/A/VAR/CPN:
+  - ffw
+RPV/ICP/A/VAR/COH:
+  - s^p'w
+RPV/ICP/A/VAR/CST:
+  - c^p'w
+RPV/ICP/A/VAR/MLT:
+  - s^s^pl
+RPV/ICP/A/COA/UNI:
+  - s^ql
+RPV/ICP/A/COA/DPX:
+  - c^ql
+RPV/ICP/A/COA/DCT:
+  - c^qw
+RPV/ICP/A/COA/AGG:
+  - s^qw
+RPV/ICP/A/COA/SEG:
+  - s^s^qw
+RPV/ICP/A/COA/CPN:
+  - xxhw
+RPV/ICP/A/COA/COH:
+  - s^q'w
+RPV/ICP/A/COA/CST:
+  - c^q'w
+RPV/ICP/A/COA/MLT:
+  - s^s^ql
+RPV/TRM/M/CSL/UNI:
+  - tr
+RPV/TRM/M/CSL/DPX:
+  - ttr
+RPV/TRM/M/CSL/DCT:
+  - ltr
+RPV/TRM/M/CSL/AGG:
+  - rtr
+RPV/TRM/M/CSL/SEG:
+  - ntr
+RPV/TRM/M/CSL/CPN:
+  - r^tr
+RPV/TRM/M/CSL/COH:
+  - mtr
+RPV/TRM/M/CSL/CST:
+  - l,tr
+RPV/TRM/M/CSL/MLT:
+  - rtn
+RPV/TRM/M/ASO/UNI:
+  - kr
+RPV/TRM/M/ASO/DPX:
+  - kkr
+RPV/TRM/M/ASO/DCT:
+  - lkr
+RPV/TRM/M/ASO/AGG:
+  - rkr
+RPV/TRM/M/ASO/SEG:
+  - n^kr
+RPV/TRM/M/ASO/CPN:
+  - r^kr
+RPV/TRM/M/ASO/COH:
+  - mkr
+RPV/TRM/M/ASO/CST:
+  - l,kr
+RPV/TRM/M/ASO/MLT:
+  - rkn
+RPV/TRM/M/VAR/UNI:
+  - pr
+RPV/TRM/M/VAR/DPX:
+  - ppr
+RPV/TRM/M/VAR/DCT:
+  - lpr
+RPV/TRM/M/VAR/AGG:
+  - rpr
+RPV/TRM/M/VAR/SEG:
+  - mpr
+RPV/TRM/M/VAR/CPN:
+  - r^pr
+RPV/TRM/M/VAR/COH:
+  - n^pr
+RPV/TRM/M/VAR/CST:
+  - l,pr
+RPV/TRM/M/VAR/MLT:
+  - rpn
+RPV/TRM/M/COA/UNI:
+  - qr
+RPV/TRM/M/COA/DPX:
+  - qqr
+RPV/TRM/M/COA/DCT:
+  - lqr
+RPV/TRM/M/COA/AGG:
+  - rqr
+RPV/TRM/M/COA/SEG:
+  - n^qr
+RPV/TRM/M/COA/CPN:
+  - r^qr
+RPV/TRM/M/COA/COH:
+  - mqr
+RPV/TRM/M/COA/CST:
+  - l,qr
+RPV/TRM/M/COA/MLT:
+  - rqn
+RPV/TRM/U/CSL/UNI:
+  - dr
+RPV/TRM/U/CSL/DPX:
+  - ddr
+RPV/TRM/U/CSL/DCT:
+  - ldr
+RPV/TRM/U/CSL/AGG:
+  - rdr
+RPV/TRM/U/CSL/SEG:
+  - ndr
+RPV/TRM/U/CSL/CPN:
+  - r^dr
+RPV/TRM/U/CSL/COH:
+  - bdr
+RPV/TRM/U/CSL/CST:
+  - dgr
+RPV/TRM/U/CSL/MLT:
+  - vbr
+RPV/TRM/U/ASO/UNI:
+  - gr
+RPV/TRM/U/ASO/DPX:
+  - ggr
+RPV/TRM/U/ASO/DCT:
+  - lgr
+RPV/TRM/U/ASO/AGG:
+  - rgr
+RPV/TRM/U/ASO/SEG:
+  - n^gr
+RPV/TRM/U/ASO/CPN:
+  - r^gr
+RPV/TRM/U/ASO/COH:
+  - gdr
+RPV/TRM/U/ASO/CST:
+  - gbr
+RPV/TRM/U/ASO/MLT:
+  - vgr
+RPV/TRM/U/VAR/UNI:
+  - br
+RPV/TRM/U/VAR/DPX:
+  - bbr
+RPV/TRM/U/VAR/DCT:
+  - lbr
+RPV/TRM/U/VAR/AGG:
+  - rbr
+RPV/TRM/U/VAR/SEG:
+  - mbr
+RPV/TRM/U/VAR/CPN:
+  - r^br
+RPV/TRM/U/VAR/COH:
+  - dbr
+RPV/TRM/U/VAR/CST:
+  - bgr
+RPV/TRM/U/VAR/MLT:
+  - vdr
+RPV/TRM/U/COA/UNI:
+  - mr
+RPV/TRM/U/COA/DPX:
+  - nr^
+RPV/TRM/U/COA/DCT:
+  - n^r
+RPV/TRM/U/COA/AGG:
+  - nr
+RPV/TRM/U/COA/SEG:
+  - dhr^
+RPV/TRM/U/COA/CPN:
+  - vr^
+RPV/TRM/U/COA/COH:
+  - br^
+RPV/TRM/U/COA/CST:
+  - dr^
+RPV/TRM/U/COA/MLT:
+  - gr^
+RPV/TRM/N/CSL/UNI:
+  - skr
+RPV/TRM/N/CSL/DPX:
+  - ckr
+RPV/TRM/N/CSL/DCT:
+  - cky
+RPV/TRM/N/CSL/AGG:
+  - sky
+RPV/TRM/N/CSL/SEG:
+  - ssky
+RPV/TRM/N/CSL/CPN:
+  - c^hw
+RPV/TRM/N/CSL/COH:
+  - skhw
+RPV/TRM/N/CSL/CST:
+  - ckhw
+RPV/TRM/N/CSL/MLT:
+  - sskr
+RPV/TRM/N/ASO/UNI:
+  - str
+RPV/TRM/N/ASO/DPX:
+  - ctr
+RPV/TRM/N/ASO/DCT:
+  - cty
+RPV/TRM/N/ASO/AGG:
+  - sty
+RPV/TRM/N/ASO/SEG:
+  - ssty
+RPV/TRM/N/ASO/CPN:
+  - chy
+RPV/TRM/N/ASO/COH:
+  - sthw
+RPV/TRM/N/ASO/CST:
+  - cthw
+RPV/TRM/N/ASO/MLT:
+  - sstr
+RPV/TRM/N/VAR/UNI:
+  - spr
+RPV/TRM/N/VAR/DPX:
+  - cpr
+RPV/TRM/N/VAR/DCT:
+  - cpy
+RPV/TRM/N/VAR/AGG:
+  - spy
+RPV/TRM/N/VAR/SEG:
+  - sspy
+RPV/TRM/N/VAR/CPN:
+  - chw
+RPV/TRM/N/VAR/COH:
+  - sphw
+RPV/TRM/N/VAR/CST:
+  - cphw
+RPV/TRM/N/VAR/MLT:
+  - sspr
+RPV/TRM/N/COA/UNI:
+  - sqr
+RPV/TRM/N/COA/DPX:
+  - cqr
+RPV/TRM/N/COA/DCT:
+  - c'y
+RPV/TRM/N/COA/AGG:
+  - cy
+RPV/TRM/N/COA/SEG:
+  - c,r
+RPV/TRM/N/COA/CPN:
+  - c^hy
+RPV/TRM/N/COA/COH:
+  - sqhw
+RPV/TRM/N/COA/CST:
+  - cqhw
+RPV/TRM/N/COA/MLT:
+  - ssqr
+RPV/TRM/A/CSL/UNI:
+  - s^kr
+RPV/TRM/A/CSL/DPX:
+  - c^kr
+RPV/TRM/A/CSL/DCT:
+  - c^ky
+RPV/TRM/A/CSL/AGG:
+  - s^ky
+RPV/TRM/A/CSL/SEG:
+  - s^s^ky
+RPV/TRM/A/CSL/CPN:
+  - l,kw
+RPV/TRM/A/CSL/COH:
+  - s^khw
+RPV/TRM/A/CSL/CST:
+  - c^khw
+RPV/TRM/A/CSL/MLT:
+  - s^s^kr
+RPV/TRM/A/ASO/UNI:
+  - s^tr
+RPV/TRM/A/ASO/DPX:
+  - c^tr
+RPV/TRM/A/ASO/DCT:
+  - c^ty
+RPV/TRM/A/ASO/AGG:
+  - s^ty
+RPV/TRM/A/ASO/SEG:
+  - s^s^ty
+RPV/TRM/A/ASO/CPN:
+  - l,tw
+RPV/TRM/A/ASO/COH:
+  - s^thw
+RPV/TRM/A/ASO/CST:
+  - c^thw
+RPV/TRM/A/ASO/MLT:
+  - s^s^tr
+RPV/TRM/A/VAR/UNI:
+  - s^pr
+RPV/TRM/A/VAR/DPX:
+  - c^pr
+RPV/TRM/A/VAR/DCT:
+  - c^py
+RPV/TRM/A/VAR/AGG:
+  - s^py
+RPV/TRM/A/VAR/SEG:
+  - s^s^py
+RPV/TRM/A/VAR/CPN:
+  - l,pw
+RPV/TRM/A/VAR/COH:
+  - s^phw
+RPV/TRM/A/VAR/CST:
+  - c^phw
+RPV/TRM/A/VAR/MLT:
+  - s^s^pr
+RPV/TRM/A/COA/UNI:
+  - s^qr
+RPV/TRM/A/COA/DPX:
+  - c^qr
+RPV/TRM/A/COA/DCT:
+  - c^'y
+RPV/TRM/A/COA/AGG:
+  - c^y
+RPV/TRM/A/COA/SEG:
+  - c,r^
+RPV/TRM/A/COA/CPN:
+  - l,qw
+RPV/TRM/A/COA/COH:
+  - s^qhw
+RPV/TRM/A/COA/CST:
+  - c^qhw
+RPV/TRM/A/COA/MLT:
+  - s^s^qr
+RPV/DPL/M/CSL/UNI:
+  - sl
+RPV/DPL/M/CSL/DPX:
+  - ssl
+RPV/DPL/M/CSL/DCT:
+  - lsl
+RPV/DPL/M/CSL/AGG:
+  - rsl
+RPV/DPL/M/CSL/SEG:
+  - msl
+RPV/DPL/M/CSL/CPN:
+  - r^sl
+RPV/DPL/M/CSL/COH:
+  - nsl
+RPV/DPL/M/CSL/CST:
+  - n^sl
+RPV/DPL/M/CSL/MLT:
+  - t,st
+RPV/DPL/M/ASO/UNI:
+  - s^l
+RPV/DPL/M/ASO/DPX:
+  - s^s^l
+RPV/DPL/M/ASO/DCT:
+  - ls^l
+RPV/DPL/M/ASO/AGG:
+  - rs^l
+RPV/DPL/M/ASO/SEG:
+  - ms^l
+RPV/DPL/M/ASO/CPN:
+  - r^s^l
+RPV/DPL/M/ASO/COH:
+  - ns^l
+RPV/DPL/M/ASO/CST:
+  - n^s^l
+RPV/DPL/M/ASO/MLT:
+  - t,s^t
+RPV/DPL/M/VAR/UNI:
+  - zl
+RPV/DPL/M/VAR/DPX:
+  - zzl
+RPV/DPL/M/VAR/DCT:
+  - lzl
+RPV/DPL/M/VAR/AGG:
+  - rzl
+RPV/DPL/M/VAR/SEG:
+  - mzl
+RPV/DPL/M/VAR/CPN:
+  - r^zl
+RPV/DPL/M/VAR/COH:
+  - nzl
+RPV/DPL/M/VAR/CST:
+  - n^zl
+RPV/DPL/M/VAR/MLT:
+  - t,sp
+RPV/DPL/M/COA/UNI:
+  - z^l
+RPV/DPL/M/COA/DPX:
+  - z^z^l
+RPV/DPL/M/COA/DCT:
+  - lz^l
+RPV/DPL/M/COA/AGG:
+  - rz^l
+RPV/DPL/M/COA/SEG:
+  - mz^l
+RPV/DPL/M/COA/CPN:
+  - r^z^l
+RPV/DPL/M/COA/COH:
+  - nz^l
+RPV/DPL/M/COA/CST:
+  - n^z^l
+RPV/DPL/M/COA/MLT:
+  - t,s^p
+RPV/DPL/U/CSL/UNI:
+  - fl
+RPV/DPL/U/CSL/DPX:
+  - ffl
+RPV/DPL/U/CSL/DCT:
+  - lfl
+RPV/DPL/U/CSL/AGG:
+  - rfl
+RPV/DPL/U/CSL/SEG:
+  - mfl
+RPV/DPL/U/CSL/CPN:
+  - r^fl
+RPV/DPL/U/CSL/COH:
+  - fxl
+RPV/DPL/U/CSL/CST:
+  - n^fl
+RPV/DPL/U/CSL/MLT:
+  - pxl
+RPV/DPL/U/ASO/UNI:
+  - t,l
+RPV/DPL/U/ASO/DPX:
+  - t,t,l
+RPV/DPL/U/ASO/DCT:
+  - lt,l
+RPV/DPL/U/ASO/AGG:
+  - rt,l
+RPV/DPL/U/ASO/SEG:
+  - nt,l
+RPV/DPL/U/ASO/CPN:
+  - r^t,l
+RPV/DPL/U/ASO/COH:
+  - t,xl
+RPV/DPL/U/ASO/CST:
+  - mt,l
+RPV/DPL/U/ASO/MLT:
+  - txl
+RPV/DPL/U/VAR/UNI:
+  - xl
+RPV/DPL/U/VAR/DPX:
+  - xxl
+RPV/DPL/U/VAR/DCT:
+  - lxl
+RPV/DPL/U/VAR/AGG:
+  - rxl
+RPV/DPL/U/VAR/SEG:
+  - n^xl
+RPV/DPL/U/VAR/CPN:
+  - r^xl
+RPV/DPL/U/VAR/COH:
+  - xfl
+RPV/DPL/U/VAR/CST:
+  - mxl
+RPV/DPL/U/VAR/MLT:
+  - xt,l
+RPV/DPL/U/COA/UNI:
+  - xhl
+RPV/DPL/U/COA/DPX:
+  - xxhl
+RPV/DPL/U/COA/DCT:
+  - lxhl
+RPV/DPL/U/COA/AGG:
+  - rxhl
+RPV/DPL/U/COA/SEG:
+  - n^xhl
+RPV/DPL/U/COA/CPN:
+  - qtl
+RPV/DPL/U/COA/COH:
+  - xhfl
+RPV/DPL/U/COA/CST:
+  - mxhl
+RPV/DPL/U/COA/MLT:
+  - xht,l
+RPV/DPL/N/CSL/UNI:
+  - vl
+RPV/DPL/N/CSL/DPX:
+  - vvl
+RPV/DPL/N/CSL/DCT:
+  - lvl
+RPV/DPL/N/CSL/AGG:
+  - rvl
+RPV/DPL/N/CSL/SEG:
+  - mvl
+RPV/DPL/N/CSL/CPN:
+  - r^vl
+RPV/DPL/N/CSL/COH:
+  - lpt,
+RPV/DPL/N/CSL/CST:
+  - lkt,
+RPV/DPL/N/CSL/MLT:
+  - mpl,
+RPV/DPL/N/ASO/UNI:
+  - dhl
+RPV/DPL/N/ASO/DPX:
+  - ddhl
+RPV/DPL/N/ASO/DCT:
+  - ldhl
+RPV/DPL/N/ASO/AGG:
+  - rdhl
+RPV/DPL/N/ASO/SEG:
+  - ndhl
+RPV/DPL/N/ASO/CPN:
+  - r^dhl
+RPV/DPL/N/ASO/COH:
+  - cl
+RPV/DPL/N/ASO/CST:
+  - c^l
+RPV/DPL/N/ASO/MLT:
+  - ntl,
+RPV/DPL/N/VAR/UNI:
+  - sv
+RPV/DPL/N/VAR/DPX:
+  - sr^
+RPV/DPL/N/VAR/DCT:
+  - ksw
+RPV/DPL/N/VAR/AGG:
+  - sxw
+RPV/DPL/N/VAR/SEG:
+  - lsr^
+RPV/DPL/N/VAR/CPN:
+  - rsr^
+RPV/DPL/N/VAR/COH:
+  - fsw
+RPV/DPL/N/VAR/CST:
+  - r^sr^
+RPV/DPL/N/VAR/MLT:
+  - bzw
+RPV/DPL/N/COA/UNI:
+  - zv
+RPV/DPL/N/COA/DPX:
+  - zr^
+RPV/DPL/N/COA/DCT:
+  - psw
+RPV/DPL/N/COA/AGG:
+  - sxhw
+RPV/DPL/N/COA/SEG:
+  - lzr^
+RPV/DPL/N/COA/CPN:
+  - rzr^
+RPV/DPL/N/COA/COH:
+  - sfw
+RPV/DPL/N/COA/CST:
+  - r^zr^
+RPV/DPL/N/COA/MLT:
+  - gzw
+RPV/DPL/A/CSL/UNI:
+  - sm
+RPV/DPL/A/CSL/DPX:
+  - sy
+RPV/DPL/A/CSL/DCT:
+  - cm
+RPV/DPL/A/CSL/AGG:
+  - zm
+RPV/DPL/A/CSL/SEG:
+  - dzm
+RPV/DPL/A/CSL/CPN:
+  - c,m
+RPV/DPL/A/CSL/COH:
+  - bm
+RPV/DPL/A/CSL/CST:
+  - dm
+RPV/DPL/A/CSL/MLT:
+  - gm
+RPV/DPL/A/ASO/UNI:
+  - s^m
+RPV/DPL/A/ASO/DPX:
+  - s^y
+RPV/DPL/A/ASO/DCT:
+  - c^m
+RPV/DPL/A/ASO/AGG:
+  - z^m
+RPV/DPL/A/ASO/SEG:
+  - jm
+RPV/DPL/A/ASO/CPN:
+  - l,m
+RPV/DPL/A/ASO/COH:
+  - vm
+RPV/DPL/A/ASO/CST:
+  - dhm
+RPV/DPL/A/ASO/MLT:
+  - kr^
+RPV/DPL/A/VAR/UNI:
+  - sn
+RPV/DPL/A/VAR/DPX:
+  - zy
+RPV/DPL/A/VAR/DCT:
+  - cn
+RPV/DPL/A/VAR/AGG:
+  - zn
+RPV/DPL/A/VAR/SEG:
+  - dzn
+RPV/DPL/A/VAR/CPN:
+  - c,n
+RPV/DPL/A/VAR/COH:
+  - bn
+RPV/DPL/A/VAR/CST:
+  - dn
+RPV/DPL/A/VAR/MLT:
+  - gn
+RPV/DPL/A/COA/UNI:
+  - s^n
+RPV/DPL/A/COA/DPX:
+  - z^y
+RPV/DPL/A/COA/DCT:
+  - c^n
+RPV/DPL/A/COA/AGG:
+  - z^n
+RPV/DPL/A/COA/SEG:
+  - jn
+RPV/DPL/A/COA/CPN:
+  - l,n
+RPV/DPL/A/COA/COH:
+  - vn
+RPV/DPL/A/COA/CST:
+  - dhn
+RPV/DPL/A/COA/MLT:
+  - n^r^
+RPV/GRA/M/CSL/UNI:
+  - sr
+RPV/GRA/M/CSL/DPX:
+  - ssr
+RPV/GRA/M/CSL/DCT:
+  - lsr
+RPV/GRA/M/CSL/AGG:
+  - rsr
+RPV/GRA/M/CSL/SEG:
+  - msr
+RPV/GRA/M/CSL/CPN:
+  - r^sr
+RPV/GRA/M/CSL/COH:
+  - nsr
+RPV/GRA/M/CSL/CST:
+  - n^sr
+RPV/GRA/M/CSL/MLT:
+  - t,sk
+RPV/GRA/M/ASO/UNI:
+  - s^r
+RPV/GRA/M/ASO/DPX:
+  - s^s^r
+RPV/GRA/M/ASO/DCT:
+  - ls^r
+RPV/GRA/M/ASO/AGG:
+  - rs^r
+RPV/GRA/M/ASO/SEG:
+  - ms^r
+RPV/GRA/M/ASO/CPN:
+  - r^s^r
+RPV/GRA/M/ASO/COH:
+  - ns^r
+RPV/GRA/M/ASO/CST:
+  - n^s^r
+RPV/GRA/M/ASO/MLT:
+  - t,s^k
+RPV/GRA/M/VAR/UNI:
+  - zr
+RPV/GRA/M/VAR/DPX:
+  - zzr
+RPV/GRA/M/VAR/DCT:
+  - lzr
+RPV/GRA/M/VAR/AGG:
+  - rzr
+RPV/GRA/M/VAR/SEG:
+  - mzr
+RPV/GRA/M/VAR/CPN:
+  - r^zr
+RPV/GRA/M/VAR/COH:
+  - nzr
+RPV/GRA/M/VAR/CST:
+  - n^zr
+RPV/GRA/M/VAR/MLT:
+  - t,sq
+RPV/GRA/M/COA/UNI:
+  - z^r
+RPV/GRA/M/COA/DPX:
+  - z^z^r
+RPV/GRA/M/COA/DCT:
+  - lz^r
+RPV/GRA/M/COA/AGG:
+  - rz^r
+RPV/GRA/M/COA/SEG:
+  - mz^r
+RPV/GRA/M/COA/CPN:
+  - r^z^r
+RPV/GRA/M/COA/COH:
+  - nz^r
+RPV/GRA/M/COA/CST:
+  - n^z^r
+RPV/GRA/M/COA/MLT:
+  - t,s^q
+RPV/GRA/U/CSL/UNI:
+  - fr
+RPV/GRA/U/CSL/DPX:
+  - ffr
+RPV/GRA/U/CSL/DCT:
+  - lfr
+RPV/GRA/U/CSL/AGG:
+  - rfr
+RPV/GRA/U/CSL/SEG:
+  - mfr
+RPV/GRA/U/CSL/CPN:
+  - r^fr
+RPV/GRA/U/CSL/COH:
+  - fxr
+RPV/GRA/U/CSL/CST:
+  - n^fr
+RPV/GRA/U/CSL/MLT:
+  - pxr
+RPV/GRA/U/ASO/UNI:
+  - t,r
+RPV/GRA/U/ASO/DPX:
+  - t,t,r
+RPV/GRA/U/ASO/DCT:
+  - lt,r
+RPV/GRA/U/ASO/AGG:
+  - rt,r
+RPV/GRA/U/ASO/SEG:
+  - nt,r
+RPV/GRA/U/ASO/CPN:
+  - r^t,r
+RPV/GRA/U/ASO/COH:
+  - t,xr
+RPV/GRA/U/ASO/CST:
+  - mt,r
+RPV/GRA/U/ASO/MLT:
+  - txr
+RPV/GRA/U/VAR/UNI:
+  - xr
+RPV/GRA/U/VAR/DPX:
+  - xxr
+RPV/GRA/U/VAR/DCT:
+  - lxr
+RPV/GRA/U/VAR/AGG:
+  - rxr
+RPV/GRA/U/VAR/SEG:
+  - n^xr
+RPV/GRA/U/VAR/CPN:
+  - r^xr
+RPV/GRA/U/VAR/COH:
+  - xfr
+RPV/GRA/U/VAR/CST:
+  - mxr
+RPV/GRA/U/VAR/MLT:
+  - xt,r
+RPV/GRA/U/COA/UNI:
+  - xhr
+RPV/GRA/U/COA/DPX:
+  - xxhr
+RPV/GRA/U/COA/DCT:
+  - lxhr
+RPV/GRA/U/COA/AGG:
+  - rxhr
+RPV/GRA/U/COA/SEG:
+  - n^xhr
+RPV/GRA/U/COA/CPN:
+  - qtr
+RPV/GRA/U/COA/COH:
+  - xhfr
+RPV/GRA/U/COA/CST:
+  - mxhr
+RPV/GRA/U/COA/MLT:
+  - xht,r
+RPV/GRA/N/CSL/UNI:
+  - vr
+RPV/GRA/N/CSL/DPX:
+  - vvr
+RPV/GRA/N/CSL/DCT:
+  - lvr
+RPV/GRA/N/CSL/AGG:
+  - rvr
+RPV/GRA/N/CSL/SEG:
+  - mvr
+RPV/GRA/N/CSL/CPN:
+  - r^vr
+RPV/GRA/N/CSL/COH:
+  - rpt,
+RPV/GRA/N/CSL/CST:
+  - rkt,
+RPV/GRA/N/CSL/MLT:
+  - mpr^
+RPV/GRA/N/ASO/UNI:
+  - dhr
+RPV/GRA/N/ASO/DPX:
+  - ddhr
+RPV/GRA/N/ASO/DCT:
+  - ldhr
+RPV/GRA/N/ASO/AGG:
+  - rdhr
+RPV/GRA/N/ASO/SEG:
+  - ndhr
+RPV/GRA/N/ASO/CPN:
+  - r^dhr
+RPV/GRA/N/ASO/COH:
+  - cr
+RPV/GRA/N/ASO/CST:
+  - c^r
+RPV/GRA/N/ASO/MLT:
+  - ntr^
+RPV/GRA/N/VAR/UNI:
+  - s^v
+RPV/GRA/N/VAR/DPX:
+  - s^r^
+RPV/GRA/N/VAR/DCT:
+  - ks^w
+RPV/GRA/N/VAR/AGG:
+  - s^xw
+RPV/GRA/N/VAR/SEG:
+  - ls^r^
+RPV/GRA/N/VAR/CPN:
+  - rs^r^
+RPV/GRA/N/VAR/COH:
+  - fs^w
+RPV/GRA/N/VAR/CST:
+  - r^s^r^
+RPV/GRA/N/VAR/MLT:
+  - bz^w
+RPV/GRA/N/COA/UNI:
+  - z^v
+RPV/GRA/N/COA/DPX:
+  - z^r^
+RPV/GRA/N/COA/DCT:
+  - ps^w
+RPV/GRA/N/COA/AGG:
+  - s^xhw
+RPV/GRA/N/COA/SEG:
+  - lz^r^
+RPV/GRA/N/COA/CPN:
+  - rz^r^
+RPV/GRA/N/COA/COH:
+  - s^fw
+RPV/GRA/N/COA/CST:
+  - r^z^r^
+RPV/GRA/N/COA/MLT:
+  - gz^w
+RPV/GRA/A/CSL/UNI:
+  - tm
+RPV/GRA/A/CSL/DPX:
+  - t,m
+RPV/GRA/A/CSL/DCT:
+  - t,n
+RPV/GRA/A/CSL/AGG:
+  - tn
+RPV/GRA/A/CSL/SEG:
+  - rsm
+RPV/GRA/A/CSL/CPN:
+  - rsn
+RPV/GRA/A/CSL/COH:
+  - sn^
+RPV/GRA/A/CSL/CST:
+  - rsn^
+RPV/GRA/A/CSL/MLT:
+  - nm
+RPV/GRA/A/ASO/UNI:
+  - km
+RPV/GRA/A/ASO/DPX:
+  - xm
+RPV/GRA/A/ASO/DCT:
+  - xn
+RPV/GRA/A/ASO/AGG:
+  - kn
+RPV/GRA/A/ASO/SEG:
+  - rzm
+RPV/GRA/A/ASO/CPN:
+  - rzn
+RPV/GRA/A/ASO/COH:
+  - zn^
+RPV/GRA/A/ASO/CST:
+  - rzn^
+RPV/GRA/A/ASO/MLT:
+  - n^m
+RPV/GRA/A/VAR/UNI:
+  - pm
+RPV/GRA/A/VAR/DPX:
+  - fm
+RPV/GRA/A/VAR/DCT:
+  - fn
+RPV/GRA/A/VAR/AGG:
+  - pn
+RPV/GRA/A/VAR/SEG:
+  - rs^m
+RPV/GRA/A/VAR/CPN:
+  - rs^n
+RPV/GRA/A/VAR/COH:
+  - s^n^
+RPV/GRA/A/VAR/CST:
+  - rs^n^
+RPV/GRA/A/VAR/MLT:
+  - mn
+RPV/GRA/A/COA/UNI:
+  - qm
+RPV/GRA/A/COA/DPX:
+  - xhm
+RPV/GRA/A/COA/DCT:
+  - xhn
+RPV/GRA/A/COA/AGG:
+  - qn
+RPV/GRA/A/COA/SEG:
+  - rz^m
+RPV/GRA/A/COA/CPN:
+  - rz^n
+RPV/GRA/A/COA/COH:
+  - z^n^
+RPV/GRA/A/COA/CST:
+  - rz^n^
+RPV/GRA/A/COA/MLT:
+  - n^n
