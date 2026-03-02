@@ -200,8 +200,27 @@ main = hspec $ do
       countSyllables "mala" `shouldBe` 2
       countSyllables "malëuţřait" `shouldBe` 3
 
+  describe "Vx Degree" $ do
+    it "maps series 1 vowels to Type1 degrees" $ do
+      vxToDegree "a" `shouldBe` Just (1, Type1Affix)
+      vxToDegree "e" `shouldBe` Just (3, Type1Affix)
+      vxToDegree "u" `shouldBe` Just (9, Type1Affix)
+
+    it "maps series 2 vowels to Type2 degrees" $ do
+      vxToDegree "ai" `shouldBe` Just (1, Type2Affix)
+      vxToDegree "ui" `shouldBe` Just (9, Type2Affix)
+
+    it "maps series 3 vowels to Type3 degrees" $ do
+      vxToDegree "ia" `shouldBe` Just (1, Type3Affix)
+      vxToDegree "ua" `shouldBe` Just (9, Type3Affix)
+
   describe "Glossing" $ do
     it "glosses a word with empty lexicon" $ do
       let result = glossWord Regular Map.empty Map.empty "mala"
       grWord result `shouldBe` "mala"
       grGloss result `shouldSatisfy` (not . T.null)
+
+    it "glosses formative with affixes when affix dict available" $ do
+      let result = glossWord Short Map.empty Map.empty "malëuţřait"
+      -- Should contain affix abbreviation
+      grGloss result `shouldSatisfy` T.isInfixOf "/"

@@ -12,6 +12,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Maybe (listToMaybe)
 import Ithkuil.Grammar
+import Ithkuil.Phonology (vowelForm)
 import Ithkuil.Parse
   ( splitConjuncts, parseSlotII, parseSlotIV, parseCase
   , isVowelChar, isConsonantCluster
@@ -231,8 +232,32 @@ parseSlotIX vc Antepenultimate = case parseCase vc of
   Nothing -> Left (Transrelative THM)
 
 -- | Parse Vk (Illocution + Validation) from ultimate-stress formatives
+-- Series 1: ASR + OBS (assertive default)
+-- Series 2: Illocution by form + OBS
+-- Series 3-4: ASR + Validation by form
 parseVk :: Text -> FormatOrIV
-parseVk _ = Format  -- TODO: full Vk parsing
+parseVk vk = case vxToDegreeRaw vk of
+  Just (1, form) -> IllocVal ASR OBS   -- Series 1: default assertive
+  Just (2, form) -> IllocVal (illocByForm form) OBS
+  Just (3, form) -> IllocVal ASR (valByForm form)
+  Just (4, form) -> IllocVal ASR (valByForm form)
+  _ -> Format  -- Fallback
+  where
+    illocByForm 1 = DIR; illocByForm 2 = DEC; illocByForm 3 = IRG
+    illocByForm 4 = VER; illocByForm 5 = ADM; illocByForm 6 = POT
+    illocByForm 7 = HOR; illocByForm 8 = CNJ; illocByForm _ = ASR
+    valByForm 1 = OBS; valByForm 2 = REC; valByForm 3 = PUP
+    valByForm 4 = RPR; valByForm 5 = USP; valByForm 6 = IMA
+    valByForm 7 = CVN; valByForm 8 = ITU; valByForm _ = INF
+
+-- | Map a vowel to its series (1-4) and form (1-9) in the vowel form table
+vxToDegreeRaw :: Text -> Maybe (Int, Int)
+vxToDegreeRaw vx = listToMaybe
+  [ (s, f)
+  | s <- [1..4]
+  , f <- [1..9]
+  , vowelForm s f == vx
+  ]
 
 --------------------------------------------------------------------------------
 -- Stress Detection

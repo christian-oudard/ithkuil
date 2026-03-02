@@ -19,8 +19,9 @@ import qualified Data.Text as T
 import Data.Map.Strict (Map)
 import Data.Maybe (fromMaybe)
 import Ithkuil.Grammar
-import Ithkuil.Parse (vxToDegree)
+import Ithkuil.Parse (splitConjuncts, isVowelChar, isConsonantCluster, vxToDegree)
 import Ithkuil.FullParse (ParseResult(..), parseFormative)
+import Ithkuil.Adjuncts (parseBias, Bias)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot, lookupAffix)
 
 --------------------------------------------------------------------------------
@@ -40,12 +41,31 @@ data GlossResult = GlossResult
 -- Word-level Glossing
 --------------------------------------------------------------------------------
 
--- | Gloss a single word from text
+-- | Gloss a single word from text, detecting word type
 glossWord :: Precision -> Map Text RootEntry -> Map Text AffixEntry -> Text -> GlossResult
 glossWord prec roots affixes word =
-  case parseFormative word of
-    Success f -> glossFormative prec roots affixes word f
-    Failure err -> GlossResult word ("?" <> word <> " [" <> err <> "]") []
+  let conjs = splitConjuncts word
+  in case detectWordType conjs of
+    BiasWord b -> GlossResult word (T.pack (show b)) [("Bias", T.pack (show b))]
+    FormativeWord -> case parseFormative word of
+      Success f -> glossFormative prec roots affixes word f
+      Failure err -> GlossResult word ("?" <> word <> " [" <> err <> "]") []
+    UnknownWord -> GlossResult word ("?" <> word) []
+
+-- | Word type detection from conjuncts
+data WordType
+  = FormativeWord
+  | BiasWord Bias
+  | UnknownWord
+
+-- | Detect the type of word from its conjunct structure.
+-- Bias adjuncts are single consonant clusters with no vowels.
+-- Everything else is attempted as a formative.
+detectWordType :: [Text] -> WordType
+detectWordType [c] | isConsonantCluster c = case parseBias c of
+  Just b  -> BiasWord b
+  Nothing -> FormativeWord  -- Could be a single-consonant formative
+detectWordType _ = FormativeWord
 
 -- | Gloss a parsed formative
 glossFormative :: Precision -> Map Text RootEntry -> Map Text AffixEntry -> Text -> Formative -> GlossResult
