@@ -107,94 +107,65 @@ parseAfterVr slotI slotII root slotIV remaining stress = do
   let (slotV, slotVI, slotVII, slotVIII, slotIX) = parseRemainingSlots remaining stress
   Success $ Formative slotI slotII root slotIV slotV slotVI slotVII slotVIII slotIX stress
 
--- | Parse remaining slots after Vr
--- Returns (SlotV affixes, SlotVI Ca, SlotVII affixes, SlotVIII VnCn, SlotIX Vc/Vk)
+-- | Parse remaining slots after Vr using right-to-left peeling.
+--
+-- Structure: [CsVx...] Ca [VxCs...] [Vn Cn] [Vc] [Slot X]
+--
+-- Algorithm:
+--   1. Strip trailing consonant (Slot X)
+--   2. Strip trailing vowel (Vc / Slot IX)
+--   3. Strip trailing Vn+Cn pair if the C is a Cn consonant (Slot VIII)
+--   4. Find Ca in what remains using parseCaSlot (first matching consonant)
+--   5. Before Ca = Slot V affixes (CsVx pairs)
+--   6. After Ca = Slot VII affixes (VxCs pairs)
 parseRemainingSlots :: [Text] -> Stress
   -> ([Affix], SlotVI, [Affix], Maybe (Valence, MoodOrScope), Either Case FormatOrIV)
-parseRemainingSlots parts stress = case classifyParts parts of
-  -- Just Ca (minimal)
-  CaParts ca ->
-    ([], parseCaOrDefault ca, [], Nothing, Left (Transrelative THM))
+parseRemainingSlots parts0 stress =
+  let -- 1. Strip trailing consonant (Slot X)
+      p1 = stripTrailingC parts0
+      -- 2. Strip trailing vowel (Vc / Slot IX)
+      (vc, p2) = stripTrailingV p1
+      -- 3. Strip trailing Vn+Cn (Slot VIII) if Cn is recognized
+      (vnCn, p3) = stripVnCn p2
+      -- 4-6. Split remainder into Slot V, Ca, Slot VII
+      (slotVParts, caText, slotVIIParts) = splitAtCa p3
+      slotV  = parseCsVxAffixes slotVParts
+      slotVI = parseCaOrDefault caText
+      slotVII = parseAffixes slotVIIParts
+      slotVIII = vnCn
+      slotIX = case vc of
+        Nothing -> Left (Transrelative THM)
+        Just v  -> parseSlotIX v stress
+  in (slotV, slotVI, slotVII, slotVIII, slotIX)
 
-  -- Ca + Vc
-  CaVcParts ca vc ->
-    ([], parseCaOrDefault ca, [], Nothing, parseSlotIX vc stress)
+-- | Strip trailing consonant (Slot X)
+stripTrailingC :: [Text] -> [Text]
+stripTrailingC parts = case reverse parts of
+  (c:rest) | isC c -> reverse rest
+  _ -> parts
 
-  -- CsVx + Ca + Vc (with slot V affixes)
-  CsVxCaVcParts csvx ca vc ->
-    (parseAffixes csvx, parseCaOrDefault ca, [], Nothing, parseSlotIX vc stress)
+-- | Strip trailing vowel (Vc / Slot IX)
+stripTrailingV :: [Text] -> (Maybe Text, [Text])
+stripTrailingV parts = case reverse parts of
+  (v:rest) | isV v -> (Just v, reverse rest)
+  _ -> (Nothing, parts)
 
-  -- Ca + VxCs + Vc (with slot VII affixes)
-  CaVxCsVcParts ca vxcs vc ->
-    ([], parseCaOrDefault ca, parseAffixes vxcs, Nothing, parseSlotIX vc stress)
+-- | Strip trailing Vn+Cn (Slot VIII) if the consonant is a Cn form
+stripVnCn :: [Text] -> (Maybe (Valence, MoodOrScope), [Text])
+stripVnCn parts = case reverse parts of
+  (cn:vn:rest) | isC cn && isCn cn && isV vn ->
+    (Just (parseVnCn vn cn), reverse rest)
+  _ -> (Nothing, parts)
 
-  -- Ca + VxCs + VnCn + Vc (with slot VII affixes and mood/valence)
-  CaVxCsVnCnVcParts ca vxcs vn cn vc ->
-    ([], parseCaOrDefault ca, parseAffixes vxcs, Just (parseVnCn vn cn), parseSlotIX vc stress)
-
-  -- Fallback: treat first consonant as Ca, last vowel as Vc
-  UnknownParts ->
-    ([], defaultSlotVI, [], Nothing, Left (Transrelative THM))
-
--- | Classify the remaining parts pattern
-data PartsPattern
-  = CaParts Text
-  | CaVcParts Text Text
-  | CsVxCaVcParts [Text] Text Text
-  | CaVxCsVcParts Text [Text] Text
-  | CaVxCsVnCnVcParts Text [Text] Text Text Text
-  | UnknownParts
-
-classifyParts :: [Text] -> PartsPattern
-classifyParts parts =
-  let isC = isConsonantCluster
-      isV t = not (T.null t) && isVowelChar (T.head t)
-  in case parts of
-    -- Just Ca
-    [ca] | isC ca -> CaParts ca
-
-    -- Ca + Vc
-    [ca, vc] | isC ca && isV vc -> CaVcParts ca vc
-
-    -- Three parts: could be CsVx+Ca+Vc or Ca+VxCs+Vc
-    -- If C-V-C-V: first pair is CsVx affix, then Ca, then Vc
-    -- If C-C-V: first C is Ca, second C is... ambiguous
-    -- Simplification: treat as Ca-VxCs-Vc if second is consonant
-    [a, b, vc] | isC a && isV b && isC vc ->
-      -- V is affix vowel, so this is affix material... but Vc should be vowel
-      UnknownParts
-    [ca, vxcs, vc] | isC ca && isC vxcs && isV vc ->
-      -- Two consonant clusters then vowel: Ca + trailing C + Vc?
-      -- Treat first as Ca
-      CaVcParts ca vc
-    [csvx, ca, vc] | isV csvx && isC ca && isV vc ->
-      -- V-C-V after Vr: the V could be affix vowel before Ca
-      -- But we don't have the affix consonant... so treat as Vc-Ca-Vc?
-      -- Actually this is the Vr-internal pattern. Skip affix, use Ca+Vc
-      CaVcParts ca vc
-
-    -- Four parts
-    [csv, cs, ca, vc] | isV csv && isC cs && isC ca && isV vc ->
-      -- Affix: VxCs before Ca
-      CsVxCaVcParts [csv, cs] ca vc
-    [ca, vx, cs, vc] | isC ca && isV vx && isC cs && isV vc ->
-      -- Ca, then VxCs affix, then Vc
-      CaVxCsVcParts ca [vx, cs] vc
-
-    -- Five parts
-    [ca, vx, cs, vn, cn] | isC ca && isV vx && isC cs && isV vn && isC cn ->
-      -- Ca + VxCs + Vn + Cn (no final Vc, or Cn subsumes it)
-      CaVxCsVnCnVcParts ca [vx, cs] vn cn ""
-
-    -- Six parts
-    [csv, cs, ca, vx2, cs2, vc]
-      | isV csv && isC cs && isC ca && isV vx2 && isC cs2 && isV vc ->
-      CsVxCaVcParts [csv, cs] ca vc  -- simplified: ignore slot VII
-    [ca, vx, cs, vn, cn, vc]
-      | isC ca && isV vx && isC cs && isV vn && isC cn && isV vc ->
-      CaVxCsVnCnVcParts ca [vx, cs] vn cn vc
-
-    _ -> UnknownParts
+-- | Find Ca by scanning for the first consonant that parses as valid Ca.
+-- Returns (before Ca, Ca text, after Ca). If no Ca found, returns default.
+splitAtCa :: [Text] -> ([Text], Text, [Text])
+splitAtCa = go []
+  where
+    go acc [] = (reverse acc, "", [])
+    go acc (c:rest)
+      | isC c, Just _ <- Ca.parseCaSlot c = (reverse acc, c, rest)
+      | otherwise = go (c : acc) rest
 
 --------------------------------------------------------------------------------
 -- Slot I: Concatenation
@@ -298,8 +269,36 @@ findAcuteStress word =
     [] -> Nothing
 
 --------------------------------------------------------------------------------
--- Helper
+-- Slot V Affixes (CsVx pairs: consonant then vowel)
 --------------------------------------------------------------------------------
+
+-- | Parse Slot V affixes from alternating consonant-vowel conjuncts
+parseCsVxAffixes :: [Text] -> [Affix]
+parseCsVxAffixes [] = []
+parseCsVxAffixes [_] = []
+parseCsVxAffixes (c:v:rest)
+  | isC c && isV v = Affix v c Type1Affix : parseCsVxAffixes rest
+  | otherwise = []
+
+--------------------------------------------------------------------------------
+-- Helpers
+--------------------------------------------------------------------------------
+
+-- | Is this conjunct a consonant cluster?
+isC :: Text -> Bool
+isC = isConsonantCluster
+
+-- | Is this conjunct a vowel group?
+isV :: Text -> Bool
+isV t = not (T.null t) && isVowelChar (T.head t)
+
+-- | Is this consonant a Cn form (Slot VIII mood/case-scope marker)?
+-- Cn consonants: h, hl, hr, hw, hm, hn, hň, w, y
+isCn :: Text -> Bool
+isCn c = c `elem` cnForms
+  where
+    cnForms :: [Text]
+    cnForms = map snd cnMoodTable ++ map snd cnCaseScopeTable
 
 when :: Bool -> ParseResult () -> ParseResult ()
 when True m = m
