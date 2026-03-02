@@ -54,7 +54,7 @@ instance FromJSON AffixEntry where
   parseJSON = withObject "AffixEntry" $ \v -> AffixEntry
     <$> v .: "cs"
     <*> v .: "abbrev"
-    <*> v .: "desc"
+    <*> v .: "description"
     <*> v .: "type"
     <*> v .: "degrees"
 

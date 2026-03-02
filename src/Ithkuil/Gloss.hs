@@ -17,9 +17,9 @@ module Ithkuil.Gloss
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Map.Strict (Map)
-import Data.Maybe (fromMaybe, mapMaybe)
+import Data.Maybe (fromMaybe)
 import Ithkuil.Grammar
-import Ithkuil.Parse (ParsedFormative(..), ParsedCa(..), splitConjuncts, parseCase, isVowelChar, isConsonantCluster)
+import Ithkuil.Parse (vxToDegree)
 import Ithkuil.FullParse (ParseResult(..), parseFormative)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot, lookupAffix)
 
@@ -49,37 +49,40 @@ glossWord prec roots affixes word =
 
 -- | Gloss a parsed formative
 glossFormative :: Precision -> Map Text RootEntry -> Map Text AffixEntry -> Text -> Formative -> GlossResult
-glossFormative prec roots _affixes word f =
+glossFormative prec roots affixes word f =
   let Root cr = fSlotIII f
       rootEntry = lookupRoot cr roots
-      details = buildDetails prec f rootEntry
-      gloss = buildGlossLine prec f rootEntry
+      details = buildDetails prec f rootEntry affixes
+      gloss = buildGlossLine prec f rootEntry affixes
   in GlossResult word gloss details
 
 -- | Build the one-line gloss string
-buildGlossLine :: Precision -> Formative -> Maybe RootEntry -> Text
-buildGlossLine prec f rootEntry =
-  let parts = filter (not . T.null)
+buildGlossLine :: Precision -> Formative -> Maybe RootEntry -> Map Text AffixEntry -> Text
+buildGlossLine prec f rootEntry affixes =
+  let (stem, _) = fSlotII f
+      parts = filter (not . T.null)
         [ glossConcatenation prec (fSlotI f)
         , glossStemVersion prec (fSlotII f)
-        , glossRoot prec (fSlotIII f) rootEntry
+        , glossRoot prec stem (fSlotIII f) rootEntry
         , glossFuncSpecCtx prec (fSlotIV f)
+        , glossAffixes prec affixes (fSlotV f)
         , glossCa prec (fSlotVI f)
+        , glossAffixes prec affixes (fSlotVII f)
         , glossVnCn prec (fSlotVIII f)
         , glossSlotIX prec (fSlotIX f)
         ]
   in T.intercalate "-" parts
 
 -- | Build slot-by-slot details
-buildDetails :: Precision -> Formative -> Maybe RootEntry -> [(Text, Text)]
-buildDetails prec f rootEntry = filter (not . T.null . snd)
+buildDetails :: Precision -> Formative -> Maybe RootEntry -> Map Text AffixEntry -> [(Text, Text)]
+buildDetails prec f rootEntry affixes = filter (not . T.null . snd)
   [ ("Slot I",    glossConcatenation prec (fSlotI f))
   , ("Slot II",   glossStemVersion prec (fSlotII f))
-  , ("Slot III",  glossRootDetail prec (fSlotIII f) rootEntry)
+  , ("Slot III",  glossRootDetail prec (fst (fSlotII f)) (fSlotIII f) rootEntry)
   , ("Slot IV",   glossFuncSpecCtx prec (fSlotIV f))
-  , ("Slot V",    glossAffixes prec (fSlotV f))
+  , ("Slot V",    glossAffixes prec affixes (fSlotV f))
   , ("Slot VI",   glossCa prec (fSlotVI f))
-  , ("Slot VII",  glossAffixes prec (fSlotVII f))
+  , ("Slot VII",  glossAffixes prec affixes (fSlotVII f))
   , ("Slot VIII", glossVnCn prec (fSlotVIII f))
   , ("Slot IX",   glossSlotIX prec (fSlotIX f))
   , ("Stress",    showStress (fStress f))
@@ -101,18 +104,24 @@ glossStemVersion _ (s, v)
   | (s, v) == defaultSlotII = ""  -- Suppress defaults
   | otherwise = showStem s <> "/" <> showVersion v
 
-glossRoot :: Precision -> Root -> Maybe RootEntry -> Text
-glossRoot Short (Root cr) rootEntry =
-  "'" <> fromMaybe cr (rootStem0 <$> rootEntry) <> "'"
-glossRoot Regular (Root cr) rootEntry =
-  "'" <> fromMaybe cr (rootStem0 <$> rootEntry) <> "'"
-glossRoot Full (Root cr) rootEntry =
-  "'" <> fromMaybe cr (rootStem0 <$> rootEntry) <> "'"
+glossRoot :: Precision -> Stem -> Root -> Maybe RootEntry -> Text
+glossRoot Short stem (Root cr) rootEntry =
+  "'" <> fromMaybe cr (selectStem stem <$> rootEntry) <> "'"
+glossRoot Regular stem (Root cr) rootEntry =
+  "'" <> fromMaybe cr (selectStem stem <$> rootEntry) <> "'"
+glossRoot Full stem (Root cr) rootEntry =
+  "'" <> fromMaybe cr (selectStem stem <$> rootEntry) <> "'"
   <> " [" <> cr <> "]"
 
-glossRootDetail :: Precision -> Root -> Maybe RootEntry -> Text
-glossRootDetail _ (Root cr) rootEntry =
-  "-" <> cr <> "- " <> fromMaybe "(unknown root)" (rootStem0 <$> rootEntry)
+selectStem :: Stem -> RootEntry -> Text
+selectStem S0 = rootStem0
+selectStem S1 = rootStem1
+selectStem S2 = rootStem2
+selectStem S3 = rootStem3
+
+glossRootDetail :: Precision -> Stem -> Root -> Maybe RootEntry -> Text
+glossRootDetail _ stem (Root cr) rootEntry =
+  "-" <> cr <> "- " <> fromMaybe "(unknown root)" (selectStem stem <$> rootEntry)
 
 glossFuncSpecCtx :: Precision -> SlotIV -> Text
 glossFuncSpecCtx _ (f, s, c)
@@ -130,12 +139,36 @@ glossCa _ (co, af, pe, ex, es)
     , if es /= NRM then showEss es else ""
     ]
 
-glossAffixes :: Precision -> [Affix] -> Text
-glossAffixes _ [] = ""
-glossAffixes prec affs = T.intercalate "+" $ map (glossAffix prec) affs
+glossAffixes :: Precision -> Map Text AffixEntry -> [Affix] -> Text
+glossAffixes _ _ [] = ""
+glossAffixes prec affixes affs = T.intercalate "-" $ map (glossAffix prec affixes) affs
 
-glossAffix :: Precision -> Affix -> Text
-glossAffix _ a = affixConsonant a <> ":" <> affixVowel a
+glossAffix :: Precision -> Map Text AffixEntry -> Affix -> Text
+glossAffix prec affixes a =
+  let cs = affixConsonant a
+      vx = affixVowel a
+      entry = lookupAffix cs affixes
+      degreeInfo = vxToDegree vx
+  in case (prec, entry, degreeInfo) of
+    -- Short: always abbreviation/degree
+    (Short, Just e, Just (deg, _)) ->
+      affixAbbrev e <> "/" <> T.pack (show deg)
+    (Short, _, Just (deg, _)) ->
+      cs <> "/" <> T.pack (show deg)
+    -- Regular: description if available
+    (Regular, Just e, Just (deg, _)) ->
+      let descs = affixDegrees e
+      in if deg >= 1 && deg <= length descs
+         then "'" <> (descs !! (deg - 1)) <> "'"
+         else affixAbbrev e <> "/" <> T.pack (show deg)
+    -- Full: description with Cs reference
+    (Full, Just e, Just (deg, _)) ->
+      let descs = affixDegrees e
+      in if deg >= 1 && deg <= length descs
+         then "'" <> (descs !! (deg - 1)) <> "' [" <> affixAbbrev e <> "/" <> T.pack (show deg) <> "]"
+         else affixAbbrev e <> "/" <> T.pack (show deg) <> " [" <> cs <> "]"
+    -- Fallback: raw Cs:Vx
+    _ -> cs <> ":" <> vx
 
 glossVnCn :: Precision -> Maybe (Valence, MoodOrScope) -> Text
 glossVnCn _ Nothing = ""

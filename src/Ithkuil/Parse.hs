@@ -19,6 +19,7 @@ module Ithkuil.Parse
   , vnTable
   , cnMoodTable
   , cnCaseScopeTable
+  , vxToDegree
   ) where
 
 import Data.Text (Text)
@@ -267,6 +268,19 @@ parseCnMood c = listToMaybe [m | (m, f) <- cnMoodTable, f == c]
 -- | Parse Cn consonant to Case-Scope
 parseCnCaseScope :: Text -> Maybe CaseScope
 parseCnCaseScope c = listToMaybe [cs | (cs, f) <- cnCaseScopeTable, f == c]
+
+-- | Map Vx vowel to affix degree (1-9).
+-- Series 1 vowels = Type 1 degrees, Series 2 = Type 2, Series 3 = Type 3.
+-- Returns (degree, affixType).
+vxToDegree :: Text -> Maybe (Int, AffixType)
+vxToDegree vx =
+  let series = [ (Type1Affix, 1), (Type2Affix, 2), (Type3Affix, 3) ]
+  in listToMaybe
+    [ (degree, atype)
+    | (atype, s) <- series
+    , degree <- [1..9]
+    , vowelForm s degree == vx
+    ]
 
 --------------------------------------------------------------------------------
 -- Parsed Formative
