@@ -1,0 +1,61 @@
+cabal-version:      3.0
+name:               ithkuil
+version:            0.1.0.0
+synopsis:           Ithkuil V4 grammar implementation
+license:            MIT
+author:             Christian Oudard
+build-type:         Simple
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings
+    exposed-modules:  Ithkuil.Phonology
+                    , Ithkuil.Grammar
+                    , Ithkuil.Parse
+                    , Ithkuil.Render
+                    , Ithkuil.Allomorph
+                    , Ithkuil.Adjuncts
+                    , Ithkuil.Referentials
+                    , Ithkuil.Numbers
+                    , Ithkuil.Lexicon
+                    , Ithkuil.Script
+                    , Ithkuil.Validation
+                    , Ithkuil.FullParse
+                    , Ithkuil.Concatenation
+                    , Ithkuil.Gloss
+                    , Ithkuil.V3.Grammar
+                    , Ithkuil.V3.Parse
+                    , Ithkuil.V2.Grammar
+                    , Ithkuil.V2.Parse
+                    , Ithkuil.V1.Grammar
+                    , Ithkuil.V1.Parse
+    build-depends:    base >=4.17 && <5
+                    , text
+                    , containers
+                    , aeson
+                    , bytestring
+    hs-source-dirs:   src
+    default-language: Haskell2010
+
+executable gloss-test
+    import:           warnings
+    default-language: Haskell2010
+    main-is:          GlossTest.hs
+    build-depends:    base >=4.17 && <5
+                    , ithkuil
+                    , text
+                    , containers
+
+test-suite ithkuil-test
+    import:           warnings
+    default-language: Haskell2010
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          Main.hs
+    build-depends:    base >=4.17 && <5
+                    , ithkuil
+                    , hspec
+                    , text
+                    , containers
