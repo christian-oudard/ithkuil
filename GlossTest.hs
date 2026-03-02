@@ -66,10 +66,12 @@ main = do
 
   -- Sentence glossing demo
   section "SENTENCE GLOSSING"
-  let sentence = "malëuţřait" -- single word for now
+  let sentence = "malëuţřait drr kale"
+  TIO.putStrLn $ "Sentence: " <> sentence
+  putStrLn ""
   let results = glossSentence Regular roots affixes sentence
   for_ results $ \r ->
-    TIO.putStrLn $ grWord r <> " = " <> grGloss r
+    TIO.putStrLn $ "  " <> grWord r <> " = " <> grGloss r
   putStrLn ""
 
   -- Cross-version comparison table

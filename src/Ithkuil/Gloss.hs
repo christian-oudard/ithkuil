@@ -19,7 +19,7 @@ import qualified Data.Text as T
 import Data.Map.Strict (Map)
 import Data.Maybe (fromMaybe)
 import Ithkuil.Grammar
-import Ithkuil.Parse (splitConjuncts, isVowelChar, isConsonantCluster, vxToDegree)
+import Ithkuil.Parse (splitConjuncts, isConsonantCluster, vxToDegree)
 import Ithkuil.FullParse (ParseResult(..), parseFormative)
 import Ithkuil.Adjuncts (parseBias, Bias)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot, lookupAffix)
@@ -125,13 +125,11 @@ glossStemVersion _ (s, v)
   | otherwise = showStem s <> "/" <> showVersion v
 
 glossRoot :: Precision -> Stem -> Root -> Maybe RootEntry -> Text
-glossRoot Short stem (Root cr) rootEntry =
-  "'" <> fromMaybe cr (selectStem stem <$> rootEntry) <> "'"
-glossRoot Regular stem (Root cr) rootEntry =
-  "'" <> fromMaybe cr (selectStem stem <$> rootEntry) <> "'"
 glossRoot Full stem (Root cr) rootEntry =
+  "'" <> meaning <> "' [" <> cr <> "]"
+  where meaning = fromMaybe cr (selectStem stem <$> rootEntry)
+glossRoot _ stem (Root cr) rootEntry =
   "'" <> fromMaybe cr (selectStem stem <$> rootEntry) <> "'"
-  <> " [" <> cr <> "]"
 
 selectStem :: Stem -> RootEntry -> Text
 selectStem S0 = rootStem0
