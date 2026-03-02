@@ -1,12 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
--- | Gloss the word "Ithkuil" using real parsing and lexicon data
--- No hardcoded output - everything generated from code
-
 module Main where
 
-import Ithkuil.Parse
 import Ithkuil.Grammar
-import Ithkuil.Lexicon (RootEntry(..), V1RootEntry(..), loadRoots, loadV1Roots, lookupRoot, lookupV1Root)
+import Ithkuil.Parse (parseFormativeReal, ParsedFormative(..), ParsedCa(..), splitConjuncts, isVowelChar)
+import Ithkuil.FullParse (ParseResult(..), parseFormative)
+import Ithkuil.Gloss
+import Ithkuil.Lexicon
 import qualified Ithkuil.V3.Parse as V3
 import qualified Ithkuil.V3.Grammar as V3
 import qualified Ithkuil.V2.Parse as V2
@@ -21,281 +20,142 @@ import System.Exit (exitFailure)
 
 main :: IO ()
 main = do
-  -- Load V4 lexicon
-  rootsResult <- loadRoots "data/roots.json"
-  roots <- case rootsResult of
-    Left err -> putStrLn ("Failed to load V4 roots: " ++ err) >> exitFailure
-    Right r -> return r
+  -- Load lexicons
+  roots <- loadOrDie "data/roots.json" loadRoots
+  affixes <- loadOrEmpty "data/affixes.json" loadAffixes
+  v3Roots <- loadOrEmpty "data/roots_v3.json" loadRoots
+  v1Roots <- loadOrEmpty "data/roots_v1.json" loadV1Roots
 
-  -- Load V3 lexicon
-  v3RootsResult <- loadRoots "data/roots_v3.json"
-  v3Roots <- case v3RootsResult of
-    Left err -> putStrLn ("Note: V3 lexicon not loaded: " ++ err) >> return Map.empty
-    Right r -> return r
-
-  -- Load V1 lexicon (biliteral roots)
-  v1RootsResult <- loadV1Roots "data/roots_v1.json"
-  v1Roots <- case v1RootsResult of
-    Left err -> putStrLn ("Note: V1 lexicon not loaded: " ++ err) >> return Map.empty
-    Right r -> return r
-
-  TIO.putStrLn $ "Lexicon: " <> T.pack (show (Map.size roots)) <> " V4 roots, "
-               <> T.pack (show (Map.size v3Roots)) <> " V3 roots, "
-               <> T.pack (show (Map.size v1Roots)) <> " V1 roots loaded"
+  TIO.putStrLn $ "Lexicon: " <> showN (Map.size roots) <> " V4 roots, "
+    <> showN (Map.size affixes) <> " affixes, "
+    <> showN (Map.size v3Roots) <> " V3 roots, "
+    <> showN (Map.size v1Roots) <> " V1 roots"
   putStrLn ""
 
-  -- Parse Malëuţřait (V4)
+  -- Demonstrate glossing at all 3 precision levels
   let word = "malëuţřait" :: Text
-  TIO.putStrLn $ "═══════════════════════════════════════════"
-  TIO.putStrLn $ "  ITHKUIL IV: " <> word
-  TIO.putStrLn $ "═══════════════════════════════════════════"
+  section "GLOSSING: malëuţřait (Ithkuil IV)"
+
+  TIO.putStrLn $ "Conjuncts: " <> T.intercalate " - " (splitConjuncts word)
   putStrLn ""
 
-  glossV4 roots word
-
-  -- Summary table
-  putStrLn ""
-  putStrLn "═══════════════════════════════════════════"
-  putStrLn "  ALL FOUR VERSIONS"
-  putStrLn "═══════════════════════════════════════════"
-  putStrLn ""
-  putStrLn "┌─────────┬────────────┬───────┬─────────────────────────────────────┐"
-  putStrLn "│ Version │ Word       │ Root  │ Meaning                             │"
-  putStrLn "├─────────┼────────────┼───────┼─────────────────────────────────────┤"
-
-  -- V4 row
-  case parseFormativeReal "malëuţřait" of
-    Nothing -> putStrLn "│ IV      │ Malëuţřait │ -?-   │ (parse failed)                      │"
-    Just pf -> do
-      let Root cr = pfRoot pf
-          (stem, _) = pfSlotII pf
-      case lookupRoot cr roots of
-        Nothing -> TIO.putStrLn $ "│ IV      │ Malëuţřait │ -" <> cr <> "-   │ (not in lexicon)                    │"
-        Just entry -> do
-          let meaning = selectStem stem entry
-          TIO.putStrLn $ "│ IV      │ Malëuţřait │ -" <> cr <> "-   │ " <> padTo 35 meaning <> " │"
-
-  -- V3 row - use V3 parser with V3 lexicon
-  case V3.parseV3Formative "elartkha" of
-    Nothing -> putStrLn "│ III     │ Elartkha   │ -?-   │ (parse failed)                      │"
-    Just v3f -> do
-      let V3.Root cr = V3.v3fRoot v3f
-      -- V3 uses root -L- (language/speech) - use V3 lexicon
-      case lookupRoot cr v3Roots of
-        Nothing -> TIO.putStrLn $ "│ III     │ Elartkha   │ -" <> cr <> "-   │ (not in V3 lexicon)                 │"
-        Just entry -> do
-          let (_, stem, _) = V3.v3fSlotII v3f
-          let meaning = selectStem stem entry
-          TIO.putStrLn $ "│ III     │ Elartkha   │ -" <> cr <> "-   │ " <> padTo 35 meaning <> " │"
-
-  -- V2 row - use V2 parser with V3 lexicon (same root -L-)
-  case V2.parseV2Formative "ilákš" of
-    Nothing -> putStrLn "│ II      │ ilákš      │ -?-   │ (parse failed)                      │"
-    Just v2f -> do
-      let V2.Root cr = V2.v2fRoot v2f
-      case lookupRoot cr v3Roots of
-        Nothing -> TIO.putStrLn $ "│ II      │ ilákš      │ -" <> cr <> "-   │ (not in V3 lexicon)                 │"
-        Just entry -> do
-          let meaning = selectStem (V2.v2fStem v2f) entry
-          TIO.putStrLn $ "│ II      │ ilákš      │ -" <> cr <> "-   │ " <> padTo 35 meaning <> " │"
-
-  -- V1 row - use V1 parser (biliteral root -K-L-) with V1 lexicon
-  case V1.parseV1Formative "iţkuîl" of
-    Nothing -> putStrLn "│ I       │ Iţkuîl     │ -?-?- │ (parse failed)                      │"
-    Just v1f -> do
-      let V1.V1Root c1 c2 = V1.v1fRoot v1f
-          rootDisplay = "-" <> c1 <> "-" <> c2 <> "-"
-      case lookupV1Root c1 c2 v1Roots of
-        Nothing -> TIO.putStrLn $ "│ I       │ Iţkuîl     │ " <> padTo 5 rootDisplay <> " │ (not in V1 lexicon)                 │"
-        Just entry -> do
-          -- V1 uses stem based on mode - Secondary mode = stem2 (imaginary language)
-          let meaning = case V1.v1fMode v1f of
-                V1.Secondary -> v1Stem2 entry
-                V1.Primary -> v1Stem0 entry
-          TIO.putStrLn $ "│ I       │ Iţkuîl     │ " <> padTo 5 rootDisplay <> " │ " <> padTo 35 meaning <> " │"
-  putStrLn "└─────────┴────────────┴───────┴─────────────────────────────────────┘"
-
--- | Gloss a V4 word with detailed slot analysis
-glossV4 :: Map.Map Text RootEntry -> Text -> IO ()
-glossV4 roots word = do
-  let conjs = splitConjuncts word
-
-  -- Show conjuncts with proper Unicode
-  TIO.putStrLn $ "Conjuncts: " <> T.intercalate " - " conjs
+  for_ [Short, Regular, Full] $ \prec -> do
+    let result = glossWord prec roots affixes word
+    TIO.putStrLn $ padTo 9 (showPrec prec) <> grGloss result
   putStrLn ""
 
-  case parseFormativeReal word of
-    Nothing -> putStrLn "Parse failed!"
-    Just pf -> do
-      let Root cr = pfRoot pf
-          (stem, version) = pfSlotII pf
-          (func, spec, ctx) = pfSlotIV pf
+  -- Slot-by-slot detail
+  let detail = glossWord Full roots affixes word
+  TIO.putStrLn "Slot-by-slot analysis:"
+  for_ (grDetails detail) $ \(slot, val) ->
+    TIO.putStrLn $ "  " <> padTo 10 slot <> val
+  putStrLn ""
 
-      -- Find the Vr vowel from conjuncts
-      let vrVowel = case conjs of
-            (_:vr:_) -> vr
-            _ -> "?"
+  -- Full parse detail
+  case parseFormative word of
+    Success f -> do
+      TIO.putStrLn "Full parse result:"
+      TIO.putStrLn $ "  Stem:     " <> T.pack (show (fSlotII f))
+      TIO.putStrLn $ "  Root:     " <> T.pack (show (fSlotIII f))
+      TIO.putStrLn $ "  Func:     " <> T.pack (show (fSlotIV f))
+      TIO.putStrLn $ "  Ca:       " <> T.pack (show (fSlotVI f))
+      TIO.putStrLn $ "  Case:     " <> T.pack (show (fSlotIX f))
+      TIO.putStrLn $ "  Stress:   " <> T.pack (show (fStress f))
+    Failure e -> TIO.putStrLn $ "  Parse error: " <> e
+  putStrLn ""
 
-      putStrLn "┌──────────┬────────┬─────────────────┬──────────────────────────────────┐"
-      putStrLn "│ Slot     │ Form   │ Value           │ Meaning                          │"
-      putStrLn "├──────────┼────────┼─────────────────┼──────────────────────────────────┤"
+  -- Sentence glossing demo
+  section "SENTENCE GLOSSING"
+  let sentence = "malëuţřait" -- single word for now
+  let results = glossSentence Regular roots affixes sentence
+  for_ results $ \r ->
+    TIO.putStrLn $ grWord r <> " = " <> grGloss r
+  putStrLn ""
 
-      -- Slot II (Vv) - elided
-      TIO.putStrLn $ "│ II (Vv)  │ (a)    │ " <> padTo 15 (showSlotII stem version) <> " │ Stem+Version (elided default)    │"
+  -- Cross-version comparison table
+  section "ALL FOUR VERSIONS"
+  showVersionTable roots v3Roots v1Roots
 
-      -- Slot III (Cr) - root
-      case lookupRoot cr roots of
-        Nothing -> TIO.putStrLn $ "│ III (Cr) │ " <> padTo 6 cr <> " │ Root            │ (not found in lexicon)           │"
-        Just entry -> do
-          let meaning = selectStem stem entry
-          TIO.putStrLn $ "│ III (Cr) │ " <> padTo 6 cr <> " │ Root -" <> cr <> "-" <> T.replicate (7 - T.length cr) " " <> " │ " <> padTo 32 meaning <> " │"
+-- | Cross-version comparison
+showVersionTable :: Map.Map Text RootEntry -> Map.Map Text RootEntry -> Map.Map Text V1RootEntry -> IO ()
+showVersionTable roots v3Roots v1Roots = do
+  -- V4
+  let v4 = case parseFormativeReal "malëuţřait" of
+        Nothing -> ("(parse failed)", "?")
+        Just pf -> let Root cr = pfRoot pf; (stem, _) = pfSlotII pf
+                   in ("-" <> cr <> "-", maybe "?" (selectStem stem) (lookupRoot cr roots))
 
-      -- Slot IV (Vr)
-      TIO.putStrLn $ "│ IV (Vr)  │ " <> padTo 6 vrVowel <> " │ " <> padTo 15 (showSlotIV func spec ctx) <> " │ Function/Specification/Context   │"
+  -- V3
+  let v3 = case V3.parseV3Formative "elartkha" of
+        Nothing -> ("?", "(parse failed)")
+        Just v3f -> let V3.Root cr = V3.v3fRoot v3f; (_, stem, _) = V3.v3fSlotII v3f
+                    in ("-" <> cr <> "-", maybe "?" (selectStem stem) (lookupRoot cr v3Roots))
 
-      -- Ca complex
-      let caText = T.intercalate "+" (pfCa pf)
-          caValue = case pfCaParsed pf of
-            Nothing -> "(unparsed)"
-            Just pc -> showCa pc
-      TIO.putStrLn $ "│ VI (Ca)  │ " <> padTo 6 caText <> " │ " <> padTo 15 caValue <> " │ Config/Affil/Persp/Ext/Ess       │"
+  -- V2
+  let v2 = case V2.parseV2Formative "ilákš" of
+        Nothing -> ("?", "(parse failed)")
+        Just v2f -> let V2.Root cr = V2.v2fRoot v2f
+                    in ("-" <> cr <> "-", maybe "?" (selectStem (V2.v2fStem v2f)) (lookupRoot cr v3Roots))
 
-      -- Case - find case vowel (last vowel before any trailing consonants)
-      let findCaseVowel [] = "?"
-          findCaseVowel (x:xs)
-            | not (T.null x) && isVowelChar (T.head x) = x
-            | otherwise = findCaseVowel xs
-          vcVowel = findCaseVowel (reverse conjs)
-      case pfCase pf of
-        Nothing -> TIO.putStrLn $ "│ IX (Vc)  │ " <> padTo 6 vcVowel <> " │ (not parsed)    │ Case                             │"
-        Just c -> TIO.putStrLn $ "│ IX (Vc)  │ " <> padTo 6 vcVowel <> " │ " <> padTo 15 (T.pack (show c)) <> " │ Case                             │"
+  -- V1
+  let v1 = case V1.parseV1Formative "iţkuîl" of
+        Nothing -> ("?", "(parse failed)")
+        Just v1f -> let V1.V1Root c1 c2 = V1.v1fRoot v1f
+                        meaning = case lookupV1Root c1 c2 v1Roots of
+                          Nothing -> "?"
+                          Just e -> case V1.v1fMode v1f of
+                            V1.Secondary -> v1Stem2 e
+                            V1.Primary -> v1Stem0 e
+                    in ("-" <> c1 <> "-" <> c2 <> "-", meaning)
 
-      putStrLn "└──────────┴────────┴─────────────────┴──────────────────────────────────┘"
+  TIO.putStrLn $ padTo 10 "Version" <> padTo 14 "Word" <> padTo 10 "Root" <> "Meaning"
+  TIO.putStrLn $ T.replicate 70 "-"
+  TIO.putStrLn $ padTo 10 "IV"  <> padTo 14 "Malëuţřait" <> padTo 10 (fst v4) <> snd v4
+  TIO.putStrLn $ padTo 10 "III" <> padTo 14 "Elartkha"   <> padTo 10 (fst v3) <> snd v3
+  TIO.putStrLn $ padTo 10 "II"  <> padTo 14 "ilákš"      <> padTo 10 (fst v2) <> snd v2
+  TIO.putStrLn $ padTo 10 "I"   <> padTo 14 "Iţkuîl"     <> padTo 10 (fst v1) <> snd v1
 
-      -- Gloss line
-      putStrLn ""
-      TIO.putStrLn $ "GLOSS: " <> buildGloss pf roots
+--------------------------------------------------------------------------------
+-- Helpers
+--------------------------------------------------------------------------------
 
--- | Select stem meaning from entry
 selectStem :: Stem -> RootEntry -> Text
 selectStem S0 = rootStem0
 selectStem S1 = rootStem1
 selectStem S2 = rootStem2
 selectStem S3 = rootStem3
 
--- | Build gloss string
-buildGloss :: ParsedFormative -> Map.Map Text RootEntry -> Text
-buildGloss pf roots =
-  let Root cr = pfRoot pf
-      (stem, version) = pfSlotII pf
-      (func, spec, ctx) = pfSlotIV pf
-      meaning = case lookupRoot cr roots of
-        Nothing -> "?"
-        Just e -> selectStem stem e
-      caGloss = case pfCaParsed pf of
-        Nothing -> ""
-        Just pc -> "-" <> showCa pc
-      caseGloss = case pfCase pf of
-        Nothing -> ""
-        Just c -> "-" <> T.pack (show c)
-  in T.concat
-    [ showSlotII stem version
-    , "-", cr, ":'", meaning, "'"
-    , "-", showSlotIV func spec ctx
-    , caGloss
-    , caseGloss
-    ]
-
--- | Format Slot II
-showSlotII :: Stem -> Version -> Text
-showSlotII stem ver = T.pack (showStem stem) <> "/" <> T.pack (showVersion ver)
-
--- | Format Slot IV
-showSlotIV :: Function -> Specification -> Context -> Text
-showSlotIV f s c = T.pack (showFunc f) <> "/" <> T.pack (showSpec s) <> "/" <> T.pack (showCtx c)
-
--- | Pad text to width
 padTo :: Int -> Text -> Text
 padTo n t = t <> T.replicate (max 0 (n - T.length t)) " "
 
--- Helper functions
-showStem :: Stem -> String
-showStem S0 = "S0"
-showStem S1 = "S1"
-showStem S2 = "S2"
-showStem S3 = "S3"
+showN :: Int -> Text
+showN = T.pack . show
 
-showVersion :: Version -> String
-showVersion PRC = "PRC"
-showVersion CPT = "CPT"
+showPrec :: Precision -> Text
+showPrec Short = "Short:  "
+showPrec Regular = "Regular:"
+showPrec Full = "Full:   "
 
-showFunc :: Function -> String
-showFunc STA = "STA"
-showFunc DYN = "DYN"
+section :: String -> IO ()
+section title = do
+  putStrLn $ replicate 50 '='
+  putStrLn $ "  " ++ title
+  putStrLn $ replicate 50 '='
+  putStrLn ""
 
-showSpec :: Specification -> String
-showSpec BSC = "BSC"
-showSpec CTE = "CTE"
-showSpec CSV = "CSV"
-showSpec OBJ = "OBJ"
+for_ :: [a] -> (a -> IO ()) -> IO ()
+for_ = flip mapM_
 
-showCtx :: Context -> String
-showCtx EXS = "EXS"
-showCtx FNC = "FNC"
-showCtx RPS = "RPS"
-showCtx AMG = "AMG"
+loadOrDie :: FilePath -> (FilePath -> IO (Either String a)) -> IO a
+loadOrDie path loader = do
+  result <- loader path
+  case result of
+    Left err -> putStrLn ("FATAL: " ++ err) >> exitFailure
+    Right a -> return a
 
--- | Show parsed Ca complex
-showCa :: ParsedCa -> Text
-showCa pc = T.intercalate "/" $ map T.pack
-  [ showConfig (pcConfig pc)
-  , showAffil (pcAffiliation pc)
-  , showPersp (pcPerspective pc)
-  , showExt (pcExtension pc)
-  , showEss (pcEssence pc)
-  ]
-
-showConfig :: Configuration -> String
-showConfig UNI = "UNI"
-showConfig DSS = "DSS"
-showConfig DSC = "DSC"
-showConfig DSF = "DSF"
-showConfig DDS = "DDS"
-showConfig DDC = "DDC"
-showConfig DDF = "DDF"
-showConfig DFS = "DFS"
-showConfig DFC = "DFC"
-showConfig DFF = "DFF"
-showConfig MSS = "MSS"
-showConfig MSC = "MSC"
-showConfig MSF = "MSF"
-showConfig MDS = "MDS"
-showConfig MDC = "MDC"
-showConfig MDF = "MDF"
-showConfig MFS = "MFS"
-showConfig MFC = "MFC"
-showConfig MFF = "MFF"
-
-showAffil :: Affiliation -> String
-showAffil CSL = "CSL"
-showAffil ASO = "ASO"
-showAffil COA = "COA"
-showAffil VAR = "VAR"
-
-showPersp :: Perspective -> String
-showPersp M_ = "M"
-showPersp G_ = "G"
-showPersp N_ = "N"
-showPersp A_ = "A"
-
-showExt :: Extension -> String
-showExt DEL = "DEL"
-showExt PRX = "PRX"
-showExt ICP = "ICP"
-showExt ATV = "ATV"
-showExt GRA = "GRA"
-showExt DPL = "DPL"
-
-showEss :: Essence -> String
-showEss NRM = "NRM"
-showEss RPV = "RPV"
+loadOrEmpty :: (Monoid a) => FilePath -> (FilePath -> IO (Either String a)) -> IO a
+loadOrEmpty path loader = do
+  result <- loader path
+  case result of
+    Left _ -> return mempty
+    Right a -> return a
