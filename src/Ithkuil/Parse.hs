@@ -69,7 +69,7 @@ parseSlotIV v = listToMaybe
       [ ((STA, BSC, ctx), vowelForm s 1)
       , ((STA, CTE, ctx), vowelForm s 2)
       , ((STA, CSV, ctx), vowelForm s 3)
-      , ((STA, OBJ, ctx), vowelForm s 5)
+      , ((STA, OBJ, ctx), vowelForm s 4)
       , ((DYN, OBJ, ctx), vowelForm s 6)
       , ((DYN, CSV, ctx), vowelForm s 7)
       , ((DYN, CTE, ctx), vowelForm s 8)
@@ -195,10 +195,10 @@ vvSeries vv = case normalizeAccents vv of
   "o"  -> 1; "ö" -> 1
   "ai" -> 2; "au" -> 2; "ei" -> 2; "eu" -> 2
   "ëu" -> 2; "ou" -> 2; "oi" -> 2; "iu" -> 2; "ui" -> 2
-  "ia" -> 3; "iä" -> 3; "ie" -> 3; "ië" -> 3
-  "ëo" -> 3; "iö" -> 3; "io" -> 3; "iü" -> 3
-  "ua" -> 4; "uä" -> 4; "ue" -> 4; "uë" -> 4
-  "ëa" -> 4; "uö" -> 4; "uo" -> 4; "uü" -> 4
+  "ia" -> 3; "ie" -> 3; "io" -> 3; "iö" -> 3
+  "eë" -> 3; "uö" -> 3; "uo" -> 3; "ue" -> 3; "ua" -> 3
+  "ao" -> 4; "aö" -> 4; "eo" -> 4; "eö" -> 4
+  "oë" -> 4; "öe" -> 4; "oe" -> 4; "öa" -> 4; "oa" -> 4
   _ -> 1
 
 -- | Check if a Vv value is a special Cs-root marker

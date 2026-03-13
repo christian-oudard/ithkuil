@@ -93,12 +93,12 @@ main = hspec $ do
 
     it "parses RPS context forms (series 3)" $ do
       parseSlotIV "ia" `shouldBe` Just (STA, BSC, RPS)
-      parseSlotIV "iä" `shouldBe` Just (STA, CTE, RPS)
+      parseSlotIV "ie" `shouldBe` Just (STA, CTE, RPS)
       parseSlotIV "ua" `shouldBe` Just (DYN, BSC, RPS)
 
     it "parses AMG context forms (series 4)" $ do
       parseSlotIV "ao" `shouldBe` Just (STA, BSC, AMG)
-      parseSlotIV "ae" `shouldBe` Just (STA, CTE, AMG)
+      parseSlotIV "aö" `shouldBe` Just (STA, CTE, AMG)
       parseSlotIV "oa" `shouldBe` Just (DYN, BSC, AMG)
 
   describe "Case Parsing" $ do

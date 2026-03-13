@@ -89,10 +89,10 @@ vowels =
 -- Used for encoding grammatical categories
 vowelFormTable :: [[Text]]
 vowelFormTable =
-  [ ["a",  "ä",  "e",  "ë",  "i",  "ö",  "o",  "ü",  "u" ]  -- Series 1
-  , ["ai", "au", "ei", "eu", "ëi", "ou", "oi", "iu", "ui"]  -- Series 2
-  , ["ia", "iä", "ie", "ië", "ëu", "uö", "uo", "ue", "ua"]  -- Series 3
-  , ["ao", "ae", "ea", "eo", "eë", "öe", "oe", "öa", "oa"]  -- Series 4
+  [ ["a",  "ä",  "e",  "i",  "ëi", "ö",  "o",  "ü",  "u" ]  -- Series 1
+  , ["ai", "au", "ei", "eu", "ëu", "ou", "oi", "iu", "ui"]  -- Series 2
+  , ["ia", "ie", "io", "iö", "eë", "uö", "uo", "ue", "ua"]  -- Series 3
+  , ["ao", "aö", "eo", "eö", "oë", "öe", "oe", "öa", "oa"]  -- Series 4
   ]
 
 -- | Get vowel form by series (1-4) and form (1-9)
