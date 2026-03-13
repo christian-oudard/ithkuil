@@ -118,32 +118,54 @@ scoreStem q stemIdx stem =
   let stemLow = T.toCaseFold stem
       frags = filter (not . T.null) . map T.strip $
               concatMap (T.splitOn ",") $ T.splitOn "/" stemLow
-      fragWords = [(f, wordsOf f) | f <- frags]
+      fragWords = [(f, wordsOf f, parenWords f) | f <- frags]
       stripParens t = let (before, rest) = T.breakOn "(" t
                       in if T.null rest then t else T.strip before
-      wordsOf = filter (\w -> T.any (\c -> c >= 'a' && c <= 'z') w) . T.words . stripParens
+      extractParens t = let (_, rest) = T.breakOn "(" t
+                        in if T.null rest then ""
+                           else T.takeWhile (/= ')') (T.drop 1 rest)
+      isWord w = T.any (\c -> c >= 'a' && c <= 'z') w
+      wordsOf = filter isWord . T.words . stripParens
+      parenWords t = let inside = extractParens t
+                     in if T.null inside then []
+                        else filter isWord . T.words $
+                             T.filter (\c -> c /= ',' && c /= '.') inside
       nFrags = length frags
-      fragScores = map scoreOneFrag fragWords
-      scoreOneFrag (frag, ws) =
-        let cleanFrag = T.strip (stripParens frag)
-        in scoreClean cleanFrag ws
+      fragScores = concatMap scoreOneFrag fragWords
+      scoreOneFrag (frag, ws, pws) =
+        let cleanFrag = T.strip . T.dropWhile (\c -> not (c >= 'a' && c <= 'z') && not (c >= 'A' && c <= 'Z'))
+                      $ stripParens frag
+        in scoreClean cleanFrag ws : scoreParen pws
       -- Check if any word is an inflected form of the query
-      isInflected w = q `T.isPrefixOf` w && any (`T.isSuffixOf` w) inflections
-      inflections = map (q <>) ["s", "es", "ed", "ing", "tion", "ness", "ment",
-                                "ity", "al", "ous", "ful", "er", "est", "ly"]
+      -- Handles both direct suffixing (play→playing) and e-dropping (consume→consuming)
+      isInflected w = w `elem` allInflections
+      eDropped = if T.length q > 1 && T.last q == 'e' then Just (T.init q) else Nothing
+      allInflections = map (q <>) ["s", "es", "ed", "ing", "tion", "ness", "ment",
+                                   "ity", "al", "ous", "ful", "er", "est", "ly"]
+                    ++ maybe [] (\base -> map (base <>)
+                         ["ing", "ed", "er", "est", "ation", "ity", "able"]) eDropped
       scoreClean cleanFrag ws
         | cleanFrag == q && nFrags <= 2 = stemIdx
-        | cleanFrag == q = 150 + stemIdx + nFrags
+        | cleanFrag == q && length ws <= 1 && nFrags >= 3 = 105 + stemIdx + nFrags
+        | cleanFrag == q = 50 + stemIdx + nFrags
+        -- Exact word match in phrase
         | not (null ws) && last ws == q && length ws <= 2 = 100 + stemIdx * 10 + length ws
-        -- Inflected match: "play" → "playing", "sleep" → "sleeping"
-        | any isInflected ws = 110 + stemIdx * 10 + length ws
+        | q `elem` ws && length ws <= 3 = 110 + stemIdx * 10 + length ws
+        -- Inflected match: "play" → "playing", "consume" → "consuming"
+        | any isInflected ws = 200 + stemIdx * 10 + length ws
         -- Head noun in longer phrase: "be in play" → lower confidence
-        | not (null ws) && last ws == q = 150 + stemIdx * 10 + length ws
-        | not (null ws) && head ws == q = 200 + stemIdx * 10 + length ws
-        | q `elem` ws = 300 + stemIdx * 10 + length ws
+        | not (null ws) && last ws == q = 250 + stemIdx * 10 + length ws
+        | not (null ws) && head ws == q = 300 + stemIdx * 10 + length ws
+        | q `elem` ws = 350 + stemIdx * 10 + length ws
         | any (\w -> q `T.isPrefixOf` w && T.length w < T.length q + 4) ws
           = 500 + stemIdx * 10 + length ws
         | otherwise = 9999
+      -- Score words inside parentheses (e.g., "natural ambulation (walk, crawl)")
+      scoreParen pws
+        | null pws = []
+        | q `elem` pws = [120 + stemIdx * 10 + length pws]
+        | any isInflected pws = [220 + stemIdx * 10 + length pws]
+        | otherwise = []
   in minimum (9999 : fragScores)
 
 -- | Search affixes by keyword in abbreviation, description, or degree meanings

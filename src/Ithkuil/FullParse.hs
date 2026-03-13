@@ -135,10 +135,16 @@ parseRemainingSlots parts stress = do
           slotIX <- parseSlotIX p3 stress
           Success (slotV, slotVI, [], Nothing, slotIX)
 
-    -- 4 parts: could be Ca-VxCs-VnCn-Vc or CsVx-Ca-VxCs-Vc
+    -- 4 parts: Ca-Vn-Cn-Vc, Ca-VxCs-VnCn-Vc, or CsVx-Ca-VxCs-Vc
     [p1, p2, p3, p4]
+      | isConsonant p1 && isVowelStart p2 && isConsonant p3 && isVowelStart p4 -> do
+          -- Ca-Vn-Cn-Vc/Vk (VnCn slot with final case/illocution)
+          slotVI <- parseFullCa p1
+          slotVIII <- parseVnCnFromParts p2 p3 stress
+          slotIX <- parseSlotIX p4 stress
+          Success ([], slotVI, [], slotVIII, slotIX)
       | isConsonant p1 && isVowelStart p2 -> do
-          -- Ca-VxCs-VnCn-Vc
+          -- Ca-VxCs-VnCn-Vc (Slot VII affixes then VnCn)
           slotVI <- parseFullCa p1
           slotVII <- parseAffixes p2
           slotVIII <- parseVnCnFromParts p3 p4 stress

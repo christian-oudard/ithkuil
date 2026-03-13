@@ -12,7 +12,8 @@ import Ithkuil.Adjuncts
 import Ithkuil.WordType
 import Ithkuil.Referentials
 import Ithkuil.Validation (StressError(..), validateStress)
-import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), composeFormative, composeReferential, applyStress)
+import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), composeFormative, composeReferential, applyStress, searchRootsRanked)
+import Ithkuil.Lexicon (loadRoots)
 
 main :: IO ()
 main = hspec $ do
@@ -1905,3 +1906,48 @@ main = hspec $ do
               , fSlotVIII = Just (VnCnAspect PRG (MoodVal FAC)) }
           w = composeFormative f
       T.isPrefixOf "wâ" w `shouldBe` True  -- ä + stress → â (circumflex)
+
+  describe "Root search ranking" $ do
+    it "resolves common English words to correct roots" $ do
+      Right roots <- loadRoots "data/roots.json"
+      let topRoot q = case searchRootsRanked q roots of
+            ((_,cr,_):_) -> cr
+            [] -> "?"
+      topRoot "walk" `shouldBe` "g"
+      topRoot "sleep" `shouldBe` "ḑḑ"
+      topRoot "consume" `shouldBe` "tx"
+      topRoot "cat" `shouldBe` "rr"
+      topRoot "house" `shouldBe` "rm"
+      topRoot "play" `shouldBe` "šv"
+      topRoot "mountain" `shouldBe` "jl"
+      topRoot "water" `shouldBe` "ţr"
+      topRoot "run" `shouldBe` "g"
+      topRoot "dog" `shouldBe` "zv"
+      topRoot "love" `shouldBe` "rkw"
+      topRoot "think" `shouldBe` "sl"
+      topRoot "give" `shouldBe` "n"
+
+  describe "Grammar example parsing" $ do
+    it "parses aspect examples (Arţtulawá = study+DYN+RTR)" $ do
+      case parseWord "Arţtulawá" of
+        PFormative pf -> do
+          pfRoot pf `shouldBe` Root "rţt"
+          pfSlotIV pf `shouldBe` (DYN, BSC, EXS)
+          pfStress pf `shouldBe` Ultimate
+        _ -> expectationFailure "Expected formative"
+
+    it "parses mood examples (Yuçkahlá = ill+MNO+SUB)" $ do
+      case parseWord "Yuçkahlá" of
+        PFormative pf -> do
+          pfRoot pf `shouldBe` Root "çk"
+          pfStress pf `shouldBe` Ultimate
+        _ -> expectationFailure "Expected formative"
+
+    it "parses PRX extension (Arţtudewá = study+DYN+PRX+HAB)" $ do
+      case parseWord "Arţtudewá" of
+        PFormative pf -> do
+          pfRoot pf `shouldBe` Root "rţt"
+          case pfCaParsed pf of
+            Just pc -> pcExtension pc `shouldBe` PRX
+            Nothing -> expectationFailure "Ca should be parsed"
+        _ -> expectationFailure "Expected formative"
