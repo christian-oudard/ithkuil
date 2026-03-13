@@ -1787,3 +1787,18 @@ main = hspec $ do
                Just (VnCnAspect asp _) -> asp `shouldBe` RTR
                other -> expectationFailure $ "Expected RTR, got: " ++ show other
         _ -> expectationFailure $ "Aspect round-trip: " ++ show parsed
+
+    it "round-trips Slot VII affix with degree" $ do
+      let affix = Affix { affixVowel = "ä", affixConsonant = "fm", affixType = Type1Affix }
+          f = (minimalFormative "g")
+              { fSlotIV = (DYN, BSC, EXS)
+              , fSlotVII = [affix]
+              , fStress = Ultimate
+              , fSlotIX = Right (IllocVal ASR OBS) }
+          w = composeFormative f
+          parsed = parseWord w
+      case parsed of
+        PFormative pf -> do
+          let afxPairs = extractAffixes (pfCa pf)
+          length afxPairs `shouldSatisfy` (>= 1)
+        _ -> expectationFailure $ "Affix round-trip: " ++ show parsed

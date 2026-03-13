@@ -16,6 +16,7 @@ import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), referentLabel)
 import Ithkuil.WordType
 import Ithkuil.Lexicon
 import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), searchRoots, searchAffixes, dumpGrammarTable, composeFormative)
+import Ithkuil.Phonology (vowelForm)
 import Ithkuil.Script (renderFormativeSvg)
 
 -- ANSI color helpers (only used when outputting to terminal)
@@ -116,7 +117,12 @@ showHelp = do
   TIO.putStrLn "  --grammar <cat>     Dump all entries in a grammar category"
   TIO.putStrLn "  --script <word>     Render a formative as SVG script"
   TIO.putStrLn "  --compose <root> [opts]  Compose a formative from grammar specs"
-  TIO.putStrLn "    opts: S1-S3 DYN STA BSC CTE CSV OBJ ABS ERG DAT ALL LOC IRG DIR OBS etc."
+  TIO.putStrLn "    opts: S0-S3 PRC CPT DYN STA BSC CTE CSV OBJ FRA +Cs/D ~Cs/D"
+  TIO.putStrLn "          UNI DPX MSS G N A DEL PRX CSL ASO COA VAR NRM RPV"
+  TIO.putStrLn "          THM ABS ERG DAT LOC ALL ABL PER ... (68 cases)"
+  TIO.putStrLn "          OBS IRG DIR ADM DEC HOR POT CNJ VER (illocutions)"
+  TIO.putStrLn "          RTR PRS HAB PRG IMM PCS REG ATP (aspects)"
+  TIO.putStrLn "          +Cs/D = Slot VII affix, ~Cs/D = Slot V affix"
   TIO.putStrLn "  --help, -h          Show this help"
 
 handleScript :: [String] -> IO ()
@@ -293,7 +299,35 @@ applyOneFlag "REG" f = f { fSlotVIII = Just (VnCnAspect REG (MoodVal FAC)) }
 applyOneFlag "ATP" f = f { fSlotVIII = Just (VnCnAspect ATP (MoodVal FAC)) }
 -- Framed relation (antepenultimate stress)
 applyOneFlag "FRA" f = f { fStress = Antepenultimate }
-applyOneFlag _ f = f  -- Ignore unknown flags
+-- Affix: +Cs/D for Slot VII (Ca-scoped), ~Cs/D for Slot V (stem-scoped)
+applyOneFlag flag f
+  | Just rest <- T.stripPrefix "+" flag = case parseAffixFlag rest of
+      Just afx -> f { fSlotVII = fSlotVII f ++ [afx] }
+      Nothing -> f
+  | Just rest <- T.stripPrefix "~" flag = case parseAffixFlag rest of
+      Just afx -> f { fSlotV = fSlotV f ++ [afx] }
+      Nothing -> f
+  | otherwise = f  -- Ignore unknown flags
+
+-- | Parse affix flag like "fm/2" or "fm/2₂" → Affix with vowel form
+parseAffixFlag :: Text -> Maybe Affix
+parseAffixFlag t = case T.splitOn "/" t of
+  [cs, degStr] ->
+    let (degDigit, typeStr) = T.span (\c -> c >= '0' && c <= '9') (T.toLower degStr)
+        deg = case reads (T.unpack degDigit) :: [(Int, String)] of
+          [(d, "")] | d >= 0 && d <= 9 -> d
+          _ -> -1
+        atype = case typeStr of
+          "₂" -> 2; "₃" -> 3; _ -> 1
+        vx = if deg == 0 then case atype of
+               1 -> "ae"; 2 -> "ea"; 3 -> "üo"; _ -> "ae"
+             else vowelForm atype deg
+    in if deg >= 0 then Just (Affix vx (T.toLower cs) (toAffixType atype))
+       else Nothing
+  _ -> Nothing
+  where
+    toAffixType 1 = Type1Affix; toAffixType 2 = Type2Affix
+    toAffixType 3 = Type3Affix; toAffixType _ = Type1Affix
 
 -- | Set validation on existing illocution, or default to ASR
 setVal :: Validation -> Formative -> Formative
