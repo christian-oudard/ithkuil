@@ -59,7 +59,8 @@ data ParsedWord
   | PBias Bias
   | PRegister Register
   | PModular [SlotVIII] Text Text  -- parsed VnCn pairs, final vowel gloss, raw text
-  | PReferential PersonalRef (Maybe Case) Text  -- referent, parsed case, raw case vowel
+  | PReferential PersonalRef (Maybe Case) Text (Maybe (Text, Maybe Case, Maybe PersonalRef))
+    -- ^ referent, case, raw case vowel, optional (scope w/y, case2, ref2)
   | PAffixual Text Int Text     -- affix Cs, degree, optional scope vowel
   | PMultipleAffix (Text, Text) Text [(Text, Text)] (Maybe Text)
     -- ^ first affix (Vx,Cs), Cz scope, additional affixes (Vx,Cs), optional Vz scope
@@ -322,13 +323,13 @@ parseReferentialWord word =
       (refs, tail') = consumeRefs rest0
   in case (refs, tail') of
     (ref:_, [v]) ->
-      PReferential ref (parseCase v) v
-    (ref:_, [v, wy, _v2]) | wy `elem` ["w", "y"] ->
+      PReferential ref (parseCase v) v Nothing
+    (ref:_, [v, wy, v2]) | wy `elem` ["w", "y"] ->
       -- w = RPV effect on second case, y = perspective scope
-      PReferential ref (parseCase v) v
-    (ref:_, [v, wy, _v2, c2]) | wy `elem` ["w", "y"], isRefC1 c2 ->
+      PReferential ref (parseCase v) v (Just (wy, parseCase v2, Nothing))
+    (ref:_, [v, wy, v2, c2]) | wy `elem` ["w", "y"], isRefC1 c2 ->
       -- Extended: C1-Vc-w/y-Vc2-C2 (dual referential with scope)
-      PReferential ref (parseCase v) v
+      PReferential ref (parseCase v) v (Just (wy, parseCase v2, lookupRefC1 c2))
     _ -> PUnparsed word
 
 -- | Parse an affixual adjunct word (Vx-Cs or Vx-Cs-Vs)
@@ -560,7 +561,8 @@ glossWord roots affixes pw = case pw of
   PRegister r -> T.pack (show r) <> " register"
   PModular pairs fv _ -> "MOD:" <> T.intercalate "+" (map glossSlotVIII pairs)
                        <> (if T.null fv then "" else "-" <> fv)
-  PReferential ref mc vc -> glossReferential ref mc vc
+  PReferential ref mc vc ext -> glossReferential ref mc vc
+    <> maybe "" glossRefExt ext
   PAffixual cs deg _ ->
     let abbr = case lookupAffix cs affixes of
           Just entry -> affixAbbrev entry
@@ -685,7 +687,8 @@ glossWordCompact roots _affixes pw = case pw of
     in stemMark <> shortMeaning <> caseOrIlloc
   PBias b -> T.pack (show b)
   PRegister r -> T.pack (show r)
-  PReferential ref mc _vc -> glossReferential ref mc ""
+  PReferential ref mc _vc ext -> glossReferential ref mc ""
+    <> maybe "" glossRefExt ext
   PModular pairs fv _raw -> T.intercalate "+" (map glossSlotVIII pairs)
                           <> (if T.null fv then "" else "-" <> fv)
   PAffixual cs deg _ -> cs <> "/" <> T.pack (show deg)
@@ -799,6 +802,14 @@ showCase (Relational c) = show c
 showCase (Affinitive c) = show c
 showCase (SpatioTemporal1 c) = show c
 showCase (SpatioTemporal2 c) = show c
+
+-- | Gloss an extended referential suffix (w/y scope + second case/referent)
+glossRefExt :: (Text, Maybe Case, Maybe PersonalRef) -> Text
+glossRefExt (wy, mc2, mRef2) =
+  let scope = if wy == "w" then "\\RPV" else ""
+      case2 = maybe "" (\c -> "-" <> T.pack (showCase c)) mc2
+      ref2 = maybe "" (\(PersonalRef r _) -> "-" <> referentLabel r) mRef2
+  in scope <> case2 <> ref2
 
 -- | Gloss a referential word
 glossReferential :: PersonalRef -> Maybe Case -> Text -> Text

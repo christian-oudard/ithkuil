@@ -102,7 +102,18 @@ glossOneWord roots affixes word = do
       mapM_ (\pf -> showFormativeDetail roots affixes pf) pfs
     PBias b -> TIO.putStrLn $ "    Bias: " <> T.pack (show b)
     PRegister r -> TIO.putStrLn $ "    Register: " <> T.pack (show r)
-    PReferential ref mc vc -> showReferentialDetail ref mc vc
+    PReferential ref mc vc ext -> do
+      showReferentialDetail ref mc vc
+      case ext of
+        Just (wy, mc2, mRef2) -> do
+          TIO.putStrLn $ "    Scope: " <> wy
+          case mc2 of
+            Just c2 -> TIO.putStrLn $ "    Case2: " <> T.pack (showCaseDetail c2)
+            Nothing -> return ()
+          case mRef2 of
+            Just (PersonalRef r _) -> TIO.putStrLn $ "    Ref2: " <> referentLabel r
+            Nothing -> return ()
+        Nothing -> return ()
     PModular pairs fv _raw -> do
       mapM_ (\s8 -> TIO.putStrLn $ "    VnCn: " <> glossSlotVIII s8) pairs
       when (not (T.null fv)) $ TIO.putStrLn $ "    Final: " <> fv

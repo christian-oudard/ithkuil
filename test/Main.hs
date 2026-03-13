@@ -383,21 +383,21 @@ main = hspec $ do
     it "parses simple referential 'la' as 1m-THM" $ do
       let pw = parseWord "la"
       case pw of
-        PReferential ref mc _ -> do
+        PReferential ref mc _ _ -> do
           ref `shouldBe` PersonalRef R1m NEU
           mc `shouldBe` Just (Transrelative THM)
         _ -> expectationFailure $ "Expected PReferential, got: " ++ show pw
 
     it "parses 'se' as 2m-ABS" $ do
       case parseWord "se" of
-        PReferential ref mc _ -> do
+        PReferential ref mc _ _ -> do
           ref `shouldBe` PersonalRef R2m NEU
           mc `shouldBe` Just (Transrelative ABS)
         pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
 
     it "parses 'ro' as 1m/BEN-ERG" $ do
       case parseWord "ro" of
-        PReferential ref mc _ -> do
+        PReferential ref mc _ _ -> do
           ref `shouldBe` PersonalRef R1m BEN
           mc `shouldBe` Just (Transrelative ERG)
         pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
@@ -405,7 +405,7 @@ main = hspec $ do
     it "parses extended referential 'layá' as 1m-THM" $ do
       classifyWord "layá" `shouldBe` WReferential
       case parseWord "layá" of
-        PReferential ref mc _ -> do
+        PReferential ref mc _ _ -> do
           ref `shouldBe` PersonalRef R1m NEU
           mc `shouldBe` Just (Transrelative THM)
         pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
@@ -413,9 +413,14 @@ main = hspec $ do
     it "parses referential with second referent 'miyüs'" $ do
       classifyWord "miyüs" `shouldBe` WReferential
       case parseWord "miyüs" of
-        PReferential ref mc _ -> do
+        PReferential ref mc _ ext -> do
           ref `shouldBe` PersonalRef Rma NEU
           mc `shouldBe` Just (Transrelative AFF)
+          case ext of
+            Just ("y", mc2, mRef2) -> do
+              mc2 `shouldBe` Just (Transrelative DAT)
+              mRef2 `shouldBe` Just (PersonalRef R2m NEU)
+            _ -> expectationFailure $ "Expected extended referential, got: " ++ show ext
         pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
 
   describe "Modular Adjunct Parsing" $ do
