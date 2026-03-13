@@ -115,10 +115,15 @@ main = hspec $ do
       parseCase "ei" `shouldBe` Just (Appositive GEN)
       parseCase "ui" `shouldBe` Just (Appositive PAR)
 
+    it "parses relational cases with glottal stop" $ do
+      parseCase "a'a" `shouldBe` Just (Relational PRN)
+      parseCase "e'e" `shouldBe` Just (Relational COR)
+      parseCase "i'i" `shouldBe` Just (Relational CPS)
+
     it "parses spatio-temporal cases with glottal stop" $ do
-      parseCase "a'a" `shouldBe` Just (SpatioTemporal1 LOC)
-      parseCase "e'e" `shouldBe` Just (SpatioTemporal1 ALL)
-      parseCase "i'i" `shouldBe` Just (SpatioTemporal2 CNR)
+      parseCase "ia'a" `shouldBe` Just (SpatioTemporal1 LOC)
+      parseCase "ie'e" `shouldBe` Just (SpatioTemporal1 ALL)
+      parseCase "ua'a" `shouldBe` Just (SpatioTemporal2 CNR)
 
   describe "Case Rendering" $ do
     it "renders all transrelative cases" $ do
@@ -126,10 +131,14 @@ main = hspec $ do
       renderCase (Transrelative ERG) `shouldBe` "o"
       renderCase (Transrelative IND) `shouldBe` "u"
 
+    it "renders relational cases" $ do
+      renderCase (Relational PRN) `shouldBe` "a'a"
+      renderCase (Relational COR) `shouldBe` "e'e"
+
     it "renders spatio-temporal cases" $ do
-      renderCase (SpatioTemporal1 LOC) `shouldBe` "a'a"
-      renderCase (SpatioTemporal2 CNR) `shouldBe` "i'i"
-      renderCase (SpatioTemporal2 PLM) `shouldBe` "a'u"
+      renderCase (SpatioTemporal1 LOC) `shouldBe` "ia'a"
+      renderCase (SpatioTemporal2 CNR) `shouldBe` "ua'a"
+      renderCase (SpatioTemporal2 PLM) `shouldBe` "uü'ü"
 
     it "round-trips non-colliding cases through parse/render" $ do
       let transrelative = map Transrelative allOf
@@ -462,6 +471,16 @@ main = hspec $ do
           cr `shouldBe` "ksk"
           pfIllocVal pf `shouldBe` Just (ASR, OBS)
         Nothing -> expectationFailure "Should parse Wekská"
+
+    it "parses glottal stop case marker (final position)" $ do
+      case parseFormativeReal "lala'a" of
+        Just pf -> pfCase pf `shouldBe` Just (Relational PRN)
+        Nothing -> expectationFailure "Should parse lala'a"
+
+    it "parses glottal stop case marker (medial position)" $ do
+      case parseFormativeReal "la'la" of
+        Just pf -> pfCase pf `shouldBe` Just (Relational PRN)
+        Nothing -> expectationFailure "Should parse la'la"
 
     it "parses longer formatives with explicit Vr" $ do
       case parseFormativeReal "kšilo" of

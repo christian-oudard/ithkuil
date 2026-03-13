@@ -299,16 +299,41 @@ splitCrCa cluster
 
 -- | Split remaining conjuncts into Ca complex and Vc
 -- The last vowel cluster is typically Vc (case), rest is Ca
--- May have a final consonant after the case vowel (Slot X)
+-- Handles glottal stop cases: a standalone ' in the Ca area shifts the case
+-- to Relational/Affinitive series (cases 37-52)
 splitCaVc :: [Text] -> ([Text], [Text])
 splitCaVc parts =
   let isVowelCluster t = not (T.null t) && isVowelChar (T.head t)
-      revParts = reverse parts
+      -- Merge V-'-V patterns into single Vc before splitting
+      merged = mergeGlottalVowels parts
+      revParts = reverse merged
       -- Skip trailing consonants (Slot X), then find the case vowel
       (_, afterC) = span (not . isVowelCluster) revParts
       (vcRev, caRev) = span isVowelCluster afterC
-      -- Ca = everything before Vc (plus trailing consonants go back to Ca? No, they're Slot X)
-  in (reverse caRev, reverse vcRev)
+      -- Check if there's a glottal stop in the Ca area — if so, apply to Vc
+      -- Glottal stop may be standalone ("'") or prefix of a consonant ("'l")
+      hasGlottal = any containsGlottal (reverse caRev)
+      caClean = map stripGlottal (filter (not . T.null) (map stripGlottal (reverse caRev)))
+      containsGlottal t = "'" `T.isInfixOf` t
+      stripGlottal t = T.filter (/= '\'') t
+      vcFinal = if hasGlottal
+        then map addGlottalToVc (reverse vcRev)
+        else reverse vcRev
+  in (caClean, vcFinal)
+  where
+    -- Add glottal stop to a Vc vowel for case groups 5-8
+    -- Single vowels: "a" → "a'a", diphthongs: "ëi" → "ë'i"
+    addGlottalToVc vc
+      | T.length vc == 1 = vc <> "'" <> vc
+      | T.length vc >= 2 = T.take 1 vc <> "'" <> T.drop 1 vc
+      | otherwise = vc
+    -- Merge vowel-glottal-vowel into single "V'V" conjunct
+    mergeGlottalVowels (v1:"'":v2:rest)
+      | not (T.null v1) && isVowelChar (T.head v1)
+      , not (T.null v2) && isVowelChar (T.head v2)
+      = mergeGlottalVowels ((v1 <> "'" <> v2) : rest)
+    mergeGlottalVowels (x:rest) = x : mergeGlottalVowels rest
+    mergeGlottalVowels [] = []
 
 -- | Parse a simple word structure: Vv-Cr-Vr-Ca
 -- Returns (SlotII, Root, SlotIV, partial SlotVI)
@@ -414,26 +439,26 @@ casePatterns =
   , (Adverbial CSM, "ëa"), (Adverbial CON, "uö")
   , (Adverbial AVR, "uo"), (Adverbial CVS, "uü")
   , (Adverbial SIT, "ui")
-  -- Relational (Series 5)
-  , (Relational PRN, "ao"), (Relational DSP, "aö")
-  , (Relational COR, "eo"), (Relational CPS, "eö")
-  , (Relational COM, "oë"), (Relational UTL, "öe")
-  , (Relational PRD, "oe"), (Relational RLT, "öa")
-  -- Affinitive (Series 6)
-  , (Affinitive ACT, "oa"), (Affinitive ASI, "öä")
-  , (Affinitive ESS, "ea"), (Affinitive TRM, "eä")
-  , (Affinitive SEL, "ëë"), (Affinitive CFM, "öö")
-  , (Affinitive DEP, "ëö"), (Affinitive VOC, "öë")
-  -- Spatio-Temporal I (Series 7)
-  , (SpatioTemporal1 LOC, "a'a"), (SpatioTemporal1 ATD, "ä'ä")
-  , (SpatioTemporal1 ALL, "e'e"), (SpatioTemporal1 ABL, "ë'ë")
-  , (SpatioTemporal1 ORI, "ë'a"), (SpatioTemporal1 IRL, "ö'ö")
-  , (SpatioTemporal1 INV, "o'o"), (SpatioTemporal1 NAV, "ü'ü")
-  -- Spatio-Temporal II (Series 8)
-  , (SpatioTemporal2 CNR, "i'i"), (SpatioTemporal2 ASS, "u'u")
-  , (SpatioTemporal2 PER, "a'i"), (SpatioTemporal2 PRO, "i'a")
-  , (SpatioTemporal2 PCV, "e'i"), (SpatioTemporal2 PCR, "i'e")
-  , (SpatioTemporal2 ELP, "u'a"), (SpatioTemporal2 PLM, "a'u")
+  -- Relational (Series 1 vowels + glottal stop)
+  , (Relational PRN, "a'a"), (Relational DSP, "ä'ä")
+  , (Relational COR, "e'e"), (Relational CPS, "i'i")
+  , (Relational COM, "ë'i"), (Relational UTL, "ö'ö")
+  , (Relational PRD, "o'o"), (Relational RLT, "u'u")
+  -- Affinitive (Series 2 vowels + glottal stop)
+  , (Affinitive ACT, "ai'i"), (Affinitive ASI, "au'u")
+  , (Affinitive ESS, "ei'i"), (Affinitive TRM, "eu'u")
+  , (Affinitive SEL, "ëu'u"), (Affinitive CFM, "ou'u")
+  , (Affinitive DEP, "oi'i"), (Affinitive VOC, "ui'i")
+  -- Spatio-Temporal I (Series 3 vowels + glottal stop)
+  , (SpatioTemporal1 LOC, "ia'a"), (SpatioTemporal1 ATD, "iä'ä")
+  , (SpatioTemporal1 ALL, "ie'e"), (SpatioTemporal1 ABL, "ië'ë")
+  , (SpatioTemporal1 ORI, "ëo'o"), (SpatioTemporal1 IRL, "iö'ö")
+  , (SpatioTemporal1 INV, "io'o"), (SpatioTemporal1 NAV, "iü'ü")
+  -- Spatio-Temporal II (Series 4 vowels + glottal stop)
+  , (SpatioTemporal2 CNR, "ua'a"), (SpatioTemporal2 ASS, "uä'ä")
+  , (SpatioTemporal2 PER, "ue'e"), (SpatioTemporal2 PRO, "uë'ë")
+  , (SpatioTemporal2 PCV, "ëa'a"), (SpatioTemporal2 PCR, "uö'ö")
+  , (SpatioTemporal2 ELP, "uo'o"), (SpatioTemporal2 PLM, "uü'ü")
   ]
 
 -- | Parse case from Vc vowel (normalizes accents)
