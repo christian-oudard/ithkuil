@@ -152,16 +152,28 @@ main = hspec $ do
       renderCase (Relational COR) `shouldBe` "e'e"
 
     it "renders spatio-temporal cases" $ do
-      renderCase (SpatioTemporal1 LOC) `shouldBe` "ia'a"
-      renderCase (SpatioTemporal2 CNR) `shouldBe` "ua'a"
-      renderCase (SpatioTemporal2 PLM) `shouldBe` "uü'ü"
+      renderCase (SpatioTemporal1 LOC) `shouldBe` "i'a"
+      renderCase (SpatioTemporal2 CNR) `shouldBe` "a'o"
+      renderCase (SpatioTemporal2 PLM) `shouldBe` "ö'a"
 
     it "round-trips non-colliding cases through parse/render" $ do
       let transrelative = map Transrelative allOf
           appositive = map Appositive allOf
+          associative = map Associative allOf
+          adverbial = map Adverbial allOf
+          relational = map Relational allOf
+          affinitive = map Affinitive allOf
+          spatioTemp1 = map SpatioTemporal1 allOf
+          spatioTemp2 = map SpatioTemporal2 allOf
       let roundTrip c = parseCase (renderCase c) == Just c
       all roundTrip transrelative `shouldBe` True
       all roundTrip appositive `shouldBe` True
+      all roundTrip associative `shouldBe` True
+      all roundTrip adverbial `shouldBe` True
+      all roundTrip relational `shouldBe` True
+      all roundTrip affinitive `shouldBe` True
+      all roundTrip spatioTemp1 `shouldBe` True
+      all roundTrip spatioTemp2 `shouldBe` True
 
   describe "Ca Complex Parsing" $ do
     it "parses default Ca 'l'" $
