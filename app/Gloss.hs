@@ -107,6 +107,7 @@ glossOneWord roots affixes word = do
       mapM_ (\s8 -> TIO.putStrLn $ "    VnCn: " <> glossSlotVIII s8) pairs
     PAffixual cs deg _ -> TIO.putStrLn $ "    Affix: " <> cs <> " degree " <> T.pack (show deg)
     PCarrier ct content -> TIO.putStrLn $ "    Carrier: " <> T.pack (show ct) <> " " <> content
+    PMoodCaseScope ms -> TIO.putStrLn $ "    Mood/Case-Scope: " <> glossMoodOrScope ms
     PUnparsed _ -> TIO.putStrLn $ "    (unparsed)"
   TIO.putStrLn $ "    GLOSS: " <> glossWord roots affixes parsed
 

@@ -42,6 +42,7 @@ data WordType
   | WAffixualAdjunct    -- ^ Affixual adjunct
   | WReferential        -- ^ Personal referential
   | WCarrierAdjunct     -- ^ Carrier/quotative/naming adjunct
+  | WMoodCaseScopeAdj   -- ^ Mood/case-scope adjunct (hr + vowel)
   | WUnknown            -- ^ Could not classify
   deriving (Show, Eq, Ord)
 
@@ -55,6 +56,7 @@ data ParsedWord
   | PReferential PersonalRef (Maybe Case) Text  -- referent, parsed case, raw case vowel
   | PAffixual Text Int Text     -- affix Cs, degree, optional scope vowel
   | PCarrier CarrierType Text   -- carrier type, content
+  | PMoodCaseScope MoodOrScope  -- standalone mood/case-scope adjunct
   | PUnparsed Text              -- Could not parse
   deriving (Show, Eq)
 
@@ -65,6 +67,7 @@ classifyWord word
   | isRegisterAdjunctWord word = WRegisterAdjunct
   | isCarrierAdjunct word = WCarrierAdjunct
   | isBiasAdjunct word = WBiasAdjunct
+  | isMoodCaseScopeAdjunct word = WMoodCaseScopeAdj
   | isModularAdjunct word = WModularAdjunct
   | isAffixualAdjunct word = WAffixualAdjunct
   | isReferentialWord word = WReferential
@@ -111,6 +114,16 @@ isReferentialWord word =
 -- | Check if a consonant is a valid referential C1
 isRefC1 :: Text -> Bool
 isRefC1 c = c `elem` map snd refC1All
+
+-- | Mood/case-scope adjuncts: "hr" + vowel (Sec. 8.5)
+-- These set standalone mood or case-scope for the following formative
+isMoodCaseScopeAdjunct :: Text -> Bool
+isMoodCaseScopeAdjunct word =
+  let conjs = splitConjuncts word
+  in case conjs of
+    [c, v] | c == "hr"
+             && not (T.null v) && isVowelChar (T.head v) -> True
+    _ -> False
 
 -- | Affixual adjuncts: V-C or V-C-V pattern where C is NOT a Cn consonant
 -- Structure: Vx (degree) + Cs (affix consonant) + optional Vs (scope)
@@ -169,6 +182,7 @@ parseSingleWord word = case classifyWord word of
   WModularAdjunct -> parseModularWord word
   WAffixualAdjunct -> parseAffixualWord word
   WCarrierAdjunct -> parseCarrierWord word
+  WMoodCaseScopeAdj -> parseMoodCaseScopeAdj word
   _ -> PUnparsed word
 
 -- | Parse a concatenated word chain (e.g., "hlamröé-úçtļořëi")
@@ -244,6 +258,34 @@ parseCarrierWord word =
           Nothing -> PUnparsed word
     _ -> PUnparsed word
 
+-- | Parse a mood/case-scope adjunct (hr + vowel)
+-- Vowel determines mood (Series 1) or case-scope (Series 2)
+parseMoodCaseScopeAdj :: Text -> ParsedWord
+parseMoodCaseScopeAdj word =
+  let conjs = splitConjuncts word
+  in case conjs of
+    [_, v] -> case parseMcsVowel v of
+      Just ms -> PMoodCaseScope ms
+      Nothing -> PUnparsed word
+    _ -> PUnparsed word
+  where
+    parseMcsVowel v = case v of
+      -- Moods (Series 1 vowels)
+      "a"  -> Just (MoodVal FAC)
+      "e"  -> Just (MoodVal SUB)
+      "i"  -> Just (MoodVal ASM)
+      "o"  -> Just (MoodVal SPC)
+      "ö"  -> Just (MoodVal COU)
+      "u"  -> Just (MoodVal HYP)
+      -- Case-scopes (Series 2 vowels)
+      "ai" -> Just (CaseScope CCN)
+      "ei" -> Just (CaseScope CCA)
+      "iu" -> Just (CaseScope CCS)
+      "oi" -> Just (CaseScope CCQ)
+      "ü"  -> Just (CaseScope CCP)
+      "ui" -> Just (CaseScope CCV)
+      _    -> Nothing
+
 -- | Parse a modular adjunct word
 -- 2-slot form: Vn-Cn (aspect or valence+mood)
 -- 4-slot form: Vn-Cn-Vn-Cn (two VnCn pairs)
@@ -304,6 +346,7 @@ glossWord roots affixes pw = case pw of
           Nothing -> cs
     in abbr <> "/" <> T.pack (show deg)
   PCarrier ct _ -> "CARRIER:" <> T.pack (show ct)
+  PMoodCaseScope ms -> glossMoodOrScope ms
   PUnparsed t -> "?" <> t
 
 -- | Gloss a formative with root lookup
@@ -412,6 +455,7 @@ glossWordCompact roots _affixes pw = case pw of
   PModular pairs _raw -> T.intercalate "+" (map glossSlotVIII pairs)
   PAffixual cs deg _ -> cs <> "/" <> T.pack (show deg)
   PCarrier _ct content -> content
+  PMoodCaseScope ms -> glossMoodOrScope ms
   PUnparsed t -> "?" <> t
 
 -- | Extract VxCs affix pairs from Ca rest conjuncts

@@ -651,6 +651,22 @@ main = hspec $ do
         Just pf -> pfSlotV pf `shouldBe` []
         Nothing -> expectationFailure "Should parse malai"
 
+  describe "Mood/Case-Scope Adjuncts" $ do
+    it "classifies hr+vowel as mood/case-scope adjunct" $ do
+      classifyWord "hrei" `shouldBe` WMoodCaseScopeAdj
+      classifyWord "hra" `shouldBe` WMoodCaseScopeAdj
+
+    it "parses mood/case-scope adjuncts" $ do
+      case parseWord "hrei" of
+        PMoodCaseScope (CaseScope CCA) -> return ()
+        pw -> expectationFailure $ "Expected CCA, got: " ++ show pw
+      case parseWord "hra" of
+        PMoodCaseScope (MoodVal FAC) -> return ()
+        pw -> expectationFailure $ "Expected FAC, got: " ++ show pw
+      case parseWord "hru" of
+        PMoodCaseScope (MoodVal HYP) -> return ()
+        pw -> expectationFailure $ "Expected HYP, got: " ++ show pw
+
   describe "Cc Parsing" $ do
     it "classifies concatenation types" $ do
       parseCc "h"  `shouldBe` (Just Type1, Nothing)
