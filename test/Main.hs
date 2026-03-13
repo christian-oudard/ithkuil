@@ -324,9 +324,11 @@ main = hspec $ do
       classifyWord "kff" `shouldBe` WBiasAdjunct
       classifyWord "lf"  `shouldBe` WBiasAdjunct
 
-    it "classifies h-initial words as register adjuncts" $ do
-      classifyWord "hlw" `shouldBe` WRegisterAdjunct
-      classifyWord "hrw" `shouldBe` WRegisterAdjunct
+    it "classifies h+vowel words as register adjuncts" $ do
+      classifyWord "ha" `shouldBe` WRegisterAdjunct
+      classifyWord "he" `shouldBe` WRegisterAdjunct
+      classifyWord "hü" `shouldBe` WRegisterAdjunct
+      classifyWord "hai" `shouldBe` WRegisterAdjunct
 
     it "classifies V-Cn patterns as modular adjuncts" $ do
       classifyWord "ah"  `shouldBe` WModularAdjunct

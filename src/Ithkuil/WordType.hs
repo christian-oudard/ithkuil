@@ -68,11 +68,13 @@ classifyWord word
 isBiasAdjunct :: Text -> Bool
 isBiasAdjunct word = not (T.null word) && not (T.any isVowelChar word)
 
--- | Register adjuncts: specific h-initial forms
--- hw, hlw, hrw, hmw, hnw, hňw, hww, or bare "h"
+-- | Register adjuncts: h + vowel form (per Sec. 8.3)
+-- Initial: ha, he, hi, ho, hu
+-- Final: hai, hei, hiu, hoi, hui, hü
 isRegisterAdjunctWord :: Text -> Bool
 isRegisterAdjunctWord word =
-  word `elem` ["hw", "hlw", "hrw", "hmw", "hnw", "hňw", "hww", "h"]
+  word `elem` ["ha", "he", "hi", "ho", "hu",
+               "hai", "hei", "hiu", "hoi", "hui", "hü"]
 
 -- | Carrier adjuncts start with hl, hm, hn, or hň followed by vowel
 isCarrierAdjunct :: Text -> Bool
@@ -135,16 +137,21 @@ parseWord word = case classifyWord word of
   WModularAdjunct -> parseModularWord word
   _ -> PUnparsed word
 
--- | Parse a register adjunct
+-- | Parse a register adjunct (initial and final forms)
 parseRegister :: Text -> Maybe Register
-parseRegister "hw"  = Just NRR
-parseRegister "hlw" = Just DSV
-parseRegister "hrw" = Just PTH
-parseRegister "hmw" = Just CGT
-parseRegister "hnw" = Just SPF
-parseRegister "hňw" = Just EXM
-parseRegister "hww" = Just MTR
-parseRegister "h"   = Just END
+-- Initial forms
+parseRegister "ha"  = Just DSV
+parseRegister "he"  = Just PNT
+parseRegister "hi"  = Just SPF
+parseRegister "ho"  = Just EXM
+parseRegister "hu"  = Just CGT
+-- Final forms
+parseRegister "hai" = Just DSV
+parseRegister "hei" = Just PNT
+parseRegister "hiu" = Just SPF
+parseRegister "hoi" = Just EXM
+parseRegister "hui" = Just CGT
+parseRegister "hü"  = Just END
 parseRegister _     = Nothing
 
 -- | Parse a referential word (simple form: C1-Vc, dual form: C1-C1-Vc)

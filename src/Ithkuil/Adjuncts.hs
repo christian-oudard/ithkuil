@@ -152,26 +152,34 @@ parseBias t = listToMaybe [ b | b <- [minBound..maxBound], biasForm b == t ]
 --------------------------------------------------------------------------------
 
 data Register
-  = NRR  -- ^ Narrative: storytelling
-  | DSV  -- ^ Discursive: general discussion
-  | PTH  -- ^ Parenthetical: aside
-  | CGT  -- ^ Cogitant: internal thought
-  | SPF  -- ^ Specificative: clarifying
+  = NRR  -- ^ Narrative (default, unmarked)
+  | DSV  -- ^ Discursive: direct speech
+  | PNT  -- ^ Parenthetical: aside
+  | SPF  -- ^ Specificative: proper name
   | EXM  -- ^ Exemplificative: giving example
-  | MTR  -- ^ Mathematical: formal/technical
-  | END  -- ^ End of register
+  | CGT  -- ^ Cogitant: internal thought
+  | END  -- ^ End of register/carrier
   deriving (Show, Eq, Ord, Bounded, Enum)
 
--- | Register consonant forms
+-- | Register adjunct initial forms (h + vowel per Sec. 8.3)
 registerForm :: Register -> Text
-registerForm NRR = "hw"
-registerForm DSV = "hlw"
-registerForm PTH = "hrw"
-registerForm CGT = "hmw"
-registerForm SPF = "hnw"
-registerForm EXM = "hňw"
-registerForm MTR = "hww"  -- geminated
-registerForm END = "h"
+registerForm NRR = ""     -- default, no marker
+registerForm DSV = "ha"
+registerForm PNT = "he"
+registerForm SPF = "hi"
+registerForm EXM = "ho"
+registerForm CGT = "hu"
+registerForm END = "hü"
+
+-- | Register adjunct final forms (end-of-register markers)
+registerFinalForm :: Register -> Text
+registerFinalForm DSV = "hai"
+registerFinalForm PNT = "hei"
+registerFinalForm SPF = "hiu"
+registerFinalForm EXM = "hoi"
+registerFinalForm CGT = "hui"
+registerFinalForm END = "hü"
+registerFinalForm _ = ""
 
 --------------------------------------------------------------------------------
 -- Modular Adjuncts
