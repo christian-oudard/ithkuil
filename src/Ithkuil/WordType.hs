@@ -44,6 +44,7 @@ data WordType
   | WAffixualAdjunct    -- ^ Affixual adjunct
   | WReferential        -- ^ Personal referential
   | WCarrierAdjunct     -- ^ Carrier/quotative/naming adjunct
+  | WCombinationRef     -- ^ Combination referential (C1-Vc-Spec-VxCs-Vc2)
   | WMoodCaseScopeAdj   -- ^ Mood/case-scope adjunct (hr + vowel)
   | WUnknown            -- ^ Could not classify
   deriving (Show, Eq, Ord)
@@ -58,6 +59,8 @@ data ParsedWord
   | PReferential PersonalRef (Maybe Case) Text  -- referent, parsed case, raw case vowel
   | PAffixual Text Int Text     -- affix Cs, degree, optional scope vowel
   | PCarrier CarrierType Text   -- carrier type, content
+  | PCombinationRef PersonalRef (Maybe Case) Text [(Text, Text)] (Maybe Case)
+    -- ^ referent, case1, spec, affixes (VxCs), case2
   | PMoodCaseScope MoodOrScope  -- standalone mood/case-scope adjunct
   | PUnparsed Text              -- Could not parse
   deriving (Show, Eq)
@@ -71,6 +74,7 @@ classifyWord word
   | isRegisterAdjunctWord word = WRegisterAdjunct
   | isCarrierAdjunct word = WCarrierAdjunct
   | isModularAdjunct word = WModularAdjunct
+  | isCombinationRef word = WCombinationRef
   | isAffixualAdjunct word = WAffixualAdjunct
   | isReferentialWord word = WReferential
   | otherwise = WFormative
@@ -137,6 +141,27 @@ isMoodCaseScopeAdjunct word =
   in case conjs of
     [c, v] | c == "hr"
              && not (T.null v) && isVowelChar (T.head v) -> True
+    _ -> False
+
+-- | Combination referentials: [ë] C1 Vc Spec [VxCs...] [Vc2]
+-- Spec must be x/xt/xp/xx; C1 must be a referential consonant
+-- No geminate Ca in the consonant slots
+isCombinationRef :: Text -> Bool
+isCombinationRef word =
+  let conjs = splitConjuncts word
+      -- Strip optional ë prefix
+      rest0 = case conjs of
+        ("ë":cs) -> cs
+        cs       -> cs
+      specConsonants = ["x", "xt", "xp", "xx"] :: [Text]
+  in case rest0 of
+    (c:v:spec:_) | isRefC1 c
+                 , not (T.null v) && isVowelChar (T.head v)
+                 , spec `elem` specConsonants -> True
+    -- "a" + CP consonant form
+    ("a":cp:v:spec:_) | cp `elem` ["hl", "hm", "hn", "hň"]
+                      , not (T.null v) && isVowelChar (T.head v)
+                      , spec `elem` specConsonants -> True
     _ -> False
 
 -- | Affixual adjuncts: V-C or V-C-V pattern where C is NOT a Cn consonant
@@ -208,6 +233,7 @@ parseSingleWord word = case classifyWord word of
   WModularAdjunct -> parseModularWord word
   WAffixualAdjunct -> parseAffixualWord word
   WCarrierAdjunct -> parseCarrierWord word
+  WCombinationRef -> parseCombinationRefWord word
   WMoodCaseScopeAdj -> parseMoodCaseScopeAdj word
   _ -> PUnparsed word
 
@@ -282,6 +308,40 @@ parseAffixualWord word =
     [vx, cs] -> PAffixual cs (classifyDegree vx) ""
     [vx, cs, _vs] -> PAffixual cs (classifyDegree vx) word
     _ -> PUnparsed word
+
+-- | Parse a combination referential: [ë] C1 Vc Spec [VxCs...] [Vc2]
+parseCombinationRefWord :: Text -> ParsedWord
+parseCombinationRefWord word =
+  let conjs = splitConjuncts word
+      -- Strip optional ë prefix
+      rest0 = case conjs of
+        ("ë":cs) -> cs
+        cs       -> cs
+      -- Also handle "a" + CP consonant
+      (c1, afterC1) = case rest0 of
+        ("a":cp:cs) | cp `elem` ["hl", "hm", "hn", "hň"] -> (cp, cs)
+        (c:cs) -> (c, cs)
+        _ -> ("", [])
+  in case afterC1 of
+    (vc:spec:rest) | spec `elem` ["x", "xt", "xp", "xx"] ->
+      let ref = lookupRefC1 c1
+          case1 = parseCase vc
+          -- Parse VxCs affix pairs from rest
+          (affixPairs, lastV) = parseVxCsPairs rest
+          case2 = lastV >>= parseCase
+      in case ref of
+        Just r -> PCombinationRef r case1 spec affixPairs case2
+        Nothing -> PUnparsed word
+    _ -> PUnparsed word
+  where
+    parseVxCsPairs [] = ([], Nothing)
+    parseVxCsPairs [v] | not (T.null v) && isVowelChar (T.head v) = ([], Just v)
+    parseVxCsPairs (v:c:rest)
+      | not (T.null v) && isVowelChar (T.head v)
+      , not (T.null c) && not (isVowelChar (T.head c))
+      = let (more, lastV) = parseVxCsPairs rest
+        in ((v, c) : more, lastV)
+    parseVxCsPairs _ = ([], Nothing)
 
 -- | Parse a carrier/quotative/naming adjunct (hl/hm/hn/hň + Vc)
 parseCarrierWord :: Text -> ParsedWord
@@ -427,6 +487,11 @@ glossWord roots affixes pw = case pw of
           Just entry -> affixAbbrev entry
           Nothing -> cs
     in abbr <> "/" <> T.pack (show deg)
+  PCombinationRef ref mc spec afxs mc2 ->
+    glossReferential ref mc ""
+    <> (if spec /= "x" then "-" <> spec else "")
+    <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) afxs)
+    <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc2
   PCarrier ct _ -> "CARRIER:" <> T.pack (show ct)
   PMoodCaseScope ms -> glossMoodOrScope ms
   PUnparsed t -> "?" <> t
@@ -541,6 +606,9 @@ glossWordCompact roots _affixes pw = case pw of
   PModular pairs fv _raw -> T.intercalate "+" (map glossSlotVIII pairs)
                           <> (if T.null fv then "" else "-" <> fv)
   PAffixual cs deg _ -> cs <> "/" <> T.pack (show deg)
+  PCombinationRef ref mc _spec afxs mc2 ->
+    glossReferential ref mc "" <> T.concat (map (\p -> "-" <> glossOneAffix _affixes p) afxs)
+    <> maybe "" (\c -> "." <> T.pack (showCase c)) mc2
   PCarrier _ct content -> content
   PMoodCaseScope ms -> glossMoodOrScope ms
   PUnparsed t -> "?" <> t

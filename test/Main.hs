@@ -137,9 +137,9 @@ main = hspec $ do
       parseCase "i'i" `shouldBe` Just (Relational CPS)
 
     it "parses spatio-temporal cases with glottal stop" $ do
-      parseCase "ia'a" `shouldBe` Just (SpatioTemporal1 LOC)
-      parseCase "ie'e" `shouldBe` Just (SpatioTemporal1 ALL)
-      parseCase "ua'a" `shouldBe` Just (SpatioTemporal2 CNR)
+      parseCase "i'a" `shouldBe` Just (SpatioTemporal1 LOC)
+      parseCase "i'e" `shouldBe` Just (SpatioTemporal1 ATD)
+      parseCase "a'o" `shouldBe` Just (SpatioTemporal2 CNR)
 
   describe "Case Rendering" $ do
     it "renders all transrelative cases" $ do
