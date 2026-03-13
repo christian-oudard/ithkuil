@@ -782,6 +782,17 @@ caStackingVowel = "üö"
 -- | Gloss a single affix (Vx, Cs) pair
 glossOneAffix :: Map Text AffixEntry -> (Text, Text) -> Text
 glossOneAffix affixes (vx, cs)
+  | cs == "nļ" =
+    -- IVL affix: Vx encodes Illocution (Series 1) or Illocution+Validation (Series 2)
+    let nv = normalizeAccents vx
+    in case vowelFormLookup nv of
+      Just (1, form) -> case form of
+        1 -> "ASR"; 2 -> "DIR"; 3 -> "DEC"; 4 -> "IRG"; 5 -> "VER"
+        6 -> "ADM"; 7 -> "POT"; 8 -> "HOR"; 9 -> "CNJ"; _ -> "?" <> vx
+      Just (2, form) -> "ASR/" <> case form of
+        1 -> "OBS"; 2 -> "REC"; 3 -> "PUP"; 4 -> "RPR"; 5 -> "USP"
+        6 -> "IMA"; 7 -> "CVN"; 8 -> "ITU"; 9 -> "INF"; _ -> "?" <> vx
+      _ -> "?" <> vx
   | normalizeAccents vx == caStackingVowel =
     let caGloss = case parseCa cs of
           Just pc -> showCaAbbr pc

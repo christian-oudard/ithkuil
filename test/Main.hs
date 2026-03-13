@@ -546,6 +546,15 @@ main = hspec $ do
       glossOneAffix mempty ("a", "lw") `shouldBe` "case:THM"
       glossOneAffix mempty ("ei", "lw") `shouldBe` "case:GEN"
 
+    it "glosses IVL affix (Cs=nļ)" $ do
+      -- Series 1: illocution only
+      glossOneAffix mempty ("a", "nļ") `shouldBe` "ASR"
+      glossOneAffix mempty ("e", "nļ") `shouldBe` "DEC"
+      glossOneAffix mempty ("u", "nļ") `shouldBe` "CNJ"
+      -- Series 2: assertive + validation
+      glossOneAffix mempty ("ai", "nļ") `shouldBe` "ASR/OBS"
+      glossOneAffix mempty ("ei", "nļ") `shouldBe` "ASR/PUP"
+
     it "glosses Ca-stacking affix (Vx=üö)" $ do
       glossOneAffix mempty ("üö", "tr") `shouldBe` "Ca:MSS/G"
       glossOneAffix mempty ("üö", "s") `shouldBe` "Ca:DPX"

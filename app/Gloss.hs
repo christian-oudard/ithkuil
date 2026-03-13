@@ -167,10 +167,11 @@ showFormativeDetail roots affixes pf = do
     _ -> return ()
   -- Slot V affixes (CsVx order)
   mapM_ (\(cs, vx) -> do
-    let degree = classifyDegree vx
+    let compact = glossOneAffix affixes (vx, cs)
+        degree = classifyDegree vx
         desc = case lookupAffix cs affixes of
           Just entry -> affixAbbrev entry <> " deg " <> T.pack (show degree)
-          Nothing -> cs <> " deg " <> T.pack (show degree)
+          Nothing -> compact
     TIO.putStrLn $ "    SlotV: -" <> cs <> "- " <> vx <> " = " <> desc
     ) (pfSlotV pf)
   -- Slot VII Affixes
