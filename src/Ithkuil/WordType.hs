@@ -7,16 +7,16 @@ module Ithkuil.WordType
   , classifyWord
   , parseWord
   , glossWord
+  , glossSentence
   ) where
 
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
 import Ithkuil.Grammar
 import Ithkuil.Parse (splitConjuncts, isVowelChar, ParsedFormative(..), parseFormativeReal, ParsedCa(..))
 import Ithkuil.Adjuncts
-import Ithkuil.Referentials (PersonalRef(..), refC1)
+import Ithkuil.Referentials (PersonalRef(..), refC1All, lookupRefC1)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot)
 
 --------------------------------------------------------------------------------
@@ -95,9 +95,7 @@ isReferentialWord word =
 
 -- | Check if a consonant is a valid referential C1
 isRefC1 :: Text -> Bool
-isRefC1 c = c `elem` map snd refC1List
-  where
-    refC1List = [(ref, refC1 ref) | ref <- [minBound..maxBound]]
+isRefC1 c = c `elem` map snd refC1All
 
 -- | Modular adjuncts: short V-C or V-C-V-C pattern with Cn consonant
 isModularAdjunct :: Text -> Bool
@@ -105,7 +103,7 @@ isModularAdjunct word =
   let conjs = splitConjuncts word
   in case conjs of
     [v, c] | isVowelChar (T.head v) && isCn c -> True
-    [v1, c1, v2, c2] | isVowelChar (T.head v1) && isCn c2 -> True
+    [v1, _, _, c2] | isVowelChar (T.head v1) && isCn c2 -> True
     _ -> False
   where
     isCn c = c `elem` ["h", "hl", "hr", "hm", "hn", "hň",
@@ -152,11 +150,7 @@ parseReferentialWord word =
       Nothing -> PUnparsed word
     _ -> PUnparsed word
 
--- | Look up referential C1 consonant
-lookupRefC1 :: Text -> Maybe PersonalRef
-lookupRefC1 c = case filter (\ref -> refC1 ref == c) [minBound..maxBound] of
-  (ref:_) -> Just ref
-  [] -> Nothing
+-- lookupRefC1 is imported from Ithkuil.Referentials
 
 --------------------------------------------------------------------------------
 -- Glossing
@@ -243,6 +237,6 @@ showCase (SpatioTemporal2 c) = show c
 -- | Parse and gloss a complete sentence (space-separated words)
 glossSentence :: Map Text RootEntry -> Map Text AffixEntry -> Text -> Text
 glossSentence roots affixes sentence =
-  let words = T.words sentence
-      glossedWords = map (\w -> glossWord roots affixes (parseWord w)) words
+  let ws = T.words sentence
+      glossedWords = map (\w -> glossWord roots affixes (parseWord w)) ws
   in T.intercalate "  " glossedWords

@@ -380,7 +380,7 @@ data Formative = Formative
   , fSlotV    :: [Affix]                     -- CsVx (Stem affixes)
   , fSlotVI   :: SlotVI                      -- Ca (Configuration complex)
   , fSlotVII  :: [Affix]                     -- VxCs (CA-scoped affixes)
-  , fSlotVIII :: Maybe (Valence, MoodOrScope) -- VnCn
+  , fSlotVIII :: Maybe SlotVIII                -- VnCn
   , fSlotIX   :: Either Case FormatOrIV      -- Vc/Vk
   , fStress   :: Stress                      -- Determines Slot IX type
   }
@@ -397,6 +397,13 @@ data MoodOrScope = MoodVal Mood | CaseScope CaseScope
 
 data CaseScope = CCN | CCA | CCS | CCQ | CCP | CCV
   deriving (Show, Eq, Ord, Enum, Bounded)
+
+-- | Slot VIII: VnCn affix (Pattern 1 or Pattern 2)
+data SlotVIII
+  = VnCnValence Valence MoodOrScope    -- ^ Pattern 1: Valence + Mood/CaseScope
+  | VnCnPhase Phase MoodOrScope        -- ^ Pattern 1: Phase + Mood/CaseScope
+  | VnCnAspect Aspect MoodOrScope      -- ^ Pattern 2: Aspect + Mood/CaseScope
+  deriving (Show, Eq, Ord)
 
 data FormatOrIV = Format | IllocVal Illocution Validation
   deriving (Show, Eq, Ord)

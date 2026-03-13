@@ -270,7 +270,7 @@ main = hspec $ do
     it "renders mood consonants correctly" $ do
       renderMoodOrScope (MoodVal FAC) `shouldBe` "h"
       renderMoodOrScope (MoodVal SUB) `shouldBe` "hl"
-      renderMoodOrScope (MoodVal HYP) `shouldBe` "hn"
+      renderMoodOrScope (MoodVal HYP) `shouldBe` "hň"
 
     it "renders illocution+validation correctly" $ do
       renderIllocution ASR `shouldBe` ""

@@ -124,10 +124,12 @@ renderSlotVII = T.concat . map renderAffix
 renderAffix :: Affix -> Text
 renderAffix a = affixVowel a <> affixConsonant a
 
--- | Slot VIII: Vn+Cn (Valence + Mood/Case-Scope)
-renderSlotVIII :: Maybe (Valence, MoodOrScope) -> Text
+-- | Slot VIII: VnCn (Pattern 1: Valence/Phase, Pattern 2: Aspect)
+renderSlotVIII :: Maybe SlotVIII -> Text
 renderSlotVIII Nothing = ""
-renderSlotVIII (Just (val, ms)) = renderValence val <> renderMoodOrScope ms
+renderSlotVIII (Just (VnCnValence val ms)) = renderValence val <> renderMoodOrScope ms
+renderSlotVIII (Just (VnCnPhase ph ms)) = renderPhase ph <> renderMoodOrScope ms
+renderSlotVIII (Just (VnCnAspect asp ms)) = renderAspect asp <> renderMoodOrScopeP2 ms
 
 renderValence :: Valence -> Text
 renderValence MNO = "a"
@@ -140,19 +142,90 @@ renderValence DEM = "o"
 renderValence CNG = "ü"
 renderValence PTI = "u"
 
+-- | Pattern 1 Cn consonants (Mood + Case-Scope)
 renderMoodOrScope :: MoodOrScope -> Text
 renderMoodOrScope (MoodVal FAC) = "h"
 renderMoodOrScope (MoodVal SUB) = "hl"
 renderMoodOrScope (MoodVal ASM) = "hr"
-renderMoodOrScope (MoodVal SPC) = "hw"
-renderMoodOrScope (MoodVal COU) = "hm"
-renderMoodOrScope (MoodVal HYP) = "hn"
-renderMoodOrScope (CaseScope CCN) = "w"
-renderMoodOrScope (CaseScope CCA) = "y"
-renderMoodOrScope (CaseScope CCS) = "h"
-renderMoodOrScope (CaseScope CCQ) = "hw"
-renderMoodOrScope (CaseScope CCP) = "hl"
-renderMoodOrScope (CaseScope CCV) = "hr"
+renderMoodOrScope (MoodVal SPC) = "hm"
+renderMoodOrScope (MoodVal COU) = "hn"
+renderMoodOrScope (MoodVal HYP) = "hň"
+renderMoodOrScope (CaseScope CCN) = "h"
+renderMoodOrScope (CaseScope CCA) = "hl"
+renderMoodOrScope (CaseScope CCS) = "hr"
+renderMoodOrScope (CaseScope CCQ) = "hm"
+renderMoodOrScope (CaseScope CCP) = "hn"
+renderMoodOrScope (CaseScope CCV) = "hň"
+
+-- | Pattern 2 Cn consonants (for Aspect)
+renderMoodOrScopeP2 :: MoodOrScope -> Text
+renderMoodOrScopeP2 (MoodVal FAC) = "w"
+renderMoodOrScopeP2 (MoodVal SUB) = "hw"
+renderMoodOrScopeP2 (MoodVal ASM) = "hrw"
+renderMoodOrScopeP2 (MoodVal SPC) = "hmw"
+renderMoodOrScopeP2 (MoodVal COU) = "hnw"
+renderMoodOrScopeP2 (MoodVal HYP) = "hňw"
+renderMoodOrScopeP2 (CaseScope CCN) = "w"
+renderMoodOrScopeP2 (CaseScope CCA) = "hw"
+renderMoodOrScopeP2 (CaseScope CCS) = "hrw"
+renderMoodOrScopeP2 (CaseScope CCQ) = "hmw"
+renderMoodOrScopeP2 (CaseScope CCP) = "hnw"
+renderMoodOrScopeP2 (CaseScope CCV) = "hňw"
+
+-- | Render Phase vowels (Series 2)
+renderPhase :: Phase -> Text
+renderPhase PUN = "ai"
+renderPhase ITR = "au"
+renderPhase REP = "ei"
+renderPhase ITM = "eu"
+renderPhase RCT = "ëu"
+renderPhase FRE = "ou"
+renderPhase FRG = "oi"
+renderPhase VAC = "iu"
+renderPhase FLC = "ui"
+
+-- | Render Aspect vowels (all 4 series)
+renderAspect :: Aspect -> Text
+-- Column 1 (Series 1)
+renderAspect RTR = "a"
+renderAspect PRS = "ä"
+renderAspect HAB = "e"
+renderAspect PRG = "i"
+renderAspect IMM = "ëi"
+renderAspect PCS = "ö"
+renderAspect REG = "o"
+renderAspect SMM = "ü"
+renderAspect ATP = "u"
+-- Column 2 (Series 2)
+renderAspect RSM = "ai"
+renderAspect CSS = "au"
+renderAspect PAU = "ei"
+renderAspect RGR = "eu"
+renderAspect PCL = "ëu"
+renderAspect CNT = "ou"
+renderAspect ICS = "oi"
+renderAspect EXP = "iu"
+renderAspect IRP = "ui"
+-- Column 3 (Series 3)
+renderAspect PMP = "ia"
+renderAspect CLM = "ie"
+renderAspect DLT = "io"
+renderAspect TMP = "iö"
+renderAspect XPD = "eë"
+renderAspect LIM = "uö"
+renderAspect EPD = "uo"
+renderAspect PTC = "ue"
+renderAspect PPR = "ua"
+-- Column 4 (Series 4)
+renderAspect DCL = "ao"
+renderAspect CCL = "aö"
+renderAspect CUL = "eo"
+renderAspect IMD = "eö"
+renderAspect TRD = "oë"
+renderAspect TNS = "öe"
+renderAspect ITC = "oe"
+renderAspect MTV = "öa"
+renderAspect SQN = "oa"
 
 -- | Slot IX: Case or Format/Illocution+Validation
 renderSlotIX :: Either Case FormatOrIV -> Text

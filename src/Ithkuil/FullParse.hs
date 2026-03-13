@@ -100,7 +100,7 @@ parseSlotI ("hw":rest) = (Just Type2, rest)
 parseSlotI rest        = (Nothing, rest)
 
 -- | Parse remaining slots after Vr
-parseRemainingSlots :: [Text] -> Stress -> ParseResult ([Affix], SlotVI, [Affix], Maybe (Valence, MoodOrScope), Either Case FormatOrIV)
+parseRemainingSlots :: [Text] -> Stress -> ParseResult ([Affix], SlotVI, [Affix], Maybe SlotVIII, Either Case FormatOrIV)
 parseRemainingSlots parts stress = do
   case parts of
     -- Minimal (just Ca)
@@ -243,20 +243,31 @@ type3Degrees =
   ]
 
 -- | Parse VnCn from two conjunct parts (Vn vowel + Cn consonant)
-parseVnCnFromParts :: Text -> Text -> Stress -> ParseResult (Maybe (Valence, MoodOrScope))
+-- Pattern 1 (Cn = h/hl/hr/hm/hn/hň): Vn = Valence or Phase
+-- Pattern 2 (Cn = w/y/hw/hrw/hmw/hnw/hňw): Vn = Aspect
+parseVnCnFromParts :: Text -> Text -> Stress -> ParseResult (Maybe SlotVIII)
 parseVnCnFromParts vn cn _ =
-  case parseCnMood cn of
-    Just mood ->
-      case parseVnValence vn of
-        Just val -> Success $ Just (val, MoodVal mood)
-        Nothing -> Success Nothing
-    Nothing ->
-      case parseCnCaseScope cn of
-        Just cs ->
-          case parseVnValence vn of
-            Just val -> Success $ Just (val, CaseScope cs)
+  let moodOrScope = case parseCnMood cn of
+        Just mood -> Just (MoodVal mood)
+        Nothing -> case parseCnCaseScope cn of
+          Just cs -> Just (CaseScope cs)
+          Nothing -> Nothing
+      isPattern2 = cn `elem` ["w", "y", "hw", "hrw", "hmw", "hnw", "hňw"]
+  in case moodOrScope of
+    Nothing -> Success Nothing
+    Just ms
+      | isPattern2 ->
+        -- Pattern 2: Vn is Aspect
+        case lookup vn aspectVowels of
+          Just asp -> Success $ Just (VnCnAspect asp ms)
+          Nothing -> Success Nothing
+      | otherwise ->
+        -- Pattern 1: Vn is Valence (Series 1) or Phase (Series 2)
+        case parseVnValence vn of
+          Just val -> Success $ Just (VnCnValence val ms)
+          Nothing -> case lookup vn phaseVowels of
+            Just ph -> Success $ Just (VnCnPhase ph ms)
             Nothing -> Success Nothing
-        Nothing -> Success Nothing
 
 --------------------------------------------------------------------------------
 -- Vn: Valence / Phase / Effect parsing
