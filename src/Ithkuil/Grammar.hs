@@ -67,7 +67,8 @@ type SlotIV = (Function, Specification, Context)
 -- Describes the physical/compositional relationship between set members
 data Configuration
   = UNI  -- ^ Uniplex: single entity
-  -- Duplex (2 members)
+  | DPX  -- ^ Duplex: basic pair/two-part entity
+  -- Duplex (2 members, specified similarity/separability)
   | DSS  -- ^ Duplex Similar Separate
   | DSC  -- ^ Duplex Similar Connected
   | DSF  -- ^ Duplex Similar Fused

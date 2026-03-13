@@ -44,8 +44,8 @@ main = hspec $ do
       fSlotII f `shouldBe` defaultSlotII
       fSlotVI f `shouldBe` defaultSlotVI
 
-    it "has 18 non-uniplex configurations" $
-      length (filter (/= UNI) (allOf :: [Configuration])) `shouldBe` 18
+    it "has 19 non-uniplex configurations" $
+      length (filter (/= UNI) (allOf :: [Configuration])) `shouldBe` 19
 
     it "has 9 valences" $
       length (allOf :: [Valence]) `shouldBe` 9

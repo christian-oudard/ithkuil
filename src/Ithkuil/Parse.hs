@@ -59,6 +59,7 @@ parseSlotIV v = listToMaybe
 configurationPatterns :: [(Configuration, Text)]
 configurationPatterns =
   [ (UNI, "")
+  , (DPX, "s")
   , (DSS, "c"),  (DSC, "ks"), (DSF, "ps")
   , (DDS, "ţs"), (DDC, "fs"), (DDF, "š")
   , (DFS, "č"),  (DFC, "kš"), (DFF, "pš")
@@ -525,7 +526,7 @@ caLookupTable =
   , ("cl",  ParsedCa DSS CSL M_ DEL NRM)
   , ("ksl", ParsedCa DSC CSL M_ DEL NRM)
   , ("psl", ParsedCa DSF CSL M_ DEL NRM)
-  , ("sl",  ParsedCa UNI CSL M_ DEL NRM)  -- DPX
+  , ("sl",  ParsedCa DPX CSL M_ DEL NRM)
   -- Configuration + Agglomerative (G) perspective
   , ("tr",  ParsedCa MSS CSL G_ DEL NRM)
   , ("kr",  ParsedCa MSC CSL G_ DEL NRM)

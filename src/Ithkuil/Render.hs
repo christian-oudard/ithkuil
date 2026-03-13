@@ -68,6 +68,7 @@ renderSlotVI (cfg, aff, per, ext, ess) = T.concat
 -- From official grammar ch03: UPX=null, DPX=s, MSS=t, MSC=k, etc.
 renderConfiguration :: Configuration -> Text
 renderConfiguration UNI = ""
+renderConfiguration DPX = "s"
 renderConfiguration DSS = "c"
 renderConfiguration DSC = "ks"
 renderConfiguration DSF = "ps"
