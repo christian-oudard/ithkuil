@@ -23,6 +23,7 @@ import qualified Data.Text as T
 import Data.Map.Strict (Map)
 import Ithkuil.Grammar
 import Data.Maybe (isJust)
+import Ithkuil.Phonology (vowelFormLookup)
 import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, ParsedFormative(..), parseFormativeReal, ParsedCa(..), isSpecialVv, normalizeAccents, detectStressSimple)
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
                            aspectVowels, phaseVowels)
@@ -546,31 +547,27 @@ extractAllPairs parts =
 -- | Gloss a single affix (Vx, Cs) pair
 glossOneAffix :: Map Text AffixEntry -> (Text, Text) -> Text
 glossOneAffix affixes (vx, cs) =
-  let degree = classifyDegree vx
+  let (degree, atype) = classifyDegreeType vx
       abbr = case lookupAffix cs affixes of
         Just entry -> affixAbbrev entry
         Nothing -> cs
-  in abbr <> "/" <> T.pack (show degree)
+      typeSuffix = case atype of
+        1 -> ""; 2 -> "₂"; 3 -> "₃"; _ -> ""
+  in abbr <> "/" <> T.pack (show degree) <> typeSuffix
+
+-- | Determine affix degree (1-9, 0) and type (1-3) from Vx vowel
+-- Returns (degree, type) where type is the series number
+classifyDegreeType :: Text -> (Int, Int)
+classifyDegreeType v = case vowelFormLookup (normalizeAccents v) of
+  Just (series, form) -> (form, series)
+  Nothing -> case normalizeAccents v of
+    -- Degree-0 forms
+    "ae" -> (0, 1); "ea" -> (0, 2); "üo" -> (0, 3)
+    _ -> (0, 1)
 
 -- | Determine affix degree (1-9, 0) from Vx vowel
 classifyDegree :: Text -> Int
-classifyDegree v = case lookup v degreeTable of
-  Just d -> d
-  Nothing -> 0
-  where
-    degreeTable =
-      -- Type 1 (Series 1)
-      [ ("a", 1), ("ä", 2), ("e", 3), ("i", 4), ("ëi", 5)
-      , ("ö", 6), ("o", 7), ("ü", 8), ("u", 9), ("ae", 0)
-      -- Type 2 (Series 2)
-      , ("ai", 1), ("au", 2), ("ei", 3), ("eu", 4), ("ëu", 5)
-      , ("ou", 6), ("oi", 7), ("iu", 8), ("ui", 9), ("ea", 0)
-      -- Type 3 (Series 3)
-      , ("ia", 1), ("uä", 1), ("ie", 2), ("uë", 2)
-      , ("io", 3), ("üä", 3), ("iö", 4), ("üë", 4), ("eë", 5)
-      , ("uö", 6), ("öë", 6), ("uo", 7), ("öä", 7)
-      , ("ue", 8), ("ië", 8), ("ua", 9), ("iä", 9), ("üo", 0)
-      ]
+classifyDegree = fst . classifyDegreeType
 
 selectStem :: Stem -> RootEntry -> Text
 selectStem S0 = rootStem0
