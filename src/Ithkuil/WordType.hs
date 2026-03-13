@@ -322,6 +322,7 @@ parseRegisterLower _     = Nothing
 parseReferentialWord :: Text -> ParsedWord
 parseReferentialWord word =
   let conjs = splitConjuncts word
+      stress = detectStressSimple word
       -- Strip optional ë/äi prefix
       rest0 = case conjs of
         ("ë":cs)  -> cs
@@ -338,17 +339,19 @@ parseReferentialWord word =
         | otherwise = ([], c:cs)
       consumeRefs [] = ([], [])
       (refs, tail') = consumeRefs rest0
+      nv = normalizeAccents
+      -- Ultimate stress = RPV essence; encode as vc suffix
+      essenceTag = case stress of { Ultimate -> "\\RPV"; _ -> "" }
   in case (refs, tail') of
     (_:_, [v]) ->
-      PReferential refs (parseCase v) v Nothing
+      PReferential refs (parseCase (nv v)) (v <> essenceTag) Nothing
     (_:_, [v, wy, v2]) | wy `elem` ["w", "y"] ->
-      PReferential refs (parseCase v) v (Just (wy, parseCase v2, Nothing))
+      PReferential refs (parseCase (nv v)) (v <> essenceTag) (Just (wy, parseCase (nv v2), Nothing))
     (_:_, [v, wy, v2, c2]) | wy `elem` ["w", "y"], isRefCluster c2 ->
-      -- Extended: C1-Vc-w/y-Vc2-C2 (dual referential with scope)
       let ref2 = case decomposeRefCluster c2 of
             Just (r:_) -> Just r
             _ -> Nothing
-      in PReferential refs (parseCase v) v (Just (wy, parseCase v2, ref2))
+      in PReferential refs (parseCase (nv v)) (v <> essenceTag) (Just (wy, parseCase (nv v2), ref2))
     _ -> PUnparsed word
 
 -- | Parse an affixual adjunct word (Vx-Cs or Vx-Cs-Vs)
@@ -586,8 +589,11 @@ glossWord roots affixes pw = case pw of
         glossVnCnDot (VnCnAspect asp ms) = T.pack (show asp) <> "." <> glossMoodOrScope ms
     in T.intercalate "-" (map glossVnCnDot pairs)
        <> (if T.null fv then "" else "-" <> fv)
-  PReferential refs mc vc ext -> glossReferentials refs mc vc
-    <> maybe "" glossRefExt ext
+  PReferential refs mc vc ext ->
+    let essenceSuffix = if "\\RPV" `T.isSuffixOf` vc then "\\RPV" else ""
+    in glossReferentials refs mc vc
+       <> maybe "" glossRefExt ext
+       <> essenceSuffix
   PAffixual cs deg scope ->
     let abbr = case lookupAffix cs affixes of
           Just entry -> affixAbbrev entry
@@ -666,10 +672,9 @@ glossFormative roots affixes pf =
           T.pack (show ill) <> "/" <> T.pack (show val)
         Nothing -> case pfCase pf of
           Just c -> T.pack (showCase c)
-          Nothing -> ""
-      frameAbbr = case pfStress pf of
-        Antepenultimate -> "FRA"
-        _ -> ""
+                 <> if pfStress pf == Antepenultimate then "\\FRA" else ""
+          Nothing -> if pfStress pf == Antepenultimate then "FRA" else ""
+      -- FRA is now merged into slotIXAbbr with backslash notation
       concatAbbr = case pfConcatenation pf of
         Just Type1 -> "T1"
         Just Type2 -> "T2"
@@ -686,7 +691,6 @@ glossFormative roots affixes pf =
       <> affixGlosses
       <> [glossSlotVIII s8 | Just s8 <- [slotVIII]]
       <> [slotIXAbbr | not (T.null slotIXAbbr)]
-      <> [frameAbbr | not (T.null frameAbbr)]
 
 -- | Compact gloss: only shows root meaning and non-default grammatical info
 glossWordCompact :: Map Text RootEntry -> Map Text AffixEntry -> ParsedWord -> Text

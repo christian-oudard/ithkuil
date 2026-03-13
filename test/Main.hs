@@ -981,6 +981,92 @@ main = hspec $ do
       let gloss = glossWord mempty mempty (parseWord "la")
       T.isInfixOf "1m" gloss `shouldBe` True
 
+  describe "Kotlin Reference Alignment" $ do
+    it "parses each word type correctly" $ do
+      -- Formative
+      case parseWord "lalu" of
+        PFormative _ -> return ()
+        pw -> expectationFailure $ "lalu: expected PFormative, got: " ++ show pw
+      -- Modular adjunct
+      case parseWord "ihnú" of
+        PModular _ _ _ -> return ()
+        pw -> expectationFailure $ "ihnú: expected PModular, got: " ++ show pw
+      -- Affixual adjunct
+      case parseWord "äst" of
+        PAffixual _ _ _ -> return ()
+        pw -> expectationFailure $ "äst: expected PAffixual, got: " ++ show pw
+      -- Referential (extended)
+      case parseWord "miyüs" of
+        PReferential _ _ _ _ -> return ()
+        pw -> expectationFailure $ "miyüs: expected PReferential, got: " ++ show pw
+      -- Register
+      case parseWord "ha" of
+        PRegister DSV -> return ()
+        pw -> expectationFailure $ "ha: expected PRegister DSV, got: " ++ show pw
+      -- Bias
+      case parseWord "pļļ" of
+        PBias _ -> return ()
+        pw -> expectationFailure $ "pļļ: expected PBias, got: " ++ show pw
+      -- Mood/case-scope
+      case parseWord "hrei" of
+        PMoodCaseScope _ -> return ()
+        pw -> expectationFailure $ "hrei: expected PMoodCaseScope, got: " ++ show pw
+
+    it "glosses referential khe correctly" $ do
+      let gloss = glossWord mempty mempty (parseWord "khe")
+      gloss `shouldBe` "Rdp.DET-ABS"
+
+    it "glosses modular ihnú correctly" $ do
+      let gloss = glossWord mempty mempty (parseWord "ihnú")
+      gloss `shouldBe` "RCP.COU-{under adj.}"
+
+    it "glosses register ha correctly" $ do
+      let gloss = glossWord mempty mempty (parseWord "ha")
+      gloss `shouldBe` "DSV"
+
+    it "glosses mood/case-scope hrei correctly" $ do
+      let gloss = glossWord mempty mempty (parseWord "hrei")
+      gloss `shouldBe` "CCA"
+
+    it "glosses referential miyüs correctly" $ do
+      let gloss = glossWord mempty mempty (parseWord "miyüs")
+      gloss `shouldBe` "ma-AFF-DAT-2m"
+
+    it "glosses referential layá with RPV essence" $ do
+      let gloss = glossWord mempty mempty (parseWord "layá")
+      gloss `shouldBe` "1m-THM-THM\\RPV"
+
+    it "glosses Cs-root formatives" $ do
+      -- ëilal = Cs-root with default Vv
+      case parseWord "ëilal" of
+        PFormative pf -> do
+          pfCsRootDegree pf `shouldBe` Just 1
+        pw -> expectationFailure $ "ëilal: expected PFormative Cs-root, got: " ++ show pw
+      -- oërmölá = CPT.DYN Cs-root
+      case parseWord "oërmölá" of
+        PFormative pf -> do
+          pfCsRootDegree pf `shouldSatisfy` (/= Nothing)
+          pfRoot pf `shouldBe` Root "rm"
+        pw -> expectationFailure $ "oërmölá: expected PFormative, got: " ++ show pw
+
+    it "parses glottal stop movement correctly" $ do
+      -- la'la and lala'a should both give case PRN
+      let gloss1 = glossWord mempty mempty (parseWord "la'la")
+          gloss2 = glossWord mempty mempty (parseWord "lala'a")
+      gloss1 `shouldBe` gloss2
+
+    it "parses all Kotlin reference test words" $ do
+      let words = [ "yužgrá", "eolaleici", "khe", "adni'lö", "yeilaiceu"
+                  , "alarfull", "a'larfunall"
+                  , "lala'a", "la'la", "wala'ana"
+                  , "ëilal", "oërmölá", "oërmoulá"
+                  , "lalu", "ihnú", "äst", "miyüs", "mixenüa", "ha", "pļļ", "hrei"
+                  , "lála'a", "çëlal", "çalal", "çwala", "ççala"
+                  , "ţnaxeka", "ţnaxekka"
+                  ] :: [T.Text]
+          failed = filter (\w -> case parseWord w of PUnparsed _ -> True; _ -> False) words
+      failed `shouldBe` []
+
   describe "Integration: Longtest Poem" $ do
     it "parses all words from the Ozymandias poem" $ do
       let ws = ["Ufhulâ","eatreuhlï","wuksmenţi'ë","Mâlu'u","Azhesâ","Tartïnhâ",
