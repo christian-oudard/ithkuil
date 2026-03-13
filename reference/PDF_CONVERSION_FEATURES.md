@@ -14,7 +14,6 @@ pdfconvert render <pdf> [--pages 1-10] [--dpi 144] [--format png] [--format svg]
 
 - Render each page to PNG at the specified DPI (default 144), grayscale
 - Optionally also export each page as SVG via `pdftocairo -svg`
-- Generate an `index.md` in the output directory listing each page with a brief description extracted from `pdftotext` (first heading or first non-empty line of text on that page)
 - Cache pages like the existing pipeline (skip existing files unless `--redo`)
 
 ### Output structure
@@ -29,7 +28,6 @@ $PDFCONVERT_OUTPUT_DIR/<name>/
     page_001.svg
     page_002.svg
     ...
-  index.md      # page listing with descriptions
 ```
 
 ### Why
@@ -74,29 +72,3 @@ Tables:
 Many reference documents (grammar specs, data sheets, API docs) are table-heavy. The current prompt silently lets Claude decide how to handle tables, which produces inconsistent results. Explicit guidance will improve the default conversion quality for all documents, not just Ithkuil.
 
 
-## 3. Page-range index generation
-
-When rendering or converting a PDF, generate an `index.md` that maps page numbers to content descriptions.
-
-### Format
-
-```markdown
-# morphology_v1.3.1 — Page Index
-
-| Page | Description |
-|------|-------------|
-| 1 | Title page, version history |
-| 2 | Phonology: consonant and vowel inventory |
-| 3 | Phonology: gemination, glottal stop rules |
-| ...  | ... |
-```
-
-### Generation approach
-
-For `render` mode: extract the first non-blank text line from each page via `pdftotext -f N -l N` as a rough description.
-
-For full `md` conversion: the index can be generated from the final markdown by scanning for headers.
-
-### Why
-
-A 67-page PDF is useless to an agent if it doesn't know which page to look at. The index lets agents find the right page in one lookup instead of scanning sequentially.
