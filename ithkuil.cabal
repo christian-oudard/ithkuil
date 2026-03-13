@@ -48,6 +48,17 @@ executable gloss-test
                     , text
                     , containers
 
+executable ithkuil-gloss
+    import:           warnings
+    default-language: Haskell2010
+    main-is:          Gloss.hs
+    hs-source-dirs:   app
+    build-depends:    base >=4.17 && <5
+                    , ithkuil
+                    , text
+                    , containers
+                    , bytestring
+
 test-suite ithkuil-test
     import:           warnings
     default-language: Haskell2010

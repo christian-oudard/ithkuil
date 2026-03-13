@@ -8,15 +8,19 @@ module Ithkuil.WordType
   , parseWord
   , glossWord
   , glossSentence
+  , glossSlotVIII
+  , glossMoodOrScope
   ) where
 
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Map.Strict (Map)
 import Ithkuil.Grammar
-import Ithkuil.Parse (splitConjuncts, isVowelChar, ParsedFormative(..), parseFormativeReal, ParsedCa(..))
+import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, ParsedFormative(..), parseFormativeReal, ParsedCa(..))
+import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
+                           aspectVowels, phaseVowels)
 import Ithkuil.Adjuncts
-import Ithkuil.Referentials (PersonalRef(..), refC1All, lookupRefC1)
+import Ithkuil.Referentials (PersonalRef(..), Referent(..), ReferentEffect(..), refC1All, lookupRefC1)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot)
 
 --------------------------------------------------------------------------------
@@ -40,8 +44,8 @@ data ParsedWord
   = PFormative ParsedFormative
   | PBias Bias
   | PRegister Register
-  | PModular Text Text          -- Vn, Cn raw forms
-  | PReferential PersonalRef Text  -- referent, case vowel
+  | PModular [SlotVIII] Text    -- parsed VnCn pairs, raw text
+  | PReferential PersonalRef (Maybe Case) Text  -- referent, parsed case, raw case vowel
   | PCarrier CarrierType Text   -- carrier type, content
   | PUnparsed Text              -- Could not parse
   deriving (Show, Eq)
@@ -126,6 +130,7 @@ parseWord word = case classifyWord word of
     Just pf -> PFormative pf
     Nothing -> PUnparsed word
   WReferential -> parseReferentialWord word
+  WModularAdjunct -> parseModularWord word
   _ -> PUnparsed word
 
 -- | Parse a register adjunct
@@ -140,17 +145,59 @@ parseRegister "hww" = Just MTR
 parseRegister "h"   = Just END
 parseRegister _     = Nothing
 
--- | Parse a referential word (simple form: C1-Vc)
+-- | Parse a referential word (simple form: C1-Vc, dual form: C1-C1-Vc)
 parseReferentialWord :: Text -> ParsedWord
 parseReferentialWord word =
   let conjs = splitConjuncts word
   in case conjs of
-    (c:v:_) -> case lookupRefC1 c of
-      Just ref -> PReferential ref v
+    [c, v] -> case lookupRefC1 c of
+      Just ref -> PReferential ref (parseCase v) v
+      Nothing -> PUnparsed word
+    [c1, c2, v] -> case lookupRefC1 c1 of
+      -- For dual referentials, we report just the first referent for now
+      Just ref -> PReferential ref (parseCase v) v
       Nothing -> PUnparsed word
     _ -> PUnparsed word
 
--- lookupRefC1 is imported from Ithkuil.Referentials
+-- | Parse a modular adjunct word
+-- 2-slot form: Vn-Cn (aspect or valence+mood)
+-- 4-slot form: Vn-Cn-Vn-Cn (two VnCn pairs)
+parseModularWord :: Text -> ParsedWord
+parseModularWord word =
+  let conjs = splitConjuncts word
+  in case conjs of
+    [vn, cn] -> case parseOneVnCn vn cn of
+      Just s8 -> PModular [s8] word
+      Nothing -> PUnparsed word
+    [vn1, cn1, vn2, cn2] ->
+      let s1 = parseOneVnCn vn1 cn1
+          s2 = parseOneVnCn vn2 cn2
+          pairs = [s | Just s <- [s1, s2]]
+      in if null pairs then PUnparsed word else PModular pairs word
+    _ -> PUnparsed word
+
+-- | Parse a single Vn+Cn pair into a SlotVIII value
+parseOneVnCn :: Text -> Text -> Maybe SlotVIII
+parseOneVnCn vn cn =
+  let isP2 = cn `elem` ["w", "y", "hw", "hrw", "hmw", "hnw", "hňw"]
+      moodOrScope = case parseCnMood cn of
+        Just mood -> Just (MoodVal mood)
+        Nothing -> case parseCnMoodP2 cn of
+          Just mood -> Just (MoodVal mood)
+          Nothing -> case parseCnCaseScope cn of
+            Just cs -> Just (CaseScope cs)
+            Nothing -> Nothing
+  in case moodOrScope of
+    Nothing -> Nothing
+    Just ms
+      | isP2 -> case lookup vn aspectVowels of
+          Just asp -> Just (VnCnAspect asp ms)
+          Nothing -> Nothing
+      | otherwise -> case parseVnValence vn of
+          Just val -> Just (VnCnValence val ms)
+          Nothing -> case lookup vn phaseVowels of
+            Just ph -> Just (VnCnPhase ph ms)
+            Nothing -> Nothing
 
 --------------------------------------------------------------------------------
 -- Glossing
@@ -162,8 +209,8 @@ glossWord roots affixes pw = case pw of
   PFormative pf -> glossFormative roots affixes pf
   PBias b -> T.pack (show b)
   PRegister r -> T.pack (show r) <> " register"
-  PModular vn cn -> "MOD:" <> vn <> "/" <> cn
-  PReferential ref vc -> T.pack (show ref) <> "." <> vc
+  PModular pairs _ -> "MOD:" <> T.intercalate "+" (map glossSlotVIII pairs)
+  PReferential ref mc vc -> glossReferential ref mc vc
   PCarrier ct _ -> "CARRIER:" <> T.pack (show ct)
   PUnparsed t -> "?" <> t
 
@@ -204,6 +251,16 @@ selectStem S1 = rootStem1
 selectStem S2 = rootStem2
 selectStem S3 = rootStem3
 
+-- | Gloss a SlotVIII (VnCn) value
+glossSlotVIII :: SlotVIII -> Text
+glossSlotVIII (VnCnValence val ms) = T.pack (show val) <> "-" <> glossMoodOrScope ms
+glossSlotVIII (VnCnPhase ph ms) = T.pack (show ph) <> "-" <> glossMoodOrScope ms
+glossSlotVIII (VnCnAspect asp ms) = T.pack (show asp) <> "-" <> glossMoodOrScope ms
+
+glossMoodOrScope :: MoodOrScope -> Text
+glossMoodOrScope (MoodVal m) = T.pack (show m)
+glossMoodOrScope (CaseScope cs) = T.pack (show cs)
+
 showCaAbbr :: ParsedCa -> Text
 showCaAbbr pc
   | pc == ParsedCa UNI CSL M_ DEL NRM = ""  -- Default, don't show
@@ -229,6 +286,19 @@ showCase (Relational c) = show c
 showCase (Affinitive c) = show c
 showCase (SpatioTemporal1 c) = show c
 showCase (SpatioTemporal2 c) = show c
+
+-- | Gloss a referential word
+glossReferential :: PersonalRef -> Maybe Case -> Text -> Text
+glossReferential (PersonalRef ref eff) mc _vc =
+  let refAbbr = T.pack (show ref)
+      effAbbr = case eff of
+        NEU -> ""
+        BEN -> "/BEN"
+        DET -> "/DET"
+      caseAbbr = case mc of
+        Just c -> "-" <> T.pack (showCase c)
+        Nothing -> ""
+  in refAbbr <> effAbbr <> caseAbbr
 
 --------------------------------------------------------------------------------
 -- Multi-word Sentence Glossing
