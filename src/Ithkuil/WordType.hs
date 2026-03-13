@@ -338,7 +338,7 @@ parseAffixualWord word =
   let conjs = splitConjuncts word
   in case conjs of
     [vx, cs] -> PAffixual cs (classifyDegree vx) ""
-    [vx, cs, _vs] -> PAffixual cs (classifyDegree vx) word
+    [vx, cs, vs] -> PAffixual cs (classifyDegree vx) (glossVz vs)
     _ -> PUnparsed word
 
 -- | Parse a multiple affix adjunct: [ë] Cs Vx Cz (VxCs)+ [Vz]
@@ -563,11 +563,12 @@ glossWord roots affixes pw = case pw of
                        <> (if T.null fv then "" else "-" <> fv)
   PReferential ref mc vc ext -> glossReferential ref mc vc
     <> maybe "" glossRefExt ext
-  PAffixual cs deg _ ->
+  PAffixual cs deg scope ->
     let abbr = case lookupAffix cs affixes of
           Just entry -> affixAbbrev entry
           Nothing -> cs
     in abbr <> "/" <> T.pack (show deg)
+       <> (if T.null scope then "" else "-" <> scope)
   PMultipleAffix first cz moreAfxs mVz ->
     glossOneAffix affixes first <> "-" <> glossCz cz
     <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) moreAfxs)
