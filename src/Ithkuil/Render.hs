@@ -53,7 +53,10 @@ renderSlotIV (func, spec, ctx) =
 
 -- | Slot V: Stem affixes (CsVx)
 renderSlotV :: [Affix] -> Text
-renderSlotV = T.concat . map renderAffix
+renderSlotV = T.concat . map renderSlotVAffix
+  where
+    -- Slot V uses CsVx order (consonant then vowel)
+    renderSlotVAffix a = affixConsonant a <> affixVowel a
 
 -- | Slot VI: Ca complex
 renderSlotVI :: SlotVI -> Text

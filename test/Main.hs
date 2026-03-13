@@ -1802,3 +1802,28 @@ main = hspec $ do
           let afxPairs = extractAffixes (pfCa pf)
           length afxPairs `shouldSatisfy` (>= 1)
         _ -> expectationFailure $ "Affix round-trip: " ++ show parsed
+
+    it "round-trips Slot V affix with geminated Ca" $ do
+      let affix = Affix { affixVowel = "e", affixConsonant = "fm", affixType = Type1Affix }
+          f = (minimalFormative "l") { fSlotV = [affix] }
+          w = composeFormative f
+          parsed = parseWord w
+      case parsed of
+        PFormative pf -> do
+          length (pfSlotV pf) `shouldBe` 1
+          let (cs, vx) = head (pfSlotV pf)
+          cs `shouldBe` "fm"
+          vx `shouldBe` "e"
+        _ -> expectationFailure $ "Slot V round-trip: " ++ T.unpack w ++ " -> " ++ show parsed
+
+    it "round-trips 2 Slot V affixes with glottal marker" $ do
+      let afx1 = Affix { affixVowel = "e", affixConsonant = "fm", affixType = Type1Affix }
+          afx2 = Affix { affixVowel = "a", affixConsonant = "r", affixType = Type1Affix }
+          f = (minimalFormative "l") { fSlotV = [afx1, afx2] }
+          w = composeFormative f
+          parsed = parseWord w
+      w `shouldSatisfy` T.isInfixOf "'"  -- should have glottal marker
+      case parsed of
+        PFormative pf -> do
+          length (pfSlotV pf) `shouldBe` 2
+        _ -> expectationFailure $ "Slot V 2-affix round-trip: " ++ T.unpack w ++ " -> " ++ show parsed
