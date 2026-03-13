@@ -4,6 +4,7 @@
 module Ithkuil.Compose
   ( lookupGrammar
   , searchRoots
+  , searchAffixes
   , allCases
   , allValences
   , allAspects
@@ -34,7 +35,7 @@ import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Ithkuil.Grammar
 import Ithkuil.Render
-import Ithkuil.Lexicon (RootEntry(..), rootStem0, rootStem1, rootStem2, rootStem3)
+import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), rootStem0, rootStem1, rootStem2, rootStem3)
 
 data GrammarEntry = GrammarEntry
   { gCategory :: Text    -- e.g. "Case", "Aspect"
@@ -58,6 +59,17 @@ searchRoots query roots =
         in any (T.isInfixOf q . T.toCaseFold) stems
            || T.toCaseFold cr == q
   in filter matches (Map.toList roots)
+
+-- | Search affixes by keyword in abbreviation, description, or degree meanings
+searchAffixes :: Text -> Map Text AffixEntry -> [(Text, AffixEntry)]
+searchAffixes query affixes =
+  let q = T.toCaseFold query
+      matches (cs, entry) =
+        T.isInfixOf q (T.toCaseFold (affixAbbrev entry))
+        || T.isInfixOf q (T.toCaseFold (affixDesc entry))
+        || T.toCaseFold cs == q
+        || any (T.isInfixOf q . T.toCaseFold) (affixDegrees entry)
+  in filter matches (Map.toList affixes)
 
 -- | Complete grammar table for reverse lookup
 grammarTable :: [GrammarEntry]

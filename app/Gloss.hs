@@ -15,7 +15,7 @@ import Ithkuil.Parse (ParsedFormative(..), ParsedCa(..))
 import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), referentLabel)
 import Ithkuil.WordType
 import Ithkuil.Lexicon
-import Ithkuil.Compose
+import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), searchRoots, searchAffixes, dumpGrammarTable)
 
 main :: IO ()
 main = do
@@ -23,6 +23,7 @@ main = do
   case args of
     ("--lookup":rest) -> handleLookup rest
     ("--root":rest) -> handleRootSearch rest
+    ("--affix":rest) -> handleAffixSearch rest
     ("--grammar":rest) -> handleGrammarDump rest
     _ -> do
       roots <- loadLexicon "data/roots.json"
@@ -61,6 +62,18 @@ handleRootSearch ws = do
                   <> "  S2: " <> rootStem2 entry
                   <> "  S3: " <> rootStem3 entry
                   <> "  S0: " <> rootStem0 entry) results
+
+handleAffixSearch :: [String] -> IO ()
+handleAffixSearch [] = TIO.putStrLn "Usage: ithkuil-gloss --affix <keyword>"
+handleAffixSearch ws = do
+  affixes <- loadAffixLexicon "data/affixes.json"
+  let query = T.pack (unwords ws)
+      results = searchAffixes query affixes
+  if null results
+    then TIO.putStrLn $ "No affixes found matching: " <> query
+    else mapM_ (\(cs, entry) ->
+      TIO.putStrLn $ "-" <> cs <> "-  " <> affixAbbrev entry
+                  <> "  (" <> affixDesc entry <> ")") results
 
 handleGrammarDump :: [String] -> IO ()
 handleGrammarDump cats = do
