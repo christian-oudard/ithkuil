@@ -159,10 +159,7 @@ handleCompose [] = TIO.putStrLn "Usage: ithkuil-gloss --compose <root> [S1-S3] [
 handleCompose (rootStr:opts) = do
   roots <- loadLexicon "data/roots.json"
   affixes <- loadAffixLexicon "data/affixes.json"
-  let root = resolveRoot roots (T.pack rootStr)
-      flags = map (resolveAffixFlag affixes . T.toUpper . T.pack) opts
-      f0 = minimalFormative root
-      f1 = applyComposeFlags flags f0
+  let f1 = makeFormative roots affixes (T.pack rootStr) (map T.pack opts)
       f2 = autoStress f1
       word = composeFormative f2
   TIO.putStrLn $ col bold word
@@ -173,10 +170,42 @@ handleSentence [] = TIO.putStrLn "Usage: ithkuil-gloss --sentence root:FLAG:FLAG
 handleSentence specs = do
   roots <- loadLexicon "data/roots.json"
   affixes <- loadAffixLexicon "data/affixes.json"
-  let words_ = map (composeOneWord roots affixes . T.pack) specs
+  let words_ = composeSentenceWords roots affixes (map T.pack specs)
       sentence = T.unwords words_
   TIO.putStrLn $ col bold sentence
   glossLine roots affixes sentence
+
+-- | Compose a sentence from word specs, handling concatenation chains.
+-- Specs prefixed with ">" are Type 1 concatenated (shares case with parent).
+-- Specs prefixed with ">>" are Type 2 concatenated (independent case).
+-- These get hyphen-joined to the preceding word.
+composeSentenceWords :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> [Text] -> [Text]
+composeSentenceWords roots affixes = joinChains . map classifySpec
+  where
+    classifySpec s
+      | Just rest <- T.stripPrefix ">>" s = (Just Type2, rest)
+      | Just rest <- T.stripPrefix ">" s  = (Just Type1, rest)
+      | otherwise                         = (Nothing, s)
+    joinChains [] = []
+    joinChains ((_, spec):rest) =
+      let headWord = composeOneWord roots affixes spec
+          (tail_, remaining) = span (isConcat . fst) rest
+          tailWords = map (\(ct, sp) ->
+            let f0 = composeFormativeSpec roots affixes sp
+                f1 = f0 { fSlotI = ct }
+                f2 = autoStress f1
+            in composeFormative f2) tail_
+      in case tailWords of
+        [] -> headWord : joinChains remaining
+        _  -> (T.intercalate "-" (headWord : tailWords)) : joinChains remaining
+    isConcat (Just _) = True
+    isConcat Nothing  = False
+
+-- | Build a Formative from a spec string (root:flag:flag), for concatenation use
+composeFormativeSpec :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> Formative
+composeFormativeSpec roots affixes s = case T.splitOn ":" s of
+  (root:opts) -> makeFormative roots affixes root opts
+  [] -> minimalFormative "?"
 
 -- | Compose one word spec: @referent:CASE, #VnCn modular adjunct, or root:FLAG:FLAG
 -- Root can be consonant cluster (e.g. "rţt") or English keyword (e.g. "study")
@@ -201,10 +230,7 @@ composeOneWord roots affixes s = case T.splitOn ":" s of
            f2 = autoStress f1
        in composeFormative f2
   (root:opts) ->
-    let resolved = resolveRoot roots root
-        f0 = minimalFormative resolved
-        flags = map (resolveAffixFlag affixes . T.toUpper) opts
-        f1 = applyComposeFlags flags f0
+    let f1 = makeFormative roots affixes root opts
         f2 = autoStress f1
     in composeFormative f2
   [] -> "?"
@@ -285,18 +311,44 @@ resolveAffixCs affixes t = case T.splitOn "/" t of
          [] -> t
   _ -> t
 
+-- | Build a formative from root keyword + flags, with auto-stem detection.
+-- Handles root resolution, stem selection, flag application, and stress.
+makeFormative :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> [Text] -> Formative
+makeFormative roots affixes root opts =
+  let (resolved, autoStem) = resolveRootAndStem roots root
+      f0 = minimalFormative resolved
+      flags = map (resolveAffixFlag affixes . T.toUpper) opts
+      hasStem = any (\f -> f `elem` ["S0","S1","S2","S3"]) (map T.toUpper opts)
+      f0' = if hasStem then f0
+            else f0 { fSlotII = (autoStem, snd (fSlotII f0)) }
+  in applyComposeFlags flags f0'
+
 -- | Resolve a root: if it contains vowels, search the lexicon by keyword
 -- and use the first match's consonant form. Uses ranked scoring from Compose.
 resolveRoot :: Map.Map Text RootEntry -> Text -> Text
-resolveRoot roots t
+resolveRoot roots t = fst (resolveRootAndStem roots t)
+
+-- | Resolve root and auto-detect best matching stem.
+-- When a keyword matches a specific stem (S2/S3), returns that stem.
+-- Falls back to S1 (default) if the keyword matches S1 or S0.
+resolveRootAndStem :: Map.Map Text RootEntry -> Text -> (Text, Stem)
+resolveRootAndStem roots t
   | T.any isVowelChar t =
     case searchRootsRanked t roots of
-      ((_,cr,_):_) -> cr
-      [] -> t
-  | otherwise = stripDashes t
+      ((_,cr,entry):_) -> (cr, bestStem t entry)
+      [] -> (t, S1)
+  | otherwise = (stripDashes t, S1)
   where
     isVowelChar c = c `elem` ("aäeëiïoöuüáéíóú" :: String)
     stripDashes = T.dropWhile (== '-') . T.dropWhileEnd (== '-')
+    -- Check which stem description best matches the query
+    bestStem q entry =
+      let qLower = T.toCaseFold q
+          contains desc = qLower `T.isInfixOf` T.toCaseFold desc
+      in if contains (rootStem1 entry) then S1
+         else if contains (rootStem2 entry) then S2
+         else if contains (rootStem3 entry) then S3
+         else S1  -- default to S1 (S0 generic → S1)
 
 -- | Compose a referential word: @REF:CASE → C1+Vc
 composeRefWord :: Text -> [Text] -> Text
@@ -779,10 +831,7 @@ repl roots affixes = do
           let parts = T.words (T.drop 8 cmd)
           case parts of
             (root:opts) -> do
-              let resolved = resolveRoot roots root
-                  f0 = minimalFormative resolved
-                  flags = map (resolveAffixFlag affixes . T.toUpper) opts
-                  f1 = applyComposeFlags flags f0
+              let f1 = makeFormative roots affixes root opts
                   f2 = autoStress f1
                   word = composeFormative f2
               TIO.putStrLn $ "  " <> col bold word
@@ -790,7 +839,7 @@ repl roots affixes = do
             _ -> TIO.putStrLn "Usage: /compose <root> [S2] [DYN] [ABS] [IRG] ..."
       | "sentence " `T.isPrefixOf` cmd = do
           let specs = T.words (T.drop 9 cmd)
-              words_ = map (composeOneWord roots affixes) specs
+              words_ = composeSentenceWords roots affixes specs
               sentence = T.unwords words_
           TIO.putStrLn $ "  " <> col bold sentence
           glossLine roots affixes sentence
@@ -816,7 +865,7 @@ repl roots affixes = do
           TIO.putStrLn "  /lookup <abbr|name>       Look up grammar (abbr, name, or category)"
           TIO.putStrLn "  /form <vowel|consonant>   Reverse lookup: form -> grammar values"
           TIO.putStrLn "  /compose <root> [opts]     Compose a formative"
-          TIO.putStrLn "  /sentence r:F:F r2:F ...  Compose multi-word sentence"
+          TIO.putStrLn "  /sentence r:F r2:F ...    Compose sentence (>r = Type1, >>r = Type2 concat)"
           TIO.putStrLn "  /help                     Show this help"
           TIO.putStrLn "  <ithkuil text>            Parse and gloss (default)"
       | otherwise = TIO.putStrLn $ col dim "Unknown command. Type /help for commands."
@@ -876,7 +925,7 @@ pipeCommand roots affixes cmd
                       <> "  [" <> gCategory e <> "]") results
   | "sentence " `T.isPrefixOf` cmd = do
       let specs = T.words (T.drop 9 cmd)
-          words_ = map (composeOneWord roots affixes) specs
+          words_ = composeSentenceWords roots affixes specs
           sentence = T.unwords words_
       TIO.putStrLn sentence
       glossLine roots affixes sentence
@@ -884,10 +933,7 @@ pipeCommand roots affixes cmd
       let parts = T.words (T.drop 8 cmd)
       case parts of
         (root:opts) -> do
-          let resolved = resolveRoot roots root
-              f0 = minimalFormative resolved
-              flags = map (resolveAffixFlag affixes . T.toUpper) opts
-              f1 = applyComposeFlags flags f0
+          let f1 = makeFormative roots affixes root opts
               f2 = autoStress f1
               word = composeFormative f2
           TIO.putStrLn word

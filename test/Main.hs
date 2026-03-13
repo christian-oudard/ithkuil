@@ -1929,6 +1929,26 @@ main = hspec $ do
           w = composeFormative f
       T.isPrefixOf "wâ" w `shouldBe` True  -- ä + stress → â (circumflex)
 
+    it "composes Type 1 concatenated formative (h prefix)" $ do
+      let f = (minimalFormative "rm")
+              { fSlotI = Just Type1 }
+          w = composeFormative f
+      T.isPrefixOf "h" w `shouldBe` True
+
+    it "composes Type 2 concatenated formative (hw prefix)" $ do
+      let f = (minimalFormative "rm")
+              { fSlotI = Just Type2 }
+          w = composeFormative f
+      T.isPrefixOf "hw" w `shouldBe` True
+
+    it "round-trips concatenated chain (parse after compose)" $ do
+      let head_ = minimalFormative "rm"
+          tail_ = (minimalFormative "lḑ") { fSlotI = Just Type1 }
+          chain = composeFormative head_ <> "-" <> composeFormative tail_
+      case parseWord chain of
+        PConcatenated pfs -> length pfs `shouldBe` 2
+        other -> expectationFailure $ "Expected PConcatenated, got: " ++ show other
+
   describe "Root search ranking" $ do
     it "finds correct root as top result for unambiguous queries" $ do
       Right roots <- loadRoots "data/roots.json"
