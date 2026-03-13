@@ -27,14 +27,18 @@ module Ithkuil.Compose
   , allCaseScopes
   , GrammarEntry(..)
   , dumpGrammarTable
+  , composeFormative
+  , applyStress
   ) where
 
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
+import Data.Char (isAlpha)
 import Ithkuil.Grammar
 import Ithkuil.Render
+import Ithkuil.Allomorph (constructCa)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), rootStem0, rootStem1, rootStem2, rootStem3)
 
 data GrammarEntry = GrammarEntry
@@ -304,3 +308,62 @@ dumpGrammarTable category =
            <> T.justifyLeft 22 ' ' (gName e)
            <> gForm e
   in T.unlines (map fmt entries)
+
+--------------------------------------------------------------------------------
+-- Formative Composition
+--------------------------------------------------------------------------------
+
+-- | Compose a Formative into correctly-rendered Ithkuil text.
+-- Uses Allomorph.constructCa for proper Ca forms, and applies stress marking.
+composeFormative :: Formative -> Text
+composeFormative f = applyStress (fStress f) unstressed
+  where
+    unstressed = T.concat
+      [ renderSlotI (fSlotI f)
+      , slotIIToVv (fSlotII f)
+      , renderRoot (fSlotIII f)
+      , renderSlotIV (fSlotIV f)
+      , renderSlotV (fSlotV f)
+      , constructCa (fSlotVI f)
+      , renderSlotVII (fSlotVII f)
+      , renderSlotVIII (fSlotVIII f)
+      , renderSlotIX (fSlotIX f)
+      ]
+
+-- | Apply stress marking to an Ithkuil word.
+-- Penultimate = no mark (default), Ultimate = acute on last vowel,
+-- Antepenultimate = circumflex→umlaut on third-to-last vowel.
+applyStress :: Stress -> Text -> Text
+applyStress Penultimate t = t
+applyStress Monosyllabic t = t
+applyStress Ultimate t = accentNthVowelFromEnd 1 t
+applyStress Antepenultimate t = accentNthVowelFromEnd 3 t
+
+-- | Place acute accent on the Nth vowel from the end (1-indexed).
+accentNthVowelFromEnd :: Int -> Text -> Text
+accentNthVowelFromEnd n t =
+  let chars = T.unpack t
+      vowelPositions = [i | (i, c) <- zip [0..] chars, isVowel c]
+      targetIdx = length vowelPositions - n
+  in if targetIdx < 0 || targetIdx >= length vowelPositions
+     then t  -- not enough vowels, return unchanged
+     else let pos = vowelPositions !! targetIdx
+              c' = acuteAccent (chars !! pos)
+          in T.pack (take pos chars ++ [c'] ++ drop (pos + 1) chars)
+
+isVowel :: Char -> Bool
+isVowel c = c `elem` ("aäeëiïoöuü" :: String)
+         || c `elem` ("áàâãéèêíìîóòôúùû" :: String)  -- already accented
+
+acuteAccent :: Char -> Char
+acuteAccent 'a' = 'á'
+acuteAccent 'ä' = 'á'  -- ä + stress → á (acute takes precedence)
+acuteAccent 'e' = 'é'
+acuteAccent 'ë' = 'é'
+acuteAccent 'i' = 'í'
+acuteAccent 'ï' = 'í'
+acuteAccent 'o' = 'ó'
+acuteAccent 'ö' = 'ó'
+acuteAccent 'u' = 'ú'
+acuteAccent 'ü' = 'ú'
+acuteAccent c = c  -- already accented or unknown

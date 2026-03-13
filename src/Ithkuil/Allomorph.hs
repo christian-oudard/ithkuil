@@ -29,6 +29,7 @@ import Ithkuil.Grammar
 -- | Ca1: Configuration consonant
 ca1 :: Configuration -> Text
 ca1 UNI = ""
+ca1 DPX = "s"
 ca1 DSS = "rt"
 ca1 DSC = "rk"
 ca1 DSF = "rp"

@@ -3,7 +3,7 @@
 -- Parses and glosses Ithkuil words and sentences
 module Main where
 
-import Control.Monad (when)
+import Control.Monad (when, forM_)
 import System.Environment (getArgs)
 import System.IO (hFlush, stdout, hSetBuffering, BufferMode(..), stdin, hIsTerminalDevice, hIsEOF)
 import Data.Text (Text)
@@ -15,7 +15,7 @@ import Ithkuil.Parse (ParsedFormative(..), ParsedCa(..))
 import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), referentLabel)
 import Ithkuil.WordType
 import Ithkuil.Lexicon
-import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), searchRoots, searchAffixes, dumpGrammarTable)
+import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), searchRoots, searchAffixes, dumpGrammarTable, composeFormative)
 import Ithkuil.Script (renderFormativeSvg)
 
 -- ANSI color helpers (only used when outputting to terminal)
@@ -44,6 +44,7 @@ main = do
     ("--affix":rest) -> handleAffixSearch rest
     ("--grammar":rest) -> handleGrammarDump rest
     ("--script":rest) -> handleScript rest
+    ("--compose":rest) -> handleCompose rest
     _ -> do
       roots <- loadLexicon "data/roots.json"
       affixes <- loadAffixLexicon "data/affixes.json"
@@ -114,6 +115,8 @@ showHelp = do
   TIO.putStrLn "  --affix <keyword>   Search affixes by keyword"
   TIO.putStrLn "  --grammar <cat>     Dump all entries in a grammar category"
   TIO.putStrLn "  --script <word>     Render a formative as SVG script"
+  TIO.putStrLn "  --compose <root> [opts]  Compose a formative from grammar specs"
+  TIO.putStrLn "    opts: S1-S3 DYN STA BSC CTE CSV OBJ ABS ERG DAT ALL LOC IRG DIR OBS etc."
   TIO.putStrLn "  --help, -h          Show this help"
 
 handleScript :: [String] -> IO ()
@@ -125,6 +128,63 @@ handleScript ws = do
     PFormative pf -> TIO.putStrLn (renderFormativeSvg pf)
     PConcatenated (pf:_) -> TIO.putStrLn (renderFormativeSvg pf)
     _ -> TIO.putStrLn $ "Cannot render script for non-formative: " <> word
+
+handleCompose :: [String] -> IO ()
+handleCompose [] = TIO.putStrLn "Usage: ithkuil-gloss --compose <root> [S1-S3] [DYN] [ABS|ERG|DAT|ALL|...] [IRG|DIR|...]"
+handleCompose (rootStr:opts) = do
+  roots <- loadLexicon "data/roots.json"
+  affixes <- loadAffixLexicon "data/affixes.json"
+  let root = T.pack rootStr
+      flags = map (T.toUpper . T.pack) opts
+      f0 = minimalFormative root
+      f1 = applyFlags flags f0
+      -- Determine stress: verbal (has illocution) → Ultimate, otherwise Penultimate
+      f2 = case fSlotIX f1 of
+        Right _ -> f1 { fStress = Ultimate }
+        Left _ -> f1
+      word = composeFormative f2
+  TIO.putStrLn $ col bold word
+  glossLine roots affixes word
+  where
+    applyFlags [] f = f
+    applyFlags (flag:rest) f = applyFlags rest (applyOneFlag flag f)
+    applyOneFlag "S1" f = f { fSlotII = (S1, snd (fSlotII f)) }
+    applyOneFlag "S2" f = f { fSlotII = (S2, snd (fSlotII f)) }
+    applyOneFlag "S3" f = f { fSlotII = (S3, snd (fSlotII f)) }
+    applyOneFlag "S0" f = f { fSlotII = (S0, snd (fSlotII f)) }
+    applyOneFlag "PRC" f = f { fSlotII = (fst (fSlotII f), PRC) }
+    applyOneFlag "CPT" f = f { fSlotII = (fst (fSlotII f), CPT) }
+    applyOneFlag "DYN" f = f { fSlotIV = (DYN, sel2 (fSlotIV f), sel3 (fSlotIV f)) }
+    applyOneFlag "STA" f = f { fSlotIV = (STA, sel2 (fSlotIV f), sel3 (fSlotIV f)) }
+    applyOneFlag "BSC" f = f { fSlotIV = (sel1 (fSlotIV f), BSC, sel3 (fSlotIV f)) }
+    applyOneFlag "CTE" f = f { fSlotIV = (sel1 (fSlotIV f), CTE, sel3 (fSlotIV f)) }
+    applyOneFlag "CSV" f = f { fSlotIV = (sel1 (fSlotIV f), CSV, sel3 (fSlotIV f)) }
+    applyOneFlag "OBJ" f = f { fSlotIV = (sel1 (fSlotIV f), OBJ, sel3 (fSlotIV f)) }
+    -- Cases
+    applyOneFlag "THM" f = f { fSlotIX = Left (Transrelative THM) }
+    applyOneFlag "ABS" f = f { fSlotIX = Left (Transrelative ABS) }
+    applyOneFlag "ERG" f = f { fSlotIX = Left (Transrelative ERG) }
+    applyOneFlag "DAT" f = f { fSlotIX = Left (Transrelative DAT) }
+    applyOneFlag "IND" f = f { fSlotIX = Left (Transrelative IND) }
+    applyOneFlag "AFF" f = f { fSlotIX = Left (Transrelative AFF) }
+    applyOneFlag "STM" f = f { fSlotIX = Left (Transrelative STM) }
+    applyOneFlag "EFF" f = f { fSlotIX = Left (Transrelative EFF) }
+    applyOneFlag "INS" f = f { fSlotIX = Left (Transrelative INS) }
+    applyOneFlag "POS" f = f { fSlotIX = Left (Appositive POS) }
+    applyOneFlag "GEN" f = f { fSlotIX = Left (Appositive GEN) }
+    applyOneFlag "ALL" f = f { fSlotIX = Left (SpatioTemporal1 ALL) }
+    applyOneFlag "LOC" f = f { fSlotIX = Left (SpatioTemporal1 LOC) }
+    applyOneFlag "ABL" f = f { fSlotIX = Left (SpatioTemporal1 ABL) }
+    -- Illocutions (make verbal)
+    applyOneFlag "OBS" f = f { fSlotIX = Right (IllocVal ASR OBS) }
+    applyOneFlag "IRG" f = f { fSlotIX = Right (IllocVal IRG OBS) }
+    applyOneFlag "DIR" f = f { fSlotIX = Right (IllocVal DIR OBS) }
+    applyOneFlag "ADM" f = f { fSlotIX = Right (IllocVal ADM OBS) }
+    applyOneFlag "HOR" f = f { fSlotIX = Right (IllocVal HOR OBS) }
+    applyOneFlag _ f = f  -- Ignore unknown flags
+    sel1 (a, _, _) = a
+    sel2 (_, b, _) = b
+    sel3 (_, _, c) = c
 
 loadLexicon :: FilePath -> IO (Map.Map Text RootEntry)
 loadLexicon path = do
@@ -171,22 +231,31 @@ pipeMode roots affixes = do
 glossLine :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> IO ()
 glossLine roots affixes input = do
   let ws = T.words input
-      -- Context-aware glossing: carriers cause following words to be foreign text
-      ctxPairs = glossSentenceWords roots affixes input
-  mapM_ (glossOneWord roots affixes) ws
-  -- Show interlinear summary with context-aware glosses
+      -- Context-aware glossing: full glosses identify which words are foreign
+      ctxFull = glossSentenceWords roots affixes input
+      -- Build compact glosses, using foreign text pass-through from context
+      compactGlosses = zipWith (\(_origW, fullG) w ->
+        let clean = T.filter (\c -> c /= ',' && c /= '.' && c /= '!' && c /= '?' && c /= ':' && c /= ';') w
+            parsed = parseWord clean
+            isForeign = fullG == clean  -- context marked as foreign if gloss == raw word
+        in if isForeign then clean
+           else glossWordCompact roots affixes parsed
+        ) ctxFull ws
+  forM_ (zip ctxFull ws) $ \((_origW, fullG), w) ->
+    let clean = T.filter (\c -> c /= ',' && c /= '.' && c /= '!' && c /= '?' && c /= ':' && c /= ';') w
+    in if fullG == clean
+      then TIO.putStrLn $ "  " <> col bold w <> "  " <> col dim "[Foreign text]"
+      else glossOneWord roots affixes w
+  -- Show interlinear summary with compact context-aware glosses
   when (length ws > 1) $ do
-    let glosses = map snd ctxPairs
-        origWs = map fst ctxPairs
-        widths = zipWith (\w g -> max (T.length w) (T.length g) + 2) origWs glosses
-        -- Pad based on visible text length, then apply color
-        padTo n t = t <> T.replicate (max 0 (n - T.length t)) " "
+    let padTo n t = t <> T.replicate (max 0 (n - T.length t)) " "
+        widths = zipWith (\w g -> max (T.length w) (T.length g) + 2) ws compactGlosses
     TIO.putStrLn ""
     TIO.putStr "  "
-    mapM_ (\(w, n) -> TIO.putStr (col bold (padTo n w))) (zip origWs widths)
+    mapM_ (\(w, n) -> TIO.putStr (col bold (padTo n w))) (zip ws widths)
     TIO.putStrLn ""
     TIO.putStr "  "
-    mapM_ (\(g, n) -> TIO.putStr (col green (padTo n g))) (zip glosses widths)
+    mapM_ (\(g, n) -> TIO.putStr (col green (padTo n g))) (zip compactGlosses widths)
     TIO.putStrLn ""
 
 glossOneWord :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> IO ()

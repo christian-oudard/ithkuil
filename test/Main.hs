@@ -12,7 +12,7 @@ import Ithkuil.Adjuncts
 import Ithkuil.WordType
 import Ithkuil.Referentials
 import Ithkuil.Validation (StressError(..), validateStress)
-import Ithkuil.Compose (lookupGrammar, GrammarEntry(..))
+import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), composeFormative, applyStress)
 
 main :: IO ()
 main = hspec $ do
@@ -1601,3 +1601,110 @@ main = hspec $ do
       let g = glossSentence mempty mempty "ahlä agala"
       T.isInfixOf "CCA" g `shouldBe` True
       T.isInfixOf "SUB" g `shouldBe` False
+
+  describe "Formative Composition" $ do
+    it "composes minimal formative (root -l-, THM)" $ do
+      let f = minimalFormative "l"
+          w = composeFormative f
+      -- Vv(a) + Cr(l) + Vr(a) + Ca(l) + Vc(a) = "alala"
+      w `shouldBe` "alala"
+
+    it "composes with ERG case" $ do
+      let f = (minimalFormative "l") { fSlotIX = Left (Transrelative ERG) }
+          w = composeFormative f
+      -- Vv(a) + Cr(l) + Vr(a) + Ca(l) + Vc(o) = "alalo"
+      w `shouldBe` "alalo"
+
+    it "composes with ultimate stress (verbal)" $ do
+      let f = (minimalFormative "l")
+              { fStress = Ultimate
+              , fSlotIX = Right (IllocVal ASR OBS) }
+          w = composeFormative f
+      -- alal + a (ASR/OBS) = "alala" + ultimate stress → "alalá"
+      w `shouldBe` "alalá"
+
+    it "composes with DYN function" $ do
+      let f = (minimalFormative "l") { fSlotIV = (DYN, BSC, EXS) }
+          w = composeFormative f
+      -- Vv(a) + Cr(l) + Vr(u) [DYN/BSC form 9] + Ca(l) + Vc(a) = "alula"
+      w `shouldBe` "alula"
+
+    it "composes with S2 stem" $ do
+      let f = (minimalFormative "l") { fSlotII = (S2, PRC) }
+          w = composeFormative f
+      -- Vv(e) + Cr(l) + Vr(a) + Ca(l) + Vc(a) = "elala"
+      w `shouldBe` "elala"
+
+    it "composes with DPX configuration" $ do
+      let f = (minimalFormative "l")
+              { fSlotVI = (DPX, CSL, M_, DEL, NRM) }
+          w = composeFormative f
+      -- Ca for DPX/CSL/M/DEL/NRM: Ca1(s) + Ca4() = "s"
+      T.isInfixOf "s" w `shouldBe` True
+      -- Should not have default "l" Ca
+      w `shouldNotBe` "alala"
+
+    it "round-trips: compose then parse recovers root" $ do
+      let f = (minimalFormative "kç") { fSlotIX = Left (Transrelative ABS) }
+          w = composeFormative f
+          parsed = parseWord w
+      case parsed of
+        PFormative pf -> pfRoot pf `shouldBe` Root "kç"
+        _ -> expectationFailure $ "Expected PFormative, got: " ++ show parsed
+
+    it "round-trips: compose verbal then parse detects ultimate stress" $ do
+      let f = (minimalFormative "m")
+              { fStress = Ultimate
+              , fSlotIX = Right (IllocVal ASR OBS) }
+          w = composeFormative f
+          parsed = parseWord w
+      case parsed of
+        PFormative pf -> pfRoot pf `shouldBe` Root "m"
+        _ -> expectationFailure $ "Expected PFormative, got: " ++ show parsed
+
+    it "applies stress correctly" $ do
+      applyStress Penultimate "alala" `shouldBe` "alala"
+      applyStress Ultimate "alala" `shouldBe` "alalá"
+      applyStress Antepenultimate "alala" `shouldBe` "álala"
+
+    it "composes with Slot VII affix" $ do
+      let affix = Affix { affixVowel = "a", affixConsonant = "r", affixType = Type1Affix }
+          f = (minimalFormative "l") { fSlotVII = [affix] }
+          w = composeFormative f
+      -- alal + ar + a = "alalara"
+      T.isInfixOf "ar" w `shouldBe` True
+
+    it "composes with VnCn aspect (PRG)" $ do
+      let f = (minimalFormative "l")
+              { fSlotVIII = Just (VnCnAspect PRG (MoodVal FAC))
+              , fStress = Ultimate
+              , fSlotIX = Right (IllocVal ASR OBS) }
+          w = composeFormative f
+      -- PRG = "i", FAC P2 Cn = "w", so VnCn = "iw"
+      T.isInfixOf "iw" w `shouldBe` True
+
+    it "composes IRG illocution as Series 2 vowel" $ do
+      let f = (minimalFormative "l")
+              { fStress = Ultimate
+              , fSlotIX = Right (IllocVal IRG OBS) }
+          w = composeFormative f
+      -- IRG/OBS = "ei" + ultimate stress → alalei with stress
+      T.isSuffixOf "eí" w `shouldBe` True
+      -- Round-trip: parse back and verify illocution
+      case parseWord w of
+        PFormative pf -> pfIllocVal pf `shouldBe` Just (IRG, OBS)
+        other -> expectationFailure $ "Expected PFormative, got: " ++ show other
+
+    it "round-trips compose → parse for complex formative" $ do
+      let f = (minimalFormative "gw")
+              { fSlotII = (S2, PRC)
+              , fSlotIV = (DYN, BSC, EXS)
+              , fSlotIX = Left (Transrelative ABS)
+              , fStress = Penultimate }
+          w = composeFormative f
+          parsed = parseWord w
+      case parsed of
+        PFormative pf -> do
+          pfRoot pf `shouldBe` Root "gw"
+          pfSlotII pf `shouldBe` (S2, PRC)
+        _ -> expectationFailure $ "Expected PFormative, got: " ++ show parsed

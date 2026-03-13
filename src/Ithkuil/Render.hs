@@ -255,10 +255,26 @@ renderEffect DET2 = "ue"
 renderEffect DET1 = "ua"
 
 -- | Slot IX: Case or Format/Illocution+Validation
+-- Uses vowel form encoding (not consonant forms which are for VnCn/adjuncts)
 renderSlotIX :: Either Case FormatOrIV -> Text
 renderSlotIX (Left c) = renderCase c
 renderSlotIX (Right Format) = "a"
-renderSlotIX (Right (IllocVal ill val)) = renderIllocution ill <> renderValidation val
+renderSlotIX (Right (IllocVal ill val)) = renderVk ill val
+
+-- | Render Vk (Illocution + Validation) as vowel form
+-- Series 1 = ASR + Validation, Series 2 = Non-ASR illocutions (OBS only)
+renderVk :: Illocution -> Validation -> Text
+renderVk ASR v = renderValidation v  -- Series 1: validation vowel only
+renderVk ill _ = case ill of         -- Series 2: illocution-specific vowel
+  DIR -> "ai"
+  DEC -> "au"
+  IRG -> "ei"
+  VER -> "eu"
+  ADM -> "ou"
+  POT -> "oi"
+  HOR -> "iu"
+  CNJ -> "ui"
+  ASR -> "a"  -- unreachable
 
 renderCase :: Case -> Text
 -- Transrelative (Series 1)

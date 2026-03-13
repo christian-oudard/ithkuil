@@ -808,7 +808,8 @@ glossWordCompact roots affixes pw = case pw of
           Just _ -> ""  -- ASR/OBS is default, skip
           Nothing -> case pfCase pf of
             Just c | c /= Transrelative THM -> "." <> T.pack (showCase c)
-            _ -> ""
+              <> if pfStress pf == Antepenultimate then "\\FRA" else ""
+            _ -> if pfStress pf == Antepenultimate then ".FRA" else ""
         stemMark = case stem of
           S1 -> ""  -- default
           _ -> T.pack (show stem) <> ":"
@@ -816,8 +817,29 @@ glossWordCompact roots affixes pw = case pw of
         shortMeaning = if T.length rootMeaning > 25
           then T.take 22 rootMeaning <> "..."
           else rootMeaning
+        -- Compact affix display (Slot V: CsVx, Slot VII: VxCs)
+        slotVParts = map (\(cs, vx) -> glossOneAffix affixes (vx, cs)) (pfSlotV pf)
+        slotVIIParts = map (glossOneAffix affixes) (extractAffixes (pfCa pf))
+        allAffixParts = slotVParts ++ slotVIIParts
+        affixStr = if null allAffixParts then "" else "-" <> T.intercalate "-" allAffixParts
+        -- VnCn display (from pfSlotVIII or extracted from Ca rest)
+        stress = pfStress pf
+        slotVIII = fmap (disambiguateSlotVIII stress) $ case pfSlotVIII pf of
+          Just s8 -> Just s8
+          Nothing -> case extractVnCnFull (pfCa pf) of
+            Just (vn, cn, absLvl) ->
+              let parsed = parseOneVnCn vn cn
+              in if absLvl
+                 then case parsed of
+                   Just (VnCnLevel lvl _ ms) -> Just (VnCnLevel lvl True ms)
+                   _ -> parsed
+                 else parsed
+            Nothing -> Nothing
+        vnCnStr = case slotVIII of
+          Just s8 -> "-" <> glossSlotVIII s8
+          Nothing -> ""
         sentencePrefix = if pfSentenceStarter pf then "[s:]" else ""
-    in sentencePrefix <> stemMark <> shortMeaning <> caseOrIlloc
+    in sentencePrefix <> stemMark <> shortMeaning <> affixStr <> vnCnStr <> caseOrIlloc
   PBias b -> let desc = biasGloss b
              in if T.null desc then T.pack (show b) else "\x201C" <> desc <> "\x201D"
   PRegister r -> T.pack (show r)
