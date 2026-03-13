@@ -2,7 +2,6 @@
 module Main where
 
 import Test.Hspec
-import Data.Text (Text)
 import qualified Data.Text as T
 import Ithkuil.Phonology
 import Ithkuil.Grammar
@@ -11,6 +10,7 @@ import Ithkuil.Render
 import Ithkuil.FullParse
 import Ithkuil.Adjuncts
 import Ithkuil.WordType
+import Ithkuil.Referentials
 
 main :: IO ()
 main = hspec $ do
@@ -132,11 +132,8 @@ main = hspec $ do
       renderCase (SpatioTemporal2 PLM) `shouldBe` "a'u"
 
     it "round-trips non-colliding cases through parse/render" $ do
-      -- Some case vowels collide across groups (e.g., "iu" = IDP and CSD)
-      -- because the official grammar reuses vowel forms across series.
-      -- Here we test that at least the first-match cases round-trip.
-      let transrelative = map Transrelative allOf  -- 9, all unique
-          appositive = map Appositive allOf        -- 9, all unique
+      let transrelative = map Transrelative allOf
+          appositive = map Appositive allOf
       let roundTrip c = parseCase (renderCase c) == Just c
       all roundTrip transrelative `shouldBe` True
       all roundTrip appositive `shouldBe` True
@@ -180,6 +177,15 @@ main = hspec $ do
           pfRoot pf `shouldBe` Root "m"
         Nothing -> expectationFailure "Should parse"
 
+    it "parses with non-default Ca" $ do
+      let result = parseFormativeReal "maru"
+      case result of
+        Just pf -> do
+          pfRoot pf `shouldBe` Root "m"
+          -- "r" Ca = G perspective
+          pfCaParsed pf `shouldBe` Just (ParsedCa UNI CSL G_ DEL NRM)
+        Nothing -> expectationFailure "Should parse maru"
+
   describe "Conjunct Splitting" $ do
     it "splits simple CV-CV words" $
       splitConjuncts "mala" `shouldBe` ["m", "a", "l", "a"]
@@ -202,7 +208,7 @@ main = hspec $ do
     it "all biases have unique forms" $ do
       let biases = allOf :: [Bias]
           forms = map biasForm biases
-      length forms `shouldBe` length (filter (uncurry (/=)) $ zip forms (tail forms)) + 1
+      length forms `shouldBe` length (filter (uncurry (/=)) $ zip forms (drop 1 forms)) + 1
 
   describe "Stress Detection" $ do
     it "detects default penultimate stress" $
@@ -218,6 +224,17 @@ main = hspec $ do
       parseVnValence "e"  `shouldBe` Just CRO
       parseVnValence "u"  `shouldBe` Just PTI
 
+    it "parses all 9 valences" $ do
+      parseVnValence "a"  `shouldBe` Just MNO
+      parseVnValence "ä"  `shouldBe` Just PRL
+      parseVnValence "e"  `shouldBe` Just CRO
+      parseVnValence "i"  `shouldBe` Just RCP
+      parseVnValence "ëi" `shouldBe` Just CPL
+      parseVnValence "ö"  `shouldBe` Just DUP
+      parseVnValence "o"  `shouldBe` Just DEM
+      parseVnValence "ü"  `shouldBe` Just CNG
+      parseVnValence "u"  `shouldBe` Just PTI
+
     it "parses mood consonants" $ do
       parseCnMood "h"  `shouldBe` Just FAC
       parseCnMood "hl" `shouldBe` Just SUB
@@ -226,9 +243,39 @@ main = hspec $ do
       parseCnMood "hn" `shouldBe` Just COU
       parseCnMood "hň" `shouldBe` Just HYP
 
+    it "parses Pattern 2 mood consonants" $ do
+      parseCnMoodP2 "w"   `shouldBe` Just FAC
+      parseCnMoodP2 "y"   `shouldBe` Just FAC
+      parseCnMoodP2 "hw"  `shouldBe` Just SUB
+      parseCnMoodP2 "hrw" `shouldBe` Just ASM
+      parseCnMoodP2 "hmw" `shouldBe` Just SPC
+      parseCnMoodP2 "hnw" `shouldBe` Just COU
+      parseCnMoodP2 "hňw" `shouldBe` Just HYP
+
     it "parses case-scope consonants" $ do
       parseCnCaseScope "w" `shouldBe` Just CCN
       parseCnCaseScope "hw" `shouldBe` Just CCA
+
+    it "parses phase vowels" $ do
+      lookup "ai" phaseVowels `shouldBe` Just PUN
+      lookup "au" phaseVowels `shouldBe` Just ITR
+      lookup "ei" phaseVowels `shouldBe` Just REP
+      lookup "ui" phaseVowels `shouldBe` Just FLC
+
+    it "parses aspect vowels (all 36)" $ do
+      -- Column 1 (Series 1)
+      lookup "a" aspectVowels `shouldBe` Just RTR
+      lookup "e" aspectVowels `shouldBe` Just HAB
+      lookup "u" aspectVowels `shouldBe` Just ATP
+      -- Column 2 (Series 2)
+      lookup "ai" aspectVowels `shouldBe` Just RSM
+      lookup "ou" aspectVowels `shouldBe` Just CNT
+      -- Column 3 (Series 3)
+      lookup "ia" aspectVowels `shouldBe` Just PMP
+      lookup "ua" aspectVowels `shouldBe` Just PPR
+      -- Column 4 (Series 4)
+      lookup "ao" aspectVowels `shouldBe` Just DCL
+      lookup "oa" aspectVowels `shouldBe` Just SQN
 
   describe "Vk Parsing" $ do
     it "parses assertive with validation" $ do
@@ -240,6 +287,37 @@ main = hspec $ do
       parseVk "ai" `shouldBe` Success (IllocVal DIR OBS)
       parseVk "ei" `shouldBe` Success (IllocVal IRG OBS)
 
+  describe "Referentials" $ do
+    it "has correct C1 forms for neutral effect" $ do
+      refC1 (PersonalRef R1m NEU) `shouldBe` "l"   -- I
+      refC1 (PersonalRef R2m NEU) `shouldBe` "s"   -- you sg.
+      refC1 (PersonalRef R2p NEU) `shouldBe` "n"   -- you pl.
+      refC1 (PersonalRef Rma NEU) `shouldBe` "m"   -- he/she
+      refC1 (PersonalRef Rpa NEU) `shouldBe` "ň"   -- they (animate)
+      refC1 (PersonalRef Rmi NEU) `shouldBe` "z"   -- it
+      refC1 (PersonalRef Rmx NEU) `shouldBe` "c"   -- mixed
+
+    it "has correct C1 forms for beneficial effect" $ do
+      refC1 (PersonalRef R1m BEN) `shouldBe` "r"
+      refC1 (PersonalRef R2m BEN) `shouldBe` "š"
+      refC1 (PersonalRef Rma BEN) `shouldBe` "p"
+
+    it "has correct C1 forms for detrimental effect" $ do
+      refC1 (PersonalRef R1m DET) `shouldBe` "ř"
+      refC1 (PersonalRef R2m DET) `shouldBe` "ž"
+      refC1 (PersonalRef Rma DET) `shouldBe` "b"
+
+    it "round-trips C1 lookup" $ do
+      lookupRefC1 "l" `shouldBe` Just (PersonalRef R1m NEU)
+      lookupRefC1 "s" `shouldBe` Just (PersonalRef R2m NEU)
+      lookupRefC1 "m" `shouldBe` Just (PersonalRef Rma NEU)
+      lookupRefC1 "r" `shouldBe` Just (PersonalRef R1m BEN)
+      lookupRefC1 "xyz" `shouldBe` Nothing
+
+    it "has 33 unique C1 forms (11 referents x 3 effects)" $ do
+      let allForms = map snd refC1All
+      length allForms `shouldBe` 33
+
   describe "Word Type Classification" $ do
     it "classifies pure consonant words as bias adjuncts" $ do
       classifyWord "řřx" `shouldBe` WBiasAdjunct
@@ -250,16 +328,69 @@ main = hspec $ do
       classifyWord "hlw" `shouldBe` WRegisterAdjunct
       classifyWord "hrw" `shouldBe` WRegisterAdjunct
 
+    it "classifies V-Cn patterns as modular adjuncts" $ do
+      classifyWord "ah"  `shouldBe` WModularAdjunct
+      classifyWord "aw"  `shouldBe` WModularAdjunct
+      classifyWord "ehl" `shouldBe` WModularAdjunct
+
+    it "classifies short C-V words as referentials" $ do
+      classifyWord "la" `shouldBe` WReferential
+      classifyWord "se" `shouldBe` WReferential
+      classifyWord "mo" `shouldBe` WReferential
+
     it "classifies normal words as formatives" $ do
       classifyWord "malai" `shouldBe` WFormative
       classifyWord "emalai" `shouldBe` WFormative
+
+  describe "Referential Parsing" $ do
+    it "parses simple referential 'la' as 1m-THM" $ do
+      let pw = parseWord "la"
+      case pw of
+        PReferential ref mc _ -> do
+          ref `shouldBe` PersonalRef R1m NEU
+          mc `shouldBe` Just (Transrelative THM)
+        _ -> expectationFailure $ "Expected PReferential, got: " ++ show pw
+
+    it "parses 'se' as 2m-ABS" $ do
+      case parseWord "se" of
+        PReferential ref mc _ -> do
+          ref `shouldBe` PersonalRef R2m NEU
+          mc `shouldBe` Just (Transrelative ABS)
+        pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
+
+    it "parses 'ro' as 1m/BEN-ERG" $ do
+      case parseWord "ro" of
+        PReferential ref mc _ -> do
+          ref `shouldBe` PersonalRef R1m BEN
+          mc `shouldBe` Just (Transrelative ERG)
+        pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
+
+  describe "Modular Adjunct Parsing" $ do
+    it "parses 'ah' as MNO-FAC" $ do
+      case parseWord "ah" of
+        PModular [VnCnValence MNO (MoodVal FAC)] _ -> return ()
+        pw -> expectationFailure $ "Expected PModular MNO-FAC, got: " ++ show pw
+
+    it "parses 'aw' as RTR-FAC (aspect)" $ do
+      case parseWord "aw" of
+        PModular [VnCnAspect RTR (MoodVal FAC)] _ -> return ()
+        pw -> expectationFailure $ "Expected PModular RTR-FAC, got: " ++ show pw
+
+    it "parses 'ehl' as CRO-SUB" $ do
+      case parseWord "ehl" of
+        PModular [VnCnValence CRO (MoodVal SUB)] _ -> return ()
+        pw -> expectationFailure $ "Expected PModular CRO-SUB, got: " ++ show pw
+
+    it "parses aspect pattern 2 'aihňw' as RSM-HYP" $ do
+      case parseWord "aihňw" of
+        PModular [VnCnAspect RSM (MoodVal HYP)] _ -> return ()
+        pw -> expectationFailure $ "Expected PModular RSM-HYP, got: " ++ show pw
 
   describe "Rendering" $ do
     it "renders a minimal formative" $ do
       let f = minimalFormative "ml"
       let rendered = renderFormative f
       rendered `shouldSatisfy` (not . T.null)
-      -- Should contain the root "ml"
       T.isInfixOf "ml" rendered `shouldBe` True
 
     it "renders valence vowels correctly" $ do
@@ -271,6 +402,22 @@ main = hspec $ do
       renderMoodOrScope (MoodVal FAC) `shouldBe` "h"
       renderMoodOrScope (MoodVal SUB) `shouldBe` "hl"
       renderMoodOrScope (MoodVal HYP) `shouldBe` "hň"
+
+    it "renders Pattern 2 mood consonants" $ do
+      renderMoodOrScopeP2 (MoodVal FAC) `shouldBe` "w"
+      renderMoodOrScopeP2 (MoodVal SUB) `shouldBe` "hw"
+      renderMoodOrScopeP2 (MoodVal HYP) `shouldBe` "hňw"
+
+    it "renders phase vowels correctly" $ do
+      renderPhase PUN `shouldBe` "ai"
+      renderPhase FLC `shouldBe` "ui"
+
+    it "renders aspect vowels correctly" $ do
+      renderAspect RTR `shouldBe` "a"
+      renderAspect RSM `shouldBe` "ai"
+      renderAspect PMP `shouldBe` "ia"
+      renderAspect DCL `shouldBe` "ao"
+      renderAspect SQN `shouldBe` "oa"
 
     it "renders illocution+validation correctly" $ do
       renderIllocution ASR `shouldBe` ""
