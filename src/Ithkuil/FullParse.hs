@@ -178,10 +178,69 @@ parseFullCa ca = case parseCa ca of
   Nothing -> Success defaultSlotVI  -- Fall back to default if unrecognized
 
 -- | Parse affixes from a vowel+consonant or consonant+vowel sequence
+-- VxCs format: vowel (degree) + consonant (affix type)
+-- CsVx format: consonant (affix type) + vowel (degree) [reversed in Slot V]
 parseAffixes :: Text -> ParseResult [Affix]
 parseAffixes t
   | T.null t = Success []
-  | otherwise = Success [Affix t "" Type1Affix]  -- Basic: store raw form for now
+  | otherwise =
+    -- Split into individual affixes (each is a V+C or C+V pair)
+    let conjs = splitConjuncts t
+    in Success $ parseAffixPairs conjs
+
+-- | Parse conjunct pairs into affixes
+parseAffixPairs :: [Text] -> [Affix]
+parseAffixPairs [] = []
+parseAffixPairs [_] = []  -- Lone conjunct, can't form a pair
+parseAffixPairs (v:c:rest)
+  | isVowelStart v && isConsonant c =
+    let (affType, degree) = classifyAffixVowel v
+    in Affix v c affType : parseAffixPairs rest
+  | isConsonant v && isVowelStart c =
+    -- CsVx (reversed) format used in Slot V
+    let (affType, degree) = classifyAffixVowel c
+    in Affix c v affType : parseAffixPairs rest
+  | otherwise = parseAffixPairs (c:rest)  -- Skip unmatched
+
+-- | Classify affix vowel to determine type and degree
+-- Returns (AffixType, degree 0-9)
+classifyAffixVowel :: Text -> (AffixType, Int)
+classifyAffixVowel v =
+  case lookupDegree type1Degrees v of
+    Just d -> (Type1Affix, d)
+    Nothing -> case lookupDegree type2Degrees v of
+      Just d -> (Type2Affix, d)
+      Nothing -> case lookupDegree type3Degrees v of
+        Just d -> (Type3Affix, d)
+        Nothing -> (Type1Affix, 0)  -- Unknown, default
+
+lookupDegree :: [(Text, Int)] -> Text -> Maybe Int
+lookupDegree table v = lookup v table
+
+-- | Type 1 degree vowels (Series 1)
+type1Degrees :: [(Text, Int)]
+type1Degrees =
+  [ ("a", 1), ("ä", 2), ("e", 3), ("i", 4), ("ëi", 5)
+  , ("ö", 6), ("o", 7), ("ü", 8), ("u", 9), ("ae", 0)
+  ]
+
+-- | Type 2 degree vowels (Series 2)
+type2Degrees :: [(Text, Int)]
+type2Degrees =
+  [ ("ai", 1), ("au", 2), ("ei", 3), ("eu", 4), ("ëu", 5)
+  , ("ou", 6), ("oi", 7), ("iu", 8), ("ui", 9), ("ea", 0)
+  ]
+
+-- | Type 3 degree vowels (Series 3, with alternates)
+type3Degrees :: [(Text, Int)]
+type3Degrees =
+  [ ("ia", 1), ("uä", 1), ("ie", 2), ("uë", 2)
+  , ("io", 3), ("üä", 3), ("iö", 4), ("üë", 4)
+  , ("eë", 5)
+  , ("uö", 6), ("öë", 6), ("uo", 7), ("öä", 7)
+  , ("ue", 8), ("ië", 8), ("ua", 9), ("iä", 9)
+  , ("üo", 0)
+  ]
 
 -- | Parse VnCn from two conjunct parts (Vn vowel + Cn consonant)
 parseVnCnFromParts :: Text -> Text -> Stress -> ParseResult (Maybe (Valence, MoodOrScope))
