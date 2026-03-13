@@ -347,6 +347,8 @@ glossFormative roots affixes pf =
       caAbbr = case pfCaParsed pf of
         Just pc -> showCaAbbr pc
         Nothing -> ""
+      -- Slot V affixes (CsVx order - note: degree comes from Vx, the second element)
+      slotVGlosses = map (\(cs, vx) -> glossOneAffix affixes (vx, cs)) (pfSlotV pf)
       -- Affixes from Ca rest (VxCs pairs after the Ca consonant)
       affixGlosses = map (glossOneAffix affixes) (extractAffixes (pfCa pf))
       -- Slot VIII: VnCn (from pfSlotVIII or extracted from Ca rest)
@@ -375,8 +377,9 @@ glossFormative roots affixes pf =
     , stemVerAbbr
     , rootMeaning
     , slotIVAbbr
-    , caAbbr
-    ] <> affixGlosses
+    ] <> slotVGlosses
+      <> [caAbbr | not (T.null caAbbr)]
+      <> affixGlosses
       <> [glossSlotVIII s8 | Just s8 <- [slotVIII]]
       <> [slotIXAbbr | not (T.null slotIXAbbr)]
       <> [frameAbbr | not (T.null frameAbbr)]

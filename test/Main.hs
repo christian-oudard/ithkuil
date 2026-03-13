@@ -618,6 +618,39 @@ main = hspec $ do
         Just pf -> pfCsRootDegree pf `shouldBe` Nothing  -- parsed as normal, not Cs-root
         Nothing -> return ()  -- also acceptable: fails to parse
 
+  describe "Ca Gemination" $ do
+    it "detects geminated Ca" $ do
+      isGeminateCa "ll" `shouldBe` True
+      isGeminateCa "rr" `shouldBe` True
+      isGeminateCa "ttr" `shouldBe` True
+      isGeminateCa "l" `shouldBe` False
+      isGeminateCa "tr" `shouldBe` False
+
+    it "detects allomorphic gemination" $ do
+      isGeminateCa "jjn" `shouldBe` True
+      isGeminateCa "xxn" `shouldBe` True
+
+    it "degeminates Ca" $ do
+      degeminateCa "ll" `shouldBe` "l"
+      degeminateCa "rr" `shouldBe` "r"
+      degeminateCa "ttr" `shouldBe` "tr"
+      degeminateCa "jjn" `shouldBe` "dn"
+      degeminateCa "xxn" `shouldBe` "kn"
+
+    it "extracts Slot V affixes with geminated Ca" $ do
+      -- "alarfull" = a-l-a-rf-u-ll → Vv=a, Cr=l, Vr=a, SlotV=[(rf,u)], Ca=ll→l
+      case parseFormativeReal "alarfull" of
+        Just pf -> do
+          pfRoot pf `shouldBe` Root "l"
+          pfSlotV pf `shouldBe` [("rf", "u")]
+          pfCaParsed pf `shouldBe` Just (ParsedCa UNI CSL M_ DEL NRM)
+        Nothing -> expectationFailure "Should parse alarfull"
+
+    it "does not extract Slot V for non-geminated Ca" $ do
+      case parseFormativeReal "malai" of
+        Just pf -> pfSlotV pf `shouldBe` []
+        Nothing -> expectationFailure "Should parse malai"
+
   describe "Cc Parsing" $ do
     it "classifies concatenation types" $ do
       parseCc "h"  `shouldBe` (Just Type1, Nothing)

@@ -135,7 +135,15 @@ showFormativeDetail roots affixes pf = do
     Just pc | pc /= ParsedCa UNI CSL M_ DEL NRM ->
       TIO.putStrLn $ "    Ca: " <> showCaDetail pc
     _ -> return ()
-  -- Affixes
+  -- Slot V affixes (CsVx order)
+  mapM_ (\(cs, vx) -> do
+    let degree = classifyDegree vx
+        desc = case lookupAffix cs affixes of
+          Just entry -> affixAbbrev entry <> " deg " <> T.pack (show degree)
+          Nothing -> cs <> " deg " <> T.pack (show degree)
+    TIO.putStrLn $ "    SlotV: -" <> cs <> "- " <> vx <> " = " <> desc
+    ) (pfSlotV pf)
+  -- Slot VII Affixes
   let afxPairs = extractAffixes (pfCa pf)
   mapM_ (\(vx, cs) -> do
     let degree = classifyDegree vx

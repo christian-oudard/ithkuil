@@ -19,6 +19,8 @@ module Ithkuil.Parse
   , CcShortcut(..)
   , isSpecialVv
   , parseAffixVr
+  , isGeminateCa
+  , degeminateCa
   ) where
 
 import Data.Text (Text)
@@ -140,6 +142,7 @@ data ParsedFormative = ParsedFormative
   , pfSlotVIII :: Maybe SlotVIII -- VnCn (valence/phase/aspect + mood/case-scope)
   , pfCase    :: Maybe Case      -- Vc (case vowel, when penultimate/antepenultimate stress)
   , pfIllocVal :: Maybe (Illocution, Validation)  -- Vk (when ultimate stress)
+  , pfSlotV   :: [(Text, Text)]   -- Slot V CsVx affix pairs (reversed order)
   , pfStress  :: Stress          -- Detected stress pattern
   , pfConjuncts :: [Text]        -- Original conjunct split
   , pfCsRootDegree :: Maybe Int  -- Cs-root degree (Nothing for normal roots)
@@ -316,6 +319,7 @@ parseVowelInitialWithShortcut sc stress parts = case parts of
       , pfSlotVIII = Nothing
       , pfCase = caseM
       , pfIllocVal = illocValM
+      , pfSlotV = []
       , pfStress = stress
       , pfConjuncts = parts
       , pfCsRootDegree = Nothing
@@ -373,6 +377,7 @@ parseConsonantInitial stress parts = case parts of
           , pfSlotVIII = Nothing
           , pfCase = caseM
           , pfIllocVal = illocValM
+          , pfSlotV = []
           , pfStress = stress
           , pfConjuncts = parts
           , pfCsRootDegree = Nothing
@@ -381,7 +386,7 @@ parseConsonantInitial stress parts = case parts of
       _ ->
         case parseSlotIV vr of
           Just slotIV ->
-            let (caRest, vcRest) = splitCaVc rest
+            let (slotVAfx, caRest, vcRest) = parseAfterVr rest
                 lastVowel = listToMaybe vcRest
                 (caseM, illocValM) = parseSlotIXSimple stress lastVowel
                 caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
@@ -396,6 +401,7 @@ parseConsonantInitial stress parts = case parts of
               , pfSlotVIII = Nothing
               , pfCase = caseM
               , pfIllocVal = illocValM
+              , pfSlotV = slotVAfx
               , pfStress = stress
               , pfConjuncts = parts
               , pfCsRootDegree = Nothing
@@ -414,6 +420,7 @@ parseConsonantInitial stress parts = case parts of
               , pfSlotVIII = Nothing
               , pfCase = caseM
               , pfIllocVal = illocValM
+              , pfSlotV = []
               , pfStress = stress
               , pfConjuncts = parts
               , pfCsRootDegree = Nothing
@@ -442,6 +449,7 @@ parseVowelInitial stress parts = case parts of
           , pfSlotVIII = Nothing
           , pfCase = caseM
           , pfIllocVal = illocValM
+          , pfSlotV = []
           , pfStress = stress
           , pfConjuncts = parts
           , pfCsRootDegree = Nothing
@@ -450,7 +458,7 @@ parseVowelInitial stress parts = case parts of
       _ ->
         case parseSlotIV vr of
           Just slotIV ->
-            let (caRest, vcRest) = splitCaVc rest
+            let (slotVAfx, caRest, vcRest) = parseAfterVr rest
                 lastVowel = listToMaybe vcRest
                 (caseM, illocValM) = parseSlotIXSimple stress lastVowel
                 caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
@@ -465,6 +473,7 @@ parseVowelInitial stress parts = case parts of
               , pfSlotVIII = Nothing
               , pfCase = caseM
               , pfIllocVal = illocValM
+              , pfSlotV = slotVAfx
               , pfStress = stress
               , pfConjuncts = parts
               , pfCsRootDegree = Nothing
@@ -485,6 +494,7 @@ parseVowelInitial stress parts = case parts of
       , pfSlotVIII = Nothing
       , pfCase = Nothing
       , pfIllocVal = Nothing
+      , pfSlotV = []
       , pfStress = stress
       , pfConjuncts = parts
       , pfCsRootDegree = Nothing
@@ -497,7 +507,7 @@ parseCsRootFormative :: Stress -> Text -> Text -> Text -> [Text] -> Maybe Parsed
 parseCsRootFormative stress vv cs vr rest = do
   (version, func) <- parseSpecialVv vv
   (degree, ctx) <- parseAffixVr vr
-  let (caRest, vcRest) = splitCaVc rest
+  let (slotVAfx, caRest, vcRest) = parseAfterVr rest
       lastVowel = listToMaybe vcRest
       (caseM, illocValM) = parseSlotIXSimple stress lastVowel
       caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
@@ -512,6 +522,7 @@ parseCsRootFormative stress vv cs vr rest = do
     , pfSlotVIII = Nothing
     , pfCase = caseM
     , pfIllocVal = illocValM
+    , pfSlotV = slotVAfx
     , pfStress = stress
     , pfConjuncts = vv : cs : vr : rest
     , pfCsRootDegree = Just degree
@@ -533,6 +544,7 @@ tryElidedVr slotII crca vcvk stress parts = do
     , pfSlotVIII = Nothing
     , pfCase = caseM
     , pfIllocVal = illocValM
+    , pfSlotV = []
     , pfStress = stress
     , pfConjuncts = parts
     , pfCsRootDegree = Nothing
@@ -555,6 +567,82 @@ splitCrCa cluster
       ((cr, caM):_) -> Just (cr, caM)
       -- If no valid Ca split found, treat entire cluster as Cr with default Ca
       [] -> Just (cluster, Just defaultCa)
+
+-- | Check if a consonant cluster is a geminated Ca form
+-- Gemination detected by adjacent duplicate characters or special allomorphs
+isGeminateCa :: Text -> Bool
+isGeminateCa t
+  | T.null t = False
+  | t `elem` caDegeminations = True
+  | otherwise = hasAdjacentDuplicate (T.unpack t)
+  where
+    hasAdjacentDuplicate [] = False
+    hasAdjacentDuplicate [_] = False
+    hasAdjacentDuplicate (a:b:rest) = a == b || hasAdjacentDuplicate (b:rest)
+    caDegeminations = map fst caDegemMap
+
+-- | Special gemination allomorphs that don't follow the simple reduplication rule
+caDegemMap :: [(Text, Text)]
+caDegemMap =
+  [ ("jjn", "dn"), ("jjm", "dm")
+  , ("gžžn", "gn"), ("gžžm", "gm"), ("bžžn", "bn"), ("bžžm", "bm")
+  , ("ḑḑn", "tn"), ("ḑḑm", "tm"), ("xxn", "kn"), ("xxm", "km")
+  , ("vvn", "pn"), ("vmm", "pm")
+  , ("ddv", "tp"), ("ḑvv", "tk"), ("ggv", "kp"), ("ggḑ", "kt")
+  , ("bbv", "pk"), ("bbḑ", "pt")
+  ]
+
+-- | Remove gemination from Ca consonant cluster
+degeminateCa :: Text -> Text
+degeminateCa t =
+  -- First check allomorph exceptions
+  case lookup t caDegemMap of
+    Just degemmed -> degemmed
+    Nothing ->
+      -- Remove adjacent duplicates
+      let chars = T.unpack t
+          dedup [] = []
+          dedup [c] = [c]
+          dedup (a:b:rest)
+            | a == b = a : dedup rest
+            | otherwise = a : dedup (b:rest)
+      in T.pack (dedup chars)
+
+-- | Try to extract Slot V CsVx affixes by scanning for geminated Ca
+-- Returns Just (slotV pairs, restructured rest with degeminated Ca) if found
+-- Returns Nothing if no gemination detected (no Slot V affixes)
+trySlotV :: [Text] -> Maybe ([(Text, Text)], [Text])
+trySlotV parts = go parts []
+  where
+    isVowelCluster t = not (T.null t) && isVowelChar (T.head t)
+    go (c:rest) acc
+      | isConsonantCluster c && isGeminateCa c =
+          -- Found geminated Ca. acc contains (cs,vx) pairs collected so far.
+          Just (reverse acc, degeminateCa c : rest)
+      | isConsonantCluster c = case rest of
+          (v:rest')
+            | isVowelCluster v -> go rest' ((c, v) : acc)
+            | otherwise -> Nothing  -- consonant followed by consonant, abort
+          [] -> Nothing  -- no vowel partner, abort
+      | otherwise = Nothing  -- hit a vowel when expecting consonant, abort
+    go [] _ = Nothing  -- reached end without finding geminated Ca
+
+-- | Parse everything after Vr: try Slot V extraction, then Ca + Slot VII + Vc
+-- Returns (slotV affixes, caRest, vcRest)
+parseAfterVr :: [Text] -> ([(Text, Text)], [Text], [Text])
+parseAfterVr rest =
+  case trySlotV rest of
+    Just (sv, ca:afterCa)
+      | null afterCa -> (sv, [ca], [])  -- Only Ca, no Vc/Vk
+      | otherwise ->
+          -- afterCa = [Slot VII VxCs...] [VnCn] [Vc/Vk]
+          -- Prepend Ca to let splitCaVc handle the rest normally
+          let (caRest, vcRest) = splitCaVc (ca : afterCa)
+          in (sv, caRest, vcRest)
+    Just (sv, []) -> (sv, [], [])
+    Nothing ->
+      let (caRest, vcRest) = splitCaVc rest
+      in ([], caRest, vcRest)
 
 -- | Split remaining conjuncts into Ca complex and Vc
 -- The last vowel cluster is typically Vc (case), rest is Ca
