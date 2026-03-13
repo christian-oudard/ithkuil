@@ -103,8 +103,9 @@ glossOneWord roots affixes word = do
     PBias b -> TIO.putStrLn $ "    Bias: " <> T.pack (show b)
     PRegister r -> TIO.putStrLn $ "    Register: " <> T.pack (show r)
     PReferential ref mc vc -> showReferentialDetail ref mc vc
-    PModular pairs _raw -> do
+    PModular pairs fv _raw -> do
       mapM_ (\s8 -> TIO.putStrLn $ "    VnCn: " <> glossSlotVIII s8) pairs
+      when (not (T.null fv)) $ TIO.putStrLn $ "    Final: " <> fv
     PAffixual cs deg _ -> TIO.putStrLn $ "    Affix: " <> cs <> " degree " <> T.pack (show deg)
     PCarrier ct content -> TIO.putStrLn $ "    Carrier: " <> T.pack (show ct) <> " " <> content
     PMoodCaseScope ms -> TIO.putStrLn $ "    Mood/Case-Scope: " <> glossMoodOrScope ms

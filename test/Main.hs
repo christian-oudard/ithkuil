@@ -361,10 +361,10 @@ main = hspec $ do
       classifyWord "hü" `shouldBe` WRegisterAdjunct
       classifyWord "hai" `shouldBe` WRegisterAdjunct
 
-    it "classifies V-Cn patterns as modular adjuncts" $ do
-      classifyWord "ah"  `shouldBe` WModularAdjunct
-      classifyWord "aw"  `shouldBe` WModularAdjunct
-      classifyWord "ehl" `shouldBe` WModularAdjunct
+    it "classifies V-Cn-V patterns as modular adjuncts" $ do
+      classifyWord "aha"  `shouldBe` WModularAdjunct
+      classifyWord "ihnú" `shouldBe` WModularAdjunct
+      classifyWord "ehlä" `shouldBe` WModularAdjunct
 
     it "classifies short C-V words as referentials" $ do
       classifyWord "la" `shouldBe` WReferential
@@ -403,25 +403,25 @@ main = hspec $ do
         pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
 
   describe "Modular Adjunct Parsing" $ do
-    it "parses 'ah' as MNO-FAC" $ do
-      case parseWord "ah" of
-        PModular [VnCnValence MNO (MoodVal FAC)] _ -> return ()
+    it "classifies V-Cn-V as modular adjunct" $ do
+      classifyWord "ihnú" `shouldBe` WModularAdjunct
+      classifyWord "aha" `shouldBe` WModularAdjunct
+      classifyWord "ehlä" `shouldBe` WModularAdjunct
+
+    it "parses 'ihnú' as RCP-COU with Vh scope" $ do
+      case parseWord "ihnú" of
+        PModular [VnCnValence RCP (MoodVal COU)] fv _ -> do
+          fv `shouldBe` "{under adj.}"
+        pw -> expectationFailure $ "Expected PModular RCP-COU, got: " ++ show pw
+
+    it "parses 'aha' as MNO-FAC + implicit VnCn (penultimate stress)" $ do
+      case parseWord "aha" of
+        PModular [VnCnValence MNO (MoodVal FAC)] fv _ -> do
+          fv `shouldBe` "MNO-FAC"  -- penultimate stress → final V + implicit "h" = another VnCn
         pw -> expectationFailure $ "Expected PModular MNO-FAC, got: " ++ show pw
 
-    it "parses 'aw' as RTR-FAC (aspect)" $ do
-      case parseWord "aw" of
-        PModular [VnCnAspect RTR (MoodVal FAC)] _ -> return ()
-        pw -> expectationFailure $ "Expected PModular RTR-FAC, got: " ++ show pw
-
-    it "parses 'ehl' as CRO-SUB" $ do
-      case parseWord "ehl" of
-        PModular [VnCnValence CRO (MoodVal SUB)] _ -> return ()
-        pw -> expectationFailure $ "Expected PModular CRO-SUB, got: " ++ show pw
-
-    it "parses aspect pattern 2 'aihňw' as RSM-HYP" $ do
-      case parseWord "aihňw" of
-        PModular [VnCnAspect RSM (MoodVal HYP)] _ -> return ()
-        pw -> expectationFailure $ "Expected PModular RSM-HYP, got: " ++ show pw
+    it "parses aspect-only modular 'a' (single vowel)" $ do
+      classifyWord "a" `shouldBe` WModularAdjunct
 
   describe "Affix Extraction" $ do
     it "extracts no affixes from simple Ca" $ do

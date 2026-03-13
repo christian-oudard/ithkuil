@@ -21,6 +21,7 @@ module Ithkuil.Parse
   , parseAffixVr
   , isGeminateCa
   , degeminateCa
+  , detectStressSimple
   ) where
 
 import Data.Text (Text)
@@ -218,7 +219,7 @@ parseFormativeReal word = do
       stripped = case T.uncons lword of
         Just ('ç', rest) -> case T.uncons rest of
           Just ('ë', rest2) | not (T.null rest2) -> rest2  -- çë = strip prefix + default Vv
-          Just ('ç', _) -> rest  -- çç = strip one ç, keep the other (PRX shortcut)
+          Just ('ç', rest2) -> "y" <> rest2  -- çç = sentence prefix + y shortcut (PRX)
           _ | not (T.null rest) -> rest
           _ -> lword
         _ -> lword

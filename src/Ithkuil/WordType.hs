@@ -22,7 +22,8 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Map.Strict (Map)
 import Ithkuil.Grammar
-import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, ParsedFormative(..), parseFormativeReal, ParsedCa(..), isSpecialVv)
+import Data.Maybe (isJust)
+import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, ParsedFormative(..), parseFormativeReal, ParsedCa(..), isSpecialVv, normalizeAccents, detectStressSimple)
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
                            aspectVowels, phaseVowels)
 import Ithkuil.Adjuncts hiding (CarrierAdjunct)
@@ -52,7 +53,7 @@ data ParsedWord
   | PConcatenated [ParsedFormative]  -- concatenation chain (hyphen-separated)
   | PBias Bias
   | PRegister Register
-  | PModular [SlotVIII] Text    -- parsed VnCn pairs, raw text
+  | PModular [SlotVIII] Text Text  -- parsed VnCn pairs, final vowel gloss, raw text
   | PReferential PersonalRef (Maybe Case) Text  -- referent, parsed case, raw case vowel
   | PAffixual Text Int Text     -- affix Cs, degree, optional scope vowel
   | PCarrier CarrierType Text   -- carrier type, content
@@ -146,14 +147,26 @@ isCnConsonant :: Text -> Bool
 isCnConsonant c = c `elem` ["h", "hl", "hr", "hm", "hn", "hň",
                               "w", "y", "hw", "hrw", "hmw", "hnw", "hňw"]
 
--- | Modular adjuncts: short V-C or V-C-V-C pattern with Cn consonant
+-- | Modular adjuncts: [w/y] (V Cn){0-3} V pattern
+-- Always ends with a vowel; all consonants must be Cn consonants
 isModularAdjunct :: Text -> Bool
 isModularAdjunct word =
   let conjs = splitConjuncts word
-  in case conjs of
-    [v, c] | isVowelChar (T.head v) && isCnConsonant c -> True
-    [v1, _, _, c2] | isVowelChar (T.head v1) && isCnConsonant c2 -> True
-    _ -> False
+      -- Strip optional w/y prefix
+      rest = case conjs of
+        (c:cs) | c == "w" || c == "y" -> cs
+        cs -> cs
+      -- Must end with a vowel and have alternating V Cn V Cn ... V
+      isValidPattern [] = False
+      isValidPattern [v] = not (T.null v) && isVowelChar (T.head v)
+                        && v /= "ë" && v /= "äi"
+      isValidPattern (v:c:xs)
+        | not (T.null v) && isVowelChar (T.head v)
+        , not (T.null c) && not (isVowelChar (T.head c))
+        , isCnConsonant c = isValidPattern xs
+        | otherwise = False
+      nCnPairs = (length rest - 1) `div` 2
+  in isValidPattern rest && nCnPairs <= 3
 
 --------------------------------------------------------------------------------
 -- Word Parsing
@@ -287,21 +300,58 @@ parseMoodCaseScopeAdj word =
       _    -> Nothing
 
 -- | Parse a modular adjunct word
--- 2-slot form: Vn-Cn (aspect or valence+mood)
--- 4-slot form: Vn-Cn-Vn-Cn (two VnCn pairs)
+-- Structure: [w/y] (VnCn){0-3} V(final)
+-- V(final) = Aspect (if no VnCn pairs) or Vh scope marker
 parseModularWord :: Text -> ParsedWord
 parseModularWord word =
   let conjs = splitConjuncts word
-  in case conjs of
-    [vn, cn] -> case parseOneVnCn vn cn of
-      Just s8 -> PModular [s8] word
-      Nothing -> PUnparsed word
-    [vn1, cn1, vn2, cn2] ->
-      let s1 = parseOneVnCn vn1 cn1
-          s2 = parseOneVnCn vn2 cn2
-          pairs = [s | Just s <- [s1, s2]]
-      in if null pairs then PUnparsed word else PModular pairs word
+      stress = detectStressSimple word
+      -- Strip optional w/y scope prefix
+      (prefix, rest) = case conjs of
+        (c:cs) | c == "w" || c == "y" -> (Just c, cs)
+        cs -> (Nothing, cs)
+      -- Parse VnCn pairs from rest, leaving final vowel
+      parsePairs [] = ([], Nothing)
+      parsePairs [v] = ([], Just v)
+      parsePairs (vn:cn:xs) = let (more, final) = parsePairs xs
+                                  pair = parseOneVnCn vn cn
+                              in (pair : more, final)
+      (maybePairs, finalV) = parsePairs rest
+      pairs = [s | Just s <- maybePairs]
+      finalGloss = case finalV of
+        Nothing -> ""
+        Just v
+          | null pairs -> glossAspect v  -- No VnCn pairs → final V is aspect
+          | stress == Ultimate -> glossVh v  -- With VnCn pairs + ult stress → Vh scope
+          | otherwise -> case parseOneVnCn v "h" of  -- Penult stress → implicit "h" Cn
+              Just s8 -> glossSlotVIII s8
+              Nothing -> "?" <> v
+  in case (prefix, pairs, finalV) of
+    (_, [], Just _) | isJust (parseAspect =<< finalV) ->
+      PModular [] finalGloss word  -- aspect-only modular adjunct
+    (_, _, _) | not (null pairs) ->
+      PModular pairs finalGloss word
     _ -> PUnparsed word
+
+-- | Parse an aspect vowel
+parseAspect :: Text -> Maybe Aspect
+parseAspect v = lookup (normalizeAccents v) aspectVowels
+
+-- | Gloss an aspect vowel
+glossAspect :: Text -> Text
+glossAspect v = case parseAspect v of
+  Just asp -> T.pack (show asp)
+  Nothing  -> "?" <> v
+
+-- | Gloss a Vh scope marker (final vowel of modular adjunct with VnCn pairs)
+glossVh :: Text -> Text
+glossVh v = case normalizeAccents v of
+  "a" -> "{form.}"
+  "e" -> "{mood}"
+  "i" -> "{under adj.}"
+  "u" -> "{under adj.}"
+  "o" -> "{over adj.}"
+  _   -> "?" <> v
 
 -- | Parse a single Vn+Cn pair into a SlotVIII value
 parseOneVnCn :: Text -> Text -> Maybe SlotVIII
@@ -338,7 +388,8 @@ glossWord roots affixes pw = case pw of
     T.intercalate "—" (map (glossFormative roots affixes) pfs)
   PBias b -> T.pack (show b)
   PRegister r -> T.pack (show r) <> " register"
-  PModular pairs _ -> "MOD:" <> T.intercalate "+" (map glossSlotVIII pairs)
+  PModular pairs fv _ -> "MOD:" <> T.intercalate "+" (map glossSlotVIII pairs)
+                       <> (if T.null fv then "" else "-" <> fv)
   PReferential ref mc vc -> glossReferential ref mc vc
   PAffixual cs deg _ ->
     let abbr = case lookupAffix cs affixes of
@@ -452,7 +503,8 @@ glossWordCompact roots _affixes pw = case pw of
   PBias b -> T.pack (show b)
   PRegister r -> T.pack (show r)
   PReferential ref mc _vc -> glossReferential ref mc ""
-  PModular pairs _raw -> T.intercalate "+" (map glossSlotVIII pairs)
+  PModular pairs fv _raw -> T.intercalate "+" (map glossSlotVIII pairs)
+                          <> (if T.null fv then "" else "-" <> fv)
   PAffixual cs deg _ -> cs <> "/" <> T.pack (show deg)
   PCarrier _ct content -> content
   PMoodCaseScope ms -> glossMoodOrScope ms
