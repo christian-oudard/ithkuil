@@ -63,7 +63,7 @@ data ParsedWord
   | PModular [SlotVIII] Text Text  -- parsed VnCn pairs, final vowel gloss, raw text
   | PReferential [PersonalRef] (Maybe Case) Text (Maybe (Text, Maybe Case, Maybe PersonalRef))
     -- ^ referent(s) from C1 cluster, case, raw case vowel, optional (scope w/y, case2, ref2)
-  | PAffixual Text Int Text     -- affix Cs, degree, optional scope vowel
+  | PAffixual Text Int Int Text     -- affix Cs, degree, type (1-3), optional scope vowel
   | PMultipleAffix (Text, Text) Text [(Text, Text)] (Maybe Text)
     -- ^ first affix (Vx,Cs), Cz scope, additional affixes (Vx,Cs), optional Vz scope
   | PCarrier CarrierType Text   -- carrier type, content
@@ -360,8 +360,8 @@ parseAffixualWord :: Text -> ParsedWord
 parseAffixualWord word =
   let conjs = splitConjuncts word
   in case conjs of
-    [vx, cs] -> PAffixual cs (classifyDegree vx) ""
-    [vx, cs, vs] -> PAffixual cs (classifyDegree vx) (glossVz vs)
+    [vx, cs] -> let (deg, atype) = classifyDegreeType vx in PAffixual cs deg atype ""
+    [vx, cs, vs] -> let (deg, atype) = classifyDegreeType vx in PAffixual cs deg atype (glossVz vs)
     _ -> PUnparsed word
 
 -- | Parse a multiple affix adjunct: [ë] Cs Vx Cz (VxCs)+ [Vz]
@@ -609,11 +609,12 @@ glossWord roots affixes pw = case pw of
     in glossReferentials refs mc vc
        <> maybe "" glossRefExt ext
        <> essenceSuffix
-  PAffixual cs deg scope ->
+  PAffixual cs deg atype scope ->
     let abbr = case lookupAffix cs affixes of
           Just entry -> affixAbbrev entry
           Nothing -> cs
-    in abbr <> "/" <> T.pack (show deg)
+        typeSub = case atype of { 1 -> "₁"; 2 -> "₂"; 3 -> "₃"; _ -> "" }
+    in abbr <> "/" <> T.pack (show deg) <> typeSub
        <> (if T.null scope then "" else "-" <> scope)
   PMultipleAffix first cz moreAfxs mVz ->
     glossOneAffix affixes first <> "-" <> glossCz cz
@@ -699,8 +700,8 @@ glossFormative roots affixes pf =
       -- Slot IX: Case or Illocution+Validation (omit THM default, keep OBS)
       slotIXAbbr = case pfIllocVal pf of
         Just (ASR, OBS) -> "OBS"
-        Just (ill, val) ->
-          T.pack (show ill) <> "/" <> T.pack (show val)
+        Just (ASR, val) -> T.pack (show val)
+        Just (ill, _) -> T.pack (show ill)  -- Non-ASR illocutions have no validation
         Nothing -> case pfCase pf of
           Just c | c /= Transrelative THM -> T.pack (showCase c)
                  <> if pfStress pf == Antepenultimate then "\\FRA" else ""
@@ -778,7 +779,8 @@ glossWordCompact roots affixes pw = case pw of
     <> maybe "" glossRefExt ext
   PModular pairs fv _raw -> T.intercalate "+" (map glossSlotVIII pairs)
                           <> (if T.null fv then "" else "-" <> fv)
-  PAffixual cs deg _ -> cs <> "/" <> T.pack (show deg)
+  PAffixual cs deg atype _ -> cs <> "/" <> T.pack (show deg)
+    <> case atype of { 1 -> "₁"; 2 -> "₂"; 3 -> "₃"; _ -> "" }
   PMultipleAffix first cz moreAfxs mVz ->
     glossOneAffix affixes first <> "-" <> glossCz cz
     <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) moreAfxs)
@@ -890,7 +892,7 @@ glossOneAffix affixes (vx, cs)
           Just entry -> affixAbbrev entry
           Nothing -> cs
         typeSuffix = case atype of
-          1 -> ""; 2 -> "₂"; 3 -> "₃"; _ -> ""
+          1 -> "₁"; 2 -> "₂"; 3 -> "₃"; _ -> ""
     in abbr <> "/" <> T.pack (show degree) <> typeSuffix
 
 -- | Determine affix degree (1-9, 0) and type (1-3) from Vx vowel
@@ -996,8 +998,15 @@ glossCombinationRefs refs = case refs of
 glossSentence :: Map Text RootEntry -> Map Text AffixEntry -> Text -> Text
 glossSentence roots affixes sentence =
   let ws = T.words sentence
-      glossedWords = map (\w -> glossWord roots affixes (parseWord w)) ws
-  in T.intercalate "  " glossedWords
+      stripPunct w = T.filter (\c -> c /= ',' && c /= '.' && c /= '!' && c /= '?' && c /= ':' && c /= ';') w
+      glossW w =
+        let clean = stripPunct w
+        in if T.null clean then ""
+           -- Quoted text in asterisks (names/foreign words)
+           else if "*" `T.isPrefixOf` clean && "*" `T.isSuffixOf` clean
+             then T.drop 1 (T.dropEnd 1 clean)
+           else glossWord roots affixes (parseWord clean)
+  in T.intercalate "  " $ filter (not . T.null) $ map glossW ws
 
 -- | Validate Slot V marker consistency
 -- Returns Nothing if valid, Just error message if mismatch

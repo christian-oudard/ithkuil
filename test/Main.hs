@@ -1050,7 +1050,7 @@ main = hspec $ do
         pw -> expectationFailure $ "ihnú: expected PModular, got: " ++ show pw
       -- Affixual adjunct
       case parseWord "äst" of
-        PAffixual _ _ _ -> return ()
+        PAffixual _ _ _ _ -> return ()
         pw -> expectationFailure $ "äst: expected PAffixual, got: " ++ show pw
       -- Referential (extended)
       case parseWord "miyüs" of

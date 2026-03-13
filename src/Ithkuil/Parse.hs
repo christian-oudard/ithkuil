@@ -290,40 +290,79 @@ parseRestAsFormative stress parts = case parts of
 parseVowelInitialWithShortcut :: CcShortcut -> Bool -> Stress -> [Text] -> Maybe ParsedFormative
 parseVowelInitialWithShortcut sc inConcat stress parts = case parts of
   (vv:cr0:rest) -> do
-    let (cr, slotVFilled) = stripSlotVMarker cr0
+    let (cr, slotVFilled0) = stripSlotVMarker cr0
     slotII <- parseSlotII vv
     let series = vvSeries vv
         scCa = shortcutCa sc series
-        -- Split rest into VxCs affix pairs and final Vc/Vk
-        -- Merge glottal-vowel patterns first, then take last vowel as Vc/Vk
-        merged = mergeGlottalVowels rest
+        -- First merge glottal-vowel patterns (a ' a -> a'a), then process glottals
+        merged0 = mergeGlottalVowels rest
+        -- Process glottal stops: strip from vowels (a'a -> a), track positions
+        (merged, hasGlottalInAffix) = processGlottalStops merged0
+        slotVFilled = slotVFilled0
         (affixParts, lastVowel) = splitAfterShortcut merged
         -- Concatenated formatives always parse as case (never Illocution+Validation)
         (caseM, illocValM) = if inConcat
           then (parseConcatSlotIX stress lastVowel, Nothing)
           else parseSlotIXSimple stress lastVowel
-        -- Prepend empty placeholder for Ca (extractAffixes skips first element)
-        caWithAffixes = if null affixParts then [] else "" : affixParts
+        -- For shortcut formatives with VxCs-region glottal, split affixes:
+        -- All affixes before glottal boundary go to slot V (CsVx order)
+        -- Remaining go to slot VII (stored in pfCa for extractAffixes)
+        -- When no glottal in affix region, all go to slot VII
+        (slotVPairs, slotVIIParts) = if hasGlottalInAffix
+          then splitSlotVFromVII affixParts
+          else ([], affixParts)
+        caWithAffixes = if null slotVIIParts then [] else "" : slotVIIParts
     Just ParsedFormative
       { pfConcatenation = Nothing
       , pfSlotII = slotII
       , pfRoot = Root cr
       , pfSlotIV = (STA, BSC, EXS)  -- Shortcuts elide Vr to default
-      , pfCa = caWithAffixes        -- Store VxCs pairs for affix extraction
+      , pfCa = caWithAffixes        -- Slot VII VxCs pairs
       , pfCaParsed = Just scCa
       , pfSlotVIII = Nothing
       , pfCase = caseM
       , pfIllocVal = illocValM
-      , pfSlotV = []
+      , pfSlotV = slotVPairs         -- Slot V CsVx pairs (from glottal boundary)
       , pfStress = stress
       , pfConjuncts = parts
       , pfCsRootDegree = Nothing
       , pfSentenceStarter = False
-      , pfVvSeries = series  -- Shortcut: series used for Ca, no implicit affix
+      , pfVvSeries = series
       , pfHasShortcut = True
       , pfSlotVMarker = slotVFilled
       }
   _ -> Nothing
+
+-- | Process glottal stops in conjunct list for shortcut formatives
+-- Strips glottal stops from vowels (a'a -> a), returns whether any glottal was found
+-- This handles Kotlin's glottal stop movement: a moved glottal in VxCs marks slot V boundary
+processGlottalStops :: [Text] -> ([Text], Bool)
+processGlottalStops parts =
+  let process [] = ([], False)
+      process (t:ts) =
+        let hasGlottal = "'" `T.isInfixOf` t
+            cleaned = unglottalizeVowel t
+            (rest', anyGlottal) = process ts
+        in (cleaned : rest', hasGlottal || anyGlottal)
+  in process parts
+
+-- | Remove glottal stop from vowel form (Kotlin: unglottalizeVowel)
+-- "a'a" -> "a", "ö'e" -> "öe", "a" -> "a"
+unglottalizeVowel :: Text -> Text
+unglottalizeVowel v =
+  let stripped = T.filter (/= '\'') v
+  in if T.length stripped == 2 && T.head stripped == T.last stripped
+     then T.take 1 stripped
+     else stripped
+
+-- | Split VxCs affix parts at glottal boundary into (slot V, slot VII)
+-- For shortcut formatives, a glottal stop in the VxCs region marks the end of slot V
+-- Takes alternating [V, C, V, C, ...] parts
+-- The first VxCs pair goes to slot V; remaining go to slot VII
+-- Slot V stores in CsVx order (reversed from the VxCs input)
+splitSlotVFromVII :: [Text] -> ([(Text, Text)], [Text])
+splitSlotVFromVII (vx:cs:remaining) = ([(cs, vx)], remaining)
+splitSlotVFromVII _ = ([], [])
 
 -- | Split conjuncts after shortcut Cr into (affix parts, last vowel)
 -- Takes [V, C, V, C, ..., V] and returns (VxCs affix pairs as [V,C,...], last V)
