@@ -48,7 +48,7 @@ getConcatType = fSlotI
 
 -- | Create a new chain with head formative
 newChain :: Formative -> ConcatChain
-newChain head = ConcatChain head []
+newChain headF = ConcatChain headF []
 
 -- | Add Type 1 concatenated formative
 addType1 :: ConcatChain -> Formative -> ConcatChain

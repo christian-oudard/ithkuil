@@ -4,7 +4,6 @@
 module Ithkuil.Numbers where
 
 import Data.Text (Text)
-import qualified Data.Text as T
 
 --------------------------------------------------------------------------------
 -- Number Roots (0-99)
@@ -176,6 +175,6 @@ findIndex xs t = go 0 xs
       | otherwise = go (i+1) rest
 
 parseTensOnes :: Text -> Maybe Int
-parseTensOnes t =
+parseTensOnes _ =
   -- Try to match tens + ones pattern
   Nothing  -- Simplified; full implementation would parse compound

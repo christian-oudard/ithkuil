@@ -3,7 +3,6 @@
 module Ithkuil.Grammar where
 
 import Data.Text (Text)
-import qualified Data.Text as T
 import Ithkuil.Phonology (vowelForm)
 
 -- | Helper for bounded enumerations

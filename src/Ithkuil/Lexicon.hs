@@ -86,15 +86,6 @@ lookupRoot = Map.lookup
 lookupAffix :: Text -> Map Text AffixEntry -> Maybe AffixEntry
 lookupAffix = Map.lookup
 
--- | Display a root entry
-showRoot :: RootEntry -> Text
-showRoot r = T.unlines
-  [ "Root: -" <> rootCr r <> "-"
-  , "  Stem 0: " <> rootStem0 r
-  , "  Stem 1: " <> rootStem1 r
-  , "  Stem 2: " <> rootStem2 r
-  , "  Stem 3: " <> rootStem3 r
-  ]
 
 --------------------------------------------------------------------------------
 -- V1 Biliteral Roots

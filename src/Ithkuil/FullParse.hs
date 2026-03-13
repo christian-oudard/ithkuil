@@ -194,11 +194,11 @@ parseAffixPairs [] = []
 parseAffixPairs [_] = []  -- Lone conjunct, can't form a pair
 parseAffixPairs (v:c:rest)
   | isVowelStart v && isConsonant c =
-    let (affType, degree) = classifyAffixVowel v
+    let (affType, _) = classifyAffixVowel v
     in Affix v c affType : parseAffixPairs rest
   | isConsonant v && isVowelStart c =
     -- CsVx (reversed) format used in Slot V
-    let (affType, degree) = classifyAffixVowel c
+    let (affType, _) = classifyAffixVowel c
     in Affix c v affType : parseAffixPairs rest
   | otherwise = parseAffixPairs (c:rest)  -- Skip unmatched
 
@@ -447,8 +447,8 @@ findAcuteStress :: Text -> Maybe Int
 findAcuteStress word =
   let acuteVowels = "áéíóú" :: String
       chars = T.unpack word
-      vowelPositions = [i | (i, c) <- zip [1..] chars, c `elem` ("aäeëiöoüu" ++ acuteVowels)]
-      acutePositions = [i | (i, c) <- zip [1..] chars, c `elem` acuteVowels]
+      vowelPositions = [i | (i, c) <- zip [1 :: Int ..] chars, c `elem` ("aäeëiöoüu" ++ acuteVowels)]
+      acutePositions = [i | (i, c) <- zip [1 :: Int ..] chars, c `elem` acuteVowels]
   in case acutePositions of
     [] -> Nothing
     (p:_) -> Just (length vowelPositions - length (filter (>p) vowelPositions))

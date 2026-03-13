@@ -189,7 +189,7 @@ splitCaVc parts =
   let isVowelCluster t = not (T.null t) && isVowelChar (T.head t)
       revParts = reverse parts
       -- Skip trailing consonants (Slot X), then find the case vowel
-      (trailingC, afterC) = span (not . isVowelCluster) revParts
+      (_, afterC) = span (not . isVowelCluster) revParts
       (vcRev, caRev) = span isVowelCluster afterC
       -- Ca = everything before Vc (plus trailing consonants go back to Ca? No, they're Slot X)
   in (reverse caRev, reverse vcRev)

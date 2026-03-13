@@ -4,7 +4,6 @@
 module Ithkuil.Phonology where
 
 import Data.Text (Text)
-import qualified Data.Text as T
 
 -- | Consonant features
 data Voicing = Voiced | Voiceless
