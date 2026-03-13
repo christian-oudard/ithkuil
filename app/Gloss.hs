@@ -17,6 +17,21 @@ import Ithkuil.WordType
 import Ithkuil.Lexicon
 import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), searchRoots, searchAffixes, dumpGrammarTable)
 
+-- ANSI color helpers (only used when outputting to terminal)
+dim, cyan, green, yellow, magenta, bold, reset :: Text
+dim     = "\ESC[2m"
+cyan    = "\ESC[36m"
+green   = "\ESC[32m"
+yellow  = "\ESC[33m"
+magenta = "\ESC[35m"
+bold    = "\ESC[1m"
+reset   = "\ESC[0m"
+
+-- | Wrap text in color, auto-resetting
+col :: Text -> Text -> Text
+col c t = c <> t <> reset
+
+
 main :: IO ()
 main = do
   args <- getArgs
@@ -97,9 +112,9 @@ loadAffixLexicon path = do
 repl :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> IO ()
 repl roots affixes = do
   hSetBuffering stdout LineBuffering
-  TIO.putStrLn $ "Ithkuil V4 Glosser (" <> T.pack (show (Map.size roots))
-               <> " roots, " <> T.pack (show (Map.size affixes)) <> " affixes)"
-  TIO.putStrLn "Enter Ithkuil text (Ctrl-D to quit):"
+  TIO.putStrLn $ col bold "Ithkuil V4 Glosser" <> " " <> col dim ("(" <> T.pack (show (Map.size roots))
+               <> " roots, " <> T.pack (show (Map.size affixes)) <> " affixes)")
+  TIO.putStrLn $ col dim "Enter Ithkuil text (Ctrl-D to quit):"
   loop
   where
     loop = do
@@ -125,25 +140,29 @@ pipeMode roots affixes = do
 glossLine :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> IO ()
 glossLine roots affixes input = do
   let ws = T.words input
+      -- Context-aware glossing: carriers cause following words to be foreign text
+      ctxPairs = glossSentenceWords roots affixes input
   mapM_ (glossOneWord roots affixes) ws
-  -- Show interlinear summary with compact glosses
+  -- Show interlinear summary with context-aware glosses
   when (length ws > 1) $ do
-    let glosses = map (\w -> glossWordCompact roots affixes (parseWord w)) ws
-        widths = zipWith (\w g -> max (T.length w) (T.length g) + 2) ws glosses
+    let glosses = map snd ctxPairs
+        origWs = map fst ctxPairs
+        widths = zipWith (\w g -> max (T.length w) (T.length g) + 2) origWs glosses
+        -- Pad based on visible text length, then apply color
         padTo n t = t <> T.replicate (max 0 (n - T.length t)) " "
     TIO.putStrLn ""
     TIO.putStr "  "
-    mapM_ (\(w, n) -> TIO.putStr (padTo n w)) (zip ws widths)
+    mapM_ (\(w, n) -> TIO.putStr (col bold (padTo n w))) (zip origWs widths)
     TIO.putStrLn ""
     TIO.putStr "  "
-    mapM_ (\(g, n) -> TIO.putStr (padTo n g)) (zip glosses widths)
+    mapM_ (\(g, n) -> TIO.putStr (col green (padTo n g))) (zip glosses widths)
     TIO.putStrLn ""
 
 glossOneWord :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> IO ()
 glossOneWord roots affixes word = do
   let wtype = classifyWord word
       parsed = parseWord word
-  TIO.putStrLn $ "  " <> word <> "  [" <> T.pack (show wtype) <> "]"
+  TIO.putStrLn $ "  " <> col bold word <> "  " <> col dim ("[" <> T.pack (show wtype) <> "]")
   case parsed of
     PFormative pf -> showFormativeDetail roots affixes pf
     PConcatenated pfs -> do
@@ -186,9 +205,9 @@ glossOneWord roots affixes word = do
         Nothing -> return ()
     PCarrier ct content -> TIO.putStrLn $ "    Carrier: " <> T.pack (show ct) <> " " <> content
     PMoodCaseScope ms -> TIO.putStrLn $ "    Mood/Case-Scope: " <> glossMoodOrScope ms
-    PError msg _ -> TIO.putStrLn $ "    ERROR: " <> msg
-    PUnparsed _ -> TIO.putStrLn $ "    (unparsed)"
-  TIO.putStrLn $ "    GLOSS: " <> glossWord roots affixes parsed
+    PError msg _ -> TIO.putStrLn $ "    " <> col "\ESC[31m" ("ERROR: " <> msg)
+    PUnparsed _ -> TIO.putStrLn $ "    " <> col dim "(unparsed)"
+  TIO.putStrLn $ "    " <> col dim "GLOSS: " <> col green (glossWord roots affixes parsed)
 
 showFormativeDetail :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> ParsedFormative -> IO ()
 showFormativeDetail roots affixes pf = do
@@ -197,25 +216,25 @@ showFormativeDetail roots affixes pf = do
       (func, spec, ctx) = pfSlotIV pf
       _conjs = pfConjuncts pf
   when (pfSentenceStarter pf) $
-    TIO.putStrLn "    [Sentence starter]"
+    TIO.putStrLn $ "    " <> col magenta "[Sentence starter]"
   -- Root or Cs affix
   case pfCsRootDegree pf of
     Just deg -> do
-      TIO.putStrLn $ "    Cs-Root Affix: -" <> cr <> "- degree " <> T.pack (show deg)
-      TIO.putStrLn $ "    Version/Function: " <> T.pack (show ver) <> "/" <> T.pack (show func)
-      TIO.putStrLn $ "    Context: " <> T.pack (show ctx)
+      TIO.putStrLn $ "    Cs-Root Affix: " <> col yellow ("-" <> cr <> "-") <> " degree " <> T.pack (show deg)
+      TIO.putStrLn $ "    Version/Function: " <> col cyan (T.pack (show ver) <> "/" <> T.pack (show func))
+      TIO.putStrLn $ "    Context: " <> col cyan (T.pack (show ctx))
     Nothing -> do
       let rootMeaning = case lookupRoot cr roots of
             Just entry -> selectStem stem entry
             Nothing -> "(not in lexicon)"
-      TIO.putStrLn $ "    Root: -" <> cr <> "- = " <> rootMeaning
-      TIO.putStrLn $ "    Stem/Version: " <> T.pack (show stem) <> "/" <> T.pack (show ver)
-      TIO.putStrLn $ "    Function/Spec/Context: " <> T.pack (show func) <> "/"
-                   <> T.pack (show spec) <> "/" <> T.pack (show ctx)
+      TIO.putStrLn $ "    Root: " <> col yellow ("-" <> cr <> "-") <> " = " <> col green rootMeaning
+      TIO.putStrLn $ "    Stem/Version: " <> col cyan (T.pack (show stem) <> "/" <> T.pack (show ver))
+      TIO.putStrLn $ "    Function/Spec/Context: " <> col cyan (T.pack (show func) <> "/"
+                   <> T.pack (show spec) <> "/" <> T.pack (show ctx))
   -- Ca
   case pfCaParsed pf of
     Just pc | pc /= ParsedCa UNI CSL M_ DEL NRM ->
-      TIO.putStrLn $ "    Ca: " <> showCaDetail pc
+      TIO.putStrLn $ "    Ca: " <> col cyan (showCaDetail pc)
     _ -> return ()
   -- Slot V affixes (CsVx order)
   mapM_ (\(cs, vx) -> do
@@ -224,7 +243,7 @@ showFormativeDetail roots affixes pf = do
         desc = case lookupAffix cs affixes of
           Just entry -> affixAbbrev entry <> " deg " <> T.pack (show degree)
           Nothing -> compact
-    TIO.putStrLn $ "    SlotV: -" <> cs <> "- " <> vx <> " = " <> desc
+    TIO.putStrLn $ "    SlotV: " <> col yellow ("-" <> cs <> "-") <> " " <> vx <> " = " <> desc
     ) (pfSlotV pf)
   -- Slot VII Affixes
   let afxPairs = extractAffixes (pfCa pf)
@@ -237,7 +256,7 @@ showFormativeDetail roots affixes pf = do
                           Just meaning -> ": " <> meaning
                           Nothing -> ""
           Nothing -> cs <> " deg " <> T.pack (show degree)
-    TIO.putStrLn $ "    Affix: -" <> cs <> "- " <> vx <> " = " <> desc
+    TIO.putStrLn $ "    Affix: " <> col yellow ("-" <> cs <> "-") <> " " <> vx <> " = " <> desc
     ) afxPairs
   -- Slot VIII: VnCn (from parse or extracted from Ca rest)
   -- Apply stress-based Mood vs CaseScope disambiguation
@@ -247,19 +266,19 @@ showFormativeDetail roots affixes pf = do
           Just (vn, cn) -> parseOneVnCn vn cn
           Nothing -> Nothing
   case vnCn of
-    Just s8 -> TIO.putStrLn $ "    VnCn: " <> glossSlotVIII s8
+    Just s8 -> TIO.putStrLn $ "    VnCn: " <> col cyan (glossSlotVIII s8)
     Nothing -> return ()
   -- Slot IX: Case or Illocution+Validation
   case pfIllocVal pf of
     Just (ill, val) -> TIO.putStrLn $ "    Illocution/Validation: "
-                     <> T.pack (show ill) <> "/" <> T.pack (show val)
+                     <> col cyan (T.pack (show ill) <> "/" <> T.pack (show val))
     Nothing -> case pfCase pf of
-      Just c -> TIO.putStrLn $ "    Case: " <> T.pack (showCaseDetail c)
+      Just c -> TIO.putStrLn $ "    Case: " <> col cyan (T.pack (showCaseDetail c))
       Nothing -> return ()
   -- Stress
   let stress = pfStress pf
   if stress /= Penultimate
-    then TIO.putStrLn $ "    Stress: " <> T.pack (show stress)
+    then TIO.putStrLn $ "    Stress: " <> col dim (T.pack (show stress))
     else return ()
 
 safeIndex :: [a] -> Int -> Maybe a

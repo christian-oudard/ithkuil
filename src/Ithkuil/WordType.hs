@@ -9,6 +9,8 @@ module Ithkuil.WordType
   , glossWord
   , glossWordCompact
   , glossSentence
+  , glossSentenceWords
+  , isCarrierParsed
   , glossSlotVIII
   , glossMoodOrScope
   , extractAffixes
@@ -1062,18 +1064,71 @@ glossCombinationRefs refs = case refs of
 --------------------------------------------------------------------------------
 
 -- | Parse and gloss a complete sentence (space-separated words)
+-- Uses context-aware glossing: carrier adjuncts cause following words to be
+-- treated as foreign/quoted text until a terminator (hü) or sentence boundary
 glossSentence :: Map Text RootEntry -> Map Text AffixEntry -> Text -> Text
 glossSentence roots affixes sentence =
-  let ws = T.words sentence
-      stripPunct w = T.filter (\c -> c /= ',' && c /= '.' && c /= '!' && c /= '?' && c /= ':' && c /= ';') w
-      glossW w =
-        let clean = stripPunct w
-        in if T.null clean then ""
+  let pairs = glossSentenceWords roots affixes sentence
+  in T.intercalate "  " $ filter (not . T.null) $ map snd pairs
+
+-- | Context state for sentence-level glossing
+data GlossContext = GlossContext
+  { gcFollowsCarrier :: Bool   -- ^ Next word follows a carrier (treated as foreign)
+  , gcTerminated     :: Bool   -- ^ A terminator exists ahead; after consuming foreign word, check for it
+  } deriving (Show)
+
+-- | Parse and gloss a sentence, returning (original word, gloss) pairs
+-- Handles carrier adjunct scoping: words after a carrier are glossed as foreign text
+glossSentenceWords :: Map Text RootEntry -> Map Text AffixEntry -> Text -> [(Text, Text)]
+glossSentenceWords roots affixes sentence =
+  go (GlossContext False False) (T.words sentence)
+  where
+    stripPunct w = T.filter (\c -> c /= ',' && c /= '.' && c /= '!' && c /= '?' && c /= ':' && c /= ';') w
+    go _ [] = []
+    go ctx (w:rest) =
+      let clean = stripPunct w
+      in if T.null clean then go ctx rest
+         else if "*" `T.isPrefixOf` clean && "*" `T.isSuffixOf` clean
            -- Quoted text in asterisks (names/foreign words)
-           else if "*" `T.isPrefixOf` clean && "*" `T.isSuffixOf` clean
-             then T.drop 1 (T.dropEnd 1 clean)
-           else glossWord roots affixes (parseWord clean)
-  in T.intercalate "  " $ filter (not . T.null) $ map glossW ws
+           then (w, T.drop 1 (T.dropEnd 1 clean)) : go ctx rest
+         else if gcFollowsCarrier ctx
+           -- Word follows a carrier: treat as foreign text, then reset carrier flag
+           then let isEnd = isTerminator clean
+                    ctx' = ctx { gcFollowsCarrier = False
+                               , gcTerminated = if isEnd then False else gcTerminated ctx }
+                in (w, clean) : go ctx' rest
+         else if gcTerminated ctx && isTerminator clean
+           -- Terminator word (hü) ending a carrier phrase
+           then let parsed = parseWord clean
+                    gloss = glossWord roots affixes parsed
+                in (w, gloss) : go (ctx { gcTerminated = False }) rest
+         else
+           let parsed = parseWord clean
+               -- Check if this word is a carrier
+               carrier = isCarrierParsed parsed
+               -- Look ahead for terminator within this sentence
+               hasTerminator = carrier && any (isTerminator . stripPunct) (takeWhile (not . isSentenceEnd) rest)
+               ctx' = if carrier
+                      then GlossContext True hasTerminator
+                      else ctx
+               gloss = glossWord roots affixes parsed
+           in (w, gloss) : go ctx' rest
+
+-- | Check if a parsed word is a carrier (adjunct or formative with root -s-)
+isCarrierParsed :: ParsedWord -> Bool
+isCarrierParsed (PCarrier _ _) = True
+isCarrierParsed (PFormative pf) = pfRoot pf == Root "s"
+isCarrierParsed (PConcatenated pfs) = any (\pf -> pfRoot pf == Root "s") pfs
+isCarrierParsed (PReferential _ _ _ _) = False  -- referential carriers use hl/hn/hň which parse as PCarrier
+isCarrierParsed _ = False
+
+-- | Check if a word is a carrier/register terminator (hü = END register)
+isTerminator :: Text -> Bool
+isTerminator w = T.toLower w == "hü"
+
+-- | Check if a word ends a sentence (punctuation)
+isSentenceEnd :: Text -> Bool
+isSentenceEnd w = any (`T.isSuffixOf` w) [".", "!", "?"]
 
 -- | Invalid root consonant forms (per Ithkuil V4 spec)
 invalidRootForms :: [Text]

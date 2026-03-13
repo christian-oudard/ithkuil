@@ -1512,3 +1512,38 @@ main = hspec $ do
       T.isInfixOf "SUB" gVerb `shouldBe` True
       let gNoun = glossWord mempty mempty (parseWord "agulahla")
       T.isInfixOf "CCA" gNoun `shouldBe` True
+
+  describe "Context-Aware Sentence Glossing" $ do
+    it "carrier adjunct causes next word to be foreign text" $ do
+      let pairs = glossSentenceWords mempty mempty "hnas John malá"
+      length pairs `shouldBe` 3
+      -- "John" should be passed through as foreign text, not parsed
+      snd (pairs !! 1) `shouldBe` "John"
+      -- "malá" should be glossed normally (not foreign)
+      T.isInfixOf "OBS" (snd (pairs !! 2)) `shouldBe` True
+
+    it "carrier only consumes one following word" $ do
+      let pairs = glossSentenceWords mempty mempty "hnas Tokyo malá"
+      -- "Tokyo" is foreign, "malá" is glossed
+      snd (pairs !! 1) `shouldBe` "Tokyo"
+      T.isInfixOf "OBS" (snd (pairs !! 2)) `shouldBe` True
+
+    it "non-carrier words are glossed normally" $ do
+      let pairs = glossSentenceWords mempty mempty "malá agula"
+      length pairs `shouldBe` 2
+      -- Both should have real glosses (not raw text)
+      T.isInfixOf "OBS" (snd (pairs !! 0)) `shouldBe` True
+
+    it "isCarrierParsed detects carrier adjuncts" $ do
+      isCarrierParsed (parseWord "hnas") `shouldBe` True
+      isCarrierParsed (parseWord "hlas") `shouldBe` True
+      isCarrierParsed (parseWord "malá") `shouldBe` False
+
+    it "formative with root -s- is detected as carrier" $ do
+      -- Root -s- = carrier formative (needs full formative structure)
+      isCarrierParsed (parseWord "asale") `shouldBe` True
+
+    it "glossSentence uses context-aware glossing" $ do
+      let g = glossSentence mempty mempty "hnas World"
+      -- "World" should appear as-is (foreign text), not parsed
+      T.isInfixOf "World" g `shouldBe` True
