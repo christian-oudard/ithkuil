@@ -121,12 +121,21 @@ buildKeywordIndex roots =
   Map.fromListWith (++) $ concatMap indexRoot (Map.toList roots)
   where
     indexRoot (cr, entry) =
-      let descs = [ (0, T.toCaseFold (rootStem0 entry))
-                  , (0, T.toCaseFold (rootStem1 entry))
-                  , (1, T.toCaseFold (rootStem2 entry))
-                  , (1, T.toCaseFold (rootStem3 entry))
+      let descs = [ (0, T.toCaseFold (rootStem1 entry))  -- S1 primary
+                  , (1, T.toCaseFold (rootStem2 entry))  -- S2 secondary
+                  , (1, T.toCaseFold (rootStem3 entry))  -- S3 tertiary
+                  , (2, T.toCaseFold (rootStem0 entry))  -- S0 generic
                   ]
-      in concatMap (\(pri, d) -> indexDesc cr pri d) descs
+          -- S0 single-word slash-parts get synonym boost (score 1)
+          s0parts = map (T.strip . T.toCaseFold) . T.splitOn "/" $
+                    rootStem0 entry
+          s0synonyms = filter (\p -> not (T.any (== ' ') p) && T.length p > 1)
+                       s0parts
+          synEntries = concatMap (\syn ->
+            let forms = Set.toList . Set.fromList $ [syn, porterStem syn]
+            in [(w, [(1, cr)]) | w <- forms]
+            ) s0synonyms
+      in synEntries ++ concatMap (\(pri, d) -> indexDesc cr pri d) descs
 
     indexDesc cr pri desc =
       let ws = extractWords desc

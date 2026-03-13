@@ -1900,6 +1900,21 @@ main = hspec $ do
           w = composeFormative f
       T.isPrefixOf "w" w `shouldBe` False  -- no shortcut for DYN
 
+    it "composes mood using Pattern 1 Cn (VnCnValence default)" $ do
+      let f = (minimalFormative "b")
+              { fSlotIV = (DYN, BSC, EXS)
+              , fSlotII = (S1, CPT)
+              , fSlotVIII = Just (VnCnValence MNO (MoodVal SUB))
+              , fStress = Ultimate
+              , fSlotIX = Right (IllocVal ASR OBS) }
+          w = composeFormative f
+      -- SUB mood Pattern 1 Cn = "hl", should produce "...ahl..."
+      T.isInfixOf "ahl" w `shouldBe` True
+      -- Verify round-trip
+      case parseWord w of
+        PFormative pf -> pfStress pf `shouldBe` Ultimate
+        _ -> expectationFailure $ "Mood round-trip: " ++ T.unpack w
+
     it "uses circumflex stress on diaeresis vowels" $ do
       let f = (minimalFormative "l")
               { fSlotII = (S1, CPT)
@@ -1924,6 +1939,8 @@ main = hspec $ do
       topRoot "love" `shouldBe` "rkw"
       topRoot "think" `shouldBe` "sl"
       topRoot "believe" `shouldBe` "b"
+      topRoot "drink" `shouldBe` "tx"
+      topRoot "child" `shouldBe` "mp"
 
     it "finds correct root in top 5 for ambiguous queries" $ do
       Right roots <- loadRoots "data/roots.json"

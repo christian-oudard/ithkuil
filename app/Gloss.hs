@@ -531,7 +531,7 @@ setMood ms f = case fSlotVIII f of
   Just (VnCnPhase p _)     -> f { fSlotVIII = Just (VnCnPhase p ms) }
   Just (VnCnEffect e _)    -> f { fSlotVIII = Just (VnCnEffect e ms) }
   Just (VnCnLevel l b _)   -> f { fSlotVIII = Just (VnCnLevel l b ms) }
-  _ -> f { fSlotVIII = Just (VnCnAspect RTR ms) }
+  _ -> f { fSlotVIII = Just (VnCnValence MNO ms) }
 
 -- | Set valence, preserving existing mood/scope
 setValence :: Valence -> Formative -> Formative
