@@ -1049,6 +1049,26 @@ main = hspec $ do
           pfRoot pf `shouldBe` Root "rm"
         pw -> expectationFailure $ "oërmölá: expected PFormative, got: " ++ show pw
 
+    it "parses Level VnCn values" $ do
+      -- ao + h = MIN level + FAC mood (in Ca conjuncts, extracted by glosser)
+      let gloss = glossWord mempty mempty (parseWord "malaoha")
+      T.isInfixOf "MIN" gloss `shouldBe` True
+      -- Also test that parseOneVnCn handles Level
+      parseOneVnCn "ao" "h" `shouldBe` Just (VnCnLevel MIN (MoodVal FAC))
+      parseOneVnCn "oa" "h" `shouldBe` Just (VnCnLevel MAX (MoodVal FAC))
+
+    it "parses Effect VnCn values" $ do
+      -- ia + h = BEN1 + FAC mood
+      parseOneVnCn "ia" "h" `shouldBe` Just (VnCnEffect BEN1 (MoodVal FAC))
+      parseOneVnCn "ue" "hl" `shouldBe` Just (VnCnEffect DET2 (MoodVal SUB))
+      parseOneVnCn "eë" "h" `shouldBe` Just (VnCnEffect UNK (MoodVal FAC))
+      parseOneVnCn "ua" "hr" `shouldBe` Just (VnCnEffect DET1 (MoodVal ASM))
+      -- Effect uses Pattern 1 Cn only — Pattern 2 should give Aspect, not Effect
+      parseOneVnCn "ia" "w" `shouldBe` Just (VnCnAspect PMP (MoodVal FAC))
+      -- Test via glossWord
+      let gloss = glossWord mempty mempty (parseWord "maliahra")
+      T.isInfixOf "BEN1" gloss `shouldBe` True
+
     it "parses glottal stop movement correctly" $ do
       -- la'la and lala'a should both give case PRN
       let gloss1 = glossWord mempty mempty (parseWord "la'la")

@@ -29,7 +29,7 @@ import Data.Maybe (isJust)
 import Ithkuil.Phonology (vowelFormLookup)
 import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, parseCa, ParsedFormative(..), parseFormativeReal, ParsedCa(..), normalizeAccents, detectStressSimple, isGeminateCa)
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
-                           aspectVowels, phaseVowels)
+                           aspectVowels, phaseVowels, levelVowels, effectVowels)
 import Ithkuil.Adjuncts hiding (CarrierAdjunct)
 import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), refC1All, decomposeRefCluster, referentLabel, referentAbbrev)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot, lookupAffix)
@@ -569,7 +569,11 @@ parseOneVnCn vn cn =
           Just val -> Just (VnCnValence val ms)
           Nothing -> case lookup vn phaseVowels of
             Just ph -> Just (VnCnPhase ph ms)
-            Nothing -> Nothing
+            Nothing -> case lookup vn levelVowels of
+              Just lvl -> Just (VnCnLevel lvl ms)
+              Nothing -> case lookup vn effectVowels of
+                Just eff -> Just (VnCnEffect eff ms)
+                Nothing -> Nothing
 
 --------------------------------------------------------------------------------
 -- Glossing
@@ -586,6 +590,8 @@ glossWord roots affixes pw = case pw of
   PModular pairs fv _ ->
     let glossVnCnDot (VnCnValence val ms) = T.pack (show val) <> "." <> glossMoodOrScope ms
         glossVnCnDot (VnCnPhase ph ms) = T.pack (show ph) <> "." <> glossMoodOrScope ms
+        glossVnCnDot (VnCnLevel lvl ms) = T.pack (show lvl) <> "." <> glossMoodOrScope ms
+        glossVnCnDot (VnCnEffect eff ms) = T.pack (show eff) <> "." <> glossMoodOrScope ms
         glossVnCnDot (VnCnAspect asp ms) = T.pack (show asp) <> "." <> glossMoodOrScope ms
     in T.intercalate "-" (map glossVnCnDot pairs)
        <> (if T.null fv then "" else "-" <> fv)
@@ -862,6 +868,8 @@ selectStem S3 = rootStem3
 glossSlotVIII :: SlotVIII -> Text
 glossSlotVIII (VnCnValence val ms) = T.pack (show val) <> "-" <> glossMoodOrScope ms
 glossSlotVIII (VnCnPhase ph ms) = T.pack (show ph) <> "-" <> glossMoodOrScope ms
+glossSlotVIII (VnCnLevel lvl ms) = T.pack (show lvl) <> "-" <> glossMoodOrScope ms
+glossSlotVIII (VnCnEffect eff ms) = T.pack (show eff) <> "-" <> glossMoodOrScope ms
 glossSlotVIII (VnCnAspect asp ms) = T.pack (show asp) <> "-" <> glossMoodOrScope ms
 
 glossMoodOrScope :: MoodOrScope -> Text

@@ -130,6 +130,8 @@ renderSlotVIII :: Maybe SlotVIII -> Text
 renderSlotVIII Nothing = ""
 renderSlotVIII (Just (VnCnValence val ms)) = renderValence val <> renderMoodOrScope ms
 renderSlotVIII (Just (VnCnPhase ph ms)) = renderPhase ph <> renderMoodOrScope ms
+renderSlotVIII (Just (VnCnLevel lvl ms)) = renderLevel lvl <> renderMoodOrScope ms
+renderSlotVIII (Just (VnCnEffect eff ms)) = renderEffect eff <> renderMoodOrScope ms
 renderSlotVIII (Just (VnCnAspect asp ms)) = renderAspect asp <> renderMoodOrScopeP2 ms
 
 renderValence :: Valence -> Text
@@ -227,6 +229,30 @@ renderAspect TNS = "öe"
 renderAspect ITC = "oe"
 renderAspect MTV = "öa"
 renderAspect SQN = "oa"
+
+-- | Render Level vowels (Series 4)
+renderLevel :: Level -> Text
+renderLevel MIN = "ao"
+renderLevel SBE = "aö"
+renderLevel IFR = "eo"
+renderLevel DFT = "eö"
+renderLevel EQU = "oë"
+renderLevel SUR = "öe"
+renderLevel SPL = "oe"
+renderLevel SPQ = "öa"
+renderLevel MAX = "oa"
+
+-- | Render Effect vowels (Series 3)
+renderEffect :: Effect -> Text
+renderEffect BEN1 = "ia"
+renderEffect BEN2 = "ie"
+renderEffect BEN3 = "io"
+renderEffect BSLF = "iö"
+renderEffect UNK  = "eë"
+renderEffect DSLF = "uö"
+renderEffect DET3 = "uo"
+renderEffect DET2 = "ue"
+renderEffect DET1 = "ua"
 
 -- | Slot IX: Case or Format/Illocution+Validation
 renderSlotIX :: Either Case FormatOrIV -> Text

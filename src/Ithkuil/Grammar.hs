@@ -274,13 +274,6 @@ data Phase
   | FLC  -- ^ Fluctuative: varying
   deriving (Show, Eq, Ord, Enum, Bounded)
 
--- | Effect (4 values) - speaker's benefit assessment
-data Effect
-  = BEN1 -- ^ Beneficial to speaker
-  | BEN2 -- ^ Beneficial to addressee
-  | BEN3 -- ^ Beneficial to third party
-  | BENX -- ^ Beneficial unknown/general
-  deriving (Show, Eq, Ord, Enum, Bounded)
 
 -- | Aspect (36 values) - temporal phases
 data Aspect
@@ -320,6 +313,34 @@ data Aspect
   | ITC  -- ^ Intercommutative
   | MTV  -- ^ Motive
   | SQN  -- ^ Sequential
+  deriving (Show, Eq, Ord, Enum, Bounded)
+
+-- | Level (9 values) - degree/comparison
+-- Uses Series 4 vowels with Pattern 1 Cn consonants
+data Level
+  = MIN  -- ^ Minimal: the least
+  | SBE  -- ^ Subequative: less than
+  | IFR  -- ^ Inferior: below average
+  | DFT  -- ^ Deficient: lacking
+  | EQU  -- ^ Equative: equal (form 5 = special)
+  | SUR  -- ^ Surpassive: above average
+  | SPL  -- ^ Superlative: outstanding
+  | SPQ  -- ^ Superequative: more than
+  | MAX  -- ^ Maximal: the most
+  deriving (Show, Eq, Ord, Enum, Bounded)
+
+-- | Effect (9 values) - benefactor/affected party
+-- Uses Series 3 vowels with Pattern 1 Cn consonants
+data Effect
+  = BEN1  -- ^ Beneficial to speaker
+  | BEN2  -- ^ Beneficial to addressee
+  | BEN3  -- ^ Beneficial to 3rd party
+  | BSLF  -- ^ Beneficial to self
+  | UNK   -- ^ Unknown effect
+  | DSLF  -- ^ Detrimental to self
+  | DET3  -- ^ Detrimental to 3rd party
+  | DET2  -- ^ Detrimental to addressee
+  | DET1  -- ^ Detrimental to speaker
   deriving (Show, Eq, Ord, Enum, Bounded)
 
 --------------------------------------------------------------------------------
@@ -402,6 +423,8 @@ data CaseScope = CCN | CCA | CCS | CCQ | CCP | CCV
 data SlotVIII
   = VnCnValence Valence MoodOrScope    -- ^ Pattern 1: Valence + Mood/CaseScope
   | VnCnPhase Phase MoodOrScope        -- ^ Pattern 1: Phase + Mood/CaseScope
+  | VnCnEffect Effect MoodOrScope      -- ^ Pattern 1: Effect + Mood/CaseScope
+  | VnCnLevel Level MoodOrScope        -- ^ Pattern 1: Level + Mood/CaseScope
   | VnCnAspect Aspect MoodOrScope      -- ^ Pattern 2: Aspect + Mood/CaseScope
   deriving (Show, Eq, Ord)
 

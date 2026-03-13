@@ -262,12 +262,16 @@ parseVnCnFromParts vn cn _ =
           Just asp -> Success $ Just (VnCnAspect asp ms)
           Nothing -> Success Nothing
       | otherwise ->
-        -- Pattern 1: Vn is Valence (Series 1) or Phase (Series 2)
+        -- Pattern 1: Vn is Valence (Series 1), Phase (Series 2), Effect (Series 3), or Level (Series 4)
         case parseVnValence vn of
           Just val -> Success $ Just (VnCnValence val ms)
           Nothing -> case lookup vn phaseVowels of
             Just ph -> Success $ Just (VnCnPhase ph ms)
-            Nothing -> Success Nothing
+            Nothing -> case lookup vn effectVowels of
+              Just eff -> Success $ Just (VnCnEffect eff ms)
+              Nothing -> case lookup vn levelVowels of
+                Just lvl -> Success $ Just (VnCnLevel lvl ms)
+                Nothing -> Success Nothing
 
 --------------------------------------------------------------------------------
 -- Vn: Valence / Phase / Effect parsing
@@ -288,6 +292,23 @@ phaseVowels :: [(Text, Phase)]
 phaseVowels =
   [ ("ai", PUN), ("au", ITR), ("ei", REP), ("eu", ITM)
   , ("ëu", RCT), ("ou", FRE), ("oi", FRG), ("iu", VAC), ("ui", FLC)
+  ]
+
+-- | Effect vowels (Pattern 1, Series 3)
+effectVowels :: [(Text, Effect)]
+effectVowels =
+  [ ("ia", BEN1), ("ie", BEN2), ("io", BEN3), ("iö", BSLF)
+  , ("eë", UNK),  ("uö", DSLF), ("uo", DET3), ("ue", DET2), ("ua", DET1)
+  -- Alternative series 3 forms
+  , ("uä", BEN1), ("uë", BEN2), ("üä", BEN3), ("üë", BSLF)
+  , ("öë", DSLF), ("öä", DET3), ("ië", DET2), ("iä", DET1)
+  ]
+
+-- | Level vowels (Pattern 1, Series 4)
+levelVowels :: [(Text, Level)]
+levelVowels =
+  [ ("ao", MIN), ("aö", SBE), ("eo", IFR), ("eö", DFT), ("oë", EQU)
+  , ("öe", SUR), ("oe", SPL), ("öa", SPQ), ("oa", MAX)
   ]
 
 --------------------------------------------------------------------------------
