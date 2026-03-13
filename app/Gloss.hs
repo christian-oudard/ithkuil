@@ -102,8 +102,8 @@ glossOneWord roots affixes word = do
       mapM_ (\pf -> showFormativeDetail roots affixes pf) pfs
     PBias b -> TIO.putStrLn $ "    Bias: " <> T.pack (show b)
     PRegister r -> TIO.putStrLn $ "    Register: " <> T.pack (show r)
-    PReferential ref mc vc ext -> do
-      showReferentialDetail ref mc vc
+    PReferential refs mc vc ext -> do
+      mapM_ (\ref -> showReferentialDetail ref mc vc) refs
       case ext of
         Just (wy, mc2, mRef2) -> do
           TIO.putStrLn $ "    Scope: " <> wy
@@ -124,8 +124,9 @@ glossOneWord roots affixes word = do
       case mVz of
         Just vz -> TIO.putStrLn $ "    Scope: " <> glossVz vz
         Nothing -> return ()
-    PCombinationRef ref@(PersonalRef rr eff) mc spec afxs mc2 -> do
-      TIO.putStrLn $ "    Referent: " <> referentLabel rr <> " /" <> T.pack (show eff)
+    PCombinationRef refs mc spec afxs mc2 -> do
+      mapM_ (\(PersonalRef rr eff) ->
+        TIO.putStrLn $ "    Referent: " <> referentLabel rr <> " /" <> T.pack (show eff)) refs
       case mc of
         Just c -> TIO.putStrLn $ "    Case: " <> T.pack (showCaseDetail c)
         Nothing -> return ()

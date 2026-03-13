@@ -8,11 +8,15 @@ module Ithkuil.Referentials
   , refC1
   , refC1All
   , lookupRefC1
+  , decomposeRefCluster
+  , biconsonantalRefs
   , renderRefCase
   , referentLabel
   ) where
 
 import Data.Text (Text)
+import qualified Data.Text as T
+import qualified Data.Set as Set
 import Data.Maybe (listToMaybe)
 import Ithkuil.Grammar (Case(..))
 import Ithkuil.Render (renderCase)
@@ -108,8 +112,36 @@ refC1All =
   ]
 
 -- | Look up a C1 consonant to find the referent+effect
+-- Includes alternate form: ļ = pi.NEU (alongside ẓ)
 lookupRefC1 :: Text -> Maybe PersonalRef
+lookupRefC1 "ļ" = Just (PersonalRef Rpi NEU)  -- alternate form
 lookupRefC1 c = listToMaybe [pr | (pr, form) <- refC1All, form == c]
+
+-- | Biconsonantal referential forms (must be checked before single-char)
+biconsonantalRefs :: Set.Set Text
+biconsonantalRefs = Set.fromList
+  [ "tļ"
+  , "th", "ph", "kh"
+  , "ll", "rr", "řř"
+  , "mm", "nn", "ňň"
+  , "hl", "hm", "hn", "hň"
+  ]
+
+-- | Decompose a consonant cluster into individual referent consonants
+-- Uses greedy left-to-right matching: biconsonantal forms checked first
+decomposeRefCluster :: Text -> Maybe [PersonalRef]
+decomposeRefCluster t
+  | T.null t = Just []
+  | T.length t >= 2
+  , let bi = T.take 2 t
+  , bi `Set.member` biconsonantalRefs
+  = case lookupRefC1 bi of
+      Just ref -> (ref :) <$> decomposeRefCluster (T.drop 2 t)
+      Nothing -> Nothing
+  | otherwise
+  = case lookupRefC1 (T.take 1 t) of
+      Just ref -> (ref :) <$> decomposeRefCluster (T.drop 1 t)
+      Nothing -> Nothing
 
 --------------------------------------------------------------------------------
 -- Referential Case Marking

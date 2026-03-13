@@ -30,7 +30,7 @@ import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, ParsedFormative(..
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
                            aspectVowels, phaseVowels)
 import Ithkuil.Adjuncts hiding (CarrierAdjunct)
-import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), refC1All, lookupRefC1, referentLabel)
+import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), refC1All, lookupRefC1, decomposeRefCluster, referentLabel)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot, lookupAffix)
 
 --------------------------------------------------------------------------------
@@ -59,14 +59,14 @@ data ParsedWord
   | PBias Bias
   | PRegister Register
   | PModular [SlotVIII] Text Text  -- parsed VnCn pairs, final vowel gloss, raw text
-  | PReferential PersonalRef (Maybe Case) Text (Maybe (Text, Maybe Case, Maybe PersonalRef))
-    -- ^ referent, case, raw case vowel, optional (scope w/y, case2, ref2)
+  | PReferential [PersonalRef] (Maybe Case) Text (Maybe (Text, Maybe Case, Maybe PersonalRef))
+    -- ^ referent(s) from C1 cluster, case, raw case vowel, optional (scope w/y, case2, ref2)
   | PAffixual Text Int Text     -- affix Cs, degree, optional scope vowel
   | PMultipleAffix (Text, Text) Text [(Text, Text)] (Maybe Text)
     -- ^ first affix (Vx,Cs), Cz scope, additional affixes (Vx,Cs), optional Vz scope
   | PCarrier CarrierType Text   -- carrier type, content
-  | PCombinationRef PersonalRef (Maybe Case) Text [(Text, Text)] (Maybe Case)
-    -- ^ referent, case1, spec, affixes (VxCs), case2
+  | PCombinationRef [PersonalRef] (Maybe Case) Text [(Text, Text)] (Maybe Case)
+    -- ^ referent(s), case1, spec, affixes (VxCs), case2
   | PMoodCaseScope MoodOrScope  -- standalone mood/case-scope adjunct
   | PUnparsed Text              -- Could not parse
   deriving (Show, Eq)
@@ -109,7 +109,7 @@ isCarrierAdjunct word =
     _ -> False
 
 -- | Referential words: [ë/äi] C1 [ëC1]* V [w/y V [C1 [ë]]]
--- C1 must be a referential consonant, w/y marks RPV/perspective scope
+-- C1 must be a referential consonant (or decomposable cluster), w/y marks RPV/perspective scope
 isReferentialWord :: Text -> Bool
 isReferentialWord word =
   let conjs = splitConjuncts word
@@ -119,9 +119,10 @@ isReferentialWord word =
         ("äi":cs) -> cs
         cs        -> cs
       -- Consume referential consonants (C1 [ë C1]*)
+      -- A consonant is valid if it's a single ref C1 or decomposes into refs
       consumeRefs (c:cs)
-        | isRefC1 c = case cs of
-            ("ë":c2:cs2) | isRefC1 c2 -> consumeRefs (c2:cs2)
+        | isRefCluster c = case cs of
+            ("ë":c2:cs2) | isRefCluster c2 -> consumeRefs (c2:cs2)
             _ -> Just cs
         | otherwise = Nothing
       consumeRefs [] = Nothing
@@ -129,16 +130,22 @@ isReferentialWord word =
       isValidTail cs = case cs of
         [v]            | isV v -> True
         [v, wy, v2]   | isV v && wy `elem` ["w", "y"] && isV v2 -> True
-        [v, wy, v2, c] | isV v && wy `elem` ["w", "y"] && isV v2 && isRefC1 c -> True
+        [v, wy, v2, c] | isV v && wy `elem` ["w", "y"] && isV v2 && isRefCluster c -> True
         _ -> False
       isV t = not (T.null t) && isVowelChar (T.head t)
   in case consumeRefs rest0 of
     Just tail' -> isValidTail tail'
     Nothing -> False
 
--- | Check if a consonant is a valid referential C1
+-- | Check if a consonant is a valid referential C1 (single or cluster)
 isRefC1 :: Text -> Bool
-isRefC1 c = c `elem` map snd refC1All
+isRefC1 c = c `elem` map snd refC1All || c == "ļ"
+
+-- | Check if a consonant cluster decomposes into valid referential consonants
+isRefCluster :: Text -> Bool
+isRefCluster c = isRefC1 c || case decomposeRefCluster c of
+  Just (_:_) -> True
+  _ -> False
 
 -- | Mood/case-scope adjuncts: "hr" + vowel (Sec. 8.5)
 -- These set standalone mood or case-scope for the following formative
@@ -162,7 +169,7 @@ isCombinationRef word =
         cs       -> cs
       specConsonants = ["x", "xt", "xp", "xx"] :: [Text]
   in case rest0 of
-    (c:v:spec:_) | isRefC1 c
+    (c:v:spec:_) | isRefCluster c
                  , not (T.null v) && isVowelChar (T.head v)
                  , spec `elem` specConsonants -> True
     -- "a" + CP consonant form
@@ -302,6 +309,7 @@ parseRegisterLower _     = Nothing
 
 -- | Parse a referential word
 -- Simple: C1-Vc, Dual: C1-ë-C1-Vc, Extended: C1-Vc-w/y-Vc2
+-- C1 may be a consonant cluster decomposable into multiple referents
 parseReferentialWord :: Text -> ParsedWord
 parseReferentialWord word =
   let conjs = splitConjuncts word
@@ -311,25 +319,27 @@ parseReferentialWord word =
         ("äi":cs) -> cs
         cs        -> cs
       -- Consume C1 referential consonants, collecting refs
+      -- Supports cluster decomposition (e.g., "ţn" → [Rmi.BEN, R2p.NEU])
       consumeRefs (c:cs)
-        | isRefC1 c = case lookupRefC1 c of
-            Just ref -> case cs of
-              ("ë":c2:cs2) -> case consumeRefs (c2:cs2) of
-                (refs, tail') -> (ref:refs, tail')
-              _ -> ([ref], cs)
-            Nothing -> ([], c:cs)
+        | Just refs' <- decomposeRefCluster c
+        , not (null refs') = case cs of
+            ("ë":c2:cs2) -> case consumeRefs (c2:cs2) of
+              (moreRefs, rest') -> (refs' ++ moreRefs, rest')
+            _ -> (refs', cs)
         | otherwise = ([], c:cs)
       consumeRefs [] = ([], [])
       (refs, tail') = consumeRefs rest0
   in case (refs, tail') of
-    (ref:_, [v]) ->
-      PReferential ref (parseCase v) v Nothing
-    (ref:_, [v, wy, v2]) | wy `elem` ["w", "y"] ->
-      -- w = RPV effect on second case, y = perspective scope
-      PReferential ref (parseCase v) v (Just (wy, parseCase v2, Nothing))
-    (ref:_, [v, wy, v2, c2]) | wy `elem` ["w", "y"], isRefC1 c2 ->
+    (_:_, [v]) ->
+      PReferential refs (parseCase v) v Nothing
+    (_:_, [v, wy, v2]) | wy `elem` ["w", "y"] ->
+      PReferential refs (parseCase v) v (Just (wy, parseCase v2, Nothing))
+    (_:_, [v, wy, v2, c2]) | wy `elem` ["w", "y"], isRefCluster c2 ->
       -- Extended: C1-Vc-w/y-Vc2-C2 (dual referential with scope)
-      PReferential ref (parseCase v) v (Just (wy, parseCase v2, lookupRefC1 c2))
+      let ref2 = case decomposeRefCluster c2 of
+            Just (r:_) -> Just r
+            _ -> Nothing
+      in PReferential refs (parseCase v) v (Just (wy, parseCase v2, ref2))
     _ -> PUnparsed word
 
 -- | Parse an affixual adjunct word (Vx-Cs or Vx-Cs-Vs)
@@ -383,13 +393,15 @@ parseCombinationRefWord word =
         _ -> ("", [])
   in case afterC1 of
     (vc:spec:rest) | spec `elem` ["x", "xt", "xp", "xx"] ->
-      let ref = lookupRefC1 c1
+      let refs = case decomposeRefCluster c1 of
+            Just rs@(_:_) -> Just rs
+            _ -> Nothing
           case1 = parseCase vc
           -- Parse VxCs affix pairs from rest
           (affixPairs, lastV) = parseVxCsPairs rest
           case2 = lastV >>= parseCase
-      in case ref of
-        Just r -> PCombinationRef r case1 spec affixPairs case2
+      in case refs of
+        Just rs -> PCombinationRef rs case1 spec affixPairs case2
         Nothing -> PUnparsed word
     _ -> PUnparsed word
   where
@@ -561,7 +573,7 @@ glossWord roots affixes pw = case pw of
   PRegister r -> T.pack (show r) <> " register"
   PModular pairs fv _ -> "MOD:" <> T.intercalate "+" (map glossSlotVIII pairs)
                        <> (if T.null fv then "" else "-" <> fv)
-  PReferential ref mc vc ext -> glossReferential ref mc vc
+  PReferential refs mc vc ext -> glossReferentials refs mc vc
     <> maybe "" glossRefExt ext
   PAffixual cs deg scope ->
     let abbr = case lookupAffix cs affixes of
@@ -573,8 +585,8 @@ glossWord roots affixes pw = case pw of
     glossOneAffix affixes first <> "-" <> glossCz cz
     <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) moreAfxs)
     <> maybe "" (\vz -> "-" <> glossVz vz) mVz
-  PCombinationRef ref mc spec afxs mc2 ->
-    glossReferential ref mc ""
+  PCombinationRef refs mc spec afxs mc2 ->
+    glossReferentials refs mc ""
     <> (if spec /= "x" then "-" <> spec else "")
     <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) afxs)
     <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc2
@@ -688,7 +700,7 @@ glossWordCompact roots _affixes pw = case pw of
     in stemMark <> shortMeaning <> caseOrIlloc
   PBias b -> T.pack (show b)
   PRegister r -> T.pack (show r)
-  PReferential ref mc _vc ext -> glossReferential ref mc ""
+  PReferential refs mc _vc ext -> glossReferentials refs mc ""
     <> maybe "" glossRefExt ext
   PModular pairs fv _raw -> T.intercalate "+" (map glossSlotVIII pairs)
                           <> (if T.null fv then "" else "-" <> fv)
@@ -697,8 +709,8 @@ glossWordCompact roots _affixes pw = case pw of
     glossOneAffix _affixes first <> "-" <> glossCz cz
     <> T.concat (map (\p -> "-" <> glossOneAffix _affixes p) moreAfxs)
     <> maybe "" (\vz -> "-" <> glossVz vz) mVz
-  PCombinationRef ref mc _spec afxs mc2 ->
-    glossReferential ref mc "" <> T.concat (map (\p -> "-" <> glossOneAffix _affixes p) afxs)
+  PCombinationRef refs mc _spec afxs mc2 ->
+    glossReferentials refs mc "" <> T.concat (map (\p -> "-" <> glossOneAffix _affixes p) afxs)
     <> maybe "" (\c -> "." <> T.pack (showCase c)) mc2
   PCarrier _ct content -> content
   PMoodCaseScope ms -> glossMoodOrScope ms
@@ -812,18 +824,27 @@ glossRefExt (wy, mc2, mRef2) =
       ref2 = maybe "" (\(PersonalRef r _) -> "-" <> referentLabel r) mRef2
   in scope <> case2 <> ref2
 
--- | Gloss a referential word
-glossReferential :: PersonalRef -> Maybe Case -> Text -> Text
-glossReferential (PersonalRef ref eff) mc _vc =
+-- | Gloss a single referent
+glossOneRef :: PersonalRef -> Text
+glossOneRef (PersonalRef ref eff) =
   let label = referentLabel ref
       effAbbr = case eff of
         NEU -> ""
         BEN -> "/BEN"
         DET -> "/DET"
+  in label <> effAbbr
+
+-- | Gloss a referential word (possibly multiple referents from cluster)
+glossReferentials :: [PersonalRef] -> Maybe Case -> Text -> Text
+glossReferentials refs mc _vc =
+  let refPart = case refs of
+        [] -> "?"
+        [r] -> "'" <> glossOneRef r <> "'"
+        rs -> "'" <> T.intercalate "+" (map glossOneRef rs) <> "'"
       caseAbbr = case mc of
         Just c -> "-" <> T.pack (showCase c)
         Nothing -> ""
-  in "'" <> label <> "'" <> effAbbr <> caseAbbr
+  in refPart <> caseAbbr
 
 --------------------------------------------------------------------------------
 -- Multi-word Sentence Glossing
