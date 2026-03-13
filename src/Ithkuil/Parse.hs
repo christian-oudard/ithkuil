@@ -13,6 +13,7 @@ module Ithkuil.Parse
   , parseCa
   , splitConjuncts
   , isVowelChar
+  , normalizeAccents
   , defaultCa
   ) where
 
@@ -111,7 +112,8 @@ data ParsedFormative = ParsedFormative
   , pfSlotIV  :: SlotIV          -- Function + Specification + Context
   , pfCa      :: [Text]          -- Ca complex (raw conjuncts)
   , pfCaParsed :: Maybe ParsedCa -- Parsed Ca values
-  , pfCase    :: Maybe Case      -- Vc (case vowel)
+  , pfCase    :: Maybe Case      -- Vc (case vowel, when penultimate/antepenultimate stress)
+  , pfIllocVal :: Maybe (Illocution, Validation)  -- Vk (when ultimate stress)
   , pfStress  :: Stress          -- Detected stress pattern
   , pfConjuncts :: [Text]        -- Original conjunct split
   } deriving (Show, Eq)
@@ -142,7 +144,8 @@ parseConsonantInitial stress parts = case parts of
   (cr:vr:rest) -> do
     slotIV <- parseSlotIV vr
     let (caRest, vcRest) = splitCaVc rest
-        caseM = parseCase =<< listToMaybe vcRest
+        lastVowel = listToMaybe vcRest
+        (caseM, illocValM) = parseSlotIXSimple stress lastVowel
         -- Try to parse Ca from consonants in caRest
         caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
         caParsedM = parseCa =<< listToMaybe caConsonants
@@ -153,6 +156,7 @@ parseConsonantInitial stress parts = case parts of
       , pfCa = caRest
       , pfCaParsed = caParsedM
       , pfCase = caseM
+      , pfIllocVal = illocValM
       , pfStress = stress
       , pfConjuncts = parts
       }
@@ -165,7 +169,8 @@ parseVowelInitial stress parts = case parts of
     slotII <- parseSlotII vv
     slotIV <- parseSlotIV vr
     let (caRest, vcRest) = splitCaVc rest
-        caseM = parseCase =<< listToMaybe vcRest
+        lastVowel = listToMaybe vcRest
+        (caseM, illocValM) = parseSlotIXSimple stress lastVowel
         -- Try to parse Ca from consonants in caRest
         caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
         caParsedM = parseCa =<< listToMaybe caConsonants
@@ -176,6 +181,7 @@ parseVowelInitial stress parts = case parts of
       , pfCa = caRest
       , pfCaParsed = caParsedM
       , pfCase = caseM
+      , pfIllocVal = illocValM
       , pfStress = stress
       , pfConjuncts = parts
       }
@@ -221,6 +227,49 @@ detectStressSimple word
 -- | Check if character is a vowel (includes accented vowels for all versions)
 isVowelChar :: Char -> Bool
 isVowelChar c = c `elem` ("aäeëiöoüuáéíóúàèìòùîâêôûǎěǐǒǔ" :: String)
+
+-- | Parse Slot IX based on stress: Case (penultimate) or Vk (ultimate)
+parseSlotIXSimple :: Stress -> Maybe Text -> (Maybe Case, Maybe (Illocution, Validation))
+parseSlotIXSimple Ultimate (Just v) = (Nothing, parseVk v)
+parseSlotIXSimple _ (Just v) = (parseCase v, Nothing)
+parseSlotIXSimple _ Nothing = (Nothing, Nothing)
+
+-- | Parse Vk (Illocution + Validation) from vowel
+-- Series 1 = ASR + Validation (forms 1-9)
+-- Series 2 = Other illocutions (forms by position)
+parseVk :: Text -> Maybe (Illocution, Validation)
+parseVk vk = case normalizeAccents vk of
+  -- Series 1: ASR + Validation
+  "a"  -> Just (ASR, OBS)
+  "ä"  -> Just (ASR, REC)
+  "e"  -> Just (ASR, PUP)
+  "i"  -> Just (ASR, RPR)
+  "ëi" -> Just (ASR, USP)
+  "ö"  -> Just (ASR, IMA)
+  "o"  -> Just (ASR, CVN)
+  "ü"  -> Just (ASR, ITU)
+  "u"  -> Just (ASR, INF)
+  -- Series 2: Non-ASR illocutions
+  "ai" -> Just (DIR, OBS)
+  "au" -> Just (DEC, OBS)
+  "ei" -> Just (IRG, OBS)
+  "eu" -> Just (VER, OBS)
+  "ou" -> Just (ADM, OBS)
+  "oi" -> Just (POT, OBS)
+  "iu" -> Just (HOR, OBS)
+  "ui" -> Just (CNJ, OBS)
+  _    -> Nothing
+
+-- | Strip acute accents from vowels for parsing
+normalizeAccents :: Text -> Text
+normalizeAccents = T.map stripAccent
+  where
+    stripAccent 'á' = 'a'
+    stripAccent 'é' = 'e'
+    stripAccent 'í' = 'i'
+    stripAccent 'ó' = 'o'
+    stripAccent 'ú' = 'u'
+    stripAccent c = c
 
 -- | Split text into consonant/vowel conjuncts
 splitConjuncts :: Text -> [Text]
@@ -277,10 +326,10 @@ casePatterns =
   , (SpatioTemporal2 ELP, "u'a"), (SpatioTemporal2 PLM, "a'u")
   ]
 
--- | Parse case from Vc vowel
+-- | Parse case from Vc vowel (normalizes accents)
 parseCase :: Text -> Maybe Case
 parseCase vc = listToMaybe
-  [ c | (c, pattern) <- casePatterns, pattern == vc ]
+  [ c | (c, pattern) <- casePatterns, pattern == normalizeAccents vc ]
 
 --------------------------------------------------------------------------------
 -- Ca Complex Parsing (Slot VI)

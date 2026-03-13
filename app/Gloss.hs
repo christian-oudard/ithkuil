@@ -11,7 +11,6 @@ import qualified Data.Text.IO as TIO
 import qualified Data.Map.Strict as Map
 import Ithkuil.Grammar
 import Ithkuil.Parse (ParsedFormative(..), ParsedCa(..))
-import Ithkuil.FullParse (detectStress)
 import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), referentLabel)
 import Ithkuil.WordType
 import Ithkuil.Lexicon
@@ -99,7 +98,7 @@ showFormativeDetail roots affixes pf = do
   let Root cr = pfRoot pf
       (stem, ver) = pfSlotII pf
       (func, spec, ctx) = pfSlotIV pf
-      conjs = pfConjuncts pf
+      _conjs = pfConjuncts pf
   -- Root
   let rootMeaning = case lookupRoot cr roots of
         Just entry -> selectStem stem entry
@@ -126,12 +125,15 @@ showFormativeDetail roots affixes pf = do
           Nothing -> cs <> " deg " <> T.pack (show degree)
     TIO.putStrLn $ "    Affix: -" <> cs <> "- " <> vx <> " = " <> desc
     ) afxPairs
-  -- Case
-  case pfCase pf of
-    Just c -> TIO.putStrLn $ "    Case: " <> T.pack (showCaseDetail c)
-    Nothing -> return ()
+  -- Slot IX: Case or Illocution+Validation
+  case pfIllocVal pf of
+    Just (ill, val) -> TIO.putStrLn $ "    Illocution/Validation: "
+                     <> T.pack (show ill) <> "/" <> T.pack (show val)
+    Nothing -> case pfCase pf of
+      Just c -> TIO.putStrLn $ "    Case: " <> T.pack (showCaseDetail c)
+      Nothing -> return ()
   -- Stress
-  let stress = detectStress (T.intercalate "" conjs)
+  let stress = pfStress pf
   if stress /= Penultimate
     then TIO.putStrLn $ "    Stress: " <> T.pack (show stress)
     else return ()
