@@ -66,10 +66,10 @@ data ParsedWord
 classifyWord :: Text -> WordType
 classifyWord word
   | T.null word = WUnknown
-  | isRegisterAdjunctWord word = WRegisterAdjunct
-  | isCarrierAdjunct word = WCarrierAdjunct
   | isBiasAdjunct word = WBiasAdjunct
   | isMoodCaseScopeAdjunct word = WMoodCaseScopeAdj
+  | isRegisterAdjunctWord word = WRegisterAdjunct
+  | isCarrierAdjunct word = WCarrierAdjunct
   | isModularAdjunct word = WModularAdjunct
   | isAffixualAdjunct word = WAffixualAdjunct
   | isReferentialWord word = WReferential
@@ -530,7 +530,11 @@ glossWordCompact roots _affixes pw = case pw of
         stemMark = case stem of
           S1 -> ""  -- default
           _ -> T.pack (show stem) <> ":"
-    in stemMark <> rootMeaning <> caseOrIlloc
+        -- Truncate long meanings for compact display
+        shortMeaning = if T.length rootMeaning > 25
+          then T.take 22 rootMeaning <> "..."
+          else rootMeaning
+    in stemMark <> shortMeaning <> caseOrIlloc
   PBias b -> T.pack (show b)
   PRegister r -> T.pack (show r)
   PReferential ref mc _vc -> glossReferential ref mc ""
