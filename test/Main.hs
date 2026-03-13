@@ -929,6 +929,58 @@ main = hspec $ do
     it "handles empty input" $ do
       decomposeRefCluster "" `shouldBe` Just []
 
+  describe "Sentence Prefix (ç)" $ do
+    it "detects ç sentence prefix in parsed formative" $ do
+      case parseFormativeReal "çëlal" of
+        Just pf -> pfSentenceStarter pf `shouldBe` True
+        Nothing -> expectationFailure "çëlal should parse"
+      case parseFormativeReal "çalal" of
+        Just pf -> pfSentenceStarter pf `shouldBe` True
+        Nothing -> expectationFailure "çalal should parse"
+
+    it "does not set sentence prefix for normal words" $ do
+      case parseFormativeReal "alal" of
+        Just pf -> pfSentenceStarter pf `shouldBe` False
+        Nothing -> expectationFailure "alal should parse"
+
+    it "detects çç (sentence + PRX shortcut)" $ do
+      case parseFormativeReal "ççala" of
+        Just pf -> pfSentenceStarter pf `shouldBe` True
+        Nothing -> expectationFailure "ççala should parse"
+
+    it "includes [sentence:] in gloss output" $ do
+      case parseWord "çëlal" of
+        PFormative pf -> do
+          pfSentenceStarter pf `shouldBe` True
+          let gloss = glossWord mempty mempty (PFormative pf)
+          T.isPrefixOf "[sentence:]" gloss `shouldBe` True
+        pw -> expectationFailure $ "Expected PFormative, got: " ++ show pw
+
+    it "rejects sentence prefix inside concatenation chain" $ do
+      case parseWord "hamala-çëlala" of
+        PUnparsed _ -> return ()
+        pw -> expectationFailure $ "Expected PUnparsed, got: " ++ show pw
+
+    it "allows sentence prefix on first part of concatenation" $ do
+      case parseWord "çëhamala-lala" of
+        PConcatenated pfs -> do
+          length pfs `shouldBe` 2
+          pfSentenceStarter (head pfs) `shouldBe` True
+        pw -> expectationFailure $ "Expected PConcatenated, got: " ++ show pw
+
+    it "uses bracket notation for combination referentials" $ do
+      case parseWord "ţnaxeka" of
+        PCombinationRef _ _ _ _ _ -> do
+          let gloss = glossWord mempty mempty (parseWord "ţnaxeka")
+          T.isPrefixOf "[" gloss `shouldBe` True
+          T.isInfixOf "mi.BEN" gloss `shouldBe` True
+          T.isInfixOf "2p" gloss `shouldBe` True
+        pw -> expectationFailure $ "Expected PCombinationRef, got: " ++ show pw
+
+    it "uses abbreviations for referential glossing" $ do
+      let gloss = glossWord mempty mempty (parseWord "la")
+      T.isInfixOf "1m" gloss `shouldBe` True
+
   describe "Integration: Longtest Poem" $ do
     it "parses all words from the Ozymandias poem" $ do
       let ws = ["Ufhulâ","eatreuhlï","wuksmenţi'ë","Mâlu'u","Azhesâ","Tartïnhâ",

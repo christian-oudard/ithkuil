@@ -12,6 +12,7 @@ module Ithkuil.Referentials
   , biconsonantalRefs
   , renderRefCase
   , referentLabel
+  , referentAbbrev
   ) where
 
 import Data.Text (Text)
@@ -164,3 +165,17 @@ referentLabel Rmx  = "it+they(mixed)"
 referentLabel Rrdp = "aforementioned"
 referentLabel Robv = "the other one"
 referentLabel Rpvs = "whatever"
+
+-- | Short abbreviation for a referent (matches standard Ithkuil notation)
+referentAbbrev :: Referent -> Text
+referentAbbrev R1m  = "1m"
+referentAbbrev R2m  = "2m"
+referentAbbrev R2p  = "2p"
+referentAbbrev Rma  = "ma"
+referentAbbrev Rpa  = "pa"
+referentAbbrev Rmi  = "mi"
+referentAbbrev Rpi  = "pi"
+referentAbbrev Rmx  = "Mx"
+referentAbbrev Rrdp = "Rdp"
+referentAbbrev Robv = "Obv"
+referentAbbrev Rpvs = "PVS"

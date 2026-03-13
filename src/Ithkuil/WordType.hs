@@ -27,11 +27,11 @@ import Data.Map.Strict (Map)
 import Ithkuil.Grammar
 import Data.Maybe (isJust)
 import Ithkuil.Phonology (vowelFormLookup)
-import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, parseCa, ParsedFormative(..), parseFormativeReal, ParsedCa(..), isSpecialVv, normalizeAccents, detectStressSimple, isGeminateCa)
+import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, parseCa, ParsedFormative(..), parseFormativeReal, ParsedCa(..), normalizeAccents, detectStressSimple, isGeminateCa)
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
                            aspectVowels, phaseVowels)
 import Ithkuil.Adjuncts hiding (CarrierAdjunct)
-import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), refC1All, decomposeRefCluster, referentLabel)
+import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), refC1All, decomposeRefCluster, referentLabel, referentAbbrev)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot, lookupAffix)
 
 --------------------------------------------------------------------------------
@@ -284,12 +284,16 @@ parseSingleWord word = case classifyWord word of
 -- | Parse a concatenated word chain (e.g., "hlamröé-úçtļořëi")
 -- All parts except the last must have Cc concatenation marker
 -- The last part must not have a concatenation marker
+-- Sentence prefix (ç) may only appear on the first part
 parseConcatenatedWord :: Text -> ParsedWord
 parseConcatenatedWord word =
   let parts = T.splitOn "-" word
       parsed = map parseFormativeReal parts
   in case sequence parsed of
-    Just pfs | length pfs >= 2 -> PConcatenated pfs
+    Just pfs
+      | length pfs >= 2
+      , not (any pfSentenceStarter (drop 1 pfs))
+      -> PConcatenated pfs
     _ -> PUnparsed word
 
 -- | Parse a register adjunct (initial and final forms)
@@ -575,9 +579,13 @@ glossWord roots affixes pw = case pw of
   PConcatenated pfs ->
     T.intercalate "—" (map (glossFormative roots affixes) pfs)
   PBias b -> T.pack (show b)
-  PRegister r -> T.pack (show r) <> " register"
-  PModular pairs fv _ -> "MOD:" <> T.intercalate "+" (map glossSlotVIII pairs)
-                       <> (if T.null fv then "" else "-" <> fv)
+  PRegister r -> T.pack (show r)
+  PModular pairs fv _ ->
+    let glossVnCnDot (VnCnValence val ms) = T.pack (show val) <> "." <> glossMoodOrScope ms
+        glossVnCnDot (VnCnPhase ph ms) = T.pack (show ph) <> "." <> glossMoodOrScope ms
+        glossVnCnDot (VnCnAspect asp ms) = T.pack (show asp) <> "." <> glossMoodOrScope ms
+    in T.intercalate "-" (map glossVnCnDot pairs)
+       <> (if T.null fv then "" else "-" <> fv)
   PReferential refs mc vc ext -> glossReferentials refs mc vc
     <> maybe "" glossRefExt ext
   PAffixual cs deg scope ->
@@ -591,7 +599,8 @@ glossWord roots affixes pw = case pw of
     <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) moreAfxs)
     <> maybe "" (\vz -> "-" <> glossVz vz) mVz
   PCombinationRef refs mc spec afxs mc2 ->
-    glossReferentials refs mc ""
+    glossCombinationRefs refs
+    <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc
     <> (if spec /= "x" then "-" <> spec else "")
     <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) afxs)
     <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc2
@@ -665,8 +674,10 @@ glossFormative roots affixes pf =
         Just Type1 -> "T1"
         Just Type2 -> "T2"
         Nothing -> ""
+      sentenceAbbr = if pfSentenceStarter pf then "[sentence:]" else ""
   in T.intercalate "-" $ filter (not . T.null)
-    [ concatAbbr
+    [ sentenceAbbr
+    , concatAbbr
     , stemVerAbbr
     , rootMeaning
     , slotIVAbbr
@@ -702,7 +713,8 @@ glossWordCompact roots _affixes pw = case pw of
         shortMeaning = if T.length rootMeaning > 25
           then T.take 22 rootMeaning <> "..."
           else rootMeaning
-    in stemMark <> shortMeaning <> caseOrIlloc
+        sentencePrefix = if pfSentenceStarter pf then "[s:]" else ""
+    in sentencePrefix <> stemMark <> shortMeaning <> caseOrIlloc
   PBias b -> T.pack (show b)
   PRegister r -> T.pack (show r)
   PReferential refs mc _vc ext -> glossReferentials refs mc ""
@@ -715,7 +727,9 @@ glossWordCompact roots _affixes pw = case pw of
     <> T.concat (map (\p -> "-" <> glossOneAffix _affixes p) moreAfxs)
     <> maybe "" (\vz -> "-" <> glossVz vz) mVz
   PCombinationRef refs mc _spec afxs mc2 ->
-    glossReferentials refs mc "" <> T.concat (map (\p -> "-" <> glossOneAffix _affixes p) afxs)
+    glossCombinationRefs refs
+    <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc
+    <> T.concat (map (\p -> "-" <> glossOneAffix _affixes p) afxs)
     <> maybe "" (\c -> "." <> T.pack (showCase c)) mc2
   PCarrier _ct content -> content
   PMoodCaseScope ms -> glossMoodOrScope ms
@@ -881,17 +895,17 @@ glossRefExt :: (Text, Maybe Case, Maybe PersonalRef) -> Text
 glossRefExt (wy, mc2, mRef2) =
   let scope = if wy == "w" then "\\RPV" else ""
       case2 = maybe "" (\c -> "-" <> T.pack (showCase c)) mc2
-      ref2 = maybe "" (\(PersonalRef r _) -> "-" <> referentLabel r) mRef2
+      ref2 = maybe "" (\pr -> "-" <> glossOneRef pr) mRef2
   in scope <> case2 <> ref2
 
 -- | Gloss a single referent
 glossOneRef :: PersonalRef -> Text
 glossOneRef (PersonalRef ref eff) =
-  let label = referentLabel ref
+  let label = referentAbbrev ref
       effAbbr = case eff of
         NEU -> ""
-        BEN -> "/BEN"
-        DET -> "/DET"
+        BEN -> ".BEN"
+        DET -> ".DET"
   in label <> effAbbr
 
 -- | Gloss a referential word (possibly multiple referents from cluster)
@@ -899,12 +913,17 @@ glossReferentials :: [PersonalRef] -> Maybe Case -> Text -> Text
 glossReferentials refs mc _vc =
   let refPart = case refs of
         [] -> "?"
-        [r] -> "'" <> glossOneRef r <> "'"
-        rs -> "'" <> T.intercalate "+" (map glossOneRef rs) <> "'"
+        rs -> T.intercalate "+" (map glossOneRef rs)
       caseAbbr = case mc of
         Just c -> "-" <> T.pack (showCase c)
         Nothing -> ""
   in refPart <> caseAbbr
+
+-- | Gloss a combination referential with bracket notation
+glossCombinationRefs :: [PersonalRef] -> Text
+glossCombinationRefs refs = case refs of
+  [] -> "?"
+  rs -> "[" <> T.intercalate "+" (map glossOneRef rs) <> "]"
 
 --------------------------------------------------------------------------------
 -- Multi-word Sentence Glossing

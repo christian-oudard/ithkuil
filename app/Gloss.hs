@@ -146,6 +146,8 @@ showFormativeDetail roots affixes pf = do
       (stem, ver) = pfSlotII pf
       (func, spec, ctx) = pfSlotIV pf
       _conjs = pfConjuncts pf
+  when (pfSentenceStarter pf) $
+    TIO.putStrLn "    [Sentence starter]"
   -- Root or Cs affix
   case pfCsRootDegree pf of
     Just deg -> do

@@ -130,6 +130,7 @@ data ParsedFormative = ParsedFormative
   , pfStress  :: Stress          -- Detected stress pattern
   , pfConjuncts :: [Text]        -- Original conjunct split
   , pfCsRootDegree :: Maybe Int  -- Cs-root degree (Nothing for normal roots)
+  , pfSentenceStarter :: Bool    -- True when word had ç sentence prefix
   } deriving (Show, Eq)
 
 -- | Cc shortcut type (w or y prefix that adds Ca values)
@@ -223,6 +224,10 @@ parseAffixVr vr =
 parseFormativeReal :: Text -> Maybe ParsedFormative
 parseFormativeReal word = do
   let lword = T.toLower word
+      -- Detect ç sentence prefix
+      hasSentencePrefix = case T.uncons lword of
+        Just ('ç', _) -> True
+        _ -> False
       -- Strip ç sentence prefix (çë, ça, çw, çy, çç patterns)
       -- çë uses "ë" as default Vv marker — strip both ç and ë
       stripped = case T.uncons lword of
@@ -234,6 +239,7 @@ parseFormativeReal word = do
         _ -> lword
       parts = splitConjuncts stripped
       stress = detectStressSimple stripped
+      markSentence pf = pf { pfSentenceStarter = hasSentencePrefix }
   case parts of
     [] -> Nothing
     -- Check for Cc consonant (concatenation/shortcut): w, y, h, hl, hm, hw, hr, hn
@@ -243,21 +249,23 @@ parseFormativeReal word = do
         -- Pure shortcut (w or y): parse with shortcut Ca
         (Nothing, Just sc) -> do
           pf <- parseVowelInitialWithShortcut sc stress rest
-          return pf
+          return (markSentence pf)
         -- Concatenation with shortcut (hl, hm, hr, hn): parse with shortcut Ca + concat
         (Just ct, Just sc) -> do
           pf <- parseVowelInitialWithShortcut sc stress rest
-          return pf { pfConcatenation = Just ct }
+          return (markSentence pf) { pfConcatenation = Just ct }
         -- Concatenation without shortcut (h, hw): parse rest normally
         (Just ct, Nothing) -> do
           pf <- parseRestAsFormative stress rest
-          return pf { pfConcatenation = Just ct }
+          return (markSentence pf) { pfConcatenation = Just ct }
         -- No Cc match: normal parsing
         (Nothing, Nothing) ->
+          fmap markSentence $
           if isConsonantCluster cc
             then parseConsonantInitial stress parts  -- Elided Vv
             else parseVowelInitial stress parts      -- Normal Vv-Cr-Vr-Ca...
     (first:_) ->
+      fmap markSentence $
       if isConsonantCluster first
         then parseConsonantInitial stress parts  -- Elided Vv
         else parseVowelInitial stress parts      -- Normal Vv-Cr-Vr-Ca...
@@ -303,6 +311,7 @@ parseVowelInitialWithShortcut sc stress parts = case parts of
       , pfStress = stress
       , pfConjuncts = parts
       , pfCsRootDegree = Nothing
+      , pfSentenceStarter = False
       }
   _ -> Nothing
 
@@ -361,6 +370,7 @@ parseConsonantInitial stress parts = case parts of
           , pfStress = stress
           , pfConjuncts = parts
           , pfCsRootDegree = Nothing
+      , pfSentenceStarter = False
           }
       -- Longer: Cr-Vr-Ca...-Vc/Vk
       _ ->
@@ -385,6 +395,7 @@ parseConsonantInitial stress parts = case parts of
               , pfStress = stress
               , pfConjuncts = parts
               , pfCsRootDegree = Nothing
+      , pfSentenceStarter = False
               }
           -- Vr parse failed: try treating cr as merged CrCa with elided Vr
           Nothing -> do
@@ -404,6 +415,7 @@ parseConsonantInitial stress parts = case parts of
               , pfStress = stress
               , pfConjuncts = parts
               , pfCsRootDegree = Nothing
+      , pfSentenceStarter = False
               }
   _ -> Nothing
 
@@ -441,6 +453,7 @@ parseVowelInitial stress parts = case parts of
           , pfStress = stress
           , pfConjuncts = parts
           , pfCsRootDegree = Nothing
+      , pfSentenceStarter = False
           }
       -- Longer formative: try Vr parse, fall back to elided Vr
       _ ->
@@ -465,6 +478,7 @@ parseVowelInitial stress parts = case parts of
               , pfStress = stress
               , pfConjuncts = parts
               , pfCsRootDegree = Nothing
+      , pfSentenceStarter = False
               }
           -- If Vr parse fails, vr might actually be Vc/Vk with elided Vr
           Nothing -> tryElidedVr slotII cr vr stress parts
@@ -486,6 +500,7 @@ parseVowelInitial stress parts = case parts of
       , pfStress = stress
       , pfConjuncts = parts
       , pfCsRootDegree = Nothing
+      , pfSentenceStarter = False
       }
   _ -> Nothing
 
@@ -519,6 +534,7 @@ parseCsRootFormative stress vv cs vr rest = do
         , pfStress = stress
         , pfConjuncts = vv : cs : vr : rest
         , pfCsRootDegree = Just degree
+        , pfSentenceStarter = False
         }
     Nothing -> do
       -- Reference-root: Vr = normal Slot IV (function/spec/context)
@@ -545,6 +561,7 @@ parseCsRootFormative stress vv cs vr rest = do
         , pfStress = stress
         , pfConjuncts = vv : cs : vr : rest
         , pfCsRootDegree = Nothing  -- Not a Cs-root
+        , pfSentenceStarter = False
         }
 
 -- | Try parsing with elided Vr: the consonant cluster contains Cr+Ca merged
