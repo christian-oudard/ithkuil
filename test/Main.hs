@@ -11,6 +11,7 @@ import Ithkuil.FullParse
 import Ithkuil.Adjuncts
 import Ithkuil.WordType
 import Ithkuil.Referentials
+import Ithkuil.Validation (StressError(..), validateStress)
 
 main :: IO ()
 main = hspec $ do
@@ -264,6 +265,45 @@ main = hspec $ do
 
     it "detects ultimate stress from acute accent" $
       detectStress "malá" `shouldBe` Ultimate
+
+    it "detects monosyllabic stress" $ do
+      detectStressSimple "a" `shouldBe` Monosyllabic
+      detectStressSimple "ëu" `shouldBe` Monosyllabic
+
+    it "detects penultimate for unmarked polysyllabic" $ do
+      detectStressSimple "ala" `shouldBe` Penultimate
+      detectStressSimple "alai" `shouldBe` Penultimate
+
+    it "detects ultimate from accent mark" $ do
+      detectStressSimple "alá" `shouldBe` Ultimate
+      detectStressSimple "alái" `shouldBe` Ultimate
+
+    it "detects antepenultimate from accent mark" $ do
+      detectStressSimple "ái'la'sa" `shouldBe` Antepenultimate
+      detectStressSimple "ála'a" `shouldBe` Antepenultimate
+
+  describe "Stress Validation" $ do
+    it "rejects marked default stress on monosyllabic" $
+      validateStress "á" `shouldBe` Left MarkedDefaultStress
+
+    it "rejects marked default stress on penultimate" $
+      validateStress "ála" `shouldBe` Left MarkedDefaultStress
+
+    it "rejects double-marked stress" $
+      validateStress "álá" `shouldBe` Left DoubleMarkedStress
+
+    it "rejects unrecognized stress placement" $
+      validateStress "álalala" `shouldBe` Left UnrecognizedPlacement
+
+    it "rejects accent on monosyllabic diphthong" $
+      -- Kotlin treats "aí" as UnrecognizedPlacement; we treat as MarkedDefault
+      -- since splitConjuncts groups consecutive vowels as one syllable
+      validateStress "aí" `shouldBe` Left MarkedDefaultStress
+
+    it "accepts valid stress patterns" $ do
+      validateStress "a" `shouldBe` Right Monosyllabic
+      validateStress "ala" `shouldBe` Right Penultimate
+      validateStress "alá" `shouldBe` Right Ultimate
 
   describe "Vn/Cn Parsing" $ do
     it "parses valence vowels" $ do
@@ -1310,3 +1350,24 @@ main = hspec $ do
           T.isInfixOf "r/4" gloss `shouldBe` False
           T.isInfixOf "t/4" gloss `shouldBe` False
         pw -> expectationFailure $ "Expected PFormative for waimala, got: " ++ show pw
+
+  describe "Slot V Marker Validation" $ do
+    it "detects Slot V filled marker (glottal stop)" $ do
+      -- alarfull: no glottal stop → pfSlotVMarker = False
+      case parseFormativeReal "alarfull" of
+        Just pf -> pfSlotVMarker pf `shouldBe` False
+        Nothing -> expectationFailure "alarfull should parse"
+      -- a'larfunall: glottal stop → pfSlotVMarker = True
+      case parseFormativeReal "a'larfunall" of
+        Just pf -> pfSlotVMarker pf `shouldBe` True
+        Nothing -> expectationFailure "a'larfunall should parse"
+
+    it "validates marker matches affix count" $ do
+      -- alarfull: 1 affix, no marker → OK
+      case parseFormativeReal "alarfull" of
+        Just pf -> validateSlotVMarker pf `shouldBe` Nothing
+        Nothing -> expectationFailure "alarfull should parse"
+      -- a'larfunall: 2 affixes, marker present → OK
+      case parseFormativeReal "a'larfunall" of
+        Just pf -> validateSlotVMarker pf `shouldBe` Nothing
+        Nothing -> expectationFailure "a'larfunall should parse"

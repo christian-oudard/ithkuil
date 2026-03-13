@@ -19,6 +19,7 @@ module Ithkuil.WordType
   , glossCz
   , glossVz
   , glossOneAffix
+  , validateSlotVMarker
   ) where
 
 import Data.Text (Text)
@@ -976,3 +977,14 @@ glossSentence roots affixes sentence =
   let ws = T.words sentence
       glossedWords = map (\w -> glossWord roots affixes (parseWord w)) ws
   in T.intercalate "  " glossedWords
+
+-- | Validate Slot V marker consistency
+-- Returns Nothing if valid, Just error message if mismatch
+validateSlotVMarker :: ParsedFormative -> Maybe Text
+validateSlotVMarker pf
+  | pfHasShortcut pf = Nothing  -- Shortcuts have different rules
+  | pfSlotVMarker pf && length (pfSlotV pf) < 2 =
+      Just "Unexpectedly few slot V affixes"
+  | not (pfSlotVMarker pf) && length (pfSlotV pf) >= 2 =
+      Just "Unexpectedly many slot V affixes"
+  | otherwise = Nothing

@@ -134,6 +134,7 @@ data ParsedFormative = ParsedFormative
   , pfSentenceStarter :: Bool    -- True when word had ç sentence prefix
   , pfVvSeries :: Int            -- Vv vowel series (1-4); Series 2-4 carry implicit affix
   , pfHasShortcut :: Bool        -- True when Cc shortcut (w/y) was used (no implicit affix)
+  , pfSlotVMarker :: Bool        -- True when glottal stop signals 2+ Slot V affixes
   } deriving (Show, Eq)
 
 -- | Cc shortcut type (w or y prefix that adds Ca values)
@@ -289,7 +290,7 @@ parseRestAsFormative stress parts = case parts of
 parseVowelInitialWithShortcut :: CcShortcut -> Stress -> [Text] -> Maybe ParsedFormative
 parseVowelInitialWithShortcut sc stress parts = case parts of
   (vv:cr0:rest) -> do
-    let (cr, _slotVFilled) = stripSlotVMarker cr0
+    let (cr, slotVFilled) = stripSlotVMarker cr0
     slotII <- parseSlotII vv
     let series = vvSeries vv
         scCa = shortcutCa sc series
@@ -317,6 +318,7 @@ parseVowelInitialWithShortcut sc stress parts = case parts of
       , pfSentenceStarter = False
       , pfVvSeries = series  -- Shortcut: series used for Ca, no implicit affix
       , pfHasShortcut = True
+      , pfSlotVMarker = slotVFilled
       }
   _ -> Nothing
 
@@ -378,6 +380,7 @@ parseConsonantInitial stress parts = case parts of
           , pfSentenceStarter = False
           , pfVvSeries = 1  -- Elided Vv defaults to Series 1
           , pfHasShortcut = False
+          , pfSlotVMarker = False
           }
       -- Longer: Cr-Vr-Ca...-Vc/Vk
       _ ->
@@ -405,6 +408,7 @@ parseConsonantInitial stress parts = case parts of
               , pfSentenceStarter = False
               , pfVvSeries = 1  -- Elided Vv defaults to Series 1
               , pfHasShortcut = False
+              , pfSlotVMarker = False
               }
           -- Vr parse failed: try treating cr as merged CrCa with elided Vr
           Nothing -> do
@@ -427,6 +431,7 @@ parseConsonantInitial stress parts = case parts of
               , pfSentenceStarter = False
               , pfVvSeries = 1  -- Elided Vv defaults to Series 1
               , pfHasShortcut = False
+              , pfSlotVMarker = False
               }
   _ -> Nothing
 
@@ -444,7 +449,7 @@ parseVowelInitial stress parts = case parts of
   (vv:cr0:vr:rest)
     | isSpecialVv vv -> parseCsRootFormative stress vv cr0 vr rest
     | otherwise -> do
-    let (cr, _slotVFilled) = stripSlotVMarker cr0
+    let (cr, slotVFilled) = stripSlotVMarker cr0
     slotII <- parseSlotII vv
     let series = vvSeries vv
     case rest of
@@ -468,6 +473,7 @@ parseVowelInitial stress parts = case parts of
           , pfSentenceStarter = False
           , pfVvSeries = series
           , pfHasShortcut = False
+          , pfSlotVMarker = slotVFilled
           }
       -- Longer formative: try Vr parse, fall back to elided Vr
       _ ->
@@ -495,9 +501,10 @@ parseVowelInitial stress parts = case parts of
               , pfSentenceStarter = False
               , pfVvSeries = series
               , pfHasShortcut = False
+              , pfSlotVMarker = slotVFilled
               }
           -- If Vr parse fails, vr might actually be Vc/Vk with elided Vr
-          Nothing -> tryElidedVr slotII cr vr series stress parts
+          Nothing -> tryElidedVr slotII cr vr series stress parts slotVFilled
   -- Two elements: Vv + CrCa (elided Vr, no Vc/Vk)
   (vv:crca:[]) -> do
     slotII <- parseSlotII vv
@@ -519,6 +526,7 @@ parseVowelInitial stress parts = case parts of
       , pfSentenceStarter = False
       , pfVvSeries = vvSeries vv
       , pfHasShortcut = False
+      , pfSlotVMarker = False
       }
   _ -> Nothing
 
@@ -555,6 +563,7 @@ parseCsRootFormative stress vv cs vr rest = do
         , pfSentenceStarter = False
         , pfVvSeries = 1  -- Special Vv, no implicit affix
         , pfHasShortcut = False
+        , pfSlotVMarker = False
         }
     Nothing -> do
       -- Reference-root: Vr = normal Slot IV (function/spec/context)
@@ -584,12 +593,13 @@ parseCsRootFormative stress vv cs vr rest = do
         , pfSentenceStarter = False
         , pfVvSeries = 1  -- Special Vv, no implicit affix
         , pfHasShortcut = False
+        , pfSlotVMarker = False
         }
 
 -- | Try parsing with elided Vr: the consonant cluster contains Cr+Ca merged
 -- and the next vowel is Vc/Vk instead of Vr
-tryElidedVr :: SlotII -> Text -> Text -> Int -> Stress -> [Text] -> Maybe ParsedFormative
-tryElidedVr slotII crca vcvk vvSer stress parts = do
+tryElidedVr :: SlotII -> Text -> Text -> Int -> Stress -> [Text] -> Bool -> Maybe ParsedFormative
+tryElidedVr slotII crca vcvk vvSer stress parts slotVFilled' = do
   (root, caParsedM) <- splitCrCa crca
   let (caseM, illocValM) = parseSlotIXSimple stress (Just vcvk)
   Just ParsedFormative
@@ -609,6 +619,7 @@ tryElidedVr slotII crca vcvk vvSer stress parts = do
     , pfSentenceStarter = False
     , pfVvSeries = vvSer
     , pfHasShortcut = False
+    , pfSlotVMarker = slotVFilled'
     }
 
 -- | Split a consonant cluster into Cr (root) + Ca (configuration complex)
@@ -748,17 +759,19 @@ parseSimpleWord word = do
 -- Acute (á) and circumflex (â) both mark the stressed syllable
 -- Detects ultimate/antepenultimate stress markers; defaults to penultimate
 detectStressSimple :: Text -> Stress
-detectStressSimple word
-  | T.any isStressedVowel word =
-    let conjs = splitConjuncts word
-        syllables = filter (\t -> not (T.null t) && isVowelChar (T.head t)) conjs
-        syllCount = length syllables
-        hasStress t = T.any isStressedVowel t
-        stressPos = length (takeWhile (not . hasStress) syllables) + 1
-    in if stressPos == syllCount then Ultimate
-       else if stressPos <= syllCount - 2 then Antepenultimate
+detectStressSimple word =
+  let conjs = splitConjuncts word
+      syllables = filter (\t -> not (T.null t) && isVowelChar (T.head t)) conjs
+      syllCount = length syllables
+  in if syllCount <= 1 && not (T.any isStressedVowel word)
+     then Monosyllabic
+     else if T.any isStressedVowel word
+       then let hasStress t = T.any isStressedVowel t
+                stressPos = length (takeWhile (not . hasStress) syllables) + 1
+            in if stressPos == syllCount then Ultimate
+               else if stressPos <= syllCount - 2 then Antepenultimate
+               else Penultimate
        else Penultimate
-  | otherwise = Penultimate
 
 -- | Check if a vowel character has a stress mark (acute or circumflex)
 isStressedVowel :: Char -> Bool
@@ -771,6 +784,7 @@ isVowelChar c = c `elem` ("aäeëiïöoüuáéíóúàèìòùîâêôûǎěǐǒ
 -- | Parse Slot IX based on stress: Case (penultimate) or Vk (ultimate)
 parseSlotIXSimple :: Stress -> Maybe Text -> (Maybe Case, Maybe (Illocution, Validation))
 parseSlotIXSimple Ultimate (Just v) = (Nothing, parseVk v)
+parseSlotIXSimple Monosyllabic (Just v) = (parseCase v, Nothing)
 parseSlotIXSimple _ (Just v) = (parseCase v, Nothing)
 parseSlotIXSimple _ Nothing = (Nothing, Nothing)
 

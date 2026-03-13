@@ -388,6 +388,7 @@ aspectVowels =
 
 -- | Parse Slot IX based on stress
 parseSlotIX :: Text -> Stress -> ParseResult (Either Case FormatOrIV)
+parseSlotIX vc Monosyllabic = Left <$> parseFullCase vc
 parseSlotIX vc Penultimate = Left <$> parseFullCase vc
 parseSlotIX vk Ultimate = Right <$> parseVk vk
 parseSlotIX vc Antepenultimate = Left <$> parseFullCase vc
@@ -440,7 +441,8 @@ detectStress word =
   let syllables = countSyllables word
       acutePos = findAcuteStress word
   in case acutePos of
-    Nothing -> Penultimate  -- Default
+    Nothing | syllables <= 1 -> Monosyllabic
+            | otherwise -> Penultimate
     Just pos
       | pos == syllables -> Ultimate
       | pos == syllables - 2 -> Antepenultimate

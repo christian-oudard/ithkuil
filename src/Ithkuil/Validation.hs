@@ -1,12 +1,24 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- | Ithkuil V4 Phonotactic Validation
 -- Rules for valid consonant clusters and vowel sequences
-module Ithkuil.Validation where
+module Ithkuil.Validation
+  ( ValidationResult(..)
+  , ValidationError(..)
+  , StressError(..)
+  , isValid
+  , validateCluster
+  , validateVowelSeq
+  , validateFormative
+  , validateExternalJuncture
+  , validateStress
+  ) where
 
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Set (Set)
 import qualified Data.Set as Set
+import Ithkuil.Grammar (Stress(..))
+import Ithkuil.Parse (splitConjuncts, isVowelChar)
 
 --------------------------------------------------------------------------------
 -- Validation Results
@@ -190,17 +202,34 @@ invalidJunctures = Set.fromList
 -- Stress Validation
 --------------------------------------------------------------------------------
 
--- | Validate stress placement
-data StressPattern
-  = Penultimate    -- Default (unmarked)
-  | Ultimate       -- Final syllable stressed
-  | Antepenultimate-- Third from end stressed
+-- | Stress error types (following Kotlin reference)
+data StressError
+  = MarkedDefaultStress    -- ^ Accent mark on default stress position
+  | DoubleMarkedStress     -- ^ Two accent marks in one word
+  | UnrecognizedPlacement  -- ^ Stress mark on non-standard syllable
+  | StressOnSentencePrefix -- ^ Accent mark on ç/çw/çç prefix
+  | LoneSentencePrefix     -- ^ ç/çw/çç with no word following
   deriving (Show, Eq, Ord)
 
--- | Check if stress is valid for word type
-validateStress :: StressPattern -> Int -> Maybe ValidationError
-validateStress _ syllables
-  | syllables < 1 = Just $ InvalidSlotValue "stress" "none" "no syllables"
-validateStress Antepenultimate syllables
-  | syllables < 3 = Just $ InvalidSlotValue "stress" "antepenultimate" "too few syllables"
-validateStress _ _ = Nothing
+-- | Validate stress placement, returning an error if invalid
+-- Uses splitConjuncts for proper diphthong/syllable handling
+validateStress :: Text -> Either StressError Stress
+validateStress word =
+  let accentCount = T.length (T.filter isStressedVowel word)
+      conjs = splitConjuncts word
+      syllables = [c | c <- conjs, not (T.null c), isVowelChar (T.head c)]
+      syllCount = length syllables
+      hasAccent = accentCount > 0
+  in if accentCount > 1 then Left DoubleMarkedStress
+     else if syllCount <= 1 && hasAccent then Left MarkedDefaultStress
+     else if syllCount <= 1 then Right Monosyllabic
+     else if not hasAccent then Right Penultimate
+     else -- Has exactly one accent mark, 2+ syllables
+       let stressIdx = length (takeWhile (not . T.any isStressedVowel) syllables)
+           fromEnd = syllCount - 1 - stressIdx
+       in if fromEnd == 1 then Left MarkedDefaultStress  -- penult is default
+          else if fromEnd == 0 then Right Ultimate
+          else if fromEnd == 2 then Right Antepenultimate
+          else Left UnrecognizedPlacement
+  where
+    isStressedVowel c = c `elem` ("áéíóúâêôû" :: String)

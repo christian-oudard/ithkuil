@@ -410,7 +410,7 @@ data Formative = Formative
 data ConcatenationStatus = Type1 | Type2
   deriving (Show, Eq, Ord, Enum, Bounded)
 
-data Stress = Penultimate | Ultimate | Antepenultimate
+data Stress = Monosyllabic | Penultimate | Ultimate | Antepenultimate
   deriving (Show, Eq, Ord, Enum, Bounded)
 
 data MoodOrScope = MoodVal Mood | CaseScope CaseScope
