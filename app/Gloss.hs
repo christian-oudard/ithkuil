@@ -3,7 +3,9 @@
 -- Parses and glosses Ithkuil words and sentences
 module Main where
 
+import Control.Applicative ((<|>))
 import Control.Monad (when, forM_)
+import Data.Maybe (mapMaybe)
 import System.Environment (getArgs)
 import System.IO (hFlush, stdout, hSetBuffering, BufferMode(..), stdin, hIsTerminalDevice, hIsEOF)
 import Data.Text (Text)
@@ -15,7 +17,9 @@ import Ithkuil.Parse (ParsedFormative(..), ParsedCa(..))
 import Ithkuil.Referentials (PersonalRef(..), Referent(..), ReferentEffect(..), referentLabel)
 import Ithkuil.WordType
 import Ithkuil.Lexicon
-import Ithkuil.Compose (lookupGrammar, searchGrammar, lookupForm, GrammarEntry(..), searchRootsRanked, searchAffixes, dumpGrammarTable, composeFormative, composeReferential)
+import Ithkuil.Compose (lookupGrammar, searchGrammar, lookupForm, GrammarEntry(..), searchRootsRanked, searchAffixes, dumpGrammarTable, composeFormative, composeReferential, applyStress)
+import Ithkuil.Render (renderSlotVIII)
+import Ithkuil.Numbers (numberRoot)
 import Ithkuil.Phonology (vowelForm)
 import Ithkuil.Script (renderFormativeSvg)
 
@@ -174,7 +178,7 @@ handleSentence specs = do
   TIO.putStrLn $ col bold sentence
   glossLine roots affixes sentence
 
--- | Compose one word spec: either @referent:CASE or root:FLAG:FLAG
+-- | Compose one word spec: @referent:CASE, #VnCn modular adjunct, or root:FLAG:FLAG
 -- Root can be consonant cluster (e.g. "rţt") or English keyword (e.g. "study")
 -- Affix flags like +NEG/4 are resolved via the affix lexicon.
 composeOneWord :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> Text
@@ -183,6 +187,19 @@ composeOneWord roots affixes s = case T.splitOn ":" s of
     | Just ref <- T.stripPrefix "@" w
     , let flags = map T.toUpper opts
     -> composeRefWord (T.toUpper ref) flags
+  (w:opts)
+    | Just _ <- T.stripPrefix "#" w
+    -> composeModularWord (map T.toUpper (w:opts))
+  (w:opts)
+    | Just numStr <- T.stripPrefix "%" w
+    , [(n, "")] <- reads (T.unpack numStr) :: [(Int, String)]
+    , n >= 0, n < 100
+    -> let cr = numberRoot n
+           f0 = minimalFormative cr
+           flags = map (resolveAffixFlag affixes . T.toUpper) opts
+           f1 = applyComposeFlags flags f0
+           f2 = autoStress f1
+       in composeFormative f2
   (root:opts) ->
     let resolved = resolveRoot roots root
         f0 = minimalFormative resolved
@@ -191,6 +208,60 @@ composeOneWord roots affixes s = case T.splitOn ":" s of
         f2 = autoStress f1
     in composeFormative f2
   [] -> "?"
+
+-- | Compose a modular adjunct word from flags
+-- Syntax: #VnCategory.Mood (e.g. #RTR.SUB, #PRG.FAC, #PUN.HYP)
+-- Ultimate stress marks the final vowel as Vh scope (formative scope = "a")
+-- Penultimate stress means the final vowel is another VnCn with implicit Cn="h"
+composeModularWord :: [Text] -> Text
+composeModularWord flags =
+  let pairs = mapMaybe parseModularFlag flags
+      rendered = T.concat $ map (renderSlotVIII . Just) pairs
+  in if T.null rendered then "?"
+     else applyStress Ultimate (rendered <> "a")
+  where
+    parseModularFlag :: Text -> Maybe SlotVIII
+    parseModularFlag t =
+      let stripped = maybe t id (T.stripPrefix "#" t)
+      in case T.splitOn "." stripped of
+        [vn, ms] -> buildVnCn vn ms
+        [vn] -> buildVnCn vn "FAC"  -- default mood
+        _ -> Nothing
+    buildVnCn :: Text -> Text -> Maybe SlotVIII
+    buildVnCn vnName msName =
+      let ms = parseMoodOrScope msName
+          -- Try each Vn category
+      in case ms of
+        Nothing -> Nothing
+        Just mood -> tryAspect vnName mood
+                 <|> tryValence vnName mood
+                 <|> tryPhase vnName mood
+                 <|> tryEffect vnName mood
+                 <|> tryLevel vnName mood
+    parseMoodOrScope :: Text -> Maybe MoodOrScope
+    parseMoodOrScope "FAC" = Just (MoodVal FAC)
+    parseMoodOrScope "SUB" = Just (MoodVal SUB)
+    parseMoodOrScope "ASM" = Just (MoodVal ASM)
+    parseMoodOrScope "SPC" = Just (MoodVal SPC)
+    parseMoodOrScope "COU" = Just (MoodVal COU)
+    parseMoodOrScope "HYP" = Just (MoodVal HYP)
+    parseMoodOrScope "CCN" = Just (CaseScope CCN)
+    parseMoodOrScope "CCA" = Just (CaseScope CCA)
+    parseMoodOrScope "CCS" = Just (CaseScope CCS)
+    parseMoodOrScope "CCQ" = Just (CaseScope CCQ)
+    parseMoodOrScope "CCP" = Just (CaseScope CCP)
+    parseMoodOrScope "CCV" = Just (CaseScope CCV)
+    parseMoodOrScope _ = Nothing
+    tryAspect n ms = lookup n aspectNames >>= \asp -> Just (VnCnAspect asp ms)
+    tryValence n ms = lookup n valenceNames >>= \v -> Just (VnCnValence v ms)
+    tryPhase n ms = lookup n phaseNames >>= \p -> Just (VnCnPhase p ms)
+    tryEffect n ms = lookup n effectNames >>= \e -> Just (VnCnEffect e ms)
+    tryLevel n ms = lookup n levelNames >>= \l -> Just (VnCnLevel l False ms)
+    aspectNames = [(T.pack (show a), a) | a <- allOf]
+    valenceNames = [(T.pack (show v), v) | v <- allOf]
+    phaseNames = [(T.pack (show p), p) | p <- allOf]
+    effectNames = [(T.pack (show e), e) | e <- allOf]
+    levelNames = [(T.pack (show l), l) | l <- allOf]
 
 -- | Resolve affix abbreviation in a flag: +NEG/4 → +r/4
 resolveAffixFlag :: Map.Map Text AffixEntry -> Text -> Text

@@ -509,6 +509,12 @@ main = hspec $ do
           fv `shouldBe` "MNO-FAC"  -- penultimate stress → final V + implicit "h" = another VnCn
         pw -> expectationFailure $ "Expected PModular MNO-FAC, got: " ++ show pw
 
+    it "parses 'ahwá' as RTR-SUB with Vh scope (ultimate stress)" $ do
+      case parseWord "ahwá" of
+        PModular [VnCnAspect RTR (MoodVal SUB)] fv _ ->
+          fv `shouldBe` "{form.}"
+        pw -> expectationFailure $ "Expected PModular RTR-SUB, got: " ++ show pw
+
     it "parses aspect-only modular 'a' (single vowel)" $ do
       classifyWord "a" `shouldBe` WModularAdjunct
 
