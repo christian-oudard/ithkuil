@@ -238,7 +238,11 @@ glossFormative roots affixes pf =
         Nothing -> ""
       -- Affixes from Ca rest (VxCs pairs after the Ca consonant)
       affixGlosses = map (glossOneAffix affixes) (extractAffixes (pfCa pf))
-      -- Case
+      -- Slot IX: Case (penultimate/antepenultimate) or Illocution+Validation (ultimate)
+      stressInfo = case pfStress pf of
+        Ultimate -> "[VERBAL]"
+        Antepenultimate -> "[FRAMED]"
+        Penultimate -> ""
       caseAbbr = case pfCase pf of
         Just c -> "-" <> T.pack (showCase c)
         Nothing -> ""
@@ -248,6 +252,7 @@ glossFormative roots affixes pf =
     , funcAbbr <> "/" <> specAbbr <> "/" <> ctxAbbr
     , caAbbr
     ] <> affixGlosses <> [caseAbbr | not (T.null caseAbbr)]
+      <> [stressInfo | not (T.null stressInfo)]
 
 -- | Extract VxCs affix pairs from Ca rest conjuncts
 -- The first consonant is Ca itself; subsequent V-C pairs are Slot VII affixes

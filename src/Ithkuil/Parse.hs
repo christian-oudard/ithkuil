@@ -112,6 +112,7 @@ data ParsedFormative = ParsedFormative
   , pfCa      :: [Text]          -- Ca complex (raw conjuncts)
   , pfCaParsed :: Maybe ParsedCa -- Parsed Ca values
   , pfCase    :: Maybe Case      -- Vc (case vowel)
+  , pfStress  :: Stress          -- Detected stress pattern
   , pfConjuncts :: [Text]        -- Original conjunct split
   } deriving (Show, Eq)
 
@@ -120,12 +121,13 @@ data ParsedFormative = ParsedFormative
 parseFormativeReal :: Text -> Maybe ParsedFormative
 parseFormativeReal word = do
   let parts = splitConjuncts word
+      stress = detectStressSimple word
   case parts of
     [] -> Nothing
-    (first:rest) ->
+    (first:_) ->
       if isConsonantCluster first
-        then parseConsonantInitial parts  -- Elided Vv
-        else parseVowelInitial parts      -- Normal Vv-Cr-Vr-Ca...
+        then parseConsonantInitial stress parts  -- Elided Vv
+        else parseVowelInitial stress parts      -- Normal Vv-Cr-Vr-Ca...
 
 -- | Check if text is a consonant cluster (starts with consonant)
 isConsonantCluster :: Text -> Bool
@@ -134,8 +136,8 @@ isConsonantCluster t = case T.uncons t of
   Just (c, _) -> not (isVowelChar c)
 
 -- | Parse consonant-initial word (elided Vv = default S1/PRC)
-parseConsonantInitial :: [Text] -> Maybe ParsedFormative
-parseConsonantInitial parts = case parts of
+parseConsonantInitial :: Stress -> [Text] -> Maybe ParsedFormative
+parseConsonantInitial stress parts = case parts of
   -- Minimal: Cr-Vr-Ca (e.g., "mal")
   (cr:vr:rest) -> do
     slotIV <- parseSlotIV vr
@@ -151,13 +153,14 @@ parseConsonantInitial parts = case parts of
       , pfCa = caRest
       , pfCaParsed = caParsedM
       , pfCase = caseM
+      , pfStress = stress
       , pfConjuncts = parts
       }
   _ -> Nothing
 
 -- | Parse vowel-initial word (explicit Vv)
-parseVowelInitial :: [Text] -> Maybe ParsedFormative
-parseVowelInitial parts = case parts of
+parseVowelInitial :: Stress -> [Text] -> Maybe ParsedFormative
+parseVowelInitial stress parts = case parts of
   (vv:cr:vr:rest) -> do
     slotII <- parseSlotII vv
     slotIV <- parseSlotIV vr
@@ -173,6 +176,7 @@ parseVowelInitial parts = case parts of
       , pfCa = caRest
       , pfCaParsed = caParsedM
       , pfCase = caseM
+      , pfStress = stress
       , pfConjuncts = parts
       }
   _ -> Nothing
@@ -196,6 +200,23 @@ parseSimpleWord :: Text -> Maybe (SlotII, Root, SlotIV)
 parseSimpleWord word = do
   pf <- parseFormativeReal word
   return (pfSlotII pf, pfRoot pf, pfSlotIV pf)
+
+-- | Simple stress detection from acute accents
+-- Detects ultimate/antepenultimate stress markers; defaults to penultimate
+detectStressSimple :: Text -> Stress
+detectStressSimple word
+  | T.any isAcuteAccent word =
+    let syllCount = length $ filter (\t -> not (T.null t) && isVowelChar (T.head t))
+                           $ splitConjuncts word
+        -- Find which syllable has the accent (1-indexed from start)
+        chars = T.unpack word
+        acutePos = length [c | c <- takeWhile (not . isAcuteAccent) chars, isVowelChar c] + 1
+    in if acutePos == syllCount then Ultimate
+       else if acutePos <= syllCount - 2 then Antepenultimate
+       else Penultimate
+  | otherwise = Penultimate
+  where
+    isAcuteAccent c = c `elem` ("áéíóú" :: String)
 
 -- | Check if character is a vowel (includes accented vowels for all versions)
 isVowelChar :: Char -> Bool
