@@ -1708,3 +1708,82 @@ main = hspec $ do
           pfRoot pf `shouldBe` Root "gw"
           pfSlotII pf `shouldBe` (S2, PRC)
         _ -> expectationFailure $ "Expected PFormative, got: " ++ show parsed
+
+    it "round-trips Ca configuration (G perspective)" $ do
+      let f = (minimalFormative "l")
+              { fSlotVI = (UNI, CSL, G_, DEL, NRM)
+              , fSlotIX = Left (Transrelative ERG) }
+          w = composeFormative f
+          parsed = parseWord w
+      case parsed of
+        PFormative pf -> do
+          case pfCaParsed pf of
+            Just pc -> pcPerspective pc `shouldBe` G_
+            Nothing -> expectationFailure "Ca should be parsed"
+        _ -> expectationFailure $ "Ca round-trip: " ++ show parsed
+
+    it "round-trips framed verb (antepenultimate stress)" $ do
+      let f = (minimalFormative "g")
+              { fSlotIV = (DYN, BSC, EXS)
+              , fStress = Antepenultimate
+              , fSlotIX = Left (Transrelative THM) }
+          w = composeFormative f
+          parsed = parseWord w
+      case parsed of
+        PFormative pf -> pfStress pf `shouldBe` Antepenultimate
+        _ -> expectationFailure $ "Framed verb: " ++ show parsed
+
+    it "round-trips DPX configuration" $ do
+      let f = (minimalFormative "l")
+              { fSlotVI = (DPX, CSL, M_, DEL, NRM)
+              , fSlotIX = Left (Transrelative ABS) }
+          w = composeFormative f
+          parsed = parseWord w
+      case parsed of
+        PFormative pf ->
+          case pfCaParsed pf of
+            Just pc -> pcConfig pc `shouldBe` DPX
+            Nothing -> expectationFailure "Ca should be parsed"
+        _ -> expectationFailure $ "DPX round-trip: " ++ show parsed
+
+    it "round-trips CPT version" $ do
+      let f = (minimalFormative "l")
+              { fSlotII = (S1, CPT)
+              , fSlotIX = Left (Transrelative ABS) }
+          w = composeFormative f
+          parsed = parseWord w
+      case parsed of
+        PFormative pf -> snd (pfSlotII pf) `shouldBe` CPT
+        _ -> expectationFailure $ "CPT round-trip: " ++ show parsed
+
+    it "round-trips CTE specification" $ do
+      let f = (minimalFormative "l")
+              { fSlotIV = (STA, CTE, EXS)
+              , fSlotIX = Left (Transrelative ABS) }
+          w = composeFormative f
+          parsed = parseWord w
+      case parsed of
+        PFormative pf -> do
+          let (_, spec, _) = pfSlotIV pf
+          spec `shouldBe` CTE
+        _ -> expectationFailure $ "CTE round-trip: " ++ show parsed
+
+    it "round-trips aspect with verbal formative" $ do
+      let f = (minimalFormative "l")
+              { fSlotVIII = Just (VnCnAspect RTR (MoodVal FAC))
+              , fStress = Ultimate
+              , fSlotIX = Right (IllocVal ASR OBS) }
+          w = composeFormative f
+          parsed = parseWord w
+      case parsed of
+        PFormative pf ->
+          -- VnCn may be in pfSlotVIII or extracted from Ca rest
+          let vnCn = case pfSlotVIII pf of
+                Just s8 -> Just s8
+                Nothing -> case extractVnCn (pfCa pf) of
+                  Just (vn, cn) -> parseOneVnCn vn cn
+                  Nothing -> Nothing
+          in case vnCn of
+               Just (VnCnAspect asp _) -> asp `shouldBe` RTR
+               other -> expectationFailure $ "Expected RTR, got: " ++ show other
+        _ -> expectationFailure $ "Aspect round-trip: " ++ show parsed
