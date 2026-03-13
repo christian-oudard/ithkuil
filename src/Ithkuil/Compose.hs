@@ -138,11 +138,24 @@ buildKeywordIndex roots =
       in synEntries ++ concatMap (\(pri, d) -> indexDesc cr pri d) descs
 
     indexDesc cr pri desc =
-      let ws = extractWords desc
+      let stripped = stripParens desc
+          ws = extractWords stripped
           nWords = length ws
           score = pri * 10 + nWords
-          allForms = Set.toList . Set.fromList $ ws ++ map porterStem ws
+          -- Also index words from parenthetical content, but at higher score
+          allWs = extractWords desc
+          allForms = Set.toList . Set.fromList $ allWs ++ map porterStem allWs
       in [(w, [(score, cr)]) | w <- allForms]
+
+    -- | Remove parenthetical content for word counting (taxonomy names inflate scores)
+    stripParens :: Text -> Text
+    stripParens = T.concat . go 0 . T.unpack
+      where
+        go _ [] = []
+        go n ('(':cs) = go (n + 1 :: Int) cs
+        go n (')':cs) = go (max 0 (n - 1)) cs
+        go 0 (c:cs)   = [T.singleton c] ++ go 0 cs
+        go n (_:cs)   = go n cs
 
     extractWords :: Text -> [Text]
     extractWords t =

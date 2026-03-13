@@ -367,8 +367,11 @@ applyOneFlag "IRL" f = f { fSlotIX = Left (SpatioTemporal1 IRL) }
 applyOneFlag "INV" f = f { fSlotIX = Left (SpatioTemporal1 INV) }
 applyOneFlag "NAV" f = f { fSlotIX = Left (SpatioTemporal1 NAV) }
 applyOneFlag "CNR" f = f { fSlotIX = Left (SpatioTemporal2 CNR) }
+applyOneFlag "ASS" f = f { fSlotIX = Left (SpatioTemporal2 ASS) }
 applyOneFlag "PER" f = f { fSlotIX = Left (SpatioTemporal2 PER) }
 applyOneFlag "PRO" f = f { fSlotIX = Left (SpatioTemporal2 PRO) }
+applyOneFlag "PCV" f = f { fSlotIX = Left (SpatioTemporal2 PCV) }
+applyOneFlag "PCR" f = f { fSlotIX = Left (SpatioTemporal2 PCR) }
 applyOneFlag "ELP" f = f { fSlotIX = Left (SpatioTemporal2 ELP) }
 applyOneFlag "PLM" f = f { fSlotIX = Left (SpatioTemporal2 PLM) }
 -- Associative Cases
@@ -381,6 +384,24 @@ applyOneFlag "TSP" f = f { fSlotIX = Left (Associative TSP) }
 applyOneFlag "CMM" f = f { fSlotIX = Left (Associative CMM) }
 applyOneFlag "CMP" f = f { fSlotIX = Left (Associative CMP) }
 applyOneFlag "CSD" f = f { fSlotIX = Left (Associative CSD) }
+-- Relational Cases
+applyOneFlag "PRN" f = f { fSlotIX = Left (Relational PRN) }
+applyOneFlag "DSP" f = f { fSlotIX = Left (Relational DSP) }
+applyOneFlag "COR" f = f { fSlotIX = Left (Relational COR) }
+applyOneFlag "CPS" f = f { fSlotIX = Left (Relational CPS) }
+applyOneFlag "COM" f = f { fSlotIX = Left (Relational COM) }
+applyOneFlag "UTL" f = f { fSlotIX = Left (Relational UTL) }
+applyOneFlag "PRD" f = f { fSlotIX = Left (Relational PRD) }
+applyOneFlag "RLT" f = f { fSlotIX = Left (Relational RLT) }
+-- Affinitive Cases
+applyOneFlag "ACT" f = f { fSlotIX = Left (Affinitive ACT) }
+applyOneFlag "ASI" f = f { fSlotIX = Left (Affinitive ASI) }
+applyOneFlag "ESS" f = f { fSlotIX = Left (Affinitive ESS) }
+applyOneFlag "TRM" f = f { fSlotIX = Left (Affinitive TRM) }
+applyOneFlag "SEL" f = f { fSlotIX = Left (Affinitive SEL) }
+applyOneFlag "CFM" f = f { fSlotIX = Left (Affinitive CFM) }
+applyOneFlag "DEP" f = f { fSlotIX = Left (Affinitive DEP) }
+applyOneFlag "VOC" f = f { fSlotIX = Left (Affinitive VOC) }
 -- Adverbial Cases
 applyOneFlag "FUN" f = f { fSlotIX = Left (Adverbial FUN) }
 applyOneFlag "TFM" f = f { fSlotIX = Left (Adverbial TFM) }
@@ -467,6 +488,26 @@ applyOneFlag "FRE" f = setPhase FRE f
 applyOneFlag "FRG" f = setPhase FRG f
 applyOneFlag "VAC" f = setPhase VAC f
 applyOneFlag "FLC" f = setPhase FLC f
+-- Effect (Slot VIII, Pattern 1 Series 3)
+applyOneFlag "BEN1" f = setEffect BEN1 f
+applyOneFlag "BEN2" f = setEffect BEN2 f
+applyOneFlag "BEN3" f = setEffect BEN3 f
+applyOneFlag "BSLF" f = setEffect BSLF f
+applyOneFlag "UNKN" f = setEffect UNK f
+applyOneFlag "DSLF" f = setEffect DSLF f
+applyOneFlag "DET3" f = setEffect DET3 f
+applyOneFlag "DET2" f = setEffect DET2 f
+applyOneFlag "DET1" f = setEffect DET1 f
+-- Level (Slot VIII, Pattern 1 Series 4)
+applyOneFlag "MIN" f = setLevel MIN False f
+applyOneFlag "SBE" f = setLevel SBE False f
+applyOneFlag "IFR" f = setLevel IFR False f
+applyOneFlag "DFT" f = setLevel DFT False f
+applyOneFlag "EQU" f = setLevel EQU False f
+applyOneFlag "SUR" f = setLevel SUR False f
+applyOneFlag "SPL" f = setLevel SPL False f
+applyOneFlag "SPQ" f = setLevel SPQ False f
+applyOneFlag "MAX" f = setLevel MAX False f
 -- Mood (Cn modifier)
 applyOneFlag "FAC" f = setMood (MoodVal FAC) f
 applyOneFlag "SUB" f = setMood (MoodVal SUB) f
@@ -540,6 +581,14 @@ setValence v f = f { fSlotVIII = Just (VnCnValence v (getMoodOrScope f)) }
 -- | Set phase, preserving existing mood/scope
 setPhase :: Phase -> Formative -> Formative
 setPhase p f = f { fSlotVIII = Just (VnCnPhase p (getMoodOrScope f)) }
+
+-- | Set effect, preserving existing mood/scope
+setEffect :: Effect -> Formative -> Formative
+setEffect e f = f { fSlotVIII = Just (VnCnEffect e (getMoodOrScope f)) }
+
+-- | Set level, preserving existing mood/scope
+setLevel :: Level -> Bool -> Formative -> Formative
+setLevel l abs_ f = f { fSlotVIII = Just (VnCnLevel l abs_ (getMoodOrScope f)) }
 
 -- | Extract mood/scope from current SlotVIII, defaulting to FAC
 getMoodOrScope :: Formative -> MoodOrScope
