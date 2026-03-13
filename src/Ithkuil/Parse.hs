@@ -8,30 +8,19 @@ module Ithkuil.Parse
   , parseSimpleWord
   , parseSlotII
   , parseSlotIV
+  , parseConfiguration
   , parseCase
   , parseCa
   , splitConjuncts
   , isVowelChar
-  , isConsonantCluster
   , defaultCa
-  , casePatterns
-  , slotIVTable
-  , vnTable
-  , cnMoodTable
-  , cnCaseScopeTable
-  , vxToDegree
   ) where
 
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Maybe (listToMaybe)
+import Ithkuil.Phonology
 import Ithkuil.Grammar
-import Ithkuil.Phonology (vowelForm)
-import qualified Ithkuil.Allomorph as Ca
-
---------------------------------------------------------------------------------
--- Slot II: Vv (Stem + Version)
---------------------------------------------------------------------------------
 
 -- | Parse Vv vowel to Slot II (Stem + Version)
 parseSlotII :: Text -> Maybe SlotII
@@ -45,246 +34,75 @@ parseSlotII v = listToMaybe
       , ((S0, PRC), "o"),  ((S0, CPT), "ö")
       ]
 
---------------------------------------------------------------------------------
--- Slot IV: Vr (Function + Specification + Context)
---------------------------------------------------------------------------------
-
 -- | Parse Vr vowel to Slot IV (Function + Specification + Context)
--- All 32 values across 4 context series
+-- Uses the vowel form table: Series 1-4 map to EXS/FNC/RPS/AMG contexts
+-- Forms 1-8 map to STA/DYN x BSC/CTE/CSV/OBJ
 parseSlotIV :: Text -> Maybe SlotIV
 parseSlotIV v = listToMaybe
   [ slot | (slot, vr) <- slotIVTable, vr == v ]
-
--- | Complete Vr table: 4 series x 8 values
--- Series 1 uses forms 1,2,3,5,6,7,8,9 (skips form 4 "ë")
--- Series 2-4 use forms 1,2,3,4,6,7,8,9 (skips form 5)
-slotIVTable :: [(SlotIV, Text)]
-slotIVTable = concat [series1, series2, series3, series4]
   where
-    series1 = -- EXS context, Series 1 (skips form 4)
-      [ ((STA, BSC, EXS), vowelForm 1 1)  -- a
-      , ((STA, CTE, EXS), vowelForm 1 2)  -- ä
-      , ((STA, CSV, EXS), vowelForm 1 3)  -- e
-      , ((STA, OBJ, EXS), vowelForm 1 5)  -- i
-      , ((DYN, OBJ, EXS), vowelForm 1 6)  -- ö
-      , ((DYN, CSV, EXS), vowelForm 1 7)  -- o
-      , ((DYN, CTE, EXS), vowelForm 1 8)  -- ü
-      , ((DYN, BSC, EXS), vowelForm 1 9)  -- u
-      ]
-    series2 = -- FNC context, Series 2 (skips form 5)
-      [ ((STA, BSC, FNC), vowelForm 2 1)  -- ai
-      , ((STA, CTE, FNC), vowelForm 2 2)  -- au
-      , ((STA, CSV, FNC), vowelForm 2 3)  -- ei
-      , ((STA, OBJ, FNC), vowelForm 2 4)  -- eu
-      , ((DYN, OBJ, FNC), vowelForm 2 6)  -- ou
-      , ((DYN, CSV, FNC), vowelForm 2 7)  -- oi
-      , ((DYN, CTE, FNC), vowelForm 2 8)  -- iu
-      , ((DYN, BSC, FNC), vowelForm 2 9)  -- ui
-      ]
-    series3 = -- RPS context, Series 3 (skips form 5)
-      [ ((STA, BSC, RPS), vowelForm 3 1)  -- ia
-      , ((STA, CTE, RPS), vowelForm 3 2)  -- iä
-      , ((STA, CSV, RPS), vowelForm 3 3)  -- ie
-      , ((STA, OBJ, RPS), vowelForm 3 4)  -- ië
-      , ((DYN, OBJ, RPS), vowelForm 3 6)  -- uö
-      , ((DYN, CSV, RPS), vowelForm 3 7)  -- uo
-      , ((DYN, CTE, RPS), vowelForm 3 8)  -- ue
-      , ((DYN, BSC, RPS), vowelForm 3 9)  -- ua
-      ]
-    series4 = -- AMG context, Series 4 (skips form 5)
-      [ ((STA, BSC, AMG), vowelForm 4 1)  -- ao
-      , ((STA, CTE, AMG), vowelForm 4 2)  -- ae
-      , ((STA, CSV, AMG), vowelForm 4 3)  -- ea
-      , ((STA, OBJ, AMG), vowelForm 4 4)  -- eo
-      , ((DYN, OBJ, AMG), vowelForm 4 6)  -- öe
-      , ((DYN, CSV, AMG), vowelForm 4 7)  -- oe
-      , ((DYN, CTE, AMG), vowelForm 4 8)  -- öa
-      , ((DYN, BSC, AMG), vowelForm 4 9)  -- oa
+    slotIVTable = concatMap seriesEntries [(EXS, 1), (FNC, 2), (RPS, 3), (AMG, 4)]
+    seriesEntries (ctx, s) =
+      [ ((STA, BSC, ctx), vowelForm s 1)
+      , ((STA, CTE, ctx), vowelForm s 2)
+      , ((STA, CSV, ctx), vowelForm s 3)
+      , ((STA, OBJ, ctx), vowelForm s 5)
+      , ((DYN, OBJ, ctx), vowelForm s 6)
+      , ((DYN, CSV, ctx), vowelForm s 7)
+      , ((DYN, CTE, ctx), vowelForm s 8)
+      , ((DYN, BSC, ctx), vowelForm s 9)
       ]
 
---------------------------------------------------------------------------------
--- Slot IX: Case (Vc) - All 68 cases
---------------------------------------------------------------------------------
-
--- | Case vowel patterns - 8 groups mapped to vowel series
--- Groups 1-4 use standard vowel forms (series 1-4)
--- Groups 5-8 use special vowel combinations
-casePatterns :: [(Case, Text)]
-casePatterns =
-  -- Transrelative (Series 1, forms 1-9)
-  [ (Transrelative THM, vowelForm 1 1)  -- a
-  , (Transrelative INS, vowelForm 1 2)  -- ä
-  , (Transrelative ABS, vowelForm 1 3)  -- e
-  , (Transrelative AFF, vowelForm 1 5)  -- i
-  , (Transrelative STM, vowelForm 1 4)  -- ë
-  , (Transrelative EFF, vowelForm 1 6)  -- ö
-  , (Transrelative ERG, vowelForm 1 7)  -- o
-  , (Transrelative DAT, vowelForm 1 8)  -- ü
-  , (Transrelative IND, vowelForm 1 9)  -- u
-  -- Appositive (Series 2, forms 1-9)
-  , (Appositive POS, vowelForm 2 1)  -- ai
-  , (Appositive PRP, vowelForm 2 2)  -- au
-  , (Appositive GEN, vowelForm 2 3)  -- ei
-  , (Appositive ATT, vowelForm 2 4)  -- eu
-  , (Appositive PDC, vowelForm 2 5)  -- ëi
-  , (Appositive ITP, vowelForm 2 6)  -- ou
-  , (Appositive OGN, vowelForm 2 7)  -- oi
-  , (Appositive IDP, vowelForm 2 8)  -- iu
-  , (Appositive PAR, vowelForm 2 9)  -- ui
-  -- Associative (Series 3, forms 1-9)
-  , (Associative APL, vowelForm 3 1)  -- ia
-  , (Associative PUR, vowelForm 3 2)  -- iä
-  , (Associative TRA, vowelForm 3 3)  -- ie
-  , (Associative DFR, vowelForm 3 4)  -- ië
-  , (Associative CRS, vowelForm 3 5)  -- ëu
-  , (Associative TSP, vowelForm 3 6)  -- uö
-  , (Associative CMM, vowelForm 3 7)  -- uo
-  , (Associative CMP, vowelForm 3 8)  -- ue
-  , (Associative CSD, vowelForm 3 9)  -- ua
-  -- Adverbial (Series 4, forms 1-9)
-  , (Adverbial FUN, vowelForm 4 1)  -- ao
-  , (Adverbial TFM, vowelForm 4 2)  -- ae
-  , (Adverbial CLA, vowelForm 4 3)  -- ea
-  , (Adverbial RSL, vowelForm 4 4)  -- eo
-  , (Adverbial CSM, vowelForm 4 5)  -- eë
-  , (Adverbial CON, vowelForm 4 6)  -- öe
-  , (Adverbial AVR, vowelForm 4 7)  -- oe
-  , (Adverbial CVS, vowelForm 4 8)  -- öa
-  , (Adverbial SIT, vowelForm 4 9)  -- oa
-  -- Relational (special vowel pairs)
-  , (Relational PRN, "ao")
-  , (Relational DSP, "aö")
-  , (Relational COR, "eo")
-  , (Relational CPS, "eö")
-  , (Relational COM, "oë")
-  , (Relational UTL, "öe")
-  , (Relational PRD, "oe")
-  , (Relational RLT, "öa")
-  -- Affinitive
-  , (Affinitive ACT, "oa")
-  , (Affinitive ASI, "öä")
-  , (Affinitive ESS, "ea")
-  , (Affinitive TRM, "eä")
-  , (Affinitive SEL, "ëë")
-  , (Affinitive CFM, "öö")
-  , (Affinitive DEP, "ëö")
-  , (Affinitive VOC, "öë")
-  -- Spatio-Temporal I (glottal stop vowel pairs)
-  , (SpatioTemporal1 LOC, "a'a")
-  , (SpatioTemporal1 ATD, "ä'ä")
-  , (SpatioTemporal1 ALL, "e'e")
-  , (SpatioTemporal1 ABL, "ë'ë")
-  , (SpatioTemporal1 ORI, "ë'a")
-  , (SpatioTemporal1 IRL, "ö'ö")
-  , (SpatioTemporal1 INV, "o'o")
-  , (SpatioTemporal1 NAV, "ü'ü")
-  -- Spatio-Temporal II (glottal stop vowel pairs)
-  , (SpatioTemporal2 CNR, "i'i")
-  , (SpatioTemporal2 ASS, "u'u")
-  , (SpatioTemporal2 PER, "a'i")
-  , (SpatioTemporal2 PRO, "i'a")
-  , (SpatioTemporal2 PCV, "e'i")
-  , (SpatioTemporal2 PCR, "i'e")
-  , (SpatioTemporal2 ELP, "u'a")
-  , (SpatioTemporal2 PLM, "a'u")
+-- | Configuration consonant patterns (Ca1 component)
+-- From official grammar ch03: UPX=null, DPX=s, MSS=t, MSC=k, etc.
+configurationPatterns :: [(Configuration, Text)]
+configurationPatterns =
+  [ (UNI, "")
+  , (DSS, "c"),  (DSC, "ks"), (DSF, "ps")
+  , (DDS, "ţs"), (DDC, "fs"), (DDF, "š")
+  , (DFS, "č"),  (DFC, "kš"), (DFF, "pš")
+  , (MSS, "t"),  (MSC, "k"),  (MSF, "p")
+  , (MDS, "ţ"),  (MDC, "f"),  (MDF, "ç")
+  , (MFS, "z"),  (MFC, "ž"),  (MFF, "ẓ")
   ]
 
--- | Parse case from Vc vowel
-parseCase :: Text -> Maybe Case
-parseCase vc = listToMaybe
-  [ c | (c, pat) <- casePatterns, pat == vc ]
+-- | Parse Configuration from Ca consonant
+parseConfiguration :: Text -> Maybe Configuration
+parseConfiguration c = listToMaybe
+  [ cfg | (cfg, pat) <- configurationPatterns, pat == c ]
 
---------------------------------------------------------------------------------
--- Slot VI: Ca Complex
---------------------------------------------------------------------------------
-
--- | Parsed Ca complex
-data ParsedCa = ParsedCa
-  { pcConfig      :: Configuration
-  , pcAffiliation :: Affiliation
-  , pcPerspective :: Perspective
-  , pcExtension   :: Extension
-  , pcEssence     :: Essence
-  } deriving (Show, Eq)
-
--- | Default Ca values (UNI/CSL/M_/DEL/NRM = "l")
-defaultCa :: ParsedCa
-defaultCa = ParsedCa UNI CSL M_ DEL NRM
-
--- | Parse Ca consonant cluster using pre-generated reverse lookup
-parseCa :: Text -> Maybe ParsedCa
-parseCa ca = case Ca.parseCaSlot ca of
-  Just (co, af, pe, ex, es) -> Just $ ParsedCa co af pe ex es
-  Nothing -> Nothing
-
---------------------------------------------------------------------------------
--- Slot VIII: Vn (Valence) and Cn (Mood/Case-Scope)
---------------------------------------------------------------------------------
-
--- | Vn vowel forms (Series 1 = Valence)
-vnTable :: [(Valence, Text)]
-vnTable =
-  [ (MNO, vowelForm 1 1)  -- a
-  , (PRL, vowelForm 1 2)  -- ä
-  , (CRO, vowelForm 1 3)  -- e
-  , (RCP, vowelForm 1 5)  -- i
-  , (CPL, vowelForm 1 4)  -- ë
-  , (DUP, vowelForm 1 6)  -- ö
-  , (DEM, vowelForm 1 7)  -- o
-  , (CNG, vowelForm 1 8)  -- ü
-  , (PTI, vowelForm 1 9)  -- u
+-- | Extension patterns (Ca2 component)
+extensionPatterns :: [(Extension, Text, Text)]  -- (ext, after-consonant, standalone/after-UPX)
+extensionPatterns =
+  [ (DEL, "",  "")
+  , (PRX, "t", "d")
+  , (ICP, "k", "g")
+  , (ATV, "p", "b")
+  , (GRA, "g", "gz")
+  , (DPL, "b", "bz")
   ]
 
--- | Cn consonant forms for Mood
-cnMoodTable :: [(Mood, Text)]
-cnMoodTable =
-  [ (FAC, "h")
-  , (SUB, "hl")
-  , (ASM, "hr")
-  , (SPC, "hw")
-  , (COU, "hm")
-  , (HYP, "hn")
+-- | Affiliation patterns (Ca3 component)
+affiliationPatterns :: [(Affiliation, Text, Text)]  -- (aff, normal, standalone)
+affiliationPatterns =
+  [ (CSL, "",  "")
+  , (ASO, "l", "nļ")
+  , (COA, "r", "rļ")
+  , (VAR, "ř", "ň")
   ]
 
--- | Cn consonant forms for Case-Scope
-cnCaseScopeTable :: [(CaseScope, Text)]
-cnCaseScopeTable =
-  [ (CCN, "w")
-  , (CCA, "y")
-  , (CCS, "h")
-  , (CCQ, "hw")
-  , (CCP, "hl")
-  , (CCV, "hr")
+-- | Perspective + Essence patterns (Ca4 component)
+perspectiveEssencePatterns :: [((Perspective, Essence), Text, Text)]  -- ((persp,ess), standalone, after-consonant)
+perspectiveEssencePatterns =
+  [ ((M_, NRM), "l",  "")
+  , ((G_, NRM), "r",  "r")
+  , ((N_, NRM), "v",  "w")
+  , ((A_, NRM), "z",  "y")
+  , ((M_, RPV), "ř",  "ř")
+  , ((G_, RPV), "tļ", "l")
+  , ((N_, RPV), "lm", "m")
+  , ((A_, RPV), "ln", "n")
   ]
-
--- | Parse Vn vowel to Valence
-parseVn :: Text -> Maybe Valence
-parseVn v = listToMaybe [val | (val, f) <- vnTable, f == v]
-
--- | Parse Cn consonant to Mood
-parseCnMood :: Text -> Maybe Mood
-parseCnMood c = listToMaybe [m | (m, f) <- cnMoodTable, f == c]
-
--- | Parse Cn consonant to Case-Scope
-parseCnCaseScope :: Text -> Maybe CaseScope
-parseCnCaseScope c = listToMaybe [cs | (cs, f) <- cnCaseScopeTable, f == c]
-
--- | Map Vx vowel to affix degree (1-9).
--- Series 1 vowels = Type 1 degrees, Series 2 = Type 2, Series 3 = Type 3.
--- Returns (degree, affixType).
-vxToDegree :: Text -> Maybe (Int, AffixType)
-vxToDegree vx =
-  let series = [ (Type1Affix, 1), (Type2Affix, 2), (Type3Affix, 3) ]
-  in listToMaybe
-    [ (degree, atype)
-    | (atype, s) <- series
-    , degree <- [1..9]
-    , vowelForm s degree == vx
-    ]
-
---------------------------------------------------------------------------------
--- Parsed Formative
---------------------------------------------------------------------------------
 
 -- | Parsed formative with all identified slots
 data ParsedFormative = ParsedFormative
@@ -297,20 +115,17 @@ data ParsedFormative = ParsedFormative
   , pfConjuncts :: [Text]        -- Original conjunct split
   } deriving (Show, Eq)
 
---------------------------------------------------------------------------------
--- Formative Parsing
---------------------------------------------------------------------------------
-
 -- | Parse a formative, handling both vowel-initial and consonant-initial words
+-- Consonant-initial words have elided Vv (defaults to S1/PRC = "a")
 parseFormativeReal :: Text -> Maybe ParsedFormative
 parseFormativeReal word = do
   let parts = splitConjuncts word
   case parts of
     [] -> Nothing
-    (first:_) ->
+    (first:rest) ->
       if isConsonantCluster first
-        then parseConsonantInitial parts
-        else parseVowelInitial parts
+        then parseConsonantInitial parts  -- Elided Vv
+        else parseVowelInitial parts      -- Normal Vv-Cr-Vr-Ca...
 
 -- | Check if text is a consonant cluster (starts with consonant)
 isConsonantCluster :: Text -> Bool
@@ -321,14 +136,16 @@ isConsonantCluster t = case T.uncons t of
 -- | Parse consonant-initial word (elided Vv = default S1/PRC)
 parseConsonantInitial :: [Text] -> Maybe ParsedFormative
 parseConsonantInitial parts = case parts of
+  -- Minimal: Cr-Vr-Ca (e.g., "mal")
   (cr:vr:rest) -> do
     slotIV <- parseSlotIV vr
     let (caRest, vcRest) = splitCaVc rest
         caseM = parseCase =<< listToMaybe vcRest
+        -- Try to parse Ca from consonants in caRest
         caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
         caParsedM = parseCa =<< listToMaybe caConsonants
     Just ParsedFormative
-      { pfSlotII = (S1, PRC)
+      { pfSlotII = (S1, PRC)  -- Default elided value
       , pfRoot = Root cr
       , pfSlotIV = slotIV
       , pfCa = caRest
@@ -346,6 +163,7 @@ parseVowelInitial parts = case parts of
     slotIV <- parseSlotIV vr
     let (caRest, vcRest) = splitCaVc rest
         caseM = parseCase =<< listToMaybe vcRest
+        -- Try to parse Ca from consonants in caRest
         caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
         caParsedM = parseCa =<< listToMaybe caConsonants
     Just ParsedFormative
@@ -360,25 +178,26 @@ parseVowelInitial parts = case parts of
   _ -> Nothing
 
 -- | Split remaining conjuncts into Ca complex and Vc
+-- The last vowel cluster is typically Vc (case), rest is Ca
+-- May have a final consonant after the case vowel (Slot X)
 splitCaVc :: [Text] -> ([Text], [Text])
 splitCaVc parts =
   let isVowelCluster t = not (T.null t) && isVowelChar (T.head t)
       revParts = reverse parts
-      (_trailingC, afterC) = span (not . isVowelCluster) revParts
+      -- Skip trailing consonants (Slot X), then find the case vowel
+      (trailingC, afterC) = span (not . isVowelCluster) revParts
       (vcRev, caRev) = span isVowelCluster afterC
+      -- Ca = everything before Vc (plus trailing consonants go back to Ca? No, they're Slot X)
   in (reverse caRev, reverse vcRev)
 
 -- | Parse a simple word structure: Vv-Cr-Vr-Ca
+-- Returns (SlotII, Root, SlotIV, partial SlotVI)
 parseSimpleWord :: Text -> Maybe (SlotII, Root, SlotIV)
 parseSimpleWord word = do
   pf <- parseFormativeReal word
   return (pfSlotII pf, pfRoot pf, pfSlotIV pf)
 
---------------------------------------------------------------------------------
--- Phonological Helpers
---------------------------------------------------------------------------------
-
--- | Check if character is a vowel (includes accented vowels)
+-- | Check if character is a vowel (includes accented vowels for all versions)
 isVowelChar :: Char -> Bool
 isVowelChar c = c `elem` ("aäeëiöoüuáéíóúàèìòùîâêôûǎěǐǒǔ" :: String)
 
@@ -387,3 +206,161 @@ splitConjuncts :: Text -> [Text]
 splitConjuncts = filter (not . T.null) . T.groupBy sameType
   where
     sameType a b = isVowelChar a == isVowelChar b
+
+-- | Case vowel patterns (Vc) - All 68 cases
+casePatterns :: [(Case, Text)]
+casePatterns =
+  -- Transrelative (Series 1)
+  [ (Transrelative THM, "a"), (Transrelative INS, "ä")
+  , (Transrelative ABS, "e"), (Transrelative AFF, "i")
+  , (Transrelative STM, "ëi"), (Transrelative EFF, "ö")
+  , (Transrelative ERG, "o"), (Transrelative DAT, "ü")
+  , (Transrelative IND, "u")
+  -- Appositive (Series 2)
+  , (Appositive POS, "ai"), (Appositive PRP, "au")
+  , (Appositive GEN, "ei"), (Appositive ATT, "eu")
+  , (Appositive PDC, "ëu"), (Appositive ITP, "ou")
+  , (Appositive OGN, "oi"), (Appositive IDP, "iu")
+  , (Appositive PAR, "ui")
+  -- Associative (Series 3)
+  , (Associative APL, "ia"), (Associative PUR, "iä")
+  , (Associative TRA, "ie"), (Associative DFR, "ië")
+  , (Associative CRS, "ëo"), (Associative TSP, "iö")
+  , (Associative CMM, "io"), (Associative CMP, "iü")
+  , (Associative CSD, "iu")
+  -- Adverbial (Series 4)
+  , (Adverbial FUN, "ua"), (Adverbial TFM, "uä")
+  , (Adverbial CLA, "ue"), (Adverbial RSL, "uë")
+  , (Adverbial CSM, "ëa"), (Adverbial CON, "uö")
+  , (Adverbial AVR, "uo"), (Adverbial CVS, "uü")
+  , (Adverbial SIT, "ui")
+  -- Relational (Series 5)
+  , (Relational PRN, "ao"), (Relational DSP, "aö")
+  , (Relational COR, "eo"), (Relational CPS, "eö")
+  , (Relational COM, "oë"), (Relational UTL, "öe")
+  , (Relational PRD, "oe"), (Relational RLT, "öa")
+  -- Affinitive (Series 6)
+  , (Affinitive ACT, "oa"), (Affinitive ASI, "öä")
+  , (Affinitive ESS, "ea"), (Affinitive TRM, "eä")
+  , (Affinitive SEL, "ëë"), (Affinitive CFM, "öö")
+  , (Affinitive DEP, "ëö"), (Affinitive VOC, "öë")
+  -- Spatio-Temporal I (Series 7)
+  , (SpatioTemporal1 LOC, "a'a"), (SpatioTemporal1 ATD, "ä'ä")
+  , (SpatioTemporal1 ALL, "e'e"), (SpatioTemporal1 ABL, "ë'ë")
+  , (SpatioTemporal1 ORI, "ë'a"), (SpatioTemporal1 IRL, "ö'ö")
+  , (SpatioTemporal1 INV, "o'o"), (SpatioTemporal1 NAV, "ü'ü")
+  -- Spatio-Temporal II (Series 8)
+  , (SpatioTemporal2 CNR, "i'i"), (SpatioTemporal2 ASS, "u'u")
+  , (SpatioTemporal2 PER, "a'i"), (SpatioTemporal2 PRO, "i'a")
+  , (SpatioTemporal2 PCV, "e'i"), (SpatioTemporal2 PCR, "i'e")
+  , (SpatioTemporal2 ELP, "u'a"), (SpatioTemporal2 PLM, "a'u")
+  ]
+
+-- | Parse case from Vc vowel
+parseCase :: Text -> Maybe Case
+parseCase vc = listToMaybe
+  [ c | (c, pattern) <- casePatterns, pattern == vc ]
+
+--------------------------------------------------------------------------------
+-- Ca Complex Parsing (Slot VI)
+--------------------------------------------------------------------------------
+
+-- | Parsed Ca complex
+data ParsedCa = ParsedCa
+  { pcConfig      :: Configuration
+  , pcAffiliation :: Affiliation
+  , pcPerspective :: Perspective
+  , pcExtension   :: Extension
+  , pcEssence     :: Essence
+  } deriving (Show, Eq)
+
+-- | Default Ca values
+defaultCa :: ParsedCa
+defaultCa = ParsedCa UNI CSL M_ DEL NRM
+
+-- | Parse Ca consonant cluster
+-- Uses compositional decomposition: Configuration + Extension + Affiliation + Perspective/Essence
+-- Falls back to common lookup table for standard forms
+parseCa :: Text -> Maybe ParsedCa
+parseCa ca = case lookup ca caLookupTable of
+  Just pc -> Just pc
+  Nothing -> tryCompositionalParse ca
+
+-- | Try to parse Ca by decomposing into components
+-- Works by trying all combinations and checking if they reconstruct the input
+tryCompositionalParse :: Text -> Maybe ParsedCa
+tryCompositionalParse ca = listToMaybe
+  [ ParsedCa cfg aff persp ext ess
+  | ((persp, ess), standalone, afterC) <- perspectiveEssencePatterns
+  , let suffix = if T.null ca then standalone else afterC
+  , not (T.null ca) || not (T.null standalone)
+  , suffix `T.isSuffixOf` ca
+  , let rest = T.dropEnd (T.length suffix) ca
+  -- Match affiliation
+  , (aff, affForm, _) <- affiliationPatterns
+  , affForm `T.isSuffixOf` rest
+  , let rest2 = T.dropEnd (T.length affForm) rest
+  -- Match extension
+  , (ext, extAfterC, _) <- extensionPatterns
+  , extAfterC `T.isSuffixOf` rest2
+  , let rest3 = T.dropEnd (T.length extAfterC) rest2
+  -- Match configuration
+  , (cfg, cfgForm) <- configurationPatterns
+  , cfgForm == rest3
+  ]
+
+-- | Precomputed lookup table for common Ca forms
+caLookupTable :: [(Text, ParsedCa)]
+caLookupTable =
+  -- Default: all-default Ca = "l"
+  [ ("l",   ParsedCa UNI CSL M_ DEL NRM)
+  -- Standalone perspective forms (UPX/CSL/DEL)
+  , ("r",   ParsedCa UNI CSL G_ DEL NRM)
+  , ("v",   ParsedCa UNI CSL N_ DEL NRM)
+  , ("j",   ParsedCa UNI CSL A_ DEL NRM)
+  , ("w",   ParsedCa UNI CSL N_ DEL NRM)
+  , ("y",   ParsedCa UNI CSL A_ DEL NRM)
+  -- Standalone RPV forms
+  , ("tļ",  ParsedCa UNI CSL M_ DEL RPV)
+  , ("ř",   ParsedCa UNI CSL M_ DEL RPV)
+  -- Extension forms (UPX standalone: use voiced form)
+  , ("d",   ParsedCa UNI CSL M_ PRX NRM)
+  , ("g",   ParsedCa UNI CSL M_ ICP NRM)
+  , ("b",   ParsedCa UNI CSL M_ ATV NRM)
+  , ("gz",  ParsedCa UNI CSL M_ GRA NRM)
+  , ("bz",  ParsedCa UNI CSL M_ DPL NRM)
+  -- Affiliation standalone forms
+  , ("nļ",  ParsedCa UNI ASO M_ DEL NRM)
+  , ("rļ",  ParsedCa UNI COA M_ DEL NRM)
+  , ("ň",   ParsedCa UNI VAR M_ DEL NRM)
+  -- Configuration + default (CSL/DEL/M/NRM) with "l" suffix
+  , ("tl",  ParsedCa MSS CSL M_ DEL NRM)
+  , ("kl",  ParsedCa MSC CSL M_ DEL NRM)
+  , ("pl",  ParsedCa MSF CSL M_ DEL NRM)
+  , ("ţl",  ParsedCa MDS CSL M_ DEL NRM)
+  , ("fl",  ParsedCa MDC CSL M_ DEL NRM)
+  , ("çl",  ParsedCa MDF CSL M_ DEL NRM)
+  , ("zl",  ParsedCa MFS CSL M_ DEL NRM)
+  , ("žl",  ParsedCa MFC CSL M_ DEL NRM)
+  , ("ẓl",  ParsedCa MFF CSL M_ DEL NRM)
+  , ("cl",  ParsedCa DSS CSL M_ DEL NRM)
+  , ("ksl", ParsedCa DSC CSL M_ DEL NRM)
+  , ("psl", ParsedCa DSF CSL M_ DEL NRM)
+  , ("sl",  ParsedCa UNI CSL M_ DEL NRM)  -- DPX
+  -- Configuration + Agglomerative (G) perspective
+  , ("tr",  ParsedCa MSS CSL G_ DEL NRM)
+  , ("kr",  ParsedCa MSC CSL G_ DEL NRM)
+  , ("pr",  ParsedCa MSF CSL G_ DEL NRM)
+  , ("ţr",  ParsedCa MDS CSL G_ DEL NRM)
+  , ("fr",  ParsedCa MDC CSL G_ DEL NRM)
+  , ("çr",  ParsedCa MDF CSL G_ DEL NRM)
+  , ("zr",  ParsedCa MFS CSL G_ DEL NRM)
+  -- Configuration + Nomic (N) perspective
+  , ("tw",  ParsedCa MSS CSL N_ DEL NRM)
+  , ("kw",  ParsedCa MSC CSL N_ DEL NRM)
+  , ("pw",  ParsedCa MSF CSL N_ DEL NRM)
+  -- Configuration + Abstract (A) perspective
+  , ("ty",  ParsedCa MSS CSL A_ DEL NRM)
+  , ("ky",  ParsedCa MSC CSL A_ DEL NRM)
+  , ("py",  ParsedCa MSF CSL A_ DEL NRM)
+  ]
