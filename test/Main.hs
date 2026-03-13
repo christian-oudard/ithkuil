@@ -634,6 +634,8 @@ main = hspec $ do
       isSpecialVv "eë" `shouldBe` True
       isSpecialVv "ëu" `shouldBe` True
       isSpecialVv "oë" `shouldBe` True
+      isSpecialVv "ae" `shouldBe` True
+      isSpecialVv "ea" `shouldBe` True
       isSpecialVv "a"  `shouldBe` False
       isSpecialVv "ai" `shouldBe` False
 
@@ -681,6 +683,25 @@ main = hspec $ do
       case parseFormativeReal "wëila" of
         Just pf -> pfCsRootDegree pf `shouldBe` Nothing  -- parsed as normal, not Cs-root
         Nothing -> return ()  -- also acceptable: fails to parse
+
+  describe "Reference-Root Formatives" $ do
+    it "parses ea-initial word as reference-root (CPT version)" $ do
+      case parseFormativeReal "ealali" of
+        Just pf -> do
+          pfSlotII pf `shouldBe` (S1, CPT)
+          let Root cr = pfRoot pf
+          cr `shouldBe` "l"
+          pfCsRootDegree pf `shouldBe` Nothing  -- ref-root, not Cs-root
+        Nothing -> expectationFailure "Should parse ealali"
+
+    it "parses ae-initial word as reference-root (PRC version)" $ do
+      case parseFormativeReal "aelali" of
+        Just pf -> do
+          pfSlotII pf `shouldBe` (S1, PRC)
+          let Root cr = pfRoot pf
+          cr `shouldBe` "l"
+          pfCsRootDegree pf `shouldBe` Nothing
+        Nothing -> expectationFailure "Should parse aelali"
 
   describe "Ca Gemination" $ do
     it "detects geminated Ca" $ do

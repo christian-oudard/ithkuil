@@ -18,6 +18,7 @@ module Ithkuil.Parse
   , parseCc
   , CcShortcut(..)
   , isSpecialVv
+  , isRefRootVv
   , parseAffixVr
   , isGeminateCa
   , degeminateCa
@@ -175,19 +176,27 @@ vvSeries vv = case vowelFormLookup (normalizeAccents vv) of
   Just (s, _) -> s
   Nothing     -> 1
 
--- | Check if a Vv value is a special Cs-root marker
--- These signal that the "root" consonant is actually a Cs affix form
+-- | Check if a Vv value is a special marker (Cs-root or reference-root)
+-- ëi/eë/ëu/oë = Cs-root (root consonant is an affix Cs)
+-- ae/ea = reference-root (root consonant is a referential C1)
 isSpecialVv :: Text -> Bool
-isSpecialVv v = normalizeAccents v `elem` ["ëi", "eë", "ëu", "oë"]
+isSpecialVv v = normalizeAccents v `elem` ["ëi", "eë", "ëu", "oë", "ae", "ea"]
 
--- | Parse special Vv for Cs-root formatives
--- Returns (Version, Maybe Function) - function is Nothing for reference roots (ae, ea)
-parseSpecialVv :: Text -> Maybe (Version, Function)
+-- | Check if a Vv value is a reference-root marker (ae/ea)
+isRefRootVv :: Text -> Bool
+isRefRootVv v = normalizeAccents v `elem` ["ae", "ea"]
+
+-- | Parse special Vv for Cs-root/reference-root formatives
+-- Returns (Version, Maybe Function)
+-- For reference roots (ae/ea), Function is Nothing
+parseSpecialVv :: Text -> Maybe (Version, Maybe Function)
 parseSpecialVv v = case normalizeAccents v of
-  "ëi" -> Just (PRC, STA)
-  "eë" -> Just (PRC, DYN)
-  "ëu" -> Just (CPT, STA)
-  "oë" -> Just (CPT, DYN)
+  "ëi" -> Just (PRC, Just STA)
+  "eë" -> Just (PRC, Just DYN)
+  "ëu" -> Just (CPT, Just STA)
+  "oë" -> Just (CPT, Just DYN)
+  "ae" -> Just (PRC, Nothing)
+  "ea" -> Just (CPT, Nothing)
   _    -> Nothing
 
 -- | Parse Vr for Cs-root formatives: degree (form) + context (series)
@@ -472,31 +481,62 @@ parseVowelInitial stress parts = case parts of
   _ -> Nothing
 
 -- | Parse a Cs-root formative (special Vv: ëi, eë, ëu, oë)
--- The "root" consonant is a Cs affix form; Vr encodes degree + context
+-- or a reference-root formative (special Vv: ae, ea)
+-- For Cs-root: the "root" consonant is a Cs affix form; Vr encodes degree + context
+-- For ref-root: the "root" consonant is a referential C1; Vr encodes case
 parseCsRootFormative :: Stress -> Text -> Text -> Text -> [Text] -> Maybe ParsedFormative
 parseCsRootFormative stress vv cs vr rest = do
-  (version, func) <- parseSpecialVv vv
-  (degree, ctx) <- parseAffixVr vr
-  let (slotVAfx, caRest, vcRest) = parseAfterVr rest
-      lastVowel = listToMaybe vcRest
-      (caseM, illocValM) = parseSlotIXSimple stress lastVowel
-      caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
-      caParsedM = parseCa =<< listToMaybe caConsonants
-  Just ParsedFormative
-    { pfConcatenation = Nothing
-    , pfSlotII = (S1, version)  -- Stem not meaningful for Cs-root
-    , pfRoot = Root cs           -- Cs affix consonant stored as root
-    , pfSlotIV = (func, BSC, ctx) -- Function from Vv, context from Vr
-    , pfCa = caRest
-    , pfCaParsed = caParsedM
-    , pfSlotVIII = Nothing
-    , pfCase = caseM
-    , pfIllocVal = illocValM
-    , pfSlotV = slotVAfx
-    , pfStress = stress
-    , pfConjuncts = vv : cs : vr : rest
-    , pfCsRootDegree = Just degree
-    }
+  (version, mFunc) <- parseSpecialVv vv
+  case mFunc of
+    Just func -> do
+      -- Cs-root: Vr = degree + context
+      (degree, ctx) <- parseAffixVr vr
+      let (slotVAfx, caRest, vcRest) = parseAfterVr rest
+          lastVowel = listToMaybe vcRest
+          (caseM, illocValM) = parseSlotIXSimple stress lastVowel
+          caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
+          caParsedM = parseCa =<< listToMaybe caConsonants
+      Just ParsedFormative
+        { pfConcatenation = Nothing
+        , pfSlotII = (S1, version)
+        , pfRoot = Root cs
+        , pfSlotIV = (func, BSC, ctx)
+        , pfCa = caRest
+        , pfCaParsed = caParsedM
+        , pfSlotVIII = Nothing
+        , pfCase = caseM
+        , pfIllocVal = illocValM
+        , pfSlotV = slotVAfx
+        , pfStress = stress
+        , pfConjuncts = vv : cs : vr : rest
+        , pfCsRootDegree = Just degree
+        }
+    Nothing -> do
+      -- Reference-root: Vr = normal Slot IV (function/spec/context)
+      -- The root consonant is a referential C1
+      let slotIV = case parseSlotIV vr of
+            Just s -> s
+            Nothing -> (STA, BSC, EXS)
+          (slotVAfx, caRest, vcRest) = parseAfterVr rest
+          lastVowel = listToMaybe vcRest
+          (caseM, illocValM) = parseSlotIXSimple stress lastVowel
+          caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
+          caParsedM = parseCa =<< listToMaybe caConsonants
+      Just ParsedFormative
+        { pfConcatenation = Nothing
+        , pfSlotII = (S1, version)
+        , pfRoot = Root cs  -- referential C1 stored as root
+        , pfSlotIV = slotIV
+        , pfCa = caRest
+        , pfCaParsed = caParsedM
+        , pfSlotVIII = Nothing
+        , pfCase = caseM
+        , pfIllocVal = illocValM
+        , pfSlotV = slotVAfx
+        , pfStress = stress
+        , pfConjuncts = vv : cs : vr : rest
+        , pfCsRootDegree = Nothing  -- Not a Cs-root
+        }
 
 -- | Try parsing with elided Vr: the consonant cluster contains Cr+Ca merged
 -- and the next vowel is Vc/Vk instead of Vr
