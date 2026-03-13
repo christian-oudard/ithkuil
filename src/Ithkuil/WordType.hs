@@ -22,7 +22,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Map.Strict (Map)
 import Ithkuil.Grammar
-import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, ParsedFormative(..), parseFormativeReal, ParsedCa(..))
+import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, ParsedFormative(..), parseFormativeReal, ParsedCa(..), isSpecialVv)
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
                            aspectVowels, phaseVowels)
 import Ithkuil.Adjuncts hiding (CarrierAdjunct)
@@ -313,24 +313,36 @@ glossFormative roots affixes pf =
   let Root cr = pfRoot pf
       (stem, version) = pfSlotII pf
       (func, spec, ctx) = pfSlotIV pf
-      -- Root meaning
-      rootMeaning = case lookupRoot cr roots of
-        Just entry -> "'" <> selectStem stem entry <> "'"
-        Nothing -> cr
-      -- Stem/Version (omit if default S1/PRC)
-      stemVerAbbr = case (stem, version) of
-        (S1, PRC) -> ""
-        (_, PRC) -> T.pack (show stem)
-        (S1, _) -> T.pack (show version)
-        _ -> T.pack (show stem) <> "." <> T.pack (show version)
-      -- Function/Specification/Context (omit if default STA/BSC/EXS)
-      slotIVAbbr = case (func, spec, ctx) of
-        (STA, BSC, EXS) -> ""
-        _ -> T.intercalate "." $ filter (/= "") $
-          [ if func /= STA then T.pack (show func) else ""
-          , if spec /= BSC then T.pack (show spec) else ""
-          , if ctx /= EXS then T.pack (show ctx) else ""
+      isCsRoot = pfCsRootDegree pf /= Nothing
+      -- Root meaning: for Cs-root, show **cs**/degree; for normal, show lexicon entry
+      rootMeaning = case pfCsRootDegree pf of
+        Just deg -> cr <> "/" <> T.pack (show deg)
+        Nothing -> case lookupRoot cr roots of
+          Just entry -> "'" <> selectStem stem entry <> "'"
+          Nothing -> cr
+      -- Stem/Version + Function for Cs-root (combined as "CPT.DYN" etc.)
+      -- For normal formatives: stem/version only
+      stemVerAbbr = if isCsRoot
+        then T.intercalate "." $ filter (not . T.null) $
+          [ if version /= PRC then T.pack (show version) else ""
+          , if func /= STA then T.pack (show func) else ""
           ]
+        else case (stem, version) of
+          (S1, PRC) -> ""
+          (_, PRC) -> T.pack (show stem)
+          (S1, _) -> T.pack (show version)
+          _ -> T.pack (show stem) <> "." <> T.pack (show version)
+      -- Function/Specification/Context (omit if default STA/BSC/EXS)
+      -- For Cs-root, function is already in stemVerAbbr; show context from Vr
+      slotIVAbbr = if isCsRoot
+        then if ctx /= EXS then T.pack (show ctx) else ""
+        else case (func, spec, ctx) of
+          (STA, BSC, EXS) -> ""
+          _ -> T.intercalate "." $ filter (/= "") $
+            [ if func /= STA then T.pack (show func) else ""
+            , if spec /= BSC then T.pack (show spec) else ""
+            , if ctx /= EXS then T.pack (show ctx) else ""
+            ]
       -- Ca complex
       caAbbr = case pfCaParsed pf of
         Just pc -> showCaAbbr pc

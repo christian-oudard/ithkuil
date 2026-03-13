@@ -564,6 +564,60 @@ main = hspec $ do
           pfCase pf `shouldBe` Just (Transrelative ERG)
         Nothing -> expectationFailure "Should parse kšilo"
 
+  describe "Cs-Root Formatives" $ do
+    it "detects special Vv values" $ do
+      isSpecialVv "ëi" `shouldBe` True
+      isSpecialVv "eë" `shouldBe` True
+      isSpecialVv "ëu" `shouldBe` True
+      isSpecialVv "oë" `shouldBe` True
+      isSpecialVv "a"  `shouldBe` False
+      isSpecialVv "ai" `shouldBe` False
+
+    it "parses Cs-root Vr as degree + context" $ do
+      parseAffixVr "a"  `shouldBe` Just (1, EXS)
+      parseAffixVr "ö"  `shouldBe` Just (6, EXS)
+      parseAffixVr "u"  `shouldBe` Just (9, EXS)
+      parseAffixVr "ai" `shouldBe` Just (1, FNC)
+      parseAffixVr "ou" `shouldBe` Just (6, FNC)
+      -- Degree-0 forms
+      parseAffixVr "ae" `shouldBe` Just (0, EXS)
+      parseAffixVr "ea" `shouldBe` Just (0, FNC)
+
+    it "parses ëilal as Cs-root formative" $ do
+      case parseFormativeReal "ëilal" of
+        Just pf -> do
+          pfRoot pf `shouldBe` Root "l"
+          pfCsRootDegree pf `shouldBe` Just 1
+          pfSlotII pf `shouldBe` (S1, PRC)
+          pfSlotIV pf `shouldBe` (STA, BSC, EXS)
+        Nothing -> expectationFailure "Should parse ëilal"
+
+    it "parses oërmölá as CPT.DYN Cs-root" $ do
+      case parseFormativeReal "oërmölá" of
+        Just pf -> do
+          pfRoot pf `shouldBe` Root "rm"
+          pfCsRootDegree pf `shouldBe` Just 6
+          pfSlotII pf `shouldBe` (S1, CPT)
+          pfSlotIV pf `shouldBe` (DYN, BSC, EXS)
+          pfIllocVal pf `shouldBe` Just (ASR, OBS)
+        Nothing -> expectationFailure "Should parse oërmölá"
+
+    it "parses oërmoulá with FNC context" $ do
+      case parseFormativeReal "oërmoulá" of
+        Just pf -> do
+          pfRoot pf `shouldBe` Root "rm"
+          pfCsRootDegree pf `shouldBe` Just 6
+          pfSlotIV pf `shouldBe` (DYN, BSC, FNC)
+        Nothing -> expectationFailure "Should parse oërmoulá"
+
+    it "does not parse Cs-root with shortcuts" $ do
+      -- w/y + special Vv should fail (shortcuts can't use Cs-root)
+      -- In our implementation, w is parsed as Cc shortcut, then parseSlotII
+      -- rejects the special Vv value, so this naturally fails
+      case parseFormativeReal "wëila" of
+        Just pf -> pfCsRootDegree pf `shouldBe` Nothing  -- parsed as normal, not Cs-root
+        Nothing -> return ()  -- also acceptable: fails to parse
+
   describe "Cc Parsing" $ do
     it "classifies concatenation types" $ do
       parseCc "h"  `shouldBe` (Just Type1, Nothing)

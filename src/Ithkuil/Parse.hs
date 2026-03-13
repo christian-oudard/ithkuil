@@ -17,6 +17,8 @@ module Ithkuil.Parse
   , defaultCa
   , parseCc
   , CcShortcut(..)
+  , isSpecialVv
+  , parseAffixVr
   ) where
 
 import Data.Text (Text)
@@ -140,6 +142,7 @@ data ParsedFormative = ParsedFormative
   , pfIllocVal :: Maybe (Illocution, Validation)  -- Vk (when ultimate stress)
   , pfStress  :: Stress          -- Detected stress pattern
   , pfConjuncts :: [Text]        -- Original conjunct split
+  , pfCsRootDegree :: Maybe Int  -- Cs-root degree (Nothing for normal roots)
   } deriving (Show, Eq)
 
 -- | Cc shortcut type (w or y prefix that adds Ca values)
@@ -194,6 +197,42 @@ vvSeries vv = case normalizeAccents vv of
   "ua" -> 4; "uä" -> 4; "ue" -> 4; "uë" -> 4
   "ëa" -> 4; "uö" -> 4; "uo" -> 4; "uü" -> 4
   _ -> 1
+
+-- | Check if a Vv value is a special Cs-root marker
+-- These signal that the "root" consonant is actually a Cs affix form
+isSpecialVv :: Text -> Bool
+isSpecialVv v = normalizeAccents v `elem` ["ëi", "eë", "ëu", "oë"]
+
+-- | Parse special Vv for Cs-root formatives
+-- Returns (Version, Maybe Function) - function is Nothing for reference roots (ae, ea)
+parseSpecialVv :: Text -> Maybe (Version, Function)
+parseSpecialVv v = case normalizeAccents v of
+  "ëi" -> Just (PRC, STA)
+  "eë" -> Just (PRC, DYN)
+  "ëu" -> Just (CPT, STA)
+  "oë" -> Just (CPT, DYN)
+  _    -> Nothing
+
+-- | Parse Vr for Cs-root formatives: degree (form) + context (series)
+-- Series 1-4 maps to EXS/FNC/RPS/AMG; Form 0-9 maps to degree
+parseAffixVr :: Text -> Maybe (Int, Context)
+parseAffixVr vr =
+  let nv = normalizeAccents vr
+  in case nv of
+    -- Degree-0 forms
+    "ae" -> Just (0, EXS)
+    "ea" -> Just (0, FNC)
+    "üo" -> Just (0, RPS)
+    "üö" -> Just (0, AMG)
+    _ -> do
+      -- Use vowel form table to get (series, form)
+      (series, form) <- lookupSeriesForm nv
+      let ctx = case series of
+            1 -> EXS; 2 -> FNC; 3 -> RPS; 4 -> AMG; _ -> EXS
+      Just (form, ctx)
+  where
+    lookupSeriesForm v = listToMaybe
+      [ (s, f) | s <- [1..4], f <- [1..9], vowelForm s f == v ]
 
 -- | Parse a formative, handling both vowel-initial and consonant-initial words
 -- Consonant-initial words have elided Vv (defaults to S1/PRC = "a")
@@ -279,6 +318,7 @@ parseVowelInitialWithShortcut sc stress parts = case parts of
       , pfIllocVal = illocValM
       , pfStress = stress
       , pfConjuncts = parts
+      , pfCsRootDegree = Nothing
       }
   _ -> Nothing
 
@@ -335,6 +375,7 @@ parseConsonantInitial stress parts = case parts of
           , pfIllocVal = illocValM
           , pfStress = stress
           , pfConjuncts = parts
+          , pfCsRootDegree = Nothing
           }
       -- Longer: Cr-Vr-Ca...-Vc/Vk
       _ ->
@@ -357,6 +398,7 @@ parseConsonantInitial stress parts = case parts of
               , pfIllocVal = illocValM
               , pfStress = stress
               , pfConjuncts = parts
+              , pfCsRootDegree = Nothing
               }
           -- Vr parse failed: try treating cr as merged CrCa with elided Vr
           Nothing -> do
@@ -374,14 +416,17 @@ parseConsonantInitial stress parts = case parts of
               , pfIllocVal = illocValM
               , pfStress = stress
               , pfConjuncts = parts
+              , pfCsRootDegree = Nothing
               }
   _ -> Nothing
 
 -- | Parse vowel-initial word (explicit Vv)
--- First tries Vv-Cr-Vr-Ca..., then falls back to Vv-CrCa-Vc/Vk (elided Vr)
+-- First checks for special Cs-root Vv values, then tries normal parsing
 parseVowelInitial :: Stress -> [Text] -> Maybe ParsedFormative
 parseVowelInitial stress parts = case parts of
-  (vv:cr:vr:rest) -> do
+  (vv:cr:vr:rest)
+    | isSpecialVv vv -> parseCsRootFormative stress vv cr vr rest
+    | otherwise -> do
     slotII <- parseSlotII vv
     case rest of
       -- Minimal formative: Vv-Cr-Vc/Vk (Vr and Ca both elided to defaults)
@@ -399,6 +444,7 @@ parseVowelInitial stress parts = case parts of
           , pfIllocVal = illocValM
           , pfStress = stress
           , pfConjuncts = parts
+          , pfCsRootDegree = Nothing
           }
       -- Longer formative: try Vr parse, fall back to elided Vr
       _ ->
@@ -421,6 +467,7 @@ parseVowelInitial stress parts = case parts of
               , pfIllocVal = illocValM
               , pfStress = stress
               , pfConjuncts = parts
+              , pfCsRootDegree = Nothing
               }
           -- If Vr parse fails, vr might actually be Vc/Vk with elided Vr
           Nothing -> tryElidedVr slotII cr vr stress parts
@@ -440,8 +487,35 @@ parseVowelInitial stress parts = case parts of
       , pfIllocVal = Nothing
       , pfStress = stress
       , pfConjuncts = parts
+      , pfCsRootDegree = Nothing
       }
   _ -> Nothing
+
+-- | Parse a Cs-root formative (special Vv: ëi, eë, ëu, oë)
+-- The "root" consonant is a Cs affix form; Vr encodes degree + context
+parseCsRootFormative :: Stress -> Text -> Text -> Text -> [Text] -> Maybe ParsedFormative
+parseCsRootFormative stress vv cs vr rest = do
+  (version, func) <- parseSpecialVv vv
+  (degree, ctx) <- parseAffixVr vr
+  let (caRest, vcRest) = splitCaVc rest
+      lastVowel = listToMaybe vcRest
+      (caseM, illocValM) = parseSlotIXSimple stress lastVowel
+      caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
+      caParsedM = parseCa =<< listToMaybe caConsonants
+  Just ParsedFormative
+    { pfConcatenation = Nothing
+    , pfSlotII = (S1, version)  -- Stem not meaningful for Cs-root
+    , pfRoot = Root cs           -- Cs affix consonant stored as root
+    , pfSlotIV = (func, BSC, ctx) -- Function from Vv, context from Vr
+    , pfCa = caRest
+    , pfCaParsed = caParsedM
+    , pfSlotVIII = Nothing
+    , pfCase = caseM
+    , pfIllocVal = illocValM
+    , pfStress = stress
+    , pfConjuncts = vv : cs : vr : rest
+    , pfCsRootDegree = Just degree
+    }
 
 -- | Try parsing with elided Vr: the consonant cluster contains Cr+Ca merged
 -- and the next vowel is Vc/Vk instead of Vr
@@ -461,6 +535,7 @@ tryElidedVr slotII crca vcvk stress parts = do
     , pfIllocVal = illocValM
     , pfStress = stress
     , pfConjuncts = parts
+    , pfCsRootDegree = Nothing
     }
 
 -- | Split a consonant cluster into Cr (root) + Ca (configuration complex)
@@ -526,11 +601,11 @@ parseSimpleWord word = do
 detectStressSimple :: Text -> Stress
 detectStressSimple word
   | T.any isStressedVowel word =
-    let syllCount = length $ filter (\t -> not (T.null t) && isVowelChar (T.head t))
-                           $ splitConjuncts word
-        -- Find which syllable has the accent (1-indexed from start)
-        chars = T.unpack word
-        stressPos = length [c | c <- takeWhile (not . isStressedVowel) chars, isVowelChar c] + 1
+    let conjs = splitConjuncts word
+        syllables = filter (\t -> not (T.null t) && isVowelChar (T.head t)) conjs
+        syllCount = length syllables
+        hasStress t = T.any isStressedVowel t
+        stressPos = length (takeWhile (not . hasStress) syllables) + 1
     in if stressPos == syllCount then Ultimate
        else if stressPos <= syllCount - 2 then Antepenultimate
        else Penultimate

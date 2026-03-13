@@ -116,14 +116,20 @@ showFormativeDetail roots affixes pf = do
       (stem, ver) = pfSlotII pf
       (func, spec, ctx) = pfSlotIV pf
       _conjs = pfConjuncts pf
-  -- Root
-  let rootMeaning = case lookupRoot cr roots of
-        Just entry -> selectStem stem entry
-        Nothing -> "(not in lexicon)"
-  TIO.putStrLn $ "    Root: -" <> cr <> "- = " <> rootMeaning
-  TIO.putStrLn $ "    Stem/Version: " <> T.pack (show stem) <> "/" <> T.pack (show ver)
-  TIO.putStrLn $ "    Function/Spec/Context: " <> T.pack (show func) <> "/"
-               <> T.pack (show spec) <> "/" <> T.pack (show ctx)
+  -- Root or Cs affix
+  case pfCsRootDegree pf of
+    Just deg -> do
+      TIO.putStrLn $ "    Cs-Root Affix: -" <> cr <> "- degree " <> T.pack (show deg)
+      TIO.putStrLn $ "    Version/Function: " <> T.pack (show ver) <> "/" <> T.pack (show func)
+      TIO.putStrLn $ "    Context: " <> T.pack (show ctx)
+    Nothing -> do
+      let rootMeaning = case lookupRoot cr roots of
+            Just entry -> selectStem stem entry
+            Nothing -> "(not in lexicon)"
+      TIO.putStrLn $ "    Root: -" <> cr <> "- = " <> rootMeaning
+      TIO.putStrLn $ "    Stem/Version: " <> T.pack (show stem) <> "/" <> T.pack (show ver)
+      TIO.putStrLn $ "    Function/Spec/Context: " <> T.pack (show func) <> "/"
+                   <> T.pack (show spec) <> "/" <> T.pack (show ctx)
   -- Ca
   case pfCaParsed pf of
     Just pc | pc /= ParsedCa UNI CSL M_ DEL NRM ->
