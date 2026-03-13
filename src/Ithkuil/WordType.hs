@@ -16,6 +16,8 @@ module Ithkuil.WordType
   , extractVnCn
   , parseOneVnCn
   , classifyDegree
+  , glossCz
+  , glossVz
   ) where
 
 import Data.Text (Text)
@@ -42,6 +44,7 @@ data WordType
   | WRegisterAdjunct    -- ^ h-initial register adjunct
   | WModularAdjunct     -- ^ Modular adjunct (VnCn pattern)
   | WAffixualAdjunct    -- ^ Affixual adjunct
+  | WMultipleAffixAdj   -- ^ Multiple affix adjunct (Cs-Vx-Cz-VxCs...)
   | WReferential        -- ^ Personal referential
   | WCarrierAdjunct     -- ^ Carrier/quotative/naming adjunct
   | WCombinationRef     -- ^ Combination referential (C1-Vc-Spec-VxCs-Vc2)
@@ -58,6 +61,8 @@ data ParsedWord
   | PModular [SlotVIII] Text Text  -- parsed VnCn pairs, final vowel gloss, raw text
   | PReferential PersonalRef (Maybe Case) Text  -- referent, parsed case, raw case vowel
   | PAffixual Text Int Text     -- affix Cs, degree, optional scope vowel
+  | PMultipleAffix (Text, Text) Text [(Text, Text)] (Maybe Text)
+    -- ^ first affix (Vx,Cs), Cz scope, additional affixes (Vx,Cs), optional Vz scope
   | PCarrier CarrierType Text   -- carrier type, content
   | PCombinationRef PersonalRef (Maybe Case) Text [(Text, Text)] (Maybe Case)
     -- ^ referent, case1, spec, affixes (VxCs), case2
@@ -75,6 +80,7 @@ classifyWord word
   | isCarrierAdjunct word = WCarrierAdjunct
   | isModularAdjunct word = WModularAdjunct
   | isCombinationRef word = WCombinationRef
+  | isMultipleAffixAdjunct word = WMultipleAffixAdj
   | isAffixualAdjunct word = WAffixualAdjunct
   | isReferentialWord word = WReferential
   | otherwise = WFormative
@@ -180,6 +186,30 @@ isAffixualAdjunct word =
                  && not (T.null vs) && isVowelChar (T.head vs) -> True
     _ -> False
 
+-- | Cz consonants for multiple affix adjuncts (scope of first affix)
+isCzConsonant :: Text -> Bool
+isCzConsonant c = c `elem` (["h", "'h", "'hl", "'hr", "hw", "'hw"] :: [Text])
+
+-- | Multiple affix adjuncts: [ë] Cs Vx Cz (VxCs)+ [Vz]
+-- Must have a Cz consonant between first affix and subsequent affixes
+isMultipleAffixAdjunct :: Text -> Bool
+isMultipleAffixAdjunct word =
+  let conjs = splitConjuncts word
+      -- Strip optional ë prefix
+      rest = case conjs of
+        ("ë":cs) -> cs
+        cs       -> cs
+  in case rest of
+    -- Cs Vx Cz Vx2 Cs2 [tail...]
+    (cs:vx:cz:vx2:cs2:_)
+      | not (T.null cs) && not (isVowelChar (T.head cs))
+      , not (T.null vx) && isVowelChar (T.head vx)
+      , isCzConsonant cz
+      , not (T.null vx2) && isVowelChar (T.head vx2)
+      , not (T.null cs2) && not (isVowelChar (T.head cs2))
+      -> True
+    _ -> False
+
 -- | Check if a consonant is a Cn (modular adjunct) consonant
 isCnConsonant :: Text -> Bool
 isCnConsonant c = c `elem` ["h", "hl", "hr", "hm", "hn", "hň",
@@ -231,6 +261,7 @@ parseSingleWord word = case classifyWord word of
     Nothing -> PUnparsed word
   WReferential -> parseReferentialWord word
   WModularAdjunct -> parseModularWord word
+  WMultipleAffixAdj -> parseMultipleAffixWord word
   WAffixualAdjunct -> parseAffixualWord word
   WCarrierAdjunct -> parseCarrierWord word
   WCombinationRef -> parseCombinationRefWord word
@@ -308,6 +339,33 @@ parseAffixualWord word =
     [vx, cs] -> PAffixual cs (classifyDegree vx) ""
     [vx, cs, _vs] -> PAffixual cs (classifyDegree vx) word
     _ -> PUnparsed word
+
+-- | Parse a multiple affix adjunct: [ë] Cs Vx Cz (VxCs)+ [Vz]
+parseMultipleAffixWord :: Text -> ParsedWord
+parseMultipleAffixWord word =
+  let conjs = splitConjuncts word
+      -- Strip optional ë prefix
+      rest = case conjs of
+        ("ë":cs) -> cs
+        cs       -> cs
+  in case rest of
+    (cs:vx:cz:tail')
+      | isCzConsonant cz ->
+        let firstAffix = (normalizeAccents vx, cs)
+            (moreAffixes, lastV) = parseVxCsPairsMulti tail'
+        in PMultipleAffix firstAffix cz moreAffixes lastV
+    _ -> PUnparsed word
+  where
+    -- Parse VxCs pairs; if odd element remains at end, it's the Vz scope vowel
+    parseVxCsPairsMulti [] = ([], Nothing)
+    parseVxCsPairsMulti [v]
+      | not (T.null v) && isVowelChar (T.head v) = ([], Just v)
+    parseVxCsPairsMulti (v:c:more)
+      | not (T.null v) && isVowelChar (T.head v)
+      , not (T.null c) && not (isVowelChar (T.head c))
+      = let (rest', lastV) = parseVxCsPairsMulti more
+        in ((normalizeAccents v, c) : rest', lastV)
+    parseVxCsPairsMulti _ = ([], Nothing)
 
 -- | Parse a combination referential: [ë] C1 Vc Spec [VxCs...] [Vc2]
 parseCombinationRefWord :: Text -> ParsedWord
@@ -434,6 +492,27 @@ glossAspect v = case parseAspect v of
   Just asp -> T.pack (show asp)
   Nothing  -> "?" <> v
 
+-- | Gloss a Cz scope consonant (first affix scope in multiple affix adjunct)
+glossCz :: Text -> Text
+glossCz cz = case cz of
+  "h"    -> "{VDom}"
+  "'h"   -> "{VSub}"
+  "'hl"  -> "{VIIDom}"
+  "'hr"  -> "{VIISub}"
+  "hw"   -> "{form.}"
+  "'hw"  -> "{concat.}"
+  _      -> "?" <> cz
+
+-- | Gloss a Vz scope vowel (scope for additional affixes in multiple affix adjunct)
+glossVz :: Text -> Text
+glossVz vz = case normalizeAccents vz of
+  "a" -> "{VDom}"
+  "u" -> "{VSub}"
+  "e" -> "{VIIDom}"
+  "i" -> "{VIISub}"
+  "o" -> "{form.}"
+  _   -> "?" <> vz
+
 -- | Gloss a Vh scope marker (final vowel of modular adjunct with VnCn pairs)
 glossVh :: Text -> Text
 glossVh v = case normalizeAccents v of
@@ -487,6 +566,10 @@ glossWord roots affixes pw = case pw of
           Just entry -> affixAbbrev entry
           Nothing -> cs
     in abbr <> "/" <> T.pack (show deg)
+  PMultipleAffix first cz moreAfxs mVz ->
+    glossOneAffix affixes first <> "-" <> glossCz cz
+    <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) moreAfxs)
+    <> maybe "" (\vz -> "-" <> glossVz vz) mVz
   PCombinationRef ref mc spec afxs mc2 ->
     glossReferential ref mc ""
     <> (if spec /= "x" then "-" <> spec else "")
@@ -606,6 +689,10 @@ glossWordCompact roots _affixes pw = case pw of
   PModular pairs fv _raw -> T.intercalate "+" (map glossSlotVIII pairs)
                           <> (if T.null fv then "" else "-" <> fv)
   PAffixual cs deg _ -> cs <> "/" <> T.pack (show deg)
+  PMultipleAffix first cz moreAfxs mVz ->
+    glossOneAffix _affixes first <> "-" <> glossCz cz
+    <> T.concat (map (\p -> "-" <> glossOneAffix _affixes p) moreAfxs)
+    <> maybe "" (\vz -> "-" <> glossVz vz) mVz
   PCombinationRef ref mc _spec afxs mc2 ->
     glossReferential ref mc "" <> T.concat (map (\p -> "-" <> glossOneAffix _affixes p) afxs)
     <> maybe "" (\c -> "." <> T.pack (showCase c)) mc2

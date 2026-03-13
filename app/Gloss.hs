@@ -107,6 +107,12 @@ glossOneWord roots affixes word = do
       mapM_ (\s8 -> TIO.putStrLn $ "    VnCn: " <> glossSlotVIII s8) pairs
       when (not (T.null fv)) $ TIO.putStrLn $ "    Final: " <> fv
     PAffixual cs deg _ -> TIO.putStrLn $ "    Affix: " <> cs <> " degree " <> T.pack (show deg)
+    PMultipleAffix (vx, cs) cz moreAfxs mVz -> do
+      TIO.putStrLn $ "    First: -" <> cs <> "- " <> vx <> " (Cz=" <> cz <> ")"
+      mapM_ (\(v, c) -> TIO.putStrLn $ "    Affix: -" <> c <> "- " <> v) moreAfxs
+      case mVz of
+        Just vz -> TIO.putStrLn $ "    Scope: " <> glossVz vz
+        Nothing -> return ()
     PCombinationRef ref@(PersonalRef rr eff) mc spec afxs mc2 -> do
       TIO.putStrLn $ "    Referent: " <> referentLabel rr <> " /" <> T.pack (show eff)
       case mc of

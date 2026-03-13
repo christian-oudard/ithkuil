@@ -439,6 +439,38 @@ main = hspec $ do
     it "parses aspect-only modular 'a' (single vowel)" $ do
       classifyWord "a" `shouldBe` WModularAdjunct
 
+  describe "Multiple Affix Adjunct" $ do
+    it "classifies Cs-Vx-Cz-VxCs as multiple affix adjunct" $ do
+      classifyWord "xaheitr" `shouldBe` WMultipleAffixAdj
+
+    it "classifies with glottal Cz" $ do
+      classifyWord "xa'heitr" `shouldBe` WMultipleAffixAdj
+
+    it "classifies with ë prefix" $ do
+      classifyWord "ëxaheitr" `shouldBe` WMultipleAffixAdj
+
+    it "parses first affix, Cz scope, and additional affixes" $ do
+      case parseWord "xaheitr" of
+        PMultipleAffix (vx, cs) cz afxs mVz -> do
+          cs `shouldBe` "x"
+          vx `shouldBe` "a"
+          cz `shouldBe` "h"
+          afxs `shouldBe` [("ei", "tr")]
+          mVz `shouldBe` Nothing
+        pw -> expectationFailure $ "Expected PMultipleAffix, got: " ++ show pw
+
+    it "parses with optional Vz scope vowel" $ do
+      case parseWord "xaheitre" of
+        PMultipleAffix _ _ afxs mVz -> do
+          afxs `shouldBe` [("ei", "tr")]
+          mVz `shouldBe` Just "e"
+        pw -> expectationFailure $ "Expected PMultipleAffix, got: " ++ show pw
+
+    it "parses glottal Cz scope" $ do
+      case parseWord "xa'heitr" of
+        PMultipleAffix _ cz _ _ -> cz `shouldBe` "'h"
+        pw -> expectationFailure $ "Expected PMultipleAffix, got: " ++ show pw
+
   describe "Affix Extraction" $ do
     it "extracts no affixes from simple Ca" $ do
       extractAffixes ["l"] `shouldBe` []
