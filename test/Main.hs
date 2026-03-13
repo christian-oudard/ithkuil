@@ -524,6 +524,33 @@ main = hspec $ do
       classifyDegree "eë" `shouldBe` 5
       classifyDegree "ua" `shouldBe` 9
 
+  describe "Case-Accessor Affixes" $ do
+    it "glosses w-series case accessor (direct case vowel)" $ do
+      -- sw = type-1 case accessor, Vx "a" = THM case
+      glossOneAffix mempty ("a", "sw") `shouldBe` "acc₁:THM"
+      glossOneAffix mempty ("e", "sw") `shouldBe` "acc₁:ABS"
+      glossOneAffix mempty ("ai", "sw") `shouldBe` "acc₁:POS"
+
+    it "glosses y-series case accessor (glottalized vowel)" $ do
+      -- sy = type-1 case accessor, Vx "a" → a'a = PRN (Relational)
+      glossOneAffix mempty ("a", "sy") `shouldBe` "acc₁:PRN"
+      glossOneAffix mempty ("e", "sy") `shouldBe` "acc₁:COR"
+      -- Diphthong: "ai" → a'i = ACT (Affinitive)
+      glossOneAffix mempty ("ai", "sy") `shouldBe` "acc₁:ACT"
+
+    it "glosses inverse case accessor" $ do
+      glossOneAffix mempty ("a", "šw") `shouldBe` "ia₁:THM"
+      glossOneAffix mempty ("a", "žw") `shouldBe` "ia₂:THM"
+
+    it "glosses case stacking" $ do
+      glossOneAffix mempty ("a", "lw") `shouldBe` "case:THM"
+      glossOneAffix mempty ("ei", "lw") `shouldBe` "case:GEN"
+
+    it "glosses Ca-stacking affix (Vx=üö)" $ do
+      glossOneAffix mempty ("üö", "tr") `shouldBe` "Ca:MSS/G"
+      glossOneAffix mempty ("üö", "s") `shouldBe` "Ca:DPX"
+      glossOneAffix mempty ("üö", "l") `shouldBe` "Ca:default"
+
   describe "Referent Labels" $ do
     it "provides human-readable labels" $ do
       referentLabel R1m `shouldBe` "I"

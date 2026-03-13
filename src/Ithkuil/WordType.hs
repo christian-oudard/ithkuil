@@ -18,6 +18,7 @@ module Ithkuil.WordType
   , classifyDegree
   , glossCz
   , glossVz
+  , glossOneAffix
   ) where
 
 import Data.Text (Text)
@@ -26,11 +27,11 @@ import Data.Map.Strict (Map)
 import Ithkuil.Grammar
 import Data.Maybe (isJust)
 import Ithkuil.Phonology (vowelFormLookup)
-import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, ParsedFormative(..), parseFormativeReal, ParsedCa(..), isSpecialVv, normalizeAccents, detectStressSimple)
+import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, parseCa, ParsedFormative(..), parseFormativeReal, ParsedCa(..), isSpecialVv, normalizeAccents, detectStressSimple)
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
                            aspectVowels, phaseVowels)
 import Ithkuil.Adjuncts hiding (CarrierAdjunct)
-import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), refC1All, lookupRefC1, decomposeRefCluster, referentLabel)
+import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), refC1All, decomposeRefCluster, referentLabel)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot, lookupAffix)
 
 --------------------------------------------------------------------------------
@@ -749,16 +750,60 @@ extractAllPairs parts =
       = (v, c) : pairVC rest
     pairVC _ = []
 
+-- | Case-accessor/case-stacking affix consonants
+-- w-series: Vx is case vowel directly
+-- y-series: Vx needs glottalization (V → V'V for monophthongs, V1V2 → V1'V2)
+isCaseAffix :: Text -> Bool
+isCaseAffix cs = cs `elem` (["sw", "zw", "čw", "šw", "žw", "jw", "lw",
+                              "sy", "zy", "čy", "šy", "žy", "jy", "ly"] :: [Text])
+
+-- | Get the case-accessor kind abbreviation
+caseAffixKind :: Text -> Text
+caseAffixKind cs = case cs of
+  "sw" -> "acc₁"; "sy" -> "acc₁"; "zw" -> "acc₂"; "zy" -> "acc₂"
+  "čw" -> "acc₃"; "čy" -> "acc₃"
+  "šw" -> "ia₁";  "šy" -> "ia₁";  "žw" -> "ia₂";  "žy" -> "ia₂"
+  "jw" -> "ia₃";  "jy" -> "ia₃"
+  "lw" -> "case"; "ly" -> "case"
+  _    -> cs
+
+-- | Glottalize a vowel for y-series case affixes
+-- Monophthongs: V → V'V (a → a'a), Diphthongs: V1V2 → V1'V2 (ai → a'i)
+glottalizeVowel :: Text -> Text
+glottalizeVowel v
+  | T.length v == 1 = v <> "'" <> v
+  | T.length v >= 2 = T.take 1 v <> "'" <> T.drop 1 v
+  | otherwise = v
+
+-- | Ca-stacking vowel: when Vx = "üö", Cs is interpreted as Ca complex
+caStackingVowel :: Text
+caStackingVowel = "üö"
+
 -- | Gloss a single affix (Vx, Cs) pair
 glossOneAffix :: Map Text AffixEntry -> (Text, Text) -> Text
-glossOneAffix affixes (vx, cs) =
-  let (degree, atype) = classifyDegreeType vx
-      abbr = case lookupAffix cs affixes of
-        Just entry -> affixAbbrev entry
-        Nothing -> cs
-      typeSuffix = case atype of
-        1 -> ""; 2 -> "₂"; 3 -> "₃"; _ -> ""
-  in abbr <> "/" <> T.pack (show degree) <> typeSuffix
+glossOneAffix affixes (vx, cs)
+  | normalizeAccents vx == caStackingVowel =
+    let caGloss = case parseCa cs of
+          Just pc -> showCaAbbr pc
+          Nothing -> cs
+    in "Ca:" <> (if T.null caGloss then "default" else caGloss)
+  | isCaseAffix cs =
+    let -- For y-series, glottalize the vowel to get the case vowel
+        caseVowel = if T.isSuffixOf "y" cs
+          then glottalizeVowel (normalizeAccents vx)
+          else normalizeAccents vx
+        caseName = case parseCase caseVowel of
+          Just c -> T.pack (showCase c)
+          Nothing -> "?" <> vx
+    in caseAffixKind cs <> ":" <> caseName
+  | otherwise =
+    let (degree, atype) = classifyDegreeType vx
+        abbr = case lookupAffix cs affixes of
+          Just entry -> affixAbbrev entry
+          Nothing -> cs
+        typeSuffix = case atype of
+          1 -> ""; 2 -> "₂"; 3 -> "₃"; _ -> ""
+    in abbr <> "/" <> T.pack (show degree) <> typeSuffix
 
 -- | Determine affix degree (1-9, 0) and type (1-3) from Vx vowel
 -- Returns (degree, type) where type is the series number
