@@ -1122,3 +1122,134 @@ main = hspec $ do
                ]
           unparsed = filter (\w -> case parseWord w of PUnparsed _ -> True; _ -> False) ws
       unparsed `shouldBe` []
+
+  describe "Grammar Reference Examples" $ do
+    it "parses Configuration examples (ch03)" $ do
+      -- Cat examples from ch03: rrala (UPX), rrasa (DPX), rraca (DSS), rrata (MSS), rraţa (MDS)
+      let testCa word expected = case parseWord word of
+            PFormative pf -> case pfCaParsed pf of
+              Just ca -> pcConfig ca `shouldBe` expected
+              Nothing -> expectationFailure $ T.unpack word <> ": no Ca parsed"
+            pw -> expectationFailure $ T.unpack word <> ": expected PFormative, got: " ++ show pw
+      testCa "rrala" UNI
+      testCa "rrasa" DPX
+      testCa "rraca" DSS
+      testCa "rrata" MSS
+      testCa "rraţa" MDS
+      testCa "rraza" MFS
+      testCa "rraša" DDF
+      testCa "rrača" DFS
+
+    it "parses Affiliation examples (ch03)" $ do
+      let testAff word expected = case parseWord word of
+            PFormative pf -> case pfCaParsed pf of
+              Just ca -> pcAffiliation ca `shouldBe` expected
+              Nothing -> expectationFailure $ T.unpack word <> ": no Ca parsed"
+            pw -> expectationFailure $ T.unpack word <> ": expected PFormative, got: " ++ show pw
+      testAff "čveţa" CSL     -- 'a bunch of tools'
+      testAff "čvelţa" ASO    -- 'a well-designed set of tools'
+      testAff "čverţa" COA    -- 'a toolset'
+
+    it "parses Cc+Vv shortcut examples (ch03)" $ do
+      -- yedpéi: y prefix -> PRX extension, Series 2 Vv = S2/PRC
+      case parseWord "yedpéi" of
+        PFormative pf -> do
+          pfRoot pf `shouldBe` Root "dp"
+          pfSlotII pf `shouldBe` (S2, PRC)
+          case pfCaParsed pf of
+            Just ca -> pcExtension ca `shouldBe` PRX
+            Nothing -> expectationFailure "yedpéi: no Ca parsed"
+        pw -> expectationFailure $ "yedpéi: " ++ show pw
+      -- weinţdâ: w prefix -> G perspective for Series 2
+      case parseWord "weinţdâ" of
+        PFormative pf -> do
+          pfRoot pf `shouldBe` Root "nţd"
+          case pfCaParsed pf of
+            Just ca -> pcPerspective ca `shouldBe` G_
+            Nothing -> expectationFailure "weinţdâ: no Ca parsed"
+        pw -> expectationFailure $ "weinţdâ: " ++ show pw
+
+    it "parses Perspective + Essence in Ca" $ do
+      -- Ca is a single consonant complex, not a sequence
+      -- l=M/NRM, r=G/NRM, w=N/NRM, y=A/NRM, tļ=M/RPV, ř=G/RPV
+      let testPerspEss word expPersp expEss = case parseWord word of
+            PFormative pf -> case pfCaParsed pf of
+              Just ca -> do
+                pcPerspective ca `shouldBe` expPersp
+                pcEssence ca `shouldBe` expEss
+              Nothing -> expectationFailure $ T.unpack word <> ": no Ca parsed"
+            pw -> expectationFailure $ T.unpack word <> ": expected PFormative, got: " ++ show pw
+      -- Use vowel-initial form (Vv=a, Cr=čv) to avoid referential classification
+      testPerspEss "ačvala" M_ NRM     -- l = default (M/NRM)
+      testPerspEss "ačvara" G_ NRM     -- r = G/NRM
+      testPerspEss "ačvawa" N_ NRM     -- w = N/NRM
+      testPerspEss "ačvaya" A_ NRM     -- y = A/NRM
+      testPerspEss "ačvatļa" M_ RPV    -- tļ = M/RPV
+      testPerspEss "ačvařa" G_ RPV     -- ř = G/RPV
+
+    it "renders and parses basic formatives consistently" $ do
+      let f = Formative
+                { fSlotI = Nothing
+                , fSlotII = (S1, PRC)
+                , fSlotIII = Root "rr"
+                , fSlotIV = (STA, BSC, EXS)
+                , fSlotV = []
+                , fSlotVI = (UNI, CSL, M_, DEL, NRM)
+                , fSlotVII = []
+                , fSlotVIII = Nothing
+                , fSlotIX = Left (Transrelative THM)
+                , fStress = Penultimate
+                }
+          rendered = renderFormative f
+      -- Should produce something like "arrala"
+      rendered `shouldBe` "arrala"
+      -- Parse it back and verify root
+      case parseWord rendered of
+        PFormative pf -> pfRoot pf `shouldBe` Root "rr"
+        pw -> expectationFailure $ "Round-trip failed: " ++ show pw
+
+    it "renders formative with Configuration and Case" $ do
+      let f = Formative
+                { fSlotI = Nothing
+                , fSlotII = (S2, PRC)
+                , fSlotIII = Root "rr"
+                , fSlotIV = (STA, CTE, EXS)
+                , fSlotV = []
+                , fSlotVI = (MSS, CSL, M_, DEL, NRM)
+                , fSlotVII = []
+                , fSlotVIII = Nothing
+                , fSlotIX = Left (Appositive GEN)
+                , fStress = Penultimate
+                }
+          rendered = renderFormative f
+      -- e = S2/PRC Vv, rr = root, ä = CTE Vr, t = MSS, l = M/NRM, ei = GEN case
+      rendered `shouldBe` "errätlei"
+      -- Parse it back
+      case parseWord rendered of
+        PFormative pf -> do
+          pfRoot pf `shouldBe` Root "rr"
+          pfSlotII pf `shouldBe` (S2, PRC)
+          pfSlotIV pf `shouldBe` (STA, CTE, EXS)
+          pfCase pf `shouldBe` Just (Appositive GEN)
+        pw -> expectationFailure $ "Round-trip failed: " ++ show pw
+
+    it "parses complex Ca forms from Kotlin tests" $ do
+      -- From Kotlin test: parseCa("s") = DPX
+      parseCa "s" `shouldBe` Just (ParsedCa DPX CSL M_ DEL NRM)
+      -- parseCa("nļ") = ASO (standalone affiliation)
+      parseCa "nļ" `shouldBe` Just (ParsedCa UNI ASO M_ DEL NRM)
+      -- parseCa("tļ") = RPV (standalone essence)
+      parseCa "tļ" `shouldBe` Just (ParsedCa UNI CSL M_ DEL RPV)
+
+    it "parses VnCn for all Valence values" $ do
+      let vals = [("a", MNO), ("ä", PRL), ("e", CRO), ("i", RCP),
+                  ("ëi", CPL), ("ö", DUP), ("o", DEM), ("ü", CNG), ("u", PTI)]
+      mapM_ (\(v, expected) ->
+        parseOneVnCn v "h" `shouldBe` Just (VnCnValence expected (MoodVal FAC))) vals
+
+    it "parses VnCn for all Aspect values (Pattern 2)" $ do
+      -- Pattern 2 uses w/y Cn
+      parseOneVnCn "a" "w" `shouldBe` Just (VnCnAspect RTR (MoodVal FAC))
+      parseOneVnCn "ai" "w" `shouldBe` Just (VnCnAspect RSM (MoodVal FAC))
+      parseOneVnCn "ia" "w" `shouldBe` Just (VnCnAspect PMP (MoodVal FAC))
+      parseOneVnCn "ao" "w" `shouldBe` Just (VnCnAspect DCL (MoodVal FAC))

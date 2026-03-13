@@ -31,7 +31,7 @@ import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, parseCa, ParsedFor
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
                            aspectVowels, phaseVowels, levelVowels, effectVowels)
 import Ithkuil.Adjuncts hiding (CarrierAdjunct)
-import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), refC1All, decomposeRefCluster, referentLabel, referentAbbrev)
+import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), refC1All, decomposeRefCluster, referentAbbrev)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot, lookupAffix)
 
 --------------------------------------------------------------------------------
@@ -700,9 +700,9 @@ glossFormative roots affixes pf =
 
 -- | Compact gloss: only shows root meaning and non-default grammatical info
 glossWordCompact :: Map Text RootEntry -> Map Text AffixEntry -> ParsedWord -> Text
-glossWordCompact roots _affixes pw = case pw of
+glossWordCompact roots affixes pw = case pw of
   PConcatenated pfs ->
-    T.intercalate "—" (map (\pf -> glossWordCompact roots _affixes (PFormative pf)) pfs)
+    T.intercalate "—" (map (\pf -> glossWordCompact roots affixes (PFormative pf)) pfs)
   PFormative pf ->
     let Root cr = pfRoot pf
         (stem, _) = pfSlotII pf
@@ -733,13 +733,13 @@ glossWordCompact roots _affixes pw = case pw of
                           <> (if T.null fv then "" else "-" <> fv)
   PAffixual cs deg _ -> cs <> "/" <> T.pack (show deg)
   PMultipleAffix first cz moreAfxs mVz ->
-    glossOneAffix _affixes first <> "-" <> glossCz cz
-    <> T.concat (map (\p -> "-" <> glossOneAffix _affixes p) moreAfxs)
+    glossOneAffix affixes first <> "-" <> glossCz cz
+    <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) moreAfxs)
     <> maybe "" (\vz -> "-" <> glossVz vz) mVz
   PCombinationRef refs mc _spec afxs mc2 ->
     glossCombinationRefs refs
     <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc
-    <> T.concat (map (\p -> "-" <> glossOneAffix _affixes p) afxs)
+    <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) afxs)
     <> maybe "" (\c -> "." <> T.pack (showCase c)) mc2
   PCarrier _ct content -> content
   PMoodCaseScope ms -> glossMoodOrScope ms

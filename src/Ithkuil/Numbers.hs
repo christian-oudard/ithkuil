@@ -4,54 +4,55 @@
 module Ithkuil.Numbers where
 
 import Data.Text (Text)
+import qualified Data.Text as T
 
 --------------------------------------------------------------------------------
 -- Number Roots (0-99)
 --------------------------------------------------------------------------------
 
--- | Basic number roots for 0-9
+-- | Basic number roots for 0-9 (from ch13 reference grammar)
 digitRoots :: [Text]
 digitRoots =
-  [ "ll"   -- 0
-  , "ks"   -- 1
-  , "z"    -- 2
-  , "ps"   -- 3
-  , "st"   -- 4
-  , "cp"   -- 5
-  , "ns"   -- 6
-  , "čk"   -- 7
-  , "lẓ"   -- 8
-  , "pc"   -- 9
+  [ "vr"   -- 0
+  , "ll"   -- 1
+  , "ks"   -- 2
+  , "z"    -- 3
+  , "pš"   -- 4
+  , "st"   -- 5
+  , "cp"   -- 6
+  , "ns"   -- 7
+  , "čk"   -- 8
+  , "lẓ"   -- 9
   ]
 
--- | Teens (10-19)
+-- | Teens (10-19): root J (=10) + digit root for 1-9
 teenRoots :: [Text]
 teenRoots =
   [ "j"     -- 10
-  , "jks"   -- 11
-  , "jz"    -- 12
-  , "jps"   -- 13
-  , "jst"   -- 14
-  , "jcp"   -- 15
-  , "jns"   -- 16
-  , "jčk"   -- 17
-  , "jlẓ"   -- 18
-  , "jpc"   -- 19
+  , "jll"   -- 11
+  , "jks"   -- 12
+  , "jz"    -- 13
+  , "jpš"   -- 14
+  , "jst"   -- 15
+  , "jcp"   -- 16
+  , "jns"   -- 17
+  , "jčk"   -- 18
+  , "jlẓ"   -- 19
   ]
 
--- | Tens (20, 30, ..., 90)
+-- | Tens (20, 30, ..., 90): v + digit root for 2-9
 tensRoots :: [Text]
 tensRoots =
   [ ""      -- 0 (not used directly)
   , ""      -- 10 (handled by teens)
-  , "vz"    -- 20
-  , "vps"   -- 30
-  , "vst"   -- 40
-  , "vcp"   -- 50
-  , "vns"   -- 60
-  , "včk"   -- 70
-  , "vlẓ"   -- 80
-  , "vpc"   -- 90
+  , "vks"   -- 20
+  , "vz"    -- 30
+  , "vpš"   -- 40
+  , "vst"   -- 50
+  , "vcp"   -- 60
+  , "vns"   -- 70
+  , "včk"   -- 80
+  , "vlẓ"   -- 90
   ]
 
 -- | Get root for numbers 0-99
@@ -72,15 +73,20 @@ numberRoot n
 -- Powers of 100
 --------------------------------------------------------------------------------
 
--- | Affixes for powers of 100
-powerAffixes :: [Text]
-powerAffixes =
-  [ ""      -- 100^0 = 1
-  , "çk"    -- 100^1 = 100 (hundred)
-  , "çp"    -- 100^2 = 10,000 (myriad)
-  , "çt"    -- 100^3 = 1,000,000 (million)
-  , "çn"    -- 100^4 = 100,000,000
-  , "çm"    -- 100^5 = 10,000,000,000
+-- | Roots for powers of 100 (from ch13 reference)
+-- These are full roots, not affixes. The centesimal system uses:
+-- 100^0: units (digit roots directly)
+-- 100^1: -GZ- (hundred)
+-- 100^2: -PC- (ten-thousand / myriad)
+-- 100^4: -KẒ- (hundred-million)
+-- 100^8: -ČG- (ten-quadrillion)
+powerRoots :: [Text]
+powerRoots =
+  [ ""      -- 100^0 = units
+  , "gz"    -- 100^1 = 100
+  , "pc"    -- 100^2 = 10,000
+  , "kẓ"    -- 100^4 = 100,000,000
+  , "čg"    -- 100^8 = 10,000,000,000,000,000
   ]
 
 --------------------------------------------------------------------------------
@@ -175,6 +181,14 @@ findIndex xs t = go 0 xs
       | otherwise = go (i+1) rest
 
 parseTensOnes :: Text -> Maybe Int
-parseTensOnes _ =
-  -- Try to match tens + ones pattern
-  Nothing  -- Simplified; full implementation would parse compound
+parseTensOnes t = go 2 tensRoots
+  where
+    go _ [] = Nothing
+    go tens (r:rest)
+      | tens >= 2, r /= "", r `isPrefixOf` t =
+        let remainder = T.drop (T.length r) t
+        in case findIndex digitRoots remainder of
+          Just ones | ones > 0 -> Just (tens * 10 + ones)
+          _ -> go (tens + 1) rest
+      | otherwise = go (tens + 1) rest
+    isPrefixOf p s = T.take (T.length p) s == p
