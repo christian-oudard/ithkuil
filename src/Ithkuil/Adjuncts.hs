@@ -73,8 +73,11 @@ data Bias
   | ANN  -- ^ Annunciative: announcing
   | RNC  -- ^ Renunciative: giving up
   | ISP  -- ^ Insipid: bland reaction
-  | ADM  -- ^ Admissive: conceding
+  | ADS  -- ^ Admissive: acknowledgement
   | IPL  -- ^ Implicative: implying
+  | MNF  -- ^ Manifestive: realization/epiphany
+  | RSG  -- ^ Resignative: giving up
+  | ARB  -- ^ Arbitrary: indifference
   | PPT  -- ^ Propitious: favorable
   | CTV  -- ^ Contemplative: pondering
   | CRP  -- ^ Corruptive: corrupting
@@ -108,7 +111,7 @@ biasForm FSC = "žžj"
 biasForm EUH = "gzz"
 biasForm GRT = "mmh"
 biasForm SAT = "ļţ"
-biasForm DLC = "jmm"
+biasForm DLC = "ẓmm"
 biasForm IFT = "vvr"
 biasForm SOL = "ňňs"
 biasForm RAC = "kll"
@@ -136,12 +139,15 @@ biasForm FOR = "lzp"
 biasForm ANN = "drr"
 biasForm RNC = "mzt"
 biasForm ISP = "lçp"
-biasForm ADM = "lļ"
+biasForm ADS = "lļ"
 biasForm IPL = "vll"
 biasForm PPT = "mll"
 biasForm CTV = "gvv"
 biasForm CRP = "gžž"
 biasForm DEJ = "žžg"
+biasForm MNF = "pss"
+biasForm RSG = "msf"
+biasForm ARB = "xtļ"
 
 -- | Parse bias from consonant form
 parseBias :: Text -> Maybe Bias

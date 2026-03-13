@@ -612,10 +612,10 @@ glossWord roots affixes pw = case pw of
     <> maybe "" (\vz -> "-" <> glossVz vz) mVz
   PCombinationRef refs mc spec afxs mc2 ->
     glossCombinationRefs refs
-    <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc
+    <> maybe "" (\c -> if c == Transrelative THM then "" else "-" <> T.pack (showCase c)) mc
     <> (if spec /= "x" then "-" <> spec else "")
     <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) afxs)
-    <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc2
+    <> maybe "" (\c -> if c == Transrelative THM then "" else "-" <> T.pack (showCase c)) mc2
   PCarrier ct _ -> "CARRIER:" <> T.pack (show ct)
   PMoodCaseScope ms -> glossMoodOrScope ms
   PUnparsed t -> "?" <> t
@@ -641,11 +641,12 @@ glossFormative roots affixes pf =
           [ if version /= PRC then T.pack (show version) else ""
           , if func /= STA then T.pack (show func) else ""
           ]
-        else case (stem, version) of
-          (S1, PRC) -> ""
-          (_, PRC) -> T.pack (show stem)
-          (S1, _) -> T.pack (show version)
-          _ -> T.pack (show stem) <> "." <> T.pack (show version)
+        else let base = case (stem, version) of
+                   (S1, PRC) -> ""
+                   (_, PRC) -> T.pack (show stem)
+                   (S1, _) -> T.pack (show version)
+                   _ -> T.pack (show stem) <> "." <> T.pack (show version)
+             in base
       -- Function/Specification/Context (omit if default STA/BSC/EXS)
       -- For Cs-root, function is already in stemVerAbbr; show context from Vr
       slotIVAbbr = if isCsRoot
@@ -657,10 +658,17 @@ glossFormative roots affixes pf =
             , if spec /= BSC then T.pack (show spec) else ""
             , if ctx /= EXS then T.pack (show ctx) else ""
             ]
-      -- Ca complex
-      caAbbr = case pfCaParsed pf of
-        Just pc -> showCaAbbr pc
-        Nothing -> ""
+      -- Ca complex: when shortcut, Ca values are shown with stem; otherwise separate
+      caAbbr = if pfHasShortcut pf then ""
+               else case pfCaParsed pf of
+                 Just pc -> showCaAbbr pc
+                 Nothing -> ""
+      -- Shortcut Ca values grouped with stem (PRX, RPV, G, N, A perspectives)
+      shortcutCaAbbr = if pfHasShortcut pf
+        then case pfCaParsed pf of
+          Just pc -> showCaAbbr pc
+          Nothing -> ""
+        else ""
       -- Slot V affixes (CsVx order - note: degree comes from Vx, the second element)
       slotVGlosses = map (\(cs, vx) -> glossOneAffix affixes (vx, cs)) (pfSlotV pf)
       -- Affixes from Ca rest (VxCs pairs after the Ca consonant)
@@ -671,15 +679,15 @@ glossFormative roots affixes pf =
         Nothing -> case extractVnCn (pfCa pf) of
           Just (vn, cn) -> parseOneVnCn vn cn
           Nothing -> Nothing
-      -- Slot IX: Case or Illocution+Validation (omit ASR/OBS default)
+      -- Slot IX: Case or Illocution+Validation (omit THM default, keep OBS)
       slotIXAbbr = case pfIllocVal pf of
         Just (ASR, OBS) -> "OBS"
         Just (ill, val) ->
           T.pack (show ill) <> "/" <> T.pack (show val)
         Nothing -> case pfCase pf of
-          Just c -> T.pack (showCase c)
+          Just c | c /= Transrelative THM -> T.pack (showCase c)
                  <> if pfStress pf == Antepenultimate then "\\FRA" else ""
-          Nothing -> if pfStress pf == Antepenultimate then "FRA" else ""
+          _ -> if pfStress pf == Antepenultimate then "FRA" else ""
       -- Implicit affix from Vv Series 2-4 (when no Cc shortcut)
       -- Series 2 → r/4, Series 3 → t/4, Series 4 → t/5
       implicitAffix = if not (pfHasShortcut pf) && pfVvSeries pf > 1
@@ -707,13 +715,14 @@ glossFormative roots affixes pf =
   in T.intercalate "-" $ filter (not . T.null)
     [ sentenceAbbr
     , concatAbbr
-    , if T.null implicitAffix then stemVerAbbr
-      else if T.null stemVerAbbr then implicitAffix
-      else stemVerAbbr <> "." <> implicitAffix
+    , let sv = T.intercalate "." $ filter (not . T.null)
+                 [stemVerAbbr, shortcutCaAbbr, implicitAffix]
+      in sv
     , rootMeaning
     , slotIVAbbr
     ] <> slotVGlosses
-      <> [caAbbr | not (T.null caAbbr)]
+      <> [if T.null caAbbr && not (null (pfSlotV pf)) then "{Ca}" else caAbbr
+         | not (T.null caAbbr) || not (null (pfSlotV pf))]
       <> affixGlosses
       <> [glossSlotVIII s8 | Just s8 <- [slotVIII]]
       <> [slotIXAbbr | not (T.null slotIXAbbr)]
@@ -734,8 +743,8 @@ glossWordCompact roots affixes pw = case pw of
             "." <> T.pack (show ill) <> "/" <> T.pack (show val)
           Just _ -> ""  -- ASR/OBS is default, skip
           Nothing -> case pfCase pf of
-            Just c -> "." <> T.pack (showCase c)
-            Nothing -> ""
+            Just c | c /= Transrelative THM -> "." <> T.pack (showCase c)
+            _ -> ""
         stemMark = case stem of
           S1 -> ""  -- default
           _ -> T.pack (show stem) <> ":"
@@ -899,7 +908,7 @@ glossMoodOrScope (CaseScope cs) = T.pack (show cs)
 showCaAbbr :: ParsedCa -> Text
 showCaAbbr pc
   | pc == ParsedCa UNI CSL M_ DEL NRM = ""  -- Default, don't show
-  | otherwise = T.intercalate "/" $ filter (/= "") $
+  | otherwise = T.intercalate "." $ filter (/= "") $
       [ if pcConfig pc /= UNI then T.pack (show (pcConfig pc)) else ""
       , if pcAffiliation pc /= CSL then T.pack (show (pcAffiliation pc)) else ""
       , if pcPerspective pc /= M_ then showPersp (pcPerspective pc) else ""

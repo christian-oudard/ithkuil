@@ -244,6 +244,11 @@ main = hspec $ do
       parseBias "řřx" `shouldBe` Just DOL
       parseBias "kff" `shouldBe` Just DIS
       parseBias "lf"  `shouldBe` Just ACC
+      parseBias "ẓmm" `shouldBe` Just DLC
+      parseBias "pss" `shouldBe` Just MNF
+      parseBias "msf" `shouldBe` Just RSG
+      parseBias "xtļ" `shouldBe` Just ARB
+      parseBias "lļ"  `shouldBe` Just ADS
 
     it "rejects unknown bias forms" $
       parseBias "xyz" `shouldBe` Nothing
@@ -556,7 +561,7 @@ main = hspec $ do
       glossOneAffix mempty ("ei", "nļ") `shouldBe` "ASR/PUP"
 
     it "glosses Ca-stacking affix (Vx=üö)" $ do
-      glossOneAffix mempty ("üö", "tr") `shouldBe` "Ca:MSS/G"
+      glossOneAffix mempty ("üö", "tr") `shouldBe` "Ca:MSS.G"
       glossOneAffix mempty ("üö", "s") `shouldBe` "Ca:DPX"
       glossOneAffix mempty ("üö", "l") `shouldBe` "Ca:default"
 
@@ -1287,6 +1292,14 @@ main = hspec $ do
           let gloss = glossWord mempty mempty (PFormative pf)
           T.isInfixOf "t/5" gloss `shouldBe` True
         pw -> expectationFailure $ "Expected PFormative for aomala, got: " ++ show pw
+
+    it "shows {Ca} marker when Slot V affixes force Ca gemination" $ do
+      -- alarfull: Slot V affix rf/9 + geminated Ca ll (→ default l)
+      let gloss1 = glossWord mempty mempty (parseWord "alarfull")
+      T.isInfixOf "{Ca}" gloss1 `shouldBe` True
+      -- a'larfunall: Slot V affixes rf/9 + n/1 + geminated Ca ll
+      let gloss2 = glossWord mempty mempty (parseWord "a'larfunall")
+      T.isInfixOf "{Ca}" gloss2 `shouldBe` True
 
     it "does not add implicit affix for shortcut formatives" $ do
       -- Shortcut w + Series 2 Vv: Ca is set from shortcut table, no implicit affix
