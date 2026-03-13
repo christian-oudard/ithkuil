@@ -902,6 +902,27 @@ main = hspec $ do
       renderValidation OBS `shouldBe` "a"
       renderValidation INF `shouldBe` "u"
 
+  describe "Cluster Referential Decomposition" $ do
+    it "decomposes biconsonantal referentials" $ do
+      decomposeRefCluster "th" `shouldBe` Just [PersonalRef Rrdp NEU]
+      decomposeRefCluster "ll" `shouldBe` Just [PersonalRef Robv NEU]
+      decomposeRefCluster "mm" `shouldBe` Just [PersonalRef Rpvs NEU]
+
+    it "decomposes multi-referent clusters" $ do
+      decomposeRefCluster "ţn" `shouldBe` Just [PersonalRef Rmi BEN, PersonalRef R2p NEU]
+      decomposeRefCluster "lm" `shouldBe` Just [PersonalRef R1m NEU, PersonalRef Rma NEU]
+      decomposeRefCluster "sp" `shouldBe` Just [PersonalRef R2m NEU, PersonalRef Rma BEN]
+
+    it "handles alternate pi.NEU form ļ" $ do
+      decomposeRefCluster "ļ" `shouldBe` Just [PersonalRef Rpi NEU]
+
+    it "fails on non-referential consonants" $ do
+      decomposeRefCluster "x" `shouldBe` Nothing
+      decomposeRefCluster "q" `shouldBe` Nothing
+
+    it "handles empty input" $ do
+      decomposeRefCluster "" `shouldBe` Just []
+
   describe "Integration: Longtest Poem" $ do
     it "parses all words from the Ozymandias poem" $ do
       let ws = ["Ufhulâ","eatreuhlï","wuksmenţi'ë","Mâlu'u","Azhesâ","Tartïnhâ",
@@ -917,3 +938,23 @@ main = hspec $ do
       case parseWord "Hmaggwí-ašnexürrtřa" of
         PConcatenated pfs -> length pfs `shouldBe` 2
         pw -> expectationFailure $ "Expected PConcatenated, got: " ++ show pw
+
+    it "parses all words from the full Ozymandias poem" $ do
+      -- Full 14-line poem (55 formative/referential/adjunct words)
+      let ws = [ "Ufhulâ","eatreuhlï","wuksmenţi'ë"
+               , "Mâlu'u","hma","Hmaggwí-ašnexürrtřa","yoskwätļu'u"
+               , "Azhesâ","Tartïnhâ","antfäsi'a"
+               , "Aţsägissa'hňu","yuilžařča","Aççpeřinï","theuxač"
+               , "Wamfpuňï","avcasu'u","umweřuňï","umskäzomļï'ï"
+               , "Avllevâ","evẓâlüduna","wulyezwi","açmaňotanï"
+               , "Emzäsouyâ","tha","áẓčelä","ešwarïntena'a"
+               , "Wanluẓda","ařžřusö'athu","aḑlialuň","açnüsö'athu"
+               , "Wužtļi'a","mangut","atväsâ","ha"
+               , "Wiadná","la","hnï","Ozimändiës","hweltivî-eltíl"
+               , "Ẓosêi","ümbrira","lëi","nu'i","aňčäzwarru'u","yumřřuňêi","hai"
+               , "Aiňļalïrxouyâ","Arčüsüanhi'a"
+               , "Esčäswallüxeu","erkefïrahma'u","yabgaguňahma'u"
+               , "Iazhasahra","eňtila'u","alřähma'u","efklaswünhâ"
+               ]
+          unparsed = filter (\w -> case parseWord w of PUnparsed _ -> True; _ -> False) ws
+      unparsed `shouldBe` []
