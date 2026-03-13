@@ -588,7 +588,9 @@ parseOneVnCn vn cn =
 -- | Gloss a parsed word with lexicon lookup
 glossWord :: Map Text RootEntry -> Map Text AffixEntry -> ParsedWord -> Text
 glossWord roots affixes pw = case pw of
-  PFormative pf -> glossFormative roots affixes pf
+  PFormative pf -> case validateSlotVMarker pf of
+    Just err -> "Error: " <> err
+    Nothing -> glossFormative roots affixes pf
   PConcatenated pfs ->
     T.intercalate "—" (map (glossFormative roots affixes) pfs)
   PBias b -> let desc = biasGloss b
@@ -1001,7 +1003,14 @@ glossSentence roots affixes sentence =
 -- Returns Nothing if valid, Just error message if mismatch
 validateSlotVMarker :: ParsedFormative -> Maybe Text
 validateSlotVMarker pf
-  | pfHasShortcut pf = Nothing  -- Shortcuts have different rules
+  | pfHasShortcut pf =
+      -- Shortcuts: glottal at Vv means slot V is filled, requiring >=2 VxCs affixes
+      let affixCount = length (extractAffixes (pfCa pf))
+      in if pfSlotVMarker pf && affixCount < 2
+         then Just "Unexpectedly few slot V affixes"
+         else if not (pfSlotVMarker pf) && affixCount >= 2
+         then Just "Unexpectedly many slot V affixes"
+         else Nothing
   | pfSlotVMarker pf && length (pfSlotV pf) < 2 =
       Just "Unexpectedly few slot V affixes"
   | not (pfSlotVMarker pf) && length (pfSlotV pf) >= 2 =

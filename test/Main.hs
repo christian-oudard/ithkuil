@@ -1151,6 +1151,15 @@ main = hspec $ do
           failed = filter (\w -> case parseWord w of PUnparsed _ -> True; _ -> False) words
       failed `shouldBe` []
 
+  describe "Kotlin Error Cases" $ do
+    it "detects unexpectedly few slot V affixes (shortcut)" $ do
+      let gloss = glossWord mempty mempty (parseWord "wa'lena")
+      T.isInfixOf "Unexpectedly few" gloss `shouldBe` True
+
+    it "detects unexpectedly many slot V affixes (shortcut)" $ do
+      let gloss = glossWord mempty mempty (parseWord "waršana'anera")
+      T.isInfixOf "Unexpectedly many" gloss `shouldBe` True
+
   describe "Integration: Longtest Poem" $ do
     it "parses all words from the Ozymandias poem" $ do
       let ws = ["Ufhulâ","eatreuhlï","wuksmenţi'ë","Mâlu'u","Azhesâ","Tartïnhâ",
