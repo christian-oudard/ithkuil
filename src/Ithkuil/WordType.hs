@@ -49,6 +49,7 @@ data ParsedWord
   | PRegister Register
   | PModular [SlotVIII] Text    -- parsed VnCn pairs, raw text
   | PReferential PersonalRef (Maybe Case) Text  -- referent, parsed case, raw case vowel
+  | PAffixual Text Int Text     -- affix Cs, degree, optional scope vowel
   | PCarrier CarrierType Text   -- carrier type, content
   | PUnparsed Text              -- Could not parse
   deriving (Show, Eq)
@@ -61,6 +62,7 @@ classifyWord word
   | isCarrierAdjunct word = WCarrierAdjunct
   | isBiasAdjunct word = WBiasAdjunct
   | isModularAdjunct word = WModularAdjunct
+  | isAffixualAdjunct word = WAffixualAdjunct
   | isReferentialWord word = WReferential
   | otherwise = WFormative
 
@@ -106,17 +108,35 @@ isReferentialWord word =
 isRefC1 :: Text -> Bool
 isRefC1 c = c `elem` map snd refC1All
 
+-- | Affixual adjuncts: V-C or V-C-V pattern where C is NOT a Cn consonant
+-- Structure: Vx (degree) + Cs (affix consonant) + optional Vs (scope)
+isAffixualAdjunct :: Text -> Bool
+isAffixualAdjunct word =
+  let conjs = splitConjuncts word
+  in case conjs of
+    [v, c] | not (T.null v) && isVowelChar (T.head v)
+             && v /= "ë"
+             && not (T.null c) && not (isVowelChar (T.head c))
+             && not (isCnConsonant c) -> True
+    [v, c, vs] | not (T.null v) && isVowelChar (T.head v)
+                 && v /= "ë"
+                 && not (T.null c) && not (isVowelChar (T.head c))
+                 && not (T.null vs) && isVowelChar (T.head vs) -> True
+    _ -> False
+
+-- | Check if a consonant is a Cn (modular adjunct) consonant
+isCnConsonant :: Text -> Bool
+isCnConsonant c = c `elem` ["h", "hl", "hr", "hm", "hn", "hň",
+                              "w", "y", "hw", "hrw", "hmw", "hnw", "hňw"]
+
 -- | Modular adjuncts: short V-C or V-C-V-C pattern with Cn consonant
 isModularAdjunct :: Text -> Bool
 isModularAdjunct word =
   let conjs = splitConjuncts word
   in case conjs of
-    [v, c] | isVowelChar (T.head v) && isCn c -> True
-    [v1, _, _, c2] | isVowelChar (T.head v1) && isCn c2 -> True
+    [v, c] | isVowelChar (T.head v) && isCnConsonant c -> True
+    [v1, _, _, c2] | isVowelChar (T.head v1) && isCnConsonant c2 -> True
     _ -> False
-  where
-    isCn c = c `elem` ["h", "hl", "hr", "hm", "hn", "hň",
-                        "w", "y", "hw", "hrw", "hmw", "hnw", "hňw"]
 
 --------------------------------------------------------------------------------
 -- Word Parsing
@@ -136,6 +156,7 @@ parseWord word = case classifyWord word of
     Nothing -> PUnparsed word
   WReferential -> parseReferentialWord word
   WModularAdjunct -> parseModularWord word
+  WAffixualAdjunct -> parseAffixualWord word
   _ -> PUnparsed word
 
 -- | Parse a register adjunct (initial and final forms)
@@ -167,6 +188,15 @@ parseReferentialWord word =
       -- For dual referentials, we report just the first referent for now
       Just ref -> PReferential ref (parseCase v) v
       Nothing -> PUnparsed word
+    _ -> PUnparsed word
+
+-- | Parse an affixual adjunct word (Vx-Cs or Vx-Cs-Vs)
+parseAffixualWord :: Text -> ParsedWord
+parseAffixualWord word =
+  let conjs = splitConjuncts word
+  in case conjs of
+    [vx, cs] -> PAffixual cs (classifyDegree vx) ""
+    [vx, cs, _vs] -> PAffixual cs (classifyDegree vx) word
     _ -> PUnparsed word
 
 -- | Parse a modular adjunct word
@@ -221,6 +251,11 @@ glossWord roots affixes pw = case pw of
   PRegister r -> T.pack (show r) <> " register"
   PModular pairs _ -> "MOD:" <> T.intercalate "+" (map glossSlotVIII pairs)
   PReferential ref mc vc -> glossReferential ref mc vc
+  PAffixual cs deg _ ->
+    let abbr = case lookupAffix cs affixes of
+          Just entry -> affixAbbrev entry
+          Nothing -> cs
+    in abbr <> "/" <> T.pack (show deg)
   PCarrier ct _ -> "CARRIER:" <> T.pack (show ct)
   PUnparsed t -> "?" <> t
 
@@ -288,6 +323,7 @@ glossWordCompact roots _affixes pw = case pw of
   PRegister r -> T.pack (show r)
   PReferential ref mc _vc -> glossReferential ref mc ""
   PModular pairs _raw -> T.intercalate "+" (map glossSlotVIII pairs)
+  PAffixual cs deg _ -> cs <> "/" <> T.pack (show deg)
   PCarrier _ct content -> content
   PUnparsed t -> "?" <> t
 

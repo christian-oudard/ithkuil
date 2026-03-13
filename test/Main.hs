@@ -349,6 +349,10 @@ main = hspec $ do
       classifyWord "se" `shouldBe` WReferential
       classifyWord "mo" `shouldBe` WReferential
 
+    it "classifies V-C words as affixual adjuncts" $ do
+      classifyWord "äst" `shouldBe` WAffixualAdjunct
+      classifyWord "eld" `shouldBe` WAffixualAdjunct
+
     it "classifies normal words as formatives" $ do
       classifyWord "malai" `shouldBe` WFormative
       classifyWord "emalai" `shouldBe` WFormative
@@ -481,6 +485,23 @@ main = hspec $ do
       case parseFormativeReal "la'la" of
         Just pf -> pfCase pf `shouldBe` Just (Relational PRN)
         Nothing -> expectationFailure "Should parse la'la"
+
+    it "parses Cc shortcut y- as PRX" $ do
+      case parseFormativeReal "yužgrá" of
+        Just pf -> do
+          pfSlotII pf `shouldBe` (S3, PRC)
+          pfCaParsed pf `shouldBe` Just (ParsedCa UNI CSL M_ PRX NRM)
+          pfIllocVal pf `shouldBe` Just (ASR, OBS)
+        Nothing -> expectationFailure "Should parse yužgrá"
+
+    it "parses Cc shortcut w- as perspective" $ do
+      case parseFormativeReal "wela" of
+        Just pf -> do
+          pfSlotII pf `shouldBe` (S2, PRC)
+          pfRoot pf `shouldBe` Root "l"
+          pfCaParsed pf `shouldBe` Just (ParsedCa UNI CSL M_ DEL NRM)
+          pfCase pf `shouldBe` Just (Transrelative THM)
+        Nothing -> expectationFailure "Should parse wela"
 
     it "parses longer formatives with explicit Vr" $ do
       case parseFormativeReal "kšilo" of

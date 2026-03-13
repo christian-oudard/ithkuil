@@ -102,6 +102,7 @@ glossOneWord roots affixes word = do
     PReferential ref mc vc -> showReferentialDetail ref mc vc
     PModular pairs _raw -> do
       mapM_ (\s8 -> TIO.putStrLn $ "    VnCn: " <> glossSlotVIII s8) pairs
+    PAffixual cs deg _ -> TIO.putStrLn $ "    Affix: " <> cs <> " degree " <> T.pack (show deg)
     PCarrier ct content -> TIO.putStrLn $ "    Carrier: " <> T.pack (show ct) <> " " <> content
     PUnparsed _ -> TIO.putStrLn $ "    (unparsed)"
   TIO.putStrLn $ "    GLOSS: " <> glossWord roots affixes parsed

@@ -119,9 +119,39 @@ data ParsedFormative = ParsedFormative
   , pfConjuncts :: [Text]        -- Original conjunct split
   } deriving (Show, Eq)
 
+-- | Cc shortcut type (w or y prefix that adds Ca values)
+data CcShortcut = ShortcutW | ShortcutY deriving (Show, Eq)
+
+-- | Resolve Ca from Cc shortcut + Vv series
+shortcutCa :: CcShortcut -> Int -> ParsedCa
+shortcutCa ShortcutW 1 = defaultCa
+shortcutCa ShortcutW 2 = ParsedCa UNI CSL G_ DEL NRM
+shortcutCa ShortcutW 3 = ParsedCa UNI CSL N_ DEL NRM
+shortcutCa ShortcutW 4 = ParsedCa UNI CSL G_ DEL RPV
+shortcutCa ShortcutY 1 = ParsedCa UNI CSL M_ PRX NRM
+shortcutCa ShortcutY 2 = ParsedCa UNI CSL M_ DEL RPV
+shortcutCa ShortcutY 3 = ParsedCa UNI CSL A_ DEL NRM
+shortcutCa ShortcutY 4 = ParsedCa UNI CSL M_ PRX RPV
+shortcutCa _ _ = defaultCa
+
+-- | Get Vv series number (1-4) from the vowel form
+vvSeries :: Text -> Int
+vvSeries vv = case normalizeAccents vv of
+  "a"  -> 1; "ä" -> 1
+  "e"  -> 1; "i" -> 1
+  "u"  -> 1; "ü" -> 1
+  "o"  -> 1; "ö" -> 1
+  "ai" -> 2; "au" -> 2; "ei" -> 2; "eu" -> 2
+  "ëu" -> 2; "ou" -> 2; "oi" -> 2; "iu" -> 2; "ui" -> 2
+  "ia" -> 3; "iä" -> 3; "ie" -> 3; "ië" -> 3
+  "ëo" -> 3; "iö" -> 3; "io" -> 3; "iü" -> 3
+  "ua" -> 4; "uä" -> 4; "ue" -> 4; "uë" -> 4
+  "ëa" -> 4; "uö" -> 4; "uo" -> 4; "uü" -> 4
+  _ -> 1
+
 -- | Parse a formative, handling both vowel-initial and consonant-initial words
 -- Consonant-initial words have elided Vv (defaults to S1/PRC = "a")
--- Words starting with w/y + vowel are treated as vowel-initial (w/y is a glide)
+-- Words starting with w/y + vowel are treated as vowel-initial (w/y is a Cc shortcut)
 parseFormativeReal :: Text -> Maybe ParsedFormative
 parseFormativeReal word = do
   let lword = T.toLower word
@@ -129,14 +159,44 @@ parseFormativeReal word = do
       stress = detectStressSimple lword
   case parts of
     [] -> Nothing
-    -- w/y glide before vowel: treat as vowel-initial (strip the glide)
-    (cc:vv:rest) | isGlide cc -> parseVowelInitial stress (vv:rest)
+    -- w/y Cc shortcut before vowel: parse as vowel-initial with shortcut Ca
+    (cc:vv:rest) | cc == "w" -> parseVowelInitialWithShortcut ShortcutW stress (vv:rest)
+    (cc:vv:rest) | cc == "y" -> parseVowelInitialWithShortcut ShortcutY stress (vv:rest)
     (first:_) ->
       if isConsonantCluster first
         then parseConsonantInitial stress parts  -- Elided Vv
         else parseVowelInitial stress parts      -- Normal Vv-Cr-Vr-Ca...
-  where
-    isGlide t = t == "w" || t == "y"
+
+-- | Parse vowel-initial word with Cc shortcut (w or y prefix)
+-- Shortcuts elide Slots IV (Vr) and VI (Ca), setting Ca from the shortcut table
+parseVowelInitialWithShortcut :: CcShortcut -> Stress -> [Text] -> Maybe ParsedFormative
+parseVowelInitialWithShortcut sc stress parts = case parts of
+  (vv:cr:rest) -> do
+    slotII <- parseSlotII vv
+    let series = vvSeries vv
+        scCa = shortcutCa sc series
+        -- With shortcuts, remaining parts after Cr are Vc/Vk directly (no Vr or Ca)
+        lastVowel = case rest of
+          [] -> Nothing
+          _ -> let isVowelCluster t = not (T.null t) && isVowelChar (T.head t)
+                   revRest = reverse rest
+                   (_, afterC) = span (not . isVowelCluster) revRest
+               in case afterC of
+                    (v:_) -> Just v
+                    [] -> Nothing
+        (caseM, illocValM) = parseSlotIXSimple stress lastVowel
+    Just ParsedFormative
+      { pfSlotII = slotII
+      , pfRoot = Root cr
+      , pfSlotIV = (STA, BSC, EXS)  -- Shortcuts elide Vr to default
+      , pfCa = []
+      , pfCaParsed = Just scCa
+      , pfCase = caseM
+      , pfIllocVal = illocValM
+      , pfStress = stress
+      , pfConjuncts = parts
+      }
+  _ -> Nothing
 
 -- | Check if text is a consonant cluster (starts with consonant)
 isConsonantCluster :: Text -> Bool
