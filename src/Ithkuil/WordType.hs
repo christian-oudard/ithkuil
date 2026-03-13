@@ -412,7 +412,8 @@ parseCombinationRefWord word =
           case1 = parseCase vc
           -- Parse VxCs affix pairs from rest
           (affixPairs, lastV) = parseVxCsPairs rest
-          case2 = lastV >>= parseCase
+          -- Combination referential second case: "a"/Nothing = no case, "üa" = THM
+          case2 = lastV >>= parseCaseCombiRef
       in case refs of
         Just rs -> PCombinationRef rs case1 spec affixPairs case2
         Nothing -> PUnparsed word
@@ -426,6 +427,10 @@ parseCombinationRefWord word =
       = let (more, lastV) = parseVxCsPairs rest
         in ((v, c) : more, lastV)
     parseVxCsPairs _ = ([], Nothing)
+    -- Combination referential case2: "a" = no case, "üa" = THM, else normal
+    parseCaseCombiRef "a" = Nothing
+    parseCaseCombiRef "üa" = Just (Transrelative THM)
+    parseCaseCombiRef v = parseCase v
 
 -- | Parse a carrier/quotative/naming adjunct (hl/hm/hn/hň + Vc)
 parseCarrierWord :: Text -> ParsedWord
@@ -614,10 +619,13 @@ glossWord roots affixes pw = case pw of
     <> maybe "" (\vz -> "-" <> glossVz vz) mVz
   PCombinationRef refs mc spec afxs mc2 ->
     glossCombinationRefs refs
-    <> maybe "" (\c -> if c == Transrelative THM then "" else "-" <> T.pack (showCase c)) mc
+    -- case1 shown only when case2 is present (Kotlin: Shown(caseA, condition = caseB != null))
+    <> case mc2 of
+         Just _ -> maybe "" (\c -> "-" <> T.pack (showCase c)) mc
+         Nothing -> ""
     <> (if spec /= "x" then "-" <> spec else "")
     <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) afxs)
-    <> maybe "" (\c -> if c == Transrelative THM then "" else "-" <> T.pack (showCase c)) mc2
+    <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc2
   PCarrier ct _ -> "CARRIER:" <> T.pack (show ct)
   PMoodCaseScope ms -> glossMoodOrScope ms
   PUnparsed t -> "?" <> t
@@ -775,9 +783,11 @@ glossWordCompact roots affixes pw = case pw of
     <> maybe "" (\vz -> "-" <> glossVz vz) mVz
   PCombinationRef refs mc _spec afxs mc2 ->
     glossCombinationRefs refs
-    <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc
+    <> case mc2 of
+         Just _ -> maybe "" (\c -> "-" <> T.pack (showCase c)) mc
+         Nothing -> ""
     <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) afxs)
-    <> maybe "" (\c -> "." <> T.pack (showCase c)) mc2
+    <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc2
   PCarrier _ct content -> content
   PMoodCaseScope ms -> glossMoodOrScope ms
   PUnparsed t -> "?" <> t
@@ -968,10 +978,12 @@ glossReferentials refs mc _vc =
         Nothing -> ""
   in refPart <> caseAbbr
 
--- | Gloss a combination referential with bracket notation
+-- | Gloss a combination referential
+-- Uses bracket notation only for multi-referent clusters
 glossCombinationRefs :: [PersonalRef] -> Text
 glossCombinationRefs refs = case refs of
   [] -> "?"
+  [r] -> glossOneRef r
   rs -> "[" <> T.intercalate "+" (map glossOneRef rs) <> "]"
 
 --------------------------------------------------------------------------------

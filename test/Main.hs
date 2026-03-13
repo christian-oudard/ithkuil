@@ -1022,6 +1022,18 @@ main = hspec $ do
           T.isInfixOf "2p" gloss `shouldBe` True
         pw -> expectationFailure $ "Expected PCombinationRef, got: " ++ show pw
 
+    it "shows both cases in combination referential with üa (THM)" $ do
+      let gloss = glossWord mempty mempty (parseWord "mixenüa")
+      -- Kotlin: ma-AFF-**n**/3₁-THM
+      T.isInfixOf "AFF" gloss `shouldBe` True
+      T.isInfixOf "THM" gloss `shouldBe` True
+
+    it "omits case1 when no case2 in combination referential" $ do
+      let gloss = glossWord mempty mempty (parseWord "ţnaxeka")
+      -- Kotlin: [mi.BEN+2p]-**k**/3₁  (no case shown)
+      T.isInfixOf "AFF" gloss `shouldBe` False
+      T.isInfixOf "THM" gloss `shouldBe` False
+
     it "uses abbreviations for referential glossing" $ do
       let gloss = glossWord mempty mempty (parseWord "la")
       T.isInfixOf "1m" gloss `shouldBe` True
