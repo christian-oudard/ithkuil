@@ -7,7 +7,8 @@ module Ithkuil.Compose
   , lookupForm
   , searchRoots
   , searchRootsRanked
-  , scoreEntry
+  , buildKeywordIndex
+  , KeywordIndex
   , searchAffixes
   , allCases
   , allValences
@@ -42,6 +43,8 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
+import qualified Data.Set as Set
+import Data.Text.Stemming.English (stem)
 import Ithkuil.Grammar
 import Ithkuil.Render
 import Ithkuil.Allomorph (constructCa)
@@ -90,83 +93,69 @@ searchRoots query roots =
 
 -- | Search roots ranked by relevance (lower score = better match)
 -- Supports both English keywords and consonant root forms (e.g. "jl" or "-jl-")
+-- Uses Porter2 stemming via keyword index for morphological matching.
 searchRootsRanked :: Text -> Map Text RootEntry -> [(Int, Text, RootEntry)]
 searchRootsRanked query roots =
   let q = T.toCaseFold query
-      -- Strip surrounding dashes for consonant root lookup
       stripped = T.dropWhile (== '-') . T.dropWhileEnd (== '-') $ q
-      -- Direct consonant root lookup
       directHit = case Map.lookup stripped roots of
         Just entry -> [(0, stripped, entry)]
         Nothing    -> []
   in if not (null directHit) then directHit
-     else let scored = [ (scoreEntry q entry, cr, entry)
-                       | (cr, entry) <- Map.toList roots
-                       , let s = scoreEntry q entry, s < 9999 ]
-          in sortBy (compare `on` (\(s,_,_) -> s)) scored
+     else let idx = buildKeywordIndex roots
+              hits = lookupKeywordIndex q idx
+              resolved = [ (score, cr, entry)
+                         | (score, cr) <- hits
+                         , Just entry <- [Map.lookup cr roots] ]
+          in sortBy (compare `on` (\(s,cr,_) -> (s, T.length cr, cr))) resolved
 
--- | Score how well a keyword matches a root entry (lower = better, 9999 = no match)
-scoreEntry :: Text -> RootEntry -> Int
-scoreEntry q entry =
-  let stems = [rootStem1 entry, rootStem0 entry, rootStem2 entry, rootStem3 entry]
-      scores = zipWith (\i s -> scoreStem q i s) [0 :: Int ..] stems
-  in minimum (9999 : scores)
+-- | Inverted keyword index: stemmed word → [(score, Cr root)]
+-- Score encodes match quality: lower = fragment is more central to root meaning.
+type KeywordIndex = Map Text [(Int, Text)]
 
--- | Score a single stem against a query
-scoreStem :: Text -> Int -> Text -> Int
-scoreStem q stemIdx stem =
-  let stemLow = T.toCaseFold stem
-      frags = filter (not . T.null) . map T.strip $
-              concatMap (T.splitOn ",") $ T.splitOn "/" stemLow
-      fragWords = [(f, wordsOf f, parenWords f) | f <- frags]
-      stripParens t = let (before, rest) = T.breakOn "(" t
-                      in if T.null rest then t else T.strip before
-      extractParens t = let (_, rest) = T.breakOn "(" t
-                        in if T.null rest then ""
-                           else T.takeWhile (/= ')') (T.drop 1 rest)
-      isWord w = T.any (\c -> c >= 'a' && c <= 'z') w
-      wordsOf = filter isWord . T.words . stripParens
-      parenWords t = let inside = extractParens t
-                     in if T.null inside then []
-                        else filter isWord . T.words $
-                             T.filter (\c -> c /= ',' && c /= '.') inside
-      nFrags = length frags
-      fragScores = concatMap scoreOneFrag fragWords
-      scoreOneFrag (frag, ws, pws) =
-        let cleanFrag = T.strip . T.dropWhile (\c -> not (c >= 'a' && c <= 'z') && not (c >= 'A' && c <= 'Z'))
-                      $ stripParens frag
-        in scoreClean cleanFrag ws : scoreParen pws
-      -- Check if any word is an inflected form of the query
-      -- Handles both direct suffixing (play→playing) and e-dropping (consume→consuming)
-      isInflected w = w `elem` allInflections
-      eDropped = if T.length q > 1 && T.last q == 'e' then Just (T.init q) else Nothing
-      allInflections = map (q <>) ["s", "es", "ed", "ing", "tion", "ness", "ment",
-                                   "ity", "al", "ous", "ful", "er", "est", "ly"]
-                    ++ maybe [] (\base -> map (base <>)
-                         ["ing", "ed", "er", "est", "ation", "ity", "able"]) eDropped
-      scoreClean cleanFrag ws
-        | cleanFrag == q && nFrags <= 2 = stemIdx
-        | cleanFrag == q && length ws <= 1 && nFrags >= 3 = 105 + stemIdx + nFrags
-        | cleanFrag == q = 50 + stemIdx + nFrags
-        -- Exact word match in phrase
-        | not (null ws) && last ws == q && length ws <= 2 = 100 + stemIdx * 10 + length ws
-        | q `elem` ws && length ws <= 3 = 110 + stemIdx * 10 + length ws
-        -- Inflected match: "play" → "playing", "consume" → "consuming"
-        | any isInflected ws = 200 + stemIdx * 10 + length ws
-        -- Head noun in longer phrase: "be in play" → lower confidence
-        | not (null ws) && last ws == q = 250 + stemIdx * 10 + length ws
-        | not (null ws) && head ws == q = 300 + stemIdx * 10 + length ws
-        | q `elem` ws = 350 + stemIdx * 10 + length ws
-        | any (\w -> q `T.isPrefixOf` w && T.length w < T.length q + 4) ws
-          = 500 + stemIdx * 10 + length ws
-        | otherwise = 9999
-      -- Score words inside parentheses (e.g., "natural ambulation (walk, crawl)")
-      scoreParen pws
-        | null pws = []
-        | q `elem` pws = [120 + stemIdx * 10 + length pws]
-        | any isInflected pws = [220 + stemIdx * 10 + length pws]
-        | otherwise = []
-  in minimum (9999 : fragScores)
+-- | Build keyword index from roots lexicon using Porter2 stemming.
+-- Bag-of-words approach: each stem description is tokenized, stemmed, and indexed.
+-- Score = word count of the shortest description containing this word.
+buildKeywordIndex :: Map Text RootEntry -> KeywordIndex
+buildKeywordIndex roots =
+  Map.fromListWith (++) $ concatMap indexRoot (Map.toList roots)
+  where
+    indexRoot (cr, entry) =
+      let descs = [ (0, T.toCaseFold (rootStem0 entry))
+                  , (0, T.toCaseFold (rootStem1 entry))
+                  , (1, T.toCaseFold (rootStem2 entry))
+                  , (1, T.toCaseFold (rootStem3 entry))
+                  ]
+      in concatMap (\(pri, d) -> indexDesc cr pri d) descs
+
+    indexDesc cr pri desc =
+      let ws = extractWords desc
+          nWords = length ws
+          score = pri * 10 + nWords
+          allForms = Set.toList . Set.fromList $ ws ++ map porterStem ws
+      in [(w, [(score, cr)]) | w <- allForms]
+
+    extractWords :: Text -> [Text]
+    extractWords t =
+      filter (\w -> T.length w > 1) .
+      map (T.dropWhile (\c -> not (c >= 'a' && c <= 'z'))) .
+      filter (T.any (\c -> c >= 'a' && c <= 'z')) .
+      T.words $ T.map (\c -> if c `elem` (".,;:!?()-/''\x2019" :: String) then ' ' else c) t
+
+    porterStem = stem Set.empty
+
+-- | Look up a query in the keyword index, trying exact word then stem.
+lookupKeywordIndex :: Text -> KeywordIndex -> [(Int, Text)]
+lookupKeywordIndex q idx =
+  let exactHits = Map.findWithDefault [] q idx
+      stemmed = stem Set.empty q
+      stemHits = if stemmed /= q
+                 then Map.findWithDefault [] stemmed idx
+                 else []
+      allHits = exactHits ++ stemHits
+      -- Deduplicate: keep best score per root
+      deduped = Map.toList $ Map.fromListWith min [(cr, score) | (score, cr) <- allHits]
+  in [(score, cr) | (cr, score) <- deduped]
 
 -- | Search affixes by keyword in abbreviation, description, or degree meanings
 -- Also handles -Cs- notation (strips dashes for consonant form lookup)
