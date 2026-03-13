@@ -15,21 +15,57 @@ import Ithkuil.Parse (ParsedFormative(..), ParsedCa(..))
 import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), referentLabel)
 import Ithkuil.WordType
 import Ithkuil.Lexicon
+import Ithkuil.Compose
 
 main :: IO ()
 main = do
   args <- getArgs
-  roots <- loadLexicon "data/roots.json"
-  affixes <- loadAffixLexicon "data/affixes.json"
   case args of
-    [] -> do
-      isTerm <- hIsTerminalDevice stdin
-      if isTerm
-        then repl roots affixes
-        else pipeMode roots affixes
-    ws -> do
-      let sentence = T.pack (unwords ws)
-      glossLine roots affixes sentence
+    ("--lookup":rest) -> handleLookup rest
+    ("--root":rest) -> handleRootSearch rest
+    ("--grammar":rest) -> handleGrammarDump rest
+    _ -> do
+      roots <- loadLexicon "data/roots.json"
+      affixes <- loadAffixLexicon "data/affixes.json"
+      case args of
+        [] -> do
+          isTerm <- hIsTerminalDevice stdin
+          if isTerm
+            then repl roots affixes
+            else pipeMode roots affixes
+        ws -> do
+          let sentence = T.pack (unwords ws)
+          glossLine roots affixes sentence
+
+handleLookup :: [String] -> IO ()
+handleLookup [] = TIO.putStrLn "Usage: ithkuil-gloss --lookup <abbreviation>"
+handleLookup (abbr:_) = do
+  let results = lookupGrammar (T.pack abbr)
+  case results of
+    [] -> TIO.putStrLn $ "No grammar entry found for: " <> T.pack abbr
+    _ -> mapM_ (\e ->
+      TIO.putStrLn $ gAbbrev e <> "  " <> gName e
+                  <> "  [" <> gCategory e <> "]"
+                  <> "  form: " <> gForm e) results
+
+handleRootSearch :: [String] -> IO ()
+handleRootSearch [] = TIO.putStrLn "Usage: ithkuil-gloss --root <keyword>"
+handleRootSearch ws = do
+  roots <- loadLexicon "data/roots.json"
+  let query = T.pack (unwords ws)
+      results = searchRoots query roots
+  if null results
+    then TIO.putStrLn $ "No roots found matching: " <> query
+    else mapM_ (\(cr, entry) ->
+      TIO.putStrLn $ "-" <> cr <> "-  S1: " <> rootStem1 entry
+                  <> "  S2: " <> rootStem2 entry
+                  <> "  S3: " <> rootStem3 entry
+                  <> "  S0: " <> rootStem0 entry) results
+
+handleGrammarDump :: [String] -> IO ()
+handleGrammarDump cats = do
+  let category = T.pack (unwords cats)
+  TIO.putStr (dumpGrammarTable category)
 
 loadLexicon :: FilePath -> IO (Map.Map Text RootEntry)
 loadLexicon path = do

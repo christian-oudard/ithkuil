@@ -25,6 +25,7 @@ library
                     , Ithkuil.FullParse
                     , Ithkuil.Concatenation
                     , Ithkuil.WordType
+                    , Ithkuil.Compose
                     , Ithkuil.V3.Grammar
                     , Ithkuil.V3.Parse
                     , Ithkuil.V2.Grammar
