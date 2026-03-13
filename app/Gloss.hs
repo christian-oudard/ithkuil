@@ -227,7 +227,8 @@ showFormativeDetail roots affixes pf = do
     TIO.putStrLn $ "    Affix: -" <> cs <> "- " <> vx <> " = " <> desc
     ) afxPairs
   -- Slot VIII: VnCn (from parse or extracted from Ca rest)
-  let vnCn = case pfSlotVIII pf of
+  -- Apply stress-based Mood vs CaseScope disambiguation
+  let vnCn = fmap (disambiguateSlotVIII (pfStress pf)) $ case pfSlotVIII pf of
         Just s8 -> Just s8
         Nothing -> case extractVnCn (pfCa pf) of
           Just (vn, cn) -> parseOneVnCn vn cn

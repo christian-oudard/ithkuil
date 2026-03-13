@@ -290,7 +290,6 @@ parseSingleWord word = case classifyWord word of
 detectFormativeError :: Text -> Maybe Text
 detectFormativeError word =
   let lw = T.toLower word
-      conjs = splitConjuncts lw
       -- Strip ç prefix for analysis
       stripped = case T.uncons lw of
         Just ('ç', rest) -> case T.uncons rest of
@@ -621,11 +620,13 @@ parseOneVnCn vn cn =
 -- | Gloss a parsed word with lexicon lookup
 glossWord :: Map Text RootEntry -> Map Text AffixEntry -> ParsedWord -> Text
 glossWord roots affixes pw = case pw of
-  PFormative pf -> case validateSlotVMarker pf of
+  PFormative pf -> case validateFormative pf of
     Just err -> "Error: " <> err
     Nothing -> glossFormative roots affixes pf
   PConcatenated pfs ->
-    T.intercalate "—" (map (glossFormative roots affixes) pfs)
+    case [e | Just e <- map validateFormative pfs] of
+      []    -> T.intercalate "—" (map (glossFormative roots affixes) pfs)
+      (e:_) -> "Error: " <> e
   PBias b -> let desc = biasGloss b
              in if T.null desc then T.pack (show b) else "\x201C" <> desc <> "\x201D"
   PRegister r -> T.pack (show r)
@@ -727,7 +728,9 @@ glossFormative roots affixes pf =
       affixGlosses = map (glossOneAffix affixes) (extractAffixes (pfCa pf))
       -- Slot VIII: VnCn (from pfSlotVIII or extracted from Ca rest)
       -- Supports absolute level: V+y+V+Cn pattern
-      slotVIII = case pfSlotVIII pf of
+      -- Disambiguate Mood vs CaseScope based on stress
+      stress = pfStress pf
+      slotVIII = fmap (disambiguateSlotVIII stress) $ case pfSlotVIII pf of
         Just s8 -> Just s8
         Nothing -> case extractVnCnFull (pfCa pf) of
           Just (vn, cn, absLvl) ->
@@ -1071,6 +1074,19 @@ glossSentence roots affixes sentence =
              then T.drop 1 (T.dropEnd 1 clean)
            else glossWord roots affixes (parseWord clean)
   in T.intercalate "  " $ filter (not . T.null) $ map glossW ws
+
+-- | Invalid root consonant forms (per Ithkuil V4 spec)
+invalidRootForms :: [Text]
+invalidRootForms = ["ļ", "ç", "çç", "çw", "w", "y"]
+
+-- | Validate all formative constraints
+-- Returns Just error if invalid
+validateFormative :: ParsedFormative -> Maybe Text
+validateFormative pf =
+  let Root cr = pfRoot pf
+  in if cr `elem` invalidRootForms
+     then Just ("Invalid root form: " <> cr)
+     else validateSlotVMarker pf
 
 -- | Validate Slot V marker consistency
 -- Returns Nothing if valid, Just error message if mismatch

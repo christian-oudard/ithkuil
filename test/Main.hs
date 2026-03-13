@@ -1495,3 +1495,20 @@ main = hspec $ do
     it "parses CNT aspect" $ do
       let g = glossWord mempty mempty (parseWord "agulouwá")
       T.isInfixOf "CNT" g `shouldBe` True
+
+  describe "Mood vs CaseScope Disambiguation" $ do
+    it "verbs (ultimate stress) get Mood" $ do
+      let g = glossWord mempty mempty (parseWord "agulahá")
+      T.isInfixOf "FAC" g `shouldBe` True
+      T.isInfixOf "CCN" g `shouldBe` False
+
+    it "nouns (penultimate stress) get CaseScope" $ do
+      let g = glossWord mempty mempty (parseWord "agulaha")
+      T.isInfixOf "CCN" g `shouldBe` True
+      T.isInfixOf "FAC" g `shouldBe` False
+
+    it "SUB mood for verbs, CCA case-scope for nouns" $ do
+      let gVerb = glossWord mempty mempty (parseWord "agulahlá")
+      T.isInfixOf "SUB" gVerb `shouldBe` True
+      let gNoun = glossWord mempty mempty (parseWord "agulahla")
+      T.isInfixOf "CCA" gNoun `shouldBe` True

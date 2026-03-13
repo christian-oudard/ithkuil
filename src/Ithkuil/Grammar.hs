@@ -419,6 +419,41 @@ data MoodOrScope = MoodVal Mood | CaseScope CaseScope
 data CaseScope = CCN | CCA | CCS | CCQ | CCP | CCV
   deriving (Show, Eq, Ord, Enum, Bounded)
 
+-- | Disambiguate Mood vs CaseScope based on stress pattern
+-- Ultimate stress = verb → Mood; Penultimate/Antepenultimate = noun → CaseScope
+disambiguateMoodScope :: Stress -> MoodOrScope -> MoodOrScope
+disambiguateMoodScope Ultimate ms = case ms of
+  CaseScope cs -> MoodVal (caseScopeToMood cs)
+  _ -> ms
+disambiguateMoodScope _ ms = case ms of
+  MoodVal m -> CaseScope (moodToCaseScope m)
+  _ -> ms
+
+moodToCaseScope :: Mood -> CaseScope
+moodToCaseScope FAC = CCN
+moodToCaseScope SUB = CCA
+moodToCaseScope ASM = CCS
+moodToCaseScope SPC = CCQ
+moodToCaseScope COU = CCP
+moodToCaseScope HYP = CCV
+
+caseScopeToMood :: CaseScope -> Mood
+caseScopeToMood CCN = FAC
+caseScopeToMood CCA = SUB
+caseScopeToMood CCS = ASM
+caseScopeToMood CCQ = SPC
+caseScopeToMood CCP = COU
+caseScopeToMood CCV = HYP
+
+-- | Apply disambiguation to a SlotVIII value
+disambiguateSlotVIII :: Stress -> SlotVIII -> SlotVIII
+disambiguateSlotVIII stress s8 = case s8 of
+  VnCnValence v ms  -> VnCnValence v (disambiguateMoodScope stress ms)
+  VnCnPhase p ms    -> VnCnPhase p (disambiguateMoodScope stress ms)
+  VnCnEffect e ms   -> VnCnEffect e (disambiguateMoodScope stress ms)
+  VnCnLevel l a ms  -> VnCnLevel l a (disambiguateMoodScope stress ms)
+  VnCnAspect a ms   -> VnCnAspect a (disambiguateMoodScope stress ms)
+
 -- | Slot VIII: VnCn affix (Pattern 1 or Pattern 2)
 data SlotVIII
   = VnCnValence Valence MoodOrScope    -- ^ Pattern 1: Valence + Mood/CaseScope
