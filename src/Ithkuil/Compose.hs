@@ -28,6 +28,7 @@ module Ithkuil.Compose
   , GrammarEntry(..)
   , dumpGrammarTable
   , composeFormative
+  , composeReferential
   , applyStress
   ) where
 
@@ -35,11 +36,11 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
-import Data.Char (isAlpha)
 import Ithkuil.Grammar
 import Ithkuil.Render
 import Ithkuil.Allomorph (constructCa)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), rootStem0, rootStem1, rootStem2, rootStem3)
+import Ithkuil.Referentials (PersonalRef(..), refC1)
 
 data GrammarEntry = GrammarEntry
   { gCategory :: Text    -- e.g. "Case", "Aspect"
@@ -336,6 +337,11 @@ composeFormative f = applyStress (fStress f) unstressed
       , renderSlotIX (fSlotIX f)
       ]
 
+-- | Compose a single referential: C1 + case vowel
+-- Example: composeReferential (PersonalRef R1m NEU) (Transrelative ERG) = "lo" ("I" in ERG)
+composeReferential :: PersonalRef -> Case -> Text
+composeReferential ref c = refC1 ref <> renderCase c
+
 -- | Geminate a Ca consonant cluster (inverse of degeminateCa).
 -- Doubles the first consonant; uses special allomorphs for certain clusters.
 geminateCa :: Text -> Text
@@ -365,20 +371,50 @@ caGemMap =
 applyStress :: Stress -> Text -> Text
 applyStress Penultimate t = t
 applyStress Monosyllabic t = t
-applyStress Ultimate t = accentNthVowelFromEnd 1 t
-applyStress Antepenultimate t = accentNthVowelFromEnd 3 t
+applyStress Ultimate t = accentNthNucleusFromEnd 1 t
+applyStress Antepenultimate t = accentNthNucleusFromEnd 3 t
 
--- | Place acute accent on the Nth vowel from the end (1-indexed).
-accentNthVowelFromEnd :: Int -> Text -> Text
-accentNthVowelFromEnd n t =
+-- | Ithkuil diphthongs (treated as single syllable nuclei).
+diphthongs :: [String]
+diphthongs = ["ai","äi","ei","ëi","oi","öi","ui","au","eu","ëu","ou","iu"]
+
+-- | Split a vowel group into syllable nuclei.
+-- Diphthongs stay together; other multi-vowel sequences split into individual vowels.
+splitNuclei :: String -> [String]
+splitNuclei [] = []
+splitNuclei [c] = [[c]]
+splitNuclei (a:b:rest)
+  | [a,b] `elem` diphthongs = [a,b] : splitNuclei rest
+  | otherwise = [a] : splitNuclei (b:rest)
+
+-- | Place acute accent on the first vowel of the Nth syllable nucleus from the end.
+accentNthNucleusFromEnd :: Int -> Text -> Text
+accentNthNucleusFromEnd n t =
   let chars = T.unpack t
-      vowelPositions = [i | (i, c) <- zip [0..] chars, isVowel c]
-      targetIdx = length vowelPositions - n
-  in if targetIdx < 0 || targetIdx >= length vowelPositions
-     then t  -- not enough vowels, return unchanged
-     else let pos = vowelPositions !! targetIdx
+      -- Find vowel group spans: (startPos, groupChars)
+      groups = findVowelGroups chars 0
+      -- Split each vowel group into nuclei, keeping track of start position
+      nuclei = concatMap (\(pos, grp) -> assignPositions pos (splitNuclei grp)) groups
+      targetIdx = length nuclei - n
+  in if targetIdx < 0 || targetIdx >= length nuclei
+     then t
+     else let (pos, _) = nuclei !! targetIdx
               c' = acuteAccent (chars !! pos)
           in T.pack (take pos chars ++ [c'] ++ drop (pos + 1) chars)
+
+-- | Find contiguous vowel groups with their starting positions.
+findVowelGroups :: String -> Int -> [(Int, String)]
+findVowelGroups [] _ = []
+findVowelGroups (c:cs) pos
+  | isVowel c = let (rest, remaining) = span isVowel cs
+                    grp = c : rest
+                in (pos, grp) : findVowelGroups remaining (pos + length grp)
+  | otherwise = findVowelGroups cs (pos + 1)
+
+-- | Assign character positions to nuclei within a vowel group.
+assignPositions :: Int -> [String] -> [(Int, String)]
+assignPositions _ [] = []
+assignPositions pos (nuc:rest) = (pos, nuc) : assignPositions (pos + length nuc) rest
 
 isVowel :: Char -> Bool
 isVowel c = c `elem` ("aäeëiïoöuü" :: String)

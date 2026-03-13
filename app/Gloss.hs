@@ -4,6 +4,9 @@
 module Main where
 
 import Control.Monad (when, forM_)
+import Data.List (sortBy)
+import Data.Ord (comparing)
+import Data.Function (on)
 import System.Environment (getArgs)
 import System.IO (hFlush, stdout, hSetBuffering, BufferMode(..), stdin, hIsTerminalDevice, hIsEOF)
 import Data.Text (Text)
@@ -12,10 +15,10 @@ import qualified Data.Text.IO as TIO
 import qualified Data.Map.Strict as Map
 import Ithkuil.Grammar
 import Ithkuil.Parse (ParsedFormative(..), ParsedCa(..))
-import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), referentLabel)
+import Ithkuil.Referentials (PersonalRef(..), Referent(..), ReferentEffect(..), referentLabel)
 import Ithkuil.WordType
 import Ithkuil.Lexicon
-import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), searchRoots, searchAffixes, dumpGrammarTable, composeFormative)
+import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), searchRoots, searchAffixes, dumpGrammarTable, composeFormative, composeReferential)
 import Ithkuil.Phonology (vowelForm)
 import Ithkuil.Script (renderFormativeSvg)
 
@@ -46,6 +49,7 @@ main = do
     ("--grammar":rest) -> handleGrammarDump rest
     ("--script":rest) -> handleScript rest
     ("--compose":rest) -> handleCompose rest
+    ("--sentence":rest) -> handleSentence rest
     _ -> do
       roots <- loadLexicon "data/roots.json"
       affixes <- loadAffixLexicon "data/affixes.json"
@@ -140,14 +144,162 @@ handleCompose [] = TIO.putStrLn "Usage: ithkuil-gloss --compose <root> [S1-S3] [
 handleCompose (rootStr:opts) = do
   roots <- loadLexicon "data/roots.json"
   affixes <- loadAffixLexicon "data/affixes.json"
-  let root = T.pack rootStr
-      flags = map (T.toUpper . T.pack) opts
+  let root = resolveRoot roots (T.pack rootStr)
+      flags = map (resolveAffixFlag affixes . T.toUpper . T.pack) opts
       f0 = minimalFormative root
       f1 = applyComposeFlags flags f0
       f2 = autoStress f1
       word = composeFormative f2
   TIO.putStrLn $ col bold word
   glossLine roots affixes word
+
+handleSentence :: [String] -> IO ()
+handleSentence [] = TIO.putStrLn "Usage: ithkuil-gloss --sentence root:FLAG:FLAG @1m:ERG ..."
+handleSentence specs = do
+  roots <- loadLexicon "data/roots.json"
+  affixes <- loadAffixLexicon "data/affixes.json"
+  let words_ = map (composeOneWord roots affixes . T.pack) specs
+      sentence = T.unwords words_
+  TIO.putStrLn $ col bold sentence
+  glossLine roots affixes sentence
+
+-- | Compose one word spec: either @referent:CASE or root:FLAG:FLAG
+-- Root can be consonant cluster (e.g. "rţt") or English keyword (e.g. "study")
+-- Affix flags like +NEG/4 are resolved via the affix lexicon.
+composeOneWord :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> Text
+composeOneWord roots affixes s = case T.splitOn ":" s of
+  (w:opts)
+    | Just ref <- T.stripPrefix "@" w
+    , let flags = map T.toUpper opts
+    -> composeRefWord (T.toUpper ref) flags
+  (root:opts) ->
+    let resolved = resolveRoot roots root
+        f0 = minimalFormative resolved
+        flags = map (resolveAffixFlag affixes . T.toUpper) opts
+        f1 = applyComposeFlags flags f0
+        f2 = autoStress f1
+    in composeFormative f2
+  [] -> "?"
+
+-- | Resolve affix abbreviation in a flag: +NEG/4 → +r/4
+resolveAffixFlag :: Map.Map Text AffixEntry -> Text -> Text
+resolveAffixFlag affixes flag
+  | Just rest <- T.stripPrefix "+" flag = "+" <> resolveAffixCs affixes rest
+  | Just rest <- T.stripPrefix "~" flag = "~" <> resolveAffixCs affixes rest
+  | otherwise = flag
+
+-- | Resolve affix Cs: if "NEG/4" and NEG is a known abbreviation, replace with "r/4"
+resolveAffixCs :: Map.Map Text AffixEntry -> Text -> Text
+resolveAffixCs affixes t = case T.splitOn "/" t of
+  [cs, deg] ->
+    let csLower = T.toLower cs
+        -- Check if cs is already a consonant form
+        isConsonant = Map.member csLower affixes
+        -- Try as abbreviation
+        abbrevMatch = [(affixCs e) | e <- Map.elems affixes, T.toUpper (affixAbbrev e) == cs]
+    in if isConsonant then t
+       else case abbrevMatch of
+         (realCs:_) -> realCs <> "/" <> deg
+         [] -> t
+  _ -> t
+
+-- | Resolve a root: if it contains vowels, search the lexicon by keyword
+-- and use the first match's consonant form. Scores by match quality.
+resolveRoot :: Map.Map Text RootEntry -> Text -> Text
+resolveRoot roots t
+  | T.any isVowelChar t =
+    let q = T.toCaseFold t
+        scored = [(scoreEntry q entry, cr) | (cr, entry) <- Map.toList roots]
+        best = map snd $ sortBy (compare `on` fst) [(s, cr) | (s, cr) <- scored, s < 9999]
+    in case best of
+      (cr:_) -> cr
+      [] -> case searchRoots t roots of  -- fallback to substring
+        ((cr, _):_) -> cr
+        [] -> t
+  | otherwise = t
+  where isVowelChar c = c `elem` ("aäeëiïoöuüáéíóú" :: String)
+
+-- | Score how well a keyword matches a root entry (lower = better, 9999 = no match)
+scoreEntry :: Text -> RootEntry -> Int
+scoreEntry q entry =
+  let stems = [rootStem1 entry, rootStem0 entry, rootStem2 entry, rootStem3 entry]
+      -- Check all stems, prefer earlier stems (stem0 = overview, most authoritative)
+      scores = zipWith (\i s -> scoreStem q i s) [0 :: Int ..] stems
+  in minimum (9999 : scores)
+
+scoreStem :: Text -> Int -> Text -> Int
+scoreStem q stemIdx stem =
+  let stemLow = T.toCaseFold stem
+      frags = filter (not . T.null) . map T.strip $
+              concatMap (T.splitOn ",") $ T.splitOn "/" stemLow
+      fragWords = [(f, wordsOf f) | f <- frags]
+      -- Strip parenthetical content before tokenizing (e.g. "(Felis catus)")
+      stripParens t = let (before, rest) = T.breakOn "(" t
+                      in if T.null rest then t else T.strip before
+      wordsOf = filter (\w -> T.any (\c -> c >= 'a' && c <= 'z') w) . T.words . stripParens
+      -- Best score across all fragments
+      nFrags = length frags
+      fragScores = map scoreOneFrag fragWords
+      scoreOneFrag (frag, ws)
+        -- Exact fragment match: "fire" = "fire"
+        -- Penalize if many fragments (compound term like "cat/dog/raccoon tapeworm")
+        | frag == q && nFrags <= 2 = stemIdx
+        | frag == q = 150 + stemIdx + nFrags
+        -- Keyword is the head noun (last word): "domestic dog" → "dog"
+        | not (null ws) && last ws == q = 100 + stemIdx * 10 + length ws
+        -- Keyword is first word: "fire engine" → "fire"
+        | not (null ws) && head ws == q = 200 + stemIdx * 10 + length ws
+        -- Keyword anywhere in fragment
+        | q `elem` ws = 300 + stemIdx * 10 + length ws
+        -- Prefix match
+        | any (\w -> q `T.isPrefixOf` w && T.length w < T.length q + 4) ws
+          = 500 + stemIdx * 10 + length ws
+        | otherwise = 9999
+  in minimum (9999 : fragScores)
+
+-- | Compose a referential word: @REF:CASE → C1+Vc
+composeRefWord :: Text -> [Text] -> Text
+composeRefWord ref flags =
+  let refM = parseReferent ref
+      caseM = findCase flags
+  in case refM of
+    Just pr -> composeReferential pr (maybe (Transrelative THM) id caseM)
+    Nothing -> "?" <> ref
+
+-- | Parse referent abbreviation to PersonalRef
+parseReferent :: Text -> Maybe PersonalRef
+parseReferent "1M"  = Just (PersonalRef R1m NEU)
+parseReferent "2M"  = Just (PersonalRef R2m NEU)
+parseReferent "2P"  = Just (PersonalRef R2p NEU)
+parseReferent "MA"  = Just (PersonalRef Rma NEU)
+parseReferent "PA"  = Just (PersonalRef Rpa NEU)
+parseReferent "MI"  = Just (PersonalRef Rmi NEU)
+parseReferent "PI"  = Just (PersonalRef Rpi NEU)
+parseReferent "MX"  = Just (PersonalRef Rmx NEU)
+parseReferent "RDP" = Just (PersonalRef Rrdp NEU)
+parseReferent "OBV" = Just (PersonalRef Robv NEU)
+parseReferent "PVS" = Just (PersonalRef Rpvs NEU)
+-- With effect: 1M.BEN, MA.DET, etc.
+parseReferent t = case T.splitOn "." t of
+  [r, "BEN"] -> fmap (\(PersonalRef ref _) -> PersonalRef ref BEN) (parseReferent r)
+  [r, "DET"] -> fmap (\(PersonalRef ref _) -> PersonalRef ref DET) (parseReferent r)
+  _ -> Nothing
+
+-- | Find a case flag in the flag list
+findCase :: [Text] -> Maybe Case
+findCase [] = Nothing
+findCase (f:fs) = case parseCaseFlag f of
+  Just c -> Just c
+  Nothing -> findCase fs
+
+-- | Parse a case abbreviation to a Case value
+parseCaseFlag :: Text -> Maybe Case
+parseCaseFlag t =
+  let f0 = minimalFormative "x"
+      f1 = applyOneFlag t f0
+  in case fSlotIX f1 of
+    Left c | fSlotIX f1 /= fSlotIX f0 -> Just c
+    _ -> Nothing
 
 -- | Apply a list of grammar flags to a formative
 applyComposeFlags :: [Text] -> Formative -> Formative
@@ -288,15 +440,77 @@ applyOneFlag "IMA" f = setVal IMA f
 applyOneFlag "CVN" f = setVal CVN f
 applyOneFlag "ITU" f = setVal ITU f
 applyOneFlag "INF" f = setVal INF f
--- Aspect (Slot VIII, Pattern 2)
-applyOneFlag "RTR" f = f { fSlotVIII = Just (VnCnAspect RTR (MoodVal FAC)) }
-applyOneFlag "PRS" f = f { fSlotVIII = Just (VnCnAspect PRS (MoodVal FAC)) }
-applyOneFlag "HAB" f = f { fSlotVIII = Just (VnCnAspect HAB (MoodVal FAC)) }
-applyOneFlag "PRG" f = f { fSlotVIII = Just (VnCnAspect PRG (MoodVal FAC)) }
-applyOneFlag "IMM" f = f { fSlotVIII = Just (VnCnAspect IMM (MoodVal FAC)) }
-applyOneFlag "PCS" f = f { fSlotVIII = Just (VnCnAspect PCS (MoodVal FAC)) }
-applyOneFlag "REG" f = f { fSlotVIII = Just (VnCnAspect REG (MoodVal FAC)) }
-applyOneFlag "ATP" f = f { fSlotVIII = Just (VnCnAspect ATP (MoodVal FAC)) }
+-- Aspect (Slot VIII, Pattern 2) — all 36 aspects
+applyOneFlag "RTR" f = setAspect RTR f
+applyOneFlag "PRS" f = setAspect PRS f
+applyOneFlag "HAB" f = setAspect HAB f
+applyOneFlag "PRG" f = setAspect PRG f
+applyOneFlag "IMM" f = setAspect IMM f
+applyOneFlag "PCS" f = setAspect PCS f
+applyOneFlag "REG" f = setAspect REG f
+applyOneFlag "SMM" f = setAspect SMM f
+applyOneFlag "ATP" f = setAspect ATP f
+applyOneFlag "RSM" f = setAspect RSM f
+applyOneFlag "CSS" f = setAspect CSS f
+applyOneFlag "PAU" f = setAspect PAU f
+applyOneFlag "RGR" f = setAspect RGR f
+applyOneFlag "PCL" f = setAspect PCL f
+applyOneFlag "CNT" f = setAspect CNT f
+applyOneFlag "ICS" f = setAspect ICS f
+applyOneFlag "EXP" f = setAspect EXP f
+applyOneFlag "IRP" f = setAspect IRP f
+applyOneFlag "PMP" f = setAspect PMP f
+applyOneFlag "CLM" f = setAspect CLM f
+applyOneFlag "DLT" f = setAspect DLT f
+applyOneFlag "TMP" f = setAspect TMP f
+applyOneFlag "XPD" f = setAspect XPD f
+applyOneFlag "LIM" f = setAspect LIM f
+applyOneFlag "EPD" f = setAspect EPD f
+applyOneFlag "PTC" f = setAspect PTC f
+applyOneFlag "PPR" f = setAspect PPR f
+applyOneFlag "DCL" f = setAspect DCL f
+applyOneFlag "CCL" f = setAspect CCL f
+applyOneFlag "CUL" f = setAspect CUL f
+applyOneFlag "IMD" f = setAspect IMD f
+applyOneFlag "TRD" f = setAspect TRD f
+applyOneFlag "TNS" f = setAspect TNS f
+applyOneFlag "ITC" f = setAspect ITC f
+applyOneFlag "MTV" f = setAspect MTV f
+applyOneFlag "SQN" f = setAspect SQN f
+-- Valence (Slot VIII, Pattern 1)
+applyOneFlag "MNO" f = setValence MNO f
+applyOneFlag "PRL" f = setValence PRL f
+applyOneFlag "CRO" f = setValence CRO f
+applyOneFlag "RCP" f = setValence RCP f
+applyOneFlag "CPL" f = setValence CPL f
+applyOneFlag "DUP" f = setValence DUP f
+applyOneFlag "DEM" f = setValence DEM f
+applyOneFlag "CNG" f = setValence CNG f
+applyOneFlag "PTI" f = setValence PTI f
+-- Phase (Slot VIII, Pattern 1 Series 2)
+applyOneFlag "PUN" f = setPhase PUN f
+applyOneFlag "ITR" f = setPhase ITR f
+applyOneFlag "REP" f = setPhase REP f
+applyOneFlag "ITM" f = setPhase ITM f
+applyOneFlag "RCT" f = setPhase RCT f
+applyOneFlag "FRE" f = setPhase FRE f
+applyOneFlag "FRG" f = setPhase FRG f
+applyOneFlag "VAC" f = setPhase VAC f
+applyOneFlag "FLC" f = setPhase FLC f
+-- Mood (Cn modifier)
+applyOneFlag "FAC" f = setMood (MoodVal FAC) f
+applyOneFlag "SUB" f = setMood (MoodVal SUB) f
+applyOneFlag "ASM" f = setMood (MoodVal ASM) f
+applyOneFlag "SPC" f = setMood (MoodVal SPC) f
+applyOneFlag "COU" f = setMood (MoodVal COU) f
+applyOneFlag "HYP" f = setMood (MoodVal HYP) f
+-- Case-Scope (Cn modifier for nouns)
+applyOneFlag "CCN" f = setMood (CaseScope CCN) f
+applyOneFlag "CCA" f = setMood (CaseScope CCA) f
+applyOneFlag "CCS" f = setMood (CaseScope CCS) f
+applyOneFlag "CCQ" f = setMood (CaseScope CCQ) f
+applyOneFlag "CCP" f = setMood (CaseScope CCP) f
+applyOneFlag "CCV" f = setMood (CaseScope CCV) f
 -- Framed relation (antepenultimate stress)
 applyOneFlag "FRA" f = f { fStress = Antepenultimate }
 -- Affix: +Cs/D for Slot VII (Ca-scoped), ~Cs/D for Slot V (stem-scoped)
@@ -335,6 +549,38 @@ setVal v f = case fSlotIX f of
   Right (IllocVal ill _) -> f { fSlotIX = Right (IllocVal ill v) }
   _ -> f { fSlotIX = Right (IllocVal ASR v) }
 
+-- | Set aspect, preserving existing mood/scope
+setAspect :: Aspect -> Formative -> Formative
+setAspect asp f = f { fSlotVIII = Just (VnCnAspect asp (getMoodOrScope f)) }
+
+-- | Set mood or case-scope, preserving existing VnCn pattern
+setMood :: MoodOrScope -> Formative -> Formative
+setMood ms f = case fSlotVIII f of
+  Just (VnCnAspect asp _)  -> f { fSlotVIII = Just (VnCnAspect asp ms) }
+  Just (VnCnValence v _)   -> f { fSlotVIII = Just (VnCnValence v ms) }
+  Just (VnCnPhase p _)     -> f { fSlotVIII = Just (VnCnPhase p ms) }
+  Just (VnCnEffect e _)    -> f { fSlotVIII = Just (VnCnEffect e ms) }
+  Just (VnCnLevel l b _)   -> f { fSlotVIII = Just (VnCnLevel l b ms) }
+  _ -> f { fSlotVIII = Just (VnCnAspect RTR ms) }
+
+-- | Set valence, preserving existing mood/scope
+setValence :: Valence -> Formative -> Formative
+setValence v f = f { fSlotVIII = Just (VnCnValence v (getMoodOrScope f)) }
+
+-- | Set phase, preserving existing mood/scope
+setPhase :: Phase -> Formative -> Formative
+setPhase p f = f { fSlotVIII = Just (VnCnPhase p (getMoodOrScope f)) }
+
+-- | Extract mood/scope from current SlotVIII, defaulting to FAC
+getMoodOrScope :: Formative -> MoodOrScope
+getMoodOrScope f = case fSlotVIII f of
+  Just (VnCnAspect _ ms)  -> ms
+  Just (VnCnValence _ ms) -> ms
+  Just (VnCnPhase _ ms)   -> ms
+  Just (VnCnEffect _ ms)  -> ms
+  Just (VnCnLevel _ _ ms) -> ms
+  _ -> MoodVal FAC
+
 -- Ca component setters
 setCa1 :: Configuration -> Formative -> Formative
 setCa1 c f = let (_, a, p, e, s) = fSlotVI f in f { fSlotVI = (c, a, p, e, s) }
@@ -347,13 +593,24 @@ setCa4p p f = let (c, a, _, e, s) = fSlotVI f in f { fSlotVI = (c, a, p, e, s) }
 setCa5 :: Essence -> Formative -> Formative
 setCa5 s f = let (c, a, p, e, _) = fSlotVI f in f { fSlotVI = (c, a, p, e, s) }
 
--- | Auto-determine stress from Slot IX, unless explicitly set (e.g. FRA)
+-- | Auto-determine stress from Slot IX and VnCn mood, unless explicitly set (e.g. FRA)
 autoStress :: Formative -> Formative
 autoStress f
   | fStress f /= Penultimate = f  -- Explicitly set, don't override
   | otherwise = case fSlotIX f of
       Right _ -> f { fStress = Ultimate }
-      Left _ -> f
+      Left _ -> case fSlotVIII f of
+        -- Mood (non-FAC) implies verbal → ultimate stress
+        Just s8 | hasMood s8 -> f { fStress = Ultimate }
+        _ -> f
+  where
+    hasMood s8 = case s8 of
+      VnCnAspect _ (MoodVal m)  -> m /= FAC
+      VnCnValence _ (MoodVal m) -> m /= FAC
+      VnCnPhase _ (MoodVal m)   -> m /= FAC
+      VnCnEffect _ (MoodVal m)  -> m /= FAC
+      VnCnLevel _ _ (MoodVal m) -> m /= FAC
+      _ -> False
 
 sel1 :: (a, b, c) -> a
 sel1 (a, _, _) = a
@@ -422,14 +679,21 @@ repl roots affixes = do
           let parts = T.words (T.drop 8 cmd)
           case parts of
             (root:opts) -> do
-              let f0 = minimalFormative root
-                  flags = map T.toUpper opts
+              let resolved = resolveRoot roots root
+                  f0 = minimalFormative resolved
+                  flags = map (resolveAffixFlag affixes . T.toUpper) opts
                   f1 = applyComposeFlags flags f0
                   f2 = autoStress f1
                   word = composeFormative f2
               TIO.putStrLn $ "  " <> col bold word
               glossLine roots affixes word
             _ -> TIO.putStrLn "Usage: /compose <root> [S2] [DYN] [ABS] [IRG] ..."
+      | "sentence " `T.isPrefixOf` cmd = do
+          let specs = T.words (T.drop 9 cmd)
+              words_ = map (composeOneWord roots affixes) specs
+              sentence = T.unwords words_
+          TIO.putStrLn $ "  " <> col bold sentence
+          glossLine roots affixes sentence
       | "lookup " `T.isPrefixOf` cmd = do
           let query = T.drop 7 cmd
               results = lookupGrammar query
@@ -442,6 +706,7 @@ repl roots affixes = do
           TIO.putStrLn "  /root <keyword>           Search roots by meaning"
           TIO.putStrLn "  /affix <keyword>          Search affixes by keyword"
           TIO.putStrLn "  /compose <root> [opts]     Compose a formative"
+          TIO.putStrLn "  /sentence r:F:F r2:F ...  Compose multi-word sentence"
           TIO.putStrLn "  /lookup <abbr>            Look up grammar abbreviation"
           TIO.putStrLn "  /help                     Show this help"
           TIO.putStrLn "  <ithkuil text>            Parse and gloss (default)"

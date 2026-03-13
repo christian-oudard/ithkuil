@@ -591,7 +591,8 @@ glossVh v = case normalizeAccents v of
 -- | Parse a single Vn+Cn pair into a SlotVIII value
 parseOneVnCn :: Text -> Text -> Maybe SlotVIII
 parseOneVnCn vn cn =
-  let isP2 = cn `elem` ["w", "y", "hw", "hrw", "hmw", "hnw", "hňw"]
+  let nv = normalizeAccents vn
+      isP2 = cn `elem` ["w", "y", "hw", "hrw", "hmw", "hnw", "hňw"]
       moodOrScope = case parseCnMood cn of
         Just mood -> Just (MoodVal mood)
         Nothing -> case parseCnMoodP2 cn of
@@ -602,16 +603,16 @@ parseOneVnCn vn cn =
   in case moodOrScope of
     Nothing -> Nothing
     Just ms
-      | isP2 -> case lookup vn aspectVowels of
+      | isP2 -> case lookup nv aspectVowels of
           Just asp -> Just (VnCnAspect asp ms)
           Nothing -> Nothing
-      | otherwise -> case parseVnValence vn of
+      | otherwise -> case parseVnValence nv of
           Just val -> Just (VnCnValence val ms)
-          Nothing -> case lookup vn phaseVowels of
+          Nothing -> case lookup nv phaseVowels of
             Just ph -> Just (VnCnPhase ph ms)
-            Nothing -> case lookup vn levelVowels of
+            Nothing -> case lookup nv levelVowels of
               Just lvl -> Just (VnCnLevel lvl False ms)
-              Nothing -> case lookup vn effectVowels of
+              Nothing -> case lookup nv effectVowels of
                 Just eff -> Just (VnCnEffect eff ms)
                 Nothing -> Nothing
 

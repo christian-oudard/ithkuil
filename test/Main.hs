@@ -12,7 +12,7 @@ import Ithkuil.Adjuncts
 import Ithkuil.WordType
 import Ithkuil.Referentials
 import Ithkuil.Validation (StressError(..), validateStress)
-import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), composeFormative, applyStress)
+import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), composeFormative, composeReferential, applyStress)
 
 main :: IO ()
 main = hspec $ do
@@ -1688,8 +1688,8 @@ main = hspec $ do
               { fStress = Ultimate
               , fSlotIX = Right (IllocVal IRG OBS) }
           w = composeFormative f
-      -- IRG/OBS = "ei" + ultimate stress → alalei with stress
-      T.isSuffixOf "eí" w `shouldBe` True
+      -- IRG/OBS = "ei" + ultimate stress → éi (accent on first vowel of diphthong)
+      T.isSuffixOf "éi" w `shouldBe` True
       -- Round-trip: parse back and verify illocution
       case parseWord w of
         PFormative pf -> pfIllocVal pf `shouldBe` Just (IRG, OBS)
@@ -1827,3 +1827,36 @@ main = hspec $ do
         PFormative pf -> do
           length (pfSlotV pf) `shouldBe` 2
         _ -> expectationFailure $ "Slot V 2-affix round-trip: " ++ T.unpack w ++ " -> " ++ show parsed
+
+    it "stresses diphthongs on first vowel (syllable-based)" $ do
+      -- "ei" diphthong with ultimate stress → "éi" not "eí"
+      let f = (minimalFormative "l")
+              { fStress = Ultimate
+              , fSlotIX = Right (IllocVal DIR OBS) }  -- DIR/OBS = "ai"
+          w = composeFormative f
+      -- "ai" is a diphthong → ultimate stress should give "ái"
+      T.isSuffixOf "ái" w `shouldBe` True
+
+    it "round-trips VnCn aspect through antepenultimate stress" $ do
+      -- XPD aspect (eë) + antepenultimate = stress lands on eë vowels
+      let f = (minimalFormative "l")
+              { fStress = Antepenultimate
+              , fSlotVIII = Just (VnCnAspect XPD (MoodVal FAC)) }
+          w = composeFormative f
+      case parseWord w of
+        PFormative pf ->
+          -- VnCn is extracted from pfCa, not pfSlotVIII (which is always Nothing from parser)
+          case extractVnCn (pfCa pf) of
+            Just (vn, cn) -> case parseOneVnCn vn cn of
+              Just (VnCnAspect asp _) -> asp `shouldBe` XPD
+              other -> expectationFailure $ "Expected VnCnAspect, got: " ++ show other
+            Nothing -> expectationFailure $ "No VnCn extracted from: " ++ show (pfCa pf)
+        other -> expectationFailure $ "Expected PFormative, got: " ++ show other
+
+    it "composes referential (1m ERG = lo)" $ do
+      let ref = PersonalRef R1m NEU
+          w = composeReferential ref (Transrelative ERG)
+      w `shouldBe` "lo"
+      case parseWord w of
+        PReferential _ _ _ _ -> return ()  -- parsed as referential
+        other -> expectationFailure $ "Expected PReferential, got: " ++ show other
