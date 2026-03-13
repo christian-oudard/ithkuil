@@ -1126,6 +1126,13 @@ main = hspec $ do
       let gloss = glossWord mempty mempty (parseWord "maliahra")
       T.isInfixOf "BEN1" gloss `shouldBe` True
 
+    it "parses concatenated formative case with glottal shift" $ do
+      -- hlamröé: hl=T1 shortcut, a=Vv, mr=Cr, öé=Vf case
+      -- Ultimate stress + glottalize: öe -> ö'e -> PCR (Postcursive)
+      let gloss = glossWord mempty mempty (parseWord "hlamröé-úçtļořëi")
+      T.isInfixOf "T1" gloss `shouldBe` True
+      T.isInfixOf "PCR" gloss `shouldBe` True
+
     it "parses glottal stop movement correctly" $ do
       -- la'la and lala'a should both give case PRN
       let gloss1 = glossWord mempty mempty (parseWord "la'la")

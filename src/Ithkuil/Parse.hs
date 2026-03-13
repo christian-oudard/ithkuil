@@ -252,11 +252,11 @@ parseFormativeReal word = do
       in case (concatM, scM) of
         -- Pure shortcut (w or y): parse with shortcut Ca
         (Nothing, Just sc) -> do
-          pf <- parseVowelInitialWithShortcut sc stress rest
+          pf <- parseVowelInitialWithShortcut sc False stress rest
           return (markSentence pf)
         -- Concatenation with shortcut (hl, hm, hr, hn): parse with shortcut Ca + concat
         (Just ct, Just sc) -> do
-          pf <- parseVowelInitialWithShortcut sc stress rest
+          pf <- parseVowelInitialWithShortcut sc True stress rest
           return (markSentence pf) { pfConcatenation = Just ct }
         -- Concatenation without shortcut (h, hw): parse rest normally
         (Just ct, Nothing) -> do
@@ -287,8 +287,8 @@ parseRestAsFormative stress parts = case parts of
 -- | Parse vowel-initial word with Cc shortcut (w or y prefix)
 -- Shortcuts elide Slots IV (Vr) and VI (Ca), setting Ca from the shortcut table
 -- After Cr, remaining conjuncts are: [VxCs Slot VII affixes...] + Vc/Vk
-parseVowelInitialWithShortcut :: CcShortcut -> Stress -> [Text] -> Maybe ParsedFormative
-parseVowelInitialWithShortcut sc stress parts = case parts of
+parseVowelInitialWithShortcut :: CcShortcut -> Bool -> Stress -> [Text] -> Maybe ParsedFormative
+parseVowelInitialWithShortcut sc inConcat stress parts = case parts of
   (vv:cr0:rest) -> do
     let (cr, slotVFilled) = stripSlotVMarker cr0
     slotII <- parseSlotII vv
@@ -298,7 +298,10 @@ parseVowelInitialWithShortcut sc stress parts = case parts of
         -- Merge glottal-vowel patterns first, then take last vowel as Vc/Vk
         merged = mergeGlottalVowels rest
         (affixParts, lastVowel) = splitAfterShortcut merged
-        (caseM, illocValM) = parseSlotIXSimple stress lastVowel
+        -- Concatenated formatives always parse as case (never Illocution+Validation)
+        (caseM, illocValM) = if inConcat
+          then (parseConcatSlotIX stress lastVowel, Nothing)
+          else parseSlotIXSimple stress lastVowel
         -- Prepend empty placeholder for Ca (extractAffixes skips first element)
         caWithAffixes = if null affixParts then [] else "" : affixParts
     Just ParsedFormative
@@ -787,6 +790,27 @@ parseSlotIXSimple Ultimate (Just v) = (Nothing, parseVk v)
 parseSlotIXSimple Monosyllabic (Just v) = (parseCase v, Nothing)
 parseSlotIXSimple _ (Just v) = (parseCase v, Nothing)
 parseSlotIXSimple _ Nothing = (Nothing, Nothing)
+
+-- | Parse Slot IX for concatenated formatives (always case, never Illocution+Validation)
+-- Ultimate/Monosyllabic stress: glottalize the vowel first (shifts to Relational/ST case series)
+-- Penultimate: parse as-is
+parseConcatSlotIX :: Stress -> Maybe Text -> Maybe Case
+parseConcatSlotIX _ Nothing = Nothing
+parseConcatSlotIX stress (Just v) =
+  let normalized = normalizeAccents v
+      vowel = case stress of
+        Ultimate -> glottalizeVowel normalized
+        Monosyllabic -> glottalizeVowel normalized
+        _ -> normalized
+  in parseCase vowel
+
+-- | Insert glottal stop into a vowel form (Kotlin: glottalizeVowel)
+-- "a" -> "a'a", "öe" -> "ö'e"
+glottalizeVowel :: Text -> Text
+glottalizeVowel v
+  | T.length v == 1 = v <> "'" <> v
+  | T.length v == 2 = T.singleton (T.head v) <> "'" <> T.singleton (T.last v)
+  | otherwise = v
 
 -- | Parse Vk (Illocution + Validation) from vowel
 -- Series 1 = ASR + Validation (forms 1-9)
