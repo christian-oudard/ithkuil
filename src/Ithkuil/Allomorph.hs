@@ -49,7 +49,8 @@ ca1 MFS = "lt"
 ca1 MFC = "lk"
 ca1 MFF = "lp"
 
--- | Ca2: Extension consonant
+-- | Ca2: Extension consonant (non-UNIPLEX form)
+-- For UNIPLEX Configuration, see constructCaRaw which uses ca2Standalone
 ca2 :: Extension -> Text
 ca2 DEL = ""
 ca2 PRX = "s"
@@ -57,6 +58,16 @@ ca2 ICP = "š"
 ca2 ATV = "f"
 ca2 GRA = "ţ"
 ca2 DPL = "ç"
+
+-- | Ca2 standalone: Extension consonant for UNIPLEX Configuration
+-- These are voiced forms used when Config is UNI (no Ca1 consonant)
+ca2Standalone :: Extension -> Text
+ca2Standalone DEL = ""
+ca2Standalone PRX = "d"
+ca2Standalone ICP = "g"
+ca2Standalone ATV = "b"
+ca2Standalone GRA = "gz"
+ca2Standalone DPL = "bz"
 
 -- | Ca3: Affiliation consonant
 -- (standalone form, after-consonant form)
@@ -67,6 +78,13 @@ ca3 CSL = ("", "")
 ca3 ASO = ("d", "t")
 ca3 COA = ("g", "k")
 ca3 VAR = ("b", "p")
+
+-- | Ca3 standalone: Affiliation when used alone (UNI/DEL/M/NRM + affiliation)
+ca3Standalone :: Affiliation -> Text
+ca3Standalone CSL = ""
+ca3Standalone ASO = "nļ"
+ca3Standalone COA = "rļ"
+ca3Standalone VAR = "ň"
 
 -- | Ca4: Perspective + Essence consonant
 -- (standalone form, after-consonant form)
@@ -87,22 +105,40 @@ ca4 A_ RPV = ("ln", "n")
 --------------------------------------------------------------------------------
 
 -- | Construct raw Ca from components (before allomorphic substitutions)
+-- Three modes:
+-- 1. UNIPLEX (Ca1="") with Extension → use ca2Standalone for voiced forms
+-- 2. UNIPLEX with Affiliation only → use ca3Standalone
+-- 3. Non-UNIPLEX (Ca1≠"") → use compositional ca2/ca3/ca4 tables
 constructCaRaw :: SlotVI -> Text
-constructCaRaw (co, af, pe, ex, es) = c1 <> c2 <> c3' <> c4''
+constructCaRaw (co, af, pe, ex, es)
+  -- UNIPLEX with Extension (voiced forms): d, g, b, gz, bz
+  | co == UNI && ex /= DEL =
+      ca2Standalone ex <> ca4suffix pe es
+  -- UNIPLEX with only Affiliation (standalone forms): nļ, rļ, ň
+  | co == UNI && af /= CSL =
+      ca3Standalone af <> ca4suffix pe es
+  -- Fully standalone (UNI/CSL/DEL) → perspective standalone form
+  | co == UNI =
+      fst (ca4 pe es)
+  -- Non-UNIPLEX: compositional
+  | otherwise = c1 <> c2 <> c3' <> c4''
   where
     c1 = ca1 co
     c2 = ca2 ex
-    (c3s, c3c) = ca3 af
-    c3' = if T.null c1 && T.null c2 then c3s else c3c
-    (c4s, c4c) = ca4 pe es
-    c4' = if T.null c1 && T.null c2 && T.null c3' then c4s else c4c
+    c3' = snd (ca3 af)  -- always after-consonant when Ca1 is present
+    -- After Configuration, M_/NRM adds "l"; other perspectives use their form
+    c4c = case (pe, es) of
+      (M_, NRM) -> "l"
+      _         -> snd (ca4 pe es)
     -- Special combination rules (from mamkait)
     c4''
-      | hasŘPrefix c1 && c4' == "r" = "v"
-      | not (T.null c2) && not (T.null c3') && c4' == "m" = "h"
-      | not (T.null c2) && not (T.null c3') && c4' == "n" = "ç"
-      | otherwise = c4'
+      | hasŘPrefix c1 && c4c == "r" = "v"
+      | not (T.null c2) && not (T.null c3') && c4c == "m" = "h"
+      | not (T.null c2) && not (T.null c3') && c4c == "n" = "ç"
+      | otherwise = c4c
     hasŘPrefix t = T.take 1 t == "ř"
+    -- Ca4 suffix for UNIPLEX with Extension/Affiliation
+    ca4suffix p e = snd (ca4 p e)
 
 -- | Construct Ca with allomorphic substitutions applied
 constructCa :: SlotVI -> Text

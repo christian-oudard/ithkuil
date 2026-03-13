@@ -13,6 +13,7 @@ import Ithkuil.WordType
 import Ithkuil.Referentials
 import Ithkuil.Validation (StressError(..), validateStress)
 import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), composeFormative, composeReferential, applyStress, searchRootsRanked)
+import Ithkuil.Allomorph (constructCa, parseCaSlot)
 import Ithkuil.Lexicon (loadRoots)
 
 main :: IO ()
@@ -1960,3 +1961,48 @@ main = hspec $ do
             Just pc -> pcExtension pc `shouldBe` PRX
             Nothing -> expectationFailure "Ca should be parsed"
         _ -> expectationFailure "Expected formative"
+
+  describe "Ca construction (Allomorph)" $ do
+    it "constructs default Ca" $ do
+      constructCa (UNI, CSL, M_, DEL, NRM) `shouldBe` "l"
+
+    it "constructs Configuration + default perspective" $ do
+      constructCa (DPX, CSL, M_, DEL, NRM) `shouldBe` "sl"
+      constructCa (MSS, CSL, M_, DEL, NRM) `shouldBe` "tl"
+      constructCa (MSC, CSL, M_, DEL, NRM) `shouldBe` "kl"
+      constructCa (MSF, CSL, M_, DEL, NRM) `shouldBe` "pl"
+
+    it "constructs Configuration + non-default perspective" $ do
+      constructCa (MSS, CSL, G_, DEL, NRM) `shouldBe` "tr"
+      constructCa (MSS, CSL, N_, DEL, NRM) `shouldBe` "tw"
+      constructCa (MSS, CSL, A_, DEL, NRM) `shouldBe` "ty"
+      constructCa (DPX, CSL, G_, DEL, NRM) `shouldBe` "sr"
+
+    it "constructs UNIPLEX standalone perspective" $ do
+      constructCa (UNI, CSL, G_, DEL, NRM) `shouldBe` "r"
+      constructCa (UNI, CSL, N_, DEL, NRM) `shouldBe` "v"
+      constructCa (UNI, CSL, A_, DEL, NRM) `shouldBe` "z"
+
+    it "constructs UNIPLEX Extension (voiced standalone)" $ do
+      constructCa (UNI, CSL, M_, PRX, NRM) `shouldBe` "d"
+      constructCa (UNI, CSL, M_, ICP, NRM) `shouldBe` "g"
+      constructCa (UNI, CSL, M_, ATV, NRM) `shouldBe` "b"
+      constructCa (UNI, CSL, M_, GRA, NRM) `shouldBe` "gz"
+      constructCa (UNI, CSL, M_, DPL, NRM) `shouldBe` "bz"
+
+    it "constructs UNIPLEX Affiliation (standalone)" $ do
+      constructCa (UNI, ASO, M_, DEL, NRM) `shouldBe` "nļ"
+      constructCa (UNI, COA, M_, DEL, NRM) `shouldBe` "rļ"
+      constructCa (UNI, VAR, M_, DEL, NRM) `shouldBe` "ň"
+
+    it "constructs UNIPLEX Extension + Perspective" $ do
+      constructCa (UNI, CSL, G_, PRX, NRM) `shouldBe` "dr"
+      constructCa (UNI, CSL, N_, PRX, NRM) `shouldBe` "dw"
+
+    it "round-trips Ca construction and parsing" $ do
+      -- Default
+      parseCaSlot "l" `shouldBe` Just (UNI, CSL, M_, DEL, NRM)
+      -- Config forms
+      parseCaSlot "sl" `shouldBe` Just (DPX, CSL, M_, DEL, NRM)
+      parseCaSlot "tl" `shouldBe` Just (MSS, CSL, M_, DEL, NRM)
+      parseCaSlot "tr" `shouldBe` Just (MSS, CSL, G_, DEL, NRM)
