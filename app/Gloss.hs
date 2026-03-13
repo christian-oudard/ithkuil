@@ -19,7 +19,7 @@ import Ithkuil.WordType
 import Ithkuil.Lexicon
 import Ithkuil.Compose (lookupGrammar, searchGrammar, lookupForm, GrammarEntry(..), searchRootsRanked, searchAffixes, dumpGrammarTable, composeFormative, composeReferential, applyStress)
 import Ithkuil.Render (renderSlotVIII)
-import Ithkuil.Numbers (numberRoot)
+import Ithkuil.Numbers (numberRoot, numberAffix)
 import Ithkuil.Phonology (vowelForm)
 import Ithkuil.Script (renderFormativeSvg)
 
@@ -225,8 +225,14 @@ composeOneWord roots affixes s = case T.splitOn ":" s of
     , n >= 0, n < 100
     -> let cr = numberRoot n
            f0 = minimalFormative cr
+           -- Add TNX affix (-rs-) for numbers 11-99
+           f0' = case numberAffix n of
+             Just (cs, deg) ->
+               let vx = vowelForm 1 deg
+               in f0 { fSlotVII = fSlotVII f0 ++ [Affix vx cs Type1Affix] }
+             Nothing -> f0
            flags = map (resolveAffixFlag affixes . T.toUpper) opts
-           f1 = applyComposeFlags flags f0
+           f1 = applyComposeFlags flags f0'
            f2 = autoStress f1
        in composeFormative f2
   (root:opts) ->

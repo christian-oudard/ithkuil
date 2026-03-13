@@ -1,7 +1,19 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- | Ithkuil V4 Numbers
 -- Centesimal (base-100) number system
-module Ithkuil.Numbers where
+module Ithkuil.Numbers
+  ( numberRoot
+  , numberAffix
+  , powerRoots
+  , digitRoots
+  , parseNumberRoot
+  , NumberStem(..)
+  , NumberVersion(..)
+  , constructNumber
+  , numberVv
+  , monthAffixes
+  , dayOfWeekAffixes
+  ) where
 
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -10,7 +22,7 @@ import qualified Data.Text as T
 -- Number Roots (0-99)
 --------------------------------------------------------------------------------
 
--- | Basic number roots for 0-9 (from ch13 reference grammar)
+-- | Basic number roots for 0-10 (from ch13 reference grammar)
 digitRoots :: [Text]
 digitRoots =
   [ "vr"   -- 0
@@ -23,63 +35,36 @@ digitRoots =
   , "ns"   -- 7
   , "čk"   -- 8
   , "lẓ"   -- 9
+  , "j"    -- 10
   ]
 
--- | Teens (10-19): root J (=10) + digit root for 1-9
-teenRoots :: [Text]
-teenRoots =
-  [ "j"     -- 10
-  , "jll"   -- 11
-  , "jks"   -- 12
-  , "jz"    -- 13
-  , "jpš"   -- 14
-  , "jst"   -- 15
-  , "jcp"   -- 16
-  , "jns"   -- 17
-  , "jčk"   -- 18
-  , "jlẓ"   -- 19
-  ]
-
--- | Tens (20, 30, ..., 90): v + digit root for 2-9
-tensRoots :: [Text]
-tensRoots =
-  [ ""      -- 0 (not used directly)
-  , ""      -- 10 (handled by teens)
-  , "vks"   -- 20
-  , "vz"    -- 30
-  , "vpš"   -- 40
-  , "vst"   -- 50
-  , "vcp"   -- 60
-  , "vns"   -- 70
-  , "včk"   -- 80
-  , "vlẓ"   -- 90
-  ]
-
--- | Get root for numbers 0-99
+-- | Get root consonant for a number 0-99.
+-- 0-10: direct root. 11-99: digit root (ones digit, or 0 for multiples of 10).
 numberRoot :: Int -> Text
 numberRoot n
-  | n < 0  = error "Negative number"
-  | n < 10 = digitRoots !! n
-  | n < 20 = teenRoots !! (n - 10)
-  | n < 100 =
-    let tens = n `div` 10
-        ones = n `mod` 10
-    in if ones == 0
-       then tensRoots !! tens
-       else tensRoots !! tens <> digitRoots !! ones
+  | n < 0    = error "Negative number"
+  | n <= 10  = digitRoots !! n
+  | n < 100  =
+    let ones = n `mod` 10
+    in digitRoots !! ones  -- Use digit root for the ones place (0 for multiples of 10)
   | otherwise = error "Number >= 100 requires compound"
+
+-- | Get TNX affix (-rs-) for numbers 11-99.
+-- Returns Nothing for 0-10, Just (cs, degree) for 11-99.
+-- The TNX affix Cs is "rs" and degree N adds N*10.
+numberAffix :: Int -> Maybe (Text, Int)
+numberAffix n
+  | n <= 10  = Nothing
+  | n < 100  =
+    let tens = n `div` 10
+    in Just ("rs", tens)
+  | otherwise = Nothing
 
 --------------------------------------------------------------------------------
 -- Powers of 100
 --------------------------------------------------------------------------------
 
 -- | Roots for powers of 100 (from ch13 reference)
--- These are full roots, not affixes. The centesimal system uses:
--- 100^0: units (digit roots directly)
--- 100^1: -GZ- (hundred)
--- 100^2: -PC- (ten-thousand / myriad)
--- 100^4: -KẒ- (hundred-million)
--- 100^8: -ČG- (ten-quadrillion)
 powerRoots :: [Text]
 powerRoots =
   [ ""      -- 100^0 = units
@@ -163,14 +148,9 @@ dayOfWeekAffixes =
 -- Parsing Numbers
 --------------------------------------------------------------------------------
 
--- | Parse a number root to integer (0-99)
+-- | Parse a number root to integer (0-10 only, for now)
 parseNumberRoot :: Text -> Maybe Int
-parseNumberRoot t =
-  case findIndex digitRoots t of
-    Just n -> Just n
-    Nothing -> case findIndex teenRoots t of
-      Just n -> Just (n + 10)
-      Nothing -> parseTensOnes t
+parseNumberRoot t = findIndex digitRoots t
 
 findIndex :: [Text] -> Text -> Maybe Int
 findIndex xs t = go 0 xs
@@ -179,16 +159,3 @@ findIndex xs t = go 0 xs
     go i (x:rest)
       | x == t = Just i
       | otherwise = go (i+1) rest
-
-parseTensOnes :: Text -> Maybe Int
-parseTensOnes t = go 2 tensRoots
-  where
-    go _ [] = Nothing
-    go tens (r:rest)
-      | tens >= 2, r /= "", r `isPrefixOf` t =
-        let remainder = T.drop (T.length r) t
-        in case findIndex digitRoots remainder of
-          Just ones | ones > 0 -> Just (tens * 10 + ones)
-          _ -> go (tens + 1) rest
-      | otherwise = go (tens + 1) rest
-    isPrefixOf p s = T.take (T.length p) s == p
