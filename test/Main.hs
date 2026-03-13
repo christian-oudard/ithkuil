@@ -916,6 +916,12 @@ main = hspec $ do
     it "handles alternate pi.NEU form ļ" $ do
       decomposeRefCluster "ļ" `shouldBe` Just [PersonalRef Rpi NEU]
 
+    it "distinguishes combination ref from geminated formative" $ do
+      -- ţnaxeka = combination referential (no gemination)
+      classifyWord "ţnaxeka" `shouldBe` WCombinationRef
+      -- ţnaxekka = formative (geminated Ca "kk" = MSC config)
+      classifyWord "ţnaxekka" `shouldBe` WFormative
+
     it "fails on non-referential consonants" $ do
       decomposeRefCluster "x" `shouldBe` Nothing
       decomposeRefCluster "q" `shouldBe` Nothing

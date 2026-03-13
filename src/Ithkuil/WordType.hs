@@ -27,7 +27,7 @@ import Data.Map.Strict (Map)
 import Ithkuil.Grammar
 import Data.Maybe (isJust)
 import Ithkuil.Phonology (vowelFormLookup)
-import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, parseCa, ParsedFormative(..), parseFormativeReal, ParsedCa(..), isSpecialVv, normalizeAccents, detectStressSimple)
+import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, parseCa, ParsedFormative(..), parseFormativeReal, ParsedCa(..), isSpecialVv, normalizeAccents, detectStressSimple, isGeminateCa)
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
                            aspectVowels, phaseVowels)
 import Ithkuil.Adjuncts hiding (CarrierAdjunct)
@@ -160,7 +160,7 @@ isMoodCaseScopeAdjunct word =
 
 -- | Combination referentials: [ë] C1 Vc Spec [VxCs...] [Vc2]
 -- Spec must be x/xt/xp/xx; C1 must be a referential consonant
--- No geminate Ca in the consonant slots
+-- No geminate consonants (gemination signals formative Ca boundary)
 isCombinationRef :: Text -> Bool
 isCombinationRef word =
   let conjs = splitConjuncts word
@@ -169,14 +169,18 @@ isCombinationRef word =
         ("ë":cs) -> cs
         cs       -> cs
       specConsonants = ["x", "xt", "xp", "xx"] :: [Text]
+      -- Check that no consonant after spec is geminated
+      noGeminates xs = not $ any (\x -> not (T.null x) && not (isVowelChar (T.head x)) && isGeminateCa x) xs
   in case rest0 of
-    (c:v:spec:_) | isRefCluster c
-                 , not (T.null v) && isVowelChar (T.head v)
-                 , spec `elem` specConsonants -> True
+    (c:v:spec:rest) | isRefCluster c
+                    , not (T.null v) && isVowelChar (T.head v)
+                    , spec `elem` specConsonants
+                    , noGeminates rest -> True
     -- "a" + CP consonant form
-    ("a":cp:v:spec:_) | cp `elem` ["hl", "hm", "hn", "hň"]
-                      , not (T.null v) && isVowelChar (T.head v)
-                      , spec `elem` specConsonants -> True
+    ("a":cp:v:spec:rest) | cp `elem` ["hl", "hm", "hn", "hň"]
+                         , not (T.null v) && isVowelChar (T.head v)
+                         , spec `elem` specConsonants
+                         , noGeminates rest -> True
     _ -> False
 
 -- | Affixual adjuncts: V-C or V-C-V pattern where C is NOT a Cn consonant
