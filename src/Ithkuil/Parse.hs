@@ -23,6 +23,7 @@ module Ithkuil.Parse
   , isGeminateCa
   , degeminateCa
   , detectStressSimple
+  , vvSeries
   ) where
 
 import Data.Text (Text)
@@ -131,6 +132,8 @@ data ParsedFormative = ParsedFormative
   , pfConjuncts :: [Text]        -- Original conjunct split
   , pfCsRootDegree :: Maybe Int  -- Cs-root degree (Nothing for normal roots)
   , pfSentenceStarter :: Bool    -- True when word had ç sentence prefix
+  , pfVvSeries :: Int            -- Vv vowel series (1-4); Series 2-4 carry implicit affix
+  , pfHasShortcut :: Bool        -- True when Cc shortcut (w/y) was used (no implicit affix)
   } deriving (Show, Eq)
 
 -- | Cc shortcut type (w or y prefix that adds Ca values)
@@ -312,6 +315,8 @@ parseVowelInitialWithShortcut sc stress parts = case parts of
       , pfConjuncts = parts
       , pfCsRootDegree = Nothing
       , pfSentenceStarter = False
+      , pfVvSeries = series  -- Shortcut: series used for Ca, no implicit affix
+      , pfHasShortcut = True
       }
   _ -> Nothing
 
@@ -370,7 +375,9 @@ parseConsonantInitial stress parts = case parts of
           , pfStress = stress
           , pfConjuncts = parts
           , pfCsRootDegree = Nothing
-      , pfSentenceStarter = False
+          , pfSentenceStarter = False
+          , pfVvSeries = 1  -- Elided Vv defaults to Series 1
+          , pfHasShortcut = False
           }
       -- Longer: Cr-Vr-Ca...-Vc/Vk
       _ ->
@@ -395,7 +402,9 @@ parseConsonantInitial stress parts = case parts of
               , pfStress = stress
               , pfConjuncts = parts
               , pfCsRootDegree = Nothing
-      , pfSentenceStarter = False
+              , pfSentenceStarter = False
+              , pfVvSeries = 1  -- Elided Vv defaults to Series 1
+              , pfHasShortcut = False
               }
           -- Vr parse failed: try treating cr as merged CrCa with elided Vr
           Nothing -> do
@@ -415,7 +424,9 @@ parseConsonantInitial stress parts = case parts of
               , pfStress = stress
               , pfConjuncts = parts
               , pfCsRootDegree = Nothing
-      , pfSentenceStarter = False
+              , pfSentenceStarter = False
+              , pfVvSeries = 1  -- Elided Vv defaults to Series 1
+              , pfHasShortcut = False
               }
   _ -> Nothing
 
@@ -435,6 +446,7 @@ parseVowelInitial stress parts = case parts of
     | otherwise -> do
     let (cr, _slotVFilled) = stripSlotVMarker cr0
     slotII <- parseSlotII vv
+    let series = vvSeries vv
     case rest of
       -- Minimal formative: Vv-Cr-Vc/Vk (Vr and Ca both elided to defaults)
       [] ->
@@ -453,7 +465,9 @@ parseVowelInitial stress parts = case parts of
           , pfStress = stress
           , pfConjuncts = parts
           , pfCsRootDegree = Nothing
-      , pfSentenceStarter = False
+          , pfSentenceStarter = False
+          , pfVvSeries = series
+          , pfHasShortcut = False
           }
       -- Longer formative: try Vr parse, fall back to elided Vr
       _ ->
@@ -478,10 +492,12 @@ parseVowelInitial stress parts = case parts of
               , pfStress = stress
               , pfConjuncts = parts
               , pfCsRootDegree = Nothing
-      , pfSentenceStarter = False
+              , pfSentenceStarter = False
+              , pfVvSeries = series
+              , pfHasShortcut = False
               }
           -- If Vr parse fails, vr might actually be Vc/Vk with elided Vr
-          Nothing -> tryElidedVr slotII cr vr stress parts
+          Nothing -> tryElidedVr slotII cr vr series stress parts
   -- Two elements: Vv + CrCa (elided Vr, no Vc/Vk)
   (vv:crca:[]) -> do
     slotII <- parseSlotII vv
@@ -501,6 +517,8 @@ parseVowelInitial stress parts = case parts of
       , pfConjuncts = parts
       , pfCsRootDegree = Nothing
       , pfSentenceStarter = False
+      , pfVvSeries = vvSeries vv
+      , pfHasShortcut = False
       }
   _ -> Nothing
 
@@ -535,6 +553,8 @@ parseCsRootFormative stress vv cs vr rest = do
         , pfConjuncts = vv : cs : vr : rest
         , pfCsRootDegree = Just degree
         , pfSentenceStarter = False
+        , pfVvSeries = 1  -- Special Vv, no implicit affix
+        , pfHasShortcut = False
         }
     Nothing -> do
       -- Reference-root: Vr = normal Slot IV (function/spec/context)
@@ -562,12 +582,14 @@ parseCsRootFormative stress vv cs vr rest = do
         , pfConjuncts = vv : cs : vr : rest
         , pfCsRootDegree = Nothing  -- Not a Cs-root
         , pfSentenceStarter = False
+        , pfVvSeries = 1  -- Special Vv, no implicit affix
+        , pfHasShortcut = False
         }
 
 -- | Try parsing with elided Vr: the consonant cluster contains Cr+Ca merged
 -- and the next vowel is Vc/Vk instead of Vr
-tryElidedVr :: SlotII -> Text -> Text -> Stress -> [Text] -> Maybe ParsedFormative
-tryElidedVr slotII crca vcvk stress parts = do
+tryElidedVr :: SlotII -> Text -> Text -> Int -> Stress -> [Text] -> Maybe ParsedFormative
+tryElidedVr slotII crca vcvk vvSer stress parts = do
   (root, caParsedM) <- splitCrCa crca
   let (caseM, illocValM) = parseSlotIXSimple stress (Just vcvk)
   Just ParsedFormative
@@ -584,6 +606,9 @@ tryElidedVr slotII crca vcvk stress parts = do
     , pfStress = stress
     , pfConjuncts = parts
     , pfCsRootDegree = Nothing
+    , pfSentenceStarter = False
+    , pfVvSeries = vvSer
+    , pfHasShortcut = False
     }
 
 -- | Split a consonant cluster into Cr (root) + Ca (configuration complex)

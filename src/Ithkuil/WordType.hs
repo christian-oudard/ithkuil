@@ -680,6 +680,24 @@ glossFormative roots affixes pf =
           Just c -> T.pack (showCase c)
                  <> if pfStress pf == Antepenultimate then "\\FRA" else ""
           Nothing -> if pfStress pf == Antepenultimate then "FRA" else ""
+      -- Implicit affix from Vv Series 2-4 (when no Cc shortcut)
+      -- Series 2 → r/4, Series 3 → t/4, Series 4 → t/5
+      implicitAffix = if not (pfHasShortcut pf) && pfVvSeries pf > 1
+        then case pfVvSeries pf of
+          2 -> let abbr = case lookupAffix "r" affixes of
+                     Just entry -> affixAbbrev entry
+                     Nothing -> "r"
+               in abbr <> "/4"
+          3 -> let abbr = case lookupAffix "t" affixes of
+                     Just entry -> affixAbbrev entry
+                     Nothing -> "t"
+               in abbr <> "/4"
+          4 -> let abbr = case lookupAffix "t" affixes of
+                     Just entry -> affixAbbrev entry
+                     Nothing -> "t"
+               in abbr <> "/5"
+          _ -> ""
+        else ""
       -- FRA is now merged into slotIXAbbr with backslash notation
       concatAbbr = case pfConcatenation pf of
         Just Type1 -> "T1"
@@ -689,7 +707,9 @@ glossFormative roots affixes pf =
   in T.intercalate "-" $ filter (not . T.null)
     [ sentenceAbbr
     , concatAbbr
-    , stemVerAbbr
+    , if T.null implicitAffix then stemVerAbbr
+      else if T.null stemVerAbbr then implicitAffix
+      else stemVerAbbr <> "." <> implicitAffix
     , rootMeaning
     , slotIVAbbr
     ] <> slotVGlosses

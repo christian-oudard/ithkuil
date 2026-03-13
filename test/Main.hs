@@ -1253,3 +1253,47 @@ main = hspec $ do
       parseOneVnCn "ai" "w" `shouldBe` Just (VnCnAspect RSM (MoodVal FAC))
       parseOneVnCn "ia" "w" `shouldBe` Just (VnCnAspect PMP (MoodVal FAC))
       parseOneVnCn "ao" "w" `shouldBe` Just (VnCnAspect DCL (MoodVal FAC))
+
+    it "detects Vv series and implicit affix for non-shortcut formatives" $ do
+      -- Series 1 Vv (a = S1/PRC): no implicit affix
+      case parseWord "amala" of
+        PFormative pf -> do
+          pfVvSeries pf `shouldBe` 1
+          pfHasShortcut pf `shouldBe` False
+        pw -> expectationFailure $ "Expected PFormative, got: " ++ show pw
+      -- Series 2 Vv (ai = S1/CPT? No: ai is form 1 series 2 = S1/PRC?)
+      -- Actually: series 2 form 1 = S1/PRC; vowelFormLookup "ai" = (2, 1)
+      -- Vv "ai" → S1/PRC, series 2 → implicit affix r/4
+      case parseWord "aimala" of
+        PFormative pf -> do
+          pfVvSeries pf `shouldBe` 2
+          pfHasShortcut pf `shouldBe` False
+          let gloss = glossWord mempty mempty (PFormative pf)
+          T.isInfixOf "r/4" gloss `shouldBe` True
+        pw -> expectationFailure $ "Expected PFormative for aimala, got: " ++ show pw
+      -- Series 3 Vv (ia = form 1 series 3 = S1/PRC, series 3 → implicit affix t/4)
+      case parseWord "iamala" of
+        PFormative pf -> do
+          pfVvSeries pf `shouldBe` 3
+          pfHasShortcut pf `shouldBe` False
+          let gloss = glossWord mempty mempty (PFormative pf)
+          T.isInfixOf "t/4" gloss `shouldBe` True
+        pw -> expectationFailure $ "Expected PFormative for iamala, got: " ++ show pw
+      -- Series 4 Vv (ao = form 1 series 4 = S1/PRC, series 4 → implicit affix t/5)
+      case parseWord "aomala" of
+        PFormative pf -> do
+          pfVvSeries pf `shouldBe` 4
+          pfHasShortcut pf `shouldBe` False
+          let gloss = glossWord mempty mempty (PFormative pf)
+          T.isInfixOf "t/5" gloss `shouldBe` True
+        pw -> expectationFailure $ "Expected PFormative for aomala, got: " ++ show pw
+
+    it "does not add implicit affix for shortcut formatives" $ do
+      -- Shortcut w + Series 2 Vv: Ca is set from shortcut table, no implicit affix
+      case parseWord "waimala" of
+        PFormative pf -> do
+          pfHasShortcut pf `shouldBe` True
+          let gloss = glossWord mempty mempty (PFormative pf)
+          T.isInfixOf "r/4" gloss `shouldBe` False
+          T.isInfixOf "t/4" gloss `shouldBe` False
+        pw -> expectationFailure $ "Expected PFormative for waimala, got: " ++ show pw
