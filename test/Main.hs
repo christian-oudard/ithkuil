@@ -1547,3 +1547,46 @@ main = hspec $ do
       let g = glossSentence mempty mempty "hnas World"
       -- "World" should appear as-is (foreign text), not parsed
       T.isInfixOf "World" g `shouldBe` True
+
+  describe "Composed Sentence Glossing" $ do
+    it "glosses 'The child walks' (verb-initial + ABS)" $ do
+      let g = glossSentence mempty mempty "agalá elale"
+      T.isInfixOf "OBS" g `shouldBe` True
+      T.isInfixOf "ABS" g `shouldBe` True
+
+    it "glosses 'The child gives a document to the adult' (3 cases)" $ do
+      let g = glossSentence mempty mempty "enalá elalo aňtyala alalü"
+      T.isInfixOf "ERG" g `shouldBe` True
+      T.isInfixOf "DAT" g `shouldBe` True
+
+    it "glosses 'I walked to the mountain' (referential + ALL case)" $ do
+      let g = glossSentence mempty mempty "agalá lo ajlali'o"
+      T.isInfixOf "1m-ERG" g `shouldBe` True
+      T.isInfixOf "ALL" g `shouldBe` True
+
+    it "glosses framed verb (antepenultimate stress)" $ do
+      let g = glossWord mempty mempty (parseWord "ágala")
+      T.isInfixOf "FRA" g `shouldBe` True
+
+    it "glosses NEG affix on verb" $ do
+      let g = glossWord mempty mempty (parseWord "amjalirá")
+      -- Without affix lexicon, falls back to consonant form "r"
+      T.isInfixOf "r/4" g `shouldBe` True
+      T.isInfixOf "OBS" g `shouldBe` True
+
+    it "glosses SIZ affix on noun" $ do
+      let g = glossWord mempty mempty (parseWord "ajlaloxa")
+      -- Without affix lexicon, falls back to "x"
+      T.isInfixOf "x/7" g `shouldBe` True
+
+    it "glosses concatenated formatives" $ do
+      let g = glossWord mempty mempty (parseWord "antrala-agala")
+      -- Should contain both root glosses joined by em-dash
+      T.isInfixOf "—" g `shouldBe` True
+
+    it "glosses complex multi-word sentence" $ do
+      let g = glossSentence mempty mempty "agalá lo ajlaloxi'o antrala enalá aňtyala elalü"
+      T.isInfixOf "1m-ERG" g `shouldBe` True
+      T.isInfixOf "x/7" g `shouldBe` True  -- SIZ affix without lexicon
+      T.isInfixOf "ALL" g `shouldBe` True
+      T.isInfixOf "DAT" g `shouldBe` True
