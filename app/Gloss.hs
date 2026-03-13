@@ -4,9 +4,6 @@
 module Main where
 
 import Control.Monad (when, forM_)
-import Data.List (sortBy)
-import Data.Ord (comparing)
-import Data.Function (on)
 import System.Environment (getArgs)
 import System.IO (hFlush, stdout, hSetBuffering, BufferMode(..), stdin, hIsTerminalDevice, hIsEOF)
 import Data.Text (Text)
@@ -18,7 +15,7 @@ import Ithkuil.Parse (ParsedFormative(..), ParsedCa(..))
 import Ithkuil.Referentials (PersonalRef(..), Referent(..), ReferentEffect(..), referentLabel)
 import Ithkuil.WordType
 import Ithkuil.Lexicon
-import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), searchRoots, searchAffixes, dumpGrammarTable, composeFormative, composeReferential)
+import Ithkuil.Compose (lookupGrammar, searchGrammar, lookupForm, GrammarEntry(..), searchRootsRanked, searchAffixes, dumpGrammarTable, composeFormative, composeReferential)
 import Ithkuil.Phonology (vowelForm)
 import Ithkuil.Script (renderFormativeSvg)
 
@@ -46,6 +43,7 @@ main = do
     ("--lookup":rest) -> handleLookup rest
     ("--root":rest) -> handleRootSearch rest
     ("--affix":rest) -> handleAffixSearch rest
+    ("--form":rest) -> handleFormLookup rest
     ("--grammar":rest) -> handleGrammarDump rest
     ("--script":rest) -> handleScript rest
     ("--compose":rest) -> handleCompose rest
@@ -65,10 +63,12 @@ main = do
 
 handleLookup :: [String] -> IO ()
 handleLookup [] = TIO.putStrLn "Usage: ithkuil-gloss --lookup <abbreviation>"
-handleLookup (abbr:_) = do
-  let results = lookupGrammar (T.pack abbr)
+handleLookup ws = do
+  let query = T.pack (unwords ws)
+      exact = lookupGrammar query
+      results = if null exact then searchGrammar query else exact
   case results of
-    [] -> TIO.putStrLn $ "No grammar entry found for: " <> T.pack abbr
+    [] -> TIO.putStrLn $ "No grammar entry found for: " <> query
     _ -> mapM_ (\e ->
       TIO.putStrLn $ gAbbrev e <> "  " <> gName e
                   <> "  [" <> gCategory e <> "]"
@@ -79,14 +79,25 @@ handleRootSearch [] = TIO.putStrLn "Usage: ithkuil-gloss --root <keyword>"
 handleRootSearch ws = do
   roots <- loadLexicon "data/roots.json"
   let query = T.pack (unwords ws)
-      results = searchRoots query roots
+      results = searchRootsRanked query roots
   if null results
     then TIO.putStrLn $ "No roots found matching: " <> query
-    else mapM_ (\(cr, entry) ->
+    else mapM_ (\(_score, cr, entry) ->
       TIO.putStrLn $ "-" <> cr <> "-  S1: " <> rootStem1 entry
                   <> "  S2: " <> rootStem2 entry
                   <> "  S3: " <> rootStem3 entry
-                  <> "  S0: " <> rootStem0 entry) results
+                  <> "  S0: " <> rootStem0 entry) (take 20 results)
+
+handleFormLookup :: [String] -> IO ()
+handleFormLookup [] = TIO.putStrLn "Usage: ithkuil-gloss --form <vowel|consonant>"
+handleFormLookup ws = do
+  let query = T.pack (unwords ws)
+      results = lookupForm query
+  case results of
+    [] -> TIO.putStrLn $ "No grammar values use form: " <> query
+    _ -> mapM_ (\e ->
+      TIO.putStrLn $ gAbbrev e <> "  " <> gName e
+                  <> "  [" <> gCategory e <> "]") results
 
 handleAffixSearch :: [String] -> IO ()
 handleAffixSearch [] = TIO.putStrLn "Usage: ithkuil-gloss --affix <keyword>"
@@ -204,58 +215,17 @@ resolveAffixCs affixes t = case T.splitOn "/" t of
   _ -> t
 
 -- | Resolve a root: if it contains vowels, search the lexicon by keyword
--- and use the first match's consonant form. Scores by match quality.
+-- and use the first match's consonant form. Uses ranked scoring from Compose.
 resolveRoot :: Map.Map Text RootEntry -> Text -> Text
 resolveRoot roots t
   | T.any isVowelChar t =
-    let q = T.toCaseFold t
-        scored = [(scoreEntry q entry, cr) | (cr, entry) <- Map.toList roots]
-        best = map snd $ sortBy (compare `on` fst) [(s, cr) | (s, cr) <- scored, s < 9999]
-    in case best of
-      (cr:_) -> cr
-      [] -> case searchRoots t roots of  -- fallback to substring
-        ((cr, _):_) -> cr
-        [] -> t
-  | otherwise = t
-  where isVowelChar c = c `elem` ("aäeëiïoöuüáéíóú" :: String)
-
--- | Score how well a keyword matches a root entry (lower = better, 9999 = no match)
-scoreEntry :: Text -> RootEntry -> Int
-scoreEntry q entry =
-  let stems = [rootStem1 entry, rootStem0 entry, rootStem2 entry, rootStem3 entry]
-      -- Check all stems, prefer earlier stems (stem0 = overview, most authoritative)
-      scores = zipWith (\i s -> scoreStem q i s) [0 :: Int ..] stems
-  in minimum (9999 : scores)
-
-scoreStem :: Text -> Int -> Text -> Int
-scoreStem q stemIdx stem =
-  let stemLow = T.toCaseFold stem
-      frags = filter (not . T.null) . map T.strip $
-              concatMap (T.splitOn ",") $ T.splitOn "/" stemLow
-      fragWords = [(f, wordsOf f) | f <- frags]
-      -- Strip parenthetical content before tokenizing (e.g. "(Felis catus)")
-      stripParens t = let (before, rest) = T.breakOn "(" t
-                      in if T.null rest then t else T.strip before
-      wordsOf = filter (\w -> T.any (\c -> c >= 'a' && c <= 'z') w) . T.words . stripParens
-      -- Best score across all fragments
-      nFrags = length frags
-      fragScores = map scoreOneFrag fragWords
-      scoreOneFrag (frag, ws)
-        -- Exact fragment match: "fire" = "fire"
-        -- Penalize if many fragments (compound term like "cat/dog/raccoon tapeworm")
-        | frag == q && nFrags <= 2 = stemIdx
-        | frag == q = 150 + stemIdx + nFrags
-        -- Keyword is the head noun (last word): "domestic dog" → "dog"
-        | not (null ws) && last ws == q = 100 + stemIdx * 10 + length ws
-        -- Keyword is first word: "fire engine" → "fire"
-        | not (null ws) && head ws == q = 200 + stemIdx * 10 + length ws
-        -- Keyword anywhere in fragment
-        | q `elem` ws = 300 + stemIdx * 10 + length ws
-        -- Prefix match
-        | any (\w -> q `T.isPrefixOf` w && T.length w < T.length q + 4) ws
-          = 500 + stemIdx * 10 + length ws
-        | otherwise = 9999
-  in minimum (9999 : fragScores)
+    case searchRootsRanked t roots of
+      ((_,cr,_):_) -> cr
+      [] -> t
+  | otherwise = stripDashes t
+  where
+    isVowelChar c = c `elem` ("aäeëiïoöuüáéíóú" :: String)
+    stripDashes = T.dropWhile (== '-') . T.dropWhileEnd (== '-')
 
 -- | Compose a referential word: @REF:CASE → C1+Vc
 composeRefWord :: Text -> [Text] -> Text
@@ -661,20 +631,30 @@ repl roots affixes = do
     replCommand cmd
       | "root " `T.isPrefixOf` cmd = do
           let query = T.drop 5 cmd
-              results = searchRoots query roots
+              results = searchRootsRanked query roots
           if null results
             then TIO.putStrLn $ col dim "No roots found for: " <> query
-            else mapM_ (\(cr, entry) ->
-              TIO.putStrLn $ col yellow ("-" <> cr <> "-") <> "  S1: " <> rootStem1 entry
-                          <> "  S2: " <> rootStem2 entry) (take 10 results)
+            else mapM_ (\(_s, cr, entry) ->
+              if length results <= 3
+                then TIO.putStrLn $ col yellow ("-" <> cr <> "-")
+                  <> "\n    S0: " <> rootStem0 entry
+                  <> "\n    S1: " <> rootStem1 entry
+                  <> "\n    S2: " <> rootStem2 entry
+                  <> "\n    S3: " <> rootStem3 entry
+                else TIO.putStrLn $ col yellow ("-" <> cr <> "-") <> "  " <> rootStem0 entry
+              ) (take 10 results)
       | "affix " `T.isPrefixOf` cmd = do
           let query = T.drop 6 cmd
               results = searchAffixes query affixes
           if null results
             then TIO.putStrLn $ col dim "No affixes found for: " <> query
-            else mapM_ (\(cs, entry) ->
+            else mapM_ (\(cs, entry) -> do
               TIO.putStrLn $ col yellow ("-" <> cs <> "-") <> "  " <> affixAbbrev entry
-                          <> "  (" <> affixDesc entry <> ")") (take 10 results)
+                          <> "  (" <> affixDesc entry <> ")"
+              when (length results <= 3) $
+                forM_ (zip [1::Int ..] (affixDegrees entry)) $ \(d, desc) ->
+                  TIO.putStrLn $ "    " <> T.pack (show d) <> ": " <> desc
+              ) (take 10 results)
       | "compose " `T.isPrefixOf` cmd = do
           let parts = T.words (T.drop 8 cmd)
           case parts of
@@ -696,18 +676,27 @@ repl roots affixes = do
           glossLine roots affixes sentence
       | "lookup " `T.isPrefixOf` cmd = do
           let query = T.drop 7 cmd
-              results = lookupGrammar query
+              exact = lookupGrammar query
+              results = if null exact then searchGrammar query else exact
           case results of
             [] -> TIO.putStrLn $ col dim "Not found: " <> query
             _ -> mapM_ (\e -> TIO.putStrLn $ col bold (gAbbrev e) <> "  " <> gName e
                           <> "  [" <> gCategory e <> "]  form: " <> gForm e) results
+      | "form " `T.isPrefixOf` cmd = do
+          let query = T.drop 5 cmd
+              results = lookupForm query
+          case results of
+            [] -> TIO.putStrLn $ col dim "No grammar values use form: " <> query
+            _ -> mapM_ (\e -> TIO.putStrLn $ col bold (gAbbrev e) <> "  " <> gName e
+                          <> "  [" <> gCategory e <> "]") results
       | "help" `T.isPrefixOf` cmd = do
           TIO.putStrLn $ col bold "REPL Commands:"
-          TIO.putStrLn "  /root <keyword>           Search roots by meaning"
-          TIO.putStrLn "  /affix <keyword>          Search affixes by keyword"
+          TIO.putStrLn "  /root <keyword|Cr>        Search roots (English or -Cr- form)"
+          TIO.putStrLn "  /affix <keyword|Cs>       Search affixes by keyword or Cs form"
+          TIO.putStrLn "  /lookup <abbr|name>       Look up grammar (abbr, name, or category)"
+          TIO.putStrLn "  /form <vowel|consonant>   Reverse lookup: form -> grammar values"
           TIO.putStrLn "  /compose <root> [opts]     Compose a formative"
           TIO.putStrLn "  /sentence r:F:F r2:F ...  Compose multi-word sentence"
-          TIO.putStrLn "  /lookup <abbr>            Look up grammar abbreviation"
           TIO.putStrLn "  /help                     Show this help"
           TIO.putStrLn "  <ithkuil text>            Parse and gloss (default)"
       | otherwise = TIO.putStrLn $ col dim "Unknown command. Type /help for commands."
@@ -715,7 +704,76 @@ repl roots affixes = do
 pipeMode :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> IO ()
 pipeMode roots affixes = do
   contents <- TIO.getContents
-  mapM_ (glossLine roots affixes . T.strip) (filter (not . T.null . T.strip) (T.lines contents))
+  let processLine line =
+        let stripped = T.strip line
+        in case T.uncons stripped of
+          Just ('/', cmd) -> pipeCommand roots affixes cmd
+          _ -> glossLine roots affixes stripped
+  mapM_ processLine (filter (not . T.null . T.strip) (T.lines contents))
+
+pipeCommand :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> IO ()
+pipeCommand roots affixes cmd
+  | "root " `T.isPrefixOf` cmd = do
+      let query = T.drop 5 cmd
+          results = searchRootsRanked query roots
+      if null results
+        then TIO.putStrLn $ "No roots found for: " <> query
+        else mapM_ (\(_s, cr, entry) ->
+          if length results <= 3
+            then TIO.putStrLn $ "-" <> cr <> "-"
+              <> "\n  S0: " <> rootStem0 entry
+              <> "\n  S1: " <> rootStem1 entry
+              <> "\n  S2: " <> rootStem2 entry
+              <> "\n  S3: " <> rootStem3 entry
+            else TIO.putStrLn $ "-" <> cr <> "-  " <> rootStem0 entry
+          ) (take 10 results)
+  | "affix " `T.isPrefixOf` cmd = do
+      let query = T.drop 6 cmd
+          results = searchAffixes query affixes
+      if null results
+        then TIO.putStrLn $ "No affixes found for: " <> query
+        else mapM_ (\(cs, entry) -> do
+          TIO.putStrLn $ "-" <> cs <> "-  " <> affixAbbrev entry
+                      <> "  (" <> affixDesc entry <> ")"
+          when (length results <= 3) $
+            forM_ (zip [1::Int ..] (affixDegrees entry)) $ \(d, desc) ->
+              TIO.putStrLn $ "  " <> T.pack (show d) <> ": " <> desc
+          ) (take 10 results)
+  | "lookup " `T.isPrefixOf` cmd = do
+      let query = T.drop 7 cmd
+          exact = lookupGrammar query
+          results = if null exact then searchGrammar query else exact
+      case results of
+        [] -> TIO.putStrLn $ "Not found: " <> query
+        _ -> mapM_ (\e -> TIO.putStrLn $ gAbbrev e <> "  " <> gName e
+                      <> "  [" <> gCategory e <> "]  form: " <> gForm e) results
+  | "form " `T.isPrefixOf` cmd = do
+      let query = T.drop 5 cmd
+          results = lookupForm query
+      case results of
+        [] -> TIO.putStrLn $ "No grammar values use form: " <> query
+        _ -> mapM_ (\e -> TIO.putStrLn $ gAbbrev e <> "  " <> gName e
+                      <> "  [" <> gCategory e <> "]") results
+  | "sentence " `T.isPrefixOf` cmd = do
+      let specs = T.words (T.drop 9 cmd)
+          words_ = map (composeOneWord roots affixes) specs
+          sentence = T.unwords words_
+      TIO.putStrLn sentence
+      glossLine roots affixes sentence
+  | "compose " `T.isPrefixOf` cmd = do
+      let parts = T.words (T.drop 8 cmd)
+      case parts of
+        (root:opts) -> do
+          let resolved = resolveRoot roots root
+              f0 = minimalFormative resolved
+              flags = map (resolveAffixFlag affixes . T.toUpper) opts
+              f1 = applyComposeFlags flags f0
+              f2 = autoStress f1
+              word = composeFormative f2
+          TIO.putStrLn word
+          glossLine roots affixes word
+        _ -> TIO.putStrLn "Usage: /compose <root> [S2] [DYN] [ABS] [IRG] ..."
+  | otherwise = TIO.putStrLn $ "Unknown command: /" <> cmd
 
 glossLine :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> IO ()
 glossLine roots affixes input = do

@@ -3,7 +3,11 @@
 -- Reverse grammar lookups: abbreviation → phonological form
 module Ithkuil.Compose
   ( lookupGrammar
+  , searchGrammar
+  , lookupForm
   , searchRoots
+  , searchRootsRanked
+  , scoreEntry
   , searchAffixes
   , allCases
   , allValences
@@ -32,6 +36,8 @@ module Ithkuil.Compose
   , applyStress
   ) where
 
+import Data.List (sortBy)
+import Data.Function (on)
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Map.Strict (Map)
@@ -39,6 +45,7 @@ import qualified Data.Map.Strict as Map
 import Ithkuil.Grammar
 import Ithkuil.Render
 import Ithkuil.Allomorph (constructCa)
+import Ithkuil.Phonology (vowelForm)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), rootStem0, rootStem1, rootStem2, rootStem3)
 import Ithkuil.Referentials (PersonalRef(..), refC1)
 
@@ -49,13 +56,29 @@ data GrammarEntry = GrammarEntry
   , gForm     :: Text    -- e.g. "a", "a" (vowel/consonant form)
   } deriving (Show, Eq)
 
--- | Look up a grammar abbreviation, returning its category and form
+-- | Look up a grammar abbreviation (exact match)
 lookupGrammar :: Text -> [GrammarEntry]
 lookupGrammar query =
   let q = T.toUpper query
   in filter (\e -> gAbbrev e == q) grammarTable
 
--- | Search roots by keyword in any stem meaning
+-- | Search grammar by abbreviation or name (fuzzy)
+searchGrammar :: Text -> [GrammarEntry]
+searchGrammar query =
+  let q = T.toCaseFold query
+      exact = filter (\e -> T.toCaseFold (gAbbrev e) == q) grammarTable
+      byName = filter (\e -> q `T.isInfixOf` T.toCaseFold (gName e)) grammarTable
+      byCat  = filter (\e -> q `T.isInfixOf` T.toCaseFold (gCategory e)) grammarTable
+  in if not (null exact) then exact
+     else if not (null byName) then byName
+     else byCat
+
+-- | Reverse form lookup: given a vowel or consonant form, show all grammar
+-- values it could represent. E.g. "a" → THM case, RTR aspect, MNO valence...
+lookupForm :: Text -> [GrammarEntry]
+lookupForm form = filter (\e -> gForm e == form) grammarTable
+
+-- | Search roots by keyword in any stem meaning (substring match, unranked)
 searchRoots :: Text -> Map Text RootEntry -> [(Text, RootEntry)]
 searchRoots query roots =
   let q = T.toCaseFold query
@@ -65,14 +88,74 @@ searchRoots query roots =
            || T.toCaseFold cr == q
   in filter matches (Map.toList roots)
 
+-- | Search roots ranked by relevance (lower score = better match)
+-- Supports both English keywords and consonant root forms (e.g. "jl" or "-jl-")
+searchRootsRanked :: Text -> Map Text RootEntry -> [(Int, Text, RootEntry)]
+searchRootsRanked query roots =
+  let q = T.toCaseFold query
+      -- Strip surrounding dashes for consonant root lookup
+      stripped = T.dropWhile (== '-') . T.dropWhileEnd (== '-') $ q
+      -- Direct consonant root lookup
+      directHit = case Map.lookup stripped roots of
+        Just entry -> [(0, stripped, entry)]
+        Nothing    -> []
+  in if not (null directHit) then directHit
+     else let scored = [ (scoreEntry q entry, cr, entry)
+                       | (cr, entry) <- Map.toList roots
+                       , let s = scoreEntry q entry, s < 9999 ]
+          in sortBy (compare `on` (\(s,_,_) -> s)) scored
+
+-- | Score how well a keyword matches a root entry (lower = better, 9999 = no match)
+scoreEntry :: Text -> RootEntry -> Int
+scoreEntry q entry =
+  let stems = [rootStem1 entry, rootStem0 entry, rootStem2 entry, rootStem3 entry]
+      scores = zipWith (\i s -> scoreStem q i s) [0 :: Int ..] stems
+  in minimum (9999 : scores)
+
+-- | Score a single stem against a query
+scoreStem :: Text -> Int -> Text -> Int
+scoreStem q stemIdx stem =
+  let stemLow = T.toCaseFold stem
+      frags = filter (not . T.null) . map T.strip $
+              concatMap (T.splitOn ",") $ T.splitOn "/" stemLow
+      fragWords = [(f, wordsOf f) | f <- frags]
+      stripParens t = let (before, rest) = T.breakOn "(" t
+                      in if T.null rest then t else T.strip before
+      wordsOf = filter (\w -> T.any (\c -> c >= 'a' && c <= 'z') w) . T.words . stripParens
+      nFrags = length frags
+      fragScores = map scoreOneFrag fragWords
+      scoreOneFrag (frag, ws) =
+        let cleanFrag = T.strip (stripParens frag)
+        in scoreClean cleanFrag ws
+      -- Check if any word is an inflected form of the query
+      isInflected w = q `T.isPrefixOf` w && any (`T.isSuffixOf` w) inflections
+      inflections = map (q <>) ["s", "es", "ed", "ing", "tion", "ness", "ment",
+                                "ity", "al", "ous", "ful", "er", "est", "ly"]
+      scoreClean cleanFrag ws
+        | cleanFrag == q && nFrags <= 2 = stemIdx
+        | cleanFrag == q = 150 + stemIdx + nFrags
+        | not (null ws) && last ws == q && length ws <= 2 = 100 + stemIdx * 10 + length ws
+        -- Inflected match: "play" → "playing", "sleep" → "sleeping"
+        | any isInflected ws = 110 + stemIdx * 10 + length ws
+        -- Head noun in longer phrase: "be in play" → lower confidence
+        | not (null ws) && last ws == q = 150 + stemIdx * 10 + length ws
+        | not (null ws) && head ws == q = 200 + stemIdx * 10 + length ws
+        | q `elem` ws = 300 + stemIdx * 10 + length ws
+        | any (\w -> q `T.isPrefixOf` w && T.length w < T.length q + 4) ws
+          = 500 + stemIdx * 10 + length ws
+        | otherwise = 9999
+  in minimum (9999 : fragScores)
+
 -- | Search affixes by keyword in abbreviation, description, or degree meanings
+-- Also handles -Cs- notation (strips dashes for consonant form lookup)
 searchAffixes :: Text -> Map Text AffixEntry -> [(Text, AffixEntry)]
 searchAffixes query affixes =
   let q = T.toCaseFold query
+      stripped = T.dropWhile (== '-') . T.dropWhileEnd (== '-') $ q
       matches (cs, entry) =
-        T.isInfixOf q (T.toCaseFold (affixAbbrev entry))
+        T.toCaseFold cs == stripped
+        || T.toCaseFold (affixAbbrev entry) == T.toUpper q
         || T.isInfixOf q (T.toCaseFold (affixDesc entry))
-        || T.toCaseFold cs == q
         || any (T.isInfixOf q . T.toCaseFold) (affixDegrees entry)
   in filter matches (Map.toList affixes)
 
@@ -317,14 +400,22 @@ dumpGrammarTable category =
 -- | Compose a Formative into correctly-rendered Ithkuil text.
 -- Uses Allomorph.constructCa for proper Ca forms, and applies stress marking.
 -- When Slot V has affixes: geminates Ca to mark boundary; adds ' after Vv for 2+ affixes.
+-- Prefers shortcut form (w/y prefix) when Ca is eligible and Vr is default.
 composeFormative :: Formative -> Text
 composeFormative f = applyStress (fStress f) unstressed
   where
-    hasSlotV = not (null (fSlotV f))
-    slotVMarker = if length (fSlotV f) >= 2 then "'" else ""
-    ca = constructCa (fSlotVI f)
-    caFinal = if hasSlotV then geminateCa ca else ca
-    unstressed = T.concat
+    unstressed = case tryShortcut f of
+      Just s  -> s
+      Nothing -> composeFull f
+
+-- | Full (non-shortcut) formative composition
+composeFull :: Formative -> Text
+composeFull f =
+  let hasSlotV = not (null (fSlotV f))
+      slotVMarker = if length (fSlotV f) >= 2 then "'" else ""
+      ca = constructCa (fSlotVI f)
+      caFinal = if hasSlotV then geminateCa ca else ca
+  in T.concat
       [ renderSlotI (fSlotI f)
       , slotIIToVv (fSlotII f)
       , slotVMarker
@@ -336,6 +427,63 @@ composeFormative f = applyStress (fStress f) unstressed
       , renderSlotVIII (fSlotVIII f)
       , renderSlotIX (fSlotIX f)
       ]
+
+-- | Try to compose a formative using shortcut form (w/y prefix).
+-- Returns Nothing if shortcut is not applicable.
+-- Shortcut requires: no concatenation, default Vr (STA/BSC/EXS), no Slot V affixes,
+-- and Ca must match one of the 8 shortcut patterns.
+tryShortcut :: Formative -> Maybe Text
+tryShortcut f = do
+  -- No concatenation allowed
+  case fSlotI f of
+    Just _ -> Nothing
+    Nothing -> Just ()
+  -- Vr must be default (shortcuts elide Slot IV)
+  case fSlotIV f of
+    (STA, BSC, EXS) -> Just ()
+    _ -> Nothing
+  -- No Slot V affixes (shortcuts use the Slot V/VII region differently)
+  case fSlotV f of
+    [] -> Just ()
+    _ -> Nothing
+  -- Case vowel must not contain glottal stop (would be misinterpreted as slot V marker)
+  let caseForm = renderSlotIX (fSlotIX f)
+  if T.any (== '\'') caseForm then Nothing else Just ()
+  -- Ca must match a shortcut pattern
+  (prefix, series) <- shortcutFromCa (fSlotVI f)
+  let vvForm = slotIIFormNum (fSlotII f)
+      vv = vowelForm series vvForm
+  Just $ T.concat
+    [ prefix
+    , vv
+    , renderRoot (fSlotIII f)
+    , renderSlotVII (fSlotVII f)
+    , renderSlotVIII (fSlotVIII f)
+    , renderSlotIX (fSlotIX f)
+    ]
+
+-- | Map Ca tuple to shortcut prefix ("w"/"y") and Vv series (1-4)
+shortcutFromCa :: SlotVI -> Maybe (Text, Int)
+shortcutFromCa (UNI, CSL, M_, DEL, NRM) = Just ("w", 1)  -- default Ca
+shortcutFromCa (UNI, CSL, G_, DEL, NRM) = Just ("w", 2)  -- Polyadic
+shortcutFromCa (UNI, CSL, N_, DEL, NRM) = Just ("w", 3)  -- Nomic
+shortcutFromCa (UNI, CSL, G_, DEL, RPV) = Just ("w", 4)  -- Polyadic+RPV
+shortcutFromCa (UNI, CSL, M_, PRX, NRM) = Just ("y", 1)  -- Proximal
+shortcutFromCa (UNI, CSL, M_, DEL, RPV) = Just ("y", 2)  -- Representative
+shortcutFromCa (UNI, CSL, A_, DEL, NRM) = Just ("y", 3)  -- Abstract
+shortcutFromCa (UNI, CSL, M_, PRX, RPV) = Just ("y", 4)  -- Proximal+RPV
+shortcutFromCa _ = Nothing
+
+-- | Get the Vv form number for a stem/version pair
+slotIIFormNum :: SlotII -> Int
+slotIIFormNum (S1, PRC) = 1
+slotIIFormNum (S1, CPT) = 2
+slotIIFormNum (S2, PRC) = 3
+slotIIFormNum (S2, CPT) = 4
+slotIIFormNum (S3, PRC) = 9
+slotIIFormNum (S3, CPT) = 8
+slotIIFormNum (S0, PRC) = 7
+slotIIFormNum (S0, CPT) = 6
 
 -- | Compose a single referential: C1 + case vowel
 -- Example: composeReferential (PersonalRef R1m NEU) (Transrelative ERG) = "lo" ("I" in ERG)

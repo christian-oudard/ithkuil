@@ -1606,22 +1606,22 @@ main = hspec $ do
     it "composes minimal formative (root -l-, THM)" $ do
       let f = minimalFormative "l"
           w = composeFormative f
-      -- Vv(a) + Cr(l) + Vr(a) + Ca(l) + Vc(a) = "alala"
-      w `shouldBe` "alala"
+      -- Shortcut: w + Vv(a) + Cr(l) + Vc(a) = "wala"
+      w `shouldBe` "wala"
 
     it "composes with ERG case" $ do
       let f = (minimalFormative "l") { fSlotIX = Left (Transrelative ERG) }
           w = composeFormative f
-      -- Vv(a) + Cr(l) + Vr(a) + Ca(l) + Vc(o) = "alalo"
-      w `shouldBe` "alalo"
+      -- Shortcut: w + Vv(a) + Cr(l) + Vc(o) = "walo"
+      w `shouldBe` "walo"
 
     it "composes with ultimate stress (verbal)" $ do
       let f = (minimalFormative "l")
               { fStress = Ultimate
               , fSlotIX = Right (IllocVal ASR OBS) }
           w = composeFormative f
-      -- alal + a (ASR/OBS) = "alala" + ultimate stress → "alalá"
-      w `shouldBe` "alalá"
+      -- Shortcut: w + Vv(a) + Cr(l) + Vc(a) + stress = "walá"
+      w `shouldBe` "walá"
 
     it "composes with DYN function" $ do
       let f = (minimalFormative "l") { fSlotIV = (DYN, BSC, EXS) }
@@ -1632,8 +1632,8 @@ main = hspec $ do
     it "composes with S2 stem" $ do
       let f = (minimalFormative "l") { fSlotII = (S2, PRC) }
           w = composeFormative f
-      -- Vv(e) + Cr(l) + Vr(a) + Ca(l) + Vc(a) = "elala"
-      w `shouldBe` "elala"
+      -- Shortcut: w + Vv(e, series 1) + Cr(l) + Vc(a) = "wela"
+      w `shouldBe` "wela"
 
     it "composes with DPX configuration" $ do
       let f = (minimalFormative "l")
@@ -1860,3 +1860,40 @@ main = hspec $ do
       case parseWord w of
         PReferential _ _ _ _ -> return ()  -- parsed as referential
         other -> expectationFailure $ "Expected PReferential, got: " ++ show other
+
+    it "uses shortcut form for default Ca" $ do
+      let f = minimalFormative "l"
+          w = composeFormative f
+      T.isPrefixOf "w" w `shouldBe` True  -- w prefix for default Ca
+
+    it "uses shortcut form for PRX Ca" $ do
+      let f = (minimalFormative "l")
+              { fSlotVI = (UNI, CSL, M_, PRX, NRM) }
+          w = composeFormative f
+      T.isPrefixOf "y" w `shouldBe` True  -- y prefix for PRX
+
+    it "round-trips shortcut G perspective" $ do
+      let f = (minimalFormative "l")
+              { fSlotVI = (UNI, CSL, G_, DEL, NRM)
+              , fSlotIX = Left (Transrelative ABS) }
+          w = composeFormative f
+      T.isPrefixOf "w" w `shouldBe` True  -- shortcut used
+      case parseWord w of
+        PFormative pf ->
+          case pfCaParsed pf of
+            Just pc -> pcPerspective pc `shouldBe` G_
+            Nothing -> expectationFailure "Ca should be parsed"
+        _ -> expectationFailure $ "Round-trip failed: " ++ T.unpack w
+
+    it "uses full form when Ca is non-shortcut" $ do
+      let f = (minimalFormative "l")
+              { fSlotVI = (DPX, CSL, M_, DEL, NRM) }
+          w = composeFormative f
+      T.isPrefixOf "w" w `shouldBe` False
+      T.isPrefixOf "y" w `shouldBe` False
+
+    it "uses full form when Vr is non-default" $ do
+      let f = (minimalFormative "l")
+              { fSlotIV = (DYN, BSC, EXS) }
+          w = composeFormative f
+      T.isPrefixOf "w" w `shouldBe` False  -- no shortcut for DYN
