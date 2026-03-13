@@ -423,6 +423,17 @@ main = hspec $ do
       referentLabel Rmi `shouldBe` "it"
       referentLabel Rpvs `shouldBe` "whatever"
 
+  describe "Stress Detection in Formatives" $ do
+    it "detects penultimate stress by default" $ do
+      case parseFormativeReal "malai" of
+        Just pf -> pfStress pf `shouldBe` Penultimate
+        Nothing -> expectationFailure "Should parse"
+
+    it "detects ultimate stress from acute accent" $ do
+      case parseFormativeReal "malá" of
+        Just pf -> pfStress pf `shouldBe` Ultimate
+        Nothing -> expectationFailure "Should parse"
+
   describe "Rendering" $ do
     it "renders a minimal formative" $ do
       let f = minimalFormative "ml"
