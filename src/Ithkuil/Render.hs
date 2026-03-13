@@ -130,7 +130,7 @@ renderSlotVIII :: Maybe SlotVIII -> Text
 renderSlotVIII Nothing = ""
 renderSlotVIII (Just (VnCnValence val ms)) = renderValence val <> renderMoodOrScope ms
 renderSlotVIII (Just (VnCnPhase ph ms)) = renderPhase ph <> renderMoodOrScope ms
-renderSlotVIII (Just (VnCnLevel lvl ms)) = renderLevel lvl <> renderMoodOrScope ms
+renderSlotVIII (Just (VnCnLevel lvl _abs ms)) = renderLevel lvl <> renderMoodOrScope ms
 renderSlotVIII (Just (VnCnEffect eff ms)) = renderEffect eff <> renderMoodOrScope ms
 renderSlotVIII (Just (VnCnAspect asp ms)) = renderAspect asp <> renderMoodOrScopeP2 ms
 

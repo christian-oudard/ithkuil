@@ -424,7 +424,7 @@ data SlotVIII
   = VnCnValence Valence MoodOrScope    -- ^ Pattern 1: Valence + Mood/CaseScope
   | VnCnPhase Phase MoodOrScope        -- ^ Pattern 1: Phase + Mood/CaseScope
   | VnCnEffect Effect MoodOrScope      -- ^ Pattern 1: Effect + Mood/CaseScope
-  | VnCnLevel Level MoodOrScope        -- ^ Pattern 1: Level + Mood/CaseScope
+  | VnCnLevel Level Bool MoodOrScope    -- ^ Pattern 1: Level + absolute? + Mood/CaseScope
   | VnCnAspect Aspect MoodOrScope      -- ^ Pattern 2: Aspect + Mood/CaseScope
   deriving (Show, Eq, Ord)
 

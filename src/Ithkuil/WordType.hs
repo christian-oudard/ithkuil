@@ -28,7 +28,7 @@ import Data.Map.Strict (Map)
 import Ithkuil.Grammar
 import Data.Maybe (isJust)
 import Ithkuil.Phonology (vowelFormLookup)
-import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, parseCa, ParsedFormative(..), parseFormativeReal, ParsedCa(..), normalizeAccents, detectStressSimple, isGeminateCa)
+import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, parseCa, ParsedFormative(..), parseFormativeReal, ParsedCa(..), normalizeAccents, detectStressSimple, isGeminateCa, isSpecialVv)
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
                            aspectVowels, phaseVowels, levelVowels, effectVowels)
 import Ithkuil.Adjuncts hiding (CarrierAdjunct)
@@ -70,6 +70,7 @@ data ParsedWord
   | PCombinationRef [PersonalRef] (Maybe Case) Text [(Text, Text)] (Maybe Case)
     -- ^ referent(s), case1, spec, affixes (VxCs), case2
   | PMoodCaseScope MoodOrScope  -- standalone mood/case-scope adjunct
+  | PError Text Text            -- error message, original word
   | PUnparsed Text              -- Could not parse
   deriving (Show, Eq)
 
@@ -270,9 +271,11 @@ parseSingleWord word = case classifyWord word of
   WRegisterAdjunct -> case parseRegister word of
     Just r -> PRegister r
     Nothing -> PUnparsed word
-  WFormative -> case parseFormativeReal word of
-    Just pf -> PFormative pf
-    Nothing -> PUnparsed word
+  WFormative -> case detectFormativeError word of
+    Just err -> PError err word
+    Nothing -> case parseFormativeReal word of
+      Just pf -> PFormative pf
+      Nothing -> PUnparsed word
   WReferential -> parseReferentialWord word
   WModularAdjunct -> parseModularWord word
   WMultipleAffixAdj -> parseMultipleAffixWord word
@@ -282,6 +285,27 @@ parseSingleWord word = case classifyWord word of
   WMoodCaseScopeAdj -> parseMoodCaseScopeAdj word
   _ -> PUnparsed word
 
+-- | Detect structural errors in formative words before parsing
+-- Returns Just errorMessage if an error is detected
+detectFormativeError :: Text -> Maybe Text
+detectFormativeError word =
+  let lw = T.toLower word
+      conjs = splitConjuncts lw
+      -- Strip ç prefix for analysis
+      stripped = case T.uncons lw of
+        Just ('ç', rest) -> case T.uncons rest of
+          Just ('ë', rest2) | not (T.null rest2) -> rest2
+          Just ('ç', rest2) -> "y" <> rest2
+          _ | not (T.null rest) -> rest
+          _ -> lw
+        _ -> lw
+      sparts = splitConjuncts stripped
+  in case sparts of
+    -- Shortcut (w/y) + Cs-root Vv (ëi, eë, ëu, oë)
+    (cc:vv:_) | cc `elem` ["w", "y"]
+              , isSpecialVv vv -> Just "Shortcuts can't be used with a Cs-root"
+    _ -> Nothing
+
 -- | Parse a concatenated word chain (e.g., "hlamröé-úçtļořëi")
 -- All parts except the last must have Cc concatenation marker
 -- The last part must not have a concatenation marker
@@ -289,13 +313,22 @@ parseSingleWord word = case classifyWord word of
 parseConcatenatedWord :: Text -> ParsedWord
 parseConcatenatedWord word =
   let parts = T.splitOn "-" word
+      -- Check for sentence prefix in non-first parts
+      hasInnerSentencePrefix = any (\p -> case T.uncons (T.toLower p) of
+        Just ('ç', _) -> True; _ -> False) (drop 1 parts)
+      -- Check for glottal stops in non-final parts (invalid in concatenated formatives)
+      nonFinalParts = if length parts > 1 then init parts else []
+      hasGlottalInConcat = any ("'" `T.isInfixOf`) nonFinalParts
       parsed = map parseFormativeReal parts
-  in case sequence parsed of
-    Just pfs
-      | length pfs >= 2
-      , not (any pfSentenceStarter (drop 1 pfs))
-      -> PConcatenated pfs
-    _ -> PUnparsed word
+  in if hasInnerSentencePrefix
+    then PError "Sentence prefix inside concatenation chain" word
+    else if hasGlottalInConcat
+    then PError "Unexpected glottal stop in concatenated formative" word
+    else case sequence parsed of
+      Just pfs
+        | length pfs >= 2
+        -> PConcatenated pfs
+      _ -> PUnparsed word
 
 -- | Parse a register adjunct (initial and final forms)
 parseRegister :: Text -> Maybe Register
@@ -576,7 +609,7 @@ parseOneVnCn vn cn =
           Nothing -> case lookup vn phaseVowels of
             Just ph -> Just (VnCnPhase ph ms)
             Nothing -> case lookup vn levelVowels of
-              Just lvl -> Just (VnCnLevel lvl ms)
+              Just lvl -> Just (VnCnLevel lvl False ms)
               Nothing -> case lookup vn effectVowels of
                 Just eff -> Just (VnCnEffect eff ms)
                 Nothing -> Nothing
@@ -599,7 +632,7 @@ glossWord roots affixes pw = case pw of
   PModular pairs fv _ ->
     let glossVnCnDot (VnCnValence val ms) = T.pack (show val) <> "." <> glossMoodOrScope ms
         glossVnCnDot (VnCnPhase ph ms) = T.pack (show ph) <> "." <> glossMoodOrScope ms
-        glossVnCnDot (VnCnLevel lvl ms) = T.pack (show lvl) <> "." <> glossMoodOrScope ms
+        glossVnCnDot (VnCnLevel lvl _abs ms) = T.pack (show lvl) <> "." <> glossMoodOrScope ms
         glossVnCnDot (VnCnEffect eff ms) = T.pack (show eff) <> "." <> glossMoodOrScope ms
         glossVnCnDot (VnCnAspect asp ms) = T.pack (show asp) <> "." <> glossMoodOrScope ms
     in T.intercalate "-" (map glossVnCnDot pairs)
@@ -631,6 +664,7 @@ glossWord roots affixes pw = case pw of
     <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc2
   PCarrier ct _ -> "CARRIER:" <> T.pack (show ct)
   PMoodCaseScope ms -> glossMoodOrScope ms
+  PError msg _ -> "Error: " <> msg
   PUnparsed t -> "?" <> t
 
 -- | Gloss a formative with root lookup
@@ -692,10 +726,17 @@ glossFormative roots affixes pf =
       -- Affixes from Ca rest (VxCs pairs after the Ca consonant)
       affixGlosses = map (glossOneAffix affixes) (extractAffixes (pfCa pf))
       -- Slot VIII: VnCn (from pfSlotVIII or extracted from Ca rest)
+      -- Supports absolute level: V+y+V+Cn pattern
       slotVIII = case pfSlotVIII pf of
         Just s8 -> Just s8
-        Nothing -> case extractVnCn (pfCa pf) of
-          Just (vn, cn) -> parseOneVnCn vn cn
+        Nothing -> case extractVnCnFull (pfCa pf) of
+          Just (vn, cn, absLvl) ->
+            let parsed = parseOneVnCn vn cn
+            in if absLvl
+               then case parsed of
+                 Just (VnCnLevel lvl _ ms) -> Just (VnCnLevel lvl True ms)
+                 _ -> parsed
+               else parsed
           Nothing -> Nothing
       -- Slot IX: Case or Illocution+Validation (omit THM default, keep OBS)
       slotIXAbbr = case pfIllocVal pf of
@@ -794,27 +835,49 @@ glossWordCompact roots affixes pw = case pw of
     <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc2
   PCarrier _ct content -> content
   PMoodCaseScope ms -> glossMoodOrScope ms
+  PError msg _ -> "Error: " <> msg
   PUnparsed t -> "?" <> t
 
 -- | Extract VxCs affix pairs from Ca rest conjuncts
 -- The first consonant is Ca itself; subsequent V-C pairs are Slot VII affixes
 -- If the last pair's consonant is a Cn consonant, it's VnCn (Slot VIII)
+-- For absolute level (V+y+V+Cn), drops the last two pairs
 extractAffixes :: [Text] -> [(Text, Text)]  -- (Vx vowel, Cs consonant)
 extractAffixes parts =
   let allPairs = extractAllPairs parts
-  in case allPairs of
-    [] -> []
-    _ | isCnConsonant (snd (last allPairs)) -> init allPairs
-      | otherwise -> allPairs
+      vnCnFull = extractVnCnFull parts
+  in case vnCnFull of
+    Just (_, _, True) | length allPairs >= 2 -> take (length allPairs - 2) allPairs
+    Just _ -> init allPairs
+    Nothing -> allPairs
 
 -- | Extract the VnCn pair from Ca rest conjuncts (if present)
+-- Also detects absolute level pattern: V + y + V + Cn → combined Vn with absolute flag
+-- Returns (Vn vowel, Cn consonant, is absolute level?)
 extractVnCn :: [Text] -> Maybe (Text, Text)
-extractVnCn parts =
+extractVnCn parts = case extractVnCnFull parts of
+  Just (vn, cn, _) -> Just (vn, cn)
+  Nothing -> Nothing
+
+-- | Full VnCn extraction with absolute level detection
+extractVnCnFull :: [Text] -> Maybe (Text, Text, Bool)
+extractVnCnFull parts =
   let allPairs = extractAllPairs parts
   in case allPairs of
     [] -> Nothing
-    _ | isCnConsonant (snd (last allPairs)) -> Just (last allPairs)
+    _ | length allPairs >= 2
+      , let (vn1, c1) = allPairs !! (length allPairs - 2)
+      , c1 == "y"
+      , isCnConsonant (snd (last allPairs))
+      , let combinedVn = vn1 <> fst (last allPairs)
+      , isLevelVowel (normalizeAccents combinedVn)
+      -> Just (combinedVn, snd (last allPairs), True)
+      | isCnConsonant (snd (last allPairs)) -> Just (fst (last allPairs), snd (last allPairs), False)
       | otherwise -> Nothing
+
+-- | Check if a vowel is a Level (Series 4) vowel
+isLevelVowel :: Text -> Bool
+isLevelVowel v = isJust (lookup v levelVowels)
 
 -- | Extract all V-C pairs after the first consonant (Ca)
 extractAllPairs :: [Text] -> [(Text, Text)]
@@ -919,7 +982,8 @@ selectStem S3 = rootStem3
 glossSlotVIII :: SlotVIII -> Text
 glossSlotVIII (VnCnValence val ms) = T.pack (show val) <> "-" <> glossMoodOrScope ms
 glossSlotVIII (VnCnPhase ph ms) = T.pack (show ph) <> "-" <> glossMoodOrScope ms
-glossSlotVIII (VnCnLevel lvl ms) = T.pack (show lvl) <> "-" <> glossMoodOrScope ms
+glossSlotVIII (VnCnLevel lvl absLvl ms) =
+  T.pack (show lvl) <> (if absLvl then ".a" else "") <> "-" <> glossMoodOrScope ms
 glossSlotVIII (VnCnEffect eff ms) = T.pack (show eff) <> "-" <> glossMoodOrScope ms
 glossSlotVIII (VnCnAspect asp ms) = T.pack (show asp) <> "-" <> glossMoodOrScope ms
 

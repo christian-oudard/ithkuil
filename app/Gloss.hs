@@ -137,6 +137,7 @@ glossOneWord roots affixes word = do
         Nothing -> return ()
     PCarrier ct content -> TIO.putStrLn $ "    Carrier: " <> T.pack (show ct) <> " " <> content
     PMoodCaseScope ms -> TIO.putStrLn $ "    Mood/Case-Scope: " <> glossMoodOrScope ms
+    PError msg _ -> TIO.putStrLn $ "    ERROR: " <> msg
     PUnparsed _ -> TIO.putStrLn $ "    (unparsed)"
   TIO.putStrLn $ "    GLOSS: " <> glossWord roots affixes parsed
 

@@ -1003,8 +1003,8 @@ main = hspec $ do
 
     it "rejects sentence prefix inside concatenation chain" $ do
       case parseWord "hamala-çëlala" of
-        PUnparsed _ -> return ()
-        pw -> expectationFailure $ "Expected PUnparsed, got: " ++ show pw
+        PError msg _ -> msg `shouldBe` "Sentence prefix inside concatenation chain"
+        pw -> expectationFailure $ "Expected PError, got: " ++ show pw
 
     it "allows sentence prefix on first part of concatenation" $ do
       case parseWord "çëhamala-lala" of
@@ -1111,8 +1111,13 @@ main = hspec $ do
       let gloss = glossWord mempty mempty (parseWord "malaoha")
       T.isInfixOf "MIN" gloss `shouldBe` True
       -- Also test that parseOneVnCn handles Level
-      parseOneVnCn "ao" "h" `shouldBe` Just (VnCnLevel MIN (MoodVal FAC))
-      parseOneVnCn "oa" "h" `shouldBe` Just (VnCnLevel MAX (MoodVal FAC))
+      parseOneVnCn "ao" "h" `shouldBe` Just (VnCnLevel MIN False (MoodVal FAC))
+      parseOneVnCn "oa" "h" `shouldBe` Just (VnCnLevel MAX False (MoodVal FAC))
+
+    it "parses absolute Level (V+y+V+Cn pattern)" $ do
+      -- malalayoha: Ca rest has ...a-y-o-h → combined "ao" = MIN absolute
+      let gloss = glossWord mempty mempty (parseWord "malalayoha")
+      T.isInfixOf "MIN.a" gloss `shouldBe` True
 
     it "parses Effect VnCn values" $ do
       -- ia + h = BEN1 + FAC mood
@@ -1148,7 +1153,7 @@ main = hspec $ do
                   , "lála'a", "çëlal", "çalal", "çwala", "ççala"
                   , "ţnaxeka", "ţnaxekka"
                   ] :: [T.Text]
-          failed = filter (\w -> case parseWord w of PUnparsed _ -> True; _ -> False) words
+          failed = filter (\w -> case parseWord w of PUnparsed _ -> True; PError _ _ -> True; _ -> False) words
       failed `shouldBe` []
 
   describe "Kotlin Error Cases" $ do
@@ -1159,6 +1164,16 @@ main = hspec $ do
     it "detects unexpectedly many slot V affixes (shortcut)" $ do
       let gloss = glossWord mempty mempty (parseWord "waršana'anera")
       T.isInfixOf "Unexpectedly many" gloss `shouldBe` True
+
+    it "rejects shortcuts with Cs-root Vv" $ do
+      case parseWord "wëil" of
+        PError msg _ -> msg `shouldBe` "Shortcuts can't be used with a Cs-root"
+        pw -> expectationFailure $ "Expected PError, got: " ++ show pw
+
+    it "rejects glottal stop in concatenated formative" $ do
+      case parseWord "halala'a-alal" of
+        PError msg _ -> msg `shouldBe` "Unexpected glottal stop in concatenated formative"
+        pw -> expectationFailure $ "Expected PError, got: " ++ show pw
 
   describe "Integration: Longtest Poem" $ do
     it "parses all words from the Ozymandias poem" $ do

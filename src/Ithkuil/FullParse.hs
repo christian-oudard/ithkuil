@@ -270,7 +270,7 @@ parseVnCnFromParts vn cn _ =
             Nothing -> case lookup vn effectVowels of
               Just eff -> Success $ Just (VnCnEffect eff ms)
               Nothing -> case lookup vn levelVowels of
-                Just lvl -> Success $ Just (VnCnLevel lvl ms)
+                Just lvl -> Success $ Just (VnCnLevel lvl False ms)
                 Nothing -> Success Nothing
 
 --------------------------------------------------------------------------------
