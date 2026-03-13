@@ -167,6 +167,12 @@ main = hspec $ do
     it "parses representative essence" $
       parseCa "tļ" `shouldBe` Just (ParsedCa UNI CSL M_ DEL RPV)
 
+    it "parses complex allomorphic Ca forms" $ do
+      parseCa "nš" `shouldBe` Just (ParsedCa UNI COA G_ DEL RPV)
+      parseCa "řktç" `shouldBe` Just (ParsedCa MSC VAR A_ PRX RPV)
+      parseCa "zḑ" `shouldBe` Just (ParsedCa MFS CSL A_ DPL RPV)
+      parseCa "nx" `shouldBe` Just (ParsedCa MSC CSL N_ GRA RPV)
+
   describe "Formative Parsing" $ do
     it "parses consonant-initial words" $ do
       let result = parseFormativeReal "malai"
@@ -502,6 +508,12 @@ main = hspec $ do
           pfCaParsed pf `shouldBe` Just (ParsedCa UNI CSL M_ DEL NRM)
           pfCase pf `shouldBe` Just (Transrelative THM)
         Nothing -> expectationFailure "Should parse wela"
+
+    it "extracts VnCn from formative Ca rest" $ do
+      let pairs = extractAllPairs ["l", "ä", "hl"]
+      pairs `shouldBe` [("ä", "hl")]
+      extractVnCn ["l", "ä", "hl"] `shouldBe` Just ("ä", "hl")
+      extractAffixes ["l", "ä", "hl"] `shouldBe` []
 
     it "parses longer formatives with explicit Vr" $ do
       case parseFormativeReal "kšilo" of

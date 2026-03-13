@@ -12,6 +12,9 @@ module Ithkuil.WordType
   , glossSlotVIII
   , glossMoodOrScope
   , extractAffixes
+  , extractAllPairs
+  , extractVnCn
+  , parseOneVnCn
   , classifyDegree
   ) where
 
@@ -281,6 +284,12 @@ glossFormative roots affixes pf =
         Nothing -> ""
       -- Affixes from Ca rest (VxCs pairs after the Ca consonant)
       affixGlosses = map (glossOneAffix affixes) (extractAffixes (pfCa pf))
+      -- Slot VIII: VnCn (from pfSlotVIII or extracted from Ca rest)
+      slotVIII = case pfSlotVIII pf of
+        Just s8 -> Just s8
+        Nothing -> case extractVnCn (pfCa pf) of
+          Just (vn, cn) -> parseOneVnCn vn cn
+          Nothing -> Nothing
       -- Slot IX: Case or Illocution+Validation
       slotIXAbbr = case pfIllocVal pf of
         Just (ill, val) ->
@@ -296,7 +305,9 @@ glossFormative roots affixes pf =
     , rootMeaning
     , funcAbbr <> "/" <> specAbbr <> "/" <> ctxAbbr
     , caAbbr
-    ] <> affixGlosses <> [slotIXAbbr | not (T.null slotIXAbbr)]
+    ] <> affixGlosses
+      <> [glossSlotVIII s8 | Just s8 <- [slotVIII]]
+      <> [slotIXAbbr | not (T.null slotIXAbbr)]
       <> [frameAbbr | not (T.null frameAbbr)]
 
 -- | Compact gloss: only shows root meaning and non-default grammatical info
@@ -329,11 +340,29 @@ glossWordCompact roots _affixes pw = case pw of
 
 -- | Extract VxCs affix pairs from Ca rest conjuncts
 -- The first consonant is Ca itself; subsequent V-C pairs are Slot VII affixes
+-- If the last pair's consonant is a Cn consonant, it's VnCn (Slot VIII)
 extractAffixes :: [Text] -> [(Text, Text)]  -- (Vx vowel, Cs consonant)
-extractAffixes [] = []
 extractAffixes parts =
-  let -- Skip the first consonant (Ca) and pair up remaining V-C
-      afterCa = drop 1 parts
+  let allPairs = extractAllPairs parts
+  in case allPairs of
+    [] -> []
+    _ | isCnConsonant (snd (last allPairs)) -> init allPairs
+      | otherwise -> allPairs
+
+-- | Extract the VnCn pair from Ca rest conjuncts (if present)
+extractVnCn :: [Text] -> Maybe (Text, Text)
+extractVnCn parts =
+  let allPairs = extractAllPairs parts
+  in case allPairs of
+    [] -> Nothing
+    _ | isCnConsonant (snd (last allPairs)) -> Just (last allPairs)
+      | otherwise -> Nothing
+
+-- | Extract all V-C pairs after the first consonant (Ca)
+extractAllPairs :: [Text] -> [(Text, Text)]
+extractAllPairs [] = []
+extractAllPairs parts =
+  let afterCa = drop 1 parts
   in pairVC afterCa
   where
     pairVC (v:c:rest)

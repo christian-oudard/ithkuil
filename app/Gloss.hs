@@ -139,6 +139,15 @@ showFormativeDetail roots affixes pf = do
           Nothing -> cs <> " deg " <> T.pack (show degree)
     TIO.putStrLn $ "    Affix: -" <> cs <> "- " <> vx <> " = " <> desc
     ) afxPairs
+  -- Slot VIII: VnCn (from parse or extracted from Ca rest)
+  let vnCn = case pfSlotVIII pf of
+        Just s8 -> Just s8
+        Nothing -> case extractVnCn (pfCa pf) of
+          Just (vn, cn) -> parseOneVnCn vn cn
+          Nothing -> Nothing
+  case vnCn of
+    Just s8 -> TIO.putStrLn $ "    VnCn: " <> glossSlotVIII s8
+    Nothing -> return ()
   -- Slot IX: Case or Illocution+Validation
   case pfIllocVal pf of
     Just (ill, val) -> TIO.putStrLn $ "    Illocution/Validation: "

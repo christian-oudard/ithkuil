@@ -99,11 +99,14 @@ perspectiveEssencePatterns =
   [ ((M_, NRM), "l",  "")
   , ((G_, NRM), "r",  "r")
   , ((N_, NRM), "v",  "w")
-  , ((A_, NRM), "z",  "y")
-  , ((M_, RPV), "ř",  "ř")
-  , ((G_, RPV), "tļ", "l")
-  , ((N_, RPV), "lm", "m")
-  , ((A_, RPV), "ln", "n")
+  , ((A_, NRM), "j",  "y")
+  -- RPV forms (standalone, after-consonant)
+  , ((M_, RPV), "tļ", "l")
+  , ((G_, RPV), "ř",  "ř")
+  , ((N_, RPV), "m",  "m")
+  , ((N_, RPV), "h",  "h")    -- alternate
+  , ((A_, RPV), "n",  "n")
+  , ((A_, RPV), "ç",  "ç")    -- alternate
   ]
 
 -- | Parsed formative with all identified slots
@@ -113,6 +116,7 @@ data ParsedFormative = ParsedFormative
   , pfSlotIV  :: SlotIV          -- Function + Specification + Context
   , pfCa      :: [Text]          -- Ca complex (raw conjuncts)
   , pfCaParsed :: Maybe ParsedCa -- Parsed Ca values
+  , pfSlotVIII :: Maybe SlotVIII -- VnCn (valence/phase/aspect + mood/case-scope)
   , pfCase    :: Maybe Case      -- Vc (case vowel, when penultimate/antepenultimate stress)
   , pfIllocVal :: Maybe (Illocution, Validation)  -- Vk (when ultimate stress)
   , pfStress  :: Stress          -- Detected stress pattern
@@ -155,8 +159,17 @@ vvSeries vv = case normalizeAccents vv of
 parseFormativeReal :: Text -> Maybe ParsedFormative
 parseFormativeReal word = do
   let lword = T.toLower word
-      parts = splitConjuncts lword
-      stress = detectStressSimple lword
+      -- Strip ç sentence prefix (çë, ça, çw, çy, çç patterns)
+      -- çë uses "ë" as default Vv marker — strip both ç and ë
+      stripped = case T.uncons lword of
+        Just ('ç', rest) -> case T.uncons rest of
+          Just ('ë', rest2) | not (T.null rest2) -> rest2  -- çë = strip prefix + default Vv
+          Just ('ç', _) -> rest  -- çç = strip one ç, keep the other (PRX shortcut)
+          _ | not (T.null rest) -> rest
+          _ -> lword
+        _ -> lword
+      parts = splitConjuncts stripped
+      stress = detectStressSimple stripped
   case parts of
     [] -> Nothing
     -- w/y Cc shortcut before vowel: parse as vowel-initial with shortcut Ca
@@ -191,6 +204,7 @@ parseVowelInitialWithShortcut sc stress parts = case parts of
       , pfSlotIV = (STA, BSC, EXS)  -- Shortcuts elide Vr to default
       , pfCa = []
       , pfCaParsed = Just scCa
+      , pfSlotVIII = Nothing
       , pfCase = caseM
       , pfIllocVal = illocValM
       , pfStress = stress
@@ -219,6 +233,7 @@ parseConsonantInitial stress parts = case parts of
           , pfSlotIV = (STA, BSC, EXS)
           , pfCa = []
           , pfCaParsed = Just defaultCa
+          , pfSlotVIII = Nothing
           , pfCase = caseM
           , pfIllocVal = illocValM
           , pfStress = stress
@@ -239,6 +254,7 @@ parseConsonantInitial stress parts = case parts of
               , pfSlotIV = slotIV
               , pfCa = caRest
               , pfCaParsed = caParsedM
+              , pfSlotVIII = Nothing
               , pfCase = caseM
               , pfIllocVal = illocValM
               , pfStress = stress
@@ -254,6 +270,7 @@ parseConsonantInitial stress parts = case parts of
               , pfSlotIV = (STA, BSC, EXS)
               , pfCa = [cr]
               , pfCaParsed = caParsedM
+              , pfSlotVIII = Nothing
               , pfCase = caseM
               , pfIllocVal = illocValM
               , pfStress = stress
@@ -277,6 +294,7 @@ parseVowelInitial stress parts = case parts of
           , pfSlotIV = (STA, BSC, EXS)
           , pfCa = []
           , pfCaParsed = Just defaultCa
+          , pfSlotVIII = Nothing
           , pfCase = caseM
           , pfIllocVal = illocValM
           , pfStress = stress
@@ -297,6 +315,7 @@ parseVowelInitial stress parts = case parts of
               , pfSlotIV = slotIV
               , pfCa = caRest
               , pfCaParsed = caParsedM
+              , pfSlotVIII = Nothing
               , pfCase = caseM
               , pfIllocVal = illocValM
               , pfStress = stress
@@ -314,6 +333,7 @@ parseVowelInitial stress parts = case parts of
       , pfSlotIV = (STA, BSC, EXS)
       , pfCa = [crca]
       , pfCaParsed = caParsedM
+      , pfSlotVIII = Nothing
       , pfCase = Nothing
       , pfIllocVal = Nothing
       , pfStress = stress
@@ -333,6 +353,7 @@ tryElidedVr slotII crca vcvk stress parts = do
     , pfSlotIV = (STA, BSC, EXS)  -- Default elided Vr
     , pfCa = [crca]
     , pfCaParsed = caParsedM
+    , pfSlotVIII = Nothing
     , pfCase = caseM
     , pfIllocVal = illocValM
     , pfStress = stress
@@ -543,35 +564,85 @@ data ParsedCa = ParsedCa
 defaultCa :: ParsedCa
 defaultCa = ParsedCa UNI CSL M_ DEL NRM
 
+-- | Ca allomorph desubstitutions (reverse phonotactic substitutions)
+-- Applied in order before compositional parsing to recover the canonical form
+-- Based on the Kotlin glosser's CA_DESUBSTITUTIONS
+desubstituteCa :: Text -> Text
+desubstituteCa ca = foldl (\t f -> f t) ca desubSteps
+  where
+    unvoiced = "stckpţfçšč" :: String
+    isUnvoiced c = c `elem` unvoiced
+    desubSteps =
+      [ T.replace "ḑy" "ţţ"
+      , T.replace "vw" "ff"
+      -- Context-sensitive: ţ/ḑ after context → bn; f/v after context → bm
+      , replaceAfterVoiced isUnvoiced 'ţ' 'ḑ' "bn"
+      , replaceAfterVoiced isUnvoiced 'f' 'v' "bm"
+      -- x/ň → gm/gn (when not at start)
+      , replaceNonInitial "xw" "çx"
+      , T.replace "ňn" "ngn"
+      , replaceNonInitial "ň" "gn"
+      , replaceNonInitial "x" "gm"
+      , T.replace "ňš" "řř", T.replace "ňs" "řr"
+      , T.replace "nš" "rř", T.replace "ns" "rr"
+      , T.replace "nd" "çy", T.replace "ng" "kg", T.replace "mb" "pb"
+      , T.replace "pļ" "ll", T.replace "nk" "kk", T.replace "nt" "tt", T.replace "mp" "pp"
+      ]
+    -- Replace 'unv' after unvoiced char or 'voiced' after voiced char with 'to'
+    replaceAfterVoiced isUnv unv voiced to t =
+      let chars = T.unpack t
+          go [] = []
+          go [c] = [c]
+          go (prev:c:rest)
+            | c == unv && isUnv prev = prev : T.unpack to ++ go rest
+            | c == voiced && not (isUnv prev) = prev : T.unpack to ++ go rest
+            | otherwise = prev : go (c:rest)
+      in T.pack (go chars)
+    -- Replace pattern when not at the start of string
+    replaceNonInitial pat repl t = case T.uncons t of
+      Nothing -> t
+      Just (first, rest) -> T.singleton first <> T.replace pat repl rest
+
 -- | Parse Ca consonant cluster
 -- Uses compositional decomposition: Configuration + Extension + Affiliation + Perspective/Essence
--- Falls back to common lookup table for standard forms
+-- Falls back to common lookup table for standard forms, then tries desubstitution
 parseCa :: Text -> Maybe ParsedCa
 parseCa ca = case lookup ca caLookupTable of
   Just pc -> Just pc
-  Nothing -> tryCompositionalParse ca
+  Nothing -> case tryCompositionalParse ca of
+    Just pc -> Just pc
+    Nothing -> let desub = desubstituteCa ca
+               in if desub /= ca
+                  then case lookup desub caLookupTable of
+                    Just pc -> Just pc
+                    Nothing -> tryCompositionalParse desub
+                  else Nothing
 
--- | Try to parse Ca by decomposing into components
--- Works by trying all combinations and checking if they reconstruct the input
+-- | Try to parse Ca by decomposing into components left-to-right:
+-- Affiliation + Configuration + Extension + Perspective/Essence
 tryCompositionalParse :: Text -> Maybe ParsedCa
 tryCompositionalParse ca = listToMaybe
   [ ParsedCa cfg aff persp ext ess
-  | ((persp, ess), standalone, afterC) <- perspectiveEssencePatterns
-  , let suffix = if T.null ca then standalone else afterC
-  , not (T.null ca) || not (T.null standalone)
-  , suffix `T.isSuffixOf` ca
-  , let rest = T.dropEnd (T.length suffix) ca
-  -- Match affiliation
-  , (aff, affForm, _) <- affiliationPatterns
-  , affForm `T.isSuffixOf` rest
-  , let rest2 = T.dropEnd (T.length affForm) rest
-  -- Match extension
-  , (ext, extAfterC, _) <- extensionPatterns
-  , extAfterC `T.isSuffixOf` rest2
-  , let rest3 = T.dropEnd (T.length extAfterC) rest2
-  -- Match configuration
+  -- Affiliation is leftmost (non-standalone form uses l/r/ř prefix)
+  | (aff, affForm, _) <- affiliationPatterns
+  , let affF = affForm  -- Non-standalone (before other components)
+  , affF `T.isPrefixOf` ca
+  , let rest1 = T.drop (T.length affF) ca
+  -- Configuration
   , (cfg, cfgForm) <- configurationPatterns
-  , cfgForm == rest3
+  , cfgForm `T.isPrefixOf` rest1
+  , let rest2 = T.drop (T.length cfgForm) rest1
+  -- Extension (voiceless after non-UNI, voiced for UNI)
+  , (ext, extAfterC, extStandalone) <- extensionPatterns
+  , let extF = if cfg == UNI then extStandalone else extAfterC
+  , extF `T.isPrefixOf` rest2
+  , let rest3 = T.drop (T.length extF) rest2
+  -- Perspective + Essence is rightmost
+  , ((persp, ess), standalone, afterC) <- perspectiveEssencePatterns
+  , let peF = if T.null rest1 && T.null (T.drop (T.length affF) ca)
+              then standalone  -- Standalone: only affiliation present
+              else afterC      -- After consonant
+  , peF == rest3
   ]
 
 -- | Precomputed lookup table for common Ca forms
@@ -587,7 +658,11 @@ caLookupTable =
   , ("y",   ParsedCa UNI CSL A_ DEL NRM)
   -- Standalone RPV forms
   , ("tļ",  ParsedCa UNI CSL M_ DEL RPV)
-  , ("ř",   ParsedCa UNI CSL M_ DEL RPV)
+  , ("ř",   ParsedCa UNI CSL G_ DEL RPV)
+  , ("m",   ParsedCa UNI CSL N_ DEL RPV)
+  , ("h",   ParsedCa UNI CSL N_ DEL RPV)  -- alternate
+  , ("n",   ParsedCa UNI CSL A_ DEL RPV)
+  , ("ç",   ParsedCa UNI CSL A_ DEL RPV)  -- alternate
   -- Extension forms (UPX standalone: use voiced form)
   , ("d",   ParsedCa UNI CSL M_ PRX NRM)
   , ("g",   ParsedCa UNI CSL M_ ICP NRM)
