@@ -1897,3 +1897,11 @@ main = hspec $ do
               { fSlotIV = (DYN, BSC, EXS) }
           w = composeFormative f
       T.isPrefixOf "w" w `shouldBe` False  -- no shortcut for DYN
+
+    it "uses circumflex stress on diaeresis vowels" $ do
+      let f = (minimalFormative "l")
+              { fSlotII = (S1, CPT)
+              , fStress = Antepenultimate
+              , fSlotVIII = Just (VnCnAspect PRG (MoodVal FAC)) }
+          w = composeFormative f
+      T.isPrefixOf "wâ" w `shouldBe` True  -- ä + stress → â (circumflex)

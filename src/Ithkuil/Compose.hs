@@ -570,13 +570,13 @@ isVowel c = c `elem` ("aäeëiïoöuü" :: String)
 
 acuteAccent :: Char -> Char
 acuteAccent 'a' = 'á'
-acuteAccent 'ä' = 'á'  -- ä + stress → á (acute takes precedence)
+acuteAccent 'ä' = 'â'  -- diaeresis + stress → circumflex
 acuteAccent 'e' = 'é'
-acuteAccent 'ë' = 'é'
+acuteAccent 'ë' = 'ê'  -- diaeresis + stress → circumflex
 acuteAccent 'i' = 'í'
 acuteAccent 'ï' = 'í'
 acuteAccent 'o' = 'ó'
-acuteAccent 'ö' = 'ó'
+acuteAccent 'ö' = 'ô'  -- diaeresis + stress → circumflex
 acuteAccent 'u' = 'ú'
-acuteAccent 'ü' = 'ú'
+acuteAccent 'ü' = 'û'  -- diaeresis + stress → circumflex
 acuteAccent c = c  -- already accented or unknown
