@@ -277,7 +277,8 @@ parseRestAsFormative stress parts = case parts of
 -- After Cr, remaining conjuncts are: [VxCs Slot VII affixes...] + Vc/Vk
 parseVowelInitialWithShortcut :: CcShortcut -> Stress -> [Text] -> Maybe ParsedFormative
 parseVowelInitialWithShortcut sc stress parts = case parts of
-  (vv:cr:rest) -> do
+  (vv:cr0:rest) -> do
+    let (cr, _slotVFilled) = stripSlotVMarker cr0
     slotII <- parseSlotII vv
     let series = vvSeries vv
         scCa = shortcutCa sc series
@@ -406,13 +407,21 @@ parseConsonantInitial stress parts = case parts of
               }
   _ -> Nothing
 
+-- | Strip Slot V filled marker (' prefix on Cr)
+-- When Vv is followed by glottal stop, it signals 2+ Slot V affixes
+stripSlotVMarker :: Text -> (Text, Bool)
+stripSlotVMarker cr = case T.uncons cr of
+  Just ('\'', rest) | not (T.null rest) -> (rest, True)
+  _ -> (cr, False)
+
 -- | Parse vowel-initial word (explicit Vv)
 -- First checks for special Cs-root Vv values, then tries normal parsing
 parseVowelInitial :: Stress -> [Text] -> Maybe ParsedFormative
 parseVowelInitial stress parts = case parts of
-  (vv:cr:vr:rest)
-    | isSpecialVv vv -> parseCsRootFormative stress vv cr vr rest
+  (vv:cr0:vr:rest)
+    | isSpecialVv vv -> parseCsRootFormative stress vv cr0 vr rest
     | otherwise -> do
+    let (cr, _slotVFilled) = stripSlotVMarker cr0
     slotII <- parseSlotII vv
     case rest of
       -- Minimal formative: Vv-Cr-Vc/Vk (Vr and Ca both elided to defaults)

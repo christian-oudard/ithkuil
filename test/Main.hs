@@ -603,6 +603,14 @@ main = hspec $ do
           pfCase pf `shouldBe` Just (Transrelative THM)
         Nothing -> expectationFailure "Should parse wela"
 
+    it "strips Slot V filled marker from Cr" $ do
+      case parseFormativeReal "a'larfunall" of
+        Just pf -> do
+          let Root cr = pfRoot pf
+          cr `shouldBe` "l"
+          length (pfSlotV pf) `shouldBe` 2
+        Nothing -> expectationFailure "Should parse a'larfunall"
+
     it "extracts VnCn from formative Ca rest" $ do
       let pairs = extractAllPairs ["l", "ä", "hl"]
       pairs `shouldBe` [("ä", "hl")]
