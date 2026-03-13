@@ -25,7 +25,7 @@ import Ithkuil.Grammar
 import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, ParsedFormative(..), parseFormativeReal, ParsedCa(..))
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
                            aspectVowels, phaseVowels)
-import Ithkuil.Adjuncts
+import Ithkuil.Adjuncts hiding (CarrierAdjunct)
 import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), refC1All, lookupRefC1, referentLabel)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot, lookupAffix)
 
@@ -80,8 +80,8 @@ isBiasAdjunct word = not (T.null word) && not (T.any isVowelChar word)
 -- Final: hai, hei, hiu, hoi, hui, hü
 isRegisterAdjunctWord :: Text -> Bool
 isRegisterAdjunctWord word =
-  word `elem` ["ha", "he", "hi", "ho", "hu",
-               "hai", "hei", "hiu", "hoi", "hui", "hü"]
+  T.toLower word `elem` ["ha", "he", "hi", "ho", "hu",
+                          "hai", "hei", "hiu", "hoi", "hui", "hü"]
 
 -- | Carrier adjuncts start with hl, hm, hn, or hň followed by vowel
 isCarrierAdjunct :: Text -> Bool
@@ -168,6 +168,7 @@ parseSingleWord word = case classifyWord word of
   WReferential -> parseReferentialWord word
   WModularAdjunct -> parseModularWord word
   WAffixualAdjunct -> parseAffixualWord word
+  WCarrierAdjunct -> parseCarrierWord word
   _ -> PUnparsed word
 
 -- | Parse a concatenated word chain (e.g., "hlamröé-úçtļořëi")
@@ -183,20 +184,23 @@ parseConcatenatedWord word =
 
 -- | Parse a register adjunct (initial and final forms)
 parseRegister :: Text -> Maybe Register
+parseRegister word = parseRegisterLower (T.toLower word)
+
+parseRegisterLower :: Text -> Maybe Register
 -- Initial forms
-parseRegister "ha"  = Just DSV
-parseRegister "he"  = Just PNT
-parseRegister "hi"  = Just SPF
-parseRegister "ho"  = Just EXM
-parseRegister "hu"  = Just CGT
+parseRegisterLower "ha"  = Just DSV
+parseRegisterLower "he"  = Just PNT
+parseRegisterLower "hi"  = Just SPF
+parseRegisterLower "ho"  = Just EXM
+parseRegisterLower "hu"  = Just CGT
 -- Final forms
-parseRegister "hai" = Just DSV
-parseRegister "hei" = Just PNT
-parseRegister "hiu" = Just SPF
-parseRegister "hoi" = Just EXM
-parseRegister "hui" = Just CGT
-parseRegister "hü"  = Just END
-parseRegister _     = Nothing
+parseRegisterLower "hai" = Just DSV
+parseRegisterLower "hei" = Just PNT
+parseRegisterLower "hiu" = Just SPF
+parseRegisterLower "hoi" = Just EXM
+parseRegisterLower "hui" = Just CGT
+parseRegisterLower "hü"  = Just END
+parseRegisterLower _     = Nothing
 
 -- | Parse a referential word (simple form: C1-Vc, dual form: C1-C1-Vc)
 parseReferentialWord :: Text -> ParsedWord
@@ -219,6 +223,25 @@ parseAffixualWord word =
   in case conjs of
     [vx, cs] -> PAffixual cs (classifyDegree vx) ""
     [vx, cs, _vs] -> PAffixual cs (classifyDegree vx) word
+    _ -> PUnparsed word
+
+-- | Parse a carrier/quotative/naming adjunct (hl/hm/hn/hň + Vc)
+parseCarrierWord :: Text -> ParsedWord
+parseCarrierWord word =
+  let conjs = splitConjuncts word
+  in case conjs of
+    (c:rest)
+      | not (null rest) ->
+        let ct = case c of
+              "hl" -> Just CarrierForeign   -- carrier (foreign word)
+              "hm" -> Just CarrierQuote     -- quotative
+              "hn" -> Just CarrierName      -- naming
+              "hň" -> Just CarrierFormula   -- formula
+              _    -> Nothing
+            content = T.concat rest
+        in case ct of
+          Just ctype -> PCarrier ctype content
+          Nothing -> PUnparsed word
     _ -> PUnparsed word
 
 -- | Parse a modular adjunct word
@@ -284,6 +307,7 @@ glossWord roots affixes pw = case pw of
   PUnparsed t -> "?" <> t
 
 -- | Gloss a formative with root lookup
+-- Omits default values (S1/PRC, STA/BSC/EXS, ASR/OBS) for conciseness
 glossFormative :: Map Text RootEntry -> Map Text AffixEntry -> ParsedFormative -> Text
 glossFormative roots affixes pf =
   let Root cr = pfRoot pf
@@ -293,12 +317,20 @@ glossFormative roots affixes pf =
       rootMeaning = case lookupRoot cr roots of
         Just entry -> "'" <> selectStem stem entry <> "'"
         Nothing -> cr
-      -- Grammatical abbreviations
-      stemAbbr = T.pack $ show stem
-      verAbbr = T.pack $ show version
-      funcAbbr = T.pack $ show func
-      specAbbr = T.pack $ show spec
-      ctxAbbr = T.pack $ show ctx
+      -- Stem/Version (omit if default S1/PRC)
+      stemVerAbbr = case (stem, version) of
+        (S1, PRC) -> ""
+        (_, PRC) -> T.pack (show stem)
+        (S1, _) -> T.pack (show version)
+        _ -> T.pack (show stem) <> "." <> T.pack (show version)
+      -- Function/Specification/Context (omit if default STA/BSC/EXS)
+      slotIVAbbr = case (func, spec, ctx) of
+        (STA, BSC, EXS) -> ""
+        _ -> T.intercalate "." $ filter (/= "") $
+          [ if func /= STA then T.pack (show func) else ""
+          , if spec /= BSC then T.pack (show spec) else ""
+          , if ctx /= EXS then T.pack (show ctx) else ""
+          ]
       -- Ca complex
       caAbbr = case pfCaParsed pf of
         Just pc -> showCaAbbr pc
@@ -311,15 +343,16 @@ glossFormative roots affixes pf =
         Nothing -> case extractVnCn (pfCa pf) of
           Just (vn, cn) -> parseOneVnCn vn cn
           Nothing -> Nothing
-      -- Slot IX: Case or Illocution+Validation
+      -- Slot IX: Case or Illocution+Validation (omit ASR/OBS default)
       slotIXAbbr = case pfIllocVal pf of
+        Just (ASR, OBS) -> "OBS"
         Just (ill, val) ->
           T.pack (show ill) <> "/" <> T.pack (show val)
         Nothing -> case pfCase pf of
           Just c -> T.pack (showCase c)
           Nothing -> ""
       frameAbbr = case pfStress pf of
-        Antepenultimate -> "[FRAMED]"
+        Antepenultimate -> "FRA"
         _ -> ""
       concatAbbr = case pfConcatenation pf of
         Just Type1 -> "T1"
@@ -327,9 +360,9 @@ glossFormative roots affixes pf =
         Nothing -> ""
   in T.intercalate "-" $ filter (not . T.null)
     [ concatAbbr
-    , stemAbbr <> "/" <> verAbbr
+    , stemVerAbbr
     , rootMeaning
-    , funcAbbr <> "/" <> specAbbr <> "/" <> ctxAbbr
+    , slotIVAbbr
     , caAbbr
     ] <> affixGlosses
       <> [glossSlotVIII s8 | Just s8 <- [slotVIII]]

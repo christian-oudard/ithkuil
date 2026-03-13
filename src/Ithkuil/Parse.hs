@@ -522,9 +522,9 @@ detectStressSimple word
 isStressedVowel :: Char -> Bool
 isStressedVowel c = c `elem` ("áéíóúâêôû" :: String)
 
--- | Check if character is a vowel (includes accented vowels for all versions)
+-- | Check if character is a vowel (includes accented vowels and diaeresis variants)
 isVowelChar :: Char -> Bool
-isVowelChar c = c `elem` ("aäeëiöoüuáéíóúàèìòùîâêôûǎěǐǒǔ" :: String)
+isVowelChar c = c `elem` ("aäeëiïöoüuáéíóúàèìòùîâêôûǎěǐǒǔ" :: String)
 
 -- | Parse Slot IX based on stress: Case (penultimate) or Vk (ultimate)
 parseSlotIXSimple :: Stress -> Maybe Text -> (Maybe Case, Maybe (Illocution, Validation))
@@ -573,6 +573,8 @@ normalizeAccents = T.map stripAccent
     stripAccent 'ê' = 'ë'
     stripAccent 'ô' = 'ö'
     stripAccent 'û' = 'ü'
+    -- Diaeresis variants (hiatus markers)
+    stripAccent 'ï' = 'i'
     stripAccent c = c
 
 -- | Split text into consonant/vowel conjuncts
