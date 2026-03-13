@@ -402,6 +402,22 @@ main = hspec $ do
           mc `shouldBe` Just (Transrelative ERG)
         pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
 
+    it "parses extended referential 'layá' as 1m-THM" $ do
+      classifyWord "layá" `shouldBe` WReferential
+      case parseWord "layá" of
+        PReferential ref mc _ -> do
+          ref `shouldBe` PersonalRef R1m NEU
+          mc `shouldBe` Just (Transrelative THM)
+        pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
+
+    it "parses referential with second referent 'miyüs'" $ do
+      classifyWord "miyüs" `shouldBe` WReferential
+      case parseWord "miyüs" of
+        PReferential ref mc _ -> do
+          ref `shouldBe` PersonalRef Rma NEU
+          mc `shouldBe` Just (Transrelative AFF)
+        pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
+
   describe "Modular Adjunct Parsing" $ do
     it "classifies V-Cn-V as modular adjunct" $ do
       classifyWord "ihnú" `shouldBe` WModularAdjunct

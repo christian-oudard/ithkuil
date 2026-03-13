@@ -97,21 +97,33 @@ isCarrierAdjunct word =
               && not (T.null v) && isVowelChar (T.head v) -> True
     _ -> False
 
--- | Referential words: C1-V or C1-C1-V pattern (2-3 conjuncts only)
--- Formatives have 4+ conjuncts (Vv-Cr-Vr-Ca or Cr-Vr-Ca-Vc)
--- Referentials are distinctly shorter: just C1 + case vowel
+-- | Referential words: [ë/äi] C1 [ëC1]* V [w/y V [C1 [ë]]]
+-- C1 must be a referential consonant, w/y marks RPV/perspective scope
 isReferentialWord :: Text -> Bool
 isReferentialWord word =
   let conjs = splitConjuncts word
-  in case conjs of
-    -- Simple referential: C1-Vc (just 2 conjuncts)
-    [c, v] | not (T.null c) && not (isVowelChar (T.head c))
-             && not (T.null v) && isVowelChar (T.head v)
-             && isRefC1 c -> True
-    -- Dual referential: C1-C1-Vc (3 conjuncts, both consonant)
-    [c1, c2, v] | isRefC1 c1 && isRefC1 c2
-                  && not (T.null v) && isVowelChar (T.head v) -> True
-    _ -> False
+      -- Strip optional ë/äi prefix
+      rest0 = case conjs of
+        ("ë":cs)  -> cs
+        ("äi":cs) -> cs
+        cs        -> cs
+      -- Consume referential consonants (C1 [ë C1]*)
+      consumeRefs (c:cs)
+        | isRefC1 c = case cs of
+            ("ë":c2:cs2) | isRefC1 c2 -> consumeRefs (c2:cs2)
+            _ -> Just cs
+        | otherwise = Nothing
+      consumeRefs [] = Nothing
+      -- After C1s, expect: V [w/y V [C1 [ë]]]
+      isValidTail cs = case cs of
+        [v]            | isV v -> True
+        [v, wy, v2]   | isV v && wy `elem` ["w", "y"] && isV v2 -> True
+        [v, wy, v2, c] | isV v && wy `elem` ["w", "y"] && isV v2 && isRefC1 c -> True
+        _ -> False
+      isV t = not (T.null t) && isVowelChar (T.head t)
+  in case consumeRefs rest0 of
+    Just tail' -> isValidTail tail'
+    Nothing -> False
 
 -- | Check if a consonant is a valid referential C1
 isRefC1 :: Text -> Bool
@@ -230,18 +242,36 @@ parseRegisterLower "hui" = Just CGT
 parseRegisterLower "hü"  = Just END
 parseRegisterLower _     = Nothing
 
--- | Parse a referential word (simple form: C1-Vc, dual form: C1-C1-Vc)
+-- | Parse a referential word
+-- Simple: C1-Vc, Dual: C1-ë-C1-Vc, Extended: C1-Vc-w/y-Vc2
 parseReferentialWord :: Text -> ParsedWord
 parseReferentialWord word =
   let conjs = splitConjuncts word
-  in case conjs of
-    [c, v] -> case lookupRefC1 c of
-      Just ref -> PReferential ref (parseCase v) v
-      Nothing -> PUnparsed word
-    [c1, _c2, v] -> case lookupRefC1 c1 of
-      -- For dual referentials, we report just the first referent for now
-      Just ref -> PReferential ref (parseCase v) v
-      Nothing -> PUnparsed word
+      -- Strip optional ë/äi prefix
+      rest0 = case conjs of
+        ("ë":cs)  -> cs
+        ("äi":cs) -> cs
+        cs        -> cs
+      -- Consume C1 referential consonants, collecting refs
+      consumeRefs (c:cs)
+        | isRefC1 c = case lookupRefC1 c of
+            Just ref -> case cs of
+              ("ë":c2:cs2) -> case consumeRefs (c2:cs2) of
+                (refs, tail') -> (ref:refs, tail')
+              _ -> ([ref], cs)
+            Nothing -> ([], c:cs)
+        | otherwise = ([], c:cs)
+      consumeRefs [] = ([], [])
+      (refs, tail') = consumeRefs rest0
+  in case (refs, tail') of
+    (ref:_, [v]) ->
+      PReferential ref (parseCase v) v
+    (ref:_, [v, wy, _v2]) | wy `elem` ["w", "y"] ->
+      -- w = RPV effect on second case, y = perspective scope
+      PReferential ref (parseCase v) v
+    (ref:_, [v, wy, _v2, c2]) | wy `elem` ["w", "y"], isRefC1 c2 ->
+      -- Extended: C1-Vc-w/y-Vc2-C2 (dual referential with scope)
+      PReferential ref (parseCase v) v
     _ -> PUnparsed word
 
 -- | Parse an affixual adjunct word (Vx-Cs or Vx-Cs-Vs)
