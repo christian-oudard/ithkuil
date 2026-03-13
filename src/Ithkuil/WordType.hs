@@ -1111,7 +1111,15 @@ glossSentenceWords roots affixes sentence =
                ctx' = if carrier
                       then GlossContext True hasTerminator
                       else ctx
-               gloss = glossWord roots affixes parsed
+               -- For modular adjuncts, disambiguate Mood/CaseScope based on next formative
+               disambiguated = case parsed of
+                 PModular pairs fv raw ->
+                   let verbal = nextFormativeIsVerbal (map stripPunct rest)
+                       stress = if verbal then Ultimate else Penultimate
+                       pairs' = map (disambiguateSlotVIII stress) pairs
+                   in PModular pairs' fv raw
+                 _ -> parsed
+               gloss = glossWord roots affixes disambiguated
            in (w, gloss) : go ctx' rest
 
 -- | Check if a parsed word is a carrier (adjunct or formative with root -s-)
@@ -1129,6 +1137,18 @@ isTerminator w = T.toLower w == "hü"
 -- | Check if a word ends a sentence (punctuation)
 isSentenceEnd :: Text -> Bool
 isSentenceEnd w = any (`T.isSuffixOf` w) [".", "!", "?"]
+
+-- | Look ahead to find the next formative and check if it's verbal (ultimate stress)
+nextFormativeIsVerbal :: [Text] -> Bool
+nextFormativeIsVerbal [] = True  -- Default to mood when no next formative
+nextFormativeIsVerbal (w:ws)
+  | isSentenceEnd w = True  -- End of sentence; default to mood
+  | isFormativeWord w =
+      let stress = detectStressSimple w
+      in stress == Ultimate || stress == Monosyllabic
+  | otherwise = nextFormativeIsVerbal ws
+  where
+    isFormativeWord t = classifyWord t == WFormative
 
 -- | Invalid root consonant forms (per Ithkuil V4 spec)
 invalidRootForms :: [Text]

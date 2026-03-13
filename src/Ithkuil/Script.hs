@@ -96,12 +96,41 @@ formativeToScript pf =
       -- Secondary character: Cr (root consonant)
       crChar = SSecondary $ consonantToSecondary cr False Nothing
 
-      -- Quaternary character: Vc/Vk (case or illocution)
-      quat = case pfCase pf of
-        Just c -> SQuaternary $ caseToQuaternary c
-        Nothing -> SQuaternary $ QuaternaryChar 0 0 Nothing Nothing
+      -- Slot V affixes (CsVx order → Secondary characters, not rotated)
+      slotVChars = map (\(cs, _vx) ->
+        SSecondary $ consonantToSecondary cs False Nothing) (pfSlotV pf)
 
-  in [primary, crChar, quat]
+      -- Slot VII affixes (VxCs order → Secondary characters, rotated 180°)
+      slotVIIChars = map (\(_vx, cs) ->
+        SSecondary $ consonantToSecondary cs True Nothing) (extractSlotVII (pfCa pf))
+
+      -- Quaternary character: Vc/Vk (case or illocution)
+      quat = case pfIllocVal pf of
+        Just (ill, val) -> SQuaternary $ illocValToQuaternary ill val
+        Nothing -> case pfCase pf of
+          Just c -> SQuaternary $ caseToQuaternary c
+          Nothing -> SQuaternary $ QuaternaryChar 0 0 Nothing Nothing
+
+  in [primary, crChar] ++ slotVChars ++ slotVIIChars ++ [quat]
+
+-- | Extract Slot VII affix pairs from Ca rest (same as extractAffixes but local)
+extractSlotVII :: [Text] -> [(Text, Text)]
+extractSlotVII parts = case parts of
+  (_ca:rest) -> go rest
+  _ -> []
+  where
+    go (v:c:rest)
+      | not (T.null v) && not (T.null c)
+      , T.all isVowelLike v = (v, c) : go rest
+    go _ = []
+    isVowelLike ch = ch `elem` ("aäeëiïöoüuáéíóúâêôû'" :: String)
+
+-- | Convert illocution + validation to quaternary character
+illocValToQuaternary :: Illocution -> Validation -> QuaternaryChar
+illocValToQuaternary ill val =
+  let topVal = fromEnum ill
+      botVal = fromEnum val
+  in QuaternaryChar topVal botVal Nothing Nothing
 
 -- | Break a consonant cluster into core + extensions for Secondary character
 consonantToSecondary :: Text -> Bool -> Maybe AffixType -> SecondaryChar

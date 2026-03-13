@@ -1590,3 +1590,14 @@ main = hspec $ do
       T.isInfixOf "x/7" g `shouldBe` True  -- SIZ affix without lexicon
       T.isInfixOf "ALL" g `shouldBe` True
       T.isInfixOf "DAT" g `shouldBe` True
+
+  describe "Modular Adjunct Context Disambiguation" $ do
+    it "modular adjunct before verb gets Mood (SUB)" $ do
+      let g = glossSentence mempty mempty "ahlä agalá"
+      T.isInfixOf "SUB" g `shouldBe` True
+      T.isInfixOf "CCA" g `shouldBe` False
+
+    it "modular adjunct before noun gets CaseScope (CCA)" $ do
+      let g = glossSentence mempty mempty "ahlä agala"
+      T.isInfixOf "CCA" g `shouldBe` True
+      T.isInfixOf "SUB" g `shouldBe` False

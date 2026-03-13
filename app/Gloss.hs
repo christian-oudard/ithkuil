@@ -16,6 +16,7 @@ import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), referentLabel)
 import Ithkuil.WordType
 import Ithkuil.Lexicon
 import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), searchRoots, searchAffixes, dumpGrammarTable)
+import Ithkuil.Script (renderFormativeSvg)
 
 -- ANSI color helpers (only used when outputting to terminal)
 dim, cyan, green, yellow, magenta, bold, reset :: Text
@@ -36,10 +37,13 @@ main :: IO ()
 main = do
   args <- getArgs
   case args of
+    ["--help"] -> showHelp
+    ["-h"] -> showHelp
     ("--lookup":rest) -> handleLookup rest
     ("--root":rest) -> handleRootSearch rest
     ("--affix":rest) -> handleAffixSearch rest
     ("--grammar":rest) -> handleGrammarDump rest
+    ("--script":rest) -> handleScript rest
     _ -> do
       roots <- loadLexicon "data/roots.json"
       affixes <- loadAffixLexicon "data/affixes.json"
@@ -94,6 +98,33 @@ handleGrammarDump :: [String] -> IO ()
 handleGrammarDump cats = do
   let category = T.pack (unwords cats)
   TIO.putStr (dumpGrammarTable category)
+
+showHelp :: IO ()
+showHelp = do
+  TIO.putStrLn $ col bold "ithkuil-gloss" <> " - Ithkuil V4 parser and glosser"
+  TIO.putStrLn ""
+  TIO.putStrLn $ col bold "USAGE:"
+  TIO.putStrLn "  ithkuil-gloss                   Interactive REPL mode"
+  TIO.putStrLn "  ithkuil-gloss <words...>         Parse and gloss a sentence"
+  TIO.putStrLn "  echo text | ithkuil-gloss        Pipe mode (one sentence per line)"
+  TIO.putStrLn ""
+  TIO.putStrLn $ col bold "COMMANDS:"
+  TIO.putStrLn "  --lookup <abbr>     Look up grammar abbreviation (e.g. THM, LOC, SUB)"
+  TIO.putStrLn "  --root <keyword>    Search roots by meaning keyword"
+  TIO.putStrLn "  --affix <keyword>   Search affixes by keyword"
+  TIO.putStrLn "  --grammar <cat>     Dump all entries in a grammar category"
+  TIO.putStrLn "  --script <word>     Render a formative as SVG script"
+  TIO.putStrLn "  --help, -h          Show this help"
+
+handleScript :: [String] -> IO ()
+handleScript [] = TIO.putStrLn "Usage: ithkuil-gloss --script <word>"
+handleScript ws = do
+  let word = T.pack (unwords ws)
+      parsed = parseWord word
+  case parsed of
+    PFormative pf -> TIO.putStrLn (renderFormativeSvg pf)
+    PConcatenated (pf:_) -> TIO.putStrLn (renderFormativeSvg pf)
+    _ -> TIO.putStrLn $ "Cannot render script for non-formative: " <> word
 
 loadLexicon :: FilePath -> IO (Map.Map Text RootEntry)
 loadLexicon path = do
