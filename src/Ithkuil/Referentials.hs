@@ -9,6 +9,7 @@ module Ithkuil.Referentials
   , refC1All
   , lookupRefC1
   , renderRefCase
+  , referentLabel
   ) where
 
 import Data.Text (Text)
@@ -117,3 +118,17 @@ lookupRefC1 c = listToMaybe [pr | (pr, form) <- refC1All, form == c]
 -- | Render case for referential (uses same Vc vowels as formative Slot IX)
 renderRefCase :: Case -> Text
 renderRefCase = renderCase
+
+-- | Human-readable label for a referent category
+referentLabel :: Referent -> Text
+referentLabel R1m  = "I"
+referentLabel R2m  = "you(sg.)"
+referentLabel R2p  = "you(pl.)"
+referentLabel Rma  = "he/she"
+referentLabel Rpa  = "they(anim.)"
+referentLabel Rmi  = "it"
+referentLabel Rpi  = "them(inanim.)"
+referentLabel Rmx  = "it+they(mixed)"
+referentLabel Rrdp = "aforementioned"
+referentLabel Robv = "the other one"
+referentLabel Rpvs = "whatever"

@@ -386,6 +386,43 @@ main = hspec $ do
         PModular [VnCnAspect RSM (MoodVal HYP)] _ -> return ()
         pw -> expectationFailure $ "Expected PModular RSM-HYP, got: " ++ show pw
 
+  describe "Affix Extraction" $ do
+    it "extracts no affixes from simple Ca" $ do
+      extractAffixes ["l"] `shouldBe` []
+
+    it "extracts one VxCs affix after Ca" $ do
+      extractAffixes ["l", "e", "sp"] `shouldBe` [("e", "sp")]
+
+    it "extracts multiple affixes" $ do
+      extractAffixes ["l", "a", "sp", "i", "rs"] `shouldBe` [("a", "sp"), ("i", "rs")]
+
+    it "classifies Type 1 degree vowels" $ do
+      classifyDegree "a" `shouldBe` 1
+      classifyDegree "e" `shouldBe` 3
+      classifyDegree "ëi" `shouldBe` 5
+      classifyDegree "u" `shouldBe` 9
+      classifyDegree "ae" `shouldBe` 0
+
+    it "classifies Type 2 degree vowels" $ do
+      classifyDegree "ai" `shouldBe` 1
+      classifyDegree "ei" `shouldBe` 3
+      classifyDegree "ui" `shouldBe` 9
+
+    it "classifies Type 3 degree vowels" $ do
+      classifyDegree "ia" `shouldBe` 1
+      classifyDegree "uä" `shouldBe` 1
+      classifyDegree "eë" `shouldBe` 5
+      classifyDegree "ua" `shouldBe` 9
+
+  describe "Referent Labels" $ do
+    it "provides human-readable labels" $ do
+      referentLabel R1m `shouldBe` "I"
+      referentLabel R2m `shouldBe` "you(sg.)"
+      referentLabel R2p `shouldBe` "you(pl.)"
+      referentLabel Rma `shouldBe` "he/she"
+      referentLabel Rmi `shouldBe` "it"
+      referentLabel Rpvs `shouldBe` "whatever"
+
   describe "Rendering" $ do
     it "renders a minimal formative" $ do
       let f = minimalFormative "ml"

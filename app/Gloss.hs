@@ -10,12 +10,9 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import qualified Data.Map.Strict as Map
 import Ithkuil.Grammar
-import Ithkuil.Parse (splitConjuncts, ParsedFormative(..), ParsedCa(..), parseFormativeReal)
-import Ithkuil.Render (renderCase)
-import Ithkuil.FullParse (detectStress, parseVnValence, parseCnMood, parseCnCaseScope,
-                           aspectVowels, phaseVowels)
-import Ithkuil.Adjuncts (Bias, Register)
-import Ithkuil.Referentials (PersonalRef(..), Referent(..), ReferentEffect(..))
+import Ithkuil.Parse (ParsedFormative(..), ParsedCa(..))
+import Ithkuil.FullParse (detectStress)
+import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), referentLabel)
 import Ithkuil.WordType
 import Ithkuil.Lexicon
 
@@ -87,18 +84,18 @@ glossOneWord roots affixes word = do
       parsed = parseWord word
   TIO.putStrLn $ "  " <> word <> "  [" <> T.pack (show wtype) <> "]"
   case parsed of
-    PFormative pf -> showFormativeDetail roots pf
+    PFormative pf -> showFormativeDetail roots affixes pf
     PBias b -> TIO.putStrLn $ "    Bias: " <> T.pack (show b)
     PRegister r -> TIO.putStrLn $ "    Register: " <> T.pack (show r)
     PReferential ref mc vc -> showReferentialDetail ref mc vc
-    PModular pairs raw -> do
+    PModular pairs _raw -> do
       mapM_ (\s8 -> TIO.putStrLn $ "    VnCn: " <> glossSlotVIII s8) pairs
     PCarrier ct content -> TIO.putStrLn $ "    Carrier: " <> T.pack (show ct) <> " " <> content
-    PUnparsed t -> TIO.putStrLn $ "    (unparsed)"
+    PUnparsed _ -> TIO.putStrLn $ "    (unparsed)"
   TIO.putStrLn $ "    GLOSS: " <> glossWord roots affixes parsed
 
-showFormativeDetail :: Map.Map Text RootEntry -> ParsedFormative -> IO ()
-showFormativeDetail roots pf = do
+showFormativeDetail :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> ParsedFormative -> IO ()
+showFormativeDetail roots affixes pf = do
   let Root cr = pfRoot pf
       (stem, ver) = pfSlotII pf
       (func, spec, ctx) = pfSlotIV pf
@@ -116,6 +113,19 @@ showFormativeDetail roots pf = do
     Just pc | pc /= ParsedCa UNI CSL M_ DEL NRM ->
       TIO.putStrLn $ "    Ca: " <> showCaDetail pc
     _ -> return ()
+  -- Affixes
+  let afxPairs = extractAffixes (pfCa pf)
+  mapM_ (\(vx, cs) -> do
+    let degree = classifyDegree vx
+        desc = case lookupAffix cs affixes of
+          Just entry -> affixAbbrev entry <> " (" <> affixDesc entry <> ")"
+                     <> " deg " <> T.pack (show degree)
+                     <> case safeIndex (affixDegrees entry) (degree - 1) of
+                          Just meaning -> ": " <> meaning
+                          Nothing -> ""
+          Nothing -> cs <> " deg " <> T.pack (show degree)
+    TIO.putStrLn $ "    Affix: -" <> cs <> "- " <> vx <> " = " <> desc
+    ) afxPairs
   -- Case
   case pfCase pf of
     Just c -> TIO.putStrLn $ "    Case: " <> T.pack (showCaseDetail c)
@@ -125,6 +135,11 @@ showFormativeDetail roots pf = do
   if stress /= Penultimate
     then TIO.putStrLn $ "    Stress: " <> T.pack (show stress)
     else return ()
+
+safeIndex :: [a] -> Int -> Maybe a
+safeIndex xs i
+  | i >= 0 && i < length xs = Just (xs !! i)
+  | otherwise = Nothing
 
 selectStem :: Stem -> RootEntry -> Text
 selectStem S0 = rootStem0
@@ -158,8 +173,8 @@ showCaseDetail (SpatioTemporal2 c) = show c
 
 showReferentialDetail :: PersonalRef -> Maybe Case -> Text -> IO ()
 showReferentialDetail (PersonalRef ref eff) mc vc = do
-  TIO.putStrLn $ "    Referent: " <> T.pack (show ref)
-               <> (if eff /= NEU then "/" <> T.pack (show eff) else "")
+  TIO.putStrLn $ "    Referent: " <> T.pack (show ref) <> " = " <> referentLabel ref
+               <> (if eff /= NEU then " /" <> T.pack (show eff) else "")
   case mc of
     Just c -> TIO.putStrLn $ "    Case: " <> T.pack (showCaseDetail c)
     Nothing -> TIO.putStrLn $ "    Case vowel: " <> vc <> " (unrecognized)"

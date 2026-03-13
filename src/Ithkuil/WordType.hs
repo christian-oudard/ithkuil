@@ -10,6 +10,8 @@ module Ithkuil.WordType
   , glossSentence
   , glossSlotVIII
   , glossMoodOrScope
+  , extractAffixes
+  , classifyDegree
   ) where
 
 import Data.Text (Text)
@@ -20,8 +22,8 @@ import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, ParsedFormative(..
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
                            aspectVowels, phaseVowels)
 import Ithkuil.Adjuncts
-import Ithkuil.Referentials (PersonalRef(..), Referent(..), ReferentEffect(..), refC1All, lookupRefC1)
-import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot)
+import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), refC1All, lookupRefC1, referentLabel)
+import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot, lookupAffix)
 
 --------------------------------------------------------------------------------
 -- Word Type Classification
@@ -153,7 +155,7 @@ parseReferentialWord word =
     [c, v] -> case lookupRefC1 c of
       Just ref -> PReferential ref (parseCase v) v
       Nothing -> PUnparsed word
-    [c1, c2, v] -> case lookupRefC1 c1 of
+    [c1, _c2, v] -> case lookupRefC1 c1 of
       -- For dual referentials, we report just the first referent for now
       Just ref -> PReferential ref (parseCase v) v
       Nothing -> PUnparsed word
@@ -216,7 +218,7 @@ glossWord roots affixes pw = case pw of
 
 -- | Gloss a formative with root lookup
 glossFormative :: Map Text RootEntry -> Map Text AffixEntry -> ParsedFormative -> Text
-glossFormative roots _ pf =
+glossFormative roots affixes pf =
   let Root cr = pfRoot pf
       (stem, version) = pfSlotII pf
       (func, spec, ctx) = pfSlotIV pf
@@ -234,6 +236,8 @@ glossFormative roots _ pf =
       caAbbr = case pfCaParsed pf of
         Just pc -> showCaAbbr pc
         Nothing -> ""
+      -- Affixes from Ca rest (VxCs pairs after the Ca consonant)
+      affixGlosses = map (glossOneAffix affixes) (extractAffixes (pfCa pf))
       -- Case
       caseAbbr = case pfCase pf of
         Just c -> "-" <> T.pack (showCase c)
@@ -243,7 +247,51 @@ glossFormative roots _ pf =
     , rootMeaning
     , funcAbbr <> "/" <> specAbbr <> "/" <> ctxAbbr
     , caAbbr
-    ] <> [caseAbbr | not (T.null caseAbbr)]
+    ] <> affixGlosses <> [caseAbbr | not (T.null caseAbbr)]
+
+-- | Extract VxCs affix pairs from Ca rest conjuncts
+-- The first consonant is Ca itself; subsequent V-C pairs are Slot VII affixes
+extractAffixes :: [Text] -> [(Text, Text)]  -- (Vx vowel, Cs consonant)
+extractAffixes [] = []
+extractAffixes parts =
+  let -- Skip the first consonant (Ca) and pair up remaining V-C
+      afterCa = drop 1 parts
+  in pairVC afterCa
+  where
+    pairVC (v:c:rest)
+      | not (T.null v) && isVowelChar (T.head v)
+      , not (T.null c) && not (isVowelChar (T.head c))
+      = (v, c) : pairVC rest
+    pairVC _ = []
+
+-- | Gloss a single affix (Vx, Cs) pair
+glossOneAffix :: Map Text AffixEntry -> (Text, Text) -> Text
+glossOneAffix affixes (vx, cs) =
+  let degree = classifyDegree vx
+      abbr = case lookupAffix cs affixes of
+        Just entry -> affixAbbrev entry
+        Nothing -> cs
+  in abbr <> "/" <> T.pack (show degree)
+
+-- | Determine affix degree (1-9, 0) from Vx vowel
+classifyDegree :: Text -> Int
+classifyDegree v = case lookup v degreeTable of
+  Just d -> d
+  Nothing -> 0
+  where
+    degreeTable =
+      -- Type 1 (Series 1)
+      [ ("a", 1), ("ä", 2), ("e", 3), ("i", 4), ("ëi", 5)
+      , ("ö", 6), ("o", 7), ("ü", 8), ("u", 9), ("ae", 0)
+      -- Type 2 (Series 2)
+      , ("ai", 1), ("au", 2), ("ei", 3), ("eu", 4), ("ëu", 5)
+      , ("ou", 6), ("oi", 7), ("iu", 8), ("ui", 9), ("ea", 0)
+      -- Type 3 (Series 3)
+      , ("ia", 1), ("uä", 1), ("ie", 2), ("uë", 2)
+      , ("io", 3), ("üä", 3), ("iö", 4), ("üë", 4), ("eë", 5)
+      , ("uö", 6), ("öë", 6), ("uo", 7), ("öä", 7)
+      , ("ue", 8), ("ië", 8), ("ua", 9), ("iä", 9), ("üo", 0)
+      ]
 
 selectStem :: Stem -> RootEntry -> Text
 selectStem S0 = rootStem0
@@ -290,7 +338,7 @@ showCase (SpatioTemporal2 c) = show c
 -- | Gloss a referential word
 glossReferential :: PersonalRef -> Maybe Case -> Text -> Text
 glossReferential (PersonalRef ref eff) mc _vc =
-  let refAbbr = T.pack (show ref)
+  let label = referentLabel ref
       effAbbr = case eff of
         NEU -> ""
         BEN -> "/BEN"
@@ -298,7 +346,7 @@ glossReferential (PersonalRef ref eff) mc _vc =
       caseAbbr = case mc of
         Just c -> "-" <> T.pack (showCase c)
         Nothing -> ""
-  in refAbbr <> effAbbr <> caseAbbr
+  in "'" <> label <> "'" <> effAbbr <> caseAbbr
 
 --------------------------------------------------------------------------------
 -- Multi-word Sentence Glossing
