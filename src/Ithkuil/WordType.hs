@@ -791,6 +791,18 @@ glossFormative roots affixes pf =
       <> [glossSlotVIII s8 | Just s8 <- [slotVIII]]
       <> [slotIXAbbr | not (T.null slotIXAbbr)]
 
+-- | Compact Ca display: only non-default components
+compactCa :: ParsedCa -> Text
+compactCa pc = T.intercalate "/" $ filter (not . T.null)
+  [ if pcConfig pc /= UNI then T.pack (show (pcConfig pc)) else ""
+  , if pcAffiliation pc /= CSL then T.pack (show (pcAffiliation pc)) else ""
+  , if pcPerspective pc /= M_ then showP (pcPerspective pc) else ""
+  , if pcExtension pc /= DEL then T.pack (show (pcExtension pc)) else ""
+  , if pcEssence pc /= NRM then T.pack (show (pcEssence pc)) else ""
+  ]
+  where
+    showP M_ = "M"; showP G_ = "G"; showP N_ = "N"; showP A_ = "A"
+
 -- | Compact gloss: only shows root meaning and non-default grammatical info
 glossWordCompact :: Map Text RootEntry -> Map Text AffixEntry -> ParsedWord -> Text
 glossWordCompact roots affixes pw = case pw of
@@ -838,8 +850,19 @@ glossWordCompact roots affixes pw = case pw of
         vnCnStr = case slotVIII of
           Just s8 -> "-" <> glossSlotVIII s8
           Nothing -> ""
+        -- Non-default function/spec/context markers
+        (func, spec, ctx) = pfSlotIV pf
+        funcMark = if func /= STA then "-" <> T.pack (show func) else ""
+        specMark = if spec /= BSC then "." <> T.pack (show spec) else ""
+        ctxMark = if ctx /= EXS then "." <> T.pack (show ctx) else ""
+        -- Non-default Ca
+        caMark = case pfCaParsed pf of
+          Just pc | pc /= ParsedCa UNI CSL M_ DEL NRM ->
+            "-" <> compactCa pc
+          _ -> ""
         sentencePrefix = if pfSentenceStarter pf then "[s:]" else ""
-    in sentencePrefix <> stemMark <> shortMeaning <> affixStr <> vnCnStr <> caseOrIlloc
+    in sentencePrefix <> stemMark <> shortMeaning <> funcMark <> specMark <> ctxMark
+       <> caMark <> affixStr <> vnCnStr <> caseOrIlloc
   PBias b -> let desc = biasGloss b
              in if T.null desc then T.pack (show b) else "\x201C" <> desc <> "\x201D"
   PRegister r -> T.pack (show r)
