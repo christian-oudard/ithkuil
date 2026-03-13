@@ -19,14 +19,14 @@ module Ithkuil.Parse
 
 import Data.Text (Text)
 import qualified Data.Text as T
-import Data.Maybe (listToMaybe)
+import Data.Maybe (listToMaybe, isJust)
 import Ithkuil.Phonology
 import Ithkuil.Grammar
 
 -- | Parse Vv vowel to Slot II (Stem + Version)
 parseSlotII :: Text -> Maybe SlotII
 parseSlotII v = listToMaybe
-  [ slot | (slot, vv) <- slotIITable, vv == v ]
+  [ slot | (slot, vv) <- slotIITable, vv == normalizeAccents v ]
   where
     slotIITable =
       [ ((S1, PRC), "a"),  ((S1, CPT), "ä")
@@ -40,7 +40,7 @@ parseSlotII v = listToMaybe
 -- Forms 1-8 map to STA/DYN x BSC/CTE/CSV/OBJ
 parseSlotIV :: Text -> Maybe SlotIV
 parseSlotIV v = listToMaybe
-  [ slot | (slot, vr) <- slotIVTable, vr == v ]
+  [ slot | (slot, vr) <- slotIVTable, vr == normalizeAccents v ]
   where
     slotIVTable = concatMap seriesEntries [(EXS, 1), (FNC, 2), (RPS, 3), (AMG, 4)]
     seriesEntries (ctx, s) =
@@ -120,16 +120,22 @@ data ParsedFormative = ParsedFormative
 
 -- | Parse a formative, handling both vowel-initial and consonant-initial words
 -- Consonant-initial words have elided Vv (defaults to S1/PRC = "a")
+-- Words starting with w/y + vowel are treated as vowel-initial (w/y is a glide)
 parseFormativeReal :: Text -> Maybe ParsedFormative
 parseFormativeReal word = do
-  let parts = splitConjuncts word
-      stress = detectStressSimple word
+  let lword = T.toLower word
+      parts = splitConjuncts lword
+      stress = detectStressSimple lword
   case parts of
     [] -> Nothing
+    -- w/y glide before vowel: treat as vowel-initial (strip the glide)
+    (cc:vv:rest) | isGlide cc -> parseVowelInitial stress (vv:rest)
     (first:_) ->
       if isConsonantCluster first
         then parseConsonantInitial stress parts  -- Elided Vv
         else parseVowelInitial stress parts      -- Normal Vv-Cr-Vr-Ca...
+  where
+    isGlide t = t == "w" || t == "y"
 
 -- | Check if text is a consonant cluster (starts with consonant)
 isConsonantCluster :: Text -> Bool
@@ -138,54 +144,157 @@ isConsonantCluster t = case T.uncons t of
   Just (c, _) -> not (isVowelChar c)
 
 -- | Parse consonant-initial word (elided Vv = default S1/PRC)
+-- Tries Cr-Vr-Ca..., then falls back to CrCa-Vc/Vk (both Vv and Vr elided)
 parseConsonantInitial :: Stress -> [Text] -> Maybe ParsedFormative
 parseConsonantInitial stress parts = case parts of
-  -- Minimal: Cr-Vr-Ca (e.g., "mal")
-  (cr:vr:rest) -> do
-    slotIV <- parseSlotIV vr
-    let (caRest, vcRest) = splitCaVc rest
-        lastVowel = listToMaybe vcRest
-        (caseM, illocValM) = parseSlotIXSimple stress lastVowel
-        -- Try to parse Ca from consonants in caRest
-        caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
-        caParsedM = parseCa =<< listToMaybe caConsonants
+  (cr:vr:rest) ->
+    case rest of
+      -- Minimal: Cr-Vc/Vk (both Vv and Vr elided)
+      [] ->
+        let (caseM, illocValM) = parseSlotIXSimple stress (Just vr)
+        in Just ParsedFormative
+          { pfSlotII = (S1, PRC)
+          , pfRoot = Root cr
+          , pfSlotIV = (STA, BSC, EXS)
+          , pfCa = []
+          , pfCaParsed = Just defaultCa
+          , pfCase = caseM
+          , pfIllocVal = illocValM
+          , pfStress = stress
+          , pfConjuncts = parts
+          }
+      -- Longer: Cr-Vr-Ca...-Vc/Vk
+      _ ->
+        case parseSlotIV vr of
+          Just slotIV ->
+            let (caRest, vcRest) = splitCaVc rest
+                lastVowel = listToMaybe vcRest
+                (caseM, illocValM) = parseSlotIXSimple stress lastVowel
+                caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
+                caParsedM = parseCa =<< listToMaybe caConsonants
+            in Just ParsedFormative
+              { pfSlotII = (S1, PRC)
+              , pfRoot = Root cr
+              , pfSlotIV = slotIV
+              , pfCa = caRest
+              , pfCaParsed = caParsedM
+              , pfCase = caseM
+              , pfIllocVal = illocValM
+              , pfStress = stress
+              , pfConjuncts = parts
+              }
+          -- Vr parse failed: try treating cr as merged CrCa with elided Vr
+          Nothing -> do
+            (root, caParsedM) <- splitCrCa cr
+            let (caseM, illocValM) = parseSlotIXSimple stress (Just vr)
+            Just ParsedFormative
+              { pfSlotII = (S1, PRC)
+              , pfRoot = Root root
+              , pfSlotIV = (STA, BSC, EXS)
+              , pfCa = [cr]
+              , pfCaParsed = caParsedM
+              , pfCase = caseM
+              , pfIllocVal = illocValM
+              , pfStress = stress
+              , pfConjuncts = parts
+              }
+  _ -> Nothing
+
+-- | Parse vowel-initial word (explicit Vv)
+-- First tries Vv-Cr-Vr-Ca..., then falls back to Vv-CrCa-Vc/Vk (elided Vr)
+parseVowelInitial :: Stress -> [Text] -> Maybe ParsedFormative
+parseVowelInitial stress parts = case parts of
+  (vv:cr:vr:rest) -> do
+    slotII <- parseSlotII vv
+    case rest of
+      -- Minimal formative: Vv-Cr-Vc/Vk (Vr and Ca both elided to defaults)
+      [] ->
+        let (caseM, illocValM) = parseSlotIXSimple stress (Just vr)
+        in Just ParsedFormative
+          { pfSlotII = slotII
+          , pfRoot = Root cr
+          , pfSlotIV = (STA, BSC, EXS)
+          , pfCa = []
+          , pfCaParsed = Just defaultCa
+          , pfCase = caseM
+          , pfIllocVal = illocValM
+          , pfStress = stress
+          , pfConjuncts = parts
+          }
+      -- Longer formative: try Vr parse, fall back to elided Vr
+      _ ->
+        case parseSlotIV vr of
+          Just slotIV ->
+            let (caRest, vcRest) = splitCaVc rest
+                lastVowel = listToMaybe vcRest
+                (caseM, illocValM) = parseSlotIXSimple stress lastVowel
+                caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
+                caParsedM = parseCa =<< listToMaybe caConsonants
+            in Just ParsedFormative
+              { pfSlotII = slotII
+              , pfRoot = Root cr
+              , pfSlotIV = slotIV
+              , pfCa = caRest
+              , pfCaParsed = caParsedM
+              , pfCase = caseM
+              , pfIllocVal = illocValM
+              , pfStress = stress
+              , pfConjuncts = parts
+              }
+          -- If Vr parse fails, vr might actually be Vc/Vk with elided Vr
+          Nothing -> tryElidedVr slotII cr vr stress parts
+  -- Two elements: Vv + CrCa (elided Vr, no Vc/Vk)
+  (vv:crca:[]) -> do
+    slotII <- parseSlotII vv
+    (root, caParsedM) <- splitCrCa crca
     Just ParsedFormative
-      { pfSlotII = (S1, PRC)  -- Default elided value
-      , pfRoot = Root cr
-      , pfSlotIV = slotIV
-      , pfCa = caRest
+      { pfSlotII = slotII
+      , pfRoot = Root root
+      , pfSlotIV = (STA, BSC, EXS)
+      , pfCa = [crca]
       , pfCaParsed = caParsedM
-      , pfCase = caseM
-      , pfIllocVal = illocValM
+      , pfCase = Nothing
+      , pfIllocVal = Nothing
       , pfStress = stress
       , pfConjuncts = parts
       }
   _ -> Nothing
 
--- | Parse vowel-initial word (explicit Vv)
-parseVowelInitial :: Stress -> [Text] -> Maybe ParsedFormative
-parseVowelInitial stress parts = case parts of
-  (vv:cr:vr:rest) -> do
-    slotII <- parseSlotII vv
-    slotIV <- parseSlotIV vr
-    let (caRest, vcRest) = splitCaVc rest
-        lastVowel = listToMaybe vcRest
-        (caseM, illocValM) = parseSlotIXSimple stress lastVowel
-        -- Try to parse Ca from consonants in caRest
-        caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
-        caParsedM = parseCa =<< listToMaybe caConsonants
-    Just ParsedFormative
-      { pfSlotII = slotII
-      , pfRoot = Root cr
-      , pfSlotIV = slotIV
-      , pfCa = caRest
-      , pfCaParsed = caParsedM
-      , pfCase = caseM
-      , pfIllocVal = illocValM
-      , pfStress = stress
-      , pfConjuncts = parts
-      }
-  _ -> Nothing
+-- | Try parsing with elided Vr: the consonant cluster contains Cr+Ca merged
+-- and the next vowel is Vc/Vk instead of Vr
+tryElidedVr :: SlotII -> Text -> Text -> Stress -> [Text] -> Maybe ParsedFormative
+tryElidedVr slotII crca vcvk stress parts = do
+  (root, caParsedM) <- splitCrCa crca
+  let (caseM, illocValM) = parseSlotIXSimple stress (Just vcvk)
+  Just ParsedFormative
+    { pfSlotII = slotII
+    , pfRoot = Root root
+    , pfSlotIV = (STA, BSC, EXS)  -- Default elided Vr
+    , pfCa = [crca]
+    , pfCaParsed = caParsedM
+    , pfCase = caseM
+    , pfIllocVal = illocValM
+    , pfStress = stress
+    , pfConjuncts = parts
+    }
+
+-- | Split a consonant cluster into Cr (root) + Ca (configuration complex)
+-- Tries all split points, preferring the longest valid Ca from the right
+splitCrCa :: Text -> Maybe (Text, Maybe ParsedCa)
+splitCrCa cluster
+  | T.null cluster = Nothing
+  | otherwise =
+    -- Try splits from right to left: longest Ca match first
+    let len = T.length cluster
+        splits = [ (T.take i cluster, T.drop i cluster) | i <- [1..len] ]
+        validSplits = [ (cr, parseCa ca) | (cr, ca) <- splits
+                       , not (T.null cr)
+                       , not (T.null ca)
+                       , isJust (parseCa ca) ]
+    in case validSplits of
+      ((cr, caM):_) -> Just (cr, caM)
+      -- If no valid Ca split found, treat entire cluster as Cr with default Ca
+      [] -> Just (cluster, Just defaultCa)
 
 -- | Split remaining conjuncts into Ca complex and Vc
 -- The last vowel cluster is typically Vc (case), rest is Ca

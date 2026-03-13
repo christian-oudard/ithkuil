@@ -436,6 +436,42 @@ main = hspec $ do
         Just pf -> pfStress pf `shouldBe` Ultimate
         Nothing -> expectationFailure "Should parse"
 
+  describe "Minimal Formative Parsing" $ do
+    it "parses w-glide vowel-initial words" $ do
+      case parseFormativeReal "weli" of
+        Just pf -> do
+          let Root cr = pfRoot pf
+          cr `shouldBe` "l"
+          pfSlotII pf `shouldBe` (S2, PRC)
+        Nothing -> expectationFailure "Should parse weli"
+
+    it "parses minimal formative Vc as case, not Vr" $ do
+      case parseFormativeReal "weli" of
+        Just pf -> pfCase pf `shouldBe` Just (Transrelative AFF)
+        Nothing -> expectationFailure "Should parse"
+
+    it "parses minimal verbal with Vk" $ do
+      case parseFormativeReal "malá" of
+        Just pf -> pfIllocVal pf `shouldBe` Just (ASR, OBS)
+        Nothing -> expectationFailure "Should parse"
+
+    it "handles capitalized input" $ do
+      case parseFormativeReal "Wekská" of
+        Just pf -> do
+          let Root cr = pfRoot pf
+          cr `shouldBe` "ksk"
+          pfIllocVal pf `shouldBe` Just (ASR, OBS)
+        Nothing -> expectationFailure "Should parse Wekská"
+
+    it "parses longer formatives with explicit Vr" $ do
+      case parseFormativeReal "kšilo" of
+        Just pf -> do
+          let Root cr = pfRoot pf
+          cr `shouldBe` "kš"
+          pfSlotIV pf `shouldBe` (STA, OBJ, EXS)
+          pfCase pf `shouldBe` Just (Transrelative ERG)
+        Nothing -> expectationFailure "Should parse kšilo"
+
   describe "Rendering" $ do
     it "renders a minimal formative" $ do
       let f = minimalFormative "ml"

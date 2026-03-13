@@ -7,6 +7,7 @@ module Ithkuil.WordType
   , classifyWord
   , parseWord
   , glossWord
+  , glossWordCompact
   , glossSentence
   , glossSlotVIII
   , glossMoodOrScope
@@ -262,6 +263,33 @@ glossFormative roots affixes pf =
     , caAbbr
     ] <> affixGlosses <> [slotIXAbbr | not (T.null slotIXAbbr)]
       <> [frameAbbr | not (T.null frameAbbr)]
+
+-- | Compact gloss: only shows root meaning and non-default grammatical info
+glossWordCompact :: Map Text RootEntry -> Map Text AffixEntry -> ParsedWord -> Text
+glossWordCompact roots _affixes pw = case pw of
+  PFormative pf ->
+    let Root cr = pfRoot pf
+        (stem, _) = pfSlotII pf
+        rootMeaning = case lookupRoot cr roots of
+          Just entry -> selectStem stem entry
+          Nothing -> cr
+        caseOrIlloc = case pfIllocVal pf of
+          Just (ill, val) | (ill, val) /= (ASR, OBS) ->
+            "." <> T.pack (show ill) <> "/" <> T.pack (show val)
+          Just _ -> ""  -- ASR/OBS is default, skip
+          Nothing -> case pfCase pf of
+            Just c -> "." <> T.pack (showCase c)
+            Nothing -> ""
+        stemMark = case stem of
+          S1 -> ""  -- default
+          _ -> T.pack (show stem) <> ":"
+    in stemMark <> rootMeaning <> caseOrIlloc
+  PBias b -> T.pack (show b)
+  PRegister r -> T.pack (show r)
+  PReferential ref mc _vc -> glossReferential ref mc ""
+  PModular pairs _raw -> T.intercalate "+" (map glossSlotVIII pairs)
+  PCarrier _ct content -> content
+  PUnparsed t -> "?" <> t
 
 -- | Extract VxCs affix pairs from Ca rest conjuncts
 -- The first consonant is Ca itself; subsequent V-C pairs are Slot VII affixes

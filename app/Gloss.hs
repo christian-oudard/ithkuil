@@ -3,6 +3,7 @@
 -- Parses and glosses Ithkuil words and sentences
 module Main where
 
+import Control.Monad (when)
 import System.Environment (getArgs)
 import System.IO (hFlush, stdout, hSetBuffering, BufferMode(..), stdin, hIsTerminalDevice, hIsEOF)
 import Data.Text (Text)
@@ -76,6 +77,18 @@ glossLine :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> IO ()
 glossLine roots affixes input = do
   let ws = T.words input
   mapM_ (glossOneWord roots affixes) ws
+  -- Show interlinear summary with compact glosses
+  when (length ws > 1) $ do
+    let glosses = map (\w -> glossWordCompact roots affixes (parseWord w)) ws
+        widths = zipWith (\w g -> max (T.length w) (T.length g) + 2) ws glosses
+        padTo n t = t <> T.replicate (max 0 (n - T.length t)) " "
+    TIO.putStrLn ""
+    TIO.putStr "  "
+    mapM_ (\(w, n) -> TIO.putStr (padTo n w)) (zip ws widths)
+    TIO.putStrLn ""
+    TIO.putStr "  "
+    mapM_ (\(g, n) -> TIO.putStr (padTo n g)) (zip glosses widths)
+    TIO.putStrLn ""
 
 glossOneWord :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> IO ()
 glossOneWord roots affixes word = do
