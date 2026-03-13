@@ -586,7 +586,8 @@ glossWord roots affixes pw = case pw of
   PFormative pf -> glossFormative roots affixes pf
   PConcatenated pfs ->
     T.intercalate "—" (map (glossFormative roots affixes) pfs)
-  PBias b -> T.pack (show b)
+  PBias b -> let desc = biasGloss b
+             in if T.null desc then T.pack (show b) else "\x201C" <> desc <> "\x201D"
   PRegister r -> T.pack (show r)
   PModular pairs fv _ ->
     let glossVnCnDot (VnCnValence val ms) = T.pack (show val) <> "." <> glossMoodOrScope ms
@@ -642,16 +643,21 @@ glossFormative roots affixes pf =
           [ if version /= PRC then T.pack (show version) else ""
           , if func /= STA then T.pack (show func) else ""
           ]
-        else let base = case (stem, version) of
+        else let hasImplicit = not (pfHasShortcut pf) && pfVvSeries pf > 1
+                 base = case (stem, version) of
+                   (S1, PRC) | hasImplicit -> "S1"  -- Show stem when implicit affix present
                    (S1, PRC) -> ""
                    (_, PRC) -> T.pack (show stem)
                    (S1, _) -> T.pack (show version)
                    _ -> T.pack (show stem) <> "." <> T.pack (show version)
              in base
       -- Function/Specification/Context (omit if default STA/BSC/EXS)
-      -- For Cs-root, function is already in stemVerAbbr; show context from Vr
+      -- For Cs-root, Vr encodes Designation (Dx) + Context
       slotIVAbbr = if isCsRoot
-        then if ctx /= EXS then T.pack (show ctx) else ""
+        then let deg = case pfCsRootDegree pf of { Just d -> d; Nothing -> 0 }
+                 dStr = "D" <> T.pack (show deg)
+                 ctxStr = if ctx /= EXS then "." <> T.pack (show ctx) else ""
+             in dStr <> ctxStr
         else case (func, spec, ctx) of
           (STA, BSC, EXS) -> ""
           _ -> T.intercalate "." $ filter (/= "") $
@@ -755,7 +761,8 @@ glossWordCompact roots affixes pw = case pw of
           else rootMeaning
         sentencePrefix = if pfSentenceStarter pf then "[s:]" else ""
     in sentencePrefix <> stemMark <> shortMeaning <> caseOrIlloc
-  PBias b -> T.pack (show b)
+  PBias b -> let desc = biasGloss b
+             in if T.null desc then T.pack (show b) else "\x201C" <> desc <> "\x201D"
   PRegister r -> T.pack (show r)
   PReferential refs mc _vc ext -> glossReferentials refs mc ""
     <> maybe "" glossRefExt ext

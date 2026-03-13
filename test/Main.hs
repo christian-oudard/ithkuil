@@ -1351,6 +1351,15 @@ main = hspec $ do
           T.isInfixOf "t/4" gloss `shouldBe` False
         pw -> expectationFailure $ "Expected PFormative for waimala, got: " ++ show pw
 
+  describe "Cs-root Designation" $ do
+    it "shows Dx designation for Cs-root formatives" $ do
+      let gloss = glossWord mempty mempty (parseWord "ëilal")
+      T.isInfixOf "D1" gloss `shouldBe` True
+      let gloss2 = glossWord mempty mempty (parseWord "oërmölá")
+      T.isInfixOf "D6" gloss2 `shouldBe` True
+      let gloss3 = glossWord mempty mempty (parseWord "oërmoulá")
+      T.isInfixOf "D6.FNC" gloss3 `shouldBe` True
+
   describe "Slot V Marker Validation" $ do
     it "detects Slot V filled marker (glottal stop)" $ do
       -- alarfull: no glottal stop → pfSlotVMarker = False
