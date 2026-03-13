@@ -137,54 +137,196 @@ handleCompose (rootStr:opts) = do
   let root = T.pack rootStr
       flags = map (T.toUpper . T.pack) opts
       f0 = minimalFormative root
-      f1 = applyFlags flags f0
-      -- Determine stress: verbal (has illocution) → Ultimate, otherwise Penultimate
-      f2 = case fSlotIX f1 of
-        Right _ -> f1 { fStress = Ultimate }
-        Left _ -> f1
+      f1 = applyComposeFlags flags f0
+      f2 = autoStress f1
       word = composeFormative f2
   TIO.putStrLn $ col bold word
   glossLine roots affixes word
-  where
-    applyFlags [] f = f
-    applyFlags (flag:rest) f = applyFlags rest (applyOneFlag flag f)
-    applyOneFlag "S1" f = f { fSlotII = (S1, snd (fSlotII f)) }
-    applyOneFlag "S2" f = f { fSlotII = (S2, snd (fSlotII f)) }
-    applyOneFlag "S3" f = f { fSlotII = (S3, snd (fSlotII f)) }
-    applyOneFlag "S0" f = f { fSlotII = (S0, snd (fSlotII f)) }
-    applyOneFlag "PRC" f = f { fSlotII = (fst (fSlotII f), PRC) }
-    applyOneFlag "CPT" f = f { fSlotII = (fst (fSlotII f), CPT) }
-    applyOneFlag "DYN" f = f { fSlotIV = (DYN, sel2 (fSlotIV f), sel3 (fSlotIV f)) }
-    applyOneFlag "STA" f = f { fSlotIV = (STA, sel2 (fSlotIV f), sel3 (fSlotIV f)) }
-    applyOneFlag "BSC" f = f { fSlotIV = (sel1 (fSlotIV f), BSC, sel3 (fSlotIV f)) }
-    applyOneFlag "CTE" f = f { fSlotIV = (sel1 (fSlotIV f), CTE, sel3 (fSlotIV f)) }
-    applyOneFlag "CSV" f = f { fSlotIV = (sel1 (fSlotIV f), CSV, sel3 (fSlotIV f)) }
-    applyOneFlag "OBJ" f = f { fSlotIV = (sel1 (fSlotIV f), OBJ, sel3 (fSlotIV f)) }
-    -- Cases
-    applyOneFlag "THM" f = f { fSlotIX = Left (Transrelative THM) }
-    applyOneFlag "ABS" f = f { fSlotIX = Left (Transrelative ABS) }
-    applyOneFlag "ERG" f = f { fSlotIX = Left (Transrelative ERG) }
-    applyOneFlag "DAT" f = f { fSlotIX = Left (Transrelative DAT) }
-    applyOneFlag "IND" f = f { fSlotIX = Left (Transrelative IND) }
-    applyOneFlag "AFF" f = f { fSlotIX = Left (Transrelative AFF) }
-    applyOneFlag "STM" f = f { fSlotIX = Left (Transrelative STM) }
-    applyOneFlag "EFF" f = f { fSlotIX = Left (Transrelative EFF) }
-    applyOneFlag "INS" f = f { fSlotIX = Left (Transrelative INS) }
-    applyOneFlag "POS" f = f { fSlotIX = Left (Appositive POS) }
-    applyOneFlag "GEN" f = f { fSlotIX = Left (Appositive GEN) }
-    applyOneFlag "ALL" f = f { fSlotIX = Left (SpatioTemporal1 ALL) }
-    applyOneFlag "LOC" f = f { fSlotIX = Left (SpatioTemporal1 LOC) }
-    applyOneFlag "ABL" f = f { fSlotIX = Left (SpatioTemporal1 ABL) }
-    -- Illocutions (make verbal)
-    applyOneFlag "OBS" f = f { fSlotIX = Right (IllocVal ASR OBS) }
-    applyOneFlag "IRG" f = f { fSlotIX = Right (IllocVal IRG OBS) }
-    applyOneFlag "DIR" f = f { fSlotIX = Right (IllocVal DIR OBS) }
-    applyOneFlag "ADM" f = f { fSlotIX = Right (IllocVal ADM OBS) }
-    applyOneFlag "HOR" f = f { fSlotIX = Right (IllocVal HOR OBS) }
-    applyOneFlag _ f = f  -- Ignore unknown flags
-    sel1 (a, _, _) = a
-    sel2 (_, b, _) = b
-    sel3 (_, _, c) = c
+
+-- | Apply a list of grammar flags to a formative
+applyComposeFlags :: [Text] -> Formative -> Formative
+applyComposeFlags [] f = f
+applyComposeFlags (flag:rest) f = applyComposeFlags rest (applyOneFlag flag f)
+
+-- | Apply a single grammar flag to a formative
+applyOneFlag :: Text -> Formative -> Formative
+-- Stem/Version (Slot II)
+applyOneFlag "S1" f = f { fSlotII = (S1, snd (fSlotII f)) }
+applyOneFlag "S2" f = f { fSlotII = (S2, snd (fSlotII f)) }
+applyOneFlag "S3" f = f { fSlotII = (S3, snd (fSlotII f)) }
+applyOneFlag "S0" f = f { fSlotII = (S0, snd (fSlotII f)) }
+applyOneFlag "PRC" f = f { fSlotII = (fst (fSlotII f), PRC) }
+applyOneFlag "CPT" f = f { fSlotII = (fst (fSlotII f), CPT) }
+-- Function/Specification/Context (Slot IV)
+applyOneFlag "DYN" f = f { fSlotIV = (DYN, sel2 (fSlotIV f), sel3 (fSlotIV f)) }
+applyOneFlag "STA" f = f { fSlotIV = (STA, sel2 (fSlotIV f), sel3 (fSlotIV f)) }
+applyOneFlag "BSC" f = f { fSlotIV = (sel1 (fSlotIV f), BSC, sel3 (fSlotIV f)) }
+applyOneFlag "CTE" f = f { fSlotIV = (sel1 (fSlotIV f), CTE, sel3 (fSlotIV f)) }
+applyOneFlag "CSV" f = f { fSlotIV = (sel1 (fSlotIV f), CSV, sel3 (fSlotIV f)) }
+applyOneFlag "OBJ" f = f { fSlotIV = (sel1 (fSlotIV f), OBJ, sel3 (fSlotIV f)) }
+applyOneFlag "EXS" f = f { fSlotIV = (sel1 (fSlotIV f), sel2 (fSlotIV f), EXS) }
+applyOneFlag "FNC" f = f { fSlotIV = (sel1 (fSlotIV f), sel2 (fSlotIV f), FNC) }
+applyOneFlag "RPS" f = f { fSlotIV = (sel1 (fSlotIV f), sel2 (fSlotIV f), RPS) }
+applyOneFlag "AMG" f = f { fSlotIV = (sel1 (fSlotIV f), sel2 (fSlotIV f), AMG) }
+-- Configuration (Ca component 1)
+applyOneFlag "UNI" f = setCa1 UNI f
+applyOneFlag "DPX" f = setCa1 DPX f
+applyOneFlag "DSS" f = setCa1 DSS f
+applyOneFlag "DSC" f = setCa1 DSC f
+applyOneFlag "DSF" f = setCa1 DSF f
+applyOneFlag "MSS" f = setCa1 MSS f
+applyOneFlag "MSC" f = setCa1 MSC f
+applyOneFlag "MSF" f = setCa1 MSF f
+applyOneFlag "MDS" f = setCa1 MDS f
+applyOneFlag "MDC" f = setCa1 MDC f
+applyOneFlag "MDF" f = setCa1 MDF f
+applyOneFlag "MFS" f = setCa1 MFS f
+applyOneFlag "MFC" f = setCa1 MFC f
+applyOneFlag "MFF" f = setCa1 MFF f
+applyOneFlag "DDS" f = setCa1 DDS f
+applyOneFlag "DDC" f = setCa1 DDC f
+applyOneFlag "DDF" f = setCa1 DDF f
+applyOneFlag "DFS" f = setCa1 DFS f
+applyOneFlag "DFC" f = setCa1 DFC f
+applyOneFlag "DFF" f = setCa1 DFF f
+-- Affiliation (Ca component 3)
+applyOneFlag "CSL" f = setCa3 CSL f
+applyOneFlag "ASO" f = setCa3 ASO f
+applyOneFlag "COA" f = setCa3 COA f
+applyOneFlag "VAR" f = setCa3 VAR f
+-- Perspective (Ca component 4)
+applyOneFlag "M" f = setCa4p M_ f
+applyOneFlag "G" f = setCa4p G_ f
+applyOneFlag "N" f = setCa4p N_ f
+applyOneFlag "A" f = setCa4p A_ f
+-- Extension (Ca component 2)
+applyOneFlag "DEL" f = setCa2 DEL f
+applyOneFlag "PRX" f = setCa2 PRX f
+applyOneFlag "ICP" f = setCa2 ICP f
+applyOneFlag "ATV" f = setCa2 ATV f
+applyOneFlag "GRA" f = setCa2 GRA f
+applyOneFlag "DPL" f = setCa2 DPL f
+-- Essence (Ca component 5)
+applyOneFlag "NRM" f = setCa5 NRM f
+applyOneFlag "RPV" f = setCa5 RPV f
+-- Transrelative Cases
+applyOneFlag "THM" f = f { fSlotIX = Left (Transrelative THM) }
+applyOneFlag "ABS" f = f { fSlotIX = Left (Transrelative ABS) }
+applyOneFlag "ERG" f = f { fSlotIX = Left (Transrelative ERG) }
+applyOneFlag "DAT" f = f { fSlotIX = Left (Transrelative DAT) }
+applyOneFlag "IND" f = f { fSlotIX = Left (Transrelative IND) }
+applyOneFlag "AFF" f = f { fSlotIX = Left (Transrelative AFF) }
+applyOneFlag "STM" f = f { fSlotIX = Left (Transrelative STM) }
+applyOneFlag "EFF" f = f { fSlotIX = Left (Transrelative EFF) }
+applyOneFlag "INS" f = f { fSlotIX = Left (Transrelative INS) }
+-- Appositive Cases
+applyOneFlag "POS" f = f { fSlotIX = Left (Appositive POS) }
+applyOneFlag "PRP" f = f { fSlotIX = Left (Appositive PRP) }
+applyOneFlag "GEN" f = f { fSlotIX = Left (Appositive GEN) }
+applyOneFlag "ATT" f = f { fSlotIX = Left (Appositive ATT) }
+applyOneFlag "PDC" f = f { fSlotIX = Left (Appositive PDC) }
+applyOneFlag "ITP" f = f { fSlotIX = Left (Appositive ITP) }
+applyOneFlag "OGN" f = f { fSlotIX = Left (Appositive OGN) }
+applyOneFlag "IDP" f = f { fSlotIX = Left (Appositive IDP) }
+applyOneFlag "PAR" f = f { fSlotIX = Left (Appositive PAR) }
+-- Spatio-Temporal Cases
+applyOneFlag "LOC" f = f { fSlotIX = Left (SpatioTemporal1 LOC) }
+applyOneFlag "ATD" f = f { fSlotIX = Left (SpatioTemporal1 ATD) }
+applyOneFlag "ALL" f = f { fSlotIX = Left (SpatioTemporal1 ALL) }
+applyOneFlag "ABL" f = f { fSlotIX = Left (SpatioTemporal1 ABL) }
+applyOneFlag "ORI" f = f { fSlotIX = Left (SpatioTemporal1 ORI) }
+applyOneFlag "IRL" f = f { fSlotIX = Left (SpatioTemporal1 IRL) }
+applyOneFlag "INV" f = f { fSlotIX = Left (SpatioTemporal1 INV) }
+applyOneFlag "NAV" f = f { fSlotIX = Left (SpatioTemporal1 NAV) }
+applyOneFlag "CNR" f = f { fSlotIX = Left (SpatioTemporal2 CNR) }
+applyOneFlag "PER" f = f { fSlotIX = Left (SpatioTemporal2 PER) }
+applyOneFlag "PRO" f = f { fSlotIX = Left (SpatioTemporal2 PRO) }
+applyOneFlag "ELP" f = f { fSlotIX = Left (SpatioTemporal2 ELP) }
+applyOneFlag "PLM" f = f { fSlotIX = Left (SpatioTemporal2 PLM) }
+-- Associative Cases
+applyOneFlag "APL" f = f { fSlotIX = Left (Associative APL) }
+applyOneFlag "PUR" f = f { fSlotIX = Left (Associative PUR) }
+applyOneFlag "TRA" f = f { fSlotIX = Left (Associative TRA) }
+applyOneFlag "DFR" f = f { fSlotIX = Left (Associative DFR) }
+applyOneFlag "CRS" f = f { fSlotIX = Left (Associative CRS) }
+applyOneFlag "TSP" f = f { fSlotIX = Left (Associative TSP) }
+applyOneFlag "CMM" f = f { fSlotIX = Left (Associative CMM) }
+applyOneFlag "CMP" f = f { fSlotIX = Left (Associative CMP) }
+applyOneFlag "CSD" f = f { fSlotIX = Left (Associative CSD) }
+-- Adverbial Cases
+applyOneFlag "FUN" f = f { fSlotIX = Left (Adverbial FUN) }
+applyOneFlag "TFM" f = f { fSlotIX = Left (Adverbial TFM) }
+applyOneFlag "CLA" f = f { fSlotIX = Left (Adverbial CLA) }
+applyOneFlag "RSL" f = f { fSlotIX = Left (Adverbial RSL) }
+applyOneFlag "CSM" f = f { fSlotIX = Left (Adverbial CSM) }
+applyOneFlag "CON" f = f { fSlotIX = Left (Adverbial CON) }
+applyOneFlag "AVR" f = f { fSlotIX = Left (Adverbial AVR) }
+applyOneFlag "CVS" f = f { fSlotIX = Left (Adverbial CVS) }
+applyOneFlag "SIT" f = f { fSlotIX = Left (Adverbial SIT) }
+-- Illocution+Validation (make verbal)
+applyOneFlag "OBS" f = f { fSlotIX = Right (IllocVal ASR OBS) }
+applyOneFlag "IRG" f = f { fSlotIX = Right (IllocVal IRG OBS) }
+applyOneFlag "DIR" f = f { fSlotIX = Right (IllocVal DIR OBS) }
+applyOneFlag "DEC" f = f { fSlotIX = Right (IllocVal DEC OBS) }
+applyOneFlag "ADM" f = f { fSlotIX = Right (IllocVal ADM OBS) }
+applyOneFlag "POT" f = f { fSlotIX = Right (IllocVal POT OBS) }
+applyOneFlag "HOR" f = f { fSlotIX = Right (IllocVal HOR OBS) }
+applyOneFlag "CNJ" f = f { fSlotIX = Right (IllocVal CNJ OBS) }
+applyOneFlag "VER" f = f { fSlotIX = Right (IllocVal VER OBS) }
+-- Validation (modifies existing illocution)
+applyOneFlag "REC" f = setVal REC f
+applyOneFlag "PUP" f = setVal PUP f
+applyOneFlag "RPR" f = setVal RPR f
+applyOneFlag "USP" f = setVal USP f
+applyOneFlag "IMA" f = setVal IMA f
+applyOneFlag "CVN" f = setVal CVN f
+applyOneFlag "ITU" f = setVal ITU f
+applyOneFlag "INF" f = setVal INF f
+-- Aspect (Slot VIII, Pattern 2)
+applyOneFlag "RTR" f = f { fSlotVIII = Just (VnCnAspect RTR (MoodVal FAC)) }
+applyOneFlag "PRS" f = f { fSlotVIII = Just (VnCnAspect PRS (MoodVal FAC)) }
+applyOneFlag "HAB" f = f { fSlotVIII = Just (VnCnAspect HAB (MoodVal FAC)) }
+applyOneFlag "PRG" f = f { fSlotVIII = Just (VnCnAspect PRG (MoodVal FAC)) }
+applyOneFlag "IMM" f = f { fSlotVIII = Just (VnCnAspect IMM (MoodVal FAC)) }
+applyOneFlag "PCS" f = f { fSlotVIII = Just (VnCnAspect PCS (MoodVal FAC)) }
+applyOneFlag "REG" f = f { fSlotVIII = Just (VnCnAspect REG (MoodVal FAC)) }
+applyOneFlag "ATP" f = f { fSlotVIII = Just (VnCnAspect ATP (MoodVal FAC)) }
+-- Framed relation (antepenultimate stress)
+applyOneFlag "FRA" f = f { fStress = Antepenultimate }
+applyOneFlag _ f = f  -- Ignore unknown flags
+
+-- | Set validation on existing illocution, or default to ASR
+setVal :: Validation -> Formative -> Formative
+setVal v f = case fSlotIX f of
+  Right (IllocVal ill _) -> f { fSlotIX = Right (IllocVal ill v) }
+  _ -> f { fSlotIX = Right (IllocVal ASR v) }
+
+-- Ca component setters
+setCa1 :: Configuration -> Formative -> Formative
+setCa1 c f = let (_, a, p, e, s) = fSlotVI f in f { fSlotVI = (c, a, p, e, s) }
+setCa2 :: Extension -> Formative -> Formative
+setCa2 e f = let (c, a, p, _, s) = fSlotVI f in f { fSlotVI = (c, a, p, e, s) }
+setCa3 :: Affiliation -> Formative -> Formative
+setCa3 a f = let (c, _, p, e, s) = fSlotVI f in f { fSlotVI = (c, a, p, e, s) }
+setCa4p :: Perspective -> Formative -> Formative
+setCa4p p f = let (c, a, _, e, s) = fSlotVI f in f { fSlotVI = (c, a, p, e, s) }
+setCa5 :: Essence -> Formative -> Formative
+setCa5 s f = let (c, a, p, e, _) = fSlotVI f in f { fSlotVI = (c, a, p, e, s) }
+
+-- | Auto-determine stress from Slot IX, unless explicitly set (e.g. FRA)
+autoStress :: Formative -> Formative
+autoStress f
+  | fStress f /= Penultimate = f  -- Explicitly set, don't override
+  | otherwise = case fSlotIX f of
+      Right _ -> f { fStress = Ultimate }
+      Left _ -> f
+
+sel1 :: (a, b, c) -> a
+sel1 (a, _, _) = a
+sel2 :: (a, b, c) -> b
+sel2 (_, b, _) = b
+sel3 :: (a, b, c) -> c
+sel3 (_, _, c) = c
 
 loadLexicon :: FilePath -> IO (Map.Map Text RootEntry)
 loadLexicon path = do
@@ -216,12 +358,60 @@ repl roots affixes = do
         then return ()
         else do
           line <- TIO.getLine
-          if T.null (T.strip line)
+          let stripped = T.strip line
+          if T.null stripped
             then loop
             else do
-              glossLine roots affixes (T.strip line)
+              case T.uncons stripped of
+                Just ('/', cmd) -> replCommand cmd
+                _ -> glossLine roots affixes stripped
               TIO.putStrLn ""
               loop
+    replCommand cmd
+      | "root " `T.isPrefixOf` cmd = do
+          let query = T.drop 5 cmd
+              results = searchRoots query roots
+          if null results
+            then TIO.putStrLn $ col dim "No roots found for: " <> query
+            else mapM_ (\(cr, entry) ->
+              TIO.putStrLn $ col yellow ("-" <> cr <> "-") <> "  S1: " <> rootStem1 entry
+                          <> "  S2: " <> rootStem2 entry) (take 10 results)
+      | "affix " `T.isPrefixOf` cmd = do
+          let query = T.drop 6 cmd
+              results = searchAffixes query affixes
+          if null results
+            then TIO.putStrLn $ col dim "No affixes found for: " <> query
+            else mapM_ (\(cs, entry) ->
+              TIO.putStrLn $ col yellow ("-" <> cs <> "-") <> "  " <> affixAbbrev entry
+                          <> "  (" <> affixDesc entry <> ")") (take 10 results)
+      | "compose " `T.isPrefixOf` cmd = do
+          let parts = T.words (T.drop 8 cmd)
+          case parts of
+            (root:opts) -> do
+              let f0 = minimalFormative root
+                  flags = map T.toUpper opts
+                  f1 = applyComposeFlags flags f0
+                  f2 = autoStress f1
+                  word = composeFormative f2
+              TIO.putStrLn $ "  " <> col bold word
+              glossLine roots affixes word
+            _ -> TIO.putStrLn "Usage: /compose <root> [S2] [DYN] [ABS] [IRG] ..."
+      | "lookup " `T.isPrefixOf` cmd = do
+          let query = T.drop 7 cmd
+              results = lookupGrammar query
+          case results of
+            [] -> TIO.putStrLn $ col dim "Not found: " <> query
+            _ -> mapM_ (\e -> TIO.putStrLn $ col bold (gAbbrev e) <> "  " <> gName e
+                          <> "  [" <> gCategory e <> "]  form: " <> gForm e) results
+      | "help" `T.isPrefixOf` cmd = do
+          TIO.putStrLn $ col bold "REPL Commands:"
+          TIO.putStrLn "  /root <keyword>           Search roots by meaning"
+          TIO.putStrLn "  /affix <keyword>          Search affixes by keyword"
+          TIO.putStrLn "  /compose <root> [opts]     Compose a formative"
+          TIO.putStrLn "  /lookup <abbr>            Look up grammar abbreviation"
+          TIO.putStrLn "  /help                     Show this help"
+          TIO.putStrLn "  <ithkuil text>            Parse and gloss (default)"
+      | otherwise = TIO.putStrLn $ col dim "Unknown command. Type /help for commands."
 
 pipeMode :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> IO ()
 pipeMode roots affixes = do
