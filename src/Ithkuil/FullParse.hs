@@ -10,7 +10,7 @@ import Ithkuil.Grammar
 import Ithkuil.Parse (splitConjuncts, parseSlotII, parseSlotIV,
                       parseCa, ParsedCa(..), isVowelChar)
 import qualified Ithkuil.Parse as P
-import Ithkuil.Phonology (vowelFormTable)
+import Ithkuil.Phonology (vowelFormLookup)
 
 --------------------------------------------------------------------------------
 -- Parser Types
@@ -397,18 +397,7 @@ parseVk vk =
 
 -- | Determine series (1-4) and form (1-9) from a vowel using the vowel form table
 seriesAndForm :: Text -> Maybe (Int, Int)
-seriesAndForm v = listToMaybe
-  [ (s + 1, f + 1)
-  | (s, row) <- zip [0..] vowelFormTable
-  , (f, vowel) <- zip [0..] row
-  , vowelMatches v vowel
-  ]
-
--- | Match vowels accounting for series 3 alternates (ia/uä etc.)
-vowelMatches :: Text -> Text -> Bool
-vowelMatches v form
-  | "/" `T.isInfixOf` form = v `elem` T.splitOn "/" form
-  | otherwise = v == form
+seriesAndForm = vowelFormLookup
 
 --------------------------------------------------------------------------------
 -- Case parsing (full 68 cases)

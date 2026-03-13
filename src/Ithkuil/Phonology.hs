@@ -4,6 +4,8 @@
 module Ithkuil.Phonology where
 
 import Data.Text (Text)
+import Data.Maybe (listToMaybe)
+import Control.Monad (mplus)
 
 -- | Consonant features
 data Voicing = Voiced | Voiceless
@@ -95,9 +97,33 @@ vowelFormTable =
   , ["ao", "aö", "eo", "eö", "oë", "öe", "oe", "öa", "oa"]  -- Series 4
   ]
 
+-- | Series 3 alternate forms (used after y- for i-initial, after w- for u-initial)
+-- (form number, alternate vowel)
+series3Alternates :: [(Int, Text)]
+series3Alternates =
+  [ (1, "uä"), (2, "uë"), (3, "üä"), (4, "üë")  -- i-initial → u/ü alternates
+  , (6, "öë"), (7, "öä"), (8, "ië"), (9, "iä")   -- u-initial → ö/i alternates
+  ]
+
 -- | Get vowel form by series (1-4) and form (1-9)
 vowelForm :: Int -> Int -> Text
 vowelForm series form = vowelFormTable !! (series - 1) !! (form - 1)
+
+-- | Look up series (1-4) and form (1-9) for a vowel, including Series 3 alternates
+vowelFormLookup :: Text -> Maybe (Int, Int)
+vowelFormLookup v = primary `mplus` alternate
+  where
+    primary = listToMaybe
+      [ (s, f)
+      | (s, row) <- zip [1..] vowelFormTable
+      , (f, vf)  <- zip [1..] row
+      , vf == v
+      ]
+    alternate = listToMaybe
+      [ (3, f)
+      | (f, alt) <- series3Alternates
+      , alt == v
+      ]
 
 -- | Check if a phoneme is a consonant
 isConsonant :: Phoneme -> Bool

@@ -96,6 +96,22 @@ main = hspec $ do
       parseSlotIV "ie" `shouldBe` Just (STA, CTE, RPS)
       parseSlotIV "ua" `shouldBe` Just (DYN, BSC, RPS)
 
+    it "parses Series 3 alternate vowel forms" $ do
+      -- Alternates used after y- (i-initial → u/ü alternates)
+      parseSlotIV "uä" `shouldBe` Just (STA, BSC, RPS)
+      parseSlotIV "uë" `shouldBe` Just (STA, CTE, RPS)
+      parseSlotIV "üä" `shouldBe` Just (STA, CSV, RPS)
+      parseSlotIV "üë" `shouldBe` Just (STA, OBJ, RPS)
+      -- Alternates used after w- (u-initial → ö/i alternates)
+      parseSlotIV "öë" `shouldBe` Just (DYN, OBJ, RPS)
+      parseSlotIV "öä" `shouldBe` Just (DYN, CSV, RPS)
+      parseSlotIV "ië" `shouldBe` Just (DYN, CTE, RPS)
+      parseSlotIV "iä" `shouldBe` Just (DYN, BSC, RPS)
+
+    it "parses Series 3 alternate Vv forms" $ do
+      parseSlotII "uä" `shouldBe` Just (S1, PRC)  -- alternate of ia
+      parseSlotII "iä" `shouldBe` Just (S3, PRC)  -- alternate of ua
+
     it "parses AMG context forms (series 4)" $ do
       parseSlotIV "ao" `shouldBe` Just (STA, BSC, AMG)
       parseSlotIV "aö" `shouldBe` Just (STA, CTE, AMG)

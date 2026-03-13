@@ -30,51 +30,33 @@ import Ithkuil.Phonology
 import Ithkuil.Grammar
 
 -- | Parse Vv vowel to Slot II (Stem + Version)
--- The Vv table is a direct mapping of 8 specific vowels:
---   S1/PRC=a, S1/CPT=ä, S2/PRC=e, S2/CPT=i, S3/PRC=u, S3/CPT=ü, S0/PRC=o, S0/CPT=ö
--- Series 2-4 diphthongs (ai, ia, ao, etc.) are also valid Vv,
--- carrying the same stem/version as their Series 1 base + additional implied semantics.
+-- Uses vowelFormLookup to resolve series/form (including Series 3 alternates)
+-- Form→Stem: 1,2→S1; 3,4→S2; 9,8→S3; 7,6→S0
+-- Form→Version: odd→PRC, even→CPT (form 5 = Cs-root special)
 parseSlotII :: Text -> Maybe SlotII
-parseSlotII v = listToMaybe
-  [ slot | (slot, vv) <- slotIITable, vv == normalizeAccents v ]
+parseSlotII v = do
+  (_, form) <- vowelFormLookup (normalizeAccents v)
+  formToStemVersion form
   where
-    -- Series 1: base 8 vowels
-    baseMappings =
-      [ ((S1, PRC), "a"),  ((S1, CPT), "ä")
-      , ((S2, PRC), "e"),  ((S2, CPT), "i")
-      , ((S3, PRC), "u"),  ((S3, CPT), "ü")
-      , ((S0, PRC), "o"),  ((S0, CPT), "ö")
-      ]
-    -- Series 2-4: diphthong Vv forms carry same stem/version as corresponding form
-    -- Form→Stem: 1,2→S1; 3,4→S2; 9,8→S3; 7,6→S0
-    -- Form→Version: odd→PRC, even→CPT
-    seriesMappings = concatMap seriesEntries [2..4]
-    seriesEntries s =
-      [ ((S1, PRC), vowelForm s 1), ((S1, CPT), vowelForm s 2)
-      , ((S2, PRC), vowelForm s 3), ((S2, CPT), vowelForm s 4)
-      , ((S3, PRC), vowelForm s 9), ((S3, CPT), vowelForm s 8)
-      , ((S0, PRC), vowelForm s 7), ((S0, CPT), vowelForm s 6)
-      ]
-    slotIITable = baseMappings ++ seriesMappings
+    formToStemVersion f = case f of
+      1 -> Just (S1, PRC); 2 -> Just (S1, CPT)
+      3 -> Just (S2, PRC); 4 -> Just (S2, CPT)
+      6 -> Just (S0, CPT); 7 -> Just (S0, PRC)
+      8 -> Just (S3, CPT); 9 -> Just (S3, PRC)
+      _ -> Nothing  -- form 5 = Cs-root special Vv
 
 -- | Parse Vr vowel to Slot IV (Function + Specification + Context)
--- Uses the vowel form table: Series 1-4 map to EXS/FNC/RPS/AMG contexts
--- Forms 1-8 map to STA/DYN x BSC/CTE/CSV/OBJ
+-- Series 1-4 → EXS/FNC/RPS/AMG; Forms map to Function x Specification
 parseSlotIV :: Text -> Maybe SlotIV
-parseSlotIV v = listToMaybe
-  [ slot | (slot, vr) <- slotIVTable, vr == normalizeAccents v ]
-  where
-    slotIVTable = concatMap seriesEntries [(EXS, 1), (FNC, 2), (RPS, 3), (AMG, 4)]
-    seriesEntries (ctx, s) =
-      [ ((STA, BSC, ctx), vowelForm s 1)
-      , ((STA, CTE, ctx), vowelForm s 2)
-      , ((STA, CSV, ctx), vowelForm s 3)
-      , ((STA, OBJ, ctx), vowelForm s 4)
-      , ((DYN, OBJ, ctx), vowelForm s 6)
-      , ((DYN, CSV, ctx), vowelForm s 7)
-      , ((DYN, CTE, ctx), vowelForm s 8)
-      , ((DYN, BSC, ctx), vowelForm s 9)
-      ]
+parseSlotIV v = do
+  (series, form) <- vowelFormLookup (normalizeAccents v)
+  ctx <- case series of
+    1 -> Just EXS; 2 -> Just FNC; 3 -> Just RPS; 4 -> Just AMG; _ -> Nothing
+  funcSpec <- case form of
+    1 -> Just (STA, BSC); 2 -> Just (STA, CTE); 3 -> Just (STA, CSV); 4 -> Just (STA, OBJ)
+    6 -> Just (DYN, OBJ); 7 -> Just (DYN, CSV); 8 -> Just (DYN, CTE); 9 -> Just (DYN, BSC)
+    _ -> Nothing  -- form 5 = Cs-root special
+  Just (fst funcSpec, snd funcSpec, ctx)
 
 -- | Configuration consonant patterns (Ca1 component)
 -- From official grammar ch03: UPX=null, DPX=s, MSS=t, MSC=k, etc.
@@ -188,18 +170,9 @@ shortcutCa _ _ = defaultCa
 
 -- | Get Vv series number (1-4) from the vowel form
 vvSeries :: Text -> Int
-vvSeries vv = case normalizeAccents vv of
-  "a"  -> 1; "ä" -> 1
-  "e"  -> 1; "i" -> 1
-  "u"  -> 1; "ü" -> 1
-  "o"  -> 1; "ö" -> 1
-  "ai" -> 2; "au" -> 2; "ei" -> 2; "eu" -> 2
-  "ëu" -> 2; "ou" -> 2; "oi" -> 2; "iu" -> 2; "ui" -> 2
-  "ia" -> 3; "ie" -> 3; "io" -> 3; "iö" -> 3
-  "eë" -> 3; "uö" -> 3; "uo" -> 3; "ue" -> 3; "ua" -> 3
-  "ao" -> 4; "aö" -> 4; "eo" -> 4; "eö" -> 4
-  "oë" -> 4; "öe" -> 4; "oe" -> 4; "öa" -> 4; "oa" -> 4
-  _ -> 1
+vvSeries vv = case vowelFormLookup (normalizeAccents vv) of
+  Just (s, _) -> s
+  Nothing     -> 1
 
 -- | Check if a Vv value is a special Cs-root marker
 -- These signal that the "root" consonant is actually a Cs affix form
@@ -228,14 +201,10 @@ parseAffixVr vr =
     "üo" -> Just (0, RPS)
     "üö" -> Just (0, AMG)
     _ -> do
-      -- Use vowel form table to get (series, form)
-      (series, form) <- lookupSeriesForm nv
+      (series, form) <- vowelFormLookup nv
       let ctx = case series of
             1 -> EXS; 2 -> FNC; 3 -> RPS; 4 -> AMG; _ -> EXS
       Just (form, ctx)
-  where
-    lookupSeriesForm v = listToMaybe
-      [ (s, f) | s <- [1..4], f <- [1..9], vowelForm s f == v ]
 
 -- | Parse a formative, handling both vowel-initial and consonant-initial words
 -- Consonant-initial words have elided Vv (defaults to S1/PRC = "a")
