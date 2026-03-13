@@ -845,3 +845,19 @@ main = hspec $ do
       renderIllocution DIR `shouldBe` "h"
       renderValidation OBS `shouldBe` "a"
       renderValidation INF `shouldBe` "u"
+
+  describe "Integration: Longtest Poem" $ do
+    it "parses all words from the Ozymandias poem" $ do
+      let ws = ["Ufhulâ","eatreuhlï","wuksmenţi'ë","Mâlu'u","Azhesâ","Tartïnhâ",
+                "antfäsi'a","Aţsägissa'hňu","yuilžařča","Aççpeřinï","theuxač",
+                "Wamfpuňï","avcasu'u","umweřuňï","umskäzomļï'ï","Avllevâ",
+                "evẓâlüduna","wulyezwi","açmaňotanï","Emzäsouyâ","tha","áẓčelä",
+                "Wanluẓda","ařžřusö'athu","aḑlialuň","açnüsö'athu","Wužtļi'a",
+                "mangut","atväsâ","Wiadná","la","hnï"]
+          unparsed = filter (\w -> case parseWord w of PUnparsed _ -> True; _ -> False) ws
+      unparsed `shouldBe` []
+
+    it "parses concatenated formatives from poem" $ do
+      case parseWord "Hmaggwí-ašnexürrtřa" of
+        PConcatenated pfs -> length pfs `shouldBe` 2
+        pw -> expectationFailure $ "Expected PConcatenated, got: " ++ show pw
