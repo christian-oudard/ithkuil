@@ -455,6 +455,36 @@ main = hspec $ do
         Just pf -> pfStress pf `shouldBe` Ultimate
         Nothing -> expectationFailure "Should parse"
 
+    it "detects antepenultimate stress from circumflex accent" $ do
+      case parseFormativeReal "Mâlu'u" of
+        Just pf -> pfStress pf `shouldBe` Antepenultimate
+        Nothing -> expectationFailure "Should parse"
+
+    it "normalizes circumflex â to ä" $ do
+      normalizeAccents "â" `shouldBe` "ä"
+      normalizeAccents "ê" `shouldBe` "ë"
+      normalizeAccents "ô" `shouldBe` "ö"
+      normalizeAccents "û" `shouldBe` "ü"
+
+  describe "Diphthong Vv" $ do
+    it "parses Series 2 diphthong Vv" $ do
+      parseSlotII "ai" `shouldBe` Just (S1, PRC)
+      parseSlotII "au" `shouldBe` Just (S1, CPT)
+      parseSlotII "ei" `shouldBe` Just (S2, PRC)
+      parseSlotII "ui" `shouldBe` Just (S3, PRC)
+
+    it "parses Series 3 diphthong Vv" $ do
+      parseSlotII "ia" `shouldBe` Just (S1, PRC)
+      parseSlotII "ua" `shouldBe` Just (S3, PRC)
+
+    it "parses w-shortcut with Series 3 Vv" $ do
+      case parseFormativeReal "Wiadná" of
+        Just pf -> do
+          pfRoot pf `shouldBe` Root "dn"
+          pfSlotII pf `shouldBe` (S1, PRC)
+          pfCaParsed pf `shouldBe` Just (ParsedCa UNI CSL N_ DEL NRM)
+        Nothing -> expectationFailure "Should parse Wiadná"
+
   describe "Minimal Formative Parsing" $ do
     it "parses w-glide vowel-initial words" $ do
       case parseFormativeReal "weli" of
@@ -523,6 +553,48 @@ main = hspec $ do
           pfSlotIV pf `shouldBe` (STA, OBJ, EXS)
           pfCase pf `shouldBe` Just (Transrelative ERG)
         Nothing -> expectationFailure "Should parse kšilo"
+
+  describe "Cc Parsing" $ do
+    it "classifies concatenation types" $ do
+      parseCc "h"  `shouldBe` (Just Type1, Nothing)
+      parseCc "hl" `shouldBe` (Just Type1, Just ShortcutW)
+      parseCc "hm" `shouldBe` (Just Type1, Just ShortcutY)
+      parseCc "hw" `shouldBe` (Just Type2, Nothing)
+      parseCc "hr" `shouldBe` (Just Type2, Just ShortcutW)
+      parseCc "hn" `shouldBe` (Just Type2, Just ShortcutY)
+      parseCc "w"  `shouldBe` (Nothing, Just ShortcutW)
+      parseCc "y"  `shouldBe` (Nothing, Just ShortcutY)
+      parseCc "l"  `shouldBe` (Nothing, Nothing)
+
+  describe "Concatenated Formatives" $ do
+    it "parses simple Type-1 concatenation" $ do
+      case parseWord "hamala-lala" of
+        PConcatenated pfs -> do
+          length pfs `shouldBe` 2
+          pfConcatenation (head pfs) `shouldBe` Just Type1
+          pfRoot (head pfs) `shouldBe` Root "m"
+          pfConcatenation (pfs !! 1) `shouldBe` Nothing
+          pfRoot (pfs !! 1) `shouldBe` Root "l"
+        pw -> expectationFailure $ "Expected PConcatenated, got: " ++ show pw
+
+    it "parses Type-2 concatenation with shortcut" $ do
+      case parseWord "hralai-malai" of
+        PConcatenated pfs -> do
+          length pfs `shouldBe` 2
+          pfConcatenation (head pfs) `shouldBe` Just Type2
+        pw -> expectationFailure $ "Expected PConcatenated, got: " ++ show pw
+
+    it "parses concatenation with ç sentence prefix" $ do
+      case parseWord "çëhamala-lala" of
+        PConcatenated pfs -> do
+          length pfs `shouldBe` 2
+          pfConcatenation (head pfs) `shouldBe` Just Type1
+        pw -> expectationFailure $ "Expected PConcatenated, got: " ++ show pw
+
+    it "does not parse non-concatenated words with hyphens" $ do
+      case parseWord "a-b" of
+        PUnparsed _ -> return ()
+        pw -> expectationFailure $ "Expected PUnparsed, got: " ++ show pw
 
   describe "Rendering" $ do
     it "renders a minimal formative" $ do

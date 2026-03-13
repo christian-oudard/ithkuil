@@ -97,6 +97,9 @@ glossOneWord roots affixes word = do
   TIO.putStrLn $ "  " <> word <> "  [" <> T.pack (show wtype) <> "]"
   case parsed of
     PFormative pf -> showFormativeDetail roots affixes pf
+    PConcatenated pfs -> do
+      TIO.putStrLn $ "    Concatenation chain (" <> T.pack (show (length pfs)) <> " formatives):"
+      mapM_ (\pf -> showFormativeDetail roots affixes pf) pfs
     PBias b -> TIO.putStrLn $ "    Bias: " <> T.pack (show b)
     PRegister r -> TIO.putStrLn $ "    Register: " <> T.pack (show r)
     PReferential ref mc vc -> showReferentialDetail ref mc vc

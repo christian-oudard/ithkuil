@@ -15,6 +15,8 @@ module Ithkuil.Parse
   , isVowelChar
   , normalizeAccents
   , defaultCa
+  , parseCc
+  , CcShortcut(..)
   ) where
 
 import Data.Text (Text)
@@ -24,16 +26,32 @@ import Ithkuil.Phonology
 import Ithkuil.Grammar
 
 -- | Parse Vv vowel to Slot II (Stem + Version)
+-- The Vv table is a direct mapping of 8 specific vowels:
+--   S1/PRC=a, S1/CPT=ä, S2/PRC=e, S2/CPT=i, S3/PRC=u, S3/CPT=ü, S0/PRC=o, S0/CPT=ö
+-- Series 2-4 diphthongs (ai, ia, ao, etc.) are also valid Vv,
+-- carrying the same stem/version as their Series 1 base + additional implied semantics.
 parseSlotII :: Text -> Maybe SlotII
 parseSlotII v = listToMaybe
   [ slot | (slot, vv) <- slotIITable, vv == normalizeAccents v ]
   where
-    slotIITable =
+    -- Series 1: base 8 vowels
+    baseMappings =
       [ ((S1, PRC), "a"),  ((S1, CPT), "ä")
       , ((S2, PRC), "e"),  ((S2, CPT), "i")
       , ((S3, PRC), "u"),  ((S3, CPT), "ü")
       , ((S0, PRC), "o"),  ((S0, CPT), "ö")
       ]
+    -- Series 2-4: diphthong Vv forms carry same stem/version as corresponding form
+    -- Form→Stem: 1,2→S1; 3,4→S2; 9,8→S3; 7,6→S0
+    -- Form→Version: odd→PRC, even→CPT
+    seriesMappings = concatMap seriesEntries [2..4]
+    seriesEntries s =
+      [ ((S1, PRC), vowelForm s 1), ((S1, CPT), vowelForm s 2)
+      , ((S2, PRC), vowelForm s 3), ((S2, CPT), vowelForm s 4)
+      , ((S3, PRC), vowelForm s 9), ((S3, CPT), vowelForm s 8)
+      , ((S0, PRC), vowelForm s 7), ((S0, CPT), vowelForm s 6)
+      ]
+    slotIITable = baseMappings ++ seriesMappings
 
 -- | Parse Vr vowel to Slot IV (Function + Specification + Context)
 -- Uses the vowel form table: Series 1-4 map to EXS/FNC/RPS/AMG contexts
@@ -111,7 +129,8 @@ perspectiveEssencePatterns =
 
 -- | Parsed formative with all identified slots
 data ParsedFormative = ParsedFormative
-  { pfSlotII  :: SlotII          -- Stem + Version
+  { pfConcatenation :: Maybe ConcatenationStatus  -- Cc concatenation type
+  , pfSlotII  :: SlotII          -- Stem + Version
   , pfRoot    :: Root            -- Cr (root consonants)
   , pfSlotIV  :: SlotIV          -- Function + Specification + Context
   , pfCa      :: [Text]          -- Ca complex (raw conjuncts)
@@ -125,6 +144,29 @@ data ParsedFormative = ParsedFormative
 
 -- | Cc shortcut type (w or y prefix that adds Ca values)
 data CcShortcut = ShortcutW | ShortcutY deriving (Show, Eq)
+
+-- | Parse Cc consonant for concatenation type and shortcut
+-- CC consonants: h/hl/hm (Type1), hw/hr/hn (Type2), w/y (shortcut only)
+-- Some carry both: hl=T1+W, hm=T1+Y, hr=T2+W, hn=T2+Y
+parseCc :: Text -> (Maybe ConcatenationStatus, Maybe CcShortcut)
+parseCc cc = (concat_, shortcut)
+  where
+    concat_ = case cc of
+      "h"  -> Just Type1
+      "hl" -> Just Type1
+      "hm" -> Just Type1
+      "hw" -> Just Type2
+      "hr" -> Just Type2
+      "hn" -> Just Type2
+      _    -> Nothing
+    shortcut = case cc of
+      "w"  -> Just ShortcutW
+      "hl" -> Just ShortcutW
+      "hr" -> Just ShortcutW
+      "y"  -> Just ShortcutY
+      "hm" -> Just ShortcutY
+      "hn" -> Just ShortcutY
+      _    -> Nothing
 
 -- | Resolve Ca from Cc shortcut + Vv series
 shortcutCa :: CcShortcut -> Int -> ParsedCa
@@ -156,6 +198,7 @@ vvSeries vv = case normalizeAccents vv of
 -- | Parse a formative, handling both vowel-initial and consonant-initial words
 -- Consonant-initial words have elided Vv (defaults to S1/PRC = "a")
 -- Words starting with w/y + vowel are treated as vowel-initial (w/y is a Cc shortcut)
+-- Words starting with h/hl/hm/hw/hr/hn are concatenated formatives
 parseFormativeReal :: Text -> Maybe ParsedFormative
 parseFormativeReal word = do
   let lword = T.toLower word
@@ -172,13 +215,41 @@ parseFormativeReal word = do
       stress = detectStressSimple stripped
   case parts of
     [] -> Nothing
-    -- w/y Cc shortcut before vowel: parse as vowel-initial with shortcut Ca
-    (cc:vv:rest) | cc == "w" -> parseVowelInitialWithShortcut ShortcutW stress (vv:rest)
-    (cc:vv:rest) | cc == "y" -> parseVowelInitialWithShortcut ShortcutY stress (vv:rest)
+    -- Check for Cc consonant (concatenation/shortcut): w, y, h, hl, hm, hw, hr, hn
+    (cc:rest) | not (null rest) ->
+      let (concatM, scM) = parseCc cc
+      in case (concatM, scM) of
+        -- Pure shortcut (w or y): parse with shortcut Ca
+        (Nothing, Just sc) -> do
+          pf <- parseVowelInitialWithShortcut sc stress rest
+          return pf
+        -- Concatenation with shortcut (hl, hm, hr, hn): parse with shortcut Ca + concat
+        (Just ct, Just sc) -> do
+          pf <- parseVowelInitialWithShortcut sc stress rest
+          return pf { pfConcatenation = Just ct }
+        -- Concatenation without shortcut (h, hw): parse rest normally
+        (Just ct, Nothing) -> do
+          pf <- parseRestAsFormative stress rest
+          return pf { pfConcatenation = Just ct }
+        -- No Cc match: normal parsing
+        (Nothing, Nothing) ->
+          if isConsonantCluster cc
+            then parseConsonantInitial stress parts  -- Elided Vv
+            else parseVowelInitial stress parts      -- Normal Vv-Cr-Vr-Ca...
     (first:_) ->
       if isConsonantCluster first
         then parseConsonantInitial stress parts  -- Elided Vv
         else parseVowelInitial stress parts      -- Normal Vv-Cr-Vr-Ca...
+
+-- | Parse remaining conjuncts as a formative after stripping Cc
+parseRestAsFormative :: Stress -> [Text] -> Maybe ParsedFormative
+parseRestAsFormative stress parts = case parts of
+  [] -> Nothing
+  (first:_)
+    | not (T.null first) && isVowelChar (T.head first) ->
+        parseVowelInitial stress parts
+    | otherwise ->
+        parseConsonantInitial stress parts
 
 -- | Parse vowel-initial word with Cc shortcut (w or y prefix)
 -- Shortcuts elide Slots IV (Vr) and VI (Ca), setting Ca from the shortcut table
@@ -199,7 +270,8 @@ parseVowelInitialWithShortcut sc stress parts = case parts of
                     [] -> Nothing
         (caseM, illocValM) = parseSlotIXSimple stress lastVowel
     Just ParsedFormative
-      { pfSlotII = slotII
+      { pfConcatenation = Nothing
+      , pfSlotII = slotII
       , pfRoot = Root cr
       , pfSlotIV = (STA, BSC, EXS)  -- Shortcuts elide Vr to default
       , pfCa = []
@@ -228,7 +300,8 @@ parseConsonantInitial stress parts = case parts of
       [] ->
         let (caseM, illocValM) = parseSlotIXSimple stress (Just vr)
         in Just ParsedFormative
-          { pfSlotII = (S1, PRC)
+          { pfConcatenation = Nothing
+          , pfSlotII = (S1, PRC)
           , pfRoot = Root cr
           , pfSlotIV = (STA, BSC, EXS)
           , pfCa = []
@@ -249,7 +322,8 @@ parseConsonantInitial stress parts = case parts of
                 caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
                 caParsedM = parseCa =<< listToMaybe caConsonants
             in Just ParsedFormative
-              { pfSlotII = (S1, PRC)
+              { pfConcatenation = Nothing
+              , pfSlotII = (S1, PRC)
               , pfRoot = Root cr
               , pfSlotIV = slotIV
               , pfCa = caRest
@@ -265,7 +339,8 @@ parseConsonantInitial stress parts = case parts of
             (root, caParsedM) <- splitCrCa cr
             let (caseM, illocValM) = parseSlotIXSimple stress (Just vr)
             Just ParsedFormative
-              { pfSlotII = (S1, PRC)
+              { pfConcatenation = Nothing
+              , pfSlotII = (S1, PRC)
               , pfRoot = Root root
               , pfSlotIV = (STA, BSC, EXS)
               , pfCa = [cr]
@@ -289,7 +364,8 @@ parseVowelInitial stress parts = case parts of
       [] ->
         let (caseM, illocValM) = parseSlotIXSimple stress (Just vr)
         in Just ParsedFormative
-          { pfSlotII = slotII
+          { pfConcatenation = Nothing
+          , pfSlotII = slotII
           , pfRoot = Root cr
           , pfSlotIV = (STA, BSC, EXS)
           , pfCa = []
@@ -310,7 +386,8 @@ parseVowelInitial stress parts = case parts of
                 caConsonants = filter (not . T.null) $ filter isConsonantCluster caRest
                 caParsedM = parseCa =<< listToMaybe caConsonants
             in Just ParsedFormative
-              { pfSlotII = slotII
+              { pfConcatenation = Nothing
+              , pfSlotII = slotII
               , pfRoot = Root cr
               , pfSlotIV = slotIV
               , pfCa = caRest
@@ -328,7 +405,8 @@ parseVowelInitial stress parts = case parts of
     slotII <- parseSlotII vv
     (root, caParsedM) <- splitCrCa crca
     Just ParsedFormative
-      { pfSlotII = slotII
+      { pfConcatenation = Nothing
+      , pfSlotII = slotII
       , pfRoot = Root root
       , pfSlotIV = (STA, BSC, EXS)
       , pfCa = [crca]
@@ -348,7 +426,8 @@ tryElidedVr slotII crca vcvk stress parts = do
   (root, caParsedM) <- splitCrCa crca
   let (caseM, illocValM) = parseSlotIXSimple stress (Just vcvk)
   Just ParsedFormative
-    { pfSlotII = slotII
+    { pfConcatenation = Nothing
+    , pfSlotII = slotII
     , pfRoot = Root root
     , pfSlotIV = (STA, BSC, EXS)  -- Default elided Vr
     , pfCa = [crca]
@@ -423,22 +502,25 @@ parseSimpleWord word = do
   pf <- parseFormativeReal word
   return (pfSlotII pf, pfRoot pf, pfSlotIV pf)
 
--- | Simple stress detection from acute accents
+-- | Simple stress detection from accent marks
+-- Acute (á) and circumflex (â) both mark the stressed syllable
 -- Detects ultimate/antepenultimate stress markers; defaults to penultimate
 detectStressSimple :: Text -> Stress
 detectStressSimple word
-  | T.any isAcuteAccent word =
+  | T.any isStressedVowel word =
     let syllCount = length $ filter (\t -> not (T.null t) && isVowelChar (T.head t))
                            $ splitConjuncts word
         -- Find which syllable has the accent (1-indexed from start)
         chars = T.unpack word
-        acutePos = length [c | c <- takeWhile (not . isAcuteAccent) chars, isVowelChar c] + 1
-    in if acutePos == syllCount then Ultimate
-       else if acutePos <= syllCount - 2 then Antepenultimate
+        stressPos = length [c | c <- takeWhile (not . isStressedVowel) chars, isVowelChar c] + 1
+    in if stressPos == syllCount then Ultimate
+       else if stressPos <= syllCount - 2 then Antepenultimate
        else Penultimate
   | otherwise = Penultimate
-  where
-    isAcuteAccent c = c `elem` ("áéíóú" :: String)
+
+-- | Check if a vowel character has a stress mark (acute or circumflex)
+isStressedVowel :: Char -> Bool
+isStressedVowel c = c `elem` ("áéíóúâêôû" :: String)
 
 -- | Check if character is a vowel (includes accented vowels for all versions)
 isVowelChar :: Char -> Bool
@@ -476,7 +558,9 @@ parseVk vk = case normalizeAccents vk of
   "ui" -> Just (CNJ, OBS)
   _    -> Nothing
 
--- | Strip acute accents from vowels for parsing
+-- | Strip stress marks from vowels for parsing
+-- Acute accents map to plain vowels: á→a, é→e, etc.
+-- Circumflex accents map to umlauted vowels: â→ä, ê→ë, ô→ö, û→ü
 normalizeAccents :: Text -> Text
 normalizeAccents = T.map stripAccent
   where
@@ -485,6 +569,10 @@ normalizeAccents = T.map stripAccent
     stripAccent 'í' = 'i'
     stripAccent 'ó' = 'o'
     stripAccent 'ú' = 'u'
+    stripAccent 'â' = 'ä'
+    stripAccent 'ê' = 'ë'
+    stripAccent 'ô' = 'ö'
+    stripAccent 'û' = 'ü'
     stripAccent c = c
 
 -- | Split text into consonant/vowel conjuncts

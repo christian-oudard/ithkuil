@@ -48,6 +48,7 @@ data WordType
 -- | A parsed word with its classification
 data ParsedWord
   = PFormative ParsedFormative
+  | PConcatenated [ParsedFormative]  -- concatenation chain (hyphen-separated)
   | PBias Bias
   | PRegister Register
   | PModular [SlotVIII] Text    -- parsed VnCn pairs, raw text
@@ -147,7 +148,14 @@ isModularAdjunct word =
 
 -- | Parse a word based on its type
 parseWord :: Text -> ParsedWord
-parseWord word = case classifyWord word of
+parseWord word
+  -- Handle concatenated formatives (hyphen-separated)
+  | "-" `T.isInfixOf` word = parseConcatenatedWord word
+  | otherwise = parseSingleWord word
+
+-- | Parse a single (non-concatenated) word
+parseSingleWord :: Text -> ParsedWord
+parseSingleWord word = case classifyWord word of
   WBiasAdjunct -> case parseBias word of
     Just b -> PBias b
     Nothing -> PUnparsed word
@@ -161,6 +169,17 @@ parseWord word = case classifyWord word of
   WModularAdjunct -> parseModularWord word
   WAffixualAdjunct -> parseAffixualWord word
   _ -> PUnparsed word
+
+-- | Parse a concatenated word chain (e.g., "hlamröé-úçtļořëi")
+-- All parts except the last must have Cc concatenation marker
+-- The last part must not have a concatenation marker
+parseConcatenatedWord :: Text -> ParsedWord
+parseConcatenatedWord word =
+  let parts = T.splitOn "-" word
+      parsed = map parseFormativeReal parts
+  in case sequence parsed of
+    Just pfs | length pfs >= 2 -> PConcatenated pfs
+    _ -> PUnparsed word
 
 -- | Parse a register adjunct (initial and final forms)
 parseRegister :: Text -> Maybe Register
@@ -250,6 +269,8 @@ parseOneVnCn vn cn =
 glossWord :: Map Text RootEntry -> Map Text AffixEntry -> ParsedWord -> Text
 glossWord roots affixes pw = case pw of
   PFormative pf -> glossFormative roots affixes pf
+  PConcatenated pfs ->
+    T.intercalate "—" (map (glossFormative roots affixes) pfs)
   PBias b -> T.pack (show b)
   PRegister r -> T.pack (show r) <> " register"
   PModular pairs _ -> "MOD:" <> T.intercalate "+" (map glossSlotVIII pairs)
@@ -293,15 +314,20 @@ glossFormative roots affixes pf =
       -- Slot IX: Case or Illocution+Validation
       slotIXAbbr = case pfIllocVal pf of
         Just (ill, val) ->
-          "-" <> T.pack (show ill) <> "/" <> T.pack (show val)
+          T.pack (show ill) <> "/" <> T.pack (show val)
         Nothing -> case pfCase pf of
-          Just c -> "-" <> T.pack (showCase c)
+          Just c -> T.pack (showCase c)
           Nothing -> ""
       frameAbbr = case pfStress pf of
-        Antepenultimate -> "-[FRAMED]"
+        Antepenultimate -> "[FRAMED]"
         _ -> ""
+      concatAbbr = case pfConcatenation pf of
+        Just Type1 -> "T1"
+        Just Type2 -> "T2"
+        Nothing -> ""
   in T.intercalate "-" $ filter (not . T.null)
-    [ stemAbbr <> "/" <> verAbbr
+    [ concatAbbr
+    , stemAbbr <> "/" <> verAbbr
     , rootMeaning
     , funcAbbr <> "/" <> specAbbr <> "/" <> ctxAbbr
     , caAbbr
@@ -313,6 +339,8 @@ glossFormative roots affixes pf =
 -- | Compact gloss: only shows root meaning and non-default grammatical info
 glossWordCompact :: Map Text RootEntry -> Map Text AffixEntry -> ParsedWord -> Text
 glossWordCompact roots _affixes pw = case pw of
+  PConcatenated pfs ->
+    T.intercalate "—" (map (\pf -> glossWordCompact roots _affixes (PFormative pf)) pfs)
   PFormative pf ->
     let Root cr = pfRoot pf
         (stem, _) = pfSlotII pf
