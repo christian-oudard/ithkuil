@@ -545,6 +545,16 @@ main = hspec $ do
       extractVnCn ["l", "ä", "hl"] `shouldBe` Just ("ä", "hl")
       extractAffixes ["l", "ä", "hl"] `shouldBe` []
 
+    it "extracts affixes from shortcut formatives" $ do
+      case parseFormativeReal "wuksmenţa" of
+        Just pf -> do
+          pfRoot pf `shouldBe` Root "ksm"
+          pfSlotII pf `shouldBe` (S3, PRC)
+          let afxs = extractAffixes (pfCa pf)
+          length afxs `shouldBe` 1
+          snd (head afxs) `shouldBe` "nţ"
+        Nothing -> expectationFailure "Should parse wuksmenţa"
+
     it "parses longer formatives with explicit Vr" $ do
       case parseFormativeReal "kšilo" of
         Just pf -> do

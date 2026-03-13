@@ -253,28 +253,26 @@ parseRestAsFormative stress parts = case parts of
 
 -- | Parse vowel-initial word with Cc shortcut (w or y prefix)
 -- Shortcuts elide Slots IV (Vr) and VI (Ca), setting Ca from the shortcut table
+-- After Cr, remaining conjuncts are: [VxCs Slot VII affixes...] + Vc/Vk
 parseVowelInitialWithShortcut :: CcShortcut -> Stress -> [Text] -> Maybe ParsedFormative
 parseVowelInitialWithShortcut sc stress parts = case parts of
   (vv:cr:rest) -> do
     slotII <- parseSlotII vv
     let series = vvSeries vv
         scCa = shortcutCa sc series
-        -- With shortcuts, remaining parts after Cr are Vc/Vk directly (no Vr or Ca)
-        lastVowel = case rest of
-          [] -> Nothing
-          _ -> let isVowelCluster t = not (T.null t) && isVowelChar (T.head t)
-                   revRest = reverse rest
-                   (_, afterC) = span (not . isVowelCluster) revRest
-               in case afterC of
-                    (v:_) -> Just v
-                    [] -> Nothing
+        -- Split rest into VxCs affix pairs and final Vc/Vk
+        -- Merge glottal-vowel patterns first, then take last vowel as Vc/Vk
+        merged = mergeGlottalVowels rest
+        (affixParts, lastVowel) = splitAfterShortcut merged
         (caseM, illocValM) = parseSlotIXSimple stress lastVowel
+        -- Prepend empty placeholder for Ca (extractAffixes skips first element)
+        caWithAffixes = if null affixParts then [] else "" : affixParts
     Just ParsedFormative
       { pfConcatenation = Nothing
       , pfSlotII = slotII
       , pfRoot = Root cr
       , pfSlotIV = (STA, BSC, EXS)  -- Shortcuts elide Vr to default
-      , pfCa = []
+      , pfCa = caWithAffixes        -- Store VxCs pairs for affix extraction
       , pfCaParsed = Just scCa
       , pfSlotVIII = Nothing
       , pfCase = caseM
@@ -283,6 +281,32 @@ parseVowelInitialWithShortcut sc stress parts = case parts of
       , pfConjuncts = parts
       }
   _ -> Nothing
+
+-- | Split conjuncts after shortcut Cr into (affix parts, last vowel)
+-- Takes [V, C, V, C, ..., V] and returns (VxCs affix pairs as [V,C,...], last V)
+splitAfterShortcut :: [Text] -> ([Text], Maybe Text)
+splitAfterShortcut [] = ([], Nothing)
+splitAfterShortcut parts =
+  let isVowelCluster t = not (T.null t) && isVowelChar (T.head t)
+      revParts = reverse parts
+      -- Find the last vowel cluster (Vc/Vk)
+      (trailingC, afterC) = span (not . isVowelCluster) revParts
+  in case afterC of
+    (vc:rest) ->
+      -- rest (reversed) = affix V-C pairs before Vc
+      -- trailingC = trailing consonants after Vc (unusual but possible)
+      let affixParts = reverse rest ++ reverse trailingC
+      in (affixParts, Just vc)
+    [] -> (parts, Nothing)
+
+-- | Merge vowel-glottal-vowel into single "V'V" conjunct
+mergeGlottalVowels :: [Text] -> [Text]
+mergeGlottalVowels (v1:"'":v2:rest)
+  | not (T.null v1) && isVowelChar (T.head v1)
+  , not (T.null v2) && isVowelChar (T.head v2)
+  = mergeGlottalVowels ((v1 <> "'" <> v2) : rest)
+mergeGlottalVowels (x:rest) = x : mergeGlottalVowels rest
+mergeGlottalVowels [] = []
 
 -- | Check if text is a consonant cluster (starts with consonant)
 isConsonantCluster :: Text -> Bool
@@ -487,13 +511,7 @@ splitCaVc parts =
       | T.length vc == 1 = vc <> "'" <> vc
       | T.length vc >= 2 = T.take 1 vc <> "'" <> T.drop 1 vc
       | otherwise = vc
-    -- Merge vowel-glottal-vowel into single "V'V" conjunct
-    mergeGlottalVowels (v1:"'":v2:rest)
-      | not (T.null v1) && isVowelChar (T.head v1)
-      , not (T.null v2) && isVowelChar (T.head v2)
-      = mergeGlottalVowels ((v1 <> "'" <> v2) : rest)
-    mergeGlottalVowels (x:rest) = x : mergeGlottalVowels rest
-    mergeGlottalVowels [] = []
+    -- Uses top-level mergeGlottalVowels
 
 -- | Parse a simple word structure: Vv-Cr-Vr-Ca
 -- Returns (SlotII, Root, SlotIV, partial SlotVI)
