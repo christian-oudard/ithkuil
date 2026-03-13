@@ -12,6 +12,7 @@ import Ithkuil.Adjuncts
 import Ithkuil.WordType
 import Ithkuil.Referentials
 import Ithkuil.Validation (StressError(..), validateStress)
+import Ithkuil.Compose (lookupGrammar, GrammarEntry(..))
 
 main :: IO ()
 main = hspec $ do
@@ -1423,3 +1424,74 @@ main = hspec $ do
       case parseFormativeReal "a'larfunall" of
         Just pf -> validateSlotVMarker pf `shouldBe` Nothing
         Nothing -> expectationFailure "a'larfunall should parse"
+
+  describe "Compose - Grammar Lookup" $ do
+    it "looks up case abbreviations" $ do
+      let results = lookupGrammar "THM"
+      length results `shouldBe` 1
+      gForm (head results) `shouldBe` "a"
+
+    it "looks up spatio-temporal cases with glottal" $ do
+      let results = lookupGrammar "LOC"
+      length results `shouldBe` 1
+      gForm (head results) `shouldBe` "i'a"
+
+    it "looks up aspect forms" $ do
+      let results = lookupGrammar "HAB"
+      length results `shouldBe` 1
+      gForm (head results) `shouldBe` "e"
+
+    it "looks up mood forms" $ do
+      let results = lookupGrammar "SUB"
+      length results `shouldBe` 1
+      gForm (head results) `shouldBe` "hl"
+
+    it "looks up configuration forms" $ do
+      let results = lookupGrammar "DPX"
+      length results `shouldBe` 1
+      gForm (head results) `shouldBe` "s"
+
+  describe "Composition Round-Trip" $ do
+    it "parses composed 'the child walks'" $ do
+      -- elalo = S2-child-ERG, agulá = walk-DYN-OBS
+      let g1 = glossWord mempty mempty (parseWord "elalo")
+      T.isInfixOf "ERG" g1 `shouldBe` True
+      T.isInfixOf "S2" g1 `shouldBe` True
+      let g2 = glossWord mempty mempty (parseWord "agulá")
+      T.isInfixOf "DYN" g2 `shouldBe` True
+
+    it "parses composed mountain-ALL" $ do
+      let g = glossWord mempty mempty (parseWord "ajlali'o")
+      T.isInfixOf "ALL" g `shouldBe` True
+
+    it "parses DPX configuration in Ca" $ do
+      let g = glossWord mempty mempty (parseWord "elaslo")
+      T.isInfixOf "DPX" g `shouldBe` True
+
+    it "parses G perspective (plural) in Ca" $ do
+      let g = glossWord mempty mempty (parseWord "elaro")
+      T.isInfixOf "G" g `shouldBe` True
+
+    it "parses CPT version" $ do
+      let g = glossWord mempty mempty (parseWord "ägulá")
+      T.isInfixOf "CPT" g `shouldBe` True
+
+    it "parses stem 2" $ do
+      let g = glossWord mempty mempty (parseWord "egulá")
+      T.isInfixOf "S2" g `shouldBe` True
+
+    it "parses CTE specification" $ do
+      let g = glossWord mempty mempty (parseWord "aẓäla")
+      T.isInfixOf "CTE" g `shouldBe` True
+
+    it "parses HAB aspect" $ do
+      let g = glossWord mempty mempty (parseWord "agulewá")
+      T.isInfixOf "HAB" g `shouldBe` True
+
+    it "parses SUB mood" $ do
+      let g = glossWord mempty mempty (parseWord "agulahlá")
+      T.isInfixOf "SUB" g `shouldBe` True
+
+    it "parses CNT aspect" $ do
+      let g = glossWord mempty mempty (parseWord "agulouwá")
+      T.isInfixOf "CNT" g `shouldBe` True
