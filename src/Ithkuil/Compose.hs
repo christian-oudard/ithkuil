@@ -153,7 +153,7 @@ buildKeywordIndex roots =
           -- Words from hyphenated compounds get a penalty (like parentheticals)
           mainForms = Set.toList . Set.fromList $ ws ++ map porterStem ws
           compoundOnly = Set.toList $ Set.fromList mainForms `Set.difference` standaloneSet
-          compoundScore = pri * 10 + nWords + 2  -- penalty for compound sub-words
+          compoundScore = (pri + 2) * 10 + nWords  -- compound/slash words rank two stem levels down
           -- Parenthetical-only words score at full word count + 1
           allWs = extractWords desc
           nFull = length allWs
@@ -181,14 +181,27 @@ buildKeywordIndex roots =
       filter (T.any (\c -> c >= 'a' && c <= 'z')) .
       T.words $ T.map (\c -> if c `elem` (".,;:!?()-/''\x2019" :: String) then ' ' else c) t
 
-    -- | Extract only standalone words (not sub-parts of hyphenated compounds)
-    -- "root-eating beetle" → ["beetle"] (standalone), vs extractWords → ["root","eating","beetle"]
+    -- | Extract only standalone words (not sub-parts of hyphenated compounds,
+    -- or slash-groups that modify a following word like "running/flowing water")
+    -- "root-eating beetle" → ["beetle"], "running/flowing water" → ["water"]
+    -- "a hill/mountain" → ["hill", "mountain"] (final slash group = alternatives)
     extractStandaloneWords :: Text -> [Text]
     extractStandaloneWords t =
-      filter (\w -> T.length w > 1) .
-      map (T.toCaseFold . T.dropWhile (\c -> not (c >= 'a' && c <= 'z'))) .
-      filter (\w -> T.any (\c -> c >= 'a' && c <= 'z') w && not (T.any (== '-') w)) .
-      T.words $ T.map (\c -> if c `elem` (".,;:!?()/'\x2019" :: String) then ' ' else c) t
+      let -- Replace common punctuation (NOT "/" or "-") with spaces
+          cleaned = T.map (\c -> if c `elem` (".,;:!?()'\x2019" :: String) then ' ' else c) t
+          tokens = T.words cleaned
+          -- Mark slash-tokens that are followed by another word as compounds
+          tagged = zip tokens (drop 1 tokens ++ [""])
+          isCompound tok nextTok = T.any (== '-') tok
+            || (T.any (== '/') tok && not (T.null nextTok) && T.any isAlpha nextTok)
+          isAlpha c = c >= 'a' && c <= 'z'
+          -- Standalone tokens: no "-" and not a slash-modifier
+          standaloneTokens = [tok | (tok, next) <- tagged, not (isCompound tok next)]
+          -- Split on "/" to get individual words from surviving slash groups
+      in filter (\w -> T.length w > 1) .
+         map (T.toCaseFold . T.dropWhile (\c -> not (isAlpha c))) .
+         filter (T.any isAlpha) .
+         concatMap (T.splitOn "/") $ standaloneTokens
 
     porterStem = stem Set.empty
 
