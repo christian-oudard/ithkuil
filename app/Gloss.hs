@@ -534,11 +534,23 @@ makeFormative :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> [T
 makeFormative roots affixes root opts =
   let (resolved, autoStem) = resolveRootAndStem roots root
       f0 = minimalFormative resolved
-      flags = map (resolveAffixFlag affixes . T.toUpper) opts
-      hasStem = any (\f -> f `elem` ["S0","S1","S2","S3"]) (map T.toUpper opts)
+      -- Split "ABS+NEG/4" → ["ABS", "+NEG/4"], "ERG~SIZ/3+NEG/4" → ["ERG", "~SIZ/3", "+NEG/4"]
+      expandedOpts = concatMap splitAffixFlags opts
+      flags = map (resolveAffixFlag affixes . T.toUpper) expandedOpts
+      hasStem = any (\f -> f `elem` ["S0","S1","S2","S3"]) (map T.toUpper expandedOpts)
       f0' = if hasStem then f0
             else f0 { fSlotII = (autoStem, snd (fSlotII f0)) }
   in applyComposeFlags flags f0'
+
+-- | Split a flag at +/~ boundaries: "ABS+NEG/4" → ["ABS", "+NEG/4"]
+splitAffixFlags :: Text -> [Text]
+splitAffixFlags t =
+  let go acc [] = [acc]
+      go acc (c:cs)
+        | (c == '+' || c == '~') && not (T.null acc) =
+            acc : go (T.singleton c) cs
+        | otherwise = go (acc <> T.singleton c) cs
+  in filter (not . T.null) $ go "" (T.unpack t)
 
 -- | Resolve a root: if it contains vowels, search the lexicon by keyword
 -- and use the first match's consonant form. Uses ranked scoring from Compose.

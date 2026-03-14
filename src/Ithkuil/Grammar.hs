@@ -425,6 +425,10 @@ disambiguateMoodScope :: Stress -> MoodOrScope -> MoodOrScope
 disambiguateMoodScope Ultimate ms = case ms of
   CaseScope cs -> MoodVal (caseScopeToMood cs)
   _ -> ms
+disambiguateMoodScope Antepenultimate ms = case ms of
+  -- Framed verbs still use mood (not case scope) — they are verbs
+  CaseScope cs -> MoodVal (caseScopeToMood cs)
+  _ -> ms
 disambiguateMoodScope _ ms = case ms of
   MoodVal m -> CaseScope (moodToCaseScope m)
   _ -> ms

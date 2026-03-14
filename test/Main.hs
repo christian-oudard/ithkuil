@@ -1647,6 +1647,14 @@ main = hspec $ do
       let g = glossWord mempty mempty (parseWord "ágala")
       T.isInfixOf "FRA" g `shouldBe` True
 
+    it "framed verb with VnCn uses mood not case-scope" $ do
+      -- Antepenultimate stress = framed verb, so Cn "h" → FAC (mood), not CCN (case-scope)
+      let g = glossWord mempty mempty (parseWord "arţtúliwa")
+      T.isInfixOf "PRG" g `shouldBe` True
+      T.isInfixOf "FAC" g `shouldBe` True
+      T.isInfixOf "FRA" g `shouldBe` True
+      T.isInfixOf "CCN" g `shouldBe` False
+
     it "glosses NEG affix on verb" $ do
       let g = glossWord mempty mempty (parseWord "amjalirá")
       -- Without affix lexicon, falls back to consonant form "r"
@@ -2061,6 +2069,26 @@ main = hspec $ do
       case parseWord chain of
         PConcatenated pfs -> length pfs `shouldBe` 2
         other -> expectationFailure $ "Expected PConcatenated, got: " ++ show other
+
+    it "round-trips formative with Slot V and Slot VII affixes" $ do
+      -- Formative with SIZ/3 in Slot V and NEG/4 in Slot VII
+      let siz = Affix "e" "x" Type1Affix  -- SIZ deg 3
+          neg = Affix "i" "r" Type1Affix  -- NEG deg 4
+          f = (minimalFormative "sl")
+              { fSlotIV = (DYN, BSC, EXS)
+              , fSlotV = [siz]
+              , fSlotVII = [neg]
+              , fStress = Ultimate }
+          w = composeFormative f
+      -- Verify both affix consonants present
+      T.isInfixOf "x" w `shouldBe` True  -- SIZ consonant
+      -- Round-trip: pfSlotV has Slot V, pfCa has Slot VII after Ca
+      case parseWord w of
+        PFormative pf -> do
+          length (pfSlotV pf) `shouldBe` 1
+          -- Slot VII affixes are stored in pfCa after the Ca consonant
+          length (pfCa pf) `shouldSatisfy` (> 1)  -- Ca + affix parts
+        other -> expectationFailure $ "Expected PFormative, got: " ++ show other
 
   describe "Root search ranking" $ do
     it "finds correct root as top result for unambiguous queries" $ do
