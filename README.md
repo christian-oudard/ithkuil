@@ -1,18 +1,17 @@
-# Ithkuil Grammar Implementation
+# Ithkuil V4 Grammar Implementation
 
-A Haskell implementation of the grammar of **Ithkuil**, the constructed language created by John Quijada. Ithkuil is a philosophical language, designed to express deeper levels of human cognition with precision and conciseness. It features a highly regular morpho-phonological system.
+A Haskell implementation of the grammar of **New Ithkuil** (v1.3.1, 2023), the constructed language created by John Quijada. Ithkuil is a philosophical language designed to express deeper levels of human cognition with precision and conciseness. It features a highly regular morpho-phonological system.
 
-This project implements a parser, renderer, and glosser for Ithkuil formatives and adjuncts for version IV. In the most recent version, the language's name for itself is *Malëuţřait*. It attempts to faithfully encode the rules described in the reference documents. The goal of this codebase is to serve as a canonical programmatic reference for the language's grammar.
+This project implements a parser, renderer, and glosser for Ithkuil formatives and adjuncts. In New Ithkuil, the language's name for itself is *Malëuţřait*. The goal of this codebase is to serve as a canonical programmatic reference for the language's grammar.
 
-
-## The Four Versions of Ithkuil
+## Version History
 
 | Version | Year | Native Name | Description |
 |---------|------|-------------|-------------|
 | I | 2004 | Iţkuîl | Original grammar with consonant grades and biliteral roots |
 | II | 2007 | Ilákš | Revised with tonal vowel system |
 | III | 2011 | Elartkha | Major redesign with Designation, Pattern, and Sanction |
-| IV | 2023 | Malëuţřait | Current version (morphology document v1.3.1) |
+| **IV** | **2023** | **Malëuţřait** | **Current version - implemented here (morphology v1.3.1)** |
 
 
 ## What This Project Does
@@ -38,76 +37,49 @@ This tool provides:
 - **Grammar search**: Looking up grammatical categories, roots, and affixes by keyword
 - **Sentence glossing**: Multi-word sentence parsing with concatenation chain detection
 
-## V4 Implementation Status
+## Implementation Status
 
 ### Fully Implemented
 
 - **Phonology** (Sec. 1): 31 consonants, 9 vowels, vowel form table (4 series x 9 forms), accent normalization, glottal stop insertion rules
-- **Slot I** (Sec. 3.1): Concatenation type detection (Type-1/Type-2), Cc values (h, hw, w, y, hl, hr, hm, hn), Ca shortcut indicators
-- **Slot II** (Sec. 3.2): All 8 Stem/Version combinations (4 stems x PRC/CPT), optional affix shortcuts (NEG/4, DCD/4, DCD/5), Cs-root Vv values (ëi, eë, ëu, oë), personal-reference root Vv values (ae, ea)
+- **Slot I** (Sec. 3.1): Concatenation type detection (Type-1/Type-2), Cc values, Ca shortcut indicators
+- **Slot II** (Sec. 3.2): All 8 Stem/Version combinations, optional affix shortcuts, Cs-root and personal-reference root Vv values
 - **Slot III** (Sec. 3.3): Root consonant extraction (1-5 consonants)
-- **Slot IV** (Sec. 3.4): All Function/Specification/Context combinations (STA/DYN x BSC/CTE/CSV/OBJ x EXS/FNC/RPS/AMG), Cs-root Vr (degree + context)
-- **Slot V** (Sec. 3.5): VxCs affix parsing with degree (0-9) and type (1-3) classification, glottal stop boundary detection for multiple affixes
-- **Slot VI** (Sec. 3.6): Complete Ca complex with pre-generated 3,840 allomorphic forms from component tables (Configuration x Extension x Affiliation x Perspective x Essence), bidirectional lookup, gemination rules for Slot V presence
+- **Slot IV** (Sec. 3.4): All Function/Specification/Context combinations (2x4x4 = 32)
+- **Slot V** (Sec. 3.5): VxCs affix parsing with degree (0-9) and type (1-3), glottal stop boundaries
+- **Slot VI** (Sec. 3.6): Complete Ca complex with pre-generated 3,840 allomorphic forms (Configuration x Extension x Affiliation x Perspective x Essence), bidirectional lookup, gemination rules
 - **Slot VII** (Sec. 3.7): VxCs affix parsing with scope over Ca
-- **Slot VIII** (Sec. 3.8): Both patterns fully implemented
-  - Pattern 1: Valence (9), Phase (9), Effect (6), Level (9) + Mood/Case-Scope
-  - Pattern 2: All 36 Aspects + Mood/Case-Scope
-  - Mood: FAC, SUB, ASM, SPC, COU, HYP (6 values)
-  - Case-Scope: CCN, CCA, CCS, CCQ, CCP, CCV (6 values)
-  - Both Pattern 1 (h/hl/hr/hm/hn/hň) and Pattern 2 (w/y/hw/hrw/hmw/hnw/hňw) Cn consonants
-- **Slot IX** (Sec. 3.9): All 68 cases across 8 groups (Transrelative, Appositive, Associative, Adverbial, Relational, Affinitive, Spatio-Temporal I, Spatio-Temporal II), including glottal-stop cases 37-68
-- **Slot X** (Sec. 3.10): Stress-based Relation detection (penultimate = UNFRAMED + Vc, ultimate = UNFRAMED + Vk, antepenultimate = FRAMED + Vc)
-- **Illocution** (Sec. 3.9.3): All 9 values (ASR, DIR, DEC, IRG, VER, ADM, POT, HOR, CNJ)
-- **Validation** (Sec. 3.9.3): All 9 values (OBS, REC, PUP, RPR, USP, IMA, CVN, ITU, INF)
-- **Vk parsing** (Sec. 3.9.3.3): Series 1 (ASR + Validation) and Series 2 (non-ASR illocutions)
-- **IVL affix** (-nļ-): Illocution+Validation as VxCs affix for framed/concatenated formatives
-- **Concatenation** (Sec. 3.1): Hyphen-joined concatenation chains, Type-1/Type-2 detection, VF format vowels (no glottal stop), concatenated formative stress rules
-- **Ca shortcut formatives** (Sec. 3.2): w/y prefix Vv shortcuts with 8 specific Ca forms (al, atļ, av, aj, ař, adl, ar, ad series)
-- **Cs-root formatives** (Sec. 4.2): Specialized formative structure where an affix Cs replaces the root, with degree+context in Vr
+- **Slot VIII** (Sec. 3.8): Pattern 1 (Valence/Phase/Effect/Level + Mood/Case-Scope) and Pattern 2 (36 Aspects + Mood/Case-Scope)
+- **Slot IX** (Sec. 3.9): All 68 cases across 8 groups, including glottal-stop cases 37-68
+- **Slot X** (Sec. 3.10): Stress-based Relation detection
+- **Illocution/Validation** (Sec. 3.9.3): All 9+9 values with Vk parsing
+- **Concatenation** (Sec. 3.1): Type-1/Type-2 compound formatives
+- **Ca shortcut formatives** (Sec. 3.2): w/y prefix with 8 Ca forms
+- **Cs-root formatives** (Sec. 4.2): Affix Cs as root with degree+context in Vr
 
 ### Adjuncts (Sec. 4)
 
-- **Bias adjuncts** (Sec. 4.7): All 61 bias markers with consonant forms, parsing, and human-readable glosses (e.g., DOL = "Ow! Ouch!", FSC = "Cool! Wow!", IRO = "Just great!")
-- **Register adjuncts** (Sec. 4.4): DSV, PNT, SPF, EXM, CGT initial forms (ha/he/hi/ho/hu) and final forms (hai/hei/hiu/hoi/hui), END final-only form (hüi)
-- **Modular adjuncts** (Sec. 4.3): VnCn pair parsing with scope prefix (w/y), final vowel as Aspect or Vh scope marker, stress-dependent interpretation
-- **Affixual adjuncts** (Sec. 4.1): Single-affix (V-C-V pattern) and multiple-affix (Cs-Vx-Cz-VxCs... pattern) with Cz/Vz scope markers
-- **Suppletive adjuncts** (Sec. 4.5): CAR (hl), QUO (hm), NAM (hn), PHR (hň) with case vowel parsing
+- **Bias adjuncts** (Sec. 4.7): All 61 bias markers
+- **Register adjuncts** (Sec. 4.4): DSV, PNT, SPF, EXM, CGT, END
+- **Modular adjuncts** (Sec. 4.3): VnCn pairs with scope and aspect
+- **Affixual adjuncts** (Sec. 4.1): Single and multiple-affix forms
+- **Suppletive adjuncts** (Sec. 4.5): CAR, QUO, NAM, PHR
 
 ### Referentials (Sec. 4.6)
 
-- **Single/Dual referentials** (Sec. 4.6.1): 11 referent categories (1m, 2m, 2p, ma, pa, mi, pi, Mx, Rdp, Obv, PVS) x 3 effects (NEU, BEN, DET) = 33 C1 forms, with case marking
-- **Combination referentials** (Sec. 4.6.2): Specification (x/xt/xp/xx) + VxCs affixes + case stacking
-- **Biconsonantal referential forms**: th/ph/kh (Rdp), ll/rr/řř (Obv), mm/nn/ňň (PVS)
-- **Referential cluster decomposition**: Greedy left-to-right matching of referent consonant clusters
-- **Referent category affixes** (Sec. 4.6): Agglomerative (-ļ-/-tļ-), Nomic (-ç-/-x-), Abstract (-w/-y) prefix/suffix detection on C1 clusters
-- **Specialized Personal-Reference Roots** (Sec. 4.6.4): ae/ea Vv markers for referential-as-formative
-
-### Special Affix Types
-
-- **Case-accessor affixes** (Sec. 3.9.2): Type-1 (sw/sy), Type-2 (zw/zy), Type-3 (čw/čy) with case vowel encoding
-- **Inverse case-accessor affixes**: Type-1 (šw/šy), Type-2 (žw/žy), Type-3 (jw/jy)
-- **Case-stacking affixes**: lw/ly consonants
-- **Ca-stacking**: Vx = üö triggers Ca-complex interpretation of Cs
-- **Y-series glottalization**: Automatic vowel glottalization for y-series case affixes
-
-### Numbers (Sec. 5 / Ch. 13)
-
-- Centesimal (base-100) number system with digit roots 0-10
-- TNX affix (-rs-) for numbers 11-99
-- Power roots for 100^n (gz, pc, kẓ, čg)
-- Number formative construction with stem/version variants
-- Month affixes (1-12) and day-of-week affixes (1-7)
+- 11 referent categories x 3 effects, combination referentials, biconsonantal forms
+- Referent category affixes (Agglomerative, Nomic, Abstract)
+- Specialized personal-reference roots
 
 ### Other Features
 
-- **Lexicon**: 4,720 roots and 527 affixes loaded from JSON, with keyword search and ranking
-- **Allomorph engine**: Pre-generates all 3,840 Ca complex forms with 9 allomorphic substitution rules, stored as bidirectional lookup maps
-- **Composition engine**: Builds formatives from grammatical specifications, with automatic slot filling and stress application
-- **Grammar search**: Keyword search across all grammatical categories with ranked results
-- **Phonotactic validation**: Consonant cluster length limits, invalid cluster detection
+- **Numbers** (Ch. 13): Centesimal system, TNX affix for 11-99, power roots
+- **Lexicon**: 4,720 roots and 527 affixes with keyword search and ranking
+- **Allomorph engine**: 3,840 Ca forms with 9 substitution rules
+- **Composition engine**: Formative construction from grammatical specifications
+- **Phonotactic validation**: Consonant cluster and vowel sequence constraints
 
-### Partial / In Progress
+### Partial
 
 - **Morpho-phonemic script** (Ch. 12): Type definitions for Primary/Secondary/Tertiary/Quaternary characters; SVG rendering skeleton
 
@@ -120,7 +92,7 @@ Requires [Nix](https://nixos.org/) for reproducible builds:
 nix-shell                # Enter dev shell with GHC + cabal
 cabal update             # Fetch package index (first time only)
 cabal build              # Build library + executable
-cabal test               # Run test suite (358 tests)
+cabal test               # Run test suite (359 tests)
 cabal run ithkuil-gloss  # Launch interactive glosser
 ```
 
@@ -128,7 +100,7 @@ cabal run ithkuil-gloss  # Launch interactive glosser
 
 ```
 > Malëuţřait             # Gloss a word
-> wambalásk              # Parse any V4 formative
+> wambalásk              # Parse any formative
 > :root -m-              # Look up a root
 > :affix -ţř-            # Look up an affix
 > :search clown          # Search roots by keyword
@@ -138,7 +110,7 @@ cabal run ithkuil-gloss  # Launch interactive glosser
 
 ## References
 
-- **Morphology v1.3.1** (2023-02-11): The primary reference document, included as `reference/grammar/morphology_v1.3.1.pdf`
+- **Morphology v1.3.1** (2023-02-11): The primary reference document
 - **Official website**: [ithkuil.net](http://ithkuil.net)
 - **Community archive**: [ithkuil.place](https://ithkuil.place)
 

@@ -5,15 +5,11 @@
 module Ithkuil.Lexicon
   ( RootEntry(..)
   , AffixEntry(..)
-  , V1RootEntry(..)
   , loadRoots
   , loadAffixes
-  , loadV1Roots
   , lookupRoot
   , lookupAffix
-  , lookupV1Root
   , rootsFromJSON
-  , v1RootsFromJSON
   ) where
 
 import Data.Map.Strict (Map)
@@ -86,41 +82,3 @@ lookupRoot = Map.lookup
 lookupAffix :: Text -> Map Text AffixEntry -> Maybe AffixEntry
 lookupAffix = Map.lookup
 
-
---------------------------------------------------------------------------------
--- V1 Biliteral Roots
---------------------------------------------------------------------------------
-
--- | V1 root entry (biliteral roots)
-data V1RootEntry = V1RootEntry
-  { v1C1 :: Text      -- First consonant
-  , v1C2 :: Text      -- Second consonant
-  , v1Stem0 :: Text   -- Stem 0
-  , v1Stem1 :: Text   -- Stem 1
-  , v1Stem2 :: Text   -- Stem 2
-  , v1Stem3 :: Text   -- Stem 3
-  } deriving (Show, Eq, Generic)
-
-instance FromJSON V1RootEntry where
-  parseJSON = withObject "V1RootEntry" $ \v -> V1RootEntry
-    <$> v .: "c1"
-    <*> v .: "c2"
-    <*> v .: "stem0"
-    <*> v .: "stem1"
-    <*> v .: "stem2"
-    <*> v .: "stem3"
-
--- | Parse V1 roots from JSON bytestring
--- Key is "c1-c2" for biliteral lookup
-v1RootsFromJSON :: BL.ByteString -> Either String (Map Text V1RootEntry)
-v1RootsFromJSON bs = case eitherDecode bs of
-  Left err -> Left err
-  Right entries -> Right $ Map.fromList [(v1C1 e <> "-" <> v1C2 e, e) | e <- entries]
-
--- | Load V1 roots from file path
-loadV1Roots :: FilePath -> IO (Either String (Map Text V1RootEntry))
-loadV1Roots path = v1RootsFromJSON <$> BL.readFile path
-
--- | Lookup a V1 biliteral root by "c1-c2" key
-lookupV1Root :: Text -> Text -> Map Text V1RootEntry -> Maybe V1RootEntry
-lookupV1Root c1 c2 = Map.lookup (c1 <> "-" <> c2)

@@ -17,9 +17,9 @@ Run `cabal update` on first build to fetch the Hackage index. `-Wall` is enabled
 
 ## What This Project Is
 
-A Haskell implementation of the Ithkuil constructed language grammar across all four versions (V1 2004, V2 2007, V3 2011, V4 2023). The primary focus is V4 ("Malëuţřait"), with partial implementations of earlier versions. The system parses formatives (words) into their morphological slots, looks up roots in a JSON lexicon, and renders glosses.
+A Haskell implementation of the Ithkuil V4 ("Malëuţřait") constructed language grammar (v1.3.1, 2023). The system parses formatives (words) into their morphological slots, looks up roots in a JSON lexicon, and renders glosses.
 
-The canonical test word for each version is its own name for the language: V1 "Iţkuîl", V2 "ilákš", V3 "Elartkha", V4 "Malëuţřait".
+The canonical test word is the language's name for itself: "Malëuţřait".
 
 ## Architecture
 
@@ -35,12 +35,7 @@ The canonical test word for each version is its own name for the language: V1 "I
 - `Lexicon.hs` - Loads roots and affixes from `data/roots.json` (4717 entries) and `data/affixes.json`
 - `Script.hs` - Morpho-phonemic writing system (Primary/Secondary/Tertiary/Quaternary characters)
 
-**Supplementary V4 modules**: `Concatenation.hs` (Type 1/2 compound formatives), `Adjuncts.hs` (70+ bias markers, registers), `Numbers.hs` (centesimal/base-100 system), `Referentials.hs` (anaphoric references)
-
-**Version-specific modules** (`V1/`, `V2/`, `V3/` subdirs, each with `Grammar.hs` + `Parse.hs`):
-- V1: Consonant grades (8 mutations), biliteral roots, primary/secondary mode
-- V2: Tonal vowel system (High/Low/Rising/Falling/Neutral)
-- V3: Designation (Formal/Informal), Pattern (P1-P3), Sanction (9 evidentiality values)
+**Supplementary modules**: `Concatenation.hs` (Type 1/2 compound formatives), `Adjuncts.hs` (70+ bias markers, registers), `Numbers.hs` (centesimal/base-100 system), `Referentials.hs` (anaphoric references)
 
 ## Key Conventions
 
@@ -51,12 +46,11 @@ The canonical test word for each version is its own name for the language: V1 "I
 - `splitConjuncts :: Text -> [Text]` is the key parsing primitive that segments words into alternating V/C chunks
 - Ca complex is built compositionally: Ca1(config) + Ca2(extension) + Ca3(affiliation) + Ca4(perspective+essence), then allomorphic substitutions applied
 - Series 1 Vr skips form 4 (STA/OBJ = form 5); Series 2-4 skip form 5 (STA/OBJ = form 4)
-- Reference implementations: `reference/IthkuilGloss/` (Kotlin) and `reference/mamkait/` (Haskell) (gitignored, local only)
+- Reference implementations in `reference/` (gitignored): `IthkuilGloss/` (Kotlin), `mamkait/` (Haskell)
 
 ## Data Files
 
-- `data/roots.json` / `data/affixes.json` - V4 lexicon (JSON, loaded via aeson)
-- `data/roots_v3.json` / `data/roots_v1.json` - Minimal historical lexicons
+- `data/roots.json` / `data/affixes.json` - Lexicon (JSON, loaded via aeson)
 - `data/convert_lexicon.py` - Converter script for lexicon formats
 
 ## Grammar Reference
