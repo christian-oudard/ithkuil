@@ -531,7 +531,7 @@ main = hspec $ do
     it "parses 'ihnú' as RCP-COU with Vh scope" $ do
       case parseWord "ihnú" of
         PModular [VnCnValence RCP (MoodVal COU)] fv _ -> do
-          fv `shouldBe` "{under adj.}"
+          fv `shouldBe` "{scope:formative}"
         pw -> expectationFailure $ "Expected PModular RCP-COU, got: " ++ show pw
 
     it "parses 'aha' as MNO-FAC + implicit VnCn (penultimate stress)" $ do
@@ -543,7 +543,7 @@ main = hspec $ do
     it "parses 'ahwá' as RTR-SUB with Vh scope (ultimate stress)" $ do
       case parseWord "ahwá" of
         PModular [VnCnAspect RTR (MoodVal SUB)] fv _ ->
-          fv `shouldBe` "{form.}"
+          fv `shouldBe` "{scope:Case+Mood+IVL}"
         pw -> expectationFailure $ "Expected PModular RTR-SUB, got: " ++ show pw
 
     it "parses aspect-only modular 'a' (single vowel)" $ do
@@ -1139,7 +1139,7 @@ main = hspec $ do
 
     it "glosses modular ihnú correctly" $ do
       let gloss = glossWord mempty mempty (parseWord "ihnú")
-      gloss `shouldBe` "RCP.COU-{under adj.}"
+      gloss `shouldBe` "RCP.COU-{scope:formative}"
 
     it "glosses register ha correctly" $ do
       let gloss = glossWord mempty mempty (parseWord "ha")
@@ -1666,6 +1666,13 @@ main = hspec $ do
       let g = glossWord mempty mempty (parseWord "ajlaloxa")
       -- Without affix lexicon, falls back to "x"
       T.isInfixOf "x/7" g `shouldBe` True
+
+    it "glosses referential shortcut affix (Type-3 with ref C1)" $ do
+      -- Type-3 Vx (series 3) with Cs = "l" (1m/NEU) should gloss as referential
+      let g = glossOneAffix mempty ("io", "l")  -- io = series 3, form 3 (Type-3, degree 3)
+      -- "l" is 1m/NEU referential C1, so this is a referential shortcut
+      -- series 3 Vx maps to case vowel for the referent
+      T.isInfixOf "1m" g `shouldBe` True
 
     it "glosses concatenated formatives" $ do
       let g = glossWord mempty mempty (parseWord "antrala-agala")

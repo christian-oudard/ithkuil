@@ -596,11 +596,12 @@ glossVz vz = case normalizeAccents vz of
 -- | Gloss a Vh scope marker (final vowel of modular adjunct with VnCn pairs)
 glossVh :: Text -> Text
 glossVh v = case normalizeAccents v of
-  "a" -> "{form.}"
-  "e" -> "{mood}"
-  "i" -> "{under adj.}"
-  "u" -> "{under adj.}"
-  "o" -> "{over adj.}"
+  "a" -> "{scope:Case+Mood+IVL}"
+  "e" -> "{scope:Case+Mood}"
+  "i" -> "{scope:formative}"
+  "u" -> "{scope:formative}"
+  "o" -> "{scope:form.+adj.}"
+  "ö" -> "{scope:form.+adj.+mod.}"
   _   -> "?" <> v
 
 -- | Parse a single Vn+Cn pair into a SlotVIII value
@@ -1026,12 +1027,34 @@ glossOneAffix affixes (vx, cs)
     in caseAffixKind cs <> ":" <> caseName
   | otherwise =
     let (degree, atype) = classifyDegreeType vx
-        abbr = case lookupAffix cs affixes of
-          Just entry -> affixAbbrev entry
-          Nothing -> cs
-        typeSuffix = case atype of
-          1 -> "₁"; 2 -> "₂"; 3 -> "₃"; _ -> ""
-    in abbr <> "/" <> T.pack (show degree) <> typeSuffix
+    in case lookupAffix cs affixes of
+      Just entry ->
+        let typeSuffix = case atype of
+              1 -> "₁"; 2 -> "₂"; 3 -> "₃"; _ -> ""
+        in affixAbbrev entry <> "/" <> T.pack (show degree) <> typeSuffix
+      Nothing
+        -- Referential shortcut: Type-3 affix with referential C1 (Sec 4.6.5)
+        | atype == 3, Just (PersonalRef ref eff) <- lookupRefC1 cs ->
+            let refLabel = referentAbbrev ref
+                effLabel = case eff of
+                  NEU -> ""; BEN -> ".BEN"; DET -> ".DET"
+                caseName = case parseCase (normalizeAccents vx) of
+                  Just c -> T.pack (showCase c)
+                  Nothing -> "?" <> vx
+            in refLabel <> effLabel <> ":" <> caseName
+        -- Column-4 vowel with referential C1 (transrelative case shortcut)
+        | atype == 4, Just (PersonalRef ref eff) <- lookupRefC1 cs ->
+            let refLabel = referentAbbrev ref
+                effLabel = case eff of
+                  NEU -> ""; BEN -> ".BEN"; DET -> ".DET"
+                caseName = case parseCase (normalizeAccents vx) of
+                  Just c -> T.pack (showCase c)
+                  Nothing -> "?" <> vx
+            in refLabel <> effLabel <> ":" <> caseName
+        | otherwise ->
+            let typeSuffix = case atype of
+                  1 -> "₁"; 2 -> "₂"; 3 -> "₃"; _ -> ""
+            in cs <> "/" <> T.pack (show degree) <> typeSuffix
 
 -- | Determine affix degree (1-9, 0) and type (1-3) from Vx vowel
 -- Returns (degree, type) where type is the series number
