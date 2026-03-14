@@ -31,6 +31,7 @@ import qualified Data.Text as T
 import Data.Maybe (listToMaybe, isJust)
 import Ithkuil.Phonology
 import Ithkuil.Grammar
+import Ithkuil.Allomorph (parseCaSlot)
 
 -- | Parse Vv vowel to Slot II (Stem + Version)
 -- Uses vowelFormLookup to resolve series/form (including Series 3 alternates)
@@ -732,7 +733,11 @@ trySlotV parts = go parts []
     go (c:rest) acc
       | isConsonantCluster c && isGeminateCa c =
           -- Found geminated Ca. acc contains (cs,vx) pairs collected so far.
-          Just (reverse acc, degeminateCa c : rest)
+          -- But if no Slot V affixes collected yet and the form is a valid Ca
+          -- on its own, prefer non-geminated reading (e.g. "sstl" is a natural Ca)
+          if null acc && isJust (parseCaSlot c)
+          then Nothing  -- not a geminate, just a natural Ca with repeated consonants
+          else Just (reverse acc, degeminateCa c : rest)
       | isConsonantCluster c = case rest of
           (v:rest')
             | isVowelCluster v -> go rest' ((c, v) : acc)
@@ -1031,11 +1036,17 @@ parseCa ca = case lookup ca caLookupTable of
   Nothing -> case tryCompositionalParse ca of
     Just pc -> Just pc
     Nothing -> let desub = desubstituteCa ca
-               in if desub /= ca
-                  then case lookup desub caLookupTable of
-                    Just pc -> Just pc
-                    Nothing -> tryCompositionalParse desub
-                  else Nothing
+               in case if desub /= ca
+                    then case lookup desub caLookupTable of
+                      Just pc -> Just pc
+                      Nothing -> tryCompositionalParse desub
+                    else Nothing
+                  of Just pc -> Just pc
+                     -- Fall back to allomorph reverse map (covers all 3840 Ca forms)
+                     Nothing -> case parseCaSlot ca of
+                       Just (cfg, aff, persp, ext, ess) ->
+                         Just (ParsedCa cfg aff persp ext ess)
+                       Nothing -> Nothing
 
 -- | Try to parse Ca by decomposing into components left-to-right:
 -- Affiliation + Configuration + Extension + Perspective/Essence

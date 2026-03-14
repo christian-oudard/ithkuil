@@ -2071,3 +2071,9 @@ main = hspec $ do
       parseCaSlot "sl" `shouldBe` Just (DPX, CSL, M_, DEL, NRM)
       parseCaSlot "tl" `shouldBe` Just (MSS, CSL, M_, DEL, NRM)
       parseCaSlot "tr" `shouldBe` Just (MSS, CSL, G_, DEL, NRM)
+      -- Ca with natural duplicate consonants (not gemination)
+      parseCaSlot "sstl" `shouldBe` Just (DPX, ASO, M_, PRX, NRM)
+      parseCa "sstl" `shouldBe` Just (ParsedCa DPX ASO M_ PRX NRM)
+      -- Natural duplicates should NOT trigger geminate detection in formative context
+      isGeminateCa "sstl" `shouldBe` True  -- raw detection still sees duplication
+      -- But trySlotV should prefer non-geminated when form is valid Ca
