@@ -15,7 +15,7 @@ import qualified Data.Text.IO as TIO
 import qualified Data.Map.Strict as Map
 import Ithkuil.Grammar
 import Ithkuil.Parse (ParsedFormative(..), ParsedCa(..), parseCase, normalizeAccents)
-import Ithkuil.Referentials (PersonalRef(..), Referent(..), ReferentEffect(..), referentLabel)
+import Ithkuil.Referentials (PersonalRef(..), Referent(..), ReferentEffect(..), referentLabel, categoryLabel)
 import Ithkuil.WordType
 import Ithkuil.Lexicon
 import Ithkuil.Compose (lookupGrammar, searchGrammar, lookupForm, GrammarEntry(..), searchRootsRanked, searchAffixes, dumpGrammarTable, composeFormative, composeReferential, applyStress)
@@ -1306,7 +1306,10 @@ glossOneWord roots affixes rawWord = do
       mapM_ (\pf -> showFormativeDetail roots affixes pf) pfs
     PBias b -> TIO.putStrLn $ "    Bias: " <> T.pack (show b)
     PRegister r -> TIO.putStrLn $ "    Register: " <> T.pack (show r)
-    PReferential refs mc vc ext -> do
+    PReferential refs mc vc ext mCat -> do
+      case mCat of
+        Just cat -> TIO.putStrLn $ "    Category: " <> categoryLabel cat
+        Nothing -> return ()
       mapM_ (\ref -> showReferentialDetail ref mc vc) refs
       case ext of
         Just (wy, mc2, mRef2) -> do

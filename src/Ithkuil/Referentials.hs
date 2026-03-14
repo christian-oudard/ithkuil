@@ -5,10 +5,13 @@ module Ithkuil.Referentials
   ( Referent(..)
   , ReferentEffect(..)
   , PersonalRef(..)
+  , ReferentCategory(..)
   , refC1
   , refC1All
   , lookupRefC1
   , decomposeRefCluster
+  , decomposeRefWithCategory
+  , categoryLabel
   , biconsonantalRefs
   , renderRefCase
   , referentLabel
@@ -179,3 +182,54 @@ referentAbbrev Rmx  = "Mx"
 referentAbbrev Rrdp = "Rdp"
 referentAbbrev Robv = "Obv"
 referentAbbrev Rpvs = "PVS"
+
+--------------------------------------------------------------------------------
+-- Referent Categories: Agglomerative, Nomic, Abstract (per Sec. 4.6)
+--------------------------------------------------------------------------------
+
+-- | Category modifiers for referentials
+-- Added as prefix or suffix to C1 consonant cluster:
+--   Agglomerative: -ļ- / -tļ-  ("each/every")
+--   Nomic:         -ç- / -x-   ("one/someone/something")
+--   Abstract:      -w  / -y    ("everything about X")
+data ReferentCategory
+  = Agglomerative  -- ^ each/every referent individually
+  | Nomic          -- ^ indefinite ("someone", "something"); replaces old IPa/IPi
+  | Abstract       -- ^ "everything about X", "all that X is"
+  deriving (Show, Eq, Ord, Bounded, Enum)
+
+-- | Gloss label for a referent category
+categoryLabel :: ReferentCategory -> Text
+categoryLabel Agglomerative = "AGM"
+categoryLabel Nomic         = "NOM"
+categoryLabel Abstract      = "ABS"
+
+-- | Try to decompose a consonant cluster as referential C1 with optional category
+-- First tries normal decomposition; if that fails, tries stripping
+-- agglomerative/nomic/abstract prefixes and suffixes.
+decomposeRefWithCategory :: Text -> Maybe (Maybe ReferentCategory, [PersonalRef])
+decomposeRefWithCategory t =
+  case decomposeRefCluster t of
+    Just refs@(_:_) -> Just (Nothing, refs)
+    _ -> tryPrefixes t
+  where
+    tryPrefixes c
+      -- Prefixes (longest first)
+      | Just rest <- T.stripPrefix "tļ" c, ok rest = Just (Just Agglomerative, fromJ rest)
+      | Just rest <- T.stripPrefix "ç" c,  ok rest = Just (Just Nomic, fromJ rest)
+      | Just rest <- T.stripPrefix "x" c,  ok rest = Just (Just Nomic, fromJ rest)
+      | Just rest <- T.stripPrefix "w" c,  ok rest = Just (Just Abstract, fromJ rest)
+      | Just rest <- T.stripPrefix "y" c,  ok rest = Just (Just Abstract, fromJ rest)
+      | Just rest <- T.stripPrefix "ļ" c,  not (T.null rest), ok rest = Just (Just Agglomerative, fromJ rest)
+      | otherwise = trySuffixes c
+    trySuffixes c
+      -- Suffixes (longest first)
+      | Just rest <- T.stripSuffix "tļ" c, ok rest = Just (Just Agglomerative, fromJ rest)
+      | Just rest <- T.stripSuffix "ç" c,  ok rest = Just (Just Nomic, fromJ rest)
+      | Just rest <- T.stripSuffix "x" c,  ok rest = Just (Just Nomic, fromJ rest)
+      | Just rest <- T.stripSuffix "w" c,  ok rest = Just (Just Abstract, fromJ rest)
+      | Just rest <- T.stripSuffix "y" c,  ok rest = Just (Just Abstract, fromJ rest)
+      | Just rest <- T.stripSuffix "ļ" c,  not (T.null rest), ok rest = Just (Just Agglomerative, fromJ rest)
+      | otherwise = Nothing
+    ok r = case decomposeRefCluster r of { Just (_:_) -> True; _ -> False }
+    fromJ r = case decomposeRefCluster r of { Just rs -> rs; Nothing -> [] }

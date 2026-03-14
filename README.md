@@ -66,12 +66,11 @@ The tool provides:
 
 ### Adjuncts (Sec. 4)
 
-- **Bias adjuncts** (Sec. 4.7): All 62 bias markers with consonant forms, parsing, and human-readable glosses (e.g., DOL = "Ow! Ouch!", FSC = "Cool! Wow!", IRO = "Just great!")
+- **Bias adjuncts** (Sec. 4.7): All 61 bias markers with consonant forms, parsing, and human-readable glosses (e.g., DOL = "Ow! Ouch!", FSC = "Cool! Wow!", IRO = "Just great!")
 - **Register adjuncts** (Sec. 4.4): DSV, PNT, SPF, EXM, CGT initial forms (ha/he/hi/ho/hu) and final forms (hai/hei/hiu/hoi/hui), END final-only form (hüi)
 - **Modular adjuncts** (Sec. 4.3): VnCn pair parsing with scope prefix (w/y), final vowel as Aspect or Vh scope marker, stress-dependent interpretation
 - **Affixual adjuncts** (Sec. 4.1): Single-affix (V-C-V pattern) and multiple-affix (Cs-Vx-Cz-VxCs... pattern) with Cz/Vz scope markers
 - **Suppletive adjuncts** (Sec. 4.5): CAR (hl), QUO (hm), NAM (hn), PHR (hň) with case vowel parsing
-- **Mood/Case-Scope adjuncts**: Standalone hr + vowel adjuncts
 
 ### Referentials (Sec. 4.6)
 
@@ -79,6 +78,7 @@ The tool provides:
 - **Combination referentials** (Sec. 4.6.2): Specification (x/xt/xp/xx) + VxCs affixes + case stacking
 - **Biconsonantal referential forms**: th/ph/kh (Rdp), ll/rr/řř (Obv), mm/nn/ňň (PVS)
 - **Referential cluster decomposition**: Greedy left-to-right matching of referent consonant clusters
+- **Referent category affixes** (Sec. 4.6): Agglomerative (-ļ-/-tļ-), Nomic (-ç-/-x-), Abstract (-w/-y) prefix/suffix detection on C1 clusters
 - **Specialized Personal-Reference Roots** (Sec. 4.6.4): ae/ea Vv markers for referential-as-formative
 
 ### Special Affix Types
@@ -124,7 +124,7 @@ src/Ithkuil/
   Render.hs          Formative-to-text rendering
   Gloss.hs           Human-readable glossing at three precision levels
   WordType.hs        Word classification, parsing, and glossing pipeline
-  Adjuncts.hs        62 bias markers, registers, suppletive adjuncts
+  Adjuncts.hs        61 bias markers, registers, suppletive adjuncts
   Referentials.hs    11 referent categories x 3 effects, cluster decomposition
   Numbers.hs         Centesimal number system
   Concatenation.hs   Type-1/Type-2 compound formatives
@@ -137,7 +137,7 @@ src/Ithkuil/
   V3/                Version III parser (2011)
 
 app/Gloss.hs         Interactive glossing tool (CLI)
-test/Main.hs         346 tests covering all implemented features
+test/Main.hs         358 tests covering all implemented features
 data/
   roots.json         4,720 V4 root entries
   affixes.json       527 V4 affix entries
@@ -156,7 +156,7 @@ Requires [Nix](https://nixos.org/) for reproducible builds:
 nix-shell               # Enter dev shell with GHC + cabal
 cabal update             # Fetch package index (first time only)
 cabal build              # Build library + executable
-cabal test               # Run test suite (346 tests)
+cabal test               # Run test suite (358 tests)
 cabal run ithkuil-gloss  # Launch interactive glosser
 ```
 

@@ -35,7 +35,7 @@ import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, parseCa, ParsedFor
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
                            aspectVowels, phaseVowels, levelVowels, effectVowels)
 import Ithkuil.Adjuncts hiding (CarrierAdjunct)
-import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), refC1All, decomposeRefCluster, referentAbbrev, lookupRefC1)
+import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), ReferentCategory(..), refC1All, decomposeRefCluster, decomposeRefWithCategory, referentAbbrev, lookupRefC1, categoryLabel)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot, lookupAffix)
 
 --------------------------------------------------------------------------------
@@ -63,8 +63,8 @@ data ParsedWord
   | PBias Bias
   | PRegister Register
   | PModular [SlotVIII] Text Text  -- parsed VnCn pairs, final vowel gloss, raw text
-  | PReferential [PersonalRef] (Maybe Case) Text (Maybe (Text, Maybe Case, Maybe PersonalRef))
-    -- ^ referent(s) from C1 cluster, case, raw case vowel, optional (scope w/y, case2, ref2)
+  | PReferential [PersonalRef] (Maybe Case) Text (Maybe (Text, Maybe Case, Maybe PersonalRef)) (Maybe ReferentCategory)
+    -- ^ referent(s), case, raw case vowel, optional (scope w/y, case2, ref2), category
   | PAffixual Text Int Int Text     -- affix Cs, degree, type (1-3), optional scope vowel
   | PMultipleAffix (Text, Text) Text [(Text, Text)] (Maybe Text)
     -- ^ first affix (Vx,Cs), Cz scope, additional affixes (Vx,Cs), optional Vz scope
@@ -149,9 +149,10 @@ isRefC1 :: Text -> Bool
 isRefC1 c = c `elem` map snd refC1All || c == "ļ"
 
 -- | Check if a consonant cluster decomposes into valid referential consonants
+-- Also accepts clusters with agglomerative/nomic/abstract category prefixes/suffixes
 isRefCluster :: Text -> Bool
-isRefCluster c = isRefC1 c || case decomposeRefCluster c of
-  Just (_:_) -> True
+isRefCluster c = isRefC1 c || case decomposeRefWithCategory c of
+  Just (_, _:_) -> True
   _ -> False
 
 -- | Combination referentials: [ë] C1 Vc Spec [VxCs...] [Vc2]
@@ -349,6 +350,7 @@ parseRegisterLower _     = Nothing
 -- | Parse a referential word
 -- Simple: C1-Vc, Dual: C1-ë-C1-Vc, Extended: C1-Vc-w/y-Vc2
 -- C1 may be a consonant cluster decomposable into multiple referents
+-- Also detects agglomerative/nomic/abstract category prefixes/suffixes on C1
 parseReferentialWord :: Text -> ParsedWord
 parseReferentialWord word =
   let conjs = splitConjuncts word
@@ -358,17 +360,25 @@ parseReferentialWord word =
         ("ë":cs)  -> cs
         ("äi":cs) -> cs
         cs        -> cs
-      -- Consume C1 referential consonants, collecting refs
-      -- Supports cluster decomposition (e.g., "ţn" → [Rmi.BEN, R2p.NEU])
-      consumeRefs (c:cs)
+      -- Consume C1 referential consonants with category detection
+      -- First C1 cluster may have agglom/nomic/abstract prefix/suffix
+      consumeRefsWithCat (c:cs) = case decomposeRefWithCategory c of
+        Just (cat, refs') | not (null refs') -> case cs of
+            ("ë":c2:cs2) -> case consumeMore (c2:cs2) of
+              (moreRefs, rest') -> (cat, refs' ++ moreRefs, rest')
+            _ -> (cat, refs', cs)
+        _ -> (Nothing, [], c:cs)
+      consumeRefsWithCat [] = (Nothing, [], [])
+      -- Subsequent C1s use normal decomposition (no category)
+      consumeMore (c:cs)
         | Just refs' <- decomposeRefCluster c
         , not (null refs') = case cs of
-            ("ë":c2:cs2) -> case consumeRefs (c2:cs2) of
+            ("ë":c2:cs2) -> case consumeMore (c2:cs2) of
               (moreRefs, rest') -> (refs' ++ moreRefs, rest')
             _ -> (refs', cs)
         | otherwise = ([], c:cs)
-      consumeRefs [] = ([], [])
-      (refs, tail') = consumeRefs rest0
+      consumeMore [] = ([], [])
+      (mCat, refs, tail') = consumeRefsWithCat rest0
       nv = normalizeAccents
       -- Ultimate stress = RPV essence; encode as vc suffix
       essenceTag = case stress of { Ultimate -> "\\RPV"; _ -> "" }
@@ -379,14 +389,14 @@ parseReferentialWord word =
       merged = mergeGlottal tail'
   in case (refs, merged) of
     (_:_, [v]) ->
-      PReferential refs (parseCase (nv v)) (v <> essenceTag) Nothing
+      PReferential refs (parseCase (nv v)) (v <> essenceTag) Nothing mCat
     (_:_, [v, wy, v2]) | wy `elem` ["w", "y"] ->
-      PReferential refs (parseCase (nv v)) (v <> essenceTag) (Just (wy, parseCase (nv v2), Nothing))
+      PReferential refs (parseCase (nv v)) (v <> essenceTag) (Just (wy, parseCase (nv v2), Nothing)) mCat
     (_:_, [v, wy, v2, c2]) | wy `elem` ["w", "y"], isRefCluster c2 ->
       let ref2 = case decomposeRefCluster c2 of
             Just (r:_) -> Just r
             _ -> Nothing
-      in PReferential refs (parseCase (nv v)) (v <> essenceTag) (Just (wy, parseCase (nv v2), ref2))
+      in PReferential refs (parseCase (nv v)) (v <> essenceTag) (Just (wy, parseCase (nv v2), ref2)) mCat
     _ -> PUnparsed word
 
 -- | Parse an affixual adjunct word (Vx-Cs or Vx-Cs-Vs)
@@ -615,9 +625,10 @@ glossWord roots affixes pw = case pw of
         glossVnCnDot (VnCnAspect asp ms) = T.pack (show asp) <> "." <> glossMoodOrScope ms
     in T.intercalate "-" (map glossVnCnDot pairs)
        <> (if T.null fv then "" else "-" <> fv)
-  PReferential refs mc vc ext ->
+  PReferential refs mc vc ext mCat ->
     let essenceSuffix = if "\\RPV" `T.isSuffixOf` vc then "\\RPV" else ""
-    in glossReferentials refs mc vc
+        catPrefix = maybe "" (\cat -> categoryLabel cat <> ":") mCat
+    in catPrefix <> glossReferentials refs mc vc
        <> maybe "" glossRefExt ext
        <> essenceSuffix
   PAffixual cs deg atype scope ->
@@ -849,8 +860,9 @@ glossWordCompact roots affixes pw = case pw of
   PBias b -> let desc = biasGloss b
              in if T.null desc then T.pack (show b) else "\x201C" <> desc <> "\x201D"
   PRegister r -> T.pack (show r)
-  PReferential refs mc _vc ext -> glossReferentials refs mc ""
-    <> maybe "" glossRefExt ext
+  PReferential refs mc _vc ext mCat -> let catPrefix = maybe "" (\cat -> categoryLabel cat <> ":") mCat
+    in catPrefix <> glossReferentials refs mc ""
+       <> maybe "" glossRefExt ext
   PModular pairs fv _raw -> T.intercalate "+" (map glossSlotVIII pairs)
                           <> (if T.null fv then "" else "-" <> fv)
   PAffixual cs deg atype _ -> cs <> "/" <> T.pack (show deg)
@@ -1176,7 +1188,7 @@ isCarrierParsed :: ParsedWord -> Bool
 isCarrierParsed (PCarrier _ _) = True
 isCarrierParsed (PFormative pf) = pfRoot pf == Root "s"
 isCarrierParsed (PConcatenated pfs) = any (\pf -> pfRoot pf == Root "s") pfs
-isCarrierParsed (PReferential _ _ _ _) = False  -- referential carriers use hl/hn/hň which parse as PCarrier
+isCarrierParsed (PReferential _ _ _ _ _) = False  -- referential carriers use hl/hn/hň which parse as PCarrier
 isCarrierParsed _ = False
 
 -- | Check if a word is a carrier/register terminator (hüi = END register)

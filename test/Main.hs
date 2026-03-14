@@ -467,28 +467,28 @@ main = hspec $ do
     it "parses simple referential 'la' as 1m-THM" $ do
       let pw = parseWord "la"
       case pw of
-        PReferential [ref] mc _ _ -> do
+        PReferential [ref] mc _ _ _ -> do
           ref `shouldBe` PersonalRef R1m NEU
           mc `shouldBe` Just (Transrelative THM)
         _ -> expectationFailure $ "Expected PReferential, got: " ++ show pw
 
     it "parses referential with glottal-stop case vowel" $ do
       case parseWord "si'o" of
-        PReferential [ref] mc _ _ -> do
+        PReferential [ref] mc _ _ _ -> do
           ref `shouldBe` PersonalRef R2m NEU
           mc `shouldBe` Just (SpatioTemporal1 ALL)
         pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
 
     it "parses 'se' as 2m-ABS" $ do
       case parseWord "se" of
-        PReferential [ref] mc _ _ -> do
+        PReferential [ref] mc _ _ _ -> do
           ref `shouldBe` PersonalRef R2m NEU
           mc `shouldBe` Just (Transrelative ABS)
         pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
 
     it "parses 'ro' as 1m/BEN-ERG" $ do
       case parseWord "ro" of
-        PReferential [ref] mc _ _ -> do
+        PReferential [ref] mc _ _ _ -> do
           ref `shouldBe` PersonalRef R1m BEN
           mc `shouldBe` Just (Transrelative ERG)
         pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
@@ -496,7 +496,7 @@ main = hspec $ do
     it "parses extended referential 'layá' as 1m-THM" $ do
       classifyWord "layá" `shouldBe` WReferential
       case parseWord "layá" of
-        PReferential [ref] mc _ _ -> do
+        PReferential [ref] mc _ _ _ -> do
           ref `shouldBe` PersonalRef R1m NEU
           mc `shouldBe` Just (Transrelative THM)
         pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
@@ -504,7 +504,7 @@ main = hspec $ do
     it "parses referential with second referent 'miyüs'" $ do
       classifyWord "miyüs" `shouldBe` WReferential
       case parseWord "miyüs" of
-        PReferential [ref] mc _ ext -> do
+        PReferential [ref] mc _ ext _ -> do
           ref `shouldBe` PersonalRef Rma NEU
           mc `shouldBe` Just (Transrelative AFF)
           case ext of
@@ -517,9 +517,65 @@ main = hspec $ do
     it "parses cluster referential 'ţna' as mi.BEN+2p-THM" $ do
       classifyWord "ţna" `shouldBe` WReferential
       case parseWord "ţna" of
-        PReferential refs mc _ _ -> do
+        PReferential refs mc _ _ _ -> do
           refs `shouldBe` [PersonalRef Rmi BEN, PersonalRef R2p NEU]
           mc `shouldBe` Just (Transrelative THM)
+        pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
+
+    it "parses nomic referential 'çma' as NOM:ma-THM (= someone)" $ do
+      classifyWord "çma" `shouldBe` WReferential
+      case parseWord "çma" of
+        PReferential [ref] mc _ _ mCat -> do
+          ref `shouldBe` PersonalRef Rma NEU
+          mc `shouldBe` Just (Transrelative THM)
+          mCat `shouldBe` Just Nomic
+        pw -> expectationFailure $ "Expected nomic PReferential, got: " ++ show pw
+
+    it "parses abstract referential 'wma' as ABS:ma-THM (= all about him/her)" $ do
+      classifyWord "wma" `shouldBe` WReferential
+      case parseWord "wma" of
+        PReferential [ref] mc _ _ mCat -> do
+          ref `shouldBe` PersonalRef Rma NEU
+          mc `shouldBe` Just (Transrelative THM)
+          mCat `shouldBe` Just Abstract
+        pw -> expectationFailure $ "Expected abstract PReferential, got: " ++ show pw
+
+    it "parses agglomerative referential with tļ suffix 'mtļa' as AGM:ma-THM" $ do
+      classifyWord "mtļa" `shouldBe` WReferential
+      case parseWord "mtļa" of
+        PReferential [ref] mc _ _ mCat -> do
+          ref `shouldBe` PersonalRef Rma NEU
+          mc `shouldBe` Just (Transrelative THM)
+          mCat `shouldBe` Just Agglomerative
+        pw -> expectationFailure $ "Expected agglom PReferential, got: " ++ show pw
+
+    it "parses nomic suffix 'mx' as NOM:ma (= someone)" $ do
+      classifyWord "mxa" `shouldBe` WReferential
+      case parseWord "mxa" of
+        PReferential [ref] _ _ _ mCat -> do
+          ref `shouldBe` PersonalRef Rma NEU
+          mCat `shouldBe` Just Nomic
+        pw -> expectationFailure $ "Expected nomic suffix PReferential, got: " ++ show pw
+
+    it "parses abstract suffix 'my' as ABS" $ do
+      classifyWord "mya" `shouldBe` WReferential
+      case parseWord "mya" of
+        PReferential [ref] _ _ _ mCat -> do
+          ref `shouldBe` PersonalRef Rma NEU
+          mCat `shouldBe` Just Abstract
+        pw -> expectationFailure $ "Expected abstract suffix PReferential, got: " ++ show pw
+
+    it "parses nomic + mi as 'something' (çza = NOM:mi-THM)" $ do
+      case parseWord "çza" of
+        PReferential [ref] mc _ _ mCat -> do
+          ref `shouldBe` PersonalRef Rmi NEU
+          mc `shouldBe` Just (Transrelative THM)
+          mCat `shouldBe` Just Nomic
+        pw -> expectationFailure $ "Expected nomic mi PReferential, got: " ++ show pw
+
+    it "normal referential has no category" $ do
+      case parseWord "la" of
+        PReferential _ _ _ _ mCat -> mCat `shouldBe` Nothing
         pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
 
   describe "Modular Adjunct Parsing" $ do
@@ -1102,7 +1158,7 @@ main = hspec $ do
         pw -> expectationFailure $ "äst: expected PAffixual, got: " ++ show pw
       -- Referential (extended)
       case parseWord "miyüs" of
-        PReferential _ _ _ _ -> return ()
+        PReferential _ _ _ _ _ -> return ()
         pw -> expectationFailure $ "miyüs: expected PReferential, got: " ++ show pw
       -- Register
       case parseWord "ha" of
@@ -1942,7 +1998,7 @@ main = hspec $ do
           w = composeReferential ref (Transrelative ERG)
       w `shouldBe` "lo"
       case parseWord w of
-        PReferential _ _ _ _ -> return ()  -- parsed as referential
+        PReferential _ _ _ _ _ -> return ()  -- parsed as referential
         other -> expectationFailure $ "Expected PReferential, got: " ++ show other
 
     it "uses shortcut form for default Ca" $ do
@@ -2618,13 +2674,13 @@ main = hspec $ do
     it "parses referential examples from Sec 4.6" $ do
       -- la = 1m/NEU-THM
       case parseWord "la" of
-        PReferential refs mc _ _ -> do
+        PReferential refs mc _ _ _ -> do
           refs `shouldSatisfy` (not . null)
           mc `shouldBe` Just (Transrelative THM)
         pw -> expectationFailure $ "la: " ++ show pw
       -- sa = 2m/NEU-THM
       case parseWord "sa" of
-        PReferential refs mc _ _ -> do
+        PReferential refs mc _ _ _ -> do
           refs `shouldSatisfy` (not . null)
           mc `shouldBe` Just (Transrelative THM)
         pw -> expectationFailure $ "sa: " ++ show pw
