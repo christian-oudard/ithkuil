@@ -26,38 +26,38 @@ import Ithkuil.Grammar
 -- Component Tables
 --------------------------------------------------------------------------------
 
--- | Ca1: Configuration consonant
+-- | Ca1: Configuration consonant (from grammar ch03 table)
 ca1 :: Configuration -> Text
 ca1 UNI = ""
 ca1 DPX = "s"
-ca1 DSS = "rt"
-ca1 DSC = "rk"
-ca1 DSF = "rp"
-ca1 DDS = "rn"
-ca1 DDC = "rň"
-ca1 DDF = "rm"
-ca1 DFS = "řt"
-ca1 DFC = "řk"
-ca1 DFF = "řp"
+ca1 DSS = "c"
+ca1 DSC = "ks"
+ca1 DSF = "ps"
+ca1 DDS = "ţs"
+ca1 DDC = "fs"
+ca1 DDF = "š"
+ca1 DFS = "č"
+ca1 DFC = "kš"
+ca1 DFF = "pš"
 ca1 MSS = "t"
 ca1 MSC = "k"
 ca1 MSF = "p"
-ca1 MDS = "n"
-ca1 MDC = "ň"
-ca1 MDF = "m"
-ca1 MFS = "lt"
-ca1 MFC = "lk"
-ca1 MFF = "lp"
+ca1 MDS = "ţ"
+ca1 MDC = "f"
+ca1 MDF = "ç"
+ca1 MFS = "z"
+ca1 MFC = "ž"
+ca1 MFF = "ẓ"
 
--- | Ca2: Extension consonant (non-UNIPLEX form)
--- For UNIPLEX Configuration, see constructCaRaw which uses ca2Standalone
+-- | Ca2: Extension consonant (non-UNIPLEX, voiceless form)
+-- Placed between Configuration and Perspective in the Ca complex
 ca2 :: Extension -> Text
 ca2 DEL = ""
-ca2 PRX = "s"
-ca2 ICP = "š"
-ca2 ATV = "f"
-ca2 GRA = "ţ"
-ca2 DPL = "ç"
+ca2 PRX = "t"
+ca2 ICP = "k"
+ca2 ATV = "p"
+ca2 GRA = "g"
+ca2 DPL = "b"
 
 -- | Ca2 standalone: Extension consonant for UNIPLEX Configuration
 -- These are voiced forms used when Config is UNI (no Ca1 consonant)
@@ -69,15 +69,15 @@ ca2Standalone ATV = "b"
 ca2Standalone GRA = "gz"
 ca2Standalone DPL = "bz"
 
--- | Ca3: Affiliation consonant
--- (standalone form, after-consonant form)
--- Standalone = when Ca1 and Ca2 are both empty
--- After-consonant = when Ca1 or Ca2 is present
-ca3 :: Affiliation -> (Text, Text)
-ca3 CSL = ("", "")
-ca3 ASO = ("d", "t")
-ca3 COA = ("g", "k")
-ca3 VAR = ("b", "p")
+-- | Ca3: Affiliation prefix
+-- (standalone form, before-consonant form)
+-- Standalone = UNI/DEL with no other components present
+-- Before-consonant = prefix before Configuration consonant
+ca3 :: Affiliation -> Text
+ca3 CSL = ""
+ca3 ASO = "l"
+ca3 COA = "r"
+ca3 VAR = "ř"
 
 -- | Ca3 standalone: Affiliation when used alone (UNI/DEL/M/NRM + affiliation)
 ca3Standalone :: Affiliation -> Text
@@ -94,51 +94,55 @@ ca4 :: Perspective -> Essence -> (Text, Text)
 ca4 M_ NRM = ("l", "")
 ca4 G_ NRM = ("r", "r")
 ca4 N_ NRM = ("v", "w")
-ca4 A_ NRM = ("z", "y")
-ca4 M_ RPV = ("ř", "ř")
-ca4 G_ RPV = ("tļ", "l")
-ca4 N_ RPV = ("lm", "m")
-ca4 A_ RPV = ("ln", "n")
+ca4 A_ NRM = ("j", "y")
+ca4 M_ RPV = ("tļ", "l")
+ca4 G_ RPV = ("ř", "ř")
+ca4 N_ RPV = ("m", "m")
+ca4 A_ RPV = ("n", "n")
 
 --------------------------------------------------------------------------------
 -- Ca Construction
 --------------------------------------------------------------------------------
 
 -- | Construct raw Ca from components (before allomorphic substitutions)
--- Three modes:
--- 1. UNIPLEX (Ca1="") with Extension → use ca2Standalone for voiced forms
--- 2. UNIPLEX with Affiliation only → use ca3Standalone
--- 3. Non-UNIPLEX (Ca1≠"") → use compositional ca2/ca3/ca4 tables
+-- Grammar order: Affiliation + Configuration + Extension + Perspective/Essence
+-- Special cases:
+-- 1. UNIPLEX with Extension → use ca2Standalone (voiced forms: d, g, b, gz, bz)
+-- 2. UNIPLEX with Affiliation only → use ca3Standalone (nļ, rļ, ň)
+-- 3. Fully standalone (UNI/CSL/DEL/M_/NRM) → standalone perspective form
+-- 4. General: Aff-prefix + Config + Extension + Perspective suffix
 constructCaRaw :: SlotVI -> Text
 constructCaRaw (co, af, pe, ex, es)
-  -- UNIPLEX with Extension (voiced forms): d, g, b, gz, bz
+  -- UNIPLEX with Extension (voiced standalone forms)
   | co == UNI && ex /= DEL =
-      ca2Standalone ex <> ca4suffix pe es
-  -- UNIPLEX with only Affiliation (standalone forms): nļ, rļ, ň
+      ca2Standalone ex <> perspSuffix pe es
+  -- UNIPLEX with only Affiliation (standalone forms)
   | co == UNI && af /= CSL =
-      ca3Standalone af <> ca4suffix pe es
+      ca3Standalone af <> perspSuffix pe es
   -- Fully standalone (UNI/CSL/DEL) → perspective standalone form
   | co == UNI =
       fst (ca4 pe es)
-  -- Non-UNIPLEX: compositional
-  | otherwise = c1 <> c2 <> c3' <> c4''
+  -- General: Affiliation prefix + Configuration + Extension + Perspective
+  | otherwise = affPfx <> cfg <> ext <> persp''
   where
-    c1 = ca1 co
-    c2 = ca2 ex
-    c3' = snd (ca3 af)  -- always after-consonant when Ca1 is present
-    -- After Configuration, M_/NRM adds "l"; other perspectives use their form
-    c4c = case (pe, es) of
-      (M_, NRM) -> "l"
-      _         -> snd (ca4 pe es)
-    -- Special combination rules (from mamkait)
-    c4''
-      | hasŘPrefix c1 && c4c == "r" = "v"
-      | not (T.null c2) && not (T.null c3') && c4c == "m" = "h"
-      | not (T.null c2) && not (T.null c3') && c4c == "n" = "ç"
-      | otherwise = c4c
-    hasŘPrefix t = T.take 1 t == "ř"
-    -- Ca4 suffix for UNIPLEX with Extension/Affiliation
-    ca4suffix p e = snd (ca4 p e)
+    affPfx = ca3 af
+    cfg = ca1 co
+    ext = ca2 ex
+    -- Perspective + Essence (after-consonant form since config is present)
+    persp = snd (ca4 pe es)
+    -- Special combination rules from grammar section 3.5.1:
+    -- N_ RPV (m) → h when preceded by [C]t, [C]k, or [C]p
+    -- A_ RPV (n) → ç when preceded by [C]t, [C]k, or [C]p
+    persp''
+      | persp == "m" && endsWithStop = "h"
+      | persp == "n" && endsWithStop = "ç"
+      | otherwise = persp
+    preceding = affPfx <> cfg <> ext
+    endsWithStop = case T.unsnoc preceding of
+      Just (_, c) -> c `elem` ("tkp" :: [Char])
+      Nothing -> False
+    -- Perspective suffix for UNIPLEX with Extension/Affiliation
+    perspSuffix p e = snd (ca4 p e)
 
 -- | Construct Ca with allomorphic substitutions applied
 constructCa :: SlotVI -> Text
@@ -148,38 +152,11 @@ constructCa = applySubstitutions . constructCaRaw
 -- Allomorphic Substitutions
 --------------------------------------------------------------------------------
 
--- | All allomorphic substitution rules
--- Applied sequentially to the raw Ca consonant cluster
+-- | Allomorphic substitution rules for Ca consonant clusters
+-- From grammar ch03 section 3.6 table
 substitutions :: [(Text, Text)]
 substitutions =
-  [ ("ts", "c")
-  , ("tš", "č")
-  , ("tţ", "ḑ")
-  , ("np", "mv")
-  , ("ňk", "ňz")
-  -- nf → v only when not word-final (simplified: always apply in Ca)
-  , ("nf", "v")
-  , ("tf", "fs")
-  , ("kf", "fš")
-  , ("ňy", "ňž")
-  , ("çy", "ž")
-  , ("cy", "j")
-  , ("čy", "dž")
-  , ("nn", "nz")
-  , ("mm", "mz")
-  , ("ltt", "ld")
-  , ("lkk", "lg")
-  , ("lpp", "lb")
-  , ("rnm", "nž")
-  , ("rmn", "mž")
-  , ("rtt", "rd")
-  , ("rkk", "rg")
-  , ("rpp", "rb")
-  , ("rňm", "ňv")
-  , ("rňn", "nḑ")
-  , ("řtt", "řd")
-  , ("řkk", "řg")
-  , ("řpp", "řb")
+  [ ("pp", "mp")  -- MSF + ATV, or other pp clusters
   ]
 
 -- | Apply all substitution rules sequentially

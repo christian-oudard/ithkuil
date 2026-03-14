@@ -199,11 +199,28 @@ main = hspec $ do
     it "parses representative essence" $
       parseCa "tļ" `shouldBe` Just (ParsedCa UNI CSL M_ DEL RPV)
 
-    it "parses complex allomorphic Ca forms" $ do
-      parseCa "nš" `shouldBe` Just (ParsedCa UNI COA G_ DEL RPV)
-      parseCa "řktç" `shouldBe` Just (ParsedCa MSC VAR A_ PRX RPV)
-      parseCa "zḑ" `shouldBe` Just (ParsedCa MFS CSL A_ DPL RPV)
-      parseCa "nx" `shouldBe` Just (ParsedCa MSC CSL N_ GRA RPV)
+    it "parses complex Ca forms (constructed)" $ do
+      -- These use the grammar Ca system: Aff + Config + Ext + Persp
+      parseCa "rļř" `shouldBe` Just (ParsedCa UNI COA G_ DEL RPV)
+      parseCa "řkpl" `shouldBe` Just (ParsedCa MSC VAR M_ ATV RPV)
+      parseCa "kgm" `shouldBe` Just (ParsedCa MSC CSL N_ GRA RPV)
+
+    it "parses Ca with grammar-table consonants (ch03)" $ do
+      -- Config consonants alone (M_/NRM has no suffix)
+      parseCa "z" `shouldBe` Just (ParsedCa MFS CSL M_ DEL NRM)
+      parseCa "š" `shouldBe` Just (ParsedCa DDF CSL M_ DEL NRM)
+      parseCa "č" `shouldBe` Just (ParsedCa DFS CSL M_ DEL NRM)
+      -- Affiliation prefix + config consonant
+      parseCa "ls" `shouldBe` Just (ParsedCa DPX ASO M_ DEL NRM)
+      parseCa "rs" `shouldBe` Just (ParsedCa DPX COA M_ DEL NRM)
+      parseCa "lţ" `shouldBe` Just (ParsedCa MDS ASO M_ DEL NRM)
+      parseCa "rţ" `shouldBe` Just (ParsedCa MDS COA M_ DEL NRM)
+      parseCa "řţ" `shouldBe` Just (ParsedCa MDS VAR M_ DEL NRM)
+      -- Config + perspective suffix
+      parseCa "zr" `shouldBe` Just (ParsedCa MFS CSL G_ DEL NRM)
+      -- Config + extension
+      parseCa "st" `shouldBe` Just (ParsedCa DPX CSL M_ PRX NRM)
+      parseCa "sk" `shouldBe` Just (ParsedCa DPX CSL M_ ICP NRM)
 
   describe "Formative Parsing" $ do
     it "parses consonant-initial words" $ do
@@ -2074,10 +2091,15 @@ main = hspec $ do
       constructCa (UNI, CSL, M_, DEL, NRM) `shouldBe` "l"
 
     it "constructs Configuration + default perspective" $ do
-      constructCa (DPX, CSL, M_, DEL, NRM) `shouldBe` "sl"
-      constructCa (MSS, CSL, M_, DEL, NRM) `shouldBe` "tl"
-      constructCa (MSC, CSL, M_, DEL, NRM) `shouldBe` "kl"
-      constructCa (MSF, CSL, M_, DEL, NRM) `shouldBe` "pl"
+      -- M_/NRM perspective is null after config consonant (no trailing "l")
+      constructCa (DPX, CSL, M_, DEL, NRM) `shouldBe` "s"
+      constructCa (MSS, CSL, M_, DEL, NRM) `shouldBe` "t"
+      constructCa (MSC, CSL, M_, DEL, NRM) `shouldBe` "k"
+      constructCa (MSF, CSL, M_, DEL, NRM) `shouldBe` "p"
+      constructCa (MDS, CSL, M_, DEL, NRM) `shouldBe` "ţ"
+      constructCa (MFS, CSL, M_, DEL, NRM) `shouldBe` "z"
+      constructCa (DDF, CSL, M_, DEL, NRM) `shouldBe` "š"
+      constructCa (DFS, CSL, M_, DEL, NRM) `shouldBe` "č"
 
     it "constructs Configuration + non-default perspective" $ do
       constructCa (MSS, CSL, G_, DEL, NRM) `shouldBe` "tr"
@@ -2088,7 +2110,7 @@ main = hspec $ do
     it "constructs UNIPLEX standalone perspective" $ do
       constructCa (UNI, CSL, G_, DEL, NRM) `shouldBe` "r"
       constructCa (UNI, CSL, N_, DEL, NRM) `shouldBe` "v"
-      constructCa (UNI, CSL, A_, DEL, NRM) `shouldBe` "z"
+      constructCa (UNI, CSL, A_, DEL, NRM) `shouldBe` "j"
 
     it "constructs UNIPLEX Extension (voiced standalone)" $ do
       constructCa (UNI, CSL, M_, PRX, NRM) `shouldBe` "d"
@@ -2109,13 +2131,15 @@ main = hspec $ do
     it "round-trips Ca construction and parsing" $ do
       -- Default
       parseCaSlot "l" `shouldBe` Just (UNI, CSL, M_, DEL, NRM)
-      -- Config forms
-      parseCaSlot "sl" `shouldBe` Just (DPX, CSL, M_, DEL, NRM)
-      parseCaSlot "tl" `shouldBe` Just (MSS, CSL, M_, DEL, NRM)
+      -- Config forms (M_/NRM has no trailing consonant now)
+      parseCaSlot "s" `shouldBe` Just (DPX, CSL, M_, DEL, NRM)
+      parseCaSlot "t" `shouldBe` Just (MSS, CSL, M_, DEL, NRM)
       parseCaSlot "tr" `shouldBe` Just (MSS, CSL, G_, DEL, NRM)
-      -- Ca with natural duplicate consonants (not gemination)
-      parseCaSlot "sstl" `shouldBe` Just (DPX, ASO, M_, PRX, NRM)
-      parseCa "sstl" `shouldBe` Just (ParsedCa DPX ASO M_ PRX NRM)
+      -- Config + RPV (M_/RPV uses "l" suffix)
+      parseCaSlot "sl" `shouldBe` Just (DPX, CSL, M_, DEL, RPV)
+      parseCaSlot "tl" `shouldBe` Just (MSS, CSL, M_, DEL, RPV)
+      -- Affiliation prefix + config + extension
+      parseCaSlot "lst" `shouldBe` Just (DPX, ASO, M_, PRX, NRM)
       -- Natural duplicates should NOT trigger geminate detection in formative context
-      isGeminateCa "sstl" `shouldBe` True  -- raw detection still sees duplication
+      isGeminateCa "llst" `shouldBe` True  -- raw detection still sees duplication
       -- But trySlotV should prefer non-geminated when form is valid Ca
