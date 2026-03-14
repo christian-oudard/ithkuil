@@ -20,7 +20,7 @@ import Ithkuil.WordType
 import Ithkuil.Lexicon
 import Ithkuil.Compose (lookupGrammar, searchGrammar, lookupForm, GrammarEntry(..), searchRootsRanked, searchAffixes, dumpGrammarTable, composeFormative, composeReferential, applyStress)
 import Ithkuil.Render (renderSlotVIII, renderCase)
-import Ithkuil.Adjuncts (Register(..), registerForm, registerFinalForm, carrierTypeForm, Bias(..), biasForm)
+import Ithkuil.Adjuncts (Register(..), registerForm, registerFinalForm, carrierTypeForm, Bias, biasForm)
 import Ithkuil.Numbers (numberRoot, numberAffix, powerRoots)
 import Ithkuil.Phonology (vowelForm)
 import Ithkuil.Script (renderFormativeSvg)
@@ -425,13 +425,14 @@ composeRegisterWord spec =
     lookupRegisterStart "SPF" = registerForm SPF
     lookupRegisterStart "EXM" = registerForm EXM
     lookupRegisterStart "CGT" = registerForm CGT
-    lookupRegisterStart "END" = registerForm END
+    lookupRegisterStart "END" = registerFinalForm END  -- END has no initial; use final form
     lookupRegisterStart _ = "?"
     lookupRegisterEnd "DSV" = registerFinalForm DSV
     lookupRegisterEnd "PNT" = registerFinalForm PNT
     lookupRegisterEnd "SPF" = registerFinalForm SPF
     lookupRegisterEnd "EXM" = registerFinalForm EXM
     lookupRegisterEnd "CGT" = registerFinalForm CGT
+    lookupRegisterEnd "END" = registerFinalForm END
     lookupRegisterEnd _ = "?"
 
 -- | Compose a bias adjunct: +FSC → "žžj", +DOL → "řřx"
@@ -448,7 +449,7 @@ composeCarrierWord ctSpec opts =
         "CAR" -> Just Carrier
         "QUO" -> Just Quotative
         "NAM" -> Just Naming
-        "MGS" -> Just MetaGestalt
+        "PHR" -> Just Phrasal
         _     -> Nothing
       caseVowel = case opts of
         (c:_) -> lookupCaseVowel (T.toUpper c)
@@ -1343,7 +1344,7 @@ glossOneWord roots affixes rawWord = do
             Carrier     -> "Carrier (hl)"
             Quotative   -> "Quotative (hm)"
             Naming      -> "Naming (hn)"
-            MetaGestalt -> "Meta-gestalt (hň)"
+            Phrasal -> "Phrasal (hň)"
           caseGloss = case parseCase (normalizeAccents vc) of
             Just c  -> T.pack (showCaseDetail c)
             Nothing -> "?" <> vc

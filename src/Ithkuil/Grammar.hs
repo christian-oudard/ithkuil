@@ -103,7 +103,7 @@ data Affiliation
 -- Boundedness and quantification
 data Perspective
   = M_   -- ^ Monadic: bounded singular
-  | G_   -- ^ Polyadic: bounded plural (renamed to avoid conflict)
+  | G_   -- ^ Agglomerative: neutral/fuzzy number (at least one X / any number of X)
   | N_   -- ^ Nomic: generic/timeless
   | A_   -- ^ Abstract: conceptual/platonic
   deriving (Show, Eq, Ord, Enum, Bounded)

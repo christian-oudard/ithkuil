@@ -73,10 +73,9 @@ data Bias
   | ANN  -- ^ Annunciative: announcing
   | RNC  -- ^ Renunciative: giving up
   | ISP  -- ^ Insipid: bland reaction
-  | ADS  -- ^ Admissive: acknowledgement
+  | ADM  -- ^ Admissive: acknowledgement
   | IPL  -- ^ Implicative: implying
-  | MNF  -- ^ Manifestive: realization/epiphany
-  | RSG  -- ^ Resignative: giving up
+  | EXP  -- ^ Experiential: immediate experience
   | ARB  -- ^ Arbitrary: indifference
   | PPT  -- ^ Propitious: favorable
   | CTV  -- ^ Contemplative: pondering
@@ -137,16 +136,15 @@ biasForm DES = "mřř"
 biasForm COI = "ššč"
 biasForm FOR = "lzp"
 biasForm ANN = "drr"
-biasForm RNC = "mzt"
+biasForm RNC = "msf"
 biasForm ISP = "lçp"
-biasForm ADS = "lļ"
+biasForm ADM = "lļ"
 biasForm IPL = "vll"
 biasForm PPT = "mll"
 biasForm CTV = "gvv"
 biasForm CRP = "gžž"
 biasForm DEJ = "žžg"
-biasForm MNF = "pss"
-biasForm RSG = "msf"
+biasForm EXP = "pss"
 biasForm ARB = "xtļ"
 
 -- | Parse bias from consonant form
@@ -208,10 +206,9 @@ biasGloss FOR = "All is well that ends well"
 biasGloss ANN = "Wait till you hear this!"
 biasGloss RNC = "So much for...!"
 biasGloss ISP = "How boring!"
-biasGloss ADS = "Mm-hm"
+biasGloss ADM = "Mm-hm"
 biasGloss IPL = "Of course,..."
-biasGloss MNF = "Well, now!"
-biasGloss RSG = ""
+biasGloss EXP = "Ah! Well, now! So!"
 biasGloss ARB = "Yeah, whatever..."
 biasGloss PPT = "It's a wonder that..."
 biasGloss CTV = "Hmmmm..."
@@ -240,7 +237,7 @@ registerForm PNT = "he"
 registerForm SPF = "hi"
 registerForm EXM = "ho"
 registerForm CGT = "hu"
-registerForm END = "hü"
+registerForm END = ""    -- END has no initial form, only a final form
 
 -- | Register adjunct final forms (end-of-register markers)
 registerFinalForm :: Register -> Text
@@ -249,7 +246,7 @@ registerFinalForm PNT = "hei"
 registerFinalForm SPF = "hiu"
 registerFinalForm EXM = "hoi"
 registerFinalForm CGT = "hui"
-registerFinalForm END = "hü"
+registerFinalForm END = "hüi"
 registerFinalForm _ = ""
 
 --------------------------------------------------------------------------------
@@ -303,11 +300,11 @@ data CarrierType
   = Carrier            -- ^ General carrier (shortcut for carrier stem -s-)
   | Quotative          -- ^ Quotative (carrier + discursive register)
   | Naming             -- ^ Naming (name referred to as a name)
-  | MetaGestalt        -- ^ Meta-gestalt (meta-level grammatical info)
+  | Phrasal            -- ^ Phrasal adjunct (meta-level grammatical info for entire phrase)
   deriving (Show, Eq, Ord, Bounded, Enum)
 
 carrierTypeForm :: CarrierType -> Text
 carrierTypeForm Carrier     = "hl"
 carrierTypeForm Quotative   = "hm"
 carrierTypeForm Naming      = "hn"
-carrierTypeForm MetaGestalt = "hň"
+carrierTypeForm Phrasal = "hň"

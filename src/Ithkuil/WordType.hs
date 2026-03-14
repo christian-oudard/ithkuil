@@ -35,7 +35,7 @@ import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, parseCa, ParsedFor
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
                            aspectVowels, phaseVowels, levelVowels, effectVowels)
 import Ithkuil.Adjuncts hiding (CarrierAdjunct)
-import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), refC1All, decomposeRefCluster, referentAbbrev)
+import Ithkuil.Referentials (PersonalRef(..), Referent(..), ReferentEffect(..), refC1All, decomposeRefCluster, referentAbbrev, lookupRefC1)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot, lookupAffix)
 
 --------------------------------------------------------------------------------
@@ -100,11 +100,11 @@ isBiasAdjunct word = not (T.null word) && not (T.any isVowelChar word)
 
 -- | Register adjuncts: h + vowel form (per Sec. 8.3)
 -- Initial: ha, he, hi, ho, hu
--- Final: hai, hei, hiu, hoi, hui, hü
+-- Final: hai, hei, hiu, hoi, hui, hüi (END = carrier-end, final only)
 isRegisterAdjunctWord :: Text -> Bool
 isRegisterAdjunctWord word =
   T.toLower word `elem` ["ha", "he", "hi", "ho", "hu",
-                          "hai", "hei", "hiu", "hoi", "hui", "hü"]
+                          "hai", "hei", "hiu", "hoi", "hui", "hüi"]
 
 -- | Carrier adjuncts start with hl, hm, hn, or hň followed by vowel
 isCarrierAdjunct :: Text -> Bool
@@ -357,7 +357,7 @@ parseRegisterLower "hei" = Just PNT
 parseRegisterLower "hiu" = Just SPF
 parseRegisterLower "hoi" = Just EXM
 parseRegisterLower "hui" = Just CGT
-parseRegisterLower "hü"  = Just END
+parseRegisterLower "hüi" = Just END   -- carrier-end (final only, no initial form)
 parseRegisterLower _     = Nothing
 
 -- | Parse a referential word
@@ -491,7 +491,7 @@ parseCarrierWord word =
               "hl" -> Just Carrier       -- general carrier
               "hm" -> Just Quotative     -- quotative (carrier + DSV register)
               "hn" -> Just Naming        -- naming (name as a name)
-              "hň" -> Just MetaGestalt   -- meta-gestalt
+              "hň" -> Just Phrasal       -- phrasal adjunct
               _    -> Nothing
             content = T.concat rest
         in case ct of
@@ -686,7 +686,7 @@ glossWord roots affixes pw = case pw of
           Carrier     -> "CAR"
           Quotative   -> "QUO"
           Naming      -> "NAM"
-          MetaGestalt -> "MGS"
+          Phrasal -> "PHR"
         caseGloss = case parseCase (normalizeAccents vc) of
           Just c  -> T.pack (showCase c)
           Nothing -> "?" <> vc
@@ -1200,9 +1200,9 @@ isCarrierParsed (PConcatenated pfs) = any (\pf -> pfRoot pf == Root "s") pfs
 isCarrierParsed (PReferential _ _ _ _) = False  -- referential carriers use hl/hn/hň which parse as PCarrier
 isCarrierParsed _ = False
 
--- | Check if a word is a carrier/register terminator (hü = END register)
+-- | Check if a word is a carrier/register terminator (hüi = END register)
 isTerminator :: Text -> Bool
-isTerminator w = T.toLower w == "hü"
+isTerminator w = T.toLower w == "hüi"
 
 -- | Check if a word ends a sentence (punctuation)
 isSentenceEnd :: Text -> Bool

@@ -303,7 +303,7 @@ allAffiliations = map (\a -> ge "Affiliation" (sn a) (nm a) (renderAffiliation a
 allPerspectives :: [GrammarEntry]
 allPerspectives =
   [ ge "Perspective" "M" "Monadic" "l"
-  , ge "Perspective" "G" "Polyadic" "r"
+  , ge "Perspective" "G" "Agglomerative" "r"
   , ge "Perspective" "N" "Nomic" "w"
   , ge "Perspective" "A" "Abstract" "y"
   ]
@@ -482,7 +482,7 @@ nm x = case T.pack (show x) of
   -- Version
   "PRC" -> "Processual"; "CPT" -> "Completive"
   -- Perspective
-  "M_" -> "Monadic"; "G_" -> "Polyadic"; "N_" -> "Nomic"; "A_" -> "Abstract"
+  "M_" -> "Monadic"; "G_" -> "Agglomerative"; "N_" -> "Nomic"; "A_" -> "Abstract"
   other -> other
 
 -- | Dump all grammar entries as formatted text
@@ -575,9 +575,9 @@ tryShortcut f = do
 -- | Map Ca tuple to shortcut prefix ("w"/"y") and Vv series (1-4)
 shortcutFromCa :: SlotVI -> Maybe (Text, Int)
 shortcutFromCa (UNI, CSL, M_, DEL, NRM) = Just ("w", 1)  -- default Ca
-shortcutFromCa (UNI, CSL, G_, DEL, NRM) = Just ("w", 2)  -- Polyadic
+shortcutFromCa (UNI, CSL, G_, DEL, NRM) = Just ("w", 2)  -- Agglomerative
 shortcutFromCa (UNI, CSL, N_, DEL, NRM) = Just ("w", 3)  -- Nomic
-shortcutFromCa (UNI, CSL, G_, DEL, RPV) = Just ("w", 4)  -- Polyadic+RPV
+shortcutFromCa (UNI, CSL, G_, DEL, RPV) = Just ("w", 4)  -- Agglomerative+RPV
 shortcutFromCa (UNI, CSL, M_, PRX, NRM) = Just ("y", 1)  -- Proximal
 shortcutFromCa (UNI, CSL, M_, DEL, RPV) = Just ("y", 2)  -- Representative
 shortcutFromCa (UNI, CSL, A_, DEL, NRM) = Just ("y", 3)  -- Abstract
