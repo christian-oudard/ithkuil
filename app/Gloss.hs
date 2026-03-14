@@ -1350,7 +1350,6 @@ glossOneWord roots affixes rawWord = do
             Nothing -> "?" <> vc
       TIO.putStrLn $ "    Type: " <> ctLabel
       TIO.putStrLn $ "    Case: " <> col "\ESC[36m" caseGloss
-    PMoodCaseScope ms -> TIO.putStrLn $ "    Mood/Case-Scope: " <> glossMoodOrScope ms
     PError msg _ -> TIO.putStrLn $ "    " <> col "\ESC[31m" ("ERROR: " <> msg)
     PUnparsed _ -> TIO.putStrLn $ "    " <> col dim "(unparsed)"
   TIO.putStrLn $ "    " <> col dim "GLOSS: " <> col green (glossWord roots affixes parsed)

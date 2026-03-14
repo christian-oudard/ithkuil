@@ -381,7 +381,6 @@ data Mood
   | SPC  -- ^ Speculative
   | COU  -- ^ Counterfactive: contrary to fact
   | HYP  -- ^ Hypothetical
-  -- Note: More moods exist in full spec
   deriving (Show, Eq, Ord, Enum, Bounded)
 
 --------------------------------------------------------------------------------

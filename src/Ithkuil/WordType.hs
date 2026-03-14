@@ -35,7 +35,7 @@ import Ithkuil.Parse (splitConjuncts, isVowelChar, parseCase, parseCa, ParsedFor
 import Ithkuil.FullParse (parseVnValence, parseCnMood, parseCnMoodP2, parseCnCaseScope,
                            aspectVowels, phaseVowels, levelVowels, effectVowels)
 import Ithkuil.Adjuncts hiding (CarrierAdjunct)
-import Ithkuil.Referentials (PersonalRef(..), Referent(..), ReferentEffect(..), refC1All, decomposeRefCluster, referentAbbrev, lookupRefC1)
+import Ithkuil.Referentials (PersonalRef(..), ReferentEffect(..), refC1All, decomposeRefCluster, referentAbbrev, lookupRefC1)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), lookupRoot, lookupAffix)
 
 --------------------------------------------------------------------------------
@@ -53,7 +53,6 @@ data WordType
   | WReferential        -- ^ Personal referential
   | WCarrierAdjunct     -- ^ Carrier/quotative/naming adjunct
   | WCombinationRef     -- ^ Combination referential (C1-Vc-Spec-VxCs-Vc2)
-  | WMoodCaseScopeAdj   -- ^ Mood/case-scope adjunct (hr + vowel)
   | WUnknown            -- ^ Could not classify
   deriving (Show, Eq, Ord)
 
@@ -72,7 +71,6 @@ data ParsedWord
   | PCarrier CarrierType Text   -- carrier type, content
   | PCombinationRef [PersonalRef] (Maybe Case) Text [(Text, Text)] (Maybe Case)
     -- ^ referent(s), case1, spec, affixes (VxCs), case2
-  | PMoodCaseScope MoodOrScope  -- standalone mood/case-scope adjunct
   | PError Text Text            -- error message, original word
   | PUnparsed Text              -- Could not parse
   deriving (Show, Eq)
@@ -82,7 +80,6 @@ classifyWord :: Text -> WordType
 classifyWord word
   | T.null word = WUnknown
   | isBiasAdjunct lw = WBiasAdjunct
-  | isMoodCaseScopeAdjunct lw = WMoodCaseScopeAdj
   | isRegisterAdjunctWord lw = WRegisterAdjunct
   | isCarrierAdjunct lw = WCarrierAdjunct
   | isModularAdjunct lw = WModularAdjunct
@@ -156,16 +153,6 @@ isRefCluster :: Text -> Bool
 isRefCluster c = isRefC1 c || case decomposeRefCluster c of
   Just (_:_) -> True
   _ -> False
-
--- | Mood/case-scope adjuncts: "hr" + vowel (Sec. 8.5)
--- These set standalone mood or case-scope for the following formative
-isMoodCaseScopeAdjunct :: Text -> Bool
-isMoodCaseScopeAdjunct word =
-  let conjs = splitConjuncts word
-  in case conjs of
-    [c, v] | c == "hr"
-             && not (T.null v) && isVowelChar (T.head v) -> True
-    _ -> False
 
 -- | Combination referentials: [ë] C1 Vc Spec [VxCs...] [Vc2]
 -- Spec must be x/xt/xp/xx; C1 must be a referential consonant
@@ -293,7 +280,6 @@ parseSingleWord word =
     WAffixualAdjunct -> parseAffixualWord lw
     WCarrierAdjunct -> parseCarrierWord lw
     WCombinationRef -> parseCombinationRefWord lw
-    WMoodCaseScopeAdj -> parseMoodCaseScopeAdj lw
     _ -> PUnparsed word
 
 -- | Detect structural errors in formative words before parsing
@@ -499,34 +485,6 @@ parseCarrierWord word =
           Nothing -> PUnparsed word
     _ -> PUnparsed word
 
--- | Parse a mood/case-scope adjunct (hr + vowel)
--- Vowel determines mood (Series 1) or case-scope (Series 2)
-parseMoodCaseScopeAdj :: Text -> ParsedWord
-parseMoodCaseScopeAdj word =
-  let conjs = splitConjuncts word
-  in case conjs of
-    [_, v] -> case parseMcsVowel v of
-      Just ms -> PMoodCaseScope ms
-      Nothing -> PUnparsed word
-    _ -> PUnparsed word
-  where
-    parseMcsVowel v = case v of
-      -- Moods (Series 1 vowels)
-      "a"  -> Just (MoodVal FAC)
-      "e"  -> Just (MoodVal SUB)
-      "i"  -> Just (MoodVal ASM)
-      "o"  -> Just (MoodVal SPC)
-      "ö"  -> Just (MoodVal COU)
-      "u"  -> Just (MoodVal HYP)
-      -- Case-scopes (Series 2 vowels)
-      "ai" -> Just (CaseScope CCN)
-      "ei" -> Just (CaseScope CCA)
-      "iu" -> Just (CaseScope CCS)
-      "oi" -> Just (CaseScope CCQ)
-      "ü"  -> Just (CaseScope CCP)
-      "ui" -> Just (CaseScope CCV)
-      _    -> Nothing
-
 -- | Parse a modular adjunct word
 -- Structure: [w/y] (VnCn){0-3} V(final)
 -- V(final) = Aspect (if no VnCn pairs) or Vh scope marker
@@ -692,7 +650,6 @@ glossWord roots affixes pw = case pw of
           Just c  -> T.pack (showCase c)
           Nothing -> "?" <> vc
     in ctLabel <> ":" <> caseGloss
-  PMoodCaseScope ms -> glossMoodOrScope ms
   PError msg _ -> "Error: " <> msg
   PUnparsed t -> "?" <> t
 
@@ -910,7 +867,6 @@ glossWordCompact roots affixes pw = case pw of
     <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) afxs)
     <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc2
   PCarrier _ct content -> content
-  PMoodCaseScope ms -> glossMoodOrScope ms
   PError msg _ -> "Error: " <> msg
   PUnparsed t -> "?" <> t
 

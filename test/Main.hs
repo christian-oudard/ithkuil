@@ -914,22 +914,6 @@ main = hspec $ do
         Just pf -> pfSlotV pf `shouldBe` []
         Nothing -> expectationFailure "Should parse malai"
 
-  describe "Mood/Case-Scope Adjuncts" $ do
-    it "classifies hr+vowel as mood/case-scope adjunct" $ do
-      classifyWord "hrei" `shouldBe` WMoodCaseScopeAdj
-      classifyWord "hra" `shouldBe` WMoodCaseScopeAdj
-
-    it "parses mood/case-scope adjuncts" $ do
-      case parseWord "hrei" of
-        PMoodCaseScope (CaseScope CCA) -> return ()
-        pw -> expectationFailure $ "Expected CCA, got: " ++ show pw
-      case parseWord "hra" of
-        PMoodCaseScope (MoodVal FAC) -> return ()
-        pw -> expectationFailure $ "Expected FAC, got: " ++ show pw
-      case parseWord "hru" of
-        PMoodCaseScope (MoodVal HYP) -> return ()
-        pw -> expectationFailure $ "Expected HYP, got: " ++ show pw
-
   describe "Cc Parsing" $ do
     it "classifies concatenation types" $ do
       parseCc "h"  `shouldBe` (Just Type1, Nothing)
@@ -1128,11 +1112,6 @@ main = hspec $ do
       case parseWord "pļļ" of
         PBias _ -> return ()
         pw -> expectationFailure $ "pļļ: expected PBias, got: " ++ show pw
-      -- Mood/case-scope
-      case parseWord "hrei" of
-        PMoodCaseScope _ -> return ()
-        pw -> expectationFailure $ "hrei: expected PMoodCaseScope, got: " ++ show pw
-
     it "glosses referential khe correctly" $ do
       let gloss = glossWord mempty mempty (parseWord "khe")
       gloss `shouldBe` "Rdp.DET-ABS"
@@ -1144,10 +1123,6 @@ main = hspec $ do
     it "glosses register ha correctly" $ do
       let gloss = glossWord mempty mempty (parseWord "ha")
       gloss `shouldBe` "DSV"
-
-    it "glosses mood/case-scope hrei correctly" $ do
-      let gloss = glossWord mempty mempty (parseWord "hrei")
-      gloss `shouldBe` "CCA"
 
     it "glosses referential miyüs correctly" $ do
       let gloss = glossWord mempty mempty (parseWord "miyüs")
@@ -1224,7 +1199,7 @@ main = hspec $ do
                   , "alarfull", "a'larfunall"
                   , "lala'a", "la'la", "wala'ana"
                   , "ëilal", "oërmölá", "oërmoulá"
-                  , "lalu", "ihnú", "äst", "miyüs", "mixenüa", "ha", "pļļ", "hrei"
+                  , "lalu", "ihnú", "äst", "miyüs", "mixenüa", "ha", "pļļ"
                   , "lála'a", "çëlal", "çalal", "çwala", "ççala"
                   , "ţnaxeka", "ţnaxekka"
                   ] :: [T.Text]
@@ -2578,6 +2553,92 @@ main = hspec $ do
       validateExternalJuncture "mat" "ala" `shouldBe` Nothing
       -- Vowel + consonant boundary is always fine
       validateExternalJuncture "mala" "tala" `shouldBe` Nothing
+
+  describe "Morphology PDF Example Sentences (v1.3.1)" $ do
+    -- Sec 5.3: Stative vs Dynamic function
+    it "parses stative/dynamic function correctly" $ do
+      -- Byalá = 'common sense'-STA-OBS (stative, penultimate stress)
+      case parseWord "Byalá" of
+        PFormative pf -> do
+          let (func, _, _) = pfSlotIV pf
+          func `shouldBe` STA
+        pw -> expectationFailure $ "Byalá: " ++ show pw
+      -- Byulá = 'common sense'-DYN-OBS (dynamic, Vr 'u' = DYN)
+      case parseWord "Byulá" of
+        PFormative pf -> do
+          let (func, _, _) = pfSlotIV pf
+          func `shouldBe` DYN
+        pw -> expectationFailure $ "Byulá: " ++ show pw
+
+    -- Sec 5.8: "The girl eats" example sentence
+    it "parses 'The girl eats' (Etxulá welacu)" $ do
+      -- Etxulá = eat-DYN, ultimate stress = verbal
+      case parseWord "Etxulá" of
+        PFormative pf -> do
+          pfRoot pf `shouldBe` Root "tx"
+          let (func, _, _) = pfSlotIV pf
+          func `shouldBe` DYN
+        pw -> expectationFailure $ "Etxulá: " ++ show pw
+      -- welacu = child-GID/1-IND
+      case parseWord "welacu" of
+        PFormative pf -> do
+          pfRoot pf `shouldBe` Root "l"
+          pfCase pf `shouldBe` Just (Transrelative IND)
+        pw -> expectationFailure $ "welacu: " ++ show pw
+
+    -- Sec 5.8: eat + child + apple sentence
+    it "parses 'The girl is eating an apple' (Etxulá welacu wanžekcoë)" $ do
+      case parseWord "wanžekcoë" of
+        PFormative pf -> do
+          pfCase pf `shouldBe` Just (Adverbial CSM)
+        pw -> expectationFailure $ "wanžekcoë: " ++ show pw
+
+    -- Sec 5.4: Relative clause example
+    it "parses relative clause example (kšilo = clown-OBJ-ERG)" $ do
+      case parseWord "kšilo" of
+        PFormative pf -> do
+          pfRoot pf `shouldBe` Root "kš"
+          let (_, spec, _) = pfSlotIV pf
+          spec `shouldBe` OBJ
+          pfCase pf `shouldBe` Just (Transrelative ERG)
+        pw -> expectationFailure $ "kšilo: " ++ show pw
+
+    -- Test that all example words from Sec 5.8 tables parse successfully
+    it "parses all example words from Sec 5.8" $ do
+      let words = [ "Etxulá", "welacu", "wanžekcoë"
+                  , "Aḑçulëuhá", "welecu"
+                  , "kšilo", "Byalá", "Byulá"
+                  , "Tladatřá", "Tludatřá"
+                  ] :: [T.Text]
+          failed = filter (\w -> case parseWord w of
+            PUnparsed _ -> True; PError _ _ -> True; _ -> False) words
+      failed `shouldBe` []
+
+    -- Referential examples from Sec 4.6
+    it "parses referential examples from Sec 4.6" $ do
+      -- la = 1m/NEU-THM
+      case parseWord "la" of
+        PReferential refs mc _ _ -> do
+          refs `shouldSatisfy` (not . null)
+          mc `shouldBe` Just (Transrelative THM)
+        pw -> expectationFailure $ "la: " ++ show pw
+      -- sa = 2m/NEU-THM
+      case parseWord "sa" of
+        PReferential refs mc _ _ -> do
+          refs `shouldSatisfy` (not . null)
+          mc `shouldBe` Just (Transrelative THM)
+        pw -> expectationFailure $ "sa: " ++ show pw
+
+    -- Modular adjunct examples from Sec 4.3
+    it "parses modular adjunct examples" $ do
+      -- o = single aspect (standalone modular adjunct)
+      case parseWord "o" of
+        PModular _ _ _ -> return ()
+        pw -> expectationFailure $ "o: " ++ show pw
+      -- yu = scope prefix y + aspect
+      case parseWord "yu" of
+        PModular _ _ _ -> return ()
+        pw -> expectationFailure $ "yu: " ++ show pw
 
 -- Helper for test assertions on Maybe errors
 isJustErr :: Maybe a -> Bool
