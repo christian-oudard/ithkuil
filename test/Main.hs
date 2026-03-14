@@ -1172,13 +1172,19 @@ main = hspec $ do
       failed `shouldBe` []
 
   describe "Kotlin Error Cases" $ do
-    it "detects unexpectedly few slot V affixes (shortcut)" $ do
+    it "detects slot V marker in shortcut formative" $ do
       let gloss = glossWord mempty mempty (parseWord "wa'lena")
-      T.isInfixOf "Unexpectedly few" gloss `shouldBe` True
+      T.isInfixOf "cannot have Slot V" gloss `shouldBe` True
 
-    it "detects unexpectedly many slot V affixes (shortcut)" $ do
-      let gloss = glossWord mempty mempty (parseWord "waršana'anera")
-      T.isInfixOf "Unexpectedly many" gloss `shouldBe` True
+    it "allows multiple Slot VII affixes in shortcut formative" $ do
+      -- Wuttuškiná has 2 affixes in Slot VII, which is valid in shortcuts
+      let parsed = parseWord "wuttuškiná"
+      case parsed of
+        PFormative _ -> return ()
+        PError msg _ -> expectationFailure $ "Unexpected error: " ++ T.unpack msg
+        _ -> expectationFailure $ "Expected PFormative, got: " ++ show parsed
+      let gloss = glossWord mempty mempty parsed
+      T.isInfixOf "Error" gloss `shouldBe` False
 
     it "rejects shortcuts with Cs-root Vv" $ do
       case parseWord "wëil" of

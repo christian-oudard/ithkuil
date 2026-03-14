@@ -577,11 +577,12 @@ glossCz cz = case cz of
 -- | Gloss a Vz scope vowel (scope for additional affixes in multiple affix adjunct)
 glossVz :: Text -> Text
 glossVz vz = case normalizeAccents vz of
-  "a" -> "{VDom}"
-  "u" -> "{VSub}"
-  "e" -> "{VIIDom}"
-  "i" -> "{VIISub}"
-  "o" -> "{form.}"
+  "a" -> "{stem>V}"       -- stem only, scope over Slot V
+  "u" -> "{stem<V}"       -- stem only, subordinate to Slot V
+  "e" -> "{stem+Ca>VII}"  -- stem+Ca, scope over Slot VII
+  "i" -> "{stem+Ca<VII}"  -- stem+Ca, subordinate to Slot VII
+  "o" -> "{whole>}"       -- scope over whole formative
+  "ö" -> "{whole<}"       -- subordinate to whole formative
   _   -> "?" <> vz
 
 -- | Gloss a Vh scope marker (final vowel of modular adjunct with VnCn pairs)
@@ -1229,13 +1230,11 @@ validateFormative pf =
 validateSlotVMarker :: ParsedFormative -> Maybe Text
 validateSlotVMarker pf
   | pfHasShortcut pf =
-      -- Shortcuts: glottal at Vv means slot V is filled, requiring >=2 VxCs affixes
-      let affixCount = length (extractAffixes (pfCa pf))
-      in if pfSlotVMarker pf && affixCount < 2
-         then Just "Unexpectedly few slot V affixes"
-         else if not (pfSlotVMarker pf) && affixCount >= 2
-         then Just "Unexpectedly many slot V affixes"
-         else Nothing
+      -- Shortcuts cannot have Slot V affixes at all (grammar constraint).
+      -- A glottal marker in shortcut Vv would indicate slot V affixes, which is invalid.
+      if pfSlotVMarker pf
+        then Just "Shortcut formatives cannot have Slot V affixes"
+        else Nothing  -- Any number of Slot VII affixes is fine
   | pfSlotVMarker pf && length (pfSlotV pf) < 2 =
       Just "Unexpectedly few slot V affixes"
   | not (pfSlotVMarker pf) && length (pfSlotV pf) >= 2 =
