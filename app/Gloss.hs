@@ -1211,6 +1211,9 @@ pipeCommand roots affixes cmd
           TIO.putStrLn word
           glossLine roots affixes word
         _ -> TIO.putStrLn "Usage: /compose <root> [S2] [DYN] [ABS] [IRG] ..."
+  | "help" `T.isPrefixOf` cmd = do
+      TIO.putStrLn "Commands: /root /affix /lookup /form /compose /sentence /help"
+      TIO.putStrLn "Or type Ithkuil text to parse and gloss."
   | otherwise = TIO.putStrLn $ "Unknown command: /" <> cmd
 
 glossLine :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> IO ()

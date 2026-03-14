@@ -2103,6 +2103,31 @@ main = hspec $ do
           length (pfCa pf) `shouldSatisfy` (> 1)  -- Ca + affix parts
         other -> expectationFailure $ "Expected PFormative, got: " ++ show other
 
+    it "round-trips complex formative (DYN+DPX+HAB+SUB+ERG)" $ do
+      let f = (minimalFormative "rţt")
+              { fSlotIV = (DYN, CTE, EXS)
+              , fSlotVI = (DPX, CSL, M_, DEL, NRM)
+              , fSlotVIII = Just (VnCnAspect HAB (MoodVal SUB))
+              , fSlotIX = Left (Transrelative ERG)
+              , fStress = Ultimate }
+          w = composeFormative f
+      case parseWord w of
+        PFormative pf -> do
+          pfRoot pf `shouldBe` Root "rţt"
+          pfSlotII pf `shouldBe` (S1, PRC)
+          pfStress pf `shouldBe` Ultimate
+          -- DYN/CTE = Vr form 8, series 1
+          pfSlotIV pf `shouldBe` (DYN, CTE, EXS)
+          -- Verify Ca has DPX
+          case pfCaParsed pf of
+            Just pc -> pcConfig pc `shouldBe` DPX
+            Nothing -> expectationFailure "Ca should be parsed"
+          -- Verify illocution (ultimate stress makes it verbal)
+          case pfIllocVal pf of
+            Just (_, _) -> return ()  -- has illocution as expected
+            Nothing -> expectationFailure "Should have illocution with ultimate stress"
+        other -> expectationFailure $ "Expected PFormative, got: " ++ show other
+
   describe "Root search ranking" $ do
     it "finds correct root as top result for unambiguous queries" $ do
       Right roots <- loadRoots "data/roots.json"

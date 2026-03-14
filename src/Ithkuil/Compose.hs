@@ -101,13 +101,14 @@ searchRootsRanked query roots =
       directHit = case Map.lookup stripped roots of
         Just entry -> [(0, stripped, entry)]
         Nothing    -> []
-  in if not (null directHit) then directHit
-     else let idx = buildKeywordIndex roots
-              hits = lookupKeywordIndex q idx
-              resolved = [ (score, cr, entry)
-                         | (score, cr) <- hits
-                         , Just entry <- [Map.lookup cr roots] ]
-          in sortBy (compare `on` (\(s,cr,_) -> (s, T.length cr, cr))) resolved
+      idx = buildKeywordIndex roots
+      keywordHits = lookupKeywordIndex q idx
+      keywordResolved = [ (score, cr, entry)
+                        | (score, cr) <- keywordHits
+                        , Just entry <- [Map.lookup cr roots]
+                        , cr /= stripped ]  -- exclude direct hit from keywords
+      sorted = sortBy (compare `on` (\(s,cr,_) -> (s, T.length cr, cr))) keywordResolved
+  in directHit ++ sorted
 
 -- | Inverted keyword index: stemmed word → [(score, Cr root)]
 -- Score encodes match quality: lower = fragment is more central to root meaning.
@@ -176,10 +177,17 @@ buildKeywordIndex roots =
 
     extractWords :: Text -> [Text]
     extractWords t =
-      filter (\w -> T.length w > 1) .
-      map (T.dropWhile (\c -> not (c >= 'a' && c <= 'z'))) .
+      filter (\w -> T.length w > 1 && not (isStopWord w)) .
+      map (T.toCaseFold . T.dropWhile (\c -> not (c >= 'a' && c <= 'z'))) .
       filter (T.any (\c -> c >= 'a' && c <= 'z')) .
       T.words $ T.map (\c -> if c `elem` (".,;:!?()-/''\x2019" :: String) then ' ' else c) t
+
+    isStopWord :: Text -> Bool
+    isStopWord w = w `Set.member` stopWords
+
+    stopWords :: Set.Set Text
+    stopWords = Set.fromList
+      ["the","an","of","or","to","as","in","on","at","by","for","its","via","per"]
 
     -- | Extract only standalone words (not sub-parts of hyphenated compounds,
     -- or slash-groups that modify a following word like "running/flowing water")
@@ -198,7 +206,7 @@ buildKeywordIndex roots =
           -- Standalone tokens: no "-" and not a slash-modifier
           standaloneTokens = [tok | (tok, next) <- tagged, not (isCompound tok next)]
           -- Split on "/" to get individual words from surviving slash groups
-      in filter (\w -> T.length w > 1) .
+      in filter (\w -> T.length w > 1 && not (isStopWord w)) .
          map (T.toCaseFold . T.dropWhile (\c -> not (isAlpha c))) .
          filter (T.any isAlpha) .
          concatMap (T.splitOn "/") $ standaloneTokens
