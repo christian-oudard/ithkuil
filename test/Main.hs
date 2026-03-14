@@ -962,15 +962,24 @@ main = hspec $ do
       isGeminateCa "tr" `shouldBe` False
 
     it "detects allomorphic gemination" $ do
-      isGeminateCa "jjn" `shouldBe` True
-      isGeminateCa "xxn" `shouldBe` True
+      isGeminateCa "nnl" `shouldBe` True   -- dn → nnl (rule 8b)
+      isGeminateCa "nnw" `shouldBe` True   -- dm → nnw (rule 8b)
+      isGeminateCa "mmw" `shouldBe` True   -- bm → mmw (rule 8b)
+      isGeminateCa "mml" `shouldBe` True   -- bn → mml (rule 8b)
+      isGeminateCa "ḑvv" `shouldBe` True   -- tk → ḑvv (rule 7)
+      isGeminateCa "bbḑ" `shouldBe` True   -- pt → bbḑ (rule 7)
+      isGeminateCa "ksst" `shouldBe` True  -- kst → ksst (rule 4)
 
     it "degeminates Ca" $ do
-      degeminateCa "ll" `shouldBe` "l"
-      degeminateCa "rr" `shouldBe` "r"
-      degeminateCa "ttr" `shouldBe` "tr"
-      degeminateCa "jjn" `shouldBe` "dn"
-      degeminateCa "xxn" `shouldBe` "kn"
+      degeminateCa "ll" `shouldBe` "l"       -- rule 1
+      degeminateCa "rr" `shouldBe` "r"       -- rule 1
+      degeminateCa "ttr" `shouldBe` "tr"     -- rule 3
+      degeminateCa "nnl" `shouldBe` "dn"     -- rule 8b
+      degeminateCa "nnw" `shouldBe` "dm"     -- rule 8b
+      degeminateCa "mmw" `shouldBe` "bm"     -- rule 8b
+      degeminateCa "ksst" `shouldBe` "kst"   -- rule 4 (sibilant)
+      degeminateCa "bbḑ" `shouldBe` "pt"     -- rule 7
+      degeminateCa "llç" `shouldBe` "lç"     -- rule 9 fallback (çç prohibited)
 
     it "extracts Slot V affixes with geminated Ca" $ do
       -- "alarfull" = a-l-a-rf-u-ll → Vv=a, Cr=l, Vr=a, SlotV=[(rf,u)], Ca=ll→l
@@ -2311,9 +2320,9 @@ main = hspec $ do
       parseCaSlot "tl" `shouldBe` Just (MSS, CSL, M_, DEL, RPV)
       -- Affiliation prefix + config + extension
       parseCaSlot "lst" `shouldBe` Just (DPX, ASO, M_, PRX, NRM)
-      -- Natural duplicates should NOT trigger geminate detection in formative context
-      isGeminateCa "llst" `shouldBe` True  -- raw detection still sees duplication
-      -- But trySlotV should prefer non-geminated when form is valid Ca
+      -- Correct gemination of "lst" is "lsst" (rule 9 + rule 4: sibilant)
+      isGeminateCa "lsst" `shouldBe` True
+      degeminateCa "lsst" `shouldBe` "lst"
 
   describe "Number formative parsing" $ do
     it "parses numbers with TNX affix in shortcut formatives" $ do

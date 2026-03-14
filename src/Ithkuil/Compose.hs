@@ -47,7 +47,7 @@ import qualified Data.Set as Set
 import Data.Text.Stemming.English (stem)
 import Ithkuil.Grammar
 import Ithkuil.Render
-import Ithkuil.Allomorph (constructCa)
+import Ithkuil.Allomorph (constructCa, geminateCa)
 import Ithkuil.Phonology (vowelForm)
 import Ithkuil.Lexicon (RootEntry(..), AffixEntry(..), rootStem0, rootStem1, rootStem2, rootStem3)
 import Ithkuil.Referentials (PersonalRef(..), refC1)
@@ -599,29 +599,6 @@ slotIIFormNum (S0, CPT) = 6
 -- Example: composeReferential (PersonalRef R1m NEU) (Transrelative ERG) = "lo" ("I" in ERG)
 composeReferential :: PersonalRef -> Case -> Text
 composeReferential ref c = refC1 ref <> renderCase c
-
--- | Geminate a Ca consonant cluster (inverse of degeminateCa).
--- Doubles the first consonant; uses special allomorphs for certain clusters.
-geminateCa :: Text -> Text
-geminateCa t =
-  case lookup t caGemMap of
-    Just gemmed -> gemmed
-    Nothing ->
-      -- Double the first character
-      case T.uncons t of
-        Just (c, rest) -> T.cons c (T.cons c rest)
-        Nothing -> t
-
--- | Reverse map of caDegemMap from Parse.hs: normal Ca → geminated form
-caGemMap :: [(Text, Text)]
-caGemMap =
-  [ ("dn", "jjn"), ("dm", "jjm")
-  , ("gn", "gžžn"), ("gm", "gžžm"), ("bn", "bžžn"), ("bm", "bžžm")
-  , ("tn", "ḑḑn"), ("tm", "ḑḑm"), ("kn", "xxn"), ("km", "xxm")
-  , ("pn", "vvn"), ("pm", "vmm")
-  , ("tp", "ddv"), ("tk", "ḑvv"), ("kp", "ggv"), ("kt", "ggḑ")
-  , ("pk", "bbv"), ("pt", "bbḑ")
-  ]
 
 -- | Apply stress marking to an Ithkuil word.
 -- Penultimate = no mark (default), Ultimate = acute on last vowel,

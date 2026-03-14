@@ -14,6 +14,9 @@ module Ithkuil.Allomorph
   , renderCa
   , caForward
   , caReverse
+  , geminateCa
+  , degeminateCa
+  , isGeminateCa
   ) where
 
 import Data.Map.Strict (Map)
@@ -235,3 +238,125 @@ parseCaSlot = flip Map.lookup caReverse
 -- | Render a SlotVI to Ca consonant cluster
 renderCa :: SlotVI -> Text
 renderCa s = Map.findWithDefault (constructCa s) s caForward
+
+--------------------------------------------------------------------------------
+-- Ca Gemination (Sec 3.6.1)
+--------------------------------------------------------------------------------
+
+-- | Geminate a Ca consonant cluster (Sec 3.6.1 rules).
+-- Uses pre-generated map for lookup; falls back to algorithmic rules.
+geminateCa :: Text -> Text
+geminateCa ca = Map.findWithDefault (geminateCaForm ca) ca caGemForward
+
+-- | Degeminate a consonant cluster back to its Ca form.
+-- Returns the input unchanged if not a recognized geminated form.
+degeminateCa :: Text -> Text
+degeminateCa t = Map.findWithDefault t t caGemReverse
+
+-- | Check if a consonant cluster is a geminated Ca form.
+isGeminateCa :: Text -> Bool
+isGeminateCa = flip Map.member caGemReverse
+
+-- | Forward gemination map: Ca form → geminated form
+caGemForward :: Map Text Text
+caGemForward = Map.fromList
+  [(ca, geminateCaForm ca) | ca <- Map.keys caReverse]
+
+-- | Reverse gemination map: geminated form → Ca form
+caGemReverse :: Map Text Text
+caGemReverse = Map.fromList
+  [(geminateCaForm ca, ca) | ca <- Map.keys caReverse]
+
+-- Character classification for gemination rules
+
+isCaStop :: Char -> Bool
+isCaStop c = c `elem` ("tkpdgb" :: [Char])
+
+isVoicelessStop :: Char -> Bool
+isVoicelessStop c = c `elem` ("tkp" :: [Char])
+
+isLiquidApprox :: Char -> Bool
+isLiquidApprox c = c `elem` ("lrřwy" :: [Char])
+
+isSibilant :: Char -> Bool
+isSibilant c = c `elem` ("sšzžçcč" :: [Char])
+
+isNonSibFric :: Char -> Bool
+isNonSibFric c = c `elem` ("fţvḑ" :: [Char])
+
+isCaNasal :: Char -> Bool
+isCaNasal c = c `elem` ("nmň" :: [Char])
+
+-- | Fricatives for rule 6 (voiceless stop + fricative)
+isFricR6 :: Char -> Bool
+isFricR6 c = c `elem` ("sšfţç" :: [Char])
+
+isLRŘ :: Char -> Bool
+isLRŘ c = c `elem` ("lrř" :: [Char])
+
+-- | Find index of first sibilant in text
+findFirstSibilant :: Text -> Maybe Int
+findFirstSibilant = go 0 . T.unpack
+  where
+    go _ [] = Nothing
+    go i (c:cs)
+      | isSibilant c = Just i
+      | otherwise = go (i+1) cs
+
+-- | Duplicate the character at position i: "kst" at 1 → "ksst"
+gemCharAt :: Int -> Text -> Text
+gemCharAt i t = T.take (i+1) t <> T.drop i t
+
+-- | Rule 7: Two stops at end → special substitution
+gemStopStop :: [(Text, Text)]
+gemStopStop =
+  [ ("pt", "bbḑ"), ("pk", "bbv")
+  , ("kt", "ggḑ"), ("kp", "ggv")
+  , ("tk", "ḑvv"), ("tp", "ddv")
+  ]
+
+-- | Rule 8: Stop + nasal at end → special substitution
+gemStopNasal :: [(Text, Text)]
+gemStopNasal =
+  -- 8a: voiceless stop + nasal
+  [ ("pm", "vvm"), ("pn", "vvn")
+  , ("km", "xxm"), ("kn", "xxn")
+  , ("tm", "ḑḑm"), ("tn", "ḑḑn")
+  -- 8b: voiced stop + nasal
+  , ("bm", "mmw"), ("bn", "mml")
+  , ("gm", "ňňw"), ("gn", "ňňl")
+  , ("dm", "nnw"), ("dn", "nnl")
+  ]
+
+-- | Apply gemination rules 1-8 (without rule 9 l/r/ř prefix handling)
+geminateCaInner :: Text -> Text
+geminateCaInner t
+  | T.null t = t
+  | T.length t == 1 = t <> t                              -- Rule 1
+  | t == "tļ" = "ttļ"                                      -- Rule 2
+  | isCaStop c1 && isLiquidApprox c2 = T.cons c1 t        -- Rule 3
+  | Just i <- findFirstSibilant t = gemCharAt i t          -- Rule 4
+  | isNonSibFric c1 || isCaNasal c1 = T.cons c1 t         -- Rule 5
+  | isVoicelessStop c1 && isFricR6 c2 = gemCharAt 1 t     -- Rule 6
+  | Just gem <- lookup t gemStopStop = gem                 -- Rule 7
+  | Just gem <- lookup t gemStopNasal = gem                -- Rule 8
+  | otherwise = T.cons c1 t                                -- Fallback
+  where
+    c1 = T.head t
+    c2 = T.index t 1
+
+-- | Apply gemination to a Ca form (Sec 3.6.1, rules 1-9)
+geminateCaForm :: Text -> Text
+geminateCaForm t
+  | T.null t = t
+  | T.length t == 1 = t <> t                              -- Rule 1
+  -- Rule 9: l-/r-/ř- prefix → apply rules to rest
+  | isLRŘ c1 && T.length t > 1 =
+      let inner = T.tail t
+          gemInner = geminateCaInner inner
+      in if "çç" `T.isInfixOf` gemInner || "ļļ" `T.isInfixOf` gemInner
+         then T.cons c1 (T.cons c1 (T.tail t))  -- fallback: geminate prefix
+         else T.cons c1 gemInner
+  -- Rules 1-8
+  | otherwise = geminateCaInner t
+  where c1 = T.head t

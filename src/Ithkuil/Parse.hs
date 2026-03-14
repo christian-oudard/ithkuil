@@ -22,6 +22,7 @@ module Ithkuil.Parse
   , parseAffixVr
   , isGeminateCa
   , degeminateCa
+  , geminateCa
   , detectStressSimple
   , vvSeries
   ) where
@@ -32,7 +33,7 @@ import Control.Applicative ((<|>))
 import Data.Maybe (listToMaybe, isJust)
 import Ithkuil.Phonology
 import Ithkuil.Grammar
-import Ithkuil.Allomorph (parseCaSlot)
+import Ithkuil.Allomorph (parseCaSlot, geminateCa, degeminateCa, isGeminateCa)
 
 -- | Parse Vv vowel to Slot II (Stem + Version)
 -- Uses vowelFormLookup to resolve series/form (including Series 3 alternates)
@@ -654,46 +655,6 @@ splitCrCa cluster
       ((cr, caM):_) -> Just (cr, caM)
       -- If no valid Ca split found, treat entire cluster as Cr with default Ca
       [] -> Just (cluster, Just defaultCa)
-
--- | Check if a consonant cluster is a geminated Ca form
--- Gemination detected by adjacent duplicate characters or special allomorphs
-isGeminateCa :: Text -> Bool
-isGeminateCa t
-  | T.null t = False
-  | t `elem` caDegeminations = True
-  | otherwise = hasAdjacentDuplicate (T.unpack t)
-  where
-    hasAdjacentDuplicate [] = False
-    hasAdjacentDuplicate [_] = False
-    hasAdjacentDuplicate (a:b:rest) = a == b || hasAdjacentDuplicate (b:rest)
-    caDegeminations = map fst caDegemMap
-
--- | Special gemination allomorphs that don't follow the simple reduplication rule
-caDegemMap :: [(Text, Text)]
-caDegemMap =
-  [ ("jjn", "dn"), ("jjm", "dm")
-  , ("gžžn", "gn"), ("gžžm", "gm"), ("bžžn", "bn"), ("bžžm", "bm")
-  , ("ḑḑn", "tn"), ("ḑḑm", "tm"), ("xxn", "kn"), ("xxm", "km")
-  , ("vvn", "pn"), ("vmm", "pm")
-  , ("ddv", "tp"), ("ḑvv", "tk"), ("ggv", "kp"), ("ggḑ", "kt")
-  , ("bbv", "pk"), ("bbḑ", "pt")
-  ]
-
--- | Remove gemination from Ca consonant cluster
-degeminateCa :: Text -> Text
-degeminateCa t =
-  -- First check allomorph exceptions
-  case lookup t caDegemMap of
-    Just degemmed -> degemmed
-    Nothing ->
-      -- Remove adjacent duplicates
-      let chars = T.unpack t
-          dedup [] = []
-          dedup [c] = [c]
-          dedup (a:b:rest)
-            | a == b = a : dedup rest
-            | otherwise = a : dedup (b:rest)
-      in T.pack (dedup chars)
 
 -- | Try to extract Slot V CsVx affixes by scanning for geminated Ca
 -- Returns Just (slotV pairs, restructured rest with degeminated Ca) if found
