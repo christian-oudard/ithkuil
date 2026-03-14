@@ -18,7 +18,8 @@ import Ithkuil.Referentials (PersonalRef(..), Referent(..), ReferentEffect(..), 
 import Ithkuil.WordType
 import Ithkuil.Lexicon
 import Ithkuil.Compose (lookupGrammar, searchGrammar, lookupForm, GrammarEntry(..), searchRootsRanked, searchAffixes, dumpGrammarTable, composeFormative, composeReferential, applyStress)
-import Ithkuil.Render (renderSlotVIII)
+import Ithkuil.Render (renderSlotVIII, renderCase)
+import Ithkuil.Adjuncts (Register(..), registerForm, registerFinalForm, carrierTypeForm)
 import Ithkuil.Numbers (numberRoot, numberAffix)
 import Ithkuil.Phonology (vowelForm)
 import Ithkuil.Script (renderFormativeSvg)
@@ -142,6 +143,15 @@ showHelp = do
   TIO.putStrLn "          OBS IRG DIR ADM DEC HOR POT CNJ VER (illocutions)"
   TIO.putStrLn "          RTR PRS HAB PRG IMM PCS REG ATP (aspects)"
   TIO.putStrLn "          +Cs/D = Slot VII affix, ~Cs/D = Slot V affix"
+  TIO.putStrLn "  --sentence spec...  Compose a multi-word sentence"
+  TIO.putStrLn "    root:FLAG:FLAG    Formative (keyword or Cr cluster)"
+  TIO.putStrLn "    @1m:CASE          Referential (@1m, @2m, @MA, @pa)"
+  TIO.putStrLn "    #VN.MOOD          Modular adjunct (#RTR.SUB, #PRG.FAC)"
+  TIO.putStrLn "    ^Cs/D[:SCOPE]     Affixual adjunct (^NEG/4, ^r/4:o)"
+  TIO.putStrLn "    ~REG / ~-REG      Register start/end (~DSV, ~-DSV, ~PNT)"
+  TIO.putStrLn "    *TYPE[:CASE]      Carrier adjunct (*CAR:ERG, *NAM, *QUO)"
+  TIO.putStrLn "    %N[:FLAG]         Number (%42, %7:ERG)"
+  TIO.putStrLn "    >root / >>root    Type 1/2 concatenation"
   TIO.putStrLn "  --help, -h          Show this help"
 
 handleScript :: [String] -> IO ()
@@ -222,6 +232,12 @@ composeOneWord roots affixes s = case T.splitOn ":" s of
   (w:opts)
     | Just afxSpec <- T.stripPrefix "!" w <|> T.stripPrefix "^" w
     -> composeAffixualWord affixes afxSpec opts
+  (w:_)
+    | Just regSpec <- T.stripPrefix "~" w
+    -> composeRegisterWord (T.toUpper regSpec)
+  (w:opts)
+    | Just carSpec <- T.stripPrefix "*" w
+    -> composeCarrierWord carSpec opts
   (w:opts)
     | Just numStr <- T.stripPrefix "%" w
     , [(n, "")] <- reads (T.unpack numStr) :: [(Int, String)]
@@ -321,6 +337,117 @@ composeAffixualWord affixes afxSpec opts =
     scopeVowel "o" = "o"           -- whole formative scope
     scopeVowel "ö" = "ö"           -- whole formative subordinate
     scopeVowel s   = s             -- pass through
+
+-- | Compose a register adjunct: ~DSV → "ha", ~-DSV → "hai" (end marker)
+composeRegisterWord :: Text -> Text
+composeRegisterWord spec =
+  case T.stripPrefix "-" spec of
+    Just regName -> lookupRegisterEnd regName
+    Nothing      -> lookupRegisterStart spec
+  where
+    lookupRegisterStart "DSV" = registerForm DSV
+    lookupRegisterStart "PNT" = registerForm PNT
+    lookupRegisterStart "SPF" = registerForm SPF
+    lookupRegisterStart "EXM" = registerForm EXM
+    lookupRegisterStart "CGT" = registerForm CGT
+    lookupRegisterStart "END" = registerForm END
+    lookupRegisterStart _ = "?"
+    lookupRegisterEnd "DSV" = registerFinalForm DSV
+    lookupRegisterEnd "PNT" = registerFinalForm PNT
+    lookupRegisterEnd "SPF" = registerFinalForm SPF
+    lookupRegisterEnd "EXM" = registerFinalForm EXM
+    lookupRegisterEnd "CGT" = registerFinalForm CGT
+    lookupRegisterEnd _ = "?"
+
+-- | Compose a carrier adjunct: *CAR:CASE → "hl" + case vowel
+composeCarrierWord :: Text -> [Text] -> Text
+composeCarrierWord ctSpec opts =
+  let ct = case T.toUpper ctSpec of
+        "CAR" -> Just Carrier
+        "QUO" -> Just Quotative
+        "NAM" -> Just Naming
+        "MGS" -> Just MetaGestalt
+        _     -> Nothing
+      caseVowel = case opts of
+        (c:_) -> lookupCaseVowel (T.toUpper c)
+        []    -> "a"  -- default: THM
+  in case ct of
+    Just t  -> carrierTypeForm t <> caseVowel
+    Nothing -> "?"
+  where
+    lookupCaseVowel abbr = renderCase (lookupCaseByAbbrev abbr)
+
+-- | Look up a Case by its 3-letter abbreviation
+lookupCaseByAbbrev :: Text -> Case
+lookupCaseByAbbrev "THM" = Transrelative THM
+lookupCaseByAbbrev "INS" = Transrelative INS
+lookupCaseByAbbrev "ABS" = Transrelative ABS
+lookupCaseByAbbrev "AFF" = Transrelative AFF
+lookupCaseByAbbrev "STM" = Transrelative STM
+lookupCaseByAbbrev "EFF" = Transrelative EFF
+lookupCaseByAbbrev "ERG" = Transrelative ERG
+lookupCaseByAbbrev "DAT" = Transrelative DAT
+lookupCaseByAbbrev "IND" = Transrelative IND
+lookupCaseByAbbrev "POS" = Appositive POS
+lookupCaseByAbbrev "PRP" = Appositive PRP
+lookupCaseByAbbrev "GEN" = Appositive GEN
+lookupCaseByAbbrev "ATT" = Appositive ATT
+lookupCaseByAbbrev "PDC" = Appositive PDC
+lookupCaseByAbbrev "ITP" = Appositive ITP
+lookupCaseByAbbrev "OGN" = Appositive OGN
+lookupCaseByAbbrev "IDP" = Appositive IDP
+lookupCaseByAbbrev "PAR" = Appositive PAR
+lookupCaseByAbbrev "LOC" = SpatioTemporal1 LOC
+lookupCaseByAbbrev "ATD" = SpatioTemporal1 ATD
+lookupCaseByAbbrev "ALL" = SpatioTemporal1 ALL
+lookupCaseByAbbrev "ABL" = SpatioTemporal1 ABL
+lookupCaseByAbbrev "ORI" = SpatioTemporal1 ORI
+lookupCaseByAbbrev "IRL" = SpatioTemporal1 IRL
+lookupCaseByAbbrev "INV" = SpatioTemporal1 INV
+lookupCaseByAbbrev "NAV" = SpatioTemporal1 NAV
+lookupCaseByAbbrev "CNR" = SpatioTemporal2 CNR
+lookupCaseByAbbrev "ASS" = SpatioTemporal2 ASS
+lookupCaseByAbbrev "PER" = SpatioTemporal2 PER
+lookupCaseByAbbrev "PRO" = SpatioTemporal2 PRO
+lookupCaseByAbbrev "PCV" = SpatioTemporal2 PCV
+lookupCaseByAbbrev "PCR" = SpatioTemporal2 PCR
+lookupCaseByAbbrev "ELP" = SpatioTemporal2 ELP
+lookupCaseByAbbrev "PLM" = SpatioTemporal2 PLM
+lookupCaseByAbbrev "APL" = Associative APL
+lookupCaseByAbbrev "PUR" = Associative PUR
+lookupCaseByAbbrev "TRA" = Associative TRA
+lookupCaseByAbbrev "DFR" = Associative DFR
+lookupCaseByAbbrev "CRS" = Associative CRS
+lookupCaseByAbbrev "TSP" = Associative TSP
+lookupCaseByAbbrev "CMM" = Associative CMM
+lookupCaseByAbbrev "CMP" = Associative CMP
+lookupCaseByAbbrev "CSD" = Associative CSD
+lookupCaseByAbbrev "PRN" = Relational PRN
+lookupCaseByAbbrev "DSP" = Relational DSP
+lookupCaseByAbbrev "COR" = Relational COR
+lookupCaseByAbbrev "CPS" = Relational CPS
+lookupCaseByAbbrev "COM" = Relational COM
+lookupCaseByAbbrev "UTL" = Relational UTL
+lookupCaseByAbbrev "PRD" = Relational PRD
+lookupCaseByAbbrev "RLT" = Relational RLT
+lookupCaseByAbbrev "ACT" = Affinitive ACT
+lookupCaseByAbbrev "ASI" = Affinitive ASI
+lookupCaseByAbbrev "ESS" = Affinitive ESS
+lookupCaseByAbbrev "TRM" = Affinitive TRM
+lookupCaseByAbbrev "SEL" = Affinitive SEL
+lookupCaseByAbbrev "CFM" = Affinitive CFM
+lookupCaseByAbbrev "DEP" = Affinitive DEP
+lookupCaseByAbbrev "VOC" = Affinitive VOC
+lookupCaseByAbbrev "FUN" = Adverbial FUN
+lookupCaseByAbbrev "TFM" = Adverbial TFM
+lookupCaseByAbbrev "CLA" = Adverbial CLA
+lookupCaseByAbbrev "RSL" = Adverbial RSL
+lookupCaseByAbbrev "CSM" = Adverbial CSM
+lookupCaseByAbbrev "CON" = Adverbial CON
+lookupCaseByAbbrev "AVR" = Adverbial AVR
+lookupCaseByAbbrev "CVS" = Adverbial CVS
+lookupCaseByAbbrev "SIT" = Adverbial SIT
+lookupCaseByAbbrev _ = Transrelative THM  -- fallback
 
 -- | Resolve affix abbreviation in a flag: +NEG/4 → +r/4
 resolveAffixFlag :: Map.Map Text AffixEntry -> Text -> Text
