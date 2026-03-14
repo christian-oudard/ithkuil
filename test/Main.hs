@@ -2143,3 +2143,34 @@ main = hspec $ do
       -- Natural duplicates should NOT trigger geminate detection in formative context
       isGeminateCa "llst" `shouldBe` True  -- raw detection still sees duplication
       -- But trySlotV should prefer non-geminated when form is valid Ca
+
+  describe "Number formative parsing" $ do
+    it "parses numbers with TNX affix in shortcut formatives" $ do
+      -- walẓärs = 29: root -lẓ- (9) + TNX/2 (+20), w-prefix shortcut
+      case parseWord "walẓärs" of
+        PFormative pf -> do
+          pfRoot pf `shouldBe` Root "lẓ"
+          pfSlotV pf `shouldBe` []
+        pw -> expectationFailure $ "walẓärs: expected PFormative, got: " ++ show pw
+
+    it "parses numbers with TNX affix in non-shortcut formatives" $ do
+      -- cpalörs = 66: root -cp- (6) + TNX/6 (+60)
+      case parseWord "cpalörs" of
+        PFormative pf -> pfRoot pf `shouldBe` Root "cp"
+        pw -> expectationFailure $ "cpalörs: expected PFormative, got: " ++ show pw
+
+    it "parses number with explicit case" $ do
+      -- ksalirsa = 42: root -ks- (2) + TNX/4 (+40) + THM case
+      case parseWord "ksalirsa" of
+        PFormative pf -> do
+          pfRoot pf `shouldBe` Root "ks"
+          pfCase pf `shouldBe` Just (Transrelative THM)
+        pw -> expectationFailure $ "ksalirsa: expected PFormative, got: " ++ show pw
+
+    it "parses 100-root in partitive case" $ do
+      -- gzalui = 100 in PARTITIVE
+      case parseWord "gzalui" of
+        PFormative pf -> do
+          pfRoot pf `shouldBe` Root "gz"
+          pfCase pf `shouldBe` Just (Appositive PAR)
+        pw -> expectationFailure $ "gzalui: expected PFormative, got: " ++ show pw

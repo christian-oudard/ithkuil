@@ -20,7 +20,7 @@ import Ithkuil.Lexicon
 import Ithkuil.Compose (lookupGrammar, searchGrammar, lookupForm, GrammarEntry(..), searchRootsRanked, searchAffixes, dumpGrammarTable, composeFormative, composeReferential, applyStress)
 import Ithkuil.Render (renderSlotVIII, renderCase)
 import Ithkuil.Adjuncts (Register(..), registerForm, registerFinalForm, carrierTypeForm, Bias(..), biasForm)
-import Ithkuil.Numbers (numberRoot, numberAffix)
+import Ithkuil.Numbers (numberRoot, numberAffix, powerRoots)
 import Ithkuil.Phonology (vowelForm)
 import Ithkuil.Script (renderFormativeSvg)
 
@@ -151,7 +151,7 @@ showHelp = do
   TIO.putStrLn "    ~REG / ~-REG      Register start/end (~DSV, ~-DSV, ~PNT)"
   TIO.putStrLn "    *TYPE[:CASE]      Carrier adjunct (*CAR:ERG, *NAM, *QUO)"
   TIO.putStrLn "    +BIAS              Bias adjunct (+FSC, +DOL, +IRO)"
-  TIO.putStrLn "    %N[:FLAG]         Number (%42, %7:ERG)"
+  TIO.putStrLn "    %N[:FLAG]         Number, centesimal (%42, %7:ERG, %4229, %269766)"
   TIO.putStrLn "    >root / >>root    Type 1/2 concatenation"
   TIO.putStrLn "  --help, -h          Show this help"
 
@@ -245,24 +245,69 @@ composeOneWord roots affixes s = case T.splitOn ":" s of
   (w:opts)
     | Just numStr <- T.stripPrefix "%" w
     , [(n, "")] <- reads (T.unpack numStr) :: [(Int, String)]
-    , n >= 0, n < 100
-    -> let cr = case numberRoot n of Just r -> r; Nothing -> "?"
-           f0 = minimalFormative cr
-           -- Add TNX affix (-rs-) for numbers 11-99
-           f0' = case numberAffix n of
-             Just (cs, deg) ->
-               let vx = vowelForm 1 deg
-               in f0 { fSlotVII = fSlotVII f0 ++ [Affix vx cs Type1Affix] }
-             Nothing -> f0
-           flags = map (resolveAffixFlag affixes . T.toUpper) opts
-           f1 = applyComposeFlags flags f0'
-           f2 = autoStress f1
-       in composeFormative f2
+    , n >= 0
+    -> composeNumberWords n (map (resolveAffixFlag affixes . T.toUpper) opts)
   (root:opts) ->
     let f1 = makeFormative roots affixes root opts
         f2 = autoStress f1
     in composeFormative f2
   [] -> "?"
+
+-- | Compose a number as one or more Ithkuil words (centesimal system)
+-- 0-99: single formative with optional TNX affix
+-- 100+: centesimal digit + power root in PARTITIVE, repeating for each power
+-- Flags (e.g. case) are applied to the LAST word (the units digit)
+composeNumberWords :: Int -> [Text] -> Text
+composeNumberWords n flags
+  | n < 100   = composeOneDigit n flags
+  | otherwise = T.unwords (composeMultiDigit n flags)
+  where
+    -- Compose a single centesimal digit (0-99) with optional flags
+    composeOneDigit :: Int -> [Text] -> Text
+    composeOneDigit d fs =
+      let cr = case numberRoot d of Just r -> r; Nothing -> "?"
+          f0 = minimalFormative cr
+          f0' = case numberAffix d of
+            Just (cs, deg) ->
+              let vx = vowelForm 1 deg
+              in f0 { fSlotVII = fSlotVII f0 ++ [Affix vx cs Type1Affix] }
+            Nothing -> f0
+          f1 = applyComposeFlags fs f0'
+          f2 = autoStress f1
+      in composeFormative f2
+
+    -- Compose a power root (100, 10000, etc.) in PARTITIVE case
+    composePowerWord :: Int -> Text
+    composePowerWord powerIdx =
+      let cr = if powerIdx < length powerRoots then powerRoots !! powerIdx else "?"
+          f0 = minimalFormative cr
+          f1 = f0 { fSlotIX = Left (Appositive PAR) }
+          f2 = autoStress f1
+      in composeFormative f2
+
+    -- Break number into centesimal groups and compose multi-word sequence
+    composeMultiDigit :: Int -> [Text] -> [Text]
+    composeMultiDigit num fs =
+      let groups = centesimalGroups num  -- [(digit, powerIndex)] highest power first
+          nGroups = length groups
+      in concatMap (\(i, (digit, power)) ->
+          let isLast = i == nGroups - 1
+              digitWord = composeOneDigit digit (if isLast then fs else [])
+              powerWord = if power > 0 then [composePowerWord power] else []
+          in digitWord : powerWord
+        ) (zip [0..] groups)
+
+    -- Split integer into centesimal groups: [(digit, powerIndex)]
+    -- e.g. 4229 -> [(42, 1), (29, 0)]  (42 hundreds + 29 units)
+    -- Drops trailing zero groups (100 -> [(1, 1)], not [(1, 1), (0, 0)])
+    centesimalGroups :: Int -> [(Int, Int)]
+    centesimalGroups 0 = [(0, 0)]
+    centesimalGroups num = dropTrailingZeros (go num 0)
+      where
+        go 0 _ = []
+        go n' p = let (q, r) = n' `divMod` 100
+                  in go q (p+1) ++ [(r, p)]
+        dropTrailingZeros = reverse . dropWhile (\(d,_) -> d == 0) . reverse
 
 -- | Compose a modular adjunct word from flags
 -- Syntax: #VnCategory.Mood (e.g. #RTR.SUB, #PRG.FAC, #PUN.HYP)

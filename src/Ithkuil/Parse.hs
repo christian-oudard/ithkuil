@@ -333,6 +333,9 @@ splitSlotVFromVII _ = ([], [])
 
 -- | Split conjuncts after shortcut Cr into (affix parts, last vowel)
 -- Takes [V, C, V, C, ..., V] and returns (VxCs affix pairs as [V,C,...], last V)
+-- Special case: when parts end in a consonant (e.g. [V, C] with no final vowel),
+-- treat the entire sequence as affix/VnCn parts with elided Vc (default THM),
+-- since standalone shortcut formatives normally end in a vowel (Vc).
 splitAfterShortcut :: [Text] -> ([Text], Maybe Text)
 splitAfterShortcut [] = ([], Nothing)
 splitAfterShortcut parts =
@@ -341,11 +344,14 @@ splitAfterShortcut parts =
       -- Find the last vowel cluster (Vc/Vk)
       (trailingC, afterC) = span (not . isVowelCluster) revParts
   in case afterC of
-    (vc:rest) ->
-      -- rest (reversed) = affix V-C pairs before Vc
-      -- trailingC = trailing consonants after Vc (unusual but possible)
-      let affixParts = reverse rest ++ reverse trailingC
-      in (affixParts, Just vc)
+    (vc:rest)
+      -- Word ends in consonant with only one vowel: likely V+C affix/VnCn, not Vc+trailing
+      | null rest && not (null trailingC) -> (parts, Nothing)
+      | otherwise ->
+          -- rest (reversed) = affix V-C pairs before Vc
+          -- trailingC = trailing consonants after Vc (unusual but possible)
+          let affixParts = reverse rest ++ reverse trailingC
+          in (affixParts, Just vc)
     [] -> (parts, Nothing)
 
 -- | Merge vowel-glottal-vowel into single "V'V" conjunct
@@ -733,6 +739,9 @@ parseAfterVr rest =
 -- The last vowel cluster is typically Vc (case), rest is Ca
 -- Handles glottal stop cases: a standalone ' in the Ca area shifts the case
 -- to Relational/Affinitive series (cases 37-52)
+-- Special case: when the word ends in a consonant and the last vowel is the
+-- ONLY vowel after Ca, treat V+C as a Slot VII affix (not Vc + trailing),
+-- since formatives normally end in a vowel and the V+C is more likely VxCs.
 splitCaVc :: [Text] -> ([Text], [Text])
 splitCaVc parts =
   let isVowelCluster t = not (T.null t) && isVowelChar (T.head t)
@@ -740,7 +749,7 @@ splitCaVc parts =
       merged = mergeGlottalVowels parts
       revParts = reverse merged
       -- Skip trailing consonants (Slot X), then find the case vowel
-      (_, afterC) = span (not . isVowelCluster) revParts
+      (trailingC, afterC) = span (not . isVowelCluster) revParts
       (vcRev, caRev) = span isVowelCluster afterC
       -- Check if there's a glottal stop in the Ca area — if so, apply to Vc
       -- Glottal stop may be standalone ("'") or prefix of a consonant ("'l")
@@ -751,7 +760,12 @@ splitCaVc parts =
       vcFinal = if hasGlottal
         then map addGlottalToVc (reverse vcRev)
         else reverse vcRev
-  in (caClean, vcFinal)
+      -- When word ends in consonant and the "Vc" is the only vowel after Ca,
+      -- the V+C pair is more likely a Slot VII affix than Vc + trailing consonant
+      caHasVowels = any isVowelCluster (reverse caRev)
+  in if not (null trailingC) && not (null vcRev) && not caHasVowels
+     then (caClean ++ vcFinal ++ reverse trailingC, [])
+     else (caClean, vcFinal)
   where
     -- Add glottal stop to a Vc vowel for case groups 5-8
     -- Single vowels: "a" → "a'a", diphthongs: "ëi" → "ë'i"
