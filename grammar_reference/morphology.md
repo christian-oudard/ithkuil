@@ -1945,7 +1945,7 @@ For dates and times of day using the SPT affix with number roots, see Sec. 6.0.
 
 The Ithkuil writing system is **morpho-phonemic**: characters convey both phonological and morphological (grammatical) information. The reader constructs the intended words based on their knowledge of the grammar.
 
-> **Note:** The actual character glyphs are visual shapes that cannot be represented in plain text. This document describes the structure, rules, and combinatorics of the system. Refer to `script_v1b.pdf` for the visual glyph charts. Handwritten forms (shown in blue in the PDF) have diagonal segments curved inward or outward so that there are no diagonal end-points, only vertical or horizontal end-points.
+> **Note:** Character glyph images are in `images/script/` and `images/numbers/`. Handwritten forms (shown in blue) have diagonal segments curved inward or outward so that there are no diagonal end-points, only vertical or horizontal end-points.
 
 ## 12.0 Sequence of Written Characters for Formatives
 
@@ -1964,6 +1964,8 @@ A Primary Character is word-initial and shows V_R Specification, Function, and C
 The Primary Character is a composite glyph built from several overlapping zones:
 
 ### Structure
+
+![Primary Character Structure](images/script/12_1_primary_char_structure.png)
 
 The Primary Character is built around a **diagonal bar** (the core stroke). Various features are encoded in different zones:
 
@@ -2010,6 +2012,8 @@ The Primary Character is built around a **diagonal bar** (the core stroke). Vari
 
 ### 4 Perspectives x 6 Extensions
 
+![Perspective x Extension](images/script/12_1_perspective_extension.png)
+
 Rows: M (Monadic), G (Agglomerative), N (Nomic), A (Abstract)
 Columns: DEL (Delimitive), PRX (Proximal), ICP (Inceptive), ATV (Attenuative), GRA (Graduative), DPL (Depletive)
 
@@ -2023,6 +2027,8 @@ Columns: DEL (Delimitive), PRX (Proximal), ICP (Inceptive), ATV (Attenuative), G
 | RPV (Representative) | arrow | upward wedge | hook | crescent |
 
 ### 10 Configurations
+
+![Configuration, Affiliation, Essence](images/script/12_1_config_affil_essence.png)
 
 Plexity (U/M vs. D) is shown with Stem, Function & Version in the lower-right zone.
 
@@ -2041,9 +2047,9 @@ Plexity (U/M vs. D) is shown with Stem, Function & Version in the lower-right zo
 
 ### Stem/Function/Version/Plexity Combinations
 
-The lower-right zone encodes: 4 Stems (1, 2, 3, 0) x 2 Functions (STA, DYN) x 2 Versions (PRC, CPT) x 2 Plexities (U/M, D) = 64 distinct forms.
+![Stem/Function/Version/Plexity](images/script/12_1_stem_func_version_plexity.png)
 
-These are shown in two tables in the PDF (one for STA, one for DYN), each with columns for PRC-U/M, PRC-D, CPT-U/M, CPT-D and rows for Stems 1-3 and 0.
+The lower-right zone encodes: 4 Stems (1, 2, 3, 0) x 2 Functions (STA, DYN) x 2 Versions (PRC, CPT) x 2 Plexities (U/M, D) = 64 distinct forms.
 
 ### Primary Character Elision
 
@@ -2056,6 +2062,8 @@ If the word is an unconcatenated verb, the diagonal bar may also be elided and t
 Consonantal characters used for displaying C_R and C_S. The C_R character follows the word-initial Primary character.
 
 ### 12.2.1 Core Secondary Characters
+
+![Core Secondary Characters](images/script/12_2_secondary_chars_core.png)
 
 The 28 core forms each have a "top" and "bottom" end that take extensions for consonant clusters. Each consonant has both a print and handwritten form.
 
@@ -2074,6 +2082,12 @@ The 28 core forms each have a "top" and "bottom" end that take extensions for co
 
 ### 12.2.2 Consonantal Extensions to Secondary Characters
 
+![Consonant Extensions 1](images/script/12_2_consonant_extensions_1.png)
+![Consonant Extensions 2](images/script/12_2_consonant_extensions_2.png)
+![Consonant Extensions 3](images/script/12_2_consonant_extensions_3.png)
+![Consonant Extensions 4](images/script/12_2_consonant_extensions_4.png)
+![Consonant Extensions 5](images/script/12_2_consonant_extensions_5.png)
+
 Extensions to the upper "end" of a core consonant character add a **preceding** consonant. Extensions to the lower "end" add a **following** consonant. Additional consonants may be added by applying extensions to a **placeholder character**.
 
 For each of the 28 consonants, there are three extension orientations:
@@ -2088,6 +2102,8 @@ Additionally, there are special extensions for:
 - **Gemination of other extension** (doubling an extension consonant)
 
 ## 12.2.3 Using Secondary Characters to Show V_xC_S Affixes
+
+![Affix Degree and Type Diacritics](images/script/12_2_affix_degree_type_diacritics.png)
 
 Use the Secondary Characters with their extensions for any Slot V C_S character(s), placed immediately following the C_R character.
 
@@ -2116,6 +2132,8 @@ The written language handles affix scoping with the sequential ordering of Secon
 
 ## 12.2.4 Rotated Secondary Characters
 
+![Rotated Secondary Characters](images/script/12_2_rotated_secondary_chars.png)
+
 Identical to standard Secondary characters except laterally rotated 180 degrees. Used for:
 
 1. **Slot VII V_xC_S affixes** (placed after Slot V affixes or after the C_R character if no Slot V affixes)
@@ -2133,6 +2151,8 @@ The Degree of the C_S consonantal form is shown by the same nine underposed diac
 Roots where the Slot III C_R infix is replaced by a single or combination Referential affix. Written using rotated Secondary Characters in place of the initial (non-rotated) Secondary Character representing C_R, exactly the same as a Specialized C_S-Root, except that the rotated Secondary Character carries a **super-posed dot diacritic**.
 
 ## 12.3 Tertiary Characters
+
+![Tertiary Characters](images/script/12_3_tertiary_chars.png)
 
 A composite character placed after all Secondary Characters, indicating Valence, Aspect, Phase, Effect, and Level.
 
@@ -2215,6 +2235,8 @@ Shown by diacritic on the Tertiary Character:
 
 ## 12.4 Quaternary Characters — V_C/V_K Characters
 
+![Quaternary Characters](images/script/12_4_quaternary_chars.png)
+
 Used for displaying V_C Case and V_K Illocution+Validation, as well as C_M Mood and C_C Case-Scope. V_C and V_K are shown by extensions to the top and bottom ends of a plain vertical bar. Mood and Case-Scope are indicated by diacritics. A Quaternary Character is placed immediately after any Tertiary Character.
 
 ### Case Type (top extension)
@@ -2266,6 +2288,10 @@ Cases 1-9 within each type are shown by bottom extensions (1 = plain, up to 9).
 
 ### 12.4.1 Diacritics Used with Quaternary Characters
 
+![Mood Diacritics](images/script/12_4_mood_diacritics.png)
+![Case-Accessor Diacritics](images/script/12_4_case_accessor_diacritics.png)
+![Slot VII Case-Accessor](images/script/12_4_slot_vii_case_accessor.png)
+
 #### Case-Scope (under-posed diacritic)
 
 | Case-Scope | Diacritic |
@@ -2309,6 +2335,9 @@ A second case, with scope over the first, is shown by simply adding a 2nd Quater
 
 ### 12.4.2 Alternative — Showing V_C/V_K Using Diacritics on the C_R Character
 
+![V_C on C_R](images/script/12_4_alt_vc_on_cr.png)
+![V_K on C_R](images/script/12_4_alt_vk_on_cr.png)
+
 If Mood and Case-scope are default FAC/CCN (so that there are no diacritics above or below the Quaternary V_C/V_K Character), then the option exists to dispense with the Quaternary character and instead show V_C or V_K on the C_R consonantal root character using superposed and underposed diacritics.
 
 #### Showing V_C Case (on C_R character)
@@ -2332,6 +2361,9 @@ Case Type shown by super-posed diacritic (same shapes as Quaternary top extensio
 To show a referential, use a Quaternary Character followed by a Secondary Character (with extensions if needed) to indicate the specific personal referent(s) with a superposed horizontal bar diacritic on the Secondary Character. Dual-referent adjuncts are written as two referentials next to each other. To show case-stacking on a Referential, place the 2nd Quaternary Character AFTER the Secondary Character (i.e., so that the Secondary Character is sandwiched between the two Quaternary Characters).
 
 ## 12.5 Bias Characters
+
+![Bias Characters](images/script/12_5_bias_chars.png)
+![Bias Diacritics](images/script/12_5_bias_diacritics.png)
 
 Two base forms (one pair of mirrored S-shapes) encode all bias adjuncts. Each bias is shown as a variant of these base forms.
 
@@ -2371,6 +2403,8 @@ Three unassigned bias slots remain in the system.
 
 ## 12.6 Showing Register
 
+![Register Symbols](images/script/12_6_register_symbols.png)
+
 Register markers are placed before and after a phrase. Each register has four modes: Standard, Alphabetic, Transcriptive, and Transliterative.
 
 | Register | Standard (open/close) | Alphabetic (open/close) | Transcriptive* (open/close) | Transliterative* (open/close) |
@@ -2395,6 +2429,12 @@ Being a morpho-phonemic writing system, the script does not normally represent a
 Use the appropriate register markers in Alphabetic mode, and insert a Quaternary Case character between the initial register marker and the first Secondary alphabetic character. A full carrier stem may precede the alphabetic register clause per standard rules of writing, or, as a shortcut, place the primary, any tertiary, and quaternary characters immediately after the alphabetic register marker before the first Secondary alphabetic character.
 
 ## 12.7 Alphabetic Writing
+
+![Alphabetic Consonants](images/script/12_7_alphabetic_consonants.png)
+![Vowel Diacritics](images/script/12_7_vowel_diacritics.png)
+![Two-Vowel Conjuncts](images/script/12_7_two_vowel_conjuncts.png)
+![Stress Indicators](images/script/12_7_stress_indicators.png)
+![Special Characters](images/script/12_7_special_chars.png)
 
 Use Secondary Characters and their extensions plus a **placeholder character** for alphabetic writing of proper names and foreign words, preceded and followed by the appropriate double-dot diacritic (shown in the Section on writing Register Adjuncts).
 
@@ -2461,17 +2501,27 @@ The numeral system uses 10 base characters (0-9), with extensions for higher pla
 
 ### Base Digits (0-9)
 
-Each digit has a distinct cursive glyph form (print and handwritten variants shown in the PDF).
+![Base Digits](images/numbers/13_base_digits.png)
+
+Each digit has a distinct cursive glyph form (print and handwritten variants).
 
 ### Extensions
 
-- **Top-right extensions**: hundreds (+100 through +900), 9 distinct forms
-- **Bottom-left extensions**: tens (+10 through +90), 9 distinct forms
-- **Internal diacritics** (placed inside the top-left quarter of the 1-through-10 symbols): thousands (+1000 through +9000), using the same 9 shapes as the underposed diacritics
+![Tens Extensions](images/numbers/13_tens_extensions.png)
+![Hundreds Extensions](images/numbers/13_hundreds_extensions.png)
+![Thousands Diacritics](images/numbers/13_thousands_diacritics.png)
 
-**Example**: 7268 would be the digit-7 character with a +200 top-right extension, a +60 bottom-left extension, and an +8000 internal diacritic (displayed in the PDF as a composed single character).
+- **Bottom-left extensions**: tens (+10 through +90), 9 distinct forms
+- **Top-right extensions**: hundreds (+100 through +900), 9 distinct forms
+- **Internal diacritics** (placed inside the top-left quarter of the 1-through-10 symbols): thousands (+1000 through +9000)
+
+### Examples
+
+![Numeral Examples](images/numbers/13_numeral_examples.png)
 
 ## 12.9 Example
+
+![Full Script Example](images/script/12_9_full_example.png)
 
 The PDF shows the word **Wezvwaušburdóu** written in the script:
 - [default C_A]-Stem2-'fox'-GEO2/2-REA1/9-ADM
