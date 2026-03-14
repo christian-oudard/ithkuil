@@ -1,17 +1,19 @@
 # Ithkuil Grammar Implementation
 
-A Haskell implementation of the grammar of **Ithkuil**, the constructed language created by **John Quijada**. Ithkuil is a philosophical language designed to express deeper levels of human cognition with maximum precision and conciseness, featuring a morpho-phonological system of extraordinary depth and regularity.
+A Haskell implementation of the grammar of **Ithkuil**, the constructed language created by John Quijada. Ithkuil is a philosophical language, designed to express deeper levels of human cognition with precision and conciseness. It features a highly regular morpho-phonological system.
 
-This project implements a parser, renderer, and glosser for Ithkuil formatives and adjuncts across all four versions of the language, with the primary focus on **Version IV** (2023, community name *Malëuţřait*). The goal is to serve as a canonical programmatic reference for the language's grammar.
+This project implements a parser, renderer, and glosser for Ithkuil formatives and adjuncts for version IV. In the most recent version, the language's name for itself is *Malëuţřait*. It attempts to faithfully encode the rules described in the reference documents. The goal of this codebase is to serve as a canonical programmatic reference for the language's grammar.
 
-## The Four Versions
+
+## The Four Versions of Ithkuil
 
 | Version | Year | Native Name | Description |
 |---------|------|-------------|-------------|
 | I | 2004 | Iţkuîl | Original grammar with consonant grades and biliteral roots |
-| II | 2007 | ilákš | Revised with tonal vowel system |
+| II | 2007 | Ilákš | Revised with tonal vowel system |
 | III | 2011 | Elartkha | Major redesign with Designation, Pattern, and Sanction |
 | IV | 2023 | Malëuţřait | Current version (morphology document v1.3.1) |
+
 
 ## What This Project Does
 
@@ -28,7 +30,7 @@ $ cabal run ithkuil-gloss -- 'Malëuţřait'
     GLOSS: 'linguistic utterance for communication'-SYS/5₂-POS
 ```
 
-The tool provides:
+This tool provides:
 - **Morphological parsing**: Decomposition of formatives into their 10 slot structure
 - **Lexicon lookup**: 4,720 roots and 527 affixes from the official lexicon
 - **Word type classification**: Formatives, referentials, bias adjuncts, register adjuncts, modular adjuncts, affixual adjuncts, carrier adjuncts, combination referentials
@@ -108,52 +110,14 @@ The tool provides:
 ### Partial / In Progress
 
 - **Morpho-phonemic script** (Ch. 12): Type definitions for Primary/Secondary/Tertiary/Quaternary characters; SVG rendering skeleton
-- **V3 parser** (Elartkha, 2011): Grammar types defined, Slot II/IV parsing; case and Ca parsing not yet implemented
-- **V2 parser** (ilákš, 2007): Basic tone detection and V-C-V-C pattern recognition
-- **V1 parser** (Iţkuîl, 2004): Consonant grade detection (8 grades) and vocalic infix parsing
 
-## Project Structure
-
-```
-src/Ithkuil/
-  Phonology.hs      31 consonants, 9 vowels, vowel form table
-  Grammar.hs         All morphological types: 68 cases, configurations, stems, versions, Ca
-  Parse.hs           Formative parsing: conjunct splitting, slot-by-slot extraction
-  FullParse.hs       Complete parsing with stress, VnCn, aspects
-  Allomorph.hs       Ca complex: 3,840 pre-generated forms with allomorphic substitutions
-  Render.hs          Formative-to-text rendering
-  Gloss.hs           Human-readable glossing at three precision levels
-  WordType.hs        Word classification, parsing, and glossing pipeline
-  Adjuncts.hs        61 bias markers, registers, suppletive adjuncts
-  Referentials.hs    11 referent categories x 3 effects, cluster decomposition
-  Numbers.hs         Centesimal number system
-  Concatenation.hs   Type-1/Type-2 compound formatives
-  Compose.hs         Grammar lookup, formative composition, root/affix search
-  Lexicon.hs         JSON lexicon loading (roots + affixes)
-  Validation.hs      Phonotactic constraint checking
-  Script.hs          Morpho-phonemic writing system (in progress)
-  V1/                Version I parser (2004)
-  V2/                Version II parser (2007)
-  V3/                Version III parser (2011)
-
-app/Gloss.hs         Interactive glossing tool (CLI)
-test/Main.hs         358 tests covering all implemented features
-data/
-  roots.json         4,720 V4 root entries
-  affixes.json       527 V4 affix entries
-  roots_v3.json      V3 lexicon
-  roots_v1.json      V1 lexicon
-reference/
-  grammar/           Markdown reference documentation for all chapters
-  grammar/morphology_v1.3.1.pdf   Authoritative grammar specification
-```
 
 ## Building and Running
 
 Requires [Nix](https://nixos.org/) for reproducible builds:
 
 ```bash
-nix-shell               # Enter dev shell with GHC + cabal
+nix-shell                # Enter dev shell with GHC + cabal
 cabal update             # Fetch package index (first time only)
 cabal build              # Build library + executable
 cabal test               # Run test suite (358 tests)
@@ -163,27 +127,24 @@ cabal run ithkuil-gloss  # Launch interactive glosser
 ### Interactive Glosser Commands
 
 ```
-> Malëuţřait              # Gloss a word
-> wambalásk               # Parse any V4 formative
-> :root -m-               # Look up a root
-> :affix -ţř-             # Look up an affix
-> :search clown           # Search roots by keyword
+> Malëuţřait             # Gloss a word
+> wambalásk              # Parse any V4 formative
+> :root -m-              # Look up a root
+> :affix -ţř-            # Look up an affix
+> :search clown          # Search roots by keyword
 > :compose S1 PRC -m- STA BSC EXS THM   # Build a formative
-> :grammar Case            # Browse grammar tables
+> :grammar Case          # Browse grammar tables
 ```
 
-## Authoritative References
+## References
 
 - **Morphology v1.3.1** (2023-02-11): The primary reference document, included as `reference/grammar/morphology_v1.3.1.pdf`
 - **Official website**: [ithkuil.net](http://ithkuil.net)
 - **Community archive**: [ithkuil.place](https://ithkuil.place)
 
+
 ## Acknowledgments
 
-Ithkuil is the creation of **John Quijada**, who has been developing the language since the 1970s. The depth, coherence, and intellectual ambition of the grammar are extraordinary. This implementation attempts to faithfully encode the rules described in the morphology document, and any errors in the implementation are the responsibility of the implementors, not the language designer.
+Ithkuil is written by **John Quijada**, who has been developing the language since the 1970s.
 
-This project draws on reference implementations by **Christian Oudard** ([mamkait](https://github.com/christian-oudard/mamkait), Haskell) and **ngoriyev** ([IthkuilGloss](https://github.com/ngoriyev/IthkuilGloss), Kotlin).
-
-## License
-
-This is an educational and research project. The Ithkuil language and its grammar are the intellectual property of John Quijada. The lexicon data files (`data/roots.json`, `data/affixes.json`) are derived from the official Ithkuil lexicon.
+Thanks to **ngoriyev** for the Kotlin codebase [IthkuilGloss](https://github.com/ngoriyev/IthkuilGloss), which was used as a reference for some parts of this code.
