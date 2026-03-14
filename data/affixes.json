@@ -87,8 +87,8 @@
   {
     "cs": "bg",
     "abbrev": "NEC",
-    "description": "",
-    "type": "",
+    "description": "Degree of Necessity",
+    "type": "0",
     "degrees": [
       "impossible if X is present",
       "undesirable",
@@ -648,8 +648,8 @@
   {
     "cs": "cj",
     "abbrev": "AUR",
-    "description": "",
-    "type": "",
+    "description": "Aural Associations",
+    "type": "D1",
     "degrees": [
       "having the sound of X",
       "having a sound similar to X",
@@ -1210,7 +1210,7 @@
     "cs": "dç",
     "abbrev": "OPL",
     "description": "Degree of Onset & Prolongation",
-    "type": "",
+    "type": "B",
     "degrees": [
       "having a sudden, intense, unexpected onset but of only momentary duration",
       "having a sudden/intense onset and enduring for a relatively brief duration",
@@ -1278,7 +1278,7 @@
     "cs": "dg",
     "abbrev": "ANG",
     "description": "Angular Measurement",
-    "type": "0* 1 arc-seconds 2 arc-minutes 3 mils 4 grads 5 degrees 6 points 7 hour angles 8 radians 9 sextants",
+    "type": "0*",
     "degrees": [
       "(in) points",
       "(in) hour angles",
@@ -2315,7 +2315,7 @@
     "cs": "jf",
     "abbrev": "CRE",
     "description": "Capacity for a relation with entity",
-    "type": "",
+    "type": "0",
     "degrees": [
       "ability to consider X",
       "ability to acknowledge X",
@@ -2348,8 +2348,8 @@
   {
     "cs": "jh",
     "abbrev": "CRL",
-    "description": "",
-    "type": "",
+    "description": "Degree of Physical Control",
+    "type": "A2",
     "degrees": [
       "too uncontrolled, too out-of-control",
       "uncontrolled/helpless(ly) , without control/ out of control",
@@ -2365,8 +2365,8 @@
   {
     "cs": "jk",
     "abbrev": "ARO",
-    "description": "",
-    "type": "",
+    "description": "Adverse Role",
+    "type": "0",
     "degrees": [
       "as cause/root/source/basis of a problem or adverse situation",
       "as source of grief/sadness/woe",
@@ -2382,8 +2382,8 @@
   {
     "cs": "jm",
     "abbrev": "MDL",
-    "description": "",
-    "type": "",
+    "description": "Random Pattern of Modulation",
+    "type": "0",
     "degrees": [
       "randomly modulate not enough",
       "randomly modulate hardly at all",
@@ -2399,8 +2399,8 @@
   {
     "cs": "jn",
     "abbrev": "AAW",
-    "description": "",
-    "type": "",
+    "description": "Areal/Cultural Association - Western Hemisphere",
+    "type": "D1",
     "degrees": [
       "from ancient North America",
       "from ancient Central America",
@@ -2416,8 +2416,8 @@
   {
     "cs": "jň",
     "abbrev": "AAO",
-    "description": "",
-    "type": "",
+    "description": "Areal/Cultural Association - Other Areas",
+    "type": "D1",
     "degrees": [
       "from ancient Polynesia and Pacific Islands",
       "from ancient Australia, New Zealand",
@@ -2433,8 +2433,8 @@
   {
     "cs": "jp",
     "abbrev": "FRO",
-    "description": "",
-    "type": "",
+    "description": "Functional Role",
+    "type": "0",
     "degrees": [
       "as toy",
       "as source of entertainment",
@@ -2450,8 +2450,8 @@
   {
     "cs": "jř",
     "abbrev": "DST",
-    "description": "",
-    "type": "",
+    "description": "Distributive Coordination",
+    "type": "C",
     "degrees": [
       "applying to each equally (unfairly)",
       "applied selectively by decision/preference (unfairly)",
@@ -2467,8 +2467,8 @@
   {
     "cs": "jt",
     "abbrev": "SRO",
-    "description": "",
-    "type": "",
+    "description": "Subjective Role",
+    "type": "0",
     "degrees": [
       "X as cause/root/source of a situation/state/problem",
       "X as obstacle/hindrance/hurdle",
@@ -2501,8 +2501,8 @@
   {
     "cs": "jv",
     "abbrev": "PRQ",
-    "description": "",
-    "type": "",
+    "description": "Prerequisite",
+    "type": "0",
     "degrees": [
       "ingredients for making",
       "originating source",
@@ -2518,8 +2518,8 @@
   {
     "cs": "jx",
     "abbrev": "IDR",
-    "description": "",
-    "type": "",
+    "description": "Random/Varying Increases and Decreases",
+    "type": "0",
     "degrees": [
       "increase and decrease randomly too slowly",
       "increase and decrease randomly very slowly",
@@ -2552,8 +2552,8 @@
   {
     "cs": "kb",
     "abbrev": "PLC",
-    "description": "",
-    "type": "",
+    "description": "Stage of Annual Plant Life-Cycle",
+    "type": "D1",
     "degrees": [
       "planted & waiting to sprout",
       "sprouting",
@@ -2569,8 +2569,8 @@
   {
     "cs": "kc",
     "abbrev": "EPP",
-    "description": "",
-    "type": "",
+    "description": "Edible or Autonomous Plant Parts/Components",
+    "type": "0",
     "degrees": [
       "seed/nut",
       "pod (seed)",
@@ -2586,8 +2586,8 @@
   {
     "cs": "kč",
     "abbrev": "LET",
-    "description": "",
-    "type": "",
+    "description": "to let X be/happen/manifest...",
+    "type": "0",
     "degrees": [
       "by deliberate inaction, not doing anything to prevent/stop it",
       "by acting against one’s own interests",
@@ -2603,8 +2603,8 @@
   {
     "cs": "kç",
     "abbrev": "PFL",
-    "description": "",
-    "type": "",
+    "description": "Internal Positional Orientation of a (Quasi-)Flat Object",
+    "type": "0",
     "degrees": [
       "with X’s “front/top” side visible to the observer but largely pointed away at a severe angle",
       "with X’s orientation being “edge-on” and vertical relative to the observer",
@@ -2637,8 +2637,8 @@
   {
     "cs": "kh",
     "abbrev": "SBT",
-    "description": "",
-    "type": "",
+    "description": "Degree of Subtlety/Nuance",
+    "type": "A2",
     "degrees": [
       "too subtle",
       "very subtle/nuanced",
@@ -2671,8 +2671,8 @@
   {
     "cs": "km",
     "abbrev": "TME",
-    "description": "",
-    "type": "",
+    "description": "Degree of Timeliness",
+    "type": "0*",
     "degrees": [
       "too early/too soon",
       "(quite) early",
@@ -2688,8 +2688,8 @@
   {
     "cs": "kp",
     "abbrev": "EFT",
-    "description": "",
-    "type": "",
+    "description": "Degree of Effort",
+    "type": "D1",
     "degrees": [
       "no attempt made at all, not even try to…",
       "minimal attempt/effort at/to, barely even try to…",
@@ -2722,8 +2722,8 @@
   {
     "cs": "kř",
     "abbrev": "DPD",
-    "description": "",
-    "type": "",
+    "description": "Degree of Dependency",
+    "type": "C",
     "degrees": [
       "objective value/identity/nature utterly dependent upon or determined by another entity",
       "objective value/identity/nature mostly dependent upon or determined by another entity",
@@ -2756,8 +2756,8 @@
   {
     "cs": "kš",
     "abbrev": "BEH",
-    "description": "",
-    "type": "",
+    "description": "Degree of Subjective Effect or Behavioral Appropriateness",
+    "type": "0",
     "degrees": [
       "grotesque, gross, nauseating, sickening",
       "repugnant, revolting, repulsive",
@@ -2773,8 +2773,8 @@
   {
     "cs": "kt",
     "abbrev": "TPP",
-    "description": "",
-    "type": "",
+    "description": "Temporal Position Relative to Present",
+    "type": "0*",
     "degrees": [
       "in the remote past/once upon a time",
       "past/former/previous",
@@ -2790,8 +2790,8 @@
   {
     "cs": "kţ",
     "abbrev": "MAT",
-    "description": "",
-    "type": "",
+    "description": "Degree of Maturation",
+    "type": "D1",
     "degrees": [
       "undeveloped/immature(ly)/seed/embryo",
       "under-developed/newborn stage/seedling/baby",
@@ -2807,8 +2807,8 @@
   {
     "cs": "kv",
     "abbrev": "APR",
-    "description": "",
-    "type": "",
+    "description": "Degree of Contextual Appropriateness",
+    "type": "0",
     "degrees": [
       "contemptible(-ly)/utterly inappropriate(ly)",
       "scandalous(ly)/trashy(-ly)/inappropriate(ly)",
@@ -2858,8 +2858,8 @@
   {
     "cs": "kz",
     "abbrev": "EGY",
-    "description": "",
-    "type": "",
+    "description": "Initiating Force/Energy of a Motion/Trajectory/Appearance/Change-in-State",
+    "type": "0",
     "degrees": [
       "spring forth (from within), i.e., release pent-up energy into an outward thrusting motion",
       "release (to lower energy state, e.g., fall, let drop, let go, slide, let out, give out, etc.",
@@ -2876,7 +2876,7 @@
     "cs": "kẓ",
     "abbrev": "XTM",
     "description": "One Hundred Million",
-    "type": "",
+    "type": "0",
     "degrees": [
       "100⁴th in physical arrangement",
       "100⁴th in agreed-upon order",
@@ -2909,8 +2909,8 @@
   {
     "cs": "lb",
     "abbrev": "CLD",
-    "description": "",
-    "type": "",
+    "description": "Color Dimensions",
+    "type": "D1",
     "degrees": [
       "pale ( = bright + desaturated)",
       "light-colored",
@@ -2926,8 +2926,8 @@
   {
     "cs": "lc",
     "abbrev": "COS",
-    "description": "",
-    "type": "",
+    "description": "Comparison Specifications",
+    "type": "0",
     "degrees": [
       "“more”/“less” = extent/amount/volume",
       "“harder”/“weaker” = degree of intensity or effort",
@@ -2943,8 +2943,8 @@
   {
     "cs": "lč",
     "abbrev": "SIA",
-    "description": "",
-    "type": "",
+    "description": "Status of Inferred Arguments",
+    "type": "0",
     "degrees": [
       "only explicitly stated arguments are implied, no unstated arguments should be inferred",
       "only logically required arguments are implied or should be inferred (e.g., a STIMULUS for a state of external sensory input, a RECIPIENT for an act of transferring possession); unstated arguments that are logically unnecessary but possible should not be inferred",
@@ -2960,8 +2960,8 @@
   {
     "cs": "lç",
     "abbrev": "SID",
-    "description": "",
-    "type": "",
+    "description": "Subjective Identity",
+    "type": "B",
     "degrees": [
       "outward expression of identity according to social expectations of",
       "exclusive expression of identify according to social expectations of",
@@ -2977,8 +2977,8 @@
   {
     "cs": "ld",
     "abbrev": "DOP",
-    "description": "",
-    "type": "",
+    "description": "Degree of Optimality",
+    "type": "0",
     "degrees": [
       "at its best / being the best it can be / optimally",
       "nearly at its best / being nearly the best it can be / near-optimally",
@@ -2994,8 +2994,8 @@
   {
     "cs": "lḑ",
     "abbrev": "TVP",
-    "description": "",
-    "type": "",
+    "description": "Trivalent Polarity",
+    "type": "D1",
     "degrees": [
       "completely the opposite extreme, polar opposite of, to the utmost opposite/negative extreme, couldn’t be worse, totally backfired",
       "much worse than if nothing had been done",
@@ -3011,8 +3011,8 @@
   {
     "cs": "lf",
     "abbrev": "LCK",
-    "description": "",
-    "type": "",
+    "description": "Degree of Luck/Fortune",
+    "type": "0*",
     "degrees": [
       "as a result of the worst luck imaginable/as the cruelest fate would have it…",
       "by a stroke of ill-fortune/as ill-fate would have it…",
@@ -3028,8 +3028,8 @@
   {
     "cs": "lg",
     "abbrev": "URS",
-    "description": "",
-    "type": "",
+    "description": "Usage of a Resource",
+    "type": "D1",
     "degrees": [
       "being foolishly unused/needlessly wasted",
       "being unused/wasted",
@@ -3045,8 +3045,8 @@
   {
     "cs": "lj",
     "abbrev": "NVS",
-    "description": "",
-    "type": "",
+    "description": "Non-Visible Spectral Regions",
+    "type": "0",
     "degrees": [
       "consisting of or emanating energy in long radio wavelengths",
       "consisting of or emanating energy in short radio wavelengths",
@@ -3079,8 +3079,8 @@
   {
     "cs": "lk",
     "abbrev": "VWP",
-    "description": "",
-    "type": "",
+    "description": "From Viewpoint/Perspective of",
+    "type": "D1",
     "degrees": [
       "from viewpoint of speaker",
       "from viewpoint of 3rd party near speaker",
@@ -3096,8 +3096,8 @@
   {
     "cs": "ļk",
     "abbrev": "PMU",
-    "description": "",
-    "type": "",
+    "description": "Pressure Measurement Units",
+    "type": "D1",
     "degrees": [
       "(in) bars",
       "(in) baryes",
@@ -3113,8 +3113,8 @@
   {
     "cs": "lkř",
     "abbrev": "ADI",
-    "description": "",
-    "type": "",
+    "description": "Adverse Disease/Disorder/Illness",
+    "type": "C",
     "degrees": [
       "temporarily asymptomatic despite",
       "temporarily mildly ill from",
@@ -3130,8 +3130,8 @@
   {
     "cs": "lks",
     "abbrev": "DFB",
-    "description": "",
-    "type": "",
+    "description": "Derived Foodstuff/Beverage",
+    "type": "0",
     "degrees": [
       "non-sweet (dry) fermented alcoholic beverage made from",
       "sweet alcoholic beverage made from",
@@ -3147,8 +3147,8 @@
   {
     "cs": "lm",
     "abbrev": "STR",
-    "description": "",
-    "type": "",
+    "description": "Degree of Physical Strength Possible or Used",
+    "type": "0*",
     "degrees": [
       "too weakly/with insufficient strength or power",
       "barely/hardly/weak(ly)/with barely enough strength orpower",
@@ -3164,8 +3164,8 @@
   {
     "cs": "ļn",
     "abbrev": "CNW",
-    "description": "",
-    "type": "",
+    "description": "Conway Polyhedral Mathematical Operations",
+    "type": "D1",
     "degrees": [
       "dual",
       "truncated",
@@ -3181,8 +3181,8 @@
   {
     "cs": "lp",
     "abbrev": "CAP",
-    "description": "",
-    "type": "",
+    "description": "Degree of Potential or Capability",
+    "type": "D1",
     "degrees": [
       "utterly incapable/completely lacking in all necessary abilities or capacities",
       "underqualified; almost totally lacking in necessary abilities or capacities",
@@ -3198,8 +3198,8 @@
   {
     "cs": "ļp",
     "abbrev": "EMU",
-    "description": "",
-    "type": "",
+    "description": "Energy Measurement Units",
+    "type": "D1",
     "degrees": [
       "(in) Planck energy units",
       "(in) electronvolts",
@@ -3215,8 +3215,8 @@
   {
     "cs": "lps",
     "abbrev": "MAS",
-    "description": "",
-    "type": "",
+    "description": "Measurement of Mass",
+    "type": "0",
     "degrees": [
       "(in) Planck masses",
       "(in) daltons",
@@ -3232,8 +3232,8 @@
   {
     "cs": "lř",
     "abbrev": "ADT",
-    "description": "",
-    "type": "",
+    "description": "Adverbial Additives",
+    "type": "C",
     "degrees": [
       "also/too",
       "furthermore/moreover",
@@ -3249,8 +3249,8 @@
   {
     "cs": "ļř",
     "abbrev": "TDP",
-    "description": "",
-    "type": "",
+    "description": "Three-Dimensional Polyhedral Forms",
+    "type": "C",
     "degrees": [
       "symmetrical 3D polyhedron having X-number of triangular faces",
       "symmetrical 3D polyhedron having X-number of quadrilateral faces",
@@ -3266,8 +3266,8 @@
   {
     "cs": "ls",
     "abbrev": "MEA",
-    "description": "",
-    "type": "",
+    "description": "Means for Being or Doing",
+    "type": "0",
     "degrees": [
       "holder/stabilizer for being/doing X",
       "mystical/magical/supernatural means for being/doing X",
@@ -3283,8 +3283,8 @@
   {
     "cs": "lš",
     "abbrev": "DPT",
-    "description": "",
-    "type": "",
+    "description": "Depiction/Representation/Record",
+    "type": "0",
     "degrees": [
       "symbol/emblem/logo representing/standing for X",
       "allegorical reference to X",
@@ -3300,8 +3300,8 @@
   {
     "cs": "lst",
     "abbrev": "ANT",
-    "description": "",
-    "type": "",
+    "description": "Degree of Anticipation",
+    "type": "0*",
     "degrees": [
       "long-awaited",
       "eagerly awaited; can't wait for",
@@ -3317,8 +3317,8 @@
   {
     "cs": "lt",
     "abbrev": "RTI",
-    "description": "",
-    "type": "",
+    "description": "Relative Timeline Indicator",
+    "type": "0",
     "degrees": [
       "completes after present",
       "occurs after present",
@@ -3334,8 +3334,8 @@
   {
     "cs": "lţ",
     "abbrev": "SQT",
-    "description": "",
-    "type": "",
+    "description": "Sequence Relative to Present Context",
+    "type": "0",
     "degrees": [
       "the former; primarily",
       "two before preceding",
@@ -3351,8 +3351,8 @@
   {
     "cs": "ļt",
     "abbrev": "FMU",
-    "description": "",
-    "type": "",
+    "description": "Force Measurement Units",
+    "type": "D1",
     "degrees": [
       "(in) Planck force units",
       "(in) dynes",
@@ -3368,8 +3368,8 @@
   {
     "cs": "ltř",
     "abbrev": "ION",
-    "description": "",
-    "type": "",
+    "description": "Ionic Compounding Elements",
+    "type": "C",
     "degrees": [
       "transition metal cation with +1 charge",
       "transition metal cation with +2 charge",
@@ -3385,8 +3385,8 @@
   {
     "cs": "lv",
     "abbrev": "DSN",
-    "description": "",
-    "type": "",
+    "description": "Degree of Seniority",
+    "type": "0",
     "degrees": [
       "candidate X; X being under consideration for acceptance/initiation",
       "newly established/newly initiated/newly accepted/rookie",
@@ -3402,8 +3402,8 @@
   {
     "cs": "ļv",
     "abbrev": "OEM",
-    "description": "",
-    "type": "",
+    "description": "Other Energy Measurement Units",
+    "type": "D1",
     "degrees": [
       "(in) watts",
       "(in) horsepower",
@@ -3419,8 +3419,8 @@
   {
     "cs": "lz",
     "abbrev": "DSD",
-    "description": "",
-    "type": "",
+    "description": "Desiderative",
+    "type": "0",
     "degrees": [
       "want to/that, desire to/that",
       "hope to/that, wish to/that; Type 2: dream about/long to",
@@ -3436,8 +3436,8 @@
   {
     "cs": "lž",
     "abbrev": "OBG",
-    "description": "",
-    "type": "",
+    "description": "Obligative/Necessitative",
+    "type": "0",
     "degrees": [
       "must/have to",
       "should/ought to",
@@ -3487,8 +3487,8 @@
   {
     "cs": "mb",
     "abbrev": "MST",
-    "description": "",
-    "type": "",
+    "description": "Degree of Moisture",
+    "type": "D1",
     "degrees": [
       "sopping/soaking/dripping wet/drenched/overflowing",
       "saturated/at full capacity in terms of holding liquid",
@@ -3504,8 +3504,8 @@
   {
     "cs": "mc",
     "abbrev": "AP1",
-    "description": "",
-    "type": "",
+    "description": "Aspects I",
+    "type": "0",
     "degrees": [
       "(RTR) Retrospective",
       "(PRS) Prospective",
@@ -3521,8 +3521,8 @@
   {
     "cs": "mč",
     "abbrev": "AP2",
-    "description": "",
-    "type": "",
+    "description": "Aspects II",
+    "type": "0",
     "degrees": [
       "(RSM) Resumptive",
       "(CSS) Cessative",
@@ -3538,8 +3538,8 @@
   {
     "cs": "mç",
     "abbrev": "DCF",
-    "description": "",
-    "type": "",
+    "description": "2nd-Level Duplex Configurative Set of 1st-Level Sets",
+    "type": "B",
     "degrees": [
       "DSS set of first-order configurative sets X",
       "DSC set of first-order configurative sets X",
@@ -3555,8 +3555,8 @@
   {
     "cs": "md",
     "abbrev": "PRT",
-    "description": "",
-    "type": "",
+    "description": "Degree of Portability",
+    "type": "0",
     "degrees": [
       "not portable, solidly integrated into substrate",
       "not portable due to excessive mass, shape/form, texture, toxicity, temperature, etc.",
@@ -3572,8 +3572,8 @@
   {
     "cs": "mḑ",
     "abbrev": "DDM",
-    "description": "",
-    "type": "",
+    "description": "Degree of Domestication",
+    "type": "D1",
     "degrees": [
       "utterly wild, savage, untamable",
       "wild/savage unknown if approachable/tamable",
@@ -3589,8 +3589,8 @@
   {
     "cs": "mf",
     "abbrev": "ITL",
-    "description": "",
-    "type": "",
+    "description": "Degree of Intelligence Manifested",
+    "type": "0",
     "degrees": [
       "dumb/stupid/asinine; idiotic(ally) /moronic(ally)",
       "foolhardy/foolish(ly)",
@@ -3606,8 +3606,8 @@
   {
     "cs": "mh",
     "abbrev": "FLS",
-    "description": "",
-    "type": "",
+    "description": "Degree of Fluctuation/Stability",
+    "type": "0*",
     "degrees": [
       "too unstable/too random",
       "highly variable/random fluctuation or instability",
@@ -3623,8 +3623,8 @@
   {
     "cs": "mj",
     "abbrev": "AP4",
-    "description": "",
-    "type": "",
+    "description": "Aspects IV",
+    "type": "0",
     "degrees": [
       "(DCL) Disclusive",
       "(CCL) Conclusive",
@@ -3640,8 +3640,8 @@
   {
     "cs": "mk",
     "abbrev": "FGN",
-    "description": "",
-    "type": "",
+    "description": "Degree of Foreignness",
+    "type": "0",
     "degrees": [
       "indigenous/autochthonous/endemic/native",
       "not originally indigenous or autochthonous or native but of long-standing presence and the first to fill a particular niche, there being no pre-existing",
@@ -3657,8 +3657,8 @@
   {
     "cs": "mļ",
     "abbrev": "MNN",
-    "description": "",
-    "type": "",
+    "description": "Manner",
+    "type": "D1",
     "degrees": [
       "gently",
       "gracefully/effortlessly",
@@ -3674,8 +3674,8 @@
   {
     "cs": "mp",
     "abbrev": "DTS",
-    "description": "",
-    "type": "",
+    "description": "Duration of Shift/Change/Transition",
+    "type": "0",
     "degrees": [
       "sharp break, sudden shift from one state/form/shape/set of circumstances to another with no discernible transition period/zone(i.e., point-like/instantaneous transition)",
       "extremely brief/small/barely discernible transition period or zone from one state/form/shape/set of circumstances to another",
@@ -3691,8 +3691,8 @@
   {
     "cs": "mř",
     "abbrev": "PXR",
-    "description": "",
-    "type": "",
+    "description": "Partially Exclusive OR",
+    "type": "C",
     "degrees": [
       "partially exclusive “or” w/shared topic, where among three or more referents, 2 or more of the referents may occur, but not all of them",
       "partially exclusive “or” w/shared morphology (unless marked otherwise), where among three or more referents, 2 or more of the referents may occur, but not all of them",
@@ -3708,8 +3708,8 @@
   {
     "cs": "ms",
     "abbrev": "MEC",
-    "description": "",
-    "type": "",
+    "description": "Type of Mechanical Instrumentality",
+    "type": "0",
     "degrees": [
       "the body’s natural method of doing so (e.g., on foot, by hand, etc.)",
       "object employed circumstantially as implement for X-ing",
@@ -3725,8 +3725,8 @@
   {
     "cs": "mš",
     "abbrev": "ENB",
-    "description": "",
-    "type": "",
+    "description": "Means of Enablement",
+    "type": "0",
     "degrees": [
       "by inadvertent gesture/word/sign taken as order or permission",
       "by granting of permission",
@@ -3742,8 +3742,8 @@
   {
     "cs": "mt",
     "abbrev": "SCL",
-    "description": "",
-    "type": "",
+    "description": "Standards for Comparison for Use with Levels",
+    "type": "D1",
     "degrees": [
       "where it was previously less than",
       "where it was previously more than",
@@ -3759,8 +3759,8 @@
   {
     "cs": "mţ",
     "abbrev": "DSR",
-    "description": "",
-    "type": "",
+    "description": "Degree of Discretion or Secrecy",
+    "type": "D1",
     "degrees": [
       "announced/advertised/heralded, w/ public disclosure",
       "open & well-known, with full public knowledge",
@@ -3776,8 +3776,8 @@
   {
     "cs": "mv",
     "abbrev": "DCY",
-    "description": "",
-    "type": "",
+    "description": "Degree of Certainty",
+    "type": "D1",
     "degrees": [
       "I’m probably mistaken in saying this (due to insufficient experience/skill/knowledge on the matter), but…",
       "I may be mistaken in saying this (since my experience/skill/knowledge on the matter may be insufficient), but…",
@@ -3793,8 +3793,8 @@
   {
     "cs": "mz",
     "abbrev": "SOC",
-    "description": "",
-    "type": "",
+    "description": "Type of Social Instrumentality",
+    "type": "0",
     "degrees": [
       "via lackeys, grunt labor, go-fors or henchmen",
       "by coercion, threat, blackmail",
@@ -3810,8 +3810,8 @@
   {
     "cs": "mž",
     "abbrev": "PWC",
-    "description": "",
-    "type": "",
+    "description": "Part/Whole Componential Metaphors",
+    "type": "0",
     "degrees": [
       "(acting as) support/leg/stand/base of X",
       "(acting as) “trunk”, torso, or central bulk portion of X",
@@ -3827,8 +3827,8 @@
   {
     "cs": "mẓ",
     "abbrev": "AP3",
-    "description": "",
-    "type": "",
+    "description": "Aspects III",
+    "type": "0",
     "degrees": [
       "(PMP) Preemptive",
       "(CLM) Climactic",
@@ -3878,8 +3878,8 @@
   {
     "cs": "nç",
     "abbrev": "MCF",
-    "description": "",
-    "type": "",
+    "description": "2nd-Level Multiplex Configurative Set of 1st-Level Sets",
+    "type": "B",
     "degrees": [
       "MSS set of first-order configurative sets X",
       "MSC set of first-order configurative sets X",
@@ -3895,8 +3895,8 @@
   {
     "cs": "ňc",
     "abbrev": "FP1",
-    "description": "",
-    "type": "",
+    "description": "Finger Positions 1",
+    "type": "0",
     "degrees": [
       "with index finger extended/pointing outward",
       "with middle finger extended",
@@ -3912,8 +3912,8 @@
   {
     "cs": "ňč",
     "abbrev": "FP2",
-    "description": "",
-    "type": "",
+    "description": "Finger Positions 2",
+    "type": "0",
     "degrees": [
       "with thumb and pinkie finger extended",
       "with thumb and index finger extended",
@@ -3929,8 +3929,8 @@
   {
     "cs": "ňç",
     "abbrev": "VRF",
-    "description": "",
-    "type": "",
+    "description": "Verifiability of Info & Trustworthiness of its Source",
+    "type": "B",
     "degrees": [
       "source trustworthy, info verifiable",
       "source trustworthy, verifiability of info unknown",
@@ -3946,8 +3946,8 @@
   {
     "cs": "nd",
     "abbrev": "ASQ",
-    "description": "",
-    "type": "",
+    "description": "Aspectual Sequencing",
+    "type": "0",
     "degrees": [
       "about to X; right before X",
       "start X-ing; start/beginning of X",
@@ -3963,8 +3963,8 @@
   {
     "cs": "nḑ",
     "abbrev": "STT",
-    "description": "",
-    "type": "",
+    "description": "Short-Term Time References",
+    "type": "0",
     "degrees": [
       "happening yesterday",
       "happening some hours ago, earlier today",
@@ -3980,8 +3980,8 @@
   {
     "cs": "ňd",
     "abbrev": "PLN",
-    "description": "",
-    "type": "",
+    "description": "Degree of Planning",
+    "type": "D1",
     "degrees": [
       "ad hoc / impromptu / unplanned (no forewarning)",
       "ad hoc / improvised (forewarned but no preparation performed)",
@@ -3997,8 +3997,8 @@
   {
     "cs": "ňḑ",
     "abbrev": "IDF",
-    "description": "",
-    "type": "",
+    "description": "Identificative",
+    "type": "0",
     "degrees": [
       "any (of the various/number of)",
       "almost any",
@@ -4014,8 +4014,8 @@
   {
     "cs": "nf",
     "abbrev": "NTR",
-    "description": "",
-    "type": "",
+    "description": "Degree of Notoriety, Acceptance, Respect, Honor",
+    "type": "0",
     "degrees": [
       "spurned, scorned, vilified, pariah-like/ostracized; in an alienating or self-ostracizing manner",
       "infamous, infamously",
@@ -4031,8 +4031,8 @@
   {
     "cs": "ňf",
     "abbrev": "VTS",
-    "description": "",
-    "type": "",
+    "description": "Variability of Shift/Change/Transition",
+    "type": "0",
     "degrees": [
       "highly variable/chaotic transition from one state/form/shape/set of circumstances to another",
       "disjointed/non-contiguous/non-continuous break/shift from one state/form/shape/set of circumstances to another",
@@ -4048,8 +4048,8 @@
   {
     "cs": "ng",
     "abbrev": "VAM",
-    "description": "",
-    "type": "",
+    "description": "Velocity and Acceleration Measurement",
+    "type": "D1",
     "degrees": [
       "km/hr [km/hr²₂]",
       "km/s [km/s²₂]",
@@ -4065,8 +4065,8 @@
   {
     "cs": "nh",
     "abbrev": "PXM",
-    "description": "",
-    "type": "",
+    "description": "Degree of Proximity",
+    "type": "A2",
     "degrees": [
       "too close",
       "as close as possible without contact",
@@ -4082,8 +4082,8 @@
   {
     "cs": "nk",
     "abbrev": "ENT",
-    "description": "",
-    "type": "",
+    "description": "Degree of Enthusiasm",
+    "type": "0",
     "degrees": [
       "under duress or coercion",
       "against one’s will or desire",
@@ -4099,8 +4099,8 @@
   {
     "cs": "nļ",
     "abbrev": "IVL",
-    "description": "",
-    "type": "",
+    "description": "Illocution + Validation",
+    "type": "D1",
     "degrees": [
       "(ASR) Assertive [(OBS) Observational₂]",
       "(DIR) Directive [(REC) Recollective₂]",
@@ -4116,8 +4116,8 @@
   {
     "cs": "nř",
     "abbrev": "AGN",
-    "description": "",
-    "type": "",
+    "description": "Degree of Agency, Intent or Effectiveness",
+    "type": "C",
     "degrees": [
       "with the anticipated max. resulting effect possible",
       "with the anticipated resulting effect to a high degree",
@@ -4133,8 +4133,8 @@
   {
     "cs": "ňř",
     "abbrev": "PRV",
-    "description": "",
-    "type": "",
+    "description": "Degree of Prevention or Blockage",
+    "type": "C",
     "degrees": [
       "completely blocked/prevented from occurring/manifesting (naturally so)",
       "fully restricted - manifestation/occurrence determined by natural conditions",
@@ -4167,8 +4167,8 @@
   {
     "cs": "nš",
     "abbrev": "BAS",
-    "description": "",
-    "type": "",
+    "description": "Basis",
+    "type": "0",
     "degrees": [
       "X-based; on the basis of X  ( = general overall basis for something, i.e., X as both the idea behind and model for something)",
       "X-based, on the basis of X ( = as the intellectual basis for, X as the idea behind something)",
@@ -4184,8 +4184,8 @@
   {
     "cs": "ňs",
     "abbrev": "OSQ",
-    "description": "",
-    "type": "",
+    "description": "Opportunity Squandered",
+    "type": "0",
     "degrees": [
       "wished-for or hoped-for but so far has never come to pass",
       "missed-out on (opportunity has arisen but one isn’t/wasn’t able or permitted to act upon it despite desire to do so)",
@@ -4201,8 +4201,8 @@
   {
     "cs": "ňš",
     "abbrev": "PSS",
-    "description": "",
-    "type": "",
+    "description": "Degree of Alienable Possession",
+    "type": "0",
     "degrees": [
       "the X which one circumstantially possesses/uses/handles at the moment or with which one is momentarily/circumstantially/informally associated",
       "the X circumstantially/informally/temporarily taken by, or circumstantially/informally given/assigned/designated to one for their use/possession/responsibility",
@@ -4218,8 +4218,8 @@
   {
     "cs": "nt",
     "abbrev": "SEQ",
-    "description": "",
-    "type": "",
+    "description": "Numerical Sequence",
+    "type": "0*",
     "degrees": [
       "first/initial; first of all",
       "second; secondly",
@@ -4235,8 +4235,8 @@
   {
     "cs": "nţ",
     "abbrev": "MDN",
-    "description": "",
-    "type": "",
+    "description": "Degree of Age or Modernity",
+    "type": "0",
     "degrees": [
       "primordial/proto-",
       "prehistoric",
@@ -4252,8 +4252,8 @@
   {
     "cs": "ňt",
     "abbrev": "APP",
-    "description": "",
-    "type": "",
+    "description": "Appraisal of Outcome/Effect",
+    "type": "D1",
     "degrees": [
       "…and that’s the way it HAS to be/…and it can’t be any other way",
       "…and that’s the way it’s supposed to be/…and that’s the way it works",
@@ -4269,8 +4269,8 @@
   {
     "cs": "ňţ",
     "abbrev": "ERR",
-    "description": "",
-    "type": "",
+    "description": "Degree of Correctness versus Error",
+    "type": "D1",
     "degrees": [
       "totally wrong/incorrectly/totally mis-/mal-, totally in error",
       "wrong/incorrectly/mis-/mal- , in error/erroneously",
@@ -4286,8 +4286,8 @@
   {
     "cs": "ntř",
     "abbrev": "HDM",
-    "description": "",
-    "type": "",
+    "description": "Hidden or Double Meaning",
+    "type": "C",
     "degrees": [
       "hidden/double/intended meaning implied from non-verbal signal/gesture/movement/sign",
       "gleaned hidden warning/advisory implied from non-verbal signal/gesture/movement/sign",
@@ -4303,8 +4303,8 @@
   {
     "cs": "ňv",
     "abbrev": "COL",
-    "description": "",
-    "type": "",
+    "description": "Color Attributes",
+    "type": "D1",
     "degrees": [
       "shiny, glossy",
       "luminescent, glowing",
@@ -4320,8 +4320,8 @@
   {
     "cs": "nx",
     "abbrev": "CVT",
-    "description": "",
-    "type": "",
+    "description": "Degree of Covertness versus Overtness",
+    "type": "D2",
     "degrees": [
       "too furtive(ly)/overly covert(ly)",
       "very furtive(ly)/highly covert(ly)/well behind the scenes",
@@ -4337,8 +4337,8 @@
   {
     "cs": "nz",
     "abbrev": "PWF",
-    "description": "",
-    "type": "",
+    "description": "Part/Whole Functional Metaphors",
+    "type": "0",
     "degrees": [
       "(acting as) engine/motor/heart/pump/core/driver mechanism",
       "(acting as) brain/computer/chip/instruction set",
@@ -4354,8 +4354,8 @@
   {
     "cs": "nž",
     "abbrev": "CVY",
-    "description": "",
-    "type": "",
+    "description": "Means of Transportation/Conveyance",
+    "type": "0",
     "degrees": [
       "holder/stabilizer for transporting/holding X",
       "mystical/magical/supernatural means for transporting/holding X",
@@ -4371,8 +4371,8 @@
   {
     "cs": "ňz",
     "abbrev": "RNC",
-    "description": "",
-    "type": "",
+    "description": "Renunciation",
+    "type": "0",
     "degrees": [
       "give up on",
       "lose faith/belief in",
@@ -4388,8 +4388,8 @@
   {
     "cs": "ňž",
     "abbrev": "CLS",
-    "description": "",
-    "type": "",
+    "description": "Classification",
+    "type": "0",
     "degrees": [
       "a physical arrangement or discernible pattern/assortment of X for aesthetic reasons",
       "a physical arrangement or discernible pattern/assortment of X for utilitarian reasons",
@@ -4405,8 +4405,8 @@
   {
     "cs": "ňẓ",
     "abbrev": "BOD",
-    "description": "",
-    "type": "",
+    "description": "Position of One's Core Body",
+    "type": "0",
     "degrees": [
       "in supine position (i.e., lying prone, facing upward)",
       "lying face-downward",
@@ -4440,7 +4440,7 @@
     "cs": "pc",
     "abbrev": "XTT",
     "description": "Ten Thousand",
-    "type": "",
+    "type": "0",
     "degrees": [
       "10000th in physical arrangement",
       "10000th in agreed-upon order",
@@ -4456,8 +4456,8 @@
   {
     "cs": "pč",
     "abbrev": "AUT",
-    "description": "",
-    "type": "",
+    "description": "Authorization",
+    "type": "B",
     "degrees": [
       "by being granted a personal privilege/via the generosity or largess ofanother or others",
       "by inalienable human right/by natural right",
@@ -4473,8 +4473,8 @@
   {
     "cs": "pç",
     "abbrev": "IPE",
-    "description": "",
-    "type": "",
+    "description": "Internal Positional Orientation of a (Quasi-)Long Object Having an Orientational 'End' or 'Ends'",
+    "type": "0",
     "degrees": [
       "with (an) orientational “end” of X facing toward the observer",
       "with (an) orientational “end” of X pointing perpendicularly upward/upright/vertically upward relative to the observer",
@@ -4507,8 +4507,8 @@
   {
     "cs": "ph",
     "abbrev": "PCN",
-    "description": "",
-    "type": "",
+    "description": "Degree of Care, Precision or Scrutiny",
+    "type": "A2",
     "degrees": [
       "too sloppily/too carelessly /utterly sloppily/totally carelessly",
       "very sloppily/very carelessly",
@@ -4524,8 +4524,8 @@
   {
     "cs": "pj",
     "abbrev": "TCT",
-    "description": "",
-    "type": "",
+    "description": "Tactile Associations",
+    "type": "0",
     "degrees": [
       "feeling / texture of X",
       "feeling / texture similar to X",
@@ -4575,8 +4575,8 @@
   {
     "cs": "pļ",
     "abbrev": "EFP",
-    "description": "",
-    "type": "",
+    "description": "Degree of Effect from Pain or Pleasure",
+    "type": "D1",
     "degrees": [
       "in / due to excruciating pain",
       "in / due to severe pain",
@@ -4592,8 +4592,8 @@
   {
     "cs": "pn",
     "abbrev": "MZE",
-    "description": "",
-    "type": "",
+    "description": "Mesozoic Era",
+    "type": "D1",
     "degrees": [
       "of/from/during the Mesozoic Era",
       "of/from/during the Early (or Lower) Triassic epoch",
@@ -4626,8 +4626,8 @@
   {
     "cs": "př",
     "abbrev": "ACS",
-    "description": "",
-    "type": "",
+    "description": "Access Point",
+    "type": "C",
     "degrees": [
       "path, course, passageway or way leading into or culminating in X",
       "entryway, doorway, opening, gateway, portal into X",
@@ -4643,8 +4643,8 @@
   {
     "cs": "ps",
     "abbrev": "XOR",
-    "description": "",
-    "type": "",
+    "description": "Exclusive Or and Contrastive Adverbials",
+    "type": "0",
     "degrees": [
       "“xor” (with topic in common as well as main verb if a subsequent main verb is missing): Sam either visited Clara or (subsequently visited) Jane every Sunday, but not both; Sam visited Clara or Sam (subsequently) danced with Jane every Sunday (but not both).",
       "“xor” (with all morphology in common with first member of series other than as non-default marked or differently-marked than first member)",
@@ -4677,8 +4677,8 @@
   {
     "cs": "pt",
     "abbrev": "DNG",
-    "description": "",
-    "type": "",
+    "description": "Degree of Danger",
+    "type": "D1",
     "degrees": [
       "completely safe, utterly no danger at all",
       "very safe, almost no threat of danger or risk",
@@ -4694,8 +4694,8 @@
   {
     "cs": "pţ",
     "abbrev": "EXD",
-    "description": "",
-    "type": "",
+    "description": "Dynamically Changing Degree or Extent",
+    "type": "0",
     "degrees": [
       "less and less/fewer and fewer/ongoing decrease in, decreasingly",
       "a lot fewer/a lot less (of), a lot less",
@@ -4779,8 +4779,8 @@
   {
     "cs": "rb",
     "abbrev": "TPI",
-    "description": "",
-    "type": "",
+    "description": "Impact or Duration Over Time",
+    "type": "0",
     "degrees": [
       "immediate/at this instant",
       "temporary/for right now [duration of context]",
@@ -4796,8 +4796,8 @@
   {
     "cs": "řb",
     "abbrev": "ATN",
-    "description": "",
-    "type": "",
+    "description": "Degree of Attention or Determination",
+    "type": "A1",
     "degrees": [
       "ignore completely",
       "barely notice, take little notice of",
@@ -4813,8 +4813,8 @@
   {
     "cs": "rc",
     "abbrev": "ELA",
-    "description": "",
-    "type": "",
+    "description": "Elapsed Time",
+    "type": "0",
     "degrees": [
       "number of nanoseconds",
       "number of microseconds",
@@ -4830,8 +4830,8 @@
   {
     "cs": "rč",
     "abbrev": "STY",
-    "description": "",
-    "type": "",
+    "description": "Stylistic thru Time",
+    "type": "0",
     "degrees": [
       "archaic",
       "medieval",
@@ -4847,8 +4847,8 @@
   {
     "cs": "rç",
     "abbrev": "PEB",
-    "description": "",
-    "type": "",
+    "description": "Overall Presence/Participation Within an Environmental Niche or Biosphere",
+    "type": "A1",
     "degrees": [
       "dominant component/feature/element/life-form/factor",
       "near-dominant",
@@ -4864,8 +4864,8 @@
   {
     "cs": "řc",
     "abbrev": "AMD",
-    "description": "",
-    "type": "",
+    "description": "Ante-Meridiem Times of Day",
+    "type": "0",
     "degrees": [
       "just after midnight",
       "during the middle of the night/madrugada",
@@ -4881,8 +4881,8 @@
   {
     "cs": "řč",
     "abbrev": "OPF",
-    "description": "",
-    "type": "",
+    "description": "Degree of Operational Functionality",
+    "type": "A1",
     "degrees": [
       "disintegrated, in pieces, shattered",
       "irreparably damaged/broken, ruined, worn out",
@@ -4915,8 +4915,8 @@
   {
     "cs": "rd",
     "abbrev": "REA",
-    "description": "",
-    "type": "",
+    "description": "Degree of Genuineness or Veracity",
+    "type": "0*",
     "degrees": [
       "imaginary/unreal/made-up ; imagine X-ing, not really X-ing [contrary to suggestion otherwise]",
       "imaginary/unreal/made-up ; imagine X-ing, not really X-ing",
@@ -4932,8 +4932,8 @@
   {
     "cs": "rḑ",
     "abbrev": "TD2",
-    "description": "",
-    "type": "",
+    "description": "Temporary Duration 2",
+    "type": "0*",
     "degrees": [
       "between one and two days",
       "for two days",
@@ -4949,8 +4949,8 @@
   {
     "cs": "řd",
     "abbrev": "SQC",
-    "description": "",
-    "type": "",
+    "description": "Sequence of Cause and Effect",
+    "type": "0",
     "degrees": [
       "originally/in the first place",
       "preliminar(il)y",
@@ -4966,8 +4966,8 @@
   {
     "cs": "řḑ",
     "abbrev": "EXT",
-    "description": "",
-    "type": "",
+    "description": "Exactness/Comparability of Identity / Identity As a Standard",
+    "type": "0*",
     "degrees": [
       "unlike",
       "not quite",
@@ -4983,8 +4983,8 @@
   {
     "cs": "rf",
     "abbrev": "PTW",
-    "description": "",
-    "type": "",
+    "description": "Contiguous Portion of the Whole",
+    "type": "0*",
     "degrees": [
       "no amount of/none (of)",
       "a very few/a tiny amount of/a tiny number of, only a tiny bit/a tiny bit",
@@ -5000,8 +5000,8 @@
   {
     "cs": "řf",
     "abbrev": "UST",
-    "description": "",
-    "type": "",
+    "description": "Ultra-Short-Term Temporal Scale",
+    "type": "0",
     "degrees": [
       "measurable in yoctoseconds (10⁻²⁴ s)",
       "measurable in zeptoseconds (10⁻²¹ s)",
@@ -5017,8 +5017,8 @@
   {
     "cs": "řfs",
     "abbrev": "USM",
-    "description": "",
-    "type": "",
+    "description": "Ultra-Short Temporal Measurement",
+    "type": "A1",
     "degrees": [
       "(in) yoctoseconds (100⁻¹²s)",
       "(in) zeptoseconds (10×100⁻¹¹s)",
@@ -5034,8 +5034,8 @@
   {
     "cs": "rft",
     "abbrev": "CNT",
-    "description": "",
-    "type": "",
+    "description": "Degree of Centrality",
+    "type": "0",
     "degrees": [
       "beyond the edge of",
       "circumscribing",
@@ -5051,8 +5051,8 @@
   {
     "cs": "rg",
     "abbrev": "MVT",
-    "description": "",
-    "type": "",
+    "description": "Degree of Stillness/Movement",
+    "type": "0*",
     "degrees": [
       "unmovable – integrated",
       "unmovable due to mass",
@@ -5068,8 +5068,8 @@
   {
     "cs": "řg",
     "abbrev": "TYP",
-    "description": "",
-    "type": "",
+    "description": "Degree of Typicalness",
+    "type": "0*",
     "degrees": [
       "unique/never-before-seen/one of a kind/shocking",
       "original/avante-garde, surprising(ly)/innovative(ly)",
@@ -5085,8 +5085,8 @@
   {
     "cs": "rh",
     "abbrev": "RLV",
-    "description": "",
-    "type": "",
+    "description": "Degree of Relevancy",
+    "type": "0",
     "degrees": [
       "utterly irrelevant, of no relevance whatsoever in any context",
       "of no relevance to the current context and of little if any relevance to other contexts",
@@ -5102,8 +5102,8 @@
   {
     "cs": "řh",
     "abbrev": "TRS",
-    "description": "",
-    "type": "",
+    "description": "Degree of Trustworthiness/Reliability",
+    "type": "A1",
     "degrees": [
       "utterly untrustworthy/unreliable",
       "flaky/unreliable/can’t be counted upon to be/act in a reliable manner",
@@ -5119,8 +5119,8 @@
   {
     "cs": "rj",
     "abbrev": "DLB",
-    "description": "",
-    "type": "",
+    "description": "Degree of Deliberateness/Agency",
+    "type": "A1",
     "degrees": [
       "accidental(ly)/inadvertent(ly) and unaware of consequences",
       "unintended/unintentional(ly)/without meaning to and unaware of consequences",
@@ -5136,8 +5136,8 @@
   {
     "cs": "řj",
     "abbrev": "PMD",
-    "description": "",
-    "type": "",
+    "description": "Post-Meridiem Times of Day",
+    "type": "0",
     "degrees": [
       "just after midday",
       "in the mid afternoon",
@@ -5153,8 +5153,8 @@
   {
     "cs": "řk",
     "abbrev": "DGR",
-    "description": "",
-    "type": "",
+    "description": "Exactness of Degree",
+    "type": "0",
     "degrees": [
       "unknowable degree or amount of",
       "almost impossible to determine degree of",
@@ -5170,8 +5170,8 @@
   {
     "cs": "rks",
     "abbrev": "CPP",
-    "description": "",
-    "type": "",
+    "description": "Capacity As Patient",
+    "type": "A1",
     "degrees": [
       "very easily/readily done",
       "fairly/rather easily/readily done",
@@ -5187,8 +5187,8 @@
   {
     "cs": "řks",
     "abbrev": "CRD",
-    "description": "",
-    "type": "",
+    "description": "Degree of Crowdedness",
+    "type": "A1",
     "degrees": [
       "tightly packed together (“like sardines”)/with no space between components/with no room to move",
       "packed together touching",
@@ -5204,8 +5204,8 @@
   {
     "cs": "rkt",
     "abbrev": "MLT",
-    "description": "",
-    "type": "",
+    "description": "Mealtimes",
+    "type": "A1",
     "degrees": [
       "served/eaten as breakfast",
       "served/eaten as brunch",
@@ -5222,7 +5222,7 @@
     "cs": "rkw",
     "abbrev": "CYC",
     "description": "Cyclic Recurrence",
-    "type": "",
+    "type": "A1",
     "degrees": [
       "occuring every second",
       "occuring every minute",
@@ -5239,7 +5239,7 @@
     "cs": "rky",
     "abbrev": "CYL",
     "description": "Cyclic Recurrence (Long-Term)",
-    "type": "",
+    "type": "A1",
     "degrees": [
       "occuring every millennium",
       "occuring every 10 thousand years",
@@ -5272,8 +5272,8 @@
   {
     "cs": "rļ",
     "abbrev": "FAM",
-    "description": "",
-    "type": "",
+    "description": "Degree of Familiarity",
+    "type": "0",
     "degrees": [
       "unknowable/alien",
       "totally unfamiliar",
@@ -5289,8 +5289,8 @@
   {
     "cs": "řl",
     "abbrev": "VMC",
-    "description": "",
-    "type": "",
+    "description": "Volumetric Measurement C",
+    "type": "A1",
     "degrees": [
       "(in) minims",
       "(in) fluid drams",
@@ -5323,8 +5323,8 @@
   {
     "cs": "rm",
     "abbrev": "ITN",
-    "description": "",
-    "type": "",
+    "description": "Degree of Iteration",
+    "type": "0",
     "degrees": [
       "just once",
       "again/once more",
@@ -5357,8 +5357,8 @@
   {
     "cs": "rmz",
     "abbrev": "MEM",
-    "description": "",
-    "type": "",
+    "description": "Memory",
+    "type": "0",
     "degrees": [
       "always in mind/can’t forget",
       "never to be forgotten/memorable",
@@ -5374,8 +5374,8 @@
   {
     "cs": "rn",
     "abbrev": "LTD",
-    "description": "",
-    "type": "",
+    "description": "Life-Time Duration",
+    "type": "0*",
     "degrees": [
       "for more than a year",
       "for two to four years",
@@ -5391,8 +5391,8 @@
   {
     "cs": "rň",
     "abbrev": "EPC",
-    "description": "",
-    "type": "",
+    "description": "Epoch-Length Duration",
+    "type": "0*",
     "degrees": [
       "for several hundred thousand years",
       "for the better part of an age (up to a million years)",
@@ -5408,8 +5408,8 @@
   {
     "cs": "řn",
     "abbrev": "PTY",
-    "description": "",
-    "type": "",
+    "description": "Degree of Prototypicality",
+    "type": "0",
     "degrees": [
       "very dissimilar to prototype, very atypical member, closer to members of different set",
       "dissimilar to prototype, atypical member",
@@ -5425,8 +5425,8 @@
   {
     "cs": "řň",
     "abbrev": "IMP",
-    "description": "",
-    "type": "",
+    "description": "Degree of Impact on Patient/Target or Enablement of Outcome",
+    "type": "A1",
     "degrees": [
       "target can do nothing - utterly inevitable",
       "target chooses to do nothing - resigned to fate",
@@ -5442,8 +5442,8 @@
   {
     "cs": "rns",
     "abbrev": "TPM",
-    "description": "",
-    "type": "",
+    "description": "Temporal Measurement",
+    "type": "A1",
     "degrees": [
       "(in) minutes",
       "(in) hours",
@@ -5459,8 +5459,8 @@
   {
     "cs": "rňs",
     "abbrev": "LTM",
-    "description": "",
-    "type": "",
+    "description": "Long-Term Temporal Measurement",
+    "type": "A1",
     "degrees": [
       "(in) centuries",
       "(in) millenia",
@@ -5476,8 +5476,8 @@
   {
     "cs": "řns",
     "abbrev": "ENG",
-    "description": "",
-    "type": "",
+    "description": "Degree of Engagement/Involvement",
+    "type": "0",
     "degrees": [
       "avoiding at all costs, run away from",
       "averse to, fear doing",
@@ -5493,8 +5493,8 @@
   {
     "cs": "rp",
     "abbrev": "FRQ",
-    "description": "",
-    "type": "",
+    "description": "Degree of Frequency",
+    "type": "0*",
     "degrees": [
       "never",
       "rare/hardly ever",
@@ -5510,8 +5510,8 @@
   {
     "cs": "řp",
     "abbrev": "UNQ",
-    "description": "",
-    "type": "",
+    "description": "Degree of Specialness or Uniqueness",
+    "type": "0*",
     "degrees": [
       "vulgar, trashy, too cheap/in a vulgar or trashy manner",
       "cheap, tasteless, gaudy, gauche/in a cheap, gaudy, tasteless manner",
@@ -5527,8 +5527,8 @@
   {
     "cs": "rps",
     "abbrev": "APV",
-    "description": "",
-    "type": "",
+    "description": "Alternate Points of View",
+    "type": "A1",
     "degrees": [
       "and not even occurring to one to evaluate/consider/analyze a/the situation in any way before deciding/acting",
       "and not even occurring to one to evaluate/consider (a) point(s) of view other than one’s own",
@@ -5544,8 +5544,8 @@
   {
     "cs": "rs",
     "abbrev": "TNX",
-    "description": "",
-    "type": "",
+    "description": "Multiples of Ten",
+    "type": "0*",
     "degrees": [
       "+10",
       "+20",
@@ -5561,8 +5561,8 @@
   {
     "cs": "rš",
     "abbrev": "STG",
-    "description": "",
-    "type": "",
+    "description": "Stage, Step or Phase of a Process",
+    "type": "0*",
     "degrees": [
       "onset/initiation/birth",
       "development/build-up",
@@ -5578,8 +5578,8 @@
   {
     "cs": "řs",
     "abbrev": "CNS",
-    "description": "",
-    "type": "",
+    "description": "Degree of Consent",
+    "type": "A1",
     "degrees": [
       "deliberately against the expressed wishes/will of the affected party",
       "without the affected party’s knowledge and against their implied/presumed wishes/will",
@@ -5595,8 +5595,8 @@
   {
     "cs": "řš",
     "abbrev": "XPT",
-    "description": "",
-    "type": "",
+    "description": "Expectation of Outcome",
+    "type": "A1",
     "degrees": [
       "shockingly unexpected, without precedent or rumour",
       "surprise X/unexpected X, completely by surprise/ completely unexpected(ly)",
@@ -5612,8 +5612,8 @@
   {
     "cs": "rsk",
     "abbrev": "FSP",
-    "description": "",
-    "type": "",
+    "description": "Degree of Freshness or Spoilage",
+    "type": "A1",
     "degrees": [
       "just-made",
       "fresh-made",
@@ -5629,8 +5629,8 @@
   {
     "cs": "ršk",
     "abbrev": "ESO",
-    "description": "",
-    "type": "",
+    "description": "Extent to Which Something Occurs",
+    "type": "0",
     "degrees": [
       "almost/nearly",
       "hardly/barely",
@@ -5646,8 +5646,8 @@
   {
     "cs": "řsk",
     "abbrev": "CVL",
-    "description": "",
-    "type": "",
+    "description": "Degree of Civilization",
+    "type": "A1",
     "degrees": [
       "hunter-gatherer status with little ability to forestall adversities such as hunger, disease, or invasion/war",
       "agricultural/agrarian society with limited ability to forestall adversities such as famine, disease, or invasion/war",
@@ -5663,8 +5663,8 @@
   {
     "cs": "rst",
     "abbrev": "ITG",
-    "description": "",
-    "type": "",
+    "description": "Integrity of a Configurative Set",
+    "type": "A1",
     "degrees": [
       "complete, whole, full",
       "functionally complete, whole, full",
@@ -5680,8 +5680,8 @@
   {
     "cs": "řst",
     "abbrev": "LCM",
-    "description": "",
-    "type": "",
+    "description": "Life-Cycle of a Mechanism/Device/Fixture/Machine",
+    "type": "A1",
     "degrees": [
       "designing, drafting a blueprint of",
       "constructing/forming/crafting/making",
@@ -5697,8 +5697,8 @@
   {
     "cs": "rt",
     "abbrev": "SUF",
-    "description": "",
-    "type": "",
+    "description": "Degree of Sufficiency of Amount/Impact",
+    "type": "0*",
     "degrees": [
       "not at all",
       "way too little",
@@ -5714,8 +5714,8 @@
   {
     "cs": "rţ",
     "abbrev": "PTT",
-    "description": "",
-    "type": "",
+    "description": "Non-Contiguous (i.e., Intermixed) Portion of the Whole",
+    "type": "0",
     "degrees": [
       "no amount of/none (of)",
       "a very few/a tiny amount of/a tiny number of, only a tiny bit/a tiny bit",
@@ -5731,8 +5731,8 @@
   {
     "cs": "řt",
     "abbrev": "INL",
-    "description": "",
-    "type": "",
+    "description": "Degree of Inclusion",
+    "type": "0",
     "degrees": [
       "none",
       "hardly any",
@@ -5748,8 +5748,8 @@
   {
     "cs": "řţ",
     "abbrev": "LGD",
-    "description": "",
-    "type": "",
+    "description": "Long-Term Duration",
+    "type": "0*",
     "degrees": [
       "for more than a century",
       "for about two centuries",
@@ -5765,8 +5765,8 @@
   {
     "cs": "rtk",
     "abbrev": "ARM",
-    "description": "",
-    "type": "",
+    "description": "Areal Measurement",
+    "type": "A1",
     "degrees": [
       "(in) barns",
       "(in) squares",
@@ -5782,8 +5782,8 @@
   {
     "cs": "rtl",
     "abbrev": "AMC",
-    "description": "",
-    "type": "",
+    "description": "Number of Atoms in a Molecular Compound",
+    "type": "A1",
     "degrees": [
       "deca-",
       "di-",
@@ -5799,8 +5799,8 @@
   {
     "cs": "rtm",
     "abbrev": "LDB",
-    "description": "",
-    "type": "",
+    "description": "Linear Dimensional Measurement B",
+    "type": "A1",
     "degrees": [
       "(in) inches",
       "(in) feet",
@@ -5816,8 +5816,8 @@
   {
     "cs": "rtn",
     "abbrev": "LDA",
-    "description": "",
-    "type": "",
+    "description": "Linear Dimensional Measurement A",
+    "type": "A1",
     "degrees": [
       "(in) Planck lengths",
       "(in) angstroms",
@@ -5833,8 +5833,8 @@
   {
     "cs": "rţw",
     "abbrev": "ITE",
-    "description": "",
-    "type": "",
+    "description": "Iterations Per Time-Period",
+    "type": "A1",
     "degrees": [
       "X times per second",
       "X times per minute",
@@ -5850,8 +5850,8 @@
   {
     "cs": "rţy",
     "abbrev": "ILT",
-    "description": "",
-    "type": "",
+    "description": "Iterations Per Long-Term",
+    "type": "A1",
     "degrees": [
       "X times per millenium",
       "X times per 10000 year period",
@@ -5867,8 +5867,8 @@
   {
     "cs": "rv",
     "abbrev": "TD1",
-    "description": "",
-    "type": "",
+    "description": "Temporary Duration 1",
+    "type": "0*",
     "degrees": [
       "momentary [no more than a few seconds]",
       "brief [10 seconds to less than a minute]",
@@ -5884,8 +5884,8 @@
   {
     "cs": "řv",
     "abbrev": "CNQ",
-    "description": "",
-    "type": "",
+    "description": "Degree of Consequentiality, Finality or Irrevocability",
+    "type": "0*",
     "degrees": [
       "inconsequential/sham/having no effect, like it didn’t even happen/with no effect",
       "relatively inconsequential/having little effect/easily reversible or undone/to little effect/minor/to minor degree",
@@ -5901,8 +5901,8 @@
   {
     "cs": "rw",
     "abbrev": "SPT",
-    "description": "",
-    "type": "",
+    "description": "Specified Points in Calendrical Time",
+    "type": "A1",
     "degrees": [
       "seconds",
       "minutes",
@@ -5918,8 +5918,8 @@
   {
     "cs": "řw",
     "abbrev": "VMA",
-    "description": "",
-    "type": "",
+    "description": "Volumetric Measurement A",
+    "type": "A1",
     "degrees": [
       "(in) cubic Planck lengths",
       "(in) cubic angstroms",
@@ -5935,8 +5935,8 @@
   {
     "cs": "rx",
     "abbrev": "SIM",
-    "description": "",
-    "type": "",
+    "description": "Degree of Similarity",
+    "type": "0*",
     "degrees": [
       "opposite",
       "completely different",
@@ -5952,8 +5952,8 @@
   {
     "cs": "ry",
     "abbrev": "SPT",
-    "description": "",
-    "type": "",
+    "description": "Specified Points in Calendrical Time",
+    "type": "A1",
     "degrees": [
       "seconds",
       "minutes",
@@ -5969,8 +5969,8 @@
   {
     "cs": "řy",
     "abbrev": "VMB",
-    "description": "",
-    "type": "",
+    "description": "Volumetric Measurement B",
+    "type": "A1",
     "degrees": [
       "(in) cubic inches",
       "(in) cubic feet",
@@ -5986,8 +5986,8 @@
   {
     "cs": "rz",
     "abbrev": "CHC",
-    "description": "",
-    "type": "",
+    "description": "Degree of Choice by Externally-Induced Agent",
+    "type": "A1",
     "degrees": [
       "party made/induced by another party/force/situation to initiate an state/act/event - can do nothing to stop it, initiation is inevitable",
       "party made/induced by another party/force/situation to initiate an state/act/event - chooses to acquiesce due to being okay with, or indifferent as to outcome",
@@ -6003,8 +6003,8 @@
   {
     "cs": "rž",
     "abbrev": "HRC",
-    "description": "",
-    "type": "",
+    "description": "Position on Social, Occupational, or (Para-)Military Hierarchy",
+    "type": "0",
     "degrees": [
       "bottom rung/the “dregs”",
       "rank & file",
@@ -6020,8 +6020,8 @@
   {
     "cs": "rẓ",
     "abbrev": "PRB",
-    "description": "",
-    "type": "",
+    "description": "Degree of Probability or Likelihood",
+    "type": "0",
     "degrees": [
       "impossible/hopeless/lost cause",
       "almost no chance of/virtually impossible",
@@ -6037,8 +6037,8 @@
   {
     "cs": "řz",
     "abbrev": "MOT",
-    "description": "",
-    "type": "",
+    "description": "Degree of Self-Conscious Deliberation or Motivation",
+    "type": "A1",
     "degrees": [
       "affected, ostentatious; affectedly/ostentatiously",
       "self-conscious(ly)",
@@ -6054,8 +6054,8 @@
   {
     "cs": "řž",
     "abbrev": "LVL",
-    "description": "",
-    "type": "",
+    "description": "Alternate Forms of Comparison Operators (Levels)",
+    "type": "A1",
     "degrees": [
       "(MIN) Minimal",
       "(SBE) Subequative",
@@ -6071,8 +6071,8 @@
   {
     "cs": "řẓ",
     "abbrev": "SVS",
-    "description": "",
-    "type": "",
+    "description": "Spatial/Areal/Volumetric Scale",
+    "type": "0",
     "degrees": [
       "on an atomic/quantum-sized scale",
       "on a microscopic/miniature scale",
@@ -6122,8 +6122,8 @@
   {
     "cs": "sb",
     "abbrev": "MMV",
-    "description": "",
-    "type": "",
+    "description": "Medium Via/Through/Along Which",
+    "type": "0",
     "degrees": [
       "via/along/across the surface of water or liquid",
       "via/through water/liquid below the surface/through a volume of water/liquid",
@@ -6139,8 +6139,8 @@
   {
     "cs": "šb",
     "abbrev": "GEO",
-    "description": "",
-    "type": "",
+    "description": "Geographic or Environmental Niche",
+    "type": "0",
     "degrees": [
       "inhabiting or associated with high mountains",
       "inhabiting or associated with the desert",
@@ -6156,8 +6156,8 @@
   {
     "cs": "sc",
     "abbrev": "EPS",
-    "description": "",
-    "type": "",
+    "description": "Energy/Power Source",
+    "type": "D1",
     "degrees": [
       "powered by fossil fuel",
       "hydraulic-powered",
@@ -6173,8 +6173,8 @@
   {
     "cs": "sč",
     "abbrev": "MTA",
-    "description": "",
-    "type": "",
+    "description": "Negative Motivation for an Action or State",
+    "type": "D1",
     "degrees": [
       "for evil or perverse reasons",
       "in fear",
@@ -6190,8 +6190,8 @@
   {
     "cs": "šč",
     "abbrev": "AMS",
-    "description": "",
-    "type": "",
+    "description": "Additional Material States/Forms (Malleable Solid)",
+    "type": "D1",
     "degrees": [
       "X as powder or dust-like substance",
       "X as fine gravel or sand-like substance",
@@ -6207,8 +6207,8 @@
   {
     "cs": "sd",
     "abbrev": "BAO",
-    "description": "",
-    "type": "",
+    "description": "Basic Arithmetical Operations",
+    "type": "0",
     "degrees": [
       "plus X",
       "minus X",
@@ -6241,8 +6241,8 @@
   {
     "cs": "šd",
     "abbrev": "WBN",
-    "description": "",
-    "type": "",
+    "description": "Water-based Environmental Niche",
+    "type": "0",
     "degrees": [
       "inhabiting or associated with islands",
       "inhabiting or associated with offshore/shallow ocean dwelling",
@@ -6275,8 +6275,8 @@
   {
     "cs": "sf",
     "abbrev": "GST",
-    "description": "",
-    "type": "",
+    "description": "Gustatory Associations",
+    "type": "0",
     "degrees": [
       "having the flavor of X",
       "having an flavor like/similar to X",
@@ -6292,8 +6292,8 @@
   {
     "cs": "šf",
     "abbrev": "CUA",
-    "description": "",
-    "type": "",
+    "description": "Currency A",
+    "type": "0",
     "degrees": [
       "Chinese 元 (人民币)",
       "Russian ₽",
@@ -6309,8 +6309,8 @@
   {
     "cs": "sg",
     "abbrev": "NDB",
-    "description": "",
-    "type": "",
+    "description": "Non-Decimal Number Bases",
+    "type": "0",
     "degrees": [
       "in base-2, binary",
       "in base-3, ternary",
@@ -6326,8 +6326,8 @@
   {
     "cs": "šg",
     "abbrev": "OBN",
-    "description": "",
-    "type": "",
+    "description": "Ocean-based Environmental Niche",
+    "type": "0",
     "degrees": [
       "inhabiting or associated with the intertidal zone",
       "inhabiting or associated with a coral reef",
@@ -6343,8 +6343,8 @@
   {
     "cs": "šh",
     "abbrev": "PPF",
-    "description": "",
-    "type": "",
+    "description": "Degree of Practice-Based Proficiency",
+    "type": "A2",
     "degrees": [
       "too lacking in proficiency, completely unpracticed in…",
       "very lacking in proficiency, very poorly practiced",
@@ -6360,8 +6360,8 @@
   {
     "cs": "sj",
     "abbrev": "HG1",
-    "description": "",
-    "type": "",
+    "description": "Linguistic Hedges (1st Group)",
+    "type": "D1",
     "degrees": [
       "technically speaking…/context aside for a moment,…",
       "for all practical purposes/to all intents and purposes/practically /virtually/all but technically",
@@ -6377,8 +6377,8 @@
   {
     "cs": "šj",
     "abbrev": "TMS",
-    "description": "",
-    "type": "",
+    "description": "Temperature Measurement System",
+    "type": "D1",
     "degrees": [
       "Planck temperature",
       "in degrees Newton",
@@ -6394,8 +6394,8 @@
   {
     "cs": "sk",
     "abbrev": "CNM",
-    "description": "",
-    "type": "",
+    "description": "Type of Container/Packaging",
+    "type": "0",
     "degrees": [
       "generic container(-ful) of X",
       "natural or generic mass containment/formation (e.g., a loaf of bread, a lump of clay)",
@@ -6411,8 +6411,8 @@
   {
     "cs": "šk",
     "abbrev": "SNX",
-    "description": "",
-    "type": "",
+    "description": "Sensory Experience or Reaction",
+    "type": "0",
     "degrees": [
       "physical tactile feeling/sensation of touching or being touched by X (being in physical/tactile contact with X)",
       "other-than-tactile sensation of witnessing/undergoing/being in the situation involving X",
@@ -6462,8 +6462,8 @@
   {
     "cs": "sm",
     "abbrev": "FRC",
-    "description": "",
-    "type": "",
+    "description": "Degree of Physical Force Exerted",
+    "type": "0*",
     "degrees": [
       "too light(ly)/too soft(ly)/too delicate(ly)",
       "light as a feather/ baby soft, extremely delicately or lightly or softly",
@@ -6479,8 +6479,8 @@
   {
     "cs": "šm",
     "abbrev": "FRM",
-    "description": "",
-    "type": "",
+    "description": "Degree of Formality",
+    "type": "0",
     "degrees": [
       "too casual/overly casual",
       "very casual",
@@ -6496,8 +6496,8 @@
   {
     "cs": "sn",
     "abbrev": "AAA",
-    "description": "",
-    "type": "",
+    "description": "Areal/Cultural Association - East Asia",
+    "type": "D1",
     "degrees": [
       "from ancient China",
       "from ancient Japan",
@@ -6513,8 +6513,8 @@
   {
     "cs": "sň",
     "abbrev": "AAS",
-    "description": "",
-    "type": "",
+    "description": "Areal/Cultural Association - South Asia",
+    "type": "D1",
     "degrees": [
       "from ancient India, Pakistan, Bangladesh, Sri Lanka",
       "from ancient Afghanistan",
@@ -6530,8 +6530,8 @@
   {
     "cs": "šn",
     "abbrev": "AAI",
-    "description": "",
-    "type": "",
+    "description": "Areal/Cultural Association - Southeast Asia / East Indies",
+    "type": "D1",
     "degrees": [
       "from ancient Vietnam, Laos, Cambodia",
       "from ancient Thailand, Myanmar",
@@ -6547,8 +6547,8 @@
   {
     "cs": "šň",
     "abbrev": "AAC",
-    "description": "",
-    "type": "",
+    "description": "Areal/Cultural Association - Central Asia",
+    "type": "D1",
     "degrees": [
       "from ancient Tibet",
       "from ancient Mongolia",
@@ -6581,8 +6581,8 @@
   {
     "cs": "šp",
     "abbrev": "VSR",
-    "description": "",
-    "type": "",
+    "description": "Visible Spectral Regions",
+    "type": "0",
     "degrees": [
       "red",
       "orange",
@@ -6598,8 +6598,8 @@
   {
     "cs": "sř",
     "abbrev": "DPR",
-    "description": "",
-    "type": "",
+    "description": "Dispersion or Separability of a Configurative Set",
+    "type": "C",
     "degrees": [
       "in total contact/contiguous mass of; pile, “ball of…” [(quasi-)permanent]",
       "non-contiguous but closely connected, interlinked ,each linked to adjacent via connecting medium (e.g., a web, branches, vines); cluster[(quasi-)permanent]",
@@ -6615,8 +6615,8 @@
   {
     "cs": "šř",
     "abbrev": "STS",
-    "description": "",
-    "type": "",
+    "description": "Spatio-Temporal Specification",
+    "type": "0*",
     "degrees": [
       "spatial interpretation",
       "spatial interpretation -- preceding X, in front of X",
@@ -6649,8 +6649,8 @@
   {
     "cs": "sţ",
     "abbrev": "AVP",
-    "description": "",
-    "type": "",
+    "description": "Misc. Adverbial Phrases",
+    "type": "0",
     "degrees": [
       "yet, still",
       "‘even’ (e.g., “I don’t even like them”) = to the slightest extent contrary to expectation",
@@ -6666,8 +6666,8 @@
   {
     "cs": "št",
     "abbrev": "MCD",
-    "description": "",
-    "type": "",
+    "description": "Manufactured/Specialized Containers/Dispensers",
+    "type": "0",
     "degrees": [
       "basket of X",
       "jar of X",
@@ -6683,8 +6683,8 @@
   {
     "cs": "šţ",
     "abbrev": "EMQ",
-    "description": "",
-    "type": "",
+    "description": "Emotional Qualification",
+    "type": "0",
     "degrees": [
       "I’m afraid that…/Unfortunately…",
       "I regret having to say/announce this/inform you, but…",
@@ -6700,8 +6700,8 @@
   {
     "cs": "stř",
     "abbrev": "DX2",
-    "description": "",
-    "type": "",
+    "description": "Additional Deixis Categories",
+    "type": "0",
     "degrees": [
       "spread out way over there somewhere",
       "spread out over there somewhere",
@@ -6717,8 +6717,8 @@
   {
     "cs": "sv",
     "abbrev": "PTN",
-    "description": "",
-    "type": "",
+    "description": "Potential",
+    "type": "0",
     "degrees": [
       "whatever X is / whatever X may be",
       "whatever X was or may have been (but is no more)",
@@ -6734,8 +6734,8 @@
   {
     "cs": "šv",
     "abbrev": "DRE",
-    "description": "",
-    "type": "",
+    "description": "Degree of Recreation",
+    "type": "0",
     "degrees": [
       "for hedonistic purposes despite negative consequences",
       "for hedonistic purposes without concern for negative consequences",
@@ -6751,8 +6751,8 @@
   {
     "cs": "sx",
     "abbrev": "ICR",
-    "description": "",
-    "type": "",
+    "description": "Increase",
+    "type": "0",
     "degrees": [
       "increase too slowly",
       "increase very slowly",
@@ -6768,8 +6768,8 @@
   {
     "cs": "šx",
     "abbrev": "ICD",
-    "description": "",
-    "type": "",
+    "description": "Increase then Decrease",
+    "type": "0",
     "degrees": [
       "increase then decrease too slowly",
       "increase then decrease very slowly",
@@ -6819,8 +6819,8 @@
   {
     "cs": "ţb",
     "abbrev": "SWM",
-    "description": "",
-    "type": "",
+    "description": "Simultaneous Withdrawal/Pulling Motion",
+    "type": "0",
     "degrees": [
       "with accompanying/simultaneous pulling/withdrawal downward from above",
       "with accompanying/simultaneous obliquely-angled pulling/withdrawal toward oneself from above",
@@ -6836,8 +6836,8 @@
   {
     "cs": "tç",
     "abbrev": "IPF",
-    "description": "",
-    "type": "",
+    "description": "Internal Positional Orientation of an Object Having an Orientational 'Face' or 'Front'",
+    "type": "0",
     "degrees": [
       "with X’s orientational “face” or “front” facing directly toward the observer(i.e.at an angle perpendicular to observer’s line of sight)",
       "with X’s orientational “face” or “front” pointing perpendicularly upward/upright/vertically upward relative to the observer",
@@ -6853,8 +6853,8 @@
   {
     "cs": "ţc",
     "abbrev": "EML",
-    "description": "",
-    "type": "",
+    "description": "Emulation",
+    "type": "0",
     "degrees": [
       "what is inferred to be X; seeming X, apparent X, what must be X",
       "what is assumed/presumed to be X; assumed X, presumed X",
@@ -6870,8 +6870,8 @@
   {
     "cs": "ţč",
     "abbrev": "DBM",
-    "description": "",
-    "type": "",
+    "description": "Distinctive Bodily/Fur Markings",
+    "type": "0",
     "degrees": [
       "having rows of lighter-colored spots",
       "having rows of darker-colored spots",
@@ -6887,8 +6887,8 @@
   {
     "cs": "ţd",
     "abbrev": "CTC",
-    "description": "",
-    "type": "",
+    "description": "Degree of Contact",
+    "type": "D1",
     "degrees": [
       "melded with/blended with/fused",
       "inseparable(ly)/locked together/bonded",
@@ -6904,8 +6904,8 @@
   {
     "cs": "tf",
     "abbrev": "TEM",
-    "description": "",
-    "type": "",
+    "description": "Temperature",
+    "type": "D1",
     "degrees": [
       "deep-frozen",
       "frozen",
@@ -6938,8 +6938,8 @@
   {
     "cs": "th",
     "abbrev": "QUA",
-    "description": "",
-    "type": "",
+    "description": "Degree of Quality, Effectiveness or Adequacy",
+    "type": "0*",
     "degrees": [
       "too poor(ly), too badly",
       "very bad(ly)/very poor(ly)/very inadequate(ly)/intolerable/intolerably/terrible/ terribly",
@@ -6955,8 +6955,8 @@
   {
     "cs": "ţj",
     "abbrev": "MB2",
-    "description": "",
-    "type": "",
+    "description": "Morphological Bodily Distinctions 2",
+    "type": "0",
     "degrees": [
       "having a shorter-than-average tail",
       "having a smaller-than-average-mouth/beak/gullet",
@@ -6989,8 +6989,8 @@
   {
     "cs": "ţk",
     "abbrev": "MAK",
-    "description": "",
-    "type": "",
+    "description": "Making/Constructing",
+    "type": "D1",
     "degrees": [
       "the idea/concept of how to make/construct X",
       "the instructions/plan/blueprint/diagram stating/illustrating how X is (to be) made",
@@ -7023,8 +7023,8 @@
   {
     "cs": "tļ",
     "abbrev": "PLT",
-    "description": "",
-    "type": "",
+    "description": "Pletive",
+    "type": "0",
     "degrees": [
       "total absence of X (where X was never present to begin with)",
       "total loss/absence of X (where X was previously present)",
@@ -7057,8 +7057,8 @@
   {
     "cs": "ţm",
     "abbrev": "ITY",
-    "description": "",
-    "type": "",
+    "description": "Degree of Intensity",
+    "type": "0*",
     "degrees": [
       "too mild(ly)",
       "very mild(ly)",
@@ -7074,8 +7074,8 @@
   {
     "cs": "ţp",
     "abbrev": "TPR",
-    "description": "",
-    "type": "",
+    "description": "Temporal Placement/Reaction/Viewpoint",
+    "type": "0",
     "degrees": [
       "wistfully looking back/in the (good) old days [longing]",
       "in hindsight",
@@ -7108,8 +7108,8 @@
   {
     "cs": "tř",
     "abbrev": "DX1",
-    "description": "",
-    "type": "",
+    "description": "Deixis Categories",
+    "type": "0",
     "degrees": [
       "way over there somewhere",
       "over there somewhere",
@@ -7125,8 +7125,8 @@
   {
     "cs": "ţř",
     "abbrev": "SYS",
-    "description": "",
-    "type": "",
+    "description": "Networks & Systems",
+    "type": "C",
     "degrees": [
       "X within a network",
       "X within a network which constitutes a (quasi-)mechanistic system",
@@ -7142,8 +7142,8 @@
   {
     "cs": "ţs",
     "abbrev": "ERN",
-    "description": "",
-    "type": "",
+    "description": "Entity and Relationship Within a Semantic Network",
+    "type": "0",
     "degrees": [
       "individual concept/idea within X’s semantic network",
       "individual place/location within X’s semantic network",
@@ -7159,8 +7159,8 @@
   {
     "cs": "ţš",
     "abbrev": "MIA",
-    "description": "",
-    "type": "",
+    "description": "Musical Instrument Attributes",
+    "type": "0",
     "degrees": [
       "non-pitched",
       "w/fixed pitch",
@@ -7176,8 +7176,8 @@
   {
     "cs": "ţt",
     "abbrev": "DCV",
-    "description": "",
-    "type": "",
+    "description": "Degree of Spatio-Temporal Divergence or Convergence",
+    "type": "D1",
     "degrees": [
       "headed/oriented in opposite directions/vectors",
       "highly divergent",
@@ -7193,8 +7193,8 @@
   {
     "cs": "tv",
     "abbrev": "SMN",
-    "description": "",
-    "type": "",
+    "description": "Semantic Network",
+    "type": "D1",
     "degrees": [
       "semantic network of places associated with X and their (inter-)relationships to each other",
       "semantic network of places and objects associated with X and their (inter-)relationships to each other",
@@ -7227,8 +7227,8 @@
   {
     "cs": "ţx",
     "abbrev": "SPH",
-    "description": "",
-    "type": "",
+    "description": "Degree of Sophistication",
+    "type": "D2",
     "degrees": [
       "too crude(ly)/too primitive(ly)",
       "very crude(ly)/very primitive(ly)",
@@ -7346,8 +7346,8 @@
   {
     "cs": "vč",
     "abbrev": "AVS",
-    "description": "",
-    "type": "",
+    "description": "Aversive",
+    "type": "0",
     "degrees": [
       "forget to",
       "avoid/shy away from",
@@ -7363,8 +7363,8 @@
   {
     "cs": "vç",
     "abbrev": "DPY",
-    "description": "",
-    "type": "",
+    "description": "Degree of Principality",
+    "type": "0",
     "degrees": [
       "tertiary and inessential",
       "tertiary/peripheral",
@@ -7380,8 +7380,8 @@
   {
     "cs": "vd",
     "abbrev": "DSA",
-    "description": "",
-    "type": "",
+    "description": "Degree of Societal Agreement/Consensus",
+    "type": "0",
     "degrees": [
       "taken for granted by all",
       "being common sense that",
@@ -7397,8 +7397,8 @@
   {
     "cs": "vḑ",
     "abbrev": "ASC",
-    "description": "",
-    "type": "",
+    "description": "Areal/Spatial Scope",
+    "type": "D1",
     "degrees": [
       "in the easily-accessible or visible vicinity of; within the readily accessible or readily visible vicinity of",
       "in the area/space nearby; neighborhood; general vicinity",
@@ -7465,8 +7465,8 @@
   {
     "cs": "vh",
     "abbrev": "DSG",
-    "description": "",
-    "type": "",
+    "description": "Degree of Design or Organization",
+    "type": "A2",
     "degrees": [
       "too unorganized/too chaotic/too random",
       "unorganized/random(ly)/chaotic(ally)",
@@ -7499,8 +7499,8 @@
   {
     "cs": "vk",
     "abbrev": "KSD",
-    "description": "",
-    "type": "",
+    "description": "Generational/Sequential Kinship Descriptions",
+    "type": "D1",
     "degrees": [
       "of one’s previous generation ( i.e., “once removed (upward)”)",
       "of two generations previous (i.e., “grand-“, “twice removed (upward)”)",
@@ -7516,8 +7516,8 @@
   {
     "cs": "vļ",
     "abbrev": "PLE",
-    "description": "",
-    "type": "",
+    "description": "Degree of Emotional/Mental (Dis-)Pleasure",
+    "type": "D1",
     "degrees": [
       "maximally unpleasant",
       "very unpleasant",
@@ -7533,8 +7533,8 @@
   {
     "cs": "vm",
     "abbrev": "FLX",
-    "description": "",
-    "type": "",
+    "description": "Degree of Rigidity/Flexibility",
+    "type": "D2",
     "degrees": [
       "too rigid/inflexible, rigid/inflexible to the point of not being usable",
       "very rigid/inflexible, as rigid/inflexible as can be",
@@ -7567,8 +7567,8 @@
   {
     "cs": "vř",
     "abbrev": "NNN",
-    "description": "",
-    "type": "",
+    "description": "N-Numbered Angles/Facets/Faces/Sides/Points/Forms",
+    "type": "0",
     "degrees": [
       "uneven/asymmetrical n–sided 2D obtusely angled form (e.g., quadrilateral pentagonoid)",
       "uneven/asymmetrical n-pointed 2D acutely angled “star” formation",
@@ -7584,8 +7584,8 @@
   {
     "cs": "vs",
     "abbrev": "FNS",
-    "description": "",
-    "type": "",
+    "description": "Non-Solid Material States",
+    "type": "0",
     "degrees": [
       "X as liquid",
       "X as goo or slime-like substance",
@@ -7601,8 +7601,8 @@
   {
     "cs": "vš",
     "abbrev": "FMS",
-    "description": "",
-    "type": "",
+    "description": "Material States/Forms (Solids)",
+    "type": "0",
     "degrees": [
       "X as glass(-like substance)",
       "X as carvable substance (like wood or soap)",
@@ -7635,8 +7635,8 @@
   {
     "cs": "vx",
     "abbrev": "DCX",
-    "description": "",
-    "type": "",
+    "description": "Degree of Complexity",
+    "type": "D2",
     "degrees": [
       "too simple",
       "very simple",
@@ -7669,8 +7669,8 @@
   {
     "cs": "vz",
     "abbrev": "ACQ",
-    "description": "",
-    "type": "",
+    "description": "Acquisition",
+    "type": "0",
     "degrees": [
       "acquired by chance/whim/having stumbled upon",
       "acquired by mental effort/learning/study/creation",
@@ -7686,8 +7686,8 @@
   {
     "cs": "vž",
     "abbrev": "MB1",
-    "description": "",
-    "type": "",
+    "description": "Morphological Bodily Distinctions 1",
+    "type": "0",
     "degrees": [
       "having a longer-than-average tail",
       "having a larger-than-average-mouth/beak/gullet",
@@ -7703,8 +7703,8 @@
   {
     "cs": "vẓ",
     "abbrev": "PSA",
-    "description": "",
-    "type": "",
+    "description": "Personal Association",
+    "type": "0",
     "degrees": [
       "one whose job/profession/vocation involves or is associated with X",
       "one who is interested in/by X",
@@ -7737,8 +7737,8 @@
   {
     "cs": "xb",
     "abbrev": "ST2",
-    "description": "",
-    "type": "",
+    "description": "Short-Term Time References 2",
+    "type": "0",
     "degrees": [
       "happening/occurring sometime in the past few days",
       "happening/occurring the day before yesterday",
@@ -7754,8 +7754,8 @@
   {
     "cs": "xc",
     "abbrev": "CK2",
-    "description": "",
-    "type": "",
+    "description": "Cooking Methods 2",
+    "type": "0",
     "degrees": [
       "steamed, cook by steaming",
       "blanched, heated/cooked by blanching",
@@ -7771,8 +7771,8 @@
   {
     "cs": "xč",
     "abbrev": "CK1",
-    "description": "",
-    "type": "",
+    "description": "Cooking Methods 1",
+    "type": "0",
     "degrees": [
       "sautéed, cook by sautéing",
       "stir-fried, cook by stir-frying",
@@ -7839,8 +7839,8 @@
   {
     "cs": "xj",
     "abbrev": "ASP",
-    "description": "",
-    "type": "",
+    "description": "Attributes of Sub-Atomic Particles",
+    "type": "0",
     "degrees": [
       "antimatter",
       "sparticle",
@@ -7890,8 +7890,8 @@
   {
     "cs": "xn",
     "abbrev": "PZE",
-    "description": "",
-    "type": "",
+    "description": "Paleozoic Era",
+    "type": "D1",
     "degrees": [
       "of/from/during the Paleozoic Era",
       "of/from/during the Early (or Lower) or Middle Cambrian Period",
@@ -7941,8 +7941,8 @@
   {
     "cs": "xţ",
     "abbrev": "CNC",
-    "description": "",
-    "type": "",
+    "description": "Degree of Concern or Consideration",
+    "type": "D1",
     "degrees": [
       "…the hell…!/what the hell…/… who cares!?",
       "self-centered(ly)/without thought or concern for others",
@@ -7958,8 +7958,8 @@
   {
     "cs": "xv",
     "abbrev": "DCP",
-    "description": "",
-    "type": "",
+    "description": "Degree of Concentration vs. Dissipation",
+    "type": "0*",
     "degrees": [
       "highly concentrated; unable to get more concentrated",
       "very concentrated/condensed/agglomerated",
@@ -7992,8 +7992,8 @@
   {
     "cs": "xẓ",
     "abbrev": "CK3",
-    "description": "",
-    "type": "",
+    "description": "Cooking Methods 3",
+    "type": "0",
     "degrees": [
       "uncooked, raw, serve X raw/uncooked [+iërţ parcooked]",
       "smoked, cook by smoking",
@@ -8060,8 +8060,8 @@
   {
     "cs": "zb",
     "abbrev": "BY1",
-    "description": "",
-    "type": "",
+    "description": "Bodily Instrumentality 1",
+    "type": "0",
     "degrees": [
       "w/a finger",
       "w/a thumb",
@@ -8077,8 +8077,8 @@
   {
     "cs": "žb",
     "abbrev": "UDE",
-    "description": "",
-    "type": "",
+    "description": "Undesirable Entailments",
+    "type": "0",
     "degrees": [
       "the limitation(s) entailed by",
       "difficulty/problem entailed by",
@@ -8094,8 +8094,8 @@
   {
     "cs": "ẓb",
     "abbrev": "TGO",
-    "description": "",
-    "type": "",
+    "description": "Trigonometric Operations",
+    "type": "0",
     "degrees": [
       "sin X",
       "cos X",
@@ -8128,8 +8128,8 @@
   {
     "cs": "zč",
     "abbrev": "TRF",
-    "description": "",
-    "type": "",
+    "description": "Transformation for Use",
+    "type": "D1",
     "degrees": [
       "cured (transformed by natural chemical process)",
       "treated",
@@ -8145,8 +8145,8 @@
   {
     "cs": "žč",
     "abbrev": "BMP",
-    "description": "",
-    "type": "",
+    "description": "Building, Structure, or Meeting Place",
+    "type": "D1",
     "degrees": [
       "building for selling",
       "building for conducting the profession",
@@ -8162,8 +8162,8 @@
   {
     "cs": "ẓč",
     "abbrev": "PG1",
-    "description": "",
-    "type": "",
+    "description": "Physical Features Based on Geography 1",
+    "type": "D1",
     "degrees": [
       "with physical features characteristic of mainland Asia",
       "with physical features characteristic of Southeast Asia/Polynesia",
@@ -8179,8 +8179,8 @@
   {
     "cs": "zd",
     "abbrev": "BY2",
-    "description": "",
-    "type": "",
+    "description": "Bodily Instrumentality 2",
+    "type": "0",
     "degrees": [
       "w/a toe",
       "w/a big toe",
@@ -8213,8 +8213,8 @@
   {
     "cs": "žd",
     "abbrev": "ISA",
-    "description": "",
-    "type": "",
+    "description": "Infrastructural Association",
+    "type": "0",
     "degrees": [
       "library/archive created/built for, devoted to, or associated with X",
       "transportation/shipping network for the physical conveyance/supplying of X",
@@ -8247,8 +8247,8 @@
   {
     "cs": "ẓd",
     "abbrev": "MET",
-    "description": "",
-    "type": "",
+    "description": "Metonymic Categories",
+    "type": "0",
     "degrees": [
       "part for whole",
       "producer for product",
@@ -8281,8 +8281,8 @@
   {
     "cs": "zf",
     "abbrev": "ENS",
-    "description": "",
-    "type": "",
+    "description": "Environmental Niche",
+    "type": "0",
     "degrees": [
       "active at twilight/crepuscular",
       "active at night/nocturnal",
@@ -8298,8 +8298,8 @@
   {
     "cs": "žf",
     "abbrev": "HEA",
-    "description": "",
-    "type": "",
+    "description": "State of Health",
+    "type": "0",
     "degrees": [
       "in the prime of health, completely healthy, without any illness, malady, injury, or incapacity",
       "suffering from a temporary illness or malady causing some degree of impairment or incapacity",
@@ -8315,8 +8315,8 @@
   {
     "cs": "ẓf",
     "abbrev": "SCA",
-    "description": "",
-    "type": "",
+    "description": "Degree of Social Appropriateness",
+    "type": "0",
     "degrees": [
       "well-mannered, polite, proper",
       "classy, dignified, in good taste",
@@ -8332,8 +8332,8 @@
   {
     "cs": "zg",
     "abbrev": "BY3",
-    "description": "",
-    "type": "",
+    "description": "Bodily Instrumentality 3",
+    "type": "0",
     "degrees": [
       "w/one’s torso/chest/thorax",
       "w/one’s shoulders",
@@ -8349,8 +8349,8 @@
   {
     "cs": "žg",
     "abbrev": "OLF",
-    "description": "",
-    "type": "",
+    "description": "Olfactory Associations",
+    "type": "0",
     "degrees": [
       "having the odor of",
       "having an odor like/similar to",
@@ -8366,8 +8366,8 @@
   {
     "cs": "ẓg",
     "abbrev": "BRE",
-    "description": "",
-    "type": "",
+    "description": "Biogeographic Realm/Ecozone",
+    "type": "0",
     "degrees": [
       "inhabiting or originating in the Palearctic ecozone",
       "inhabiting or originating in the Nearctic ecozone",
@@ -8383,8 +8383,8 @@
   {
     "cs": "žh",
     "abbrev": "KPF",
-    "description": "",
-    "type": "",
+    "description": "Degree of Knowledge-Based Proficiency",
+    "type": "A2",
     "degrees": [
       "too lacking in proficiency, completely untrained to/in…",
       "very lacking in skill or proficiency, very poorly trained",
@@ -8400,8 +8400,8 @@
   {
     "cs": "zj",
     "abbrev": "HG2",
-    "description": "",
-    "type": "",
+    "description": "Linguistic Hedges (2nd Group)",
+    "type": "D1",
     "degrees": [
       "in a manner of speaking, in a sense/in a way",
       "‘in other words…’, ‘to put it more exactly….’",
@@ -8417,8 +8417,8 @@
   {
     "cs": "žj",
     "abbrev": "VIS",
-    "description": "",
-    "type": "",
+    "description": "Visual Associations",
+    "type": "D1",
     "degrees": [
       "having the look of X",
       "having the look similar to X",
@@ -8434,8 +8434,8 @@
   {
     "cs": "ẓj",
     "abbrev": "PG2",
-    "description": "",
-    "type": "",
+    "description": "Physical Features Based on Geography 2",
+    "type": "D1",
     "degrees": [
       "having physical features characteristic of Arctic origin or environment",
       "having physical features characteristic of Mediterranean Sea origin or environment",
@@ -8451,8 +8451,8 @@
   {
     "cs": "zk",
     "abbrev": "BY4",
-    "description": "",
-    "type": "",
+    "description": "Bodily Instrumentality 4",
+    "type": "0",
     "degrees": [
       "w/one’s mouth/beak",
       "w/one’s fins/flippers/flukes",
@@ -8468,8 +8468,8 @@
   {
     "cs": "žk",
     "abbrev": "AR2",
-    "description": "",
-    "type": "",
+    "description": "Position of One's Arms 2",
+    "type": "0",
     "degrees": [
       "with one arm flexed (i.e., curled up at elbow joint)",
       "with one arm behind one’s back",
@@ -8485,8 +8485,8 @@
   {
     "cs": "ẓk",
     "abbrev": "VAL",
-    "description": "",
-    "type": "",
+    "description": "Valence",
+    "type": "0",
     "degrees": [
       "(MNO) Monoactive",
       "(PRL) Parallel",
@@ -8553,8 +8553,8 @@
   {
     "cs": "zm",
     "abbrev": "RCO",
-    "description": "",
-    "type": "",
+    "description": "Recoil in Place",
+    "type": "0",
     "degrees": [
       "recoil in place not enough",
       "recoil in place hardly at all",
@@ -8570,8 +8570,8 @@
   {
     "cs": "žm",
     "abbrev": "TFI",
-    "description": "",
-    "type": "",
+    "description": "Back & Forth; To & Fro in Place",
+    "type": "0",
     "degrees": [
       "go back and forth not enough",
       "go back and forth hardly at all",
@@ -8587,8 +8587,8 @@
   {
     "cs": "ẓm",
     "abbrev": "CRV",
-    "description": "",
-    "type": "",
+    "description": "Cycle or Circular Motion over Linear Vector",
+    "type": "0",
     "degrees": [
       "roll not enough",
       "roll hardly at all",
@@ -8604,8 +8604,8 @@
   {
     "cs": "zn",
     "abbrev": "AAH",
-    "description": "",
-    "type": "",
+    "description": "Areal/Cultural Association - Northern Africa & Horn of Africa",
+    "type": "D1",
     "degrees": [
       "from ancient Egypt and Nile Valley",
       "from ancient Horn of Africa",
@@ -8621,8 +8621,8 @@
   {
     "cs": "zň",
     "abbrev": "AAF",
-    "description": "",
-    "type": "",
+    "description": "Areal/Cultural Association - Sub-Saharan Africa",
+    "type": "D1",
     "degrees": [
       "from ancient West Coast and Benin Coast of Africa",
       "from ancient Central Africa",
@@ -8638,8 +8638,8 @@
   {
     "cs": "žn",
     "abbrev": "AAN",
-    "description": "",
-    "type": "",
+    "description": "Areal/Cultural Association - Northern & Western Europe",
+    "type": "D1",
     "degrees": [
       "from ancient Gaul, Britain, Ireland, Scotland, North Sea and Channel islands",
       "from ancent Gothic lands, Norse lands",
@@ -8655,8 +8655,8 @@
   {
     "cs": "žň",
     "abbrev": "AAE",
-    "description": "",
-    "type": "",
+    "description": "Areal/Cultural Association - Southern & Eastern Europe",
+    "type": "D1",
     "degrees": [
       "from ancient Roman Empire, Iberia, France, Greece, Sicely, Corsica, Sardinia, Malta",
       "from ancient Balkans",
@@ -8672,8 +8672,8 @@
   {
     "cs": "zp",
     "abbrev": "SMO",
-    "description": "",
-    "type": "",
+    "description": "Secondary Mathematical Operations",
+    "type": "0",
     "degrees": [
       "mod X",
       "absolute value of X, ｜X｜",
@@ -8689,8 +8689,8 @@
   {
     "cs": "žp",
     "abbrev": "HND",
-    "description": "",
-    "type": "",
+    "description": "Hand Position",
+    "type": "0",
     "degrees": [
       "with hand extended frontward (i.e., as when offering to shake hand)",
       "with hand extended or finger pointing to indicate orientational direction or to focus attention upon something",
@@ -8706,8 +8706,8 @@
   {
     "cs": "ẓp",
     "abbrev": "HUM",
-    "description": "",
-    "type": "",
+    "description": "Human Usage/Presence/Intervention",
+    "type": "0",
     "degrees": [
       "as associated with humans",
       "for the benefit of humans",
@@ -8723,8 +8723,8 @@
   {
     "cs": "zř",
     "abbrev": "ROC",
-    "description": "",
-    "type": "",
+    "description": "Result / Outcome / Consequences",
+    "type": "C",
     "degrees": [
       "the result/impact/effect on the ERG/EFF Agent from(performing/doing) X",
       "the result/impact/effect on the ABS Patient from (performing/doing) X",
@@ -8740,8 +8740,8 @@
   {
     "cs": "žř",
     "abbrev": "MMA",
-    "description": "",
-    "type": "",
+    "description": "Metaphor / Metonym / Allusion",
+    "type": "C",
     "degrees": [
       "functioning metaphorically",
       "functioning as a metonym",
@@ -8774,8 +8774,8 @@
   {
     "cs": "ẓř",
     "abbrev": "SDP",
-    "description": "",
-    "type": "",
+    "description": "Subset of Duplex Set",
+    "type": "C",
     "degrees": [
       "first, top, front, lefthand or lead “half” of duplex set or pair (e.g., upper lip, inhale/inhalation, lefthand)",
       "beginning or leading “edge” of the first, top, front, lefthand or lead “half” of a duplex entity",
@@ -8791,8 +8791,8 @@
   {
     "cs": "zt",
     "abbrev": "MNS",
-    "description": "",
-    "type": "",
+    "description": "Maintenance of a State",
+    "type": "0",
     "degrees": [
       "maintain in pristine/ideal state without needing/applying X",
       "maintain in pristine/ideal state by requiring/obtaining X",
@@ -8808,8 +8808,8 @@
   {
     "cs": "zţ",
     "abbrev": "CPI",
-    "description": "",
-    "type": "",
+    "description": "Polyatomic Cations",
+    "type": "0",
     "degrees": [
       "ammonium",
       "fluoronium",
@@ -8825,8 +8825,8 @@
   {
     "cs": "žt",
     "abbrev": "AR1",
-    "description": "",
-    "type": "",
+    "description": "Position of One's Arms 1",
+    "type": "0",
     "degrees": [
       "with both arms extended upward parallel to each other",
       "with both arms extended upward in a “V” shape",
@@ -8842,8 +8842,8 @@
   {
     "cs": "ẓt",
     "abbrev": "VPF",
-    "description": "",
-    "type": "",
+    "description": "Variance From Prototypical 3-D Form",
+    "type": "0",
     "degrees": [
       "long axis obliquely angled/inclined away from the vertical/right-angled/rectilinear/perpendicular",
       "elongated lengthwise/heightwise",
@@ -8876,8 +8876,8 @@
   {
     "cs": "zv",
     "abbrev": "KBP",
-    "description": "",
-    "type": "",
+    "description": "Basis for System of Knowledge, Belief or Practice",
+    "type": "0",
     "degrees": [
       "formal religion / set of religious beliefs",
       "sect/cult",
@@ -8893,8 +8893,8 @@
   {
     "cs": "žv",
     "abbrev": "STF",
-    "description": "",
-    "type": "",
+    "description": "Miscellaneous Surface Textures or Formations",
+    "type": "0",
     "degrees": [
       "fruticose (structured/formed like a tuft or multiple-branched leafless mini-srub whether upright or hanging down)",
       "foliose (structured/formed in 2D flat leaf-like lobes)",
@@ -8910,8 +8910,8 @@
   {
     "cs": "ẓv",
     "abbrev": "CGL",
-    "description": "",
-    "type": "",
+    "description": "Motive/Reason for Conglomeration of Gestalt Entity",
+    "type": "0",
     "degrees": [
       "by being physically forced to against the memberentities’ interest or will",
       "by being pressured, coerced, tricked",
@@ -8944,8 +8944,8 @@
   {
     "cs": "zẓ",
     "abbrev": "MSE",
-    "description": "",
-    "type": "",
+    "description": "Miscellaneous Entailments Associated with an Entity",
+    "type": "D1",
     "degrees": [
       "offered/supplied/sold as a commodity",
       "packaged/processed for commercial sale/use",
