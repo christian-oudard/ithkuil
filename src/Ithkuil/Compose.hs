@@ -147,14 +147,21 @@ buildKeywordIndex roots =
           exactBonus w = if nWords == 1 && (w == trimmed || porterStem w == porterStem trimmed)
                          then 0  -- override to perfect score
                          else baseScore
+          -- Extract standalone words (not from hyphenated compounds)
+          standaloneWs = extractStandaloneWords stripped
+          standaloneSet = Set.fromList (standaloneWs ++ map porterStem standaloneWs)
+          -- Words from hyphenated compounds get a penalty (like parentheticals)
           mainForms = Set.toList . Set.fromList $ ws ++ map porterStem ws
+          compoundOnly = Set.toList $ Set.fromList mainForms `Set.difference` standaloneSet
+          compoundScore = pri * 10 + nWords + 2  -- penalty for compound sub-words
           -- Parenthetical-only words score at full word count + 1
           allWs = extractWords desc
           nFull = length allWs
           parenScore = pri * 10 + nFull + 1
           parenOnly = Set.toList $ Set.fromList (allWs ++ map porterStem allWs)
                       `Set.difference` Set.fromList mainForms
-      in [(w, [(exactBonus w, cr)]) | w <- mainForms]
+      in [(w, [(exactBonus w, cr)]) | w <- Set.toList standaloneSet]
+         ++ [(w, [(compoundScore, cr)]) | w <- compoundOnly]
          ++ [(w, [(parenScore, cr)]) | w <- parenOnly]
 
     -- | Remove parenthetical content for word counting (taxonomy names inflate scores)
@@ -173,6 +180,15 @@ buildKeywordIndex roots =
       map (T.dropWhile (\c -> not (c >= 'a' && c <= 'z'))) .
       filter (T.any (\c -> c >= 'a' && c <= 'z')) .
       T.words $ T.map (\c -> if c `elem` (".,;:!?()-/''\x2019" :: String) then ' ' else c) t
+
+    -- | Extract only standalone words (not sub-parts of hyphenated compounds)
+    -- "root-eating beetle" → ["beetle"] (standalone), vs extractWords → ["root","eating","beetle"]
+    extractStandaloneWords :: Text -> [Text]
+    extractStandaloneWords t =
+      filter (\w -> T.length w > 1) .
+      map (T.toCaseFold . T.dropWhile (\c -> not (c >= 'a' && c <= 'z'))) .
+      filter (\w -> T.any (\c -> c >= 'a' && c <= 'z') w && not (T.any (== '-') w)) .
+      T.words $ T.map (\c -> if c `elem` (".,;:!?()/'\x2019" :: String) then ' ' else c) t
 
     porterStem = stem Set.empty
 
