@@ -748,17 +748,10 @@ autoStress f
   | otherwise = case fSlotIX f of
       Right _ -> f { fStress = Ultimate }
       Left _ -> case fSlotVIII f of
-        -- Mood (non-FAC) implies verbal → ultimate stress
-        Just s8 | hasMood s8 -> f { fStress = Ultimate }
+        -- Any explicit Slot VIII content implies verbal → ultimate stress
+        -- (even with default FAC mood, the aspect/valence/etc. makes it verbal)
+        Just _ -> f { fStress = Ultimate }
         _ -> f
-  where
-    hasMood s8 = case s8 of
-      VnCnAspect _ (MoodVal m)  -> m /= FAC
-      VnCnValence _ (MoodVal m) -> m /= FAC
-      VnCnPhase _ (MoodVal m)   -> m /= FAC
-      VnCnEffect _ (MoodVal m)  -> m /= FAC
-      VnCnLevel _ _ (MoodVal m) -> m /= FAC
-      _ -> False
 
 sel1 :: (a, b, c) -> a
 sel1 (a, _, _) = a
