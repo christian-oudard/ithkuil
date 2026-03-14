@@ -409,7 +409,7 @@ nm x = case T.pack (show x) of
   "RCP" -> "Reciprocal"; "CPL" -> "Complementary"; "DUP" -> "Duplicative"
   "DEM" -> "Demonstrative"; "CNG" -> "Contingent"; "PTI" -> "Participative"
   -- Phase
-  "PUN" -> "Punctual"; "ITR" -> "Iterative"; "REP" -> "Repetitive"
+  "PCT" -> "Punctual"; "ITR" -> "Iterative"; "REP" -> "Repetitive"
   "ITM" -> "Intermittent"; "RCT" -> "Recurrent"; "FRE" -> "Frequentative"
   "FRG" -> "Fragmentative"; "VAC" -> "Vacillative"; "FLC" -> "Fluctuative"
   -- Aspect

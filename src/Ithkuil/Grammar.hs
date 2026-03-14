@@ -263,7 +263,7 @@ data Valence
 
 -- | Phase (9 values) - temporal contour of action
 data Phase
-  = PUN  -- ^ Punctual: instantaneous
+  = PCT  -- ^ Punctual: instantaneous
   | ITR  -- ^ Iterative: repeated
   | REP  -- ^ Repetitive: recurring
   | ITM  -- ^ Intermittent: on-and-off

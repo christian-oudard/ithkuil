@@ -204,7 +204,23 @@ main = hspec $ do
       -- These use the grammar Ca system: Aff + Config + Ext + Persp
       parseCa "rļř" `shouldBe` Just (ParsedCa UNI COA G_ DEL RPV)
       parseCa "řkpl" `shouldBe` Just (ParsedCa MSC VAR M_ ATV RPV)
-      parseCa "kgm" `shouldBe` Just (ParsedCa MSC CSL N_ GRA RPV)
+      -- kgm → kg→ng → [C]gm→[C]x → nx
+      parseCa "nx" `shouldBe` Just (ParsedCa MSC CSL N_ GRA RPV)
+
+    it "applies allomorphic substitutions correctly" $ do
+      -- Simple substitutions (Sec 3.6 table)
+      -- tt → nt: MSS(t) + PRX(t) = tt → nt
+      parseCa "nt" `shouldBe` Just (ParsedCa MSS CSL M_ PRX NRM)
+      -- kk → nk: MSC(k) + ICP(k) = kk → nk
+      parseCa "nk" `shouldBe` Just (ParsedCa MSC CSL M_ ICP NRM)
+      -- pb → mb: MSF(p) + DPL(b) = pb → mb
+      parseCa "mb" `shouldBe` Just (ParsedCa MSF CSL M_ DPL NRM)
+      -- kg → ng: MSC(k) + GRA(g) = kg → ng
+      parseCa "ng" `shouldBe` Just (ParsedCa MSC CSL M_ GRA NRM)
+      -- Context-dependent: [C]gm → [C]x (but bare gm stays as UNI/ICP)
+      parseCa "gm" `shouldBe` Just (ParsedCa UNI CSL N_ ICP RPV)
+      -- çy → nd: MDF(ç) + A_/NRM(y) = çy → nd
+      parseCa "nd" `shouldBe` Just (ParsedCa MDF CSL A_ DEL NRM)
 
     it "parses Ca with grammar-table consonants (ch03)" $ do
       -- Config consonants alone (M_/NRM has no suffix)
@@ -366,7 +382,7 @@ main = hspec $ do
       parseCnCaseScope "hw" `shouldBe` Just CCA
 
     it "parses phase vowels" $ do
-      lookup "ai" phaseVowels `shouldBe` Just PUN
+      lookup "ai" phaseVowels `shouldBe` Just PCT
       lookup "au" phaseVowels `shouldBe` Just ITR
       lookup "ei" phaseVowels `shouldBe` Just REP
       lookup "ui" phaseVowels `shouldBe` Just FLC
@@ -1035,7 +1051,7 @@ main = hspec $ do
       renderMoodOrScopeP2 (MoodVal HYP) `shouldBe` "hňw"
 
     it "renders phase vowels correctly" $ do
-      renderPhase PUN `shouldBe` "ai"
+      renderPhase PCT `shouldBe` "ai"
       renderPhase FLC `shouldBe` "ui"
 
     it "renders aspect vowels correctly" $ do

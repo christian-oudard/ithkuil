@@ -296,7 +296,7 @@ valenceVowels =
 -- | Phase vowels (Pattern 1, Series 2)
 phaseVowels :: [(Text, Phase)]
 phaseVowels =
-  [ ("ai", PUN), ("au", ITR), ("ei", REP), ("eu", ITM)
+  [ ("ai", PCT), ("au", ITR), ("ei", REP), ("eu", ITM)
   , ("ëu", RCT), ("ou", FRE), ("oi", FRG), ("iu", VAC), ("ui", FLC)
   ]
 

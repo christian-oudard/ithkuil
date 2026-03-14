@@ -153,18 +153,52 @@ constructCa = applySubstitutions . constructCaRaw
 --------------------------------------------------------------------------------
 
 -- | Allomorphic substitution rules for Ca consonant clusters
--- From grammar ch03 section 3.6 table
-substitutions :: [(Text, Text)]
-substitutions =
-  [ ("pp", "mp")  -- MSF + ATV, or other pp clusters
+-- From morphology v1.3.1 Sec 3.6 table (page 14)
+-- Simple substitutions: always apply
+simpleSubstitutions :: [(Text, Text)]
+simpleSubstitutions =
+  [ ("pp", "mp"), ("tt", "nt"), ("kk", "nk")
+  , ("pb", "mb"), ("kg", "ng")
+  , ("ll", "pļ"), ("rr", "ns")
+  , ("çy", "nd")
+  -- Multi-step substitutions
+  , ("řř", "nš")  -- řř → nš (if generated)
   ]
 
--- | Apply all substitution rules sequentially
+-- | Context-dependent substitutions: [C]X → [C]Y
+-- Only apply when the pattern occurs after at least one consonant (not word-initial)
+contextSubstitutions :: [(Text, Text)]
+contextSubstitutions =
+  [ ("gm", "x"), ("gn", "ň")
+  , ("bm", "v"), ("bn", "ḑ")
+  ]
+
+-- | Apply all substitution rules
+-- 1. Simple substitutions (apply everywhere)
+-- 2. Context-dependent substitutions (only non-initial)
 applySubstitutions :: Text -> Text
-applySubstitutions = applyAll substitutions
+applySubstitutions = applyContext contextSubstitutions . applySimple simpleSubstitutions
   where
-    applyAll [] t = t
-    applyAll ((from, to):rest) t = applyAll rest (T.replace from to t)
+    applySimple [] t = t
+    applySimple ((from, to):rest) t = applySimple rest (T.replace from to t)
+    -- Replace pattern only when it occurs after at least one character
+    applyContext [] t = t
+    applyContext ((from, to):rest) t = applyContext rest (replaceNonInitial from to t)
+
+-- | Replace occurrences of a pattern in text, but only when not at position 0
+replaceNonInitial :: Text -> Text -> Text -> Text
+replaceNonInitial from to t
+  | T.length t < T.length from = t
+  | otherwise =
+    let len = T.length from
+        -- Keep the first character, then do replacements in the rest
+        -- But we need to check at each position after index 0
+        go i
+          | i + len > T.length t = t  -- no more room for pattern
+          | T.take len (T.drop i t) == from && i > 0 =
+              T.take i t <> to <> replaceNonInitial from to (T.drop (i + len) t)
+          | otherwise = go (i + 1)
+    in go 0
 
 --------------------------------------------------------------------------------
 -- Pre-generated Lookup Tables

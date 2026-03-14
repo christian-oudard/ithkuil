@@ -185,7 +185,7 @@ renderMoodOrScopeP2 (CaseScope CCV) = "hňw"
 
 -- | Render Phase vowels (Series 2)
 renderPhase :: Phase -> Text
-renderPhase PUN = "ai"
+renderPhase PCT = "ai"
 renderPhase ITR = "au"
 renderPhase REP = "ei"
 renderPhase ITM = "eu"

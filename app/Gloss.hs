@@ -331,7 +331,7 @@ composeNumberWords n flags
         dropTrailingZeros = reverse . dropWhile (\(d,_) -> d == 0) . reverse
 
 -- | Compose a modular adjunct word from flags
--- Syntax: #VnCategory.Mood (e.g. #RTR.SUB, #PRG.FAC, #PUN.HYP)
+-- Syntax: #VnCategory.Mood (e.g. #RTR.SUB, #PRG.FAC, #PCT.HYP)
 -- Ultimate stress marks the final vowel as Vh scope (formative scope = "a")
 -- Penultimate stress means the final vowel is another VnCn with implicit Cn="h"
 composeModularWord :: [Text] -> Text
@@ -876,7 +876,7 @@ applyOneFlag "DEM" f = setValence DEM f
 applyOneFlag "CNG" f = setValence CNG f
 applyOneFlag "PTI" f = setValence PTI f
 -- Phase (Slot VIII, Pattern 1 Series 2)
-applyOneFlag "PUN" f = setPhase PUN f
+applyOneFlag "PCT" f = setPhase PCT f
 applyOneFlag "ITR" f = setPhase ITR f
 applyOneFlag "REP" f = setPhase REP f
 applyOneFlag "ITM" f = setPhase ITM f
