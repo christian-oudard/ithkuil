@@ -51,13 +51,18 @@ The canonical test word for each version is its own name for the language: V1 "I
 - `splitConjuncts :: Text -> [Text]` is the key parsing primitive that segments words into alternating V/C chunks
 - Ca complex is built compositionally: Ca1(config) + Ca2(extension) + Ca3(affiliation) + Ca4(perspective+essence), then allomorphic substitutions applied
 - Series 1 Vr skips form 4 (STA/OBJ = form 5); Series 2-4 skip form 5 (STA/OBJ = form 4)
-- Reference implementations: `reference/IthkuilGloss/` (Kotlin) and `reference/mamkait/` (Haskell)
+- Reference implementations: `reference/IthkuilGloss/` (Kotlin) and `reference/mamkait/` (Haskell) (gitignored, local only)
 
 ## Data Files
 
 - `data/roots.json` / `data/affixes.json` - V4 lexicon (JSON, loaded via aeson)
 - `data/roots_v3.json` / `data/roots_v1.json` - Minimal historical lexicons
 - `data/convert_lexicon.py` - Converter script for lexicon formats
+
+## Grammar Reference
+
+- `grammar_reference/` - Committed markdown reference docs for V4 (ch01-ch13) and V3
+- `reference/` - Gitignored: source PDFs, web scrapes, third-party reference implementations
 
 ## Planning Documents
 

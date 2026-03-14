@@ -3,3 +3,4 @@ dist-newstyle/
 *.o
 *.dyn_hi
 *.dyn_o
+reference/
