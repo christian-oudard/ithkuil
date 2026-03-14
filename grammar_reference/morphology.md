@@ -297,6 +297,118 @@ This optional slot holds one or more standard -V_X C_S affixes which apply to th
 
 No C_S form can contain a glottal-stop or begin with **h**-, nor can the following forms occur as C_S: -**w**-, -**y**-, -**ç**-, -**ļ**-, -**ļw**-, or -**ļy**-. Additionally, no geminated consonant can be a C_S form.
 
+#### 3.5.0.1 Affix Gradient Types
+
+Each affix's nine degrees follow one of seven "gradient types" determined by the phonological shape of the C_S consonant form:
+
+**Gradient Type 0 (Zero):** C_S is a single sibilant or affricate (e.g., -s, -č), or begins with a sibilant followed by a stop or non-sibilant fricative (e.g., -sk, -gz, -jd, -sf), or is a bi-consonantal form ending in a sibilant. The nine degrees represent an arbitrary list of nine related but non-graduated concepts (no inherent gradient from Degree 1 to 9). Some Type-0 affixes are marked **0\***, indicating an associated Cr root form.
+
+| Cs | Abbr | Affix Name |
+|---|---|---|
+| -sp | NEW | Newness/Revision |
+
+| Deg | Meaning |
+|---|---|
+| 1 | new = original + new, i.e., never before seen |
+| 2 | new = never before seen within current context, e.g., a new student |
+| 3 | new = role, i.e., never functioning/existing in this capacity/manner before |
+| 4 | new/other = replacement + new |
+| 5 | new/other = additional instance + new |
+| 6 | new/other = revision + additional |
+| 7 | new/other = revision + replacement |
+| 8 | new/other/different = different, not seen/used before within current context |
+| 9 | new/other/different = different + new |
+
+**Gradient Type A1:** C_S begins with -r or -ř (e.g., -rt, -řn, -rks). The nine degrees represent a gradient from zero/none (Degree 1) to maximum (Degree 9).
+
+| Cs | Abbr | Affix Name |
+|---|---|---|
+| -rļ | FAM | Degree of Familiarity |
+
+| Deg | Meaning |
+|---|---|
+| 1 | unknowable / alien; unable to even try X-ing |
+| 2 | totally unfamiliar, utterly strange; totally unaccustomed to X-ing |
+| 3 | unfamiliar, strange; unaccustomed to X-ing |
+| 4 | somewhat unfamiliar; somewhat unaccustomed to X-ing |
+| 5 | just becoming familiar, just getting to know; just getting used to X-ing |
+| 6 | somewhat familiar; somewhat accustomed to X-ing |
+| 7 | familiar/known; accustomed to X-ing |
+| 8 | well-known / utterly familiar with / ingrained |
+| 9 | intimate with; intimately involved with / intimately accustomed to |
+
+**Gradient Type A2:** C_S ends in -h (except -rh and -řh, which are Type A1). The nine degrees represent a gradient from insufficient (Degree 1) through optimal (Degree 5) to excessive (Degree 9).
+
+| Cs | Abbr | Affix Name |
+|---|---|---|
+| -mh | FLS | Degree of Fluctuation/Stability |
+
+| Deg | Meaning |
+|---|---|
+| 1 | too unstable / too random |
+| 2 | unstable / highly variable/random fluctuation or instability |
+| 3 | moderately variable/random fluctuation or instability |
+| 4 | increasing fluctuation or destabilization in pattern |
+| 5 | tending toward fluctuations and periods of instability |
+| 6 | decreasing fluctuation or instability in pattern = increasing stability |
+| 7 | moderately stable and lacking in fluctuations |
+| 8 | complete lack of fluctuation or instability; highly stable, steadfast |
+| 9 | too stable |
+
+**Gradient Type B:** C_S contains -ç- (e.g., -çţ, -çx). The nine degrees represent two contrasting states (positive vs. negative, active vs. passive, etc.) with a neutral midpoint.
+
+| Cs | Abbr | Affix Name |
+|---|---|---|
+| -çţ | RPN | Pattern of Spatio-Temporal Repetition or Distribution of Set Members |
+
+| Deg | Meaning |
+|---|---|
+| 1 | slow-paced repetition at regular intervals |
+| 2 | slow-paced repetition at irregular intervals |
+| 3 | slow-paced repetition at mixed intervals |
+| 4 | mid-paced repetition at irregular intervals |
+| 5 | mid-paced repetition at regular intervals |
+| 6 | mid-paced repetition at mixed intervals |
+| 7 | fast-paced repetition at mixed intervals |
+| 8 | fast-paced repetition at irregular intervals |
+| 9 | fast-paced repetition at regular intervals |
+
+**Gradient Type C:** C_S ends in -ř (e.g., -nř, -lř). The nine degrees represent a scale of anticipated-to-unanticipated effect.
+
+| Cs | Abbr | Affix Name |
+|---|---|---|
+| -nř | AGN | Degree of Agency, Intent or Effectiveness |
+
+| Deg | Meaning |
+|---|---|
+| 1 | with the anticipated max. resulting effect possible |
+| 2 | with the anticipated resulting effect to a high degree |
+| 3 | with the anticipated resulting effect to a moderate degree |
+| 4 | with the anticipated resulting effect but only to a marginal degree |
+| 5 | with no noticeable effect or resulting change |
+| 6 | with only marginal effect or resulting change, unanticipated |
+| 7 | with moderate effect or resulting change, unanticipated |
+| 8 | with the resulting effect to a high degree, unanticipated |
+| 9 | with the max. resulting effect possible, unanticipated |
+
+**Gradient Type D1:** The default gradient type for C_S forms not matching any of the above patterns. The nine degrees represent a standard spectrum from one extreme through a midpoint to the opposite extreme.
+
+**Gradient Type D2:** C_S ends in -x, or consists of two or more consonants ending in -m (e.g., -km). Complementary to D1.
+
+#### 3.5.0.2 Affix Type Descriptions
+
+**Type 1** (circumstantial): Applies the affix meaning in a circumstantial, incidental, happenstance, temporary, or informal manner.
+
+**Type 2** (derivational): Applies the affix meaning in a derivational manner that can entail lexical differences when translating into English.
+
+For example, the affix -rx (SIM, "Degree of Similarity") at Degree 9 means "exactly similar to / indistinguishable from / identical." The Type-1 form -urx applied to *wal* "person" gives *walurx* "identical-looking person" (circumstantial similarity), whereas the Type-2 form -uirx gives *waluirx* "twin" (derivational, a wholly new concept derived from the stem).
+
+**Type 3** (modifying adjacent affix): Applies the affix meaning not to the formative itself, but to the immediately adjacent affix (usually the following one, unless word-final, in which case the preceding one). For example, the affix -cč/7 "made-up, imaginary" with Type-3 infix modifies the adjacent affix rather than the stem:
+
+- Type-1: "a made-up/imaginary person"
+- Type-2: "a fictional person" (a character from a work of fiction)
+- Type-3: "a person who is imagined to be large" (where the adjacent affix means "large")
+
 **3.5.1 Glottal Stop Required in Slot II V_V To Indicate Slot V Is Filled:** When Slot V of a formative contains more than one C_S V_X- or -V_X C_S- affix, it becomes a problem whether to interpret the consonant forms as C_S forms or a C_A form until the eventual "arrival" of the end-of-Slot-V marker. Therefore, it is necessary to signal early on whether Slot V of a formative will contain more than one C_S V_X- or -V_X C_S- affix. To do so, insert a glottal-stop into the V_V-form of Slot II per the rules in Sec. 1.7.
 
 ### 3.6 SLOT VI: The C_A complex — Configuration + Extension + Affiliation + Perspective + Essence
