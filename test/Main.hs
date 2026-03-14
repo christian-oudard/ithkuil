@@ -2062,6 +2062,19 @@ main = hspec $ do
           w = composeFormative f
       T.isPrefixOf "hw" w `shouldBe` True
 
+    it "round-trips nominal formative with VnCn (case-scope)" $ do
+      -- Noun with aspect: penultimate stress, Cn = case-scope (not mood)
+      let f = (minimalFormative "g")
+              { fSlotVIII = Just (VnCnAspect PRG (CaseScope CCN))
+              , fSlotIX = Left (Transrelative ABS) }
+          w = composeFormative f
+      -- Should have penultimate stress (noun)
+      case parseWord w of
+        PFormative pf -> do
+          pfStress pf `shouldBe` Penultimate
+          pfCase pf `shouldBe` Just (Transrelative ABS)
+        other -> expectationFailure $ "Expected PFormative, got: " ++ show other
+
     it "round-trips concatenated chain (parse after compose)" $ do
       let head_ = minimalFormative "rm"
           tail_ = (minimalFormative "lḑ") { fSlotI = Just Type1 }

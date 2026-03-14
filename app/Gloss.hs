@@ -1006,16 +1006,25 @@ autoStress f
   | fStress f /= Penultimate = f  -- Explicitly set, don't override
   | otherwise = case fSlotIX f of
       Right _ -> f { fStress = Ultimate }
-      Left _ -> case fSlotVIII f of
+      Left c -> case fSlotVIII f of
         -- Slot VIII with CaseScope → nominal (penultimate stress)
         Just (VnCnAspect _ (CaseScope _)) -> f
         Just (VnCnValence _ (CaseScope _)) -> f
         Just (VnCnPhase _ (CaseScope _)) -> f
         Just (VnCnEffect _ (CaseScope _)) -> f
         Just (VnCnLevel _ _ (CaseScope _)) -> f
+        -- Non-default case with VnCn+Mood → nominal: convert mood to case-scope
+        Just s8 | c /= Transrelative THM -> f { fSlotVIII = Just (moodToScope s8) }
         -- Any other Slot VIII content implies verbal → ultimate stress
         Just _ -> f { fStress = Ultimate }
         _ -> f
+  where
+    moodToScope (VnCnAspect a (MoodVal m))   = VnCnAspect a (CaseScope (moodToCaseScope m))
+    moodToScope (VnCnValence v (MoodVal m))   = VnCnValence v (CaseScope (moodToCaseScope m))
+    moodToScope (VnCnPhase p (MoodVal m))     = VnCnPhase p (CaseScope (moodToCaseScope m))
+    moodToScope (VnCnEffect e (MoodVal m))    = VnCnEffect e (CaseScope (moodToCaseScope m))
+    moodToScope (VnCnLevel l a (MoodVal m))   = VnCnLevel l a (CaseScope (moodToCaseScope m))
+    moodToScope s8 = s8
 
 sel1 :: (a, b, c) -> a
 sel1 (a, _, _) = a
@@ -1235,8 +1244,9 @@ glossLine roots affixes input = do
     TIO.putStrLn ""
 
 glossOneWord :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> IO ()
-glossOneWord roots affixes word = do
-  let wtype = classifyWord word
+glossOneWord roots affixes rawWord = do
+  let word = T.filter (\c -> c /= ',' && c /= '.' && c /= '!' && c /= '?' && c /= ':' && c /= ';') rawWord
+      wtype = classifyWord word
       parsed = parseWord word
   TIO.putStrLn $ "  " <> col bold word <> "  " <> col dim ("[" <> T.pack (show wtype) <> "]")
   case parsed of
