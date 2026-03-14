@@ -134,10 +134,13 @@ isReferentialWord word =
         | otherwise = Nothing
       consumeRefs [] = Nothing
       -- After C1s, expect: V [w/y V [C1 [ë]]]
+      -- V can be a glottal-stop case vowel (V'V) which splits into 3 conjuncts
       isValidTail cs = case cs of
         [v]            | isV v -> True
+        [v, "'", v2]   | isV v && isV v2 -> True  -- glottal case: V'V (e.g., i'o = ALL)
         [v, wy, v2]   | isV v && wy `elem` ["w", "y"] && isV v2 -> True
         [v, wy, v2, c] | isV v && wy `elem` ["w", "y"] && isV v2 && isRefCluster c -> True
+        [v, "'", v2, wy, v3] | isV v && isV v2 && wy `elem` ["w", "y"] && isV v3 -> True
         _ -> False
       isV t = not (T.null t) && isVowelChar (T.head t)
   in case consumeRefs rest0 of
@@ -383,7 +386,12 @@ parseReferentialWord word =
       nv = normalizeAccents
       -- Ultimate stress = RPV essence; encode as vc suffix
       essenceTag = case stress of { Ultimate -> "\\RPV"; _ -> "" }
-  in case (refs, tail') of
+      -- Merge V'V glottal-stop case patterns into single vowel
+      mergeGlottal (v:"'":v2:rest') | isV v && isV v2 = (v <> "'" <> v2) : rest'
+      mergeGlottal xs = xs
+      isV t = not (T.null t) && isVowelChar (T.head t)
+      merged = mergeGlottal tail'
+  in case (refs, merged) of
     (_:_, [v]) ->
       PReferential refs (parseCase (nv v)) (v <> essenceTag) Nothing
     (_:_, [v, wy, v2]) | wy `elem` ["w", "y"] ->

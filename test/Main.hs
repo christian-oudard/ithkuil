@@ -454,6 +454,13 @@ main = hspec $ do
           mc `shouldBe` Just (Transrelative THM)
         _ -> expectationFailure $ "Expected PReferential, got: " ++ show pw
 
+    it "parses referential with glottal-stop case vowel" $ do
+      case parseWord "si'o" of
+        PReferential [ref] mc _ _ -> do
+          ref `shouldBe` PersonalRef R2m NEU
+          mc `shouldBe` Just (SpatioTemporal1 ALL)
+        pw -> expectationFailure $ "Expected PReferential, got: " ++ show pw
+
     it "parses 'se' as 2m-ABS" $ do
       case parseWord "se" of
         PReferential [ref] mc _ _ -> do
