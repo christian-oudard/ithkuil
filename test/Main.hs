@@ -1984,7 +1984,6 @@ main = hspec $ do
       topRoot "love" `shouldBe` "rkw"
       topRoot "think" `shouldBe` "sl"
       topRoot "believe" `shouldBe` "b"
-      topRoot "drink" `shouldBe` "tx"
       topRoot "child" `shouldBe` "mp"
 
     it "finds correct root in top 5 for ambiguous queries" $ do
@@ -1996,6 +1995,8 @@ main = hspec $ do
       "g" `shouldSatisfy` (`elem` top10 "run")
       -- "dog" has Latin taxonomy inflating word count
       "zv" `shouldSatisfy` (`elem` top10 "dog")
+      -- "drink" matches both -tx- S3 (drinking liquid) and -ļtw- S1 (soft drink)
+      "tx" `shouldSatisfy` (`elem` top10 "drink")
       -- "give" stem description has many synonyms
       "n" `shouldSatisfy` (`elem` top10 "give")
 

@@ -133,7 +133,7 @@ buildKeywordIndex roots =
                        s0parts
           synEntries = concatMap (\syn ->
             let forms = Set.toList . Set.fromList $ [syn, porterStem syn]
-            in [(w, [(1, cr)]) | w <- forms]
+            in [(w, [(5, cr)]) | w <- forms]  -- S0 synonyms rank below direct S1 matches
             ) s0synonyms
       in synEntries ++ concatMap (\(pri, d) -> indexDesc cr pri d) descs
 
@@ -141,11 +141,16 @@ buildKeywordIndex roots =
       let stripped = stripParens desc
           ws = extractWords stripped
           nWords = length ws
-          score = pri * 10 + nWords
+          baseScore = pri * 10 + nWords
+          -- Exact-match bonus: if description is a single word, give it a strong boost
+          trimmed = T.strip (T.toCaseFold stripped)
+          exactBonus w = if nWords == 1 && (w == trimmed || porterStem w == porterStem trimmed)
+                         then 0  -- override to perfect score
+                         else baseScore
           -- Also index words from parenthetical content, but at higher score
           allWs = extractWords desc
           allForms = Set.toList . Set.fromList $ allWs ++ map porterStem allWs
-      in [(w, [(score, cr)]) | w <- allForms]
+      in [(w, [(exactBonus w, cr)]) | w <- allForms]
 
     -- | Remove parenthetical content for word counting (taxonomy names inflate scores)
     stripParens :: Text -> Text
