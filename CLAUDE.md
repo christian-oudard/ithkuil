@@ -55,8 +55,10 @@ The canonical test word is the language's name for itself: "Malëuţřait".
 
 ## Grammar Reference
 
-- `grammar_reference/` - Committed markdown reference docs for V4 (ch01-ch13) and V3
-- `reference/` - Gitignored: source PDFs, web scrapes, third-party reference implementations
+- `grammar_reference/morphology.md` - Canonical V4 grammar reference (phonology, morphology, slots, cases, adjuncts, syntax, script, numbers)
+- `grammar_reference/affixes_reference.md` - All 527 affixes with gradient types and 9 degrees
+- `grammar_reference/phonotactics.md` - Detailed consonant cluster rules
+- `grammar_reference_pdf/` - Gitignored: source PDFs
 
 ## Planning Documents
 
