@@ -435,6 +435,12 @@ main = hspec $ do
       classifyWord "äst" `shouldBe` WAffixualAdjunct
       classifyWord "eld" `shouldBe` WAffixualAdjunct
 
+    it "classifies uppercase words correctly (case-insensitive)" $ do
+      classifyWord "Adři" `shouldBe` WAffixualAdjunct
+      classifyWord "Äst" `shouldBe` WAffixualAdjunct
+      classifyWord "HÜ" `shouldBe` WRegisterAdjunct
+      classifyWord "Hla" `shouldBe` WCarrierAdjunct
+
     it "classifies normal words as formatives" $ do
       classifyWord "malai" `shouldBe` WFormative
       classifyWord "emalai" `shouldBe` WFormative

@@ -81,16 +81,17 @@ data ParsedWord
 classifyWord :: Text -> WordType
 classifyWord word
   | T.null word = WUnknown
-  | isBiasAdjunct word = WBiasAdjunct
-  | isMoodCaseScopeAdjunct word = WMoodCaseScopeAdj
-  | isRegisterAdjunctWord word = WRegisterAdjunct
-  | isCarrierAdjunct word = WCarrierAdjunct
-  | isModularAdjunct word = WModularAdjunct
-  | isCombinationRef word = WCombinationRef
-  | isMultipleAffixAdjunct word = WMultipleAffixAdj
-  | isAffixualAdjunct word = WAffixualAdjunct
-  | isReferentialWord word = WReferential
+  | isBiasAdjunct lw = WBiasAdjunct
+  | isMoodCaseScopeAdjunct lw = WMoodCaseScopeAdj
+  | isRegisterAdjunctWord lw = WRegisterAdjunct
+  | isCarrierAdjunct lw = WCarrierAdjunct
+  | isModularAdjunct lw = WModularAdjunct
+  | isCombinationRef lw = WCombinationRef
+  | isMultipleAffixAdjunct lw = WMultipleAffixAdj
+  | isAffixualAdjunct lw = WAffixualAdjunct
+  | isReferentialWord lw = WReferential
   | otherwise = WFormative
+  where lw = T.toLower word
 
 -- | Bias adjuncts are pure consonant clusters (no vowels)
 -- Must not be a register adjunct (which also has no vowels)
@@ -266,27 +267,31 @@ parseWord word
   | otherwise = parseSingleWord word
 
 -- | Parse a single (non-concatenated) word
+-- Classification and most parsing works on lowercased input;
+-- formative parsing handles case internally (for stress detection)
 parseSingleWord :: Text -> ParsedWord
-parseSingleWord word = case classifyWord word of
-  WBiasAdjunct -> case parseBias word of
-    Just b -> PBias b
-    Nothing -> PUnparsed word
-  WRegisterAdjunct -> case parseRegister word of
-    Just r -> PRegister r
-    Nothing -> PUnparsed word
-  WFormative -> case detectFormativeError word of
-    Just err -> PError err word
-    Nothing -> case parseFormativeReal word of
-      Just pf -> PFormative pf
+parseSingleWord word =
+  let lw = T.toLower word
+  in case classifyWord word of
+    WBiasAdjunct -> case parseBias lw of
+      Just b -> PBias b
       Nothing -> PUnparsed word
-  WReferential -> parseReferentialWord word
-  WModularAdjunct -> parseModularWord word
-  WMultipleAffixAdj -> parseMultipleAffixWord word
-  WAffixualAdjunct -> parseAffixualWord word
-  WCarrierAdjunct -> parseCarrierWord word
-  WCombinationRef -> parseCombinationRefWord word
-  WMoodCaseScopeAdj -> parseMoodCaseScopeAdj word
-  _ -> PUnparsed word
+    WRegisterAdjunct -> case parseRegister lw of
+      Just r -> PRegister r
+      Nothing -> PUnparsed word
+    WFormative -> case detectFormativeError word of
+      Just err -> PError err word
+      Nothing -> case parseFormativeReal word of
+        Just pf -> PFormative pf
+        Nothing -> PUnparsed word
+    WReferential -> parseReferentialWord lw
+    WModularAdjunct -> parseModularWord word  -- needs original for stress detection
+    WMultipleAffixAdj -> parseMultipleAffixWord lw
+    WAffixualAdjunct -> parseAffixualWord lw
+    WCarrierAdjunct -> parseCarrierWord lw
+    WCombinationRef -> parseCombinationRefWord lw
+    WMoodCaseScopeAdj -> parseMoodCaseScopeAdj lw
+    _ -> PUnparsed word
 
 -- | Detect structural errors in formative words before parsing
 -- Returns Just errorMessage if an error is detected
