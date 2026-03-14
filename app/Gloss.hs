@@ -19,7 +19,7 @@ import Ithkuil.WordType
 import Ithkuil.Lexicon
 import Ithkuil.Compose (lookupGrammar, searchGrammar, lookupForm, GrammarEntry(..), searchRootsRanked, searchAffixes, dumpGrammarTable, composeFormative, composeReferential, applyStress)
 import Ithkuil.Render (renderSlotVIII, renderCase)
-import Ithkuil.Adjuncts (Register(..), registerForm, registerFinalForm, carrierTypeForm)
+import Ithkuil.Adjuncts (Register(..), registerForm, registerFinalForm, carrierTypeForm, Bias(..), biasForm)
 import Ithkuil.Numbers (numberRoot, numberAffix)
 import Ithkuil.Phonology (vowelForm)
 import Ithkuil.Script (renderFormativeSvg)
@@ -142,7 +142,7 @@ showHelp = do
   TIO.putStrLn "          THM ABS ERG DAT LOC ALL ABL PER ... (68 cases)"
   TIO.putStrLn "          OBS IRG DIR ADM DEC HOR POT CNJ VER (illocutions)"
   TIO.putStrLn "          RTR PRS HAB PRG IMM PCS REG ATP (aspects)"
-  TIO.putStrLn "          +Cs/D = Slot VII affix, ~Cs/D = Slot V affix"
+  TIO.putStrLn "          +Cs/D = Slot VII affix, ~Cs/D = Slot V affix (D.2=Type 2)"
   TIO.putStrLn "  --sentence spec...  Compose a multi-word sentence"
   TIO.putStrLn "    root:FLAG:FLAG    Formative (keyword or Cr cluster)"
   TIO.putStrLn "    @1m:CASE          Referential (@1m, @2m, @MA, @pa)"
@@ -150,6 +150,7 @@ showHelp = do
   TIO.putStrLn "    ^Cs/D[:SCOPE]     Affixual adjunct (^NEG/4, ^r/4:o)"
   TIO.putStrLn "    ~REG / ~-REG      Register start/end (~DSV, ~-DSV, ~PNT)"
   TIO.putStrLn "    *TYPE[:CASE]      Carrier adjunct (*CAR:ERG, *NAM, *QUO)"
+  TIO.putStrLn "    +BIAS              Bias adjunct (+FSC, +DOL, +IRO)"
   TIO.putStrLn "    %N[:FLAG]         Number (%42, %7:ERG)"
   TIO.putStrLn "    >root / >>root    Type 1/2 concatenation"
   TIO.putStrLn "  --help, -h          Show this help"
@@ -232,6 +233,9 @@ composeOneWord roots affixes s = case T.splitOn ":" s of
   (w:opts)
     | Just afxSpec <- T.stripPrefix "!" w <|> T.stripPrefix "^" w
     -> composeAffixualWord affixes afxSpec opts
+  (w:_)
+    | Just biasSpec <- T.stripPrefix "+" w
+    -> composeBiasWord (T.toUpper biasSpec)
   (w:_)
     | Just regSpec <- T.stripPrefix "~" w
     -> composeRegisterWord (T.toUpper regSpec)
@@ -358,6 +362,13 @@ composeRegisterWord spec =
     lookupRegisterEnd "EXM" = registerFinalForm EXM
     lookupRegisterEnd "CGT" = registerFinalForm CGT
     lookupRegisterEnd _ = "?"
+
+-- | Compose a bias adjunct: +FSC → "žžj", +DOL → "řřx"
+composeBiasWord :: Text -> Text
+composeBiasWord name =
+  case lookup name [(T.pack (show b), b) | b <- [minBound..maxBound :: Bias]] of
+    Just b  -> biasForm b
+    Nothing -> "?"
 
 -- | Compose a carrier adjunct: *CAR:CASE → "hl" + case vowel
 composeCarrierWord :: Text -> [Text] -> Text
@@ -821,12 +832,13 @@ applyOneFlag flag f
 parseAffixFlag :: Text -> Maybe Affix
 parseAffixFlag t = case T.splitOn "/" t of
   [cs, degStr] ->
-    let (degDigit, typeStr) = T.span (\c -> c >= '0' && c <= '9') (T.toLower degStr)
+    let -- Split degree from type: "5.2" → ("5", ".2"), "5₂" → ("5", "₂"), "5" → ("5", "")
+        (degDigit, typeStr) = T.span (\c -> c >= '0' && c <= '9') (T.toLower degStr)
         deg = case reads (T.unpack degDigit) :: [(Int, String)] of
           [(d, "")] | d >= 0 && d <= 9 -> d
           _ -> -1
         atype = case typeStr of
-          "₂" -> 2; "₃" -> 3; _ -> 1
+          "₂" -> 2; "₃" -> 3; ".2" -> 2; ".3" -> 3; _ -> 1
         vx = if deg == 0 then case atype of
                1 -> "ae"; 2 -> "ea"; 3 -> "üo"; _ -> "ae"
              else vowelForm atype deg
@@ -902,8 +914,13 @@ autoStress f
   | otherwise = case fSlotIX f of
       Right _ -> f { fStress = Ultimate }
       Left _ -> case fSlotVIII f of
-        -- Any explicit Slot VIII content implies verbal → ultimate stress
-        -- (even with default FAC mood, the aspect/valence/etc. makes it verbal)
+        -- Slot VIII with CaseScope → nominal (penultimate stress)
+        Just (VnCnAspect _ (CaseScope _)) -> f
+        Just (VnCnValence _ (CaseScope _)) -> f
+        Just (VnCnPhase _ (CaseScope _)) -> f
+        Just (VnCnEffect _ (CaseScope _)) -> f
+        Just (VnCnLevel _ _ (CaseScope _)) -> f
+        -- Any other Slot VIII content implies verbal → ultimate stress
         Just _ -> f { fStress = Ultimate }
         _ -> f
 

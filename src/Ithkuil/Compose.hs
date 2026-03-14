@@ -489,6 +489,12 @@ tryShortcut f = do
   case fSlotV f of
     [] -> Just ()
     _ -> Nothing
+  -- Antepenultimate stress (FRA) requires 3+ syllables.
+  -- Shortcut base is 2 syllables; each Slot VII affix or Slot VIII adds 1.
+  let extraSyllables = length (fSlotVII f) + (case fSlotVIII f of Just _ -> 1; Nothing -> 0)
+  case fStress f of
+    Antepenultimate | extraSyllables == 0 -> Nothing
+    _ -> Just ()
   -- Case vowel must not contain glottal stop (would be misinterpreted as slot V marker)
   let caseForm = renderSlotIX (fSlotIX f)
   if T.any (== '\'') caseForm then Nothing else Just ()

@@ -1760,6 +1760,20 @@ main = hspec $ do
         PFormative pf -> pfStress pf `shouldBe` Antepenultimate
         _ -> expectationFailure $ "Framed verb: " ++ show parsed
 
+    it "round-trips framed noun (default Vr, forced full form)" $ do
+      -- With default STA/BSC/EXS, shortcut would be 2 syllables (wale).
+      -- FRA must force full form (álale = 3 syllables).
+      let f = (minimalFormative "l")
+              { fStress = Antepenultimate
+              , fSlotIX = Left (Transrelative ABS) }
+          w = composeFormative f
+          parsed = parseWord w
+      case parsed of
+        PFormative pf -> do
+          pfStress pf `shouldBe` Antepenultimate
+          pfRoot pf `shouldBe` Root "l"
+        _ -> expectationFailure $ "Framed noun: " ++ show parsed
+
     it "round-trips DPX configuration" $ do
       let f = (minimalFormative "l")
               { fSlotVI = (DPX, CSL, M_, DEL, NRM)
@@ -1940,6 +1954,19 @@ main = hspec $ do
         PFormative pf -> pfStress pf `shouldBe` Ultimate
         _ -> expectationFailure $ "Mood round-trip: " ++ T.unpack w
 
+    it "preserves penultimate stress for case-scopes" $ do
+      -- Case-scopes use the same Cn consonants as moods but need penultimate stress.
+      -- Use non-shortcut form (DYN) so VnCn goes to pfSlotVIII directly.
+      let f = (minimalFormative "l")
+              { fSlotIV = (DYN, BSC, EXS)
+              , fSlotVIII = Just (VnCnValence MNO (CaseScope CCQ)) }
+          w = composeFormative f
+          parsed = parseWord w
+      -- CCQ has Cn="hm" — with penultimate stress, parser should read CCQ not SPC
+      case parsed of
+        PFormative pf -> pfStress pf `shouldBe` Penultimate
+        _ -> expectationFailure $ "Case-scope round-trip: " ++ T.unpack w
+
     it "uses circumflex stress on diaeresis vowels" $ do
       let f = (minimalFormative "l")
               { fSlotII = (S1, CPT)
@@ -1947,6 +1974,21 @@ main = hspec $ do
               , fSlotVIII = Just (VnCnAspect PRG (MoodVal FAC)) }
           w = composeFormative f
       T.isPrefixOf "wâ" w `shouldBe` True  -- ä + stress → â (circumflex)
+
+    it "uses full form for antepenultimate stress with 2-syllable shortcut" $ do
+      -- FRA requires 3+ syllables; shortcut base has only 2
+      let f = (minimalFormative "l") { fStress = Antepenultimate }
+          w = composeFormative f
+      -- Should use full form (starting with vowel), not shortcut (starting with w)
+      T.isPrefixOf "á" w `shouldBe` True  -- álalo, not wálo
+
+    it "allows shortcut for antepenultimate when Slot VII/VIII add syllables" $ do
+      -- With Slot VIII, shortcut has 3 syllables, FRA is valid
+      let f = (minimalFormative "l")
+              { fStress = Antepenultimate
+              , fSlotVIII = Just (VnCnAspect RTR (MoodVal FAC)) }
+          w = composeFormative f
+      T.isPrefixOf "w" w `shouldBe` True  -- shortcut preserved
 
     it "composes Type 1 concatenated formative (h prefix)" $ do
       let f = (minimalFormative "rm")
