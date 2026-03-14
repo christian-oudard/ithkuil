@@ -1182,6 +1182,17 @@ main = hspec $ do
       let gloss = glossWord mempty mempty (parseWord "malalayoha")
       T.isInfixOf "MIN.a" gloss `shouldBe` True
 
+    it "round-trips absolute Level composition" $ do
+      -- Compose with absolute MIN, verify V+y+V pattern and correct parse
+      let f = (minimalFormative "rr")
+              { fStress = Ultimate
+              , fSlotVIII = Just (VnCnLevel MIN True (MoodVal FAC))
+              , fSlotIX = Right (IllocVal ASR OBS) }
+          w = composeFormative f
+          gloss = glossWord mempty mempty (parseWord w)
+      T.isInfixOf "MIN.a" gloss `shouldBe` True
+      T.isInfixOf "y" w `shouldBe` True  -- V+y+V pattern present
+
     it "parses Effect VnCn values" $ do
       -- ia + h = BEN1 + FAC mood
       parseOneVnCn "ia" "h" `shouldBe` Just (VnCnEffect BEN1 (MoodVal FAC))

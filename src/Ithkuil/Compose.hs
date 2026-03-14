@@ -213,7 +213,7 @@ searchAffixes query affixes =
       stripped = T.dropWhile (== '-') . T.dropWhileEnd (== '-') $ q
       matches (cs, entry) =
         T.toCaseFold cs == stripped
-        || T.toCaseFold (affixAbbrev entry) == T.toUpper q
+        || T.toCaseFold (affixAbbrev entry) == q
         || T.isInfixOf q (T.toCaseFold (affixDesc entry))
         || any (T.isInfixOf q . T.toCaseFold) (affixDegrees entry)
   in filter matches (Map.toList affixes)

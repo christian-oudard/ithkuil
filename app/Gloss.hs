@@ -838,16 +838,25 @@ applyOneFlag "DSLF" f = setEffect DSLF f
 applyOneFlag "DET3" f = setEffect DET3 f
 applyOneFlag "DET2" f = setEffect DET2 f
 applyOneFlag "DET1" f = setEffect DET1 f
--- Level (Slot VIII, Pattern 1 Series 4)
+-- Level (Slot VIII, Pattern 1 Series 4) — append .A for absolute
 applyOneFlag "MIN" f = setLevel MIN False f
+applyOneFlag "MIN.A" f = setLevel MIN True f
 applyOneFlag "SBE" f = setLevel SBE False f
+applyOneFlag "SBE.A" f = setLevel SBE True f
 applyOneFlag "IFR" f = setLevel IFR False f
+applyOneFlag "IFR.A" f = setLevel IFR True f
 applyOneFlag "DFT" f = setLevel DFT False f
+applyOneFlag "DFT.A" f = setLevel DFT True f
 applyOneFlag "EQU" f = setLevel EQU False f
+applyOneFlag "EQU.A" f = setLevel EQU True f
 applyOneFlag "SUR" f = setLevel SUR False f
+applyOneFlag "SUR.A" f = setLevel SUR True f
 applyOneFlag "SPL" f = setLevel SPL False f
+applyOneFlag "SPL.A" f = setLevel SPL True f
 applyOneFlag "SPQ" f = setLevel SPQ False f
+applyOneFlag "SPQ.A" f = setLevel SPQ True f
 applyOneFlag "MAX" f = setLevel MAX False f
+applyOneFlag "MAX.A" f = setLevel MAX True f
 -- Mood (Cn modifier)
 applyOneFlag "FAC" f = setMood (MoodVal FAC) f
 applyOneFlag "SUB" f = setMood (MoodVal SUB) f
