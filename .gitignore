@@ -3,5 +3,4 @@ dist-newstyle/
 *.o
 *.dyn_hi
 *.dyn_o
-reference/
-reference-bak/
+grammar_reference_pdf/
