@@ -143,6 +143,7 @@ showHelp = do
   TIO.putStrLn "          OBS IRG DIR ADM DEC HOR POT CNJ VER (illocutions)"
   TIO.putStrLn "          RTR PRS HAB PRG IMM PCS REG ATP (aspects)"
   TIO.putStrLn "          +Cs/D = Slot VII affix, ~Cs/D = Slot V affix (D.2=Type 2)"
+  TIO.putStrLn "          +ACC1/CASE = case-accessor (ACC2,ACC3,IA1,IA2,IA3,STK)"
   TIO.putStrLn "  --sentence spec...  Compose a multi-word sentence"
   TIO.putStrLn "    root:FLAG:FLAG    Formative (keyword or Cr cluster)"
   TIO.putStrLn "    @1m:CASE          Referential (@1m, @2m, @MA, @pa)"
@@ -874,25 +875,51 @@ applyOneFlag flag f
   | otherwise = f  -- Ignore unknown flags
 
 -- | Parse affix flag like "fm/2" or "fm/2₂" → Affix with vowel form
+-- Also handles case-accessor syntax: ACC1:ERG, IA1:THM, STK:ABS
 parseAffixFlag :: Text -> Maybe Affix
-parseAffixFlag t = case T.splitOn "/" t of
-  [cs, degStr] ->
-    let -- Split degree from type: "5.2" → ("5", ".2"), "5₂" → ("5", "₂"), "5" → ("5", "")
-        (degDigit, typeStr) = T.span (\c -> c >= '0' && c <= '9') (T.toLower degStr)
-        deg = case reads (T.unpack degDigit) :: [(Int, String)] of
-          [(d, "")] | d >= 0 && d <= 9 -> d
-          _ -> -1
-        atype = case typeStr of
-          "₂" -> 2; "₃" -> 3; ".2" -> 2; ".3" -> 3; _ -> 1
-        vx = if deg == 0 then case atype of
-               1 -> "ae"; 2 -> "ea"; 3 -> "üo"; _ -> "ae"
-             else vowelForm atype deg
-    in if deg >= 0 then Just (Affix vx (T.toLower cs) (toAffixType atype))
-       else Nothing
-  _ -> Nothing
+parseAffixFlag t
+  -- Case-accessor affix: ACC1:ERG, ACC2:THM, ACC3:LOC, IA1:ERG, IA2:THM, IA3:ABS, STK:ERG
+  | Just (csBase, caseAbbr) <- parseCaseAccessorFlag t =
+    let caseM = lookupCaseByAbbrev caseAbbr
+        caseVowel = renderCase caseM
+        hasGlottal = T.any (== '\'') caseVowel
+        vx = T.filter (/= '\'') caseVowel
+        cs = csBase <> (if hasGlottal then "y" else "w")
+    in Just (Affix vx cs Type1Affix)
+  | otherwise = case T.splitOn "/" t of
+      [cs, degStr] ->
+        let -- Split degree from type: "5.2" → ("5", ".2"), "5₂" → ("5", "₂"), "5" → ("5", "")
+            (degDigit, typeStr) = T.span (\c -> c >= '0' && c <= '9') (T.toLower degStr)
+            deg = case reads (T.unpack degDigit) :: [(Int, String)] of
+              [(d, "")] | d >= 0 && d <= 9 -> d
+              _ -> -1
+            atype = case typeStr of
+              "₂" -> 2; "₃" -> 3; ".2" -> 2; ".3" -> 3; _ -> 1
+            vx = if deg == 0 then case atype of
+                   1 -> "ae"; 2 -> "ea"; 3 -> "üo"; _ -> "ae"
+                 else vowelForm atype deg
+        in if deg >= 0 then Just (Affix vx (T.toLower cs) (toAffixType atype))
+           else Nothing
+      _ -> Nothing
   where
     toAffixType 1 = Type1Affix; toAffixType 2 = Type2Affix
     toAffixType 3 = Type3Affix; toAffixType _ = Type1Affix
+
+-- | Parse case-accessor flag prefix: ACC1/ERG → ("s", "ERG")
+-- Returns (Cs base without w/y suffix, case abbreviation)
+-- Uses "/" separator to be consistent with standard affix syntax (+Cs/D)
+parseCaseAccessorFlag :: Text -> Maybe (Text, Text)
+parseCaseAccessorFlag t = case T.splitOn "/" t of
+  [kind, caseAbbr] -> case T.toUpper kind of
+    "ACC1" -> Just ("s",  T.toUpper caseAbbr)
+    "ACC2" -> Just ("z",  T.toUpper caseAbbr)
+    "ACC3" -> Just ("č",  T.toUpper caseAbbr)
+    "IA1"  -> Just ("š",  T.toUpper caseAbbr)
+    "IA2"  -> Just ("ž",  T.toUpper caseAbbr)
+    "IA3"  -> Just ("j",  T.toUpper caseAbbr)
+    "STK"  -> Just ("l",  T.toUpper caseAbbr)
+    _      -> Nothing
+  _ -> Nothing
 
 -- | Set validation on existing illocution, or default to ASR
 setVal :: Validation -> Formative -> Formative

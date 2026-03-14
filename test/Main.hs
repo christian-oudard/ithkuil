@@ -639,6 +639,30 @@ main = hspec $ do
       glossOneAffix mempty ("ai", "nļ") `shouldBe` "ASR/OBS"
       glossOneAffix mempty ("ei", "nļ") `shouldBe` "ASR/PUP"
 
+    it "round-trips case-accessor affix composition (w-series)" $ do
+      -- Compose with acc₁:ERG (sw, case vowel = "o"), then parse and check gloss
+      let f = (minimalFormative "rr")
+              { fSlotVII = [Affix "o" "sw" Type1Affix] }
+          w = composeFormative f
+          gloss = glossWord mempty mempty (parseWord w)
+      T.isInfixOf "acc₁:ERG" gloss `shouldBe` True
+
+    it "round-trips case-accessor affix composition (y-series)" $ do
+      -- Compose with acc₁:PRN (sy, de-glottalized vowel = "a")
+      let f = (minimalFormative "rr")
+              { fSlotVII = [Affix "a" "sy" Type1Affix] }
+          w = composeFormative f
+          gloss = glossWord mempty mempty (parseWord w)
+      T.isInfixOf "acc₁:PRN" gloss `shouldBe` True
+
+    it "round-trips case-stacking affix for spatio-temporal case" $ do
+      -- Case-stacking for LOC (ly, de-glottalized "ia")
+      let f = (minimalFormative "rr")
+              { fSlotVII = [Affix "ia" "ly" Type1Affix] }
+          w = composeFormative f
+          gloss = glossWord mempty mempty (parseWord w)
+      T.isInfixOf "case:LOC" gloss `shouldBe` True
+
     it "glosses Ca-stacking affix (Vx=üö)" $ do
       glossOneAffix mempty ("üö", "tr") `shouldBe` "Ca:MSS.G"
       glossOneAffix mempty ("üö", "s") `shouldBe` "Ca:DPX"

@@ -225,6 +225,7 @@ grammarTable = concat
   , allMoods, allIllocutions, allValidations, allCaseScopes
   , allConfigurations, allAffiliations, allPerspectives, allExtensions, allEssences
   , allFunctions, allSpecifications, allContexts, allStems, allVersions
+  , allCaseAccessorCs
   ]
 
 -- Cases (68)
@@ -324,6 +325,24 @@ allVersions :: [GrammarEntry]
 allVersions =
   [ ge "Version" "PRC" "Processual" "first vowel of pair"
   , ge "Version" "CPT" "Completive" "second vowel of pair"
+  ]
+
+allCaseAccessorCs :: [GrammarEntry]
+allCaseAccessorCs =
+  [ ge "Affix/CaseAcc" "acc₁" "Type-1 Case-Accessor (cases 1-36)" "sw"
+  , ge "Affix/CaseAcc" "acc₁" "Type-1 Case-Accessor (cases 37-68)" "sy"
+  , ge "Affix/CaseAcc" "acc₂" "Type-2 Case-Accessor (cases 1-36)" "zw"
+  , ge "Affix/CaseAcc" "acc₂" "Type-2 Case-Accessor (cases 37-68)" "zy"
+  , ge "Affix/CaseAcc" "acc₃" "Type-3 Case-Accessor (cases 1-36)" "čw"
+  , ge "Affix/CaseAcc" "acc₃" "Type-3 Case-Accessor (cases 37-68)" "čy"
+  , ge "Affix/InvAcc" "ia₁" "Type-1 Inverse Accessor (cases 1-36)" "šw"
+  , ge "Affix/InvAcc" "ia₁" "Type-1 Inverse Accessor (cases 37-68)" "šy"
+  , ge "Affix/InvAcc" "ia₂" "Type-2 Inverse Accessor (cases 1-36)" "žw"
+  , ge "Affix/InvAcc" "ia₂" "Type-2 Inverse Accessor (cases 37-68)" "žy"
+  , ge "Affix/InvAcc" "ia₃" "Type-3 Inverse Accessor (cases 1-36)" "jw"
+  , ge "Affix/InvAcc" "ia₃" "Type-3 Inverse Accessor (cases 37-68)" "jy"
+  , ge "Affix/CaseStk" "case" "Case-Stacking (cases 1-36)" "lw"
+  , ge "Affix/CaseStk" "case" "Case-Stacking (cases 37-68)" "ly"
   ]
 
 -- Helpers
