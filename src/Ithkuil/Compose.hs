@@ -147,10 +147,15 @@ buildKeywordIndex roots =
           exactBonus w = if nWords == 1 && (w == trimmed || porterStem w == porterStem trimmed)
                          then 0  -- override to perfect score
                          else baseScore
-          -- Also index words from parenthetical content, but at higher score
+          mainForms = Set.toList . Set.fromList $ ws ++ map porterStem ws
+          -- Parenthetical-only words score at full word count + 1
           allWs = extractWords desc
-          allForms = Set.toList . Set.fromList $ allWs ++ map porterStem allWs
-      in [(w, [(exactBonus w, cr)]) | w <- allForms]
+          nFull = length allWs
+          parenScore = pri * 10 + nFull + 1
+          parenOnly = Set.toList $ Set.fromList (allWs ++ map porterStem allWs)
+                      `Set.difference` Set.fromList mainForms
+      in [(w, [(exactBonus w, cr)]) | w <- mainForms]
+         ++ [(w, [(parenScore, cr)]) | w <- parenOnly]
 
     -- | Remove parenthetical content for word counting (taxonomy names inflate scores)
     stripParens :: Text -> Text

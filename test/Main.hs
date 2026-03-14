@@ -1985,6 +1985,8 @@ main = hspec $ do
       topRoot "think" `shouldBe` "sl"
       topRoot "believe" `shouldBe` "b"
       topRoot "child" `shouldBe` "mp"
+      topRoot "see" `shouldBe` "ẓ"
+      topRoot "sight" `shouldBe` "ẓ"
 
     it "finds correct root in top 5 for ambiguous queries" $ do
       Right roots <- loadRoots "data/roots.json"

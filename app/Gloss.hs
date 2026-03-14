@@ -207,7 +207,7 @@ composeFormativeSpec roots affixes s = case T.splitOn ":" s of
   (root:opts) -> makeFormative roots affixes root opts
   [] -> minimalFormative "?"
 
--- | Compose one word spec: @referent:CASE, #VnCn modular adjunct, or root:FLAG:FLAG
+-- | Compose one word spec: @referent:CASE, #VnCn modular adjunct, !affix adjunct, or root:FLAG:FLAG
 -- Root can be consonant cluster (e.g. "rţt") or English keyword (e.g. "study")
 -- Affix flags like +NEG/4 are resolved via the affix lexicon.
 composeOneWord :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> Text
@@ -219,6 +219,9 @@ composeOneWord roots affixes s = case T.splitOn ":" s of
   (w:opts)
     | Just _ <- T.stripPrefix "#" w
     -> composeModularWord (map T.toUpper (w:opts))
+  (w:opts)
+    | Just afxSpec <- T.stripPrefix "!" w <|> T.stripPrefix "^" w
+    -> composeAffixualWord affixes afxSpec opts
   (w:opts)
     | Just numStr <- T.stripPrefix "%" w
     , [(n, "")] <- reads (T.unpack numStr) :: [(Int, String)]
@@ -294,6 +297,30 @@ composeModularWord flags =
     phaseNames = [(T.pack (show p), p) | p <- allOf]
     effectNames = [(T.pack (show e), e) | e <- allOf]
     levelNames = [(T.pack (show l), l) | l <- allOf]
+
+-- | Compose a single affixual adjunct: !Cs/D[:SCOPE]
+-- Syntax: !r/4 (NEG degree 4), !NEG/4 (by abbreviation), !r/4:a (with scope)
+-- Produces: Vx + Cs [+ Vs]
+composeAffixualWord :: Map.Map Text AffixEntry -> Text -> [Text] -> Text
+composeAffixualWord affixes afxSpec opts =
+  let resolved = resolveAffixCs affixes (T.toUpper afxSpec)
+  in case parseAffixFlag (T.toLower resolved) of
+    Just afx ->
+      let vx = affixVowel afx
+          cs = affixConsonant afx
+          vs = case opts of
+            (scope:_) -> scopeVowel (T.toLower scope)
+            [] -> ""
+      in vx <> cs <> vs
+    Nothing -> "?"
+  where
+    scopeVowel "a" = "a"           -- stem only, scope over V
+    scopeVowel "u" = "u"           -- stem only, subordinate to V
+    scopeVowel "e" = "e"           -- stem+Ca, scope over VII
+    scopeVowel "i" = "i"           -- stem+Ca, subordinate to VII
+    scopeVowel "o" = "o"           -- whole formative scope
+    scopeVowel "ö" = "ö"           -- whole formative subordinate
+    scopeVowel s   = s             -- pass through
 
 -- | Resolve affix abbreviation in a flag: +NEG/4 → +r/4
 resolveAffixFlag :: Map.Map Text AffixEntry -> Text -> Text
