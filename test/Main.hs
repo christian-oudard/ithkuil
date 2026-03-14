@@ -8,10 +8,11 @@ import Ithkuil.Grammar
 import Ithkuil.Parse
 import Ithkuil.Render
 import Ithkuil.FullParse
-import Ithkuil.Adjuncts
+import Ithkuil.Adjuncts hiding (ADM, EXP)
+import qualified Ithkuil.Adjuncts as Adj
 import Ithkuil.WordType
 import Ithkuil.Referentials
-import Ithkuil.Validation (StressError(..), validateStress)
+import Ithkuil.Validation (StressError(..), validateStress, ValidationResult(..), ValidationError(..), Position(..), validateCluster, validateVowelSeq, validateFormative, validateExternalJuncture, validateProhibitedConjunct, hasTripleConsonant)
 import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), composeFormative, composeReferential, applyStress, searchRootsRanked)
 import Ithkuil.Allomorph (constructCa, parseCaSlot)
 import Ithkuil.Lexicon (loadRoots)
@@ -266,10 +267,10 @@ main = hspec $ do
       parseBias "kff" `shouldBe` Just DIS
       parseBias "lf"  `shouldBe` Just ACC
       parseBias "ẓmm" `shouldBe` Just DLC
-      parseBias "pss" `shouldBe` Just MNF
-      parseBias "msf" `shouldBe` Just RSG
+      parseBias "pss" `shouldBe` Just Adj.EXP
+      parseBias "msf" `shouldBe` Just RNC
       parseBias "xtļ" `shouldBe` Just ARB
-      parseBias "lļ"  `shouldBe` Just ADS
+      parseBias "lļ"  `shouldBe` Just Adj.ADM
 
     it "rejects unknown bias forms" $
       parseBias "xyz" `shouldBe` Nothing
@@ -435,7 +436,7 @@ main = hspec $ do
     it "classifies h+vowel words as register adjuncts" $ do
       classifyWord "ha" `shouldBe` WRegisterAdjunct
       classifyWord "he" `shouldBe` WRegisterAdjunct
-      classifyWord "hü" `shouldBe` WRegisterAdjunct
+      classifyWord "hüi" `shouldBe` WRegisterAdjunct
       classifyWord "hai" `shouldBe` WRegisterAdjunct
 
     it "classifies V-Cn-V patterns as modular adjuncts" $ do
@@ -455,7 +456,7 @@ main = hspec $ do
     it "classifies uppercase words correctly (case-insensitive)" $ do
       classifyWord "Adři" `shouldBe` WAffixualAdjunct
       classifyWord "Äst" `shouldBe` WAffixualAdjunct
-      classifyWord "HÜ" `shouldBe` WRegisterAdjunct
+      classifyWord "HÜI" `shouldBe` WRegisterAdjunct
       classifyWord "Hla" `shouldBe` WCarrierAdjunct
 
     it "classifies normal words as formatives" $ do
@@ -2290,3 +2291,292 @@ main = hspec $ do
           pfRoot pf `shouldBe` Root "gz"
           pfCase pf `shouldBe` Just (Appositive PAR)
         pw -> expectationFailure $ "gzalui: expected PFormative, got: " ++ show pw
+
+  describe "Phonotactic Validation - Cluster Length" $ do
+    it "accepts clusters within length limits" $ do
+      validateCluster Initial "pr" `shouldBe` Nothing
+      validateCluster Initial "str" `shouldBe` Nothing
+      validateCluster Initial "pskw" `shouldBe` Nothing  -- 4-consonant initial
+      validateCluster Medial "ntr" `shouldBe` Nothing
+      validateCluster Medial "rkst" `shouldBe` Nothing
+      validateCluster Final "rk" `shouldBe` Nothing
+      validateCluster Final "nst" `shouldBe` Nothing
+
+    it "rejects clusters exceeding length limits" $ do
+      validateCluster Initial "pskwl" `shouldSatisfy` isJustErr  -- 5 > max 4 initial
+      validateCluster Final "rkstm" `shouldSatisfy` isJustErr    -- 5 > max 4 final
+
+    it "rejects medial clusters over 6 consonants" $
+      validateCluster Medial "prkstmn" `shouldSatisfy` isJustErr -- 7 > max 6
+
+  describe "Phonotactic Validation - Prohibited Conjuncts (Section 2)" $ do
+    it "2.1: consonant + glottal stop prohibited" $ do
+      validateProhibitedConjunct "t'" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "sk'" `shouldSatisfy` isJustErr
+
+    it "2.2: dental stop + sibilant prohibited" $ do
+      validateProhibitedConjunct "ts" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "dz" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "tš" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "tc" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "tţ" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "dḑ" `shouldSatisfy` isJustErr
+
+    it "2.3: velar stop + x/ň prohibited" $ do
+      validateProhibitedConjunct "kx" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "gx" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "kň" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "gň" `shouldSatisfy` isJustErr
+
+    it "2.4: homologous stop voicing mismatch prohibited" $ do
+      validateProhibitedConjunct "pb" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "bp" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "td" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "dt" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "kg" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "gk" `shouldSatisfy` isJustErr
+      -- Non-homologous stop pairs are fine
+      validateProhibitedConjunct "pk" `shouldBe` Nothing
+      validateProhibitedConjunct "bd" `shouldBe` Nothing
+
+    it "2.5: homologous sibilant voicing mismatch prohibited" $ do
+      validateProhibitedConjunct "sz" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "zs" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "šž" `shouldSatisfy` isJustErr
+
+    it "2.6: alveolo-palatal fricative + alveolar affricate prohibited" $ do
+      validateProhibitedConjunct "šc" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "žc" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "šẓ" `shouldSatisfy` isJustErr
+
+    it "2.7: s + ẓ prohibited" $
+      validateProhibitedConjunct "sẓ" `shouldSatisfy` isJustErr
+
+    it "2.8: sibilant fricative + sibilant fricative (non-geminate) prohibited" $ do
+      validateProhibitedConjunct "sš" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "žs" `shouldSatisfy` isJustErr
+      -- Geminates are fine
+      validateProhibitedConjunct "ss" `shouldBe` Nothing
+      validateProhibitedConjunct "šš" `shouldBe` Nothing
+
+    it "2.9: sibilant affricate + sibilant fricative prohibited" $ do
+      validateProhibitedConjunct "cs" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "čs" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "js" `shouldSatisfy` isJustErr
+
+    it "2.10: ç restrictions" $ do
+      validateProhibitedConjunct "çs" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "sç" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "çj" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "çļ" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "ļç" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "çh" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "hç" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "xç" `shouldSatisfy` isJustErr
+      -- ç with valid followers should be fine
+      validateProhibitedConjunct "çt" `shouldBe` Nothing
+      validateProhibitedConjunct "çk" `shouldBe` Nothing
+
+    it "2.11: nasal + sibilant affricate prohibited" $ do
+      validateProhibitedConjunct "nc" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "nč" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "nẓ" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "nj" `shouldSatisfy` isJustErr
+
+    it "2.12: m + labial/dental stop prohibited" $ do
+      validateProhibitedConjunct "mp" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "mb" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "mt" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "md" `shouldSatisfy` isJustErr
+      -- m + non-homologous is fine
+      validateProhibitedConjunct "mk" `shouldBe` Nothing
+
+    it "2.14: n + labial stop prohibited" $ do
+      validateProhibitedConjunct "np" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "nb" `shouldSatisfy` isJustErr
+      -- n + dental is fine (same place)
+      validateProhibitedConjunct "nt" `shouldBe` Nothing
+
+    it "2.16: ň + velar/uvular/y prohibited" $ do
+      validateProhibitedConjunct "ňk" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "ňg" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "ňx" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "ňy" `shouldSatisfy` isJustErr
+
+    it "2.17: x + various consonants prohibited" $ do
+      validateProhibitedConjunct "xs" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "xç" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "xg" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "xļ" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "xň" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "xy" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "xh" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "xř" `shouldSatisfy` isJustErr
+      -- x + valid followers
+      validateProhibitedConjunct "xt" `shouldBe` Nothing
+      validateProhibitedConjunct "xp" `shouldBe` Nothing
+
+    it "2.18: ļ restrictions" $ do
+      validateProhibitedConjunct "ļb" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "ļd" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "ļg" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "hļ" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "ļs" `shouldSatisfy` isJustErr
+      -- ļ + voiceless stop is fine
+      validateProhibitedConjunct "ļt" `shouldBe` Nothing
+      validateProhibitedConjunct "ļk" `shouldBe` Nothing
+
+    it "2.20/2.21: r/h + ř and ř + r prohibited" $ do
+      validateProhibitedConjunct "rř" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "hř" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "řr" `shouldSatisfy` isJustErr
+
+    it "2.23: ḑ + sibilant and nň prohibited" $ do
+      validateProhibitedConjunct "ḑs" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "ḑš" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "ḑz" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "ḑž" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "nň" `shouldSatisfy` isJustErr
+
+    it "2.24: çç and ļļ geminates prohibited" $ do
+      validateProhibitedConjunct "çç" `shouldSatisfy` isJustErr
+      validateProhibitedConjunct "ļļ" `shouldSatisfy` isJustErr
+
+    it "allows valid consonant pairs" $ do
+      validateProhibitedConjunct "pr" `shouldBe` Nothing
+      validateProhibitedConjunct "kl" `shouldBe` Nothing
+      validateProhibitedConjunct "mn" `shouldBe` Nothing
+      validateProhibitedConjunct "st" `shouldBe` Nothing
+      validateProhibitedConjunct "fl" `shouldBe` Nothing
+      validateProhibitedConjunct "hl" `shouldBe` Nothing
+      validateProhibitedConjunct "hr" `shouldBe` Nothing
+
+  describe "Phonotactic Validation - Gemination Rules (Section 1.7)" $ do
+    it "rejects triple consonant repetition" $ do
+      hasTripleConsonant "ttt" `shouldBe` True
+      hasTripleConsonant "sss" `shouldBe` True
+      hasTripleConsonant "tt" `shouldBe` False
+      hasTripleConsonant "sts" `shouldBe` False
+
+    it "rejects prohibited geminates (', w, y)" $ do
+      validateCluster Medial "''" `shouldSatisfy` isJustErr
+      validateCluster Medial "ww" `shouldSatisfy` isJustErr
+      validateCluster Medial "yy" `shouldSatisfy` isJustErr
+
+    it "allows normal geminates" $ do
+      validateCluster Medial "tt" `shouldBe` Nothing
+      validateCluster Medial "ss" `shouldBe` Nothing
+      validateCluster Medial "ll" `shouldBe` Nothing
+      validateCluster Medial "mm" `shouldBe` Nothing
+      validateCluster Medial "rr" `shouldBe` Nothing
+
+  describe "Phonotactic Validation - Initial Cluster Rules (Section 3)" $ do
+    it "rejects ļ as sole initial consonant" $
+      validateCluster Initial "ļ" `shouldSatisfy` isJustErr
+
+    it "rejects glottal stop in initial cluster (except standalone)" $ do
+      validateCluster Initial "'k" `shouldSatisfy` isJustErr
+      -- Single glottal stop at word-initial is valid (it precedes a vowel)
+      validateCluster Initial "'" `shouldBe` Nothing
+
+    it "accepts valid initial clusters" $ do
+      validateCluster Initial "p" `shouldBe` Nothing
+      validateCluster Initial "t" `shouldBe` Nothing
+      validateCluster Initial "k" `shouldBe` Nothing
+      validateCluster Initial "m" `shouldBe` Nothing
+      validateCluster Initial "pr" `shouldBe` Nothing
+      validateCluster Initial "kl" `shouldBe` Nothing
+      validateCluster Initial "hl" `shouldBe` Nothing
+      validateCluster Initial "str" `shouldBe` Nothing
+
+  describe "Phonotactic Validation - Final Cluster Rules (Section 4)" $ do
+    it "rejects w and y in final position" $ do
+      validateCluster Final "tw" `shouldSatisfy` isJustErr
+      validateCluster Final "ky" `shouldSatisfy` isJustErr
+      validateCluster Final "w" `shouldSatisfy` isJustErr
+      validateCluster Final "y" `shouldSatisfy` isJustErr
+
+    it "accepts valid final clusters" $ do
+      validateCluster Final "t" `shouldBe` Nothing
+      validateCluster Final "k" `shouldBe` Nothing
+      validateCluster Final "st" `shouldBe` Nothing
+      validateCluster Final "rk" `shouldBe` Nothing
+      validateCluster Final "l" `shouldBe` Nothing
+
+  describe "Phonotactic Validation - Vowel Sequences (Sections 1.1-1.4)" $ do
+    it "accepts single vowels" $ do
+      validateVowelSeq "a" `shouldBe` Nothing
+      validateVowelSeq "e" `shouldBe` Nothing
+      validateVowelSeq "ë" `shouldBe` Nothing
+
+    it "accepts permissible diphthongs" $ do
+      validateVowelSeq "ai" `shouldBe` Nothing
+      validateVowelSeq "au" `shouldBe` Nothing
+      validateVowelSeq "ei" `shouldBe` Nothing
+      validateVowelSeq "eu" `shouldBe` Nothing
+      validateVowelSeq "ëi" `shouldBe` Nothing
+      validateVowelSeq "ou" `shouldBe` Nothing
+      validateVowelSeq "oi" `shouldBe` Nothing
+      validateVowelSeq "iu" `shouldBe` Nothing
+      validateVowelSeq "ui" `shouldBe` Nothing
+
+    it "accepts disyllabic vowel conjuncts" $ do
+      validateVowelSeq "ia" `shouldBe` Nothing
+      validateVowelSeq "ie" `shouldBe` Nothing
+      validateVowelSeq "io" `shouldBe` Nothing
+      validateVowelSeq "ua" `shouldBe` Nothing
+      validateVowelSeq "uo" `shouldBe` Nothing
+      validateVowelSeq "ao" `shouldBe` Nothing
+      validateVowelSeq "oa" `shouldBe` Nothing
+      validateVowelSeq "ea" `shouldBe` Nothing
+      validateVowelSeq "ae" `shouldBe` Nothing
+
+    it "rejects tri-syllabic+ vowel sequences" $ do
+      validateVowelSeq "aei" `shouldSatisfy` isJustErr
+      validateVowelSeq "oua" `shouldSatisfy` isJustErr
+      validateVowelSeq "aiou" `shouldSatisfy` isJustErr
+
+    it "rejects same-vowel repetition" $ do
+      validateVowelSeq "aa" `shouldSatisfy` isJustErr
+      validateVowelSeq "ee" `shouldSatisfy` isJustErr
+      validateVowelSeq "ii" `shouldSatisfy` isJustErr
+      validateVowelSeq "oo" `shouldSatisfy` isJustErr
+      validateVowelSeq "uu" `shouldSatisfy` isJustErr
+
+  describe "Phonotactic Validation - Formative Validation" $ do
+    it "validates well-formed words" $ do
+      validateFormative "malai" `shouldBe` Valid
+      validateFormative "emalai" `shouldBe` Valid
+      validateFormative "kšilo" `shouldBe` Valid
+
+    it "detects invalid clusters in formatives" $ do
+      let result = validateFormative "atsala"  -- t+s prohibited by 2.2
+      result `shouldSatisfy` isInvalid
+
+  describe "Phonotactic Validation - External Juncture (Section 7)" $ do
+    it "detects prohibited conjuncts across word boundaries" $ do
+      -- Word ending in 't' + word starting with 's' -> ts prohibited (2.2)
+      validateExternalJuncture "mat" "sala" `shouldSatisfy` isJustErr
+      -- Word ending in 'k' + word starting with 'x' -> kx prohibited (2.3)
+      validateExternalJuncture "mak" "xala" `shouldSatisfy` isJustErr
+
+    it "detects triple consonant at juncture" $ do
+      -- Word ending 'tt' + word starting 't' -> ttt triple
+      validateExternalJuncture "matt" "tala" `shouldSatisfy` isJustErr
+
+    it "allows valid junctures" $ do
+      validateExternalJuncture "mal" "tala" `shouldBe` Nothing
+      validateExternalJuncture "mak" "lala" `shouldBe` Nothing
+      -- Consonant + vowel boundary is always fine
+      validateExternalJuncture "mat" "ala" `shouldBe` Nothing
+      -- Vowel + consonant boundary is always fine
+      validateExternalJuncture "mala" "tala" `shouldBe` Nothing
+
+-- Helper for test assertions on Maybe errors
+isJustErr :: Maybe a -> Bool
+isJustErr (Just _) = True
+isJustErr Nothing = False
+
+isInvalid :: ValidationResult -> Bool
+isInvalid (Invalid _) = True
+isInvalid Valid = False
