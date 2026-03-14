@@ -2083,6 +2083,21 @@ main = hspec $ do
         PConcatenated pfs -> length pfs `shouldBe` 2
         other -> expectationFailure $ "Expected PConcatenated, got: " ++ show other
 
+    it "concatenation word order: dependent precedes parent" $ do
+      -- In Ithkuil, concatenated dependent (with h/hw prefix) comes first
+      let parent = (minimalFormative "rm") { fSlotIX = Left (Transrelative ABS) }
+          dep = (minimalFormative "lḑ") { fSlotI = Just Type1 }
+          chain = composeFormative dep <> "-" <> composeFormative parent
+      -- The dependent should start with "h" (Type 1 Cc prefix)
+      T.isPrefixOf "h" (composeFormative dep) `shouldBe` True
+      -- Parse should succeed and have both parts
+      case parseWord chain of
+        PConcatenated pfs -> do
+          length pfs `shouldBe` 2
+          pfConcatenation (head pfs) `shouldBe` Just Type1
+          pfConcatenation (pfs !! 1) `shouldBe` Nothing
+        other -> expectationFailure $ "Expected PConcatenated, got: " ++ show other
+
     it "round-trips formative with Slot V and Slot VII affixes" $ do
       -- Formative with SIZ/3 in Slot V and NEG/4 in Slot VII
       let siz = Affix "e" "x" Type1Affix  -- SIZ deg 3

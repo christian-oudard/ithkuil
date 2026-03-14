@@ -5,9 +5,10 @@ module Main where
 
 import Control.Applicative ((<|>))
 import Control.Monad (when, forM_)
+import Data.List (partition)
 import Data.Maybe (mapMaybe)
 import System.Environment (getArgs)
-import System.IO (hFlush, stdout, hSetBuffering, BufferMode(..), stdin, hIsTerminalDevice, hIsEOF)
+import System.IO (hFlush, stdout, hSetBuffering, BufferMode(..), stdin, hIsTerminalDevice, hIsEOF, hPutStrLn, stderr)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
@@ -147,7 +148,7 @@ showHelp = do
   TIO.putStrLn "  --sentence spec...  Compose a multi-word sentence"
   TIO.putStrLn "    root:FLAG:FLAG    Formative (keyword or Cr cluster)"
   TIO.putStrLn "    @1m:CASE          Referential (@1m, @2m, @MA, @pa)"
-  TIO.putStrLn "    #VN.MOOD          Modular adjunct (#RTR.SUB, #PRG.FAC)"
+  TIO.putStrLn "    #VN.MOOD[:VH=V]   Modular adjunct (#RTR.SUB, #PRG.FAC:VH=E)"
   TIO.putStrLn "    ^Cs/D[:SCOPE]     Affixual adjunct (^NEG/4, ^r/4:o)"
   TIO.putStrLn "    ~REG / ~-REG      Register start/end (~DSV, ~-DSV, ~PNT)"
   TIO.putStrLn "    *TYPE[:CASE]      Carrier adjunct (*CAR:ERG, *NAM, *QUO)"
@@ -182,36 +183,50 @@ handleSentence [] = TIO.putStrLn "Usage: ithkuil-gloss --sentence root:FLAG:FLAG
 handleSentence specs = do
   roots <- loadLexicon "data/roots.json"
   affixes <- loadAffixLexicon "data/affixes.json"
-  let words_ = composeSentenceWords roots affixes (map T.pack specs)
+  let (words_, warns) = composeSentenceWords roots affixes (map T.pack specs)
       sentence = T.unwords words_
+  mapM_ (hPutStrLn stderr . T.unpack) warns
   TIO.putStrLn $ col bold sentence
   glossLine roots affixes sentence
 
 -- | Compose a sentence from word specs, handling concatenation chains.
 -- Specs prefixed with ">" are Type 1 concatenated (shares case with parent).
 -- Specs prefixed with ">>" are Type 2 concatenated (independent case).
--- These get hyphen-joined to the preceding word.
-composeSentenceWords :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> [Text] -> [Text]
+-- Concatenated dependents precede the parent in the output (Ithkuil word order).
+-- Non-final (dependent) parts cannot use glottal-stop cases (Relational, Affinitive, SpatioTemporal).
+-- Returns (words, warnings).
+composeSentenceWords :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> [Text] -> ([Text], [Text])
 composeSentenceWords roots affixes = joinChains . map classifySpec
   where
     classifySpec s
       | Just rest <- T.stripPrefix ">>" s = (Just Type2, rest)
       | Just rest <- T.stripPrefix ">" s  = (Just Type1, rest)
       | otherwise                         = (Nothing, s)
-    joinChains [] = []
+    joinChains [] = ([], [])
     joinChains ((_, spec):rest) =
       let headWord = composeOneWord roots affixes spec
           (tail_, remaining) = span (isConcat . fst) rest
-          tailWords = map (\(ct, sp) ->
+          tailResults = map (\(ct, sp) ->
             let f0 = composeFormativeSpec roots affixes sp
-                f1 = f0 { fSlotI = ct }
+                (f0', warn) = validateConcatCase sp f0
+                f1 = f0' { fSlotI = ct }
                 f2 = autoStress f1
-            in composeFormative f2) tail_
+            in (composeFormative f2, warn)) tail_
+          tailWords = map fst tailResults
+          tailWarns = concatMap snd tailResults
+          (restWords, restWarns) = joinChains remaining
       in case tailWords of
-        [] -> headWord : joinChains remaining
-        _  -> (T.intercalate "-" (headWord : tailWords)) : joinChains remaining
+        [] -> (headWord : restWords, tailWarns ++ restWarns)
+        _  -> (T.intercalate "-" (tailWords ++ [headWord]) : restWords, tailWarns ++ restWarns)
     isConcat (Just _) = True
     isConcat Nothing  = False
+    -- Replace glottal-stop cases with THM in non-final concatenated parts
+    validateConcatCase sp f = case fSlotIX f of
+      Left c | isGlottalCase c ->
+        ( f { fSlotIX = Left (Transrelative THM) }
+        , ["Warning: >" <> sp <> " uses glottal-stop case " <> caseAbbrev c
+           <> ", invalid in non-final concatenation; replaced with THM"] )
+      _ -> (f, [])
 
 -- | Build a Formative from a spec string (root:flag:flag), for concatenation use
 composeFormativeSpec :: Map.Map Text RootEntry -> Map.Map Text AffixEntry -> Text -> Formative
@@ -316,11 +331,16 @@ composeNumberWords n flags
 -- Penultimate stress means the final vowel is another VnCn with implicit Cn="h"
 composeModularWord :: [Text] -> Text
 composeModularWord flags =
-  let pairs = mapMaybe parseModularFlag flags
+  let (vhFlags, vnFlags) = partition isVhFlag flags
+      vh = case vhFlags of
+        (f:_) -> T.toLower (T.drop 3 f)  -- strip "VH=" prefix
+        []    -> "a"                       -- default: formative scope
+      pairs = mapMaybe parseModularFlag vnFlags
       rendered = T.concat $ map (renderSlotVIII . Just) pairs
   in if T.null rendered then "?"
-     else applyStress Ultimate (rendered <> "a")
+     else applyStress Ultimate (rendered <> vh)
   where
+    isVhFlag t = T.isPrefixOf "VH=" t
     parseModularFlag :: Text -> Maybe SlotVIII
     parseModularFlag t =
       let stripped = maybe t id (T.stripPrefix "#" t)
@@ -622,6 +642,25 @@ parseCaseFlag t =
   in case fSlotIX f1 of
     Left c | fSlotIX f1 /= fSlotIX f0 -> Just c
     _ -> Nothing
+
+-- | Check if a case uses glottal stop (V'V pattern), restricted in non-final concatenation
+isGlottalCase :: Case -> Bool
+isGlottalCase (Relational _)      = True
+isGlottalCase (Affinitive _)      = True
+isGlottalCase (SpatioTemporal1 _) = True
+isGlottalCase (SpatioTemporal2 _) = True
+isGlottalCase _                   = False
+
+-- | Show case abbreviation (inner type's Show instance)
+caseAbbrev :: Case -> Text
+caseAbbrev (Transrelative c)  = T.pack (show c)
+caseAbbrev (Appositive c)     = T.pack (show c)
+caseAbbrev (Associative c)    = T.pack (show c)
+caseAbbrev (Adverbial c)      = T.pack (show c)
+caseAbbrev (Relational c)     = T.pack (show c)
+caseAbbrev (Affinitive c)     = T.pack (show c)
+caseAbbrev (SpatioTemporal1 c) = T.pack (show c)
+caseAbbrev (SpatioTemporal2 c) = T.pack (show c)
 
 -- | Apply a list of grammar flags to a formative
 applyComposeFlags :: [Text] -> Formative -> Formative
@@ -1111,8 +1150,9 @@ repl roots affixes = do
             _ -> TIO.putStrLn "Usage: /compose <root> [S2] [DYN] [ABS] [IRG] ..."
       | "sentence " `T.isPrefixOf` cmd = do
           let specs = T.words (T.drop 9 cmd)
-              words_ = composeSentenceWords roots affixes specs
+              (words_, warns) = composeSentenceWords roots affixes specs
               sentence = T.unwords words_
+          mapM_ (hPutStrLn stderr . T.unpack) warns
           TIO.putStrLn $ "  " <> col bold sentence
           glossLine roots affixes sentence
       | "lookup " `T.isPrefixOf` cmd = do
@@ -1197,8 +1237,9 @@ pipeCommand roots affixes cmd
                       <> "  [" <> gCategory e <> "]") results
   | "sentence " `T.isPrefixOf` cmd = do
       let specs = T.words (T.drop 9 cmd)
-          words_ = composeSentenceWords roots affixes specs
+          (words_, warns) = composeSentenceWords roots affixes specs
           sentence = T.unwords words_
+      mapM_ (hPutStrLn stderr . T.unpack) warns
       TIO.putStrLn sentence
       glossLine roots affixes sentence
   | "compose " `T.isPrefixOf` cmd = do
