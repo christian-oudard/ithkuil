@@ -148,6 +148,11 @@ buildKeywordIndex roots =
           exactBonus w = if nWords == 1 && (w == trimmed || porterStem w == porterStem trimmed)
                          then 0  -- override to perfect score
                          else baseScore
+          -- Head-word bonus: first word in description is the primary concept
+          firstWord = case extractStandaloneWords stripped of
+            (fw:_) -> Set.fromList [fw, porterStem fw]
+            []     -> Set.empty
+          headBonus w = if w `Set.member` firstWord then -1 else 0
           -- Extract standalone words (not from hyphenated compounds)
           standaloneWs = extractStandaloneWords stripped
           standaloneSet = Set.fromList (standaloneWs ++ map porterStem standaloneWs)
@@ -161,7 +166,7 @@ buildKeywordIndex roots =
           parenScore = pri * 10 + nFull + 1
           parenOnly = Set.toList $ Set.fromList (allWs ++ map porterStem allWs)
                       `Set.difference` Set.fromList mainForms
-      in [(w, [(exactBonus w, cr)]) | w <- Set.toList standaloneSet]
+      in [(w, [(max 0 (exactBonus w + headBonus w), cr)]) | w <- Set.toList standaloneSet]
          ++ [(w, [(compoundScore, cr)]) | w <- compoundOnly]
          ++ [(w, [(parenScore, cr)]) | w <- parenOnly]
 

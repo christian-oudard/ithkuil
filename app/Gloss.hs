@@ -113,9 +113,13 @@ handleAffixSearch ws = do
       results = searchAffixes query affixes
   if null results
     then TIO.putStrLn $ "No affixes found matching: " <> query
-    else mapM_ (\(cs, entry) ->
+    else mapM_ (\(cs, entry) -> do
       TIO.putStrLn $ "-" <> cs <> "-  " <> affixAbbrev entry
-                  <> "  (" <> affixDesc entry <> ")") results
+                  <> "  (" <> affixDesc entry <> ")"
+      when (length results <= 3) $
+        forM_ (zip [1::Int ..] (affixDegrees entry)) $ \(d, desc) ->
+          TIO.putStrLn $ "    " <> T.pack (show d) <> ": " <> desc
+      ) results
 
 handleGrammarDump :: [String] -> IO ()
 handleGrammarDump cats = do
@@ -208,7 +212,8 @@ composeSentenceWords roots affixes = joinChains . map classifySpec
           (tail_, remaining) = span (isConcat . fst) rest
           tailResults = map (\(ct, sp) ->
             let f0 = composeFormativeSpec roots affixes sp
-                (f0', warn) = validateConcatCase sp f0
+                prefix = maybe ">" (\t -> if t == Type2 then ">>" else ">") ct
+                (f0', warn) = validateConcatCase prefix sp f0
                 f1 = f0' { fSlotI = ct }
                 f2 = autoStress f1
             in (composeFormative f2, warn)) tail_
@@ -221,10 +226,10 @@ composeSentenceWords roots affixes = joinChains . map classifySpec
     isConcat (Just _) = True
     isConcat Nothing  = False
     -- Replace glottal-stop cases with THM in non-final concatenated parts
-    validateConcatCase sp f = case fSlotIX f of
+    validateConcatCase pfx sp f = case fSlotIX f of
       Left c | isGlottalCase c ->
         ( f { fSlotIX = Left (Transrelative THM) }
-        , ["Warning: >" <> sp <> " uses glottal-stop case " <> caseAbbrev c
+        , ["Warning: " <> pfx <> sp <> " uses glottal-stop case " <> caseAbbrev c
            <> ", invalid in non-final concatenation; replaced with THM"] )
       _ -> (f, [])
 
