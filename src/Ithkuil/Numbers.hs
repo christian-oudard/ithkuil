@@ -16,7 +16,6 @@ module Ithkuil.Numbers
   ) where
 
 import Data.Text (Text)
-import qualified Data.Text as T
 
 --------------------------------------------------------------------------------
 -- Number Roots (0-99)
@@ -40,14 +39,15 @@ digitRoots =
 
 -- | Get root consonant for a number 0-99.
 -- 0-10: direct root. 11-99: digit root (ones digit, or 0 for multiples of 10).
-numberRoot :: Int -> Text
+-- Returns Nothing for negative numbers or >= 100.
+numberRoot :: Int -> Maybe Text
 numberRoot n
-  | n < 0    = error "Negative number"
-  | n <= 10  = digitRoots !! n
+  | n < 0    = Nothing
+  | n <= 10  = Just (digitRoots !! n)
   | n < 100  =
     let ones = n `mod` 10
-    in digitRoots !! ones  -- Use digit root for the ones place (0 for multiples of 10)
-  | otherwise = error "Number >= 100 requires compound"
+    in Just (digitRoots !! ones)
+  | otherwise = Nothing
 
 -- | Get TNX affix (-rs-) for numbers 11-99.
 -- Returns Nothing for 0-10, Just (cs, degree) for 11-99.
@@ -93,13 +93,13 @@ data NumberVersion
   deriving (Show, Eq, Ord)
 
 -- | Construct a number formative
-constructNumber :: Int -> NumberStem -> NumberVersion -> Text
-constructNumber n stem ver =
+constructNumber :: Int -> NumberStem -> NumberVersion -> Maybe Text
+constructNumber n stem ver = do
+  cr <- numberRoot (n `mod` 100)
   let vv = numberVv stem ver
-      cr = numberRoot (n `mod` 100)
       vr = "a"  -- Basic specification
       ca = "l"  -- Default CA
-  in vv <> cr <> vr <> ca
+  pure (vv <> cr <> vr <> ca)
 
 numberVv :: NumberStem -> NumberVersion -> Text
 numberVv NSCardinal NVConcrete   = "a"

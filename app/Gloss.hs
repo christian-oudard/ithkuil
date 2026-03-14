@@ -13,7 +13,7 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import qualified Data.Map.Strict as Map
 import Ithkuil.Grammar
-import Ithkuil.Parse (ParsedFormative(..), ParsedCa(..))
+import Ithkuil.Parse (ParsedFormative(..), ParsedCa(..), parseCase, normalizeAccents)
 import Ithkuil.Referentials (PersonalRef(..), Referent(..), ReferentEffect(..), referentLabel)
 import Ithkuil.WordType
 import Ithkuil.Lexicon
@@ -223,7 +223,7 @@ composeOneWord roots affixes s = case T.splitOn ":" s of
     | Just numStr <- T.stripPrefix "%" w
     , [(n, "")] <- reads (T.unpack numStr) :: [(Int, String)]
     , n >= 0, n < 100
-    -> let cr = numberRoot n
+    -> let cr = case numberRoot n of Just r -> r; Nothing -> "?"
            f0 = minimalFormative cr
            -- Add TNX affix (-rs-) for numbers 11-99
            f0' = case numberAffix n of
@@ -1022,7 +1022,17 @@ glossOneWord roots affixes word = do
       case mc2 of
         Just c2 -> TIO.putStrLn $ "    Case2: " <> T.pack (showCaseDetail c2)
         Nothing -> return ()
-    PCarrier ct content -> TIO.putStrLn $ "    Carrier: " <> T.pack (show ct) <> " " <> content
+    PCarrier ct vc -> do
+      let ctLabel = case ct of
+            Carrier     -> "Carrier (hl)"
+            Quotative   -> "Quotative (hm)"
+            Naming      -> "Naming (hn)"
+            MetaGestalt -> "Meta-gestalt (hň)"
+          caseGloss = case parseCase (normalizeAccents vc) of
+            Just c  -> T.pack (showCaseDetail c)
+            Nothing -> "?" <> vc
+      TIO.putStrLn $ "    Type: " <> ctLabel
+      TIO.putStrLn $ "    Case: " <> col "\ESC[36m" caseGloss
     PMoodCaseScope ms -> TIO.putStrLn $ "    Mood/Case-Scope: " <> glossMoodOrScope ms
     PError msg _ -> TIO.putStrLn $ "    " <> col "\ESC[31m" ("ERROR: " <> msg)
     PUnparsed _ -> TIO.putStrLn $ "    " <> col dim "(unparsed)"

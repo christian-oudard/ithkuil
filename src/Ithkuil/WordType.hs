@@ -22,6 +22,7 @@ module Ithkuil.WordType
   , glossVz
   , glossOneAffix
   , validateSlotVMarker
+  , CarrierType(..)
   ) where
 
 import Data.Text (Text)
@@ -474,10 +475,10 @@ parseCarrierWord word =
     (c:rest)
       | not (null rest) ->
         let ct = case c of
-              "hl" -> Just CarrierForeign   -- carrier (foreign word)
-              "hm" -> Just CarrierQuote     -- quotative
-              "hn" -> Just CarrierName      -- naming
-              "hň" -> Just CarrierFormula   -- formula
+              "hl" -> Just Carrier       -- general carrier
+              "hm" -> Just Quotative     -- quotative (carrier + DSV register)
+              "hn" -> Just Naming        -- naming (name as a name)
+              "hň" -> Just MetaGestalt   -- meta-gestalt
               _    -> Nothing
             content = T.concat rest
         in case ct of
@@ -666,7 +667,16 @@ glossWord roots affixes pw = case pw of
     <> (if spec /= "x" then "-" <> spec else "")
     <> T.concat (map (\p -> "-" <> glossOneAffix affixes p) afxs)
     <> maybe "" (\c -> "-" <> T.pack (showCase c)) mc2
-  PCarrier ct _ -> "CARRIER:" <> T.pack (show ct)
+  PCarrier ct vc ->
+    let ctLabel = case ct of
+          Carrier     -> "CAR"
+          Quotative   -> "QUO"
+          Naming      -> "NAM"
+          MetaGestalt -> "MGS"
+        caseGloss = case parseCase (normalizeAccents vc) of
+          Just c  -> T.pack (showCase c)
+          Nothing -> "?" <> vc
+    in ctLabel <> ":" <> caseGloss
   PMoodCaseScope ms -> glossMoodOrScope ms
   PError msg _ -> "Error: " <> msg
   PUnparsed t -> "?" <> t

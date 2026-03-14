@@ -300,14 +300,14 @@ data CarrierAdjunct = CarrierAdjunct
   deriving (Show, Eq)
 
 data CarrierType
-  = CarrierQuote       -- ^ Direct quotation
-  | CarrierName        -- ^ Proper name
-  | CarrierForeign     -- ^ Foreign word
-  | CarrierFormula     -- ^ Technical/formula
+  = Carrier            -- ^ General carrier (shortcut for carrier stem -s-)
+  | Quotative          -- ^ Quotative (carrier + discursive register)
+  | Naming             -- ^ Naming (name referred to as a name)
+  | MetaGestalt        -- ^ Meta-gestalt (meta-level grammatical info)
   deriving (Show, Eq, Ord, Bounded, Enum)
 
 carrierTypeForm :: CarrierType -> Text
-carrierTypeForm CarrierQuote   = "hl"
-carrierTypeForm CarrierName    = "hm"
-carrierTypeForm CarrierForeign = "hn"
-carrierTypeForm CarrierFormula = "hň"
+carrierTypeForm Carrier     = "hl"
+carrierTypeForm Quotative   = "hm"
+carrierTypeForm Naming      = "hn"
+carrierTypeForm MetaGestalt = "hň"
