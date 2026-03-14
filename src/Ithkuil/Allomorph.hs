@@ -160,9 +160,7 @@ simpleSubstitutions =
   [ ("pp", "mp"), ("tt", "nt"), ("kk", "nk")
   , ("pb", "mb"), ("kg", "ng")
   , ("ll", "pļ"), ("rr", "ns")
-  , ("çy", "nd")
-  -- Multi-step substitutions
-  , ("řř", "nš")  -- řř → nš (if generated)
+  , ("çy", "nd"), ("řř", "nš")
   ]
 
 -- | Context-dependent substitutions: [C]X → [C]Y
@@ -171,13 +169,26 @@ contextSubstitutions :: [(Text, Text)]
 contextSubstitutions =
   [ ("gm", "x"), ("gn", "ň")
   , ("bm", "v"), ("bn", "ḑ")
+  , ("çx", "xw")  -- [C]çx → [C]xw
   ]
 
--- | Apply all substitution rules
+-- | Second-pass substitutions for multi-step derivations
+-- Applied after context substitutions produce intermediate forms
+-- fbm → [C]bm→[C]v → fv → vw
+-- ţbn → [C]bn→[C]ḑ → tḑ → ḑy
+secondPassSubstitutions :: [(Text, Text)]
+secondPassSubstitutions =
+  [ ("fv", "vw"), ("tḑ", "ḑy")
+  ]
+
+-- | Apply all substitution rules in order:
 -- 1. Simple substitutions (apply everywhere)
 -- 2. Context-dependent substitutions (only non-initial)
+-- 3. Second-pass for multi-step derivations
 applySubstitutions :: Text -> Text
-applySubstitutions = applyContext contextSubstitutions . applySimple simpleSubstitutions
+applySubstitutions = applySimple secondPassSubstitutions
+                   . applyContext contextSubstitutions
+                   . applySimple simpleSubstitutions
   where
     applySimple [] t = t
     applySimple ((from, to):rest) t = applySimple rest (T.replace from to t)
