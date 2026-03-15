@@ -14,7 +14,8 @@ from glyphs import (SECONDARY, CONSONANT_ORDER, PUA_SECONDARY, _outline as L, _a
                      QUAT_ILLOCUTION, ILLOCUTION_NAMES, QUAT_VALIDATION, VALIDATION_NAMES,
                      PRIMARY_SPEC, PRIMARY_CTX, PRIMARY_PERSP_EXT, PRIMARY_AFFIL_ESS,
                      PRIMARY_CONFIG, PRIMARY_SFVP, PRIMARY_RELATION, PRIMARY_CONCAT,
-                     BIAS_GLYPHS, REGISTER_GLYPHS, NUMERAL_GLYPHS)
+                     BIAS_GLYPHS, REGISTER_GLYPHS, NUMERAL_GLYPHS,
+                     CONS_EXT_TOP, CONS_EXT_BOT)
 
 
 # ============================================================================
@@ -165,7 +166,15 @@ def build_font(output='script/IthkuilScript.ttf'):
     cmap[ROTATION_MARK['codepoint']] = ROTATION_MARK['name']
     all_glyphs[ROTATION_MARK['name']] = ROTATION_MARK
 
-    # 5. Primary character components
+    # 5. Consonant cluster extensions (combining top + bottom)
+    for glyph_dict in [CONS_EXT_TOP, CONS_EXT_BOT]:
+        for g in glyph_dict.values():
+            if 'codepoint' in g and g.get('path', '').strip():
+                names.append(g['name'])
+                cmap[g['codepoint']] = g['name']
+                all_glyphs[g['name']] = g
+
+    # 6. Primary character components
     for glyph_dict in [PRIMARY_SPEC, PRIMARY_CTX, PRIMARY_PERSP_EXT,
                         PRIMARY_AFFIL_ESS, PRIMARY_CONFIG, PRIMARY_SFVP,
                         PRIMARY_RELATION, PRIMARY_CONCAT]:

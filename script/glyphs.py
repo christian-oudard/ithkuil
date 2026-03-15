@@ -299,6 +299,93 @@ SECONDARY['placeholder']['codepoint'] = PUA_SECONDARY + 0x1F
 
 
 # ============================================================================
+# Consonant Cluster Extensions (combining, top and bottom)
+# ============================================================================
+# Each consonant has a top extension (preceding consonant in cluster)
+# and a bottom extension (following consonant in cluster).
+# These are combining characters with 0 advance width.
+# Top extensions: U+E020-E03F (32 slots for 31 consonants + placeholder)
+# Bottom extensions: U+E040-E05F
+
+# Extension shapes are simplified versions of the base consonant,
+# scaled to fit above or below the base character's attachment point.
+# Top extensions sit at y=800-950, bottom at y=0-150.
+
+def _make_extension_shape(cons, top=True):
+    """Generate a combining extension shape for a consonant.
+
+    Top extensions: characteristic mark at y=830-950, x=130-370
+    Bottom extensions: characteristic mark at y=50-170, x=130-370
+    """
+    # Each consonant gets a distinctive small mark based on its character.
+    # The mark is derived from the consonant's most distinctive feature.
+    y_base = 880 if top else 100
+    y_dir = 1 if top else -1  # direction of extension from attachment point
+    cx = 250  # center x
+
+    # Map consonants to extension shapes (characteristic strokes)
+    shapes = {
+        'p': [L(cx-40, y_base, cx+40, y_base), L(cx-40, y_base, cx-40, y_base+y_dir*50)],
+        'b': [L(cx-40, y_base, cx+40, y_base), L(cx+40, y_base, cx+40, y_base+y_dir*50)],
+        't': [L(cx, y_base, cx, y_base+y_dir*60), L(cx, y_base+y_dir*60, cx+40, y_base+y_dir*60)],
+        'd': [L(cx, y_base, cx, y_base+y_dir*60), L(cx, y_base+y_dir*60, cx-40, y_base+y_dir*60)],
+        'k': [L(cx-30, y_base, cx+30, y_base+y_dir*50), L(cx+30, y_base+y_dir*50, cx+30, y_base)],
+        'g': [L(cx+30, y_base, cx-30, y_base+y_dir*50), L(cx-30, y_base+y_dir*50, cx-30, y_base)],
+        'f': [L(cx-30, y_base+y_dir*50, cx+30, y_base+y_dir*50), L(cx-30, y_base+y_dir*50, cx-30, y_base),
+              L(cx-30, y_base, cx+30, y_base)],
+        'v': [L(cx-30, y_base+y_dir*50, cx+30, y_base+y_dir*50), L(cx+30, y_base+y_dir*50, cx+30, y_base),
+              L(cx-30, y_base, cx+30, y_base)],
+        'ţ': [A(cx+20, y_base+y_dir*25, 30, 120 if top else 240, 240 if top else 120)],
+        'ḑ': [A(cx-20, y_base+y_dir*25, 30, -60 if top else 60, 60 if top else -60)],
+        's': [L(cx-30, y_base+y_dir*50, cx+30, y_base), L(cx+30, y_base, cx-30, y_base-y_dir*10)],
+        'z': [L(cx+30, y_base+y_dir*50, cx-30, y_base), L(cx-30, y_base, cx+30, y_base-y_dir*10)],
+        'š': [A(cx, y_base+y_dir*35, 25, 0, 180), L(cx-25, y_base+y_dir*35, cx+25, y_base)],
+        'ž': [A(cx, y_base+y_dir*35, 25, 0, 180), L(cx+25, y_base+y_dir*35, cx-25, y_base)],
+        'č': [L(cx-20, y_base, cx-20, y_base+y_dir*50), L(cx-20, y_base+y_dir*50, cx+20, y_base+y_dir*50),
+              L(cx-20, y_base, cx+20, y_base)],
+        'j': [L(cx+20, y_base, cx+20, y_base+y_dir*50), L(cx-20, y_base+y_dir*50, cx+20, y_base+y_dir*50),
+              L(cx-20, y_base, cx+20, y_base)],
+        'c': [L(cx-20, y_base, cx-20, y_base+y_dir*50), L(cx-20, y_base, cx+30, y_base)],
+        'ẓ': [L(cx-20, y_base, cx-20, y_base+y_dir*50), L(cx-20, y_base, cx+30, y_base),
+              L(cx-20, y_base+y_dir*50, cx+10, y_base+y_dir*50)],
+        'x': [L(cx-30, y_base+y_dir*50, cx+30, y_base+y_dir*50), L(cx+30, y_base+y_dir*50, cx-30, y_base),
+              L(cx-30, y_base, cx+30, y_base)],
+        'ç': [L(cx-30, y_base+y_dir*50, cx+30, y_base+y_dir*50), L(cx-30, y_base+y_dir*50, cx, y_base+y_dir*25),
+              L(cx, y_base+y_dir*25, cx-30, y_base), L(cx-30, y_base, cx+30, y_base)],
+        'h': [L(cx-20, y_base+y_dir*50, cx+10, y_base+y_dir*25), L(cx+10, y_base+y_dir*25, cx+10, y_base),
+              L(cx-10, y_base+y_dir*25, cx+30, y_base+y_dir*25)],
+        'ļ': [L(cx-20, y_base+y_dir*50, cx, y_base), L(cx, y_base, cx+20, y_base+y_dir*50)],
+        'l': [L(cx-20, y_base+y_dir*50, cx, y_base+y_dir*25), L(cx, y_base+y_dir*25, cx, y_base),
+              L(cx, y_base, cx+30, y_base)],
+        'r': [L(cx-20, y_base+y_dir*50, cx+20, y_base+y_dir*50), L(cx+20, y_base+y_dir*50, cx+20, y_base+y_dir*25),
+              L(cx-10, y_base+y_dir*25, cx+20, y_base+y_dir*25), L(cx-10, y_base+y_dir*25, cx-10, y_base)],
+        'ř': [A(cx, y_base+y_dir*35, 25, 0, 270), L(cx, y_base+y_dir*10, cx, y_base)],
+        'm': [L(cx-20, y_base+y_dir*50, cx+20, y_base)],
+        'n': [L(cx-20, y_base+y_dir*50, cx+10, y_base), L(cx+10, y_base, cx+30, y_base)],
+        'ň': [L(cx-20, y_base+y_dir*50, cx+10, y_base+y_dir*15), L(cx+10, y_base+y_dir*15, cx+30, y_base)],
+        'w': [L(cx-20, y_base+y_dir*50, cx, y_base+y_dir*15), A(cx, y_base+y_dir*8, 15, 90, 0)],
+        'y': [L(cx+20, y_base+y_dir*50, cx, y_base+y_dir*15), A(cx, y_base+y_dir*8, 15, 90, 180)],
+        "'": [L(cx, y_base, cx, y_base+y_dir*40)],
+    }
+    return shapes.get(cons, [L(cx, y_base, cx, y_base+y_dir*40)])
+
+
+# Generate extension glyphs for all consonants
+CONS_EXT_TOP = {}
+CONS_EXT_BOT = {}
+for i, cons in enumerate(CONSONANT_ORDER):
+    if cons not in SECONDARY:
+        continue
+    top_parts = _make_extension_shape(cons, top=True)
+    CONS_EXT_TOP[cons] = _glyph(f'ext_top_{_ASCII_NAMES.get(cons, cons)}', cons, top_parts, 0)
+    CONS_EXT_TOP[cons]['codepoint'] = 0xE020 + i
+
+    bot_parts = _make_extension_shape(cons, top=False)
+    CONS_EXT_BOT[cons] = _glyph(f'ext_bot_{_ASCII_NAMES.get(cons, cons)}', cons, bot_parts, 0)
+    CONS_EXT_BOT[cons]['codepoint'] = 0xE040 + i
+
+
+# ============================================================================
 # SVG Rendering
 # ============================================================================
 
