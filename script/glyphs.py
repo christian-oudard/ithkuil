@@ -382,18 +382,208 @@ for i in range(1, 10):
 # Aspect shapes are the most numerous (36 distinct forms).
 # For now, define the base structure.
 
+# ---- Valence (9 forms): horizontal arrow bar, different arrowheads ----
+# Each is a right-pointing arrow with a distinctive head shape.
+# PUA: U+E100-E108
 TERTIARY_VALENCE = {}
 VALENCE_NAMES = ['MNO', 'PRL', 'CRO', 'RCP', 'CPL', 'DUP', 'DEM', 'CNG', 'PTI']
+_val_base = lambda: L(50, 500, 350, 500)  # horizontal shaft
+
+_val_heads = {
+    'MNO': [L(350, 500, 450, 560), L(350, 500, 450, 440)],              # simple arrowhead
+    'PRL': [L(350, 500, 450, 560), L(350, 500, 450, 440), L(300, 560, 300, 440)],  # arrow + back notch
+    'CRO': [L(350, 500, 450, 560), L(350, 500, 450, 440), A(300, 500, 60, 90, 270)],  # arrow + hook
+    'RCP': [L(350, 500, 430, 580), L(350, 500, 430, 420), L(430, 580, 430, 420)],  # triangle head
+    'CPL': [L(350, 500, 450, 560), L(350, 500, 450, 440), L(380, 560, 380, 440)],  # arrow + bar
+    'DUP': [L(350, 500, 450, 540), L(350, 500, 450, 460), L(320, 540, 320, 460)],  # narrow arrow + bar
+    'DEM': [L(350, 500, 450, 560), L(350, 500, 450, 440), L(350, 440, 320, 400)],  # arrow + down-tick
+    'CNG': [L(350, 500, 450, 560), L(350, 500, 450, 440), L(350, 560, 320, 600)],  # arrow + up-tick
+    'PTI': [L(350, 500, 430, 570), L(350, 500, 430, 430), L(430, 570, 480, 540), L(430, 430, 480, 460)],  # double hook
+}
 for i, name in enumerate(VALENCE_NAMES):
-    # Horizontal bar with varying right-side arrow/decoration
-    bar_y = 500
-    arrow_dx = 50 + i * 30
-    TERTIARY_VALENCE[name] = _glyph(f'tert_val_{name}', '', [
-        L(50, bar_y, 400, bar_y),                    # horizontal bar
-        L(400, bar_y, 400 + arrow_dx, bar_y + 80),   # arrow up
-        L(400, bar_y, 400 + arrow_dx, bar_y - 80),   # arrow down
+    parts = [_val_base()] + _val_heads[name]
+    TERTIARY_VALENCE[name] = _glyph(f'tert_val_{name}', '', parts)
+    TERTIARY_VALENCE[name]['codepoint'] = 0xE100 + i
+
+
+# ---- Aspect (36 forms): arrow-like shapes ----
+# Each aspect is a distinctive arrow/chevron shape.
+# PUA: U+E11B-E13E
+ASPECT_NAMES = [
+    'RTR', 'PRS', 'HAB', 'PRG', 'IMM', 'PCS', 'REG', 'SMM', 'ATP',    # column 1: timeline
+    'RSM', 'CSS', 'PAU', 'RGR', 'PCL', 'CNT', 'ICS', 'EXP', 'IRP',    # column 2: shape/structure
+    'PMP', 'CLM', 'DLT', 'TMP', 'XPD', 'LIM', 'EPD', 'PTC', 'PPR',    # column 3: consequence
+    'DCL', 'CCL', 'CUL', 'IMD', 'TRD', 'TNS', 'ITC', 'MTV', 'SQN',    # column 4: misc
+]
+
+TERTIARY_ASPECT = {}
+for i, name in enumerate(ASPECT_NAMES):
+    # Generate distinct arrow shapes using systematic variations
+    col = i // 9       # 0-3: which column (determines base direction)
+    row = i % 9        # 0-8: which row (determines detail)
+
+    # Base arrow direction varies by column
+    base_dx = [350, 300, 350, 300][col]
+    base_dy = [0, 50, -50, 0][col]
+    y_mid = 500
+
+    # Head shape varies by row
+    head_spread = 40 + row * 8
+    head_len = 60 + row * 5
+    tail_mod = row * 15
+
+    parts = [
+        L(50, y_mid + base_dy, base_dx, y_mid),  # shaft
+        L(base_dx, y_mid, base_dx + head_len, y_mid + head_spread),  # upper head
+        L(base_dx, y_mid, base_dx + head_len, y_mid - head_spread),  # lower head
+    ]
+
+    # Add distinctive tail features per column
+    if col == 0:  # timeline: back-pointing tail
+        parts.append(L(50, y_mid + base_dy, 50 - tail_mod//2, y_mid + 30))
+    elif col == 1:  # structure: notched tail
+        parts.append(L(80, y_mid + base_dy + 30, 80, y_mid + base_dy - 30))
+    elif col == 2:  # consequence: forked tail
+        parts.append(L(50, y_mid + base_dy, 20, y_mid + 40))
+        parts.append(L(50, y_mid + base_dy, 20, y_mid - 40))
+    elif col == 3:  # misc: barred tail
+        parts.append(L(70, y_mid + 25, 70, y_mid - 25))
+
+    TERTIARY_ASPECT[name] = _glyph(f'tert_asp_{name}', '', parts)
+    TERTIARY_ASPECT[name]['codepoint'] = 0xE11B + i
+
+
+# ---- Phase (9 forms) ----
+# PUA: U+E109-E111
+PHASE_NAMES = ['PCT', 'ITR', 'REP', 'ITM', 'RCT', 'FRE', 'FRG', 'VAC', 'FLC']
+TERTIARY_PHASE = {}
+for i, name in enumerate(PHASE_NAMES):
+    # Phase forms: vertical double-stroke patterns
+    x_base = 200
+    spread = 30 + i * 8
+    TERTIARY_PHASE[name] = _glyph(f'tert_phs_{name}', '', [
+        L(x_base - spread, 300, x_base - spread, 700),
+        L(x_base + spread, 300, x_base + spread, 700),
+        L(x_base - spread, 700, x_base, 750 + i * 5),  # varying bottom connection
+        L(x_base + spread, 700, x_base, 750 + i * 5),
     ])
+    TERTIARY_PHASE[name]['codepoint'] = 0xE109 + i
+
+
+# ---- Effect (9 forms) ----
+# PUA: U+E112-E11A
+EFFECT_NAMES = ['neutral', '1BEN', '2BEN', '3BEN', 'SLF_BEN', 'UNKNOWN', 'SLF_DET', '3DET', '2DET', '1DET']
+# Actually there are 10 effect forms per the reference, but the spec shows 9 distinct
+# Using neutral + 4 benefactive + unknown + 4 detrimental = 10
+TERTIARY_EFFECT = {}
+for i, name in enumerate(EFFECT_NAMES[:9]):
+    safe_name = name.replace('/', '_')
+    # Effect forms: downward-pointing marks of varying size
+    h = 100 + i * 20
+    TERTIARY_EFFECT[name] = _glyph(f'tert_eff_{safe_name}', '', [
+        L(180, 700, 220, 700),            # top bar
+        L(200, 700, 200, 700 - h),        # vertical extent
+    ])
+    TERTIARY_EFFECT[name]['codepoint'] = 0xE112 + i
+
+
+# ---- Level diacritics (9 forms, superposed or underposed on tertiary) ----
+# PUA: U+E13F-E147
+LEVEL_NAMES = ['MIN', 'SBE', 'IFR', 'DFT', 'EQU', 'SUR', 'SPL', 'SPQ', 'MAX']
+TERTIARY_LEVEL = {}
+for i, name in enumerate(LEVEL_NAMES):
+    # Small marks: diamond, crescents, arrows of varying size
+    TERTIARY_LEVEL[name] = _glyph(f'tert_lvl_{name}', '', [
+        L(180, 900 + i * 3, 220, 900 + i * 3),
+    ], 0)  # combining (0 width)
+    TERTIARY_LEVEL[name]['codepoint'] = 0xE13F + i
+
+
+# ============================================================================
+# Quaternary Character Shapes (refined)
+# ============================================================================
+
+# Case Type top extensions (8): U+E180-E187
+QUAT_CASE_TYPE = {}
+_qcase_type_names = ['TRANS', 'APPOS', 'ASSOC', 'ADVERB', 'RELAT', 'AFFIN', 'SPAT1', 'SPAT2']
+_qcase_type_shapes = {
+    'TRANS':  [L(200, 200, 200, 900)],                                     # plain vertical
+    'APPOS':  [L(200, 200, 200, 900), L(200, 900, 320, 820)],             # right hook
+    'ASSOC':  [L(200, 200, 200, 900), L(200, 900, 300, 850), L(200, 900, 100, 850)],  # fork
+    'ADVERB': [L(200, 200, 200, 900), A(200, 800, 100, 0, 90)],           # right curve
+    'RELAT':  [L(200, 200, 200, 900), L(200, 900, 80, 820)],              # left hook
+    'AFFIN':  [L(200, 200, 200, 900), L(100, 900, 350, 900)],             # T-bar
+    'SPAT1':  [L(200, 200, 200, 900), L(100, 900, 350, 900), L(350, 900, 380, 830)],  # T + right hook
+    'SPAT2':  [L(200, 200, 200, 900), L(100, 900, 350, 900), L(100, 900, 70, 830)],   # T + left hook
+}
+for i, name in enumerate(_qcase_type_names):
+    QUAT_CASE_TYPE[name] = _glyph(f'quat_type_{name}', '', _qcase_type_shapes[name], 400)
+    QUAT_CASE_TYPE[name]['codepoint'] = 0xE180 + i
+
+# Case Number bottom extensions (9): U+E188-E190
+QUAT_CASE_NUM = {}
+for i in range(1, 10):
+    # Different bottom extension angles/curves for cases 1-9
+    angle = 210 + (i-1) * 15  # 210° to 330° (sweeping around bottom)
+    elen = 180
+    ex = int(200 + elen * math.cos(math.radians(angle)))
+    ey = int(200 + elen * math.sin(math.radians(angle)))
+    QUAT_CASE_NUM[i] = _glyph(f'quat_num_{i}', '', [L(200, 200, ex, ey)], 400)
+    QUAT_CASE_NUM[i]['codepoint'] = 0xE188 + i - 1
+
+# Illocution (9): U+E191-E199
+ILLOCUTION_NAMES = ['ASR', 'DIR', 'DEC', 'IRG', 'VRF', 'ADM', 'POT', 'HOR', 'CNJ']
+QUAT_ILLOCUTION = {}
+for i, name in enumerate(ILLOCUTION_NAMES):
+    # Tall vertical with distinctive top curve/hook
+    hook_dx = [-20, 80, -80, 60, -60, 40, -40, 100, -100][i]
+    hook_dy = [0, -40, -40, -60, -60, -30, -30, -50, -50][i]
+    QUAT_ILLOCUTION[name] = _glyph(f'quat_illoc_{name}', '', [
+        L(200, 100, 200, 900),
+        L(200, 900, 200 + hook_dx, 900 + hook_dy),
+    ], 400)
+    QUAT_ILLOCUTION[name]['codepoint'] = 0xE191 + i
+
+# Validation (9): U+E19A-E1A2
+VALIDATION_NAMES = ['OBS', 'REC', 'PUP', 'RPR', 'IMA', 'CVN', 'ITU', 'INF', 'USP']
+QUAT_VALIDATION = {}
+for i, name in enumerate(VALIDATION_NAMES):
+    hook_dx = [0, 60, -60, 40, -40, 80, -80, 50, -50][i]
+    QUAT_VALIDATION[name] = _glyph(f'quat_valid_{name}', '', [
+        L(200, 100, 200, 700),
+        L(200, 100, 200 + hook_dx, 50),
+    ], 400)
+    QUAT_VALIDATION[name]['codepoint'] = 0xE19A + i
 
 
 if __name__ == '__main__':
     render_test_sheet()
+    # Also render tertiary test sheet
+    render_tertiary_test()
+
+def render_tertiary_test(filename='script/tertiary_chars_test.svg'):
+    """Render all tertiary characters to SVG test sheet."""
+    cols, cell_w, cell_h, margin = 9, 80, 80, 15
+    all_items = ([(n, TERTIARY_VALENCE[n]) for n in VALENCE_NAMES] +
+                 [(n, TERTIARY_ASPECT[n]) for n in ASPECT_NAMES])
+    rows = (len(all_items) + cols - 1) // cols
+    W = cols * cell_w + 2 * margin
+    H = rows * cell_h + 2 * margin
+
+    svg = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" '
+           f'viewBox="0 0 {W} {H}">', '<rect width="100%" height="100%" fill="white"/>']
+
+    for idx, (name, glyph) in enumerate(all_items):
+        col, row = idx % cols, idx // cols
+        x, y = margin + col * cell_w, margin + row * cell_h
+        svg.append(f'<rect x="{x}" y="{y}" width="{cell_w}" height="{cell_h}" '
+                   f'fill="none" stroke="#ddd" stroke-width="0.5"/>')
+        svg.append(f'<text x="{x+cell_w//2}" y="{y+10}" text-anchor="middle" '
+                   f'font-size="7" fill="#666">{name}</text>')
+        transform = f'translate({x+5},{y+15+55}) scale(0.065,-0.065)'
+        svg.append(f'<g transform="{transform}"><path d="{glyph["path"]}" fill="black" fill-rule="nonzero"/></g>')
+
+    svg.append('</svg>')
+    with open(filename, 'w') as f:
+        f.write('\n'.join(svg))
+    print(f'Wrote {filename} ({len(all_items)} glyphs)')

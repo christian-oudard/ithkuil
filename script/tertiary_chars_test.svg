@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="750" height="430" viewBox="0 0 750 430">
+<rect width="100%" height="100%" fill="white"/>
+<rect x="15" y="15" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="55" y="25" text-anchor="middle" font-size="7" fill="#666">MNO</text>
+<g transform="translate(20,85) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M337,521 L437,581 L463,539 L363,479 Z M363,521 L463,461 L437,419 L337,479 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="95" y="15" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="135" y="25" text-anchor="middle" font-size="7" fill="#666">PRL</text>
+<g transform="translate(100,85) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M337,521 L437,581 L463,539 L363,479 Z M363,521 L463,461 L437,419 L337,479 Z M325,560 L325,440 L275,440 L275,560 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="175" y="15" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="215" y="25" text-anchor="middle" font-size="7" fill="#666">CRO</text>
+<g transform="translate(180,85) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M337,521 L437,581 L463,539 L363,479 Z M363,521 L463,461 L437,419 L337,479 Z M300,585 A85,85 0 0,1 300,415 L300,465 A35,35 0 0,0 300,535 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="255" y="15" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="295" y="25" text-anchor="middle" font-size="7" fill="#666">RCP</text>
+<g transform="translate(260,85) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M332,518 L412,598 L448,562 L368,482 Z M368,518 L448,438 L412,402 L332,482 Z M455,580 L455,420 L405,420 L405,580 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="335" y="15" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="375" y="25" text-anchor="middle" font-size="7" fill="#666">CPL</text>
+<g transform="translate(340,85) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M337,521 L437,581 L463,539 L363,479 Z M363,521 L463,461 L437,419 L337,479 Z M405,560 L405,440 L355,440 L355,560 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="415" y="15" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="455" y="25" text-anchor="middle" font-size="7" fill="#666">DUP</text>
+<g transform="translate(420,85) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M341,523 L441,563 L459,517 L359,477 Z M359,523 L459,483 L441,437 L341,477 Z M345,540 L345,460 L295,460 L295,540 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="495" y="15" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="535" y="25" text-anchor="middle" font-size="7" fill="#666">DEM</text>
+<g transform="translate(500,85) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M337,521 L437,581 L463,539 L363,479 Z M363,521 L463,461 L437,419 L337,479 Z M370,425 L340,385 L300,415 L330,455 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="575" y="15" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="615" y="25" text-anchor="middle" font-size="7" fill="#666">CNG</text>
+<g transform="translate(580,85) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M337,521 L437,581 L463,539 L363,479 Z M363,521 L463,461 L437,419 L337,479 Z M330,545 L300,585 L340,615 L370,575 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="655" y="15" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="695" y="25" text-anchor="middle" font-size="7" fill="#666">PTI</text>
+<g transform="translate(660,85) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M334,519 L414,589 L446,551 L366,481 Z M366,519 L446,449 L414,411 L334,481 Z M443,591 L493,561 L467,519 L417,549 Z M417,451 L467,481 L493,439 L443,409 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="15" y="95" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="55" y="105" text-anchor="middle" font-size="7" fill="#666">RTR</text>
+<g transform="translate(20,165) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M336,521 L396,561 L424,519 L364,479 Z M364,521 L424,481 L396,439 L336,479 Z M25,500 L25,530 L75,530 L75,500 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="95" y="95" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="135" y="105" text-anchor="middle" font-size="7" fill="#666">PRS</text>
+<g transform="translate(100,165) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M335,520 L400,568 L430,528 L365,480 Z M365,520 L430,472 L400,432 L335,480 Z M26,494 L19,524 L67,536 L74,506 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="175" y="95" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="215" y="105" text-anchor="middle" font-size="7" fill="#666">HAB</text>
+<g transform="translate(180,165) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M334,520 L404,576 L436,536 L366,480 Z M366,520 L436,464 L404,424 L334,480 Z M28,489 L13,519 L57,541 L72,511 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="255" y="95" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="295" y="105" text-anchor="middle" font-size="7" fill="#666">PRG</text>
+<g transform="translate(260,165) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M334,519 L409,583 L441,545 L366,481 Z M366,519 L441,455 L409,417 L334,481 Z M30,485 L8,515 L48,545 L70,515 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="335" y="95" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="375" y="105" text-anchor="middle" font-size="7" fill="#666">IMM</text>
+<g transform="translate(340,165) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M333,519 L413,591 L447,553 L367,481 Z M367,519 L447,447 L413,409 L333,481 Z M32,482 L2,512 L38,548 L68,518 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="415" y="95" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="455" y="105" text-anchor="middle" font-size="7" fill="#666">PCS</text>
+<g transform="translate(420,165) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M333,518 L418,598 L452,562 L367,482 Z M367,518 L452,438 L418,402 L333,482 Z M34,481 L-3,511 L29,549 L66,519 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="495" y="95" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="535" y="105" text-anchor="middle" font-size="7" fill="#666">REG</text>
+<g transform="translate(500,165) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M333,518 L423,606 L457,570 L367,482 Z M367,518 L457,430 L423,394 L333,482 Z M36,479 L-9,509 L19,551 L64,521 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="575" y="95" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="615" y="105" text-anchor="middle" font-size="7" fill="#666">SMM</text>
+<g transform="translate(580,165) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M332,518 L427,614 L463,578 L368,482 Z M368,518 L463,422 L427,386 L332,482 Z M38,478 L-14,508 L10,552 L62,522 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="655" y="95" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="695" y="105" text-anchor="middle" font-size="7" fill="#666">ATP</text>
+<g transform="translate(660,165) scale(0.065,-0.065)"><path d="M50,525 L350,525 L350,475 L50,475 Z M332,517 L432,621 L468,587 L368,483 Z M368,517 L468,413 L432,379 L332,483 Z M39,478 L-21,508 L1,552 L61,522 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="15" y="175" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="55" y="185" text-anchor="middle" font-size="7" fill="#666">RSM</text>
+<g transform="translate(20,245) scale(0.065,-0.065)"><path d="M55,575 L305,525 L295,475 L45,525 Z M286,521 L346,561 L374,519 L314,479 Z M314,521 L374,481 L346,439 L286,479 Z M105,580 L105,520 L55,520 L55,580 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="95" y="175" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="135" y="185" text-anchor="middle" font-size="7" fill="#666">CSS</text>
+<g transform="translate(100,245) scale(0.065,-0.065)"><path d="M55,575 L305,525 L295,475 L45,525 Z M285,520 L350,568 L380,528 L315,480 Z M315,520 L380,472 L350,432 L285,480 Z M105,580 L105,520 L55,520 L55,580 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="175" y="175" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="215" y="185" text-anchor="middle" font-size="7" fill="#666">PAU</text>
+<g transform="translate(180,245) scale(0.065,-0.065)"><path d="M55,575 L305,525 L295,475 L45,525 Z M284,520 L354,576 L386,536 L316,480 Z M316,520 L386,464 L354,424 L284,480 Z M105,580 L105,520 L55,520 L55,580 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="255" y="175" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="295" y="185" text-anchor="middle" font-size="7" fill="#666">RGR</text>
+<g transform="translate(260,245) scale(0.065,-0.065)"><path d="M55,575 L305,525 L295,475 L45,525 Z M284,519 L359,583 L391,545 L316,481 Z M316,519 L391,455 L359,417 L284,481 Z M105,580 L105,520 L55,520 L55,580 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="335" y="175" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="375" y="185" text-anchor="middle" font-size="7" fill="#666">PCL</text>
+<g transform="translate(340,245) scale(0.065,-0.065)"><path d="M55,575 L305,525 L295,475 L45,525 Z M283,519 L363,591 L397,553 L317,481 Z M317,519 L397,447 L363,409 L283,481 Z M105,580 L105,520 L55,520 L55,580 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="415" y="175" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="455" y="185" text-anchor="middle" font-size="7" fill="#666">CNT</text>
+<g transform="translate(420,245) scale(0.065,-0.065)"><path d="M55,575 L305,525 L295,475 L45,525 Z M283,518 L368,598 L402,562 L317,482 Z M317,518 L402,438 L368,402 L283,482 Z M105,580 L105,520 L55,520 L55,580 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="495" y="175" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="535" y="185" text-anchor="middle" font-size="7" fill="#666">ICS</text>
+<g transform="translate(500,245) scale(0.065,-0.065)"><path d="M55,575 L305,525 L295,475 L45,525 Z M283,518 L373,606 L407,570 L317,482 Z M317,518 L407,430 L373,394 L283,482 Z M105,580 L105,520 L55,520 L55,580 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="575" y="175" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="615" y="185" text-anchor="middle" font-size="7" fill="#666">EXP</text>
+<g transform="translate(580,245) scale(0.065,-0.065)"><path d="M55,575 L305,525 L295,475 L45,525 Z M282,518 L377,614 L413,578 L318,482 Z M318,518 L413,422 L377,386 L282,482 Z M105,580 L105,520 L55,520 L55,580 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="655" y="175" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="695" y="185" text-anchor="middle" font-size="7" fill="#666">IRP</text>
+<g transform="translate(660,245) scale(0.065,-0.065)"><path d="M55,575 L305,525 L295,475 L45,525 Z M282,517 L382,621 L418,587 L318,483 Z M318,517 L418,413 L382,379 L282,483 Z M105,580 L105,520 L55,520 L55,580 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="15" y="255" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="55" y="265" text-anchor="middle" font-size="7" fill="#666">PMP</text>
+<g transform="translate(20,325) scale(0.065,-0.065)"><path d="M46,475 L346,525 L354,475 L54,425 Z M336,521 L396,561 L424,519 L364,479 Z M364,521 L424,481 L396,439 L336,479 Z M26,442 L-4,532 L44,548 L74,458 Z M42,426 L12,436 L28,484 L58,474 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="95" y="255" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="135" y="265" text-anchor="middle" font-size="7" fill="#666">CLM</text>
+<g transform="translate(100,325) scale(0.065,-0.065)"><path d="M46,475 L346,525 L354,475 L54,425 Z M335,520 L400,568 L430,528 L365,480 Z M365,520 L430,472 L400,432 L335,480 Z M26,442 L-4,532 L44,548 L74,458 Z M42,426 L12,436 L28,484 L58,474 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="175" y="255" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="215" y="265" text-anchor="middle" font-size="7" fill="#666">DLT</text>
+<g transform="translate(180,325) scale(0.065,-0.065)"><path d="M46,475 L346,525 L354,475 L54,425 Z M334,520 L404,576 L436,536 L366,480 Z M366,520 L436,464 L404,424 L334,480 Z M26,442 L-4,532 L44,548 L74,458 Z M42,426 L12,436 L28,484 L58,474 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="255" y="255" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="295" y="265" text-anchor="middle" font-size="7" fill="#666">TMP</text>
+<g transform="translate(260,325) scale(0.065,-0.065)"><path d="M46,475 L346,525 L354,475 L54,425 Z M334,519 L409,583 L441,545 L366,481 Z M366,519 L441,455 L409,417 L334,481 Z M26,442 L-4,532 L44,548 L74,458 Z M42,426 L12,436 L28,484 L58,474 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="335" y="255" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="375" y="265" text-anchor="middle" font-size="7" fill="#666">XPD</text>
+<g transform="translate(340,325) scale(0.065,-0.065)"><path d="M46,475 L346,525 L354,475 L54,425 Z M333,519 L413,591 L447,553 L367,481 Z M367,519 L447,447 L413,409 L333,481 Z M26,442 L-4,532 L44,548 L74,458 Z M42,426 L12,436 L28,484 L58,474 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="415" y="255" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="455" y="265" text-anchor="middle" font-size="7" fill="#666">LIM</text>
+<g transform="translate(420,325) scale(0.065,-0.065)"><path d="M46,475 L346,525 L354,475 L54,425 Z M333,518 L418,598 L452,562 L367,482 Z M367,518 L452,438 L418,402 L333,482 Z M26,442 L-4,532 L44,548 L74,458 Z M42,426 L12,436 L28,484 L58,474 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="495" y="255" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="535" y="265" text-anchor="middle" font-size="7" fill="#666">EPD</text>
+<g transform="translate(500,325) scale(0.065,-0.065)"><path d="M46,475 L346,525 L354,475 L54,425 Z M333,518 L423,606 L457,570 L367,482 Z M367,518 L457,430 L423,394 L333,482 Z M26,442 L-4,532 L44,548 L74,458 Z M42,426 L12,436 L28,484 L58,474 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="575" y="255" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="615" y="265" text-anchor="middle" font-size="7" fill="#666">PTC</text>
+<g transform="translate(580,325) scale(0.065,-0.065)"><path d="M46,475 L346,525 L354,475 L54,425 Z M332,518 L427,614 L463,578 L368,482 Z M368,518 L463,422 L427,386 L332,482 Z M26,442 L-4,532 L44,548 L74,458 Z M42,426 L12,436 L28,484 L58,474 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="655" y="255" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="695" y="265" text-anchor="middle" font-size="7" fill="#666">PPR</text>
+<g transform="translate(660,325) scale(0.065,-0.065)"><path d="M46,475 L346,525 L354,475 L54,425 Z M332,517 L432,621 L468,587 L368,483 Z M368,517 L468,413 L432,379 L332,483 Z M26,442 L-4,532 L44,548 L74,458 Z M42,426 L12,436 L28,484 L58,474 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="15" y="335" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="55" y="345" text-anchor="middle" font-size="7" fill="#666">DCL</text>
+<g transform="translate(20,405) scale(0.065,-0.065)"><path d="M50,525 L300,525 L300,475 L50,475 Z M286,521 L346,561 L374,519 L314,479 Z M314,521 L374,481 L346,439 L286,479 Z M95,525 L95,475 L45,475 L45,525 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="95" y="335" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="135" y="345" text-anchor="middle" font-size="7" fill="#666">CCL</text>
+<g transform="translate(100,405) scale(0.065,-0.065)"><path d="M50,525 L300,525 L300,475 L50,475 Z M285,520 L350,568 L380,528 L315,480 Z M315,520 L380,472 L350,432 L285,480 Z M95,525 L95,475 L45,475 L45,525 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="175" y="335" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="215" y="345" text-anchor="middle" font-size="7" fill="#666">CUL</text>
+<g transform="translate(180,405) scale(0.065,-0.065)"><path d="M50,525 L300,525 L300,475 L50,475 Z M284,520 L354,576 L386,536 L316,480 Z M316,520 L386,464 L354,424 L284,480 Z M95,525 L95,475 L45,475 L45,525 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="255" y="335" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="295" y="345" text-anchor="middle" font-size="7" fill="#666">IMD</text>
+<g transform="translate(260,405) scale(0.065,-0.065)"><path d="M50,525 L300,525 L300,475 L50,475 Z M284,519 L359,583 L391,545 L316,481 Z M316,519 L391,455 L359,417 L284,481 Z M95,525 L95,475 L45,475 L45,525 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="335" y="335" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="375" y="345" text-anchor="middle" font-size="7" fill="#666">TRD</text>
+<g transform="translate(340,405) scale(0.065,-0.065)"><path d="M50,525 L300,525 L300,475 L50,475 Z M283,519 L363,591 L397,553 L317,481 Z M317,519 L397,447 L363,409 L283,481 Z M95,525 L95,475 L45,475 L45,525 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="415" y="335" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="455" y="345" text-anchor="middle" font-size="7" fill="#666">TNS</text>
+<g transform="translate(420,405) scale(0.065,-0.065)"><path d="M50,525 L300,525 L300,475 L50,475 Z M283,518 L368,598 L402,562 L317,482 Z M317,518 L402,438 L368,402 L283,482 Z M95,525 L95,475 L45,475 L45,525 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="495" y="335" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="535" y="345" text-anchor="middle" font-size="7" fill="#666">ITC</text>
+<g transform="translate(500,405) scale(0.065,-0.065)"><path d="M50,525 L300,525 L300,475 L50,475 Z M283,518 L373,606 L407,570 L317,482 Z M317,518 L407,430 L373,394 L283,482 Z M95,525 L95,475 L45,475 L45,525 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="575" y="335" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="615" y="345" text-anchor="middle" font-size="7" fill="#666">MTV</text>
+<g transform="translate(580,405) scale(0.065,-0.065)"><path d="M50,525 L300,525 L300,475 L50,475 Z M282,518 L377,614 L413,578 L318,482 Z M318,518 L413,422 L377,386 L282,482 Z M95,525 L95,475 L45,475 L45,525 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="655" y="335" width="80" height="80" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="695" y="345" text-anchor="middle" font-size="7" fill="#666">SQN</text>
+<g transform="translate(660,405) scale(0.065,-0.065)"><path d="M50,525 L300,525 L300,475 L50,475 Z M282,517 L382,621 L418,587 L318,483 Z M318,517 L418,413 L382,379 L282,483 Z M95,525 L95,475 L45,475 L45,525 Z" fill="black" fill-rule="nonzero"/></g>
+</svg>

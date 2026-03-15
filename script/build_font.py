@@ -7,7 +7,11 @@ from fontTools.fontBuilder import FontBuilder
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.ttLib import TTFont
 
-from glyphs import SECONDARY, CONSONANT_ORDER, PUA_SECONDARY, _outline as L, _arc as A
+from glyphs import (SECONDARY, CONSONANT_ORDER, PUA_SECONDARY, _outline as L, _arc as A,
+                     TERTIARY_VALENCE, VALENCE_NAMES, TERTIARY_ASPECT, ASPECT_NAMES,
+                     TERTIARY_PHASE, PHASE_NAMES, TERTIARY_EFFECT, EFFECT_NAMES,
+                     TERTIARY_LEVEL, LEVEL_NAMES, QUAT_CASE_TYPE, QUAT_CASE_NUM,
+                     QUAT_ILLOCUTION, ILLOCUTION_NAMES, QUAT_VALIDATION, VALIDATION_NAMES)
 
 
 # ============================================================================
@@ -157,6 +161,24 @@ def build_font(output='script/IthkuilScript.ttf'):
     names.append(ROTATION_MARK['name'])
     cmap[ROTATION_MARK['codepoint']] = ROTATION_MARK['name']
     all_glyphs[ROTATION_MARK['name']] = ROTATION_MARK
+
+    # 5. Tertiary characters (valence, aspect, phase, effect, level)
+    for glyph_dict in [TERTIARY_VALENCE, TERTIARY_ASPECT, TERTIARY_PHASE,
+                        TERTIARY_EFFECT, TERTIARY_LEVEL]:
+        for g in glyph_dict.values():
+            if 'codepoint' in g:
+                names.append(g['name'])
+                cmap[g['codepoint']] = g['name']
+                all_glyphs[g['name']] = g
+
+    # 6. Quaternary characters (case type, case num, illocution, validation)
+    for glyph_dict in [QUAT_CASE_TYPE, QUAT_CASE_NUM,
+                        QUAT_ILLOCUTION, QUAT_VALIDATION]:
+        for g in glyph_dict.values():
+            if 'codepoint' in g:
+                names.append(g['name'])
+                cmap[g['codepoint']] = g['name']
+                all_glyphs[g['name']] = g
 
     # Build font
     fb = FontBuilder(1000, isTTF=True)
