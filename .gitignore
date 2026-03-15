@@ -4,3 +4,8 @@ dist-newstyle/
 *.dyn_hi
 *.dyn_o
 grammar_reference_pdf/
+*.ttf
+*.otf
+.venv/
+script/*.png
+script/__pycache__/

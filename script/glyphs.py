@@ -47,8 +47,16 @@ def _arc(cx, cy, r, a1_deg, a2_deg, w=SW):
 # Coordinates: bottom-left origin, y-up. Body in ~500w x 800h box.
 # Top attachment point: ~(250, 850), Bottom: ~(250, 100)
 
+# Map consonants to ASCII-safe glyph names (for font post table)
+_ASCII_NAMES = {
+    'ţ': 'tc', 'ḑ': 'dh', 'š': 'sh', 'ž': 'zh', 'ç': 'cy',
+    'ļ': 'lh', 'ẓ': 'zd', 'č': 'ch', 'ň': 'ny', 'ř': 'rh',
+    "'": 'glottal',
+}
+
 def _glyph(name, cons, parts, w=500):
-    return {'name': f'sec_{name}', 'consonant': cons, 'width': w,
+    ascii_name = _ASCII_NAMES.get(name, name)
+    return {'name': f'sec_{ascii_name}', 'consonant': cons, 'width': w,
             'path': ' '.join(p for p in parts if p)}
 
 # Shorthand
