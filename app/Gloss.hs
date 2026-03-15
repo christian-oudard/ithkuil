@@ -52,6 +52,7 @@ main = do
     ("--form":rest) -> handleFormLookup rest
     ("--grammar":rest) -> handleGrammarDump rest
     ("--script":rest) -> handleScript rest
+    ("--script-json":rest) -> handleScriptJson rest
     ("--compose":rest) -> handleCompose rest
     ("--sentence":rest) -> handleSentence rest
     _ -> do
@@ -170,6 +171,68 @@ handleScript ws = do
     PFormative pf -> TIO.putStrLn (renderFormativeSvg pf)
     PConcatenated (pf:_) -> TIO.putStrLn (renderFormativeSvg pf)
     _ -> TIO.putStrLn $ "Cannot render script for non-formative: " <> word
+
+-- | Output JSON formative data for the Python script renderer
+handleScriptJson :: [String] -> IO ()
+handleScriptJson [] = TIO.putStrLn "Usage: ithkuil-gloss --script-json <word> [word2 ...]"
+handleScriptJson ws = do
+  let words = map T.pack ws
+      jsons = map wordToScriptJson words
+  TIO.putStrLn $ "[" <> T.intercalate "," jsons <> "]"
+
+wordToScriptJson :: Text -> Text
+wordToScriptJson word =
+  let parsed = parseWord word
+  in case parsed of
+    PFormative pf -> formativeToJson pf
+    PConcatenated (pf:_) -> formativeToJson pf
+    _ -> "{\"error\":\"not a formative\"}"
+
+formativeToJson :: ParsedFormative -> Text
+formativeToJson pf =
+  let Root cr = pfRoot pf
+      (stem, version) = pfSlotII pf
+      (func, spec, ctx) = pfSlotIV pf
+      stemN = case stem of { S0 -> 0 :: Int; S1 -> 1; S2 -> 2; S3 -> 3 }
+      funcS = case func of { STA -> "STA"; DYN -> "DYN" }
+      specS = case spec of { BSC -> "BSC"; CTE -> "CTE"; CSV -> "CSV"; OBJ -> "OBJ" }
+      ctxS = case ctx of { EXS -> "EXS"; FNC -> "FNC"; RPS -> "RPS"; AMG -> "AMG" }
+      caseS = case pfCase pf of
+        Just c -> caseAbbrev c
+        Nothing -> "THM"
+      -- Slot V affixes
+      slotVAffixes = map (\(cs, _vx) ->
+        "{\"cs\":" <> jsonStr cs <> ",\"degree\":0,\"type\":1,\"slot\":5}") (pfSlotV pf)
+      -- Slot VII affixes (from Ca rest)
+      slotVIIAffixes = map (\(_vx, cs) ->
+        "{\"cs\":" <> jsonStr cs <> ",\"degree\":0,\"type\":1,\"slot\":7}") (extractSlotVIIAffixes (pfCa pf))
+      allAffixes = slotVAffixes ++ slotVIIAffixes
+      affixArray = "[" <> T.intercalate "," allAffixes <> "]"
+  in T.concat
+    [ "{"
+    , "\"root\":", jsonStr cr
+    , ",\"stem\":", T.pack (show stemN)
+    , ",\"func\":", jsonStr funcS
+    , ",\"spec\":", jsonStr specS
+    , ",\"ctx\":", jsonStr ctxS
+    , ",\"case\":", jsonStr caseS
+    , ",\"affixes\":", affixArray
+    , "}"
+    ]
+
+jsonStr :: Text -> Text
+jsonStr t = "\"" <> T.replace "\"" "\\\"" t <> "\""
+
+extractSlotVIIAffixes :: [Text] -> [(Text, Text)]
+extractSlotVIIAffixes parts = case parts of
+  (_ca:rest) -> go rest
+  _ -> []
+  where
+    go (v:c:more)
+      | not (T.null v) && not (T.null c)
+      , T.all isV v = (v, c) : go more
+    go _ = []
+    isV ch = ch `elem` ("aäeëiïöoüuáéíóúâêôû'" :: String)
 
 handleCompose :: [String] -> IO ()
 handleCompose [] = TIO.putStrLn "Usage: ithkuil-gloss --compose <root> [S1-S3] [DYN] [ABS|ERG|DAT|ALL|...] [IRG|DIR|...]"
