@@ -376,11 +376,134 @@ for i in range(1, 10):
 
 
 # ============================================================================
+# Primary Character Components
+# ============================================================================
+
+# ---- Specification (4 forms, lower-left zone): U+E060-E063 ----
+PRIMARY_SPEC = {}
+_spec_shapes = {
+    'BSC': [L(50, 200, 200, 600)],
+    'CTE': [L(80, 250, 180, 500)],
+    'CSV': [L(50, 400, 150, 250), L(150, 250, 50, 200)],
+    'OBJ': [L(50, 250, 150, 400), L(150, 400, 50, 450)],
+}
+for i, (name, parts) in enumerate(_spec_shapes.items()):
+    PRIMARY_SPEC[name] = _glyph(f'prim_spec_{name}', '', parts, 250)
+    PRIMARY_SPEC[name]['codepoint'] = 0xE060 + i
+
+# ---- Context (4 superposed diacritics): U+E064-E067 ----
+PRIMARY_CTX = {}
+_ctx_shapes = {
+    'EXS': [L(190, 920, 210, 920), L(190, 900, 210, 900)],
+    'FNC': [L(170, 910, 230, 910)],
+    'RPS': [L(175, 920, 225, 900)],
+    'AMG': [L(225, 920, 175, 900)],
+}
+for i, (name, parts) in enumerate(_ctx_shapes.items()):
+    PRIMARY_CTX[name] = _glyph(f'prim_ctx_{name}', '', parts, 0)
+    PRIMARY_CTX[name]['codepoint'] = 0xE064 + i
+
+# ---- Perspective x Extension (24 forms, upper-left): U+E068-E07F ----
+PERSP_NAMES = ['M', 'G', 'N', 'A']
+EXT_NAMES = ['DEL', 'PRX', 'ICP', 'ATV', 'GRA', 'DPL']
+PRIMARY_PERSP_EXT = {}
+for pi, persp in enumerate(PERSP_NAMES):
+    for ei, ext in enumerate(EXT_NAMES):
+        key = f'{persp}_{ext}'
+        idx = pi * 6 + ei
+        base_x, base_y = 100, 700
+        p_angle = [0, 30, -30, 15][pi]
+        e_dx = [80, 60, 100, 70, 90, 50][ei]
+        e_dy = [0, 40, -40, 60, -60, 80][ei]
+        parts = [L(base_x, base_y, base_x + e_dx, base_y + e_dy + p_angle)]
+        if ei >= 3:
+            parts.append(L(base_x + e_dx, base_y + e_dy + p_angle,
+                          base_x + e_dx + 20, base_y + e_dy + p_angle - 20))
+        PRIMARY_PERSP_EXT[key] = _glyph(f'prim_pe_{idx}', '', parts, 0)
+        PRIMARY_PERSP_EXT[key]['codepoint'] = 0xE068 + idx
+
+# ---- Affiliation x Essence (8 forms, upper-right): U+E080-E087 ----
+PRIMARY_AFFIL_ESS = {}
+_ae_shapes = {
+    ('CSL', 'NRM'): [L(350, 700, 420, 700)],
+    ('ASO', 'NRM'): [L(350, 720, 420, 680)],
+    ('COA', 'NRM'): [L(370, 720, 370, 680)],
+    ('VAR', 'NRM'): [L(350, 710, 420, 710)],
+    ('CSL', 'RPV'): [L(350, 700, 420, 700), L(400, 720, 420, 680)],
+    ('ASO', 'RPV'): [L(370, 720, 370, 680), L(360, 720, 380, 720)],
+    ('COA', 'RPV'): [A(385, 700, 30, 0, 180)],
+    ('VAR', 'RPV'): [A(385, 700, 30, 0, 300)],
+}
+for idx, ((affil, ess), parts) in enumerate(_ae_shapes.items()):
+    key = f'{affil}_{ess}'
+    PRIMARY_AFFIL_ESS[key] = _glyph(f'prim_ae_{idx}', '', parts, 0)
+    PRIMARY_AFFIL_ESS[key]['codepoint'] = 0xE080 + idx
+
+# ---- Configuration (10 underposed marks): U+E088-E091 ----
+CONFIG_NAMES_SHORT = ['PX', 'SS', 'SC', 'SF', 'DS', 'DC', 'DF', 'FS', 'FC', 'FF']
+PRIMARY_CONFIG = {}
+_cfg_shapes = {
+    'PX': [L(180, 50, 220, 50)],
+    'SS': [L(170, 50, 230, 50), L(170, 30, 230, 30)],
+    'SC': [L(170, 50, 200, 30), L(200, 30, 230, 50)],
+    'SF': [L(170, 40, 230, 40)],
+    'DS': [L(180, 50, 200, 20), L(200, 20, 220, 50)],
+    'DC': [A(200, 40, 25, 0, 180)],
+    'DF': [A(200, 40, 25, 180, 360)],
+    'FS': [L(170, 50, 230, 50), L(200, 50, 200, 20)],
+    'FC': [L(170, 50, 230, 50), A(200, 30, 15, 0, 180)],
+    'FF': [A(200, 40, 20, 0, 350)],
+}
+for i, name in enumerate(CONFIG_NAMES_SHORT):
+    PRIMARY_CONFIG[name] = _glyph(f'prim_cfg_{name}', '', _cfg_shapes[name], 0)
+    PRIMARY_CONFIG[name]['codepoint'] = 0xE088 + i
+
+# ---- Stem/Function/Version/Plexity (64 forms, lower-right): U+E092-E0D1 ----
+PRIMARY_SFVP = {}
+_sfvp_idx = 0
+for si, stem in enumerate(['S1', 'S2', 'S3', 'S0']):
+    for fi, func in enumerate(['STA', 'DYN']):
+        for vi, ver in enumerate(['PRC', 'CPT']):
+            for pi, plex in enumerate(['UM', 'D']):
+                key = f'{stem}_{func}_{ver}_{plex}'
+                x0, y0 = 300, 200
+                dx = 80 if func == 'STA' else 60
+                dy = 80 if func == 'STA' else 100
+                parts = [L(x0, y0, x0 + dx, y0 + dy)]
+                for tick in range(si + 1 if si < 3 else 0):
+                    tx = x0 + 15 + tick * 12
+                    parts.append(L(tx, y0 + dy + 5, tx, y0 + dy + 15))
+                if ver == 'CPT':
+                    parts.append(L(x0 + dx + 5, y0 + dy - 5, x0 + dx + 15, y0 + dy - 5))
+                if plex == 'D':
+                    parts.append(L(x0 + 10, y0 + 5, x0 + dx - 10, y0 + 5))
+                PRIMARY_SFVP[key] = _glyph(f'prim_sfvp_{_sfvp_idx}', '', parts, 0)
+                PRIMARY_SFVP[key]['codepoint'] = 0xE092 + _sfvp_idx
+                _sfvp_idx += 1
+
+# ---- Relation (3 subscript marks): U+E0D2-E0D4 ----
+PRIMARY_RELATION = {}
+for i, (name, parts) in enumerate({
+    'NOUN': [],
+    'UNFRAMED_VERB': [L(190, -30, 210, -30), L(190, -50, 210, -50)],
+    'FRAMED_VERB': [L(170, -40, 230, -40)],
+}.items()):
+    PRIMARY_RELATION[name] = _glyph(f'prim_rel_{name}', '', parts, 0)
+    PRIMARY_RELATION[name]['codepoint'] = 0xE0D2 + i
+
+# ---- Concatenation (2 subscript marks): U+E0D5-E0D6 ----
+PRIMARY_CONCAT = {}
+for i, (name, parts) in enumerate({
+    'TYPE1': [L(185, -30, 200, -60), L(200, -60, 215, -30)],
+    'TYPE2': [L(180, -30, 195, -50), L(195, -50, 210, -30), L(210, -30, 225, -50)],
+}.items()):
+    PRIMARY_CONCAT[name] = _glyph(f'prim_cat_{name}', '', parts, 0)
+    PRIMARY_CONCAT[name]['codepoint'] = 0xE0D5 + i
+
+
+# ============================================================================
 # Tertiary Character Shapes (Valence/Phase/Aspect/Effect/Level)
 # ============================================================================
-# From reference: arrow-like shapes with horizontal valence bar as base.
-# Aspect shapes are the most numerous (36 distinct forms).
-# For now, define the base structure.
 
 # ---- Valence (9 forms): horizontal arrow bar, different arrowheads ----
 # Each is a right-pointing arrow with a distinctive head shape.

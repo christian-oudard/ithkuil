@@ -11,7 +11,9 @@ from glyphs import (SECONDARY, CONSONANT_ORDER, PUA_SECONDARY, _outline as L, _a
                      TERTIARY_VALENCE, VALENCE_NAMES, TERTIARY_ASPECT, ASPECT_NAMES,
                      TERTIARY_PHASE, PHASE_NAMES, TERTIARY_EFFECT, EFFECT_NAMES,
                      TERTIARY_LEVEL, LEVEL_NAMES, QUAT_CASE_TYPE, QUAT_CASE_NUM,
-                     QUAT_ILLOCUTION, ILLOCUTION_NAMES, QUAT_VALIDATION, VALIDATION_NAMES)
+                     QUAT_ILLOCUTION, ILLOCUTION_NAMES, QUAT_VALIDATION, VALIDATION_NAMES,
+                     PRIMARY_SPEC, PRIMARY_CTX, PRIMARY_PERSP_EXT, PRIMARY_AFFIL_ESS,
+                     PRIMARY_CONFIG, PRIMARY_SFVP, PRIMARY_RELATION, PRIMARY_CONCAT)
 
 
 # ============================================================================
@@ -162,7 +164,17 @@ def build_font(output='script/IthkuilScript.ttf'):
     cmap[ROTATION_MARK['codepoint']] = ROTATION_MARK['name']
     all_glyphs[ROTATION_MARK['name']] = ROTATION_MARK
 
-    # 5. Tertiary characters (valence, aspect, phase, effect, level)
+    # 5. Primary character components
+    for glyph_dict in [PRIMARY_SPEC, PRIMARY_CTX, PRIMARY_PERSP_EXT,
+                        PRIMARY_AFFIL_ESS, PRIMARY_CONFIG, PRIMARY_SFVP,
+                        PRIMARY_RELATION, PRIMARY_CONCAT]:
+        for g in glyph_dict.values():
+            if 'codepoint' in g and g.get('path', '').strip():
+                names.append(g['name'])
+                cmap[g['codepoint']] = g['name']
+                all_glyphs[g['name']] = g
+
+    # 6. Tertiary characters (valence, aspect, phase, effect, level)
     for glyph_dict in [TERTIARY_VALENCE, TERTIARY_ASPECT, TERTIARY_PHASE,
                         TERTIARY_EFFECT, TERTIARY_LEVEL]:
         for g in glyph_dict.values():
