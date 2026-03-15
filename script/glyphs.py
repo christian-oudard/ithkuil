@@ -679,9 +679,105 @@ for i, name in enumerate(VALIDATION_NAMES):
     QUAT_VALIDATION[name]['codepoint'] = 0xE19A + i
 
 
+# ============================================================================
+# Bias Characters (61 forms): U+E220-E25C
+# ============================================================================
+# Each bias is a small arrow/chevron mark. From the reference image,
+# they come in 4 base forms (columns) with variations.
+# The 4 base forms: ACC-like (diagonal), DCC-like (curved), FSC-like (angular), PSM-like (barred)
+
+BIAS_NAMES = [
+    'ACC', 'ACH', 'ADS', 'ANN', 'ANP', 'APB', 'APH', 'ARB', 'ATE',
+    'CMD', 'CNV', 'COI', 'CRP', 'CRR', 'CTP', 'CTV', 'DCC', 'DEJ',
+    'DES', 'DFD', 'DIS', 'DLC', 'DOL', 'DPB', 'DRS', 'DUB', 'EUH',
+    'EUP', 'EXA', 'EXG', 'MNF', 'FOR', 'FSC', 'GRT', 'IDG', 'IFT',
+    'IPL', 'IPT', 'IRO', 'ISP', 'IVD', 'MAN', 'OPT', 'PES', 'PPT',
+    'PPX', 'PPV', 'PSC', 'PSM', 'RAC', 'RFL', 'RSG', 'RPU', 'RVL',
+    'SAT', 'SGS', 'SKP', 'SOL', 'STU', 'TRP', 'VEX',
+]
+
+BIAS_GLYPHS = {}
+for i, name in enumerate(BIAS_NAMES):
+    # Generate systematic variations: 4 base shapes rotated/reflected
+    base = i % 4
+    variant = i // 4
+    cx, cy = 200, 500
+    # Base shape type
+    if base == 0:   # diagonal stroke
+        parts = [L(cx - 60, cy + 40, cx + 60, cy - 40)]
+        parts.append(L(cx + 60 - variant*5, cy - 40, cx + 80, cy - 20 + variant*8))
+    elif base == 1:  # curved stroke
+        parts = [A(cx, cy, 50 + variant*3, 30, 210)]
+    elif base == 2:  # angular chevron
+        parts = [L(cx - 50, cy, cx, cy + 30 + variant*5), L(cx, cy + 30 + variant*5, cx + 50, cy)]
+    else:            # barred stroke
+        parts = [L(cx - 40, cy, cx + 40, cy), L(cx, cy - 30 - variant*4, cx, cy + 30 + variant*4)]
+    BIAS_GLYPHS[name] = _glyph(f'bias_{name}', '', parts, 400)
+    BIAS_GLYPHS[name]['codepoint'] = 0xE220 + i
+
+
+# ============================================================================
+# Register Symbols (24 forms: 6 registers x 4 modes): U+E260-E277
+# ============================================================================
+# Registers: Narrative, Discursive, Parenthetical, Cogitant, Exemplificative, Specificative
+# Modes: Standard, Alphabetic, Transcriptive, Transliterative
+# From reference: diamond-based shapes with varying marks
+
+REGISTER_NAMES = ['NRR', 'DSV', 'PNT', 'CGT', 'EXM', 'SPF']
+REGISTER_MODES = ['STD', 'ALP', 'TRN', 'TRL']
+REGISTER_GLYPHS = {}
+for ri, reg in enumerate(REGISTER_NAMES):
+    for mi, mode in enumerate(REGISTER_MODES):
+        key = f'{reg}_{mode}'
+        idx = ri * 4 + mi
+        cx, cy = 200, 500
+        # Base: diamond shape, size varies by register
+        sz = 40 + ri * 5
+        parts = [
+            L(cx, cy - sz, cx + sz, cy),  # top-right edge
+            L(cx + sz, cy, cx, cy + sz),   # bottom-right edge
+            L(cx, cy + sz, cx - sz, cy),   # bottom-left edge
+            L(cx - sz, cy, cx, cy - sz),   # top-left edge
+        ]
+        # Mode decoration
+        if mode == 'ALP':
+            parts.append(L(cx + sz + 10, cy - 10, cx + sz + 10, cy + 10))  # dot right
+        elif mode == 'TRN':
+            parts.append(L(cx + sz + 5, cy, cx + sz + 20, cy))  # bar right
+        elif mode == 'TRL':
+            parts.append(L(cx + sz + 5, cy - 8, cx + sz + 15, cy + 8))  # slash right
+        # Register-specific internal mark
+        for tick in range(ri):
+            parts.append(L(cx - 5 + tick * 8, cy + sz + 10, cx - 5 + tick * 8, cy + sz + 20))
+        REGISTER_GLYPHS[key] = _glyph(f'reg_{key}', '', parts, 500)
+        REGISTER_GLYPHS[key]['codepoint'] = 0xE260 + idx
+
+
+# ============================================================================
+# Numeral Characters (10 base digits): U+E270-E279
+# ============================================================================
+# From reference: cursive digit glyphs 0-9, each with distinctive shape.
+
+NUMERAL_GLYPHS = {}
+_numeral_shapes = {
+    0: [A(200, 500, 150, 45, 315)],                                    # open curve (like a tilde)
+    1: [L(250, 800, 200, 300), L(200, 300, 220, 250)],                # stroke with foot
+    2: [L(150, 700, 300, 700), L(300, 700, 150, 300)],                # angle
+    3: [L(150, 700, 300, 700), L(300, 700, 200, 500), L(200, 500, 300, 300)],  # zigzag
+    4: [L(200, 800, 200, 300), L(200, 500, 350, 500)],                # cross
+    5: [L(150, 800, 300, 500), L(300, 500, 150, 300)],                # V-shape
+    6: [A(250, 500, 150, 90, 360), L(250, 650, 300, 700)],            # loop + stroke
+    7: [L(150, 500, 250, 800), L(250, 800, 350, 500), L(250, 500, 250, 300)],  # N-shape
+    8: [L(150, 500, 250, 750), L(250, 750, 350, 500), L(350, 500, 200, 250)],  # zigzag down
+    9: [A(200, 600, 120, 0, 300), L(200, 480, 250, 300)],             # loop + tail
+}
+for digit, parts in _numeral_shapes.items():
+    NUMERAL_GLYPHS[digit] = _glyph(f'num_{digit}', '', parts, 400)
+    NUMERAL_GLYPHS[digit]['codepoint'] = 0xE270 + digit
+
+
 if __name__ == '__main__':
     render_test_sheet()
-    # Also render tertiary test sheet
     render_tertiary_test()
 
 def render_tertiary_test(filename='script/tertiary_chars_test.svg'):

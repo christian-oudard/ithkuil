@@ -13,7 +13,8 @@ from glyphs import (SECONDARY, CONSONANT_ORDER, PUA_SECONDARY, _outline as L, _a
                      TERTIARY_LEVEL, LEVEL_NAMES, QUAT_CASE_TYPE, QUAT_CASE_NUM,
                      QUAT_ILLOCUTION, ILLOCUTION_NAMES, QUAT_VALIDATION, VALIDATION_NAMES,
                      PRIMARY_SPEC, PRIMARY_CTX, PRIMARY_PERSP_EXT, PRIMARY_AFFIL_ESS,
-                     PRIMARY_CONFIG, PRIMARY_SFVP, PRIMARY_RELATION, PRIMARY_CONCAT)
+                     PRIMARY_CONFIG, PRIMARY_SFVP, PRIMARY_RELATION, PRIMARY_CONCAT,
+                     BIAS_GLYPHS, REGISTER_GLYPHS, NUMERAL_GLYPHS)
 
 
 # ============================================================================
@@ -174,7 +175,15 @@ def build_font(output='script/IthkuilScript.ttf'):
                 cmap[g['codepoint']] = g['name']
                 all_glyphs[g['name']] = g
 
-    # 6. Tertiary characters (valence, aspect, phase, effect, level)
+    # 6. Bias, register, numeral glyphs
+    for glyph_dict in [BIAS_GLYPHS, REGISTER_GLYPHS, NUMERAL_GLYPHS]:
+        for g in glyph_dict.values():
+            if 'codepoint' in g and g.get('path', '').strip():
+                names.append(g['name'])
+                cmap[g['codepoint']] = g['name']
+                all_glyphs[g['name']] = g
+
+    # 7. Tertiary characters (valence, aspect, phase, effect, level)
     for glyph_dict in [TERTIARY_VALENCE, TERTIARY_ASPECT, TERTIARY_PHASE,
                         TERTIARY_EFFECT, TERTIARY_LEVEL]:
         for g in glyph_dict.values():
