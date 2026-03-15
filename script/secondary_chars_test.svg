@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="830" height="550" viewBox="0 0 830 550">
+<rect width="100%" height="100%" fill="white"/>
+<rect x="15" y="15" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="65" y="27" text-anchor="middle" font-size="10" fill="#666">p</text>
+<g transform="translate(20,123) scale(0.09,-0.09) translate(0,-1000)"><path d="M100,825 L350,825 L350,775 L100,775 Z M125,800 L125,350 L75,350 L75,800 Z M75,350 A175,175 0 0,1 250,175 L250,225 A125,125 0 0,0 125,350 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="115" y="15" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="165" y="27" text-anchor="middle" font-size="10" fill="#666">b</text>
+<g transform="translate(120,123) scale(0.09,-0.09) translate(0,-1000)"><path d="M100,825 L350,825 L350,775 L100,775 Z M375,800 L375,350 L325,350 L325,800 Z M200,175 A175,175 0 0,1 375,350 L325,350 A125,125 0 0,0 200,225 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="215" y="15" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="265" y="27" text-anchor="middle" font-size="10" fill="#666">t</text>
+<g transform="translate(220,123) scale(0.09,-0.09) translate(0,-1000)"><path d="M125,800 L125,200 L75,200 L75,800 Z M100,825 L400,825 L400,775 L100,775 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="315" y="15" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="365" y="27" text-anchor="middle" font-size="10" fill="#666">d</text>
+<g transform="translate(320,123) scale(0.09,-0.09) translate(0,-1000)"><path d="M425,800 L425,200 L375,200 L375,800 Z M100,825 L400,825 L400,775 L100,775 Z M400,175 L250,175 L250,225 L400,225 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="415" y="15" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="465" y="27" text-anchor="middle" font-size="10" fill="#666">k</text>
+<g transform="translate(420,123) scale(0.09,-0.09) translate(0,-1000)"><path d="M100,825 L400,825 L400,775 L100,775 Z M425,800 L425,500 L375,500 L375,800 Z M418,482 L118,182 L82,218 L382,518 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="515" y="15" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="565" y="27" text-anchor="middle" font-size="10" fill="#666">g</text>
+<g transform="translate(520,123) scale(0.09,-0.09) translate(0,-1000)"><path d="M100,825 L400,825 L400,775 L100,775 Z M125,800 L125,500 L75,500 L75,800 Z M118,518 L418,218 L382,182 L82,482 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="615" y="15" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="665" y="27" text-anchor="middle" font-size="10" fill="#666">f</text>
+<g transform="translate(620,123) scale(0.09,-0.09) translate(0,-1000)"><path d="M100,825 L400,825 L400,775 L100,775 Z M125,800 L125,550 L75,550 L75,800 Z M100,575 L350,575 L350,525 L100,525 Z M375,550 L375,200 L325,200 L325,550 Z M350,25 A175,175 0 1,1 175,200 L225,200 A125,125 0 1,0 350,75 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="715" y="15" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="765" y="27" text-anchor="middle" font-size="10" fill="#666">v</text>
+<g transform="translate(720,123) scale(0.09,-0.09) translate(0,-1000)"><path d="M100,825 L400,825 L400,775 L100,775 Z M425,800 L425,550 L375,550 L375,800 Z M150,575 L400,575 L400,525 L150,525 Z M175,550 L175,200 L125,200 L125,550 Z M325,200 A175,175 0 1,1 150,25 L150,75 A125,125 0 1,0 275,200 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="15" y="145" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="65" y="157" text-anchor="middle" font-size="10" fill="#666">ţ</text>
+<g transform="translate(20,253) scale(0.09,-0.09) translate(0,-1000)"><path d="M213,738 A275,275 0 0,1 212,262 L237,305 A225,225 0 0,0 238,695 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="115" y="145" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="165" y="157" text-anchor="middle" font-size="10" fill="#666">ḑ</text>
+<g transform="translate(120,253) scale(0.09,-0.09) translate(0,-1000)"><path d="M288,262 A275,275 0 0,1 288,738 L262,695 A225,225 0 0,0 262,305 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="215" y="145" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="265" y="157" text-anchor="middle" font-size="10" fill="#666">s</text>
+<g transform="translate(220,253) scale(0.09,-0.09) translate(0,-1000)"><path d="M118,818 L368,568 L332,532 L82,782 Z M368,532 L118,282 L82,318 L332,568 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="315" y="145" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="365" y="157" text-anchor="middle" font-size="10" fill="#666">z</text>
+<g transform="translate(320,253) scale(0.09,-0.09) translate(0,-1000)"><path d="M368,782 L118,532 L82,568 L332,818 Z M118,568 L368,318 L332,282 L82,532 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="415" y="145" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="465" y="157" text-anchor="middle" font-size="10" fill="#666">š</text>
+<g transform="translate(420,253) scale(0.09,-0.09) translate(0,-1000)"><path d="M402,738 A175,175 0 0,1 75,650 L125,650 A125,125 0 0,0 358,712 Z M121,663 L371,263 L329,237 L79,637 Z M100,275 L350,275 L350,225 L100,225 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="515" y="145" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="565" y="157" text-anchor="middle" font-size="10" fill="#666">ž</text>
+<g transform="translate(520,253) scale(0.09,-0.09) translate(0,-1000)"><path d="M425,650 A175,175 0 0,1 98,738 L142,712 A125,125 0 0,0 375,650 Z M421,637 L171,237 L129,263 L379,663 Z M150,275 L400,275 L400,225 L150,225 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="615" y="145" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="665" y="157" text-anchor="middle" font-size="10" fill="#666">ç</text>
+<g transform="translate(620,253) scale(0.09,-0.09) translate(0,-1000)"><path d="M100,825 L400,825 L400,775 L100,775 Z M122,811 L272,511 L228,489 L78,789 Z M272,489 L122,189 L78,211 L228,511 Z M100,225 L400,225 L400,175 L100,175 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="715" y="145" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="765" y="157" text-anchor="middle" font-size="10" fill="#666">x</text>
+<g transform="translate(720,253) scale(0.09,-0.09) translate(0,-1000)"><path d="M100,825 L400,825 L400,775 L100,775 Z M422,789 L122,189 L78,211 L378,811 Z M100,225 L400,225 L400,175 L100,175 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="15" y="275" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="65" y="287" text-anchor="middle" font-size="10" fill="#666">h</text>
+<g transform="translate(20,383) scale(0.09,-0.09) translate(0,-1000)"><path d="M122,812 L322,462 L278,438 L78,788 Z M325,450 L325,200 L275,200 L275,450 Z M150,475 L450,475 L450,425 L150,425 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="115" y="275" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="165" y="287" text-anchor="middle" font-size="10" fill="#666">ļ</text>
+<g transform="translate(120,383) scale(0.09,-0.09) translate(0,-1000)"><path d="M123,809 L273,409 L227,391 L77,791 Z M227,409 L377,809 L423,791 L273,391 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="215" y="275" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="265" y="287" text-anchor="middle" font-size="10" fill="#666">c</text>
+<g transform="translate(220,383) scale(0.09,-0.09) translate(0,-1000)"><path d="M125,800 L125,200 L75,200 L75,800 Z M100,225 L400,225 L400,175 L100,175 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="315" y="275" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="365" y="287" text-anchor="middle" font-size="10" fill="#666">ẓ</text>
+<g transform="translate(320,383) scale(0.09,-0.09) translate(0,-1000)"><path d="M125,800 L125,200 L75,200 L75,800 Z M100,225 L400,225 L400,175 L100,175 Z M100,825 L250,825 L250,775 L100,775 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="415" y="275" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="465" y="287" text-anchor="middle" font-size="10" fill="#666">č</text>
+<g transform="translate(420,383) scale(0.09,-0.09) translate(0,-1000)"><path d="M125,800 L125,200 L75,200 L75,800 Z M100,825 L350,825 L350,775 L100,775 Z M100,225 L350,225 L350,175 L100,175 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="515" y="275" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="565" y="287" text-anchor="middle" font-size="10" fill="#666">j</text>
+<g transform="translate(520,383) scale(0.09,-0.09) translate(0,-1000)"><path d="M425,800 L425,200 L375,200 L375,800 Z M150,825 L400,825 L400,775 L150,775 Z M150,225 L400,225 L400,175 L150,175 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="615" y="275" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="665" y="287" text-anchor="middle" font-size="10" fill="#666">m</text>
+<g transform="translate(620,383) scale(0.09,-0.09) translate(0,-1000)"><path d="M123,810 L373,210 L327,190 L77,790 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="715" y="275" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="765" y="287" text-anchor="middle" font-size="10" fill="#666">n</text>
+<g transform="translate(720,383) scale(0.09,-0.09) translate(0,-1000)"><path d="M124,808 L324,208 L276,192 L76,792 Z M300,225 L450,225 L450,175 L300,175 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="15" y="405" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="65" y="417" text-anchor="middle" font-size="10" fill="#666">ň</text>
+<g transform="translate(20,513) scale(0.09,-0.09) translate(0,-1000)"><path d="M123,810 L323,360 L277,340 L77,790 Z M325,350 L325,200 L275,200 L275,350 Z M314,371 L464,271 L436,229 L286,329 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="115" y="405" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="165" y="417" text-anchor="middle" font-size="10" fill="#666">r</text>
+<g transform="translate(120,513) scale(0.09,-0.09) translate(0,-1000)"><path d="M100,825 L350,825 L350,775 L100,775 Z M375,800 L375,550 L325,550 L325,800 Z M150,575 L350,575 L350,525 L150,525 Z M175,550 L175,200 L125,200 L125,550 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="215" y="405" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="265" y="417" text-anchor="middle" font-size="10" fill="#666">l</text>
+<g transform="translate(220,513) scale(0.09,-0.09) translate(0,-1000)"><path d="M122,811 L272,511 L228,489 L78,789 Z M275,500 L275,200 L225,200 L225,500 Z M250,225 L450,225 L450,175 L250,175 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="315" y="405" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="365" y="417" text-anchor="middle" font-size="10" fill="#666">w</text>
+<g transform="translate(320,513) scale(0.09,-0.09) translate(0,-1000)"><path d="M123,810 L273,460 L227,440 L77,790 Z M250,475 A175,175 0 0,0 425,300 L375,300 A125,125 0 0,1 250,425 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="415" y="405" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="465" y="417" text-anchor="middle" font-size="10" fill="#666">y</text>
+<g transform="translate(420,513) scale(0.09,-0.09) translate(0,-1000)"><path d="M373,790 L223,440 L177,460 L327,810 Z M200,475 A175,175 0 0,1 25,300 L75,300 A125,125 0 0,0 200,425 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="515" y="405" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="565" y="417" text-anchor="middle" font-size="10" fill="#666">ř</text>
+<g transform="translate(520,513) scale(0.09,-0.09) translate(0,-1000)"><path d="M375,650 A175,175 0 1,1 200,475 L200,525 A125,125 0 1,0 325,650 Z M225,500 L225,200 L175,200 L175,500 Z" fill="black" fill-rule="nonzero"/></g>
+<rect x="615" y="405" width="100" height="130" fill="none" stroke="#ddd" stroke-width="0.5"/>
+<text x="665" y="417" text-anchor="middle" font-size="10" fill="#666">&#x2019;</text>
+<g transform="translate(620,513) scale(0.09,-0.09) translate(0,-1000)"><path d="M225,700 L225,400 L175,400 L175,700 Z" fill="black" fill-rule="nonzero"/></g>
+</svg>
