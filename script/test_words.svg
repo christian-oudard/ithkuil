@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+<rect width="100%" height="100%" fill="#faf8f0"/>
+<text x="20" y="25" font-size="14" font-family="sans-serif" fill="#333">Ithkuil V4 Script - Test Words</text>
+<text x="20" y="50" font-size="10" fill="#999">maleutrrait</text>
+<g transform="translate(20,55)"><line x1="15" y1="105" x2="55" y2="15" stroke="black" stroke-width="4" stroke-linecap="round"/>
+<circle cx="35" cy="7" r="2" fill="black"/>
+<line x1="52" y1="18" x2="52" y2="24" stroke="black" stroke-width="1"/>
+<g transform="translate(65,110) scale(0.08,-0.08)"><path d="M123,810 L373,210 L327,190 L77,790 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(120,110) scale(0.08,-0.08)"><path d="M213,738 A275,275 0 0,1 212,262 L237,305 A225,225 0 0,0 238,695 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(130,115) scale(0.064,-0.064)"><path d="M180,75 L220,75 L220,25 L180,25 Z M235,70 L235,30 L185,30 L185,70 Z" fill="black"/></g>
+<g transform="translate(175,110) scale(0.08,-0.08)"><path d="M375,650 A175,175 0 1,1 200,475 L200,525 A125,125 0 1,0 325,650 Z M225,500 L225,200 L175,200 L175,500 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(185,115) scale(0.064,-0.064)"><path d="M180,75 L220,75 L220,25 L180,25 Z M235,70 L235,30 L185,30 L185,70 Z" fill="black"/></g>
+<line x1="255" y1="20" x2="255" y2="100" stroke="black" stroke-width="2.5"/>
+<line x1="255" y1="20" x2="267" y2="30" stroke="black" stroke-width="2"/>
+<line x1="255" y1="100" x2="268" y2="108" stroke="black" stroke-width="2"/></g>
+<text x="20" y="190" font-size="10" fill="#999">talk-ERG</text>
+<g transform="translate(20,195)"><line x1="15" y1="105" x2="55" y2="15" stroke="black" stroke-width="4" stroke-linecap="round"/>
+<circle cx="35" cy="7" r="2" fill="black"/>
+<line x1="52" y1="18" x2="52" y2="24" stroke="black" stroke-width="1"/>
+<line x1="18" y1="102" x2="52" y2="18" stroke="black" stroke-width="2" stroke-linecap="round"/>
+<g transform="translate(65,110) scale(0.08,-0.08)"><path d="M122,811 L272,511 L228,489 L78,789 Z M275,500 L275,200 L225,200 L225,500 Z M250,225 L450,225 L450,175 L250,175 Z" fill="black" fill-rule="nonzero"/></g>
+<line x1="145" y1="20" x2="145" y2="100" stroke="black" stroke-width="2.5"/>
+<line x1="145" y1="100" x2="138" y2="113" stroke="black" stroke-width="2"/></g>
+<text x="20" y="330" font-size="10" fill="#999">cat-THM</text>
+<g transform="translate(20,335)"><line x1="15" y1="105" x2="55" y2="15" stroke="black" stroke-width="4" stroke-linecap="round"/>
+<circle cx="35" cy="7" r="2" fill="black"/>
+<line x1="52" y1="18" x2="52" y2="24" stroke="black" stroke-width="1"/>
+<line x1="56" y1="18" x2="56" y2="24" stroke="black" stroke-width="1"/>
+<g transform="translate(65,110) scale(0.08,-0.08)"><path d="M100,825 L350,825 L350,775 L100,775 Z M375,800 L375,550 L325,550 L325,800 Z M150,575 L350,575 L350,525 L150,525 Z M175,550 L175,200 L125,200 L125,550 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(120,110) scale(0.08,-0.08)"><path d="M100,825 L350,825 L350,775 L100,775 Z M375,800 L375,550 L325,550 L325,800 Z M150,575 L350,575 L350,525 L150,525 Z M175,550 L175,200 L125,200 L125,550 Z" fill="black" fill-rule="nonzero"/></g>
+<line x1="200" y1="20" x2="200" y2="100" stroke="black" stroke-width="2.5"/>
+<line x1="200" y1="100" x2="213" y2="108" stroke="black" stroke-width="2"/></g>
+<text x="20" y="470" font-size="10" fill="#999">clown+affix-ABS</text>
+<g transform="translate(20,475)"><line x1="15" y1="105" x2="55" y2="15" stroke="black" stroke-width="4" stroke-linecap="round"/>
+<circle cx="35" cy="7" r="2" fill="black"/>
+<line x1="52" y1="18" x2="52" y2="24" stroke="black" stroke-width="1"/>
+<g transform="translate(65,110) scale(0.08,-0.08)"><path d="M100,825 L400,825 L400,775 L100,775 Z M425,800 L425,500 L375,500 L375,800 Z M418,482 L118,182 L82,218 L382,518 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(120,110) scale(0.08,-0.08)"><path d="M402,738 A175,175 0 0,1 75,650 L125,650 A125,125 0 0,0 358,712 Z M121,663 L371,263 L329,237 L79,637 Z M100,275 L350,275 L350,225 L100,225 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(175,110) scale(0.08,-0.08) rotate(180 250 500)"><path d="M100,825 L350,825 L350,775 L100,775 Z M375,800 L375,550 L325,550 L325,800 Z M150,575 L350,575 L350,525 L150,525 Z M175,550 L175,200 L125,200 L125,550 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(185,115) scale(0.064,-0.064)"><path d="M245,50 A45,45 0 1,1 200,5 L200,49 A1,1 0 1,0 201,50 Z" fill="black"/></g>
+<line x1="255" y1="20" x2="255" y2="100" stroke="black" stroke-width="2.5"/>
+<line x1="255" y1="100" x2="262" y2="113" stroke="black" stroke-width="2"/></g>
+</svg>
