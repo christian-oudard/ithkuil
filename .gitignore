@@ -9,3 +9,4 @@ grammar_reference_pdf/
 .venv/
 script/*.png
 script/__pycache__/
+discord_archive/data/
