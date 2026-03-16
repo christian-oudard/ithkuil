@@ -934,8 +934,17 @@ defaultCa = ParsedCa UNI CSL M_ DEL NRM
 -- Applied in order before compositional parsing to recover the canonical form
 -- Based on the Kotlin glosser's CA_DESUBSTITUTIONS
 -- | Reverse allomorphic substitutions to recover raw Ca form
+-- | Reverse allomorphic substitutions to recover raw Ca form.
+-- Must be applied in reverse order (longer patterns first to avoid partial matches).
 desubstituteCa :: Text -> Text
-desubstituteCa = T.replace "mp" "pp"  -- reverse of pp → mp
+desubstituteCa = applyDesubs
+  [ ("ňš", "řř"), ("ňs", "řr"), ("nš", "rř"), ("ns", "rr")  -- r/ř combinations
+  , ("nd", "çy"), ("ng", "kg"), ("mb", "pb")
+  , ("pļ", "ll"), ("nk", "kk"), ("nt", "tt"), ("mp", "pp")
+  ]
+  where
+    applyDesubs [] t = t
+    applyDesubs ((from, to):rest) t = applyDesubs rest (T.replace from to t)
 
 -- | Parse Ca consonant cluster
 -- Uses common lookup table for frequent forms, desubstitution for allomorphic

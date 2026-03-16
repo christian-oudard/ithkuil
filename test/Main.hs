@@ -202,7 +202,8 @@ main = hspec $ do
 
     it "parses complex Ca forms (constructed)" $ do
       -- These use the grammar Ca system: Aff + Config + Ext + Persp
-      parseCa "rļř" `shouldBe` Just (ParsedCa UNI COA G_ DEL RPV)
+      -- UNI/COA/G_/DEL/RPV: short affil "r" + persp "ř" = "rř", substituted to "nš"
+      parseCa "nš" `shouldBe` Just (ParsedCa UNI COA G_ DEL RPV)
       parseCa "řkpl" `shouldBe` Just (ParsedCa MSC VAR M_ ATV RPV)
       -- kgm → kg→ng → [C]gm→[C]x → nx
       parseCa "nx" `shouldBe` Just (ParsedCa MSC CSL N_ GRA RPV)

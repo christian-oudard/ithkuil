@@ -119,9 +119,12 @@ constructCaRaw (co, af, pe, ex, es)
   -- UNIPLEX with Extension (voiced standalone forms)
   | co == UNI && ex /= DEL =
       ca2Standalone ex <> perspSuffix pe es
-  -- UNIPLEX with only Affiliation (standalone forms)
+  -- UNIPLEX with Affiliation: use standalone form only if no perspective suffix,
+  -- otherwise use short affiliation prefix + perspective suffix
+  | co == UNI && af /= CSL && perspSuffix pe es == "" =
+      ca3Standalone af
   | co == UNI && af /= CSL =
-      ca3Standalone af <> perspSuffix pe es
+      ca3 af <> perspSuffix pe es
   -- Fully standalone (UNI/CSL/DEL) → perspective standalone form
   | co == UNI =
       fst (ca4 pe es)
@@ -163,7 +166,8 @@ simpleSubstitutions =
   [ ("pp", "mp"), ("tt", "nt"), ("kk", "nk")
   , ("pb", "mb"), ("kg", "ng")
   , ("ll", "pļ"), ("rr", "ns")
-  , ("çy", "nd"), ("řř", "nš")
+  , ("çy", "nd")
+  , ("řř", "ňš"), ("rř", "nš"), ("řr", "ňs")
   ]
 
 -- | Context-dependent substitutions: [C]X → [C]Y
