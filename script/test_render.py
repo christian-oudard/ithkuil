@@ -175,6 +175,49 @@ def test_degree_diacritics():
     print('  degree diacritics (9 distinct): OK')
 
 
+def test_bias_characters():
+    """Test that all 4 bias columns produce different base shapes."""
+    from render import FormativeRenderer
+    outputs = set()
+    for bias in ['ACC', 'DCC', 'FSC', 'PSM']:
+        r = FormativeRenderer()
+        r.add_bias(bias)
+        svg = r.to_svg()
+        outputs.add(svg)
+    assert len(outputs) == 4, f"Expected 4 distinct bias base shapes, got {len(outputs)}"
+    print('  bias characters (4 base shapes): OK')
+
+
+def test_register_markers():
+    """Test register open/close produce different output."""
+    from render import FormativeRenderer
+    r1 = FormativeRenderer()
+    r1.add_register('NRR', 'open')
+    r2 = FormativeRenderer()
+    r2.add_register('NRR', 'close')
+    assert r1.to_svg() != r2.to_svg(), "Open and close registers should differ"
+    # Different registers should produce different sizes
+    r3 = FormativeRenderer()
+    r3.add_register('SPF', 'open')
+    assert r1.to_svg() != r3.to_svg(), "Different registers should differ"
+    print('  register markers (open/close/distinct): OK')
+
+
+def test_bias_in_json():
+    """Test that bias in JSON input gets rendered."""
+    data = {
+        "root": "m", "stem": 1, "func": "STA", "spec": "BSC", "ctx": "EXS",
+        "case": "THM", "affixes": [], "bias": "IRO"
+    }
+    svg = render_from_json(data)
+    # Should have bias character (path with Q for S-curve or sigma lines)
+    assert 'polygon' in svg, "Should have primary character"
+    # IRO is in column 3 (sigma shape) - should have extra lines
+    line_count = svg.count('<line')
+    assert line_count >= 5, f"IRO bias should add sigma lines, got {line_count} lines total"
+    print('  bias in JSON pipeline: OK')
+
+
 def run_all():
     print('Script rendering tests:')
     test_consonant_cluster_splitting()
@@ -189,6 +232,9 @@ def run_all():
     test_render_sentence()
     test_case_map_coverage()
     test_degree_diacritics()
+    test_bias_characters()
+    test_register_markers()
+    test_bias_in_json()
     print('All script rendering tests passed!')
 
 

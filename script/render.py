@@ -772,6 +772,105 @@ class FormativeRenderer:
             valence=valence, aspect=aspect, phase=phase, effect=effect))
         self.x_cursor += self.CHAR_WIDTH + self.SPACING
 
+    def add_bias(self, bias_name):
+        """Add a bias character.
+
+        From reference 12_5_bias_chars.png: 4 base forms with variant marks.
+        Column 1 (ACC-CTV): S-curve ("3" shape)
+        Column 2 (DCC-FOR): reversed S-curve
+        Column 3 (FSC-PSC): sigma shape
+        Column 4 (PSM-VEX): reversed sigma
+        """
+        x = self.x_cursor
+        y = 10
+        h = self.CHAR_HEIGHT
+        w = self.CHAR_WIDTH
+        cx = x + w / 2
+        cy = y + h / 2
+        sw = 2.5
+
+        col1 = ['ACC','ACH','ADS','ANN','ANP','APB','APH','ARB','ATE',
+                'CMD','CNV','COI','CRP','CRR','CTP','CTV']
+        col2 = ['DCC','DEJ','DES','DFD','DIS','DLC','DOL','DPB','DRS',
+                'DUB','EUH','EUP','EXA','EXG','MNF','FOR']
+        col3 = ['FSC','GRT','IDG','IFT','IPL','IPT','IRO','ISP','IVD',
+                'MAN','OPT','PES','PPT','PPX','PPV','PSC']
+        col4 = ['PSM','RAC','RFL','RSG','RPU','RVL','SAT','SGS','SKP',
+                'SOL','STU','TRP','VEX']
+
+        if bias_name in col1:
+            idx = col1.index(bias_name)
+            # S-curve (like "3")
+            self.elements.append(svg_path(
+                f'M{cx-8:.1f},{y+10:.1f} Q{cx+12:.1f},{y+h*0.33:.1f} {cx-4:.1f},{cy:.1f} '
+                f'Q{cx+12:.1f},{y+h*0.67:.1f} {cx-8:.1f},{y+h-10:.1f}', sw))
+        elif bias_name in col2:
+            idx = col2.index(bias_name)
+            # Reversed S-curve
+            self.elements.append(svg_path(
+                f'M{cx+8:.1f},{y+10:.1f} Q{cx-12:.1f},{y+h*0.33:.1f} {cx+4:.1f},{cy:.1f} '
+                f'Q{cx-12:.1f},{y+h*0.67:.1f} {cx+8:.1f},{y+h-10:.1f}', sw))
+        elif bias_name in col3:
+            idx = col3.index(bias_name)
+            # Sigma shape (Σ)
+            self.elements.append(svg_line(cx - 10, y + 10, cx + 10, y + 10, sw))
+            self.elements.append(svg_line(cx - 10, y + 10, cx + 4, cy, sw))
+            self.elements.append(svg_line(cx + 4, cy, cx - 10, y + h - 10, sw))
+            self.elements.append(svg_line(cx - 10, y + h - 10, cx + 10, y + h - 10, sw))
+        elif bias_name in col4:
+            idx = col4.index(bias_name)
+            # Reversed sigma
+            self.elements.append(svg_line(cx - 10, y + 10, cx + 10, y + 10, sw))
+            self.elements.append(svg_line(cx + 10, y + 10, cx - 4, cy, sw))
+            self.elements.append(svg_line(cx - 4, cy, cx + 10, y + h - 10, sw))
+            self.elements.append(svg_line(cx - 10, y + h - 10, cx + 10, y + h - 10, sw))
+        else:
+            idx = 0
+
+        # Variant mark (small distinguishing stroke based on index within column)
+        if idx > 0:
+            mx = cx + 12
+            my = cy - 8 + (idx % 4) * 4
+            angle = (idx // 4) * 45
+            dx = 4 * math.cos(math.radians(angle))
+            dy = 4 * math.sin(math.radians(angle))
+            self.elements.append(svg_line(mx, my, mx + dx, my + dy, 1.5))
+
+        self.x_cursor += self.CHAR_WIDTH + self.SPACING
+
+    def add_register(self, register, mode='open'):
+        """Add a register marker (open or close).
+
+        From reference 12_6_register_symbols.png:
+        6 registers x 4 modes, shown as diamond-based marks.
+        """
+        x = self.x_cursor
+        y = 10
+        h = self.CHAR_HEIGHT
+        w = self.CHAR_WIDTH * 0.6  # registers are narrower
+        cx = x + w / 2
+        cy = y + h / 2
+        sw = 2
+
+        reg_names = ['NRR', 'DSV', 'PNT', 'CGT', 'EXM', 'SPF']
+        ri = reg_names.index(register) if register in reg_names else 0
+
+        # Base: diamond shape, size varies by register
+        sz = 6 + ri
+        pts = [(cx, cy - sz), (cx + sz, cy), (cx, cy + sz), (cx - sz, cy)]
+        self.elements.append(svg_polygon(pts))
+
+        # Register count indicator (ticks below)
+        for i in range(ri):
+            self.elements.append(svg_line(cx - 4 + i * 3, cy + sz + 4,
+                                          cx - 4 + i * 3, cy + sz + 8, 1.5))
+
+        # Close marker: add horizontal bar through diamond
+        if mode == 'close':
+            self.elements.append(svg_line(cx - sz - 3, cy, cx + sz + 3, cy, 1.5))
+
+        self.x_cursor += int(w) + self.SPACING
+
     def to_svg(self, width=None, height=130):
         """Generate complete SVG string."""
         if width is None:
@@ -880,7 +979,7 @@ def render_word(root_consonants, affixes=None, case_type=0, case_num=1,
 
 def render_test_words():
     """Render comprehensive test sheet for the writing system."""
-    page_w, page_h = 950, 1400
+    page_w, page_h = 950, 1650
     page_parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{page_w}" height="{page_h}" '
         f'viewBox="0 0 {page_w} {page_h}">',
@@ -1001,6 +1100,42 @@ def render_test_words():
         page_parts.append(f'<g transform="translate({dx},{y})">{inner}</g>')
         page_parts.append(f'<text x="{dx + 25}" y="{y + 95}" text-anchor="middle" '
                           f'font-size="7" fill="#999">Deg {deg}</text>')
+    y += 110
+
+    # --- Section 7: Bias Characters (sample from each column) ---
+    page_parts.append(f'<text x="20" y="{y}" font-size="11" font-weight="bold" '
+                      f'fill="#333">Bias Characters (4 base forms)</text>')
+    y += 10
+
+    bias_samples = [('ACC', 'S-curve'), ('DCC', 'Rev S'), ('FSC', 'Sigma'), ('PSM', 'Rev Σ'),
+                    ('IRO', 'Col3'), ('DOL', 'Col2'), ('CRP', 'Col1'), ('VEX', 'Col4')]
+    for i, (bias, label) in enumerate(bias_samples):
+        bx = 30 + i * 65
+        r = FormativeRenderer()
+        r.x_cursor = 0
+        r.add_bias(bias)
+        inner = '\n'.join(e for e in r.elements if e)
+        page_parts.append(f'<g transform="translate({bx},{y})">{inner}</g>')
+        page_parts.append(f'<text x="{bx + 25}" y="{y + 95}" text-anchor="middle" '
+                          f'font-size="6" fill="#999">{bias} ({label})</text>')
+    y += 110
+
+    # --- Section 8: Register Markers ---
+    page_parts.append(f'<text x="20" y="{y}" font-size="11" font-weight="bold" '
+                      f'fill="#333">Register Markers</text>')
+    y += 10
+
+    reg_names = ['NRR', 'DSV', 'PNT', 'CGT', 'EXM', 'SPF']
+    for i, reg in enumerate(reg_names):
+        rx = 30 + i * 75
+        r = FormativeRenderer()
+        r.x_cursor = 0
+        r.add_register(reg, 'open')
+        r.add_register(reg, 'close')
+        inner = '\n'.join(e for e in r.elements if e)
+        page_parts.append(f'<g transform="translate({rx},{y})">{inner}</g>')
+        page_parts.append(f'<text x="{rx + 20}" y="{y + 95}" text-anchor="middle" '
+                          f'font-size="7" fill="#999">{reg}</text>')
     y += 110
 
     page_parts.append('</svg>')

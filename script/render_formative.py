@@ -99,6 +99,11 @@ def render_from_json(data):
             case_type=case_type, case_num=case_num,
             mood=data.get('mood'))
 
+    # Bias (if present, rendered after quaternary)
+    bias = data.get('bias')
+    if bias:
+        r.add_bias(bias)
+
     return r.to_svg()
 
 
@@ -147,6 +152,11 @@ def render_sentence(words_json):
             case_name = word_data.get('case', 'THM')
             ct, cn = CASE_MAP.get(case_name, (0, 1))
             r.add_quaternary(case_type=ct, case_num=cn, mood=word_data.get('mood'))
+
+        # Bias
+        bias = word_data.get('bias')
+        if bias:
+            r.add_bias(bias)
 
         word_renderers.append((r, x_offset))
         x_offset += r.x_cursor + 25
