@@ -479,18 +479,33 @@ def draw_tertiary(x, y, w, h, valence='MNO', aspect=None, phase=None, effect=Non
     elements.append(svg_line(head_x, shaft_y, head_x + head_len, shaft_y - head_spread, sw))
     elements.append(svg_line(head_x, shaft_y, head_x + head_len, shaft_y + head_spread, sw))
 
-    # Additional valence markers
-    if vi >= 1:
-        # Back notch/mark for non-MNO
-        mark_x = shaft_x1 + 4
-        mark_count = min(vi, 4)
-        for i in range(mark_count):
-            mx = mark_x + i * 4
-            elements.append(svg_line(mx, shaft_y - 3, mx, shaft_y + 3, 1.5))
-    if vi >= 5:
-        # Extra bar behind arrowhead for higher valences
-        bx = head_x - 4
-        elements.append(svg_line(bx, shaft_y - 5, bx, shaft_y + 5, 1.5))
+    # Additional valence markers (must produce 9 distinct forms)
+    if vi == 1:  # PRL: single back notch
+        elements.append(svg_line(shaft_x1 + 4, shaft_y - 3, shaft_x1 + 4, shaft_y + 3, 1.5))
+    elif vi == 2:  # CRO: hook on arrowhead
+        elements.append(svg_path(
+            f'M{head_x + head_len:.1f},{shaft_y - head_spread:.1f} '
+            f'Q{head_x + head_len + 3:.1f},{shaft_y:.1f} '
+            f'{head_x + head_len:.1f},{shaft_y + head_spread:.1f}', 1.5))
+    elif vi == 3:  # RCP: triangle head (closed)
+        elements.append(svg_line(head_x + head_len, shaft_y - head_spread,
+                                  head_x + head_len, shaft_y + head_spread, 1.5))
+    elif vi == 4:  # CPL: bar behind arrowhead
+        elements.append(svg_line(head_x - 4, shaft_y - 5, head_x - 4, shaft_y + 5, 1.5))
+    elif vi == 5:  # DUP: double back notch
+        elements.append(svg_line(shaft_x1 + 4, shaft_y - 3, shaft_x1 + 4, shaft_y + 3, 1.5))
+        elements.append(svg_line(shaft_x1 + 8, shaft_y - 3, shaft_x1 + 8, shaft_y + 3, 1.5))
+    elif vi == 6:  # DEM: arrowhead + down-tick
+        elements.append(svg_line(head_x + head_len, shaft_y + head_spread,
+                                  head_x + head_len - 3, shaft_y + head_spread + 4, 1.5))
+    elif vi == 7:  # CNG: arrowhead + up-tick
+        elements.append(svg_line(head_x + head_len, shaft_y - head_spread,
+                                  head_x + head_len - 3, shaft_y - head_spread - 4, 1.5))
+    elif vi == 8:  # PTI: double hook on head
+        elements.append(svg_line(head_x + head_len, shaft_y - head_spread,
+                                  head_x + head_len + 3, shaft_y - head_spread + 3, 1.5))
+        elements.append(svg_line(head_x + head_len, shaft_y + head_spread,
+                                  head_x + head_len + 3, shaft_y + head_spread - 3, 1.5))
 
     # Aspect (shown as a second arrow or mark above/below the shaft)
     if aspect:

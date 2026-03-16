@@ -29,8 +29,7 @@
 <line x1="169.0" y1="60.0" x2="211.0" y2="60.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
 <line x1="211.0" y1="60.0" x2="219.0" y2="54.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
 <line x1="211.0" y1="60.0" x2="219.0" y2="66.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="173.0" y1="57.0" x2="173.0" y2="63.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="177.0" y1="57.0" x2="177.0" y2="63.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M219.0,54.0 Q222.0,60.0 219.0,66.0" stroke="black" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="195.0" y1="35.0" x2="212.5" y2="35.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
 <line x1="212.5" y1="35.0" x2="209.5" y2="32.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
 <line x1="198.0" y1="57.0" x2="198.0" y2="60.0" stroke="black" stroke-width="1" stroke-linecap="round"/>
