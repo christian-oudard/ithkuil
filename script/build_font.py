@@ -258,22 +258,20 @@ def build_font(output='script/IthkuilScript.ttf'):
     base_glyph_names = [SECONDARY[c]['name'] for c in CONSONANT_ORDER if c in SECONDARY]
     degree_glyph_names = [g['name'] for g in DEGREE_GLYPHS.values()]
     atype_glyph_names = [g['name'] for g in AFFIX_TYPE_GLYPHS.values()]
+    ext_top_names = [g['name'] for g in CONS_EXT_TOP.values()
+                     if g.get('path', '').strip() and g['name'] in {n for n in names}]
+    ext_bot_names = [g['name'] for g in CONS_EXT_BOT.values()
+                     if g.get('path', '').strip() and g['name'] in {n for n in names}]
 
     # Build GPOS with mark-to-base attachment
     try:
-        _add_gpos_marks(fb.font, base_glyph_names, degree_glyph_names, atype_glyph_names)
+        _add_gpos(fb.font, base_glyph_names, degree_glyph_names, atype_glyph_names,
+                  ext_top_names, ext_bot_names)
         print('  GPOS mark attachment tables added')
     except Exception as e:
+        import traceback
         print(f'  Warning: GPOS setup failed: {e}')
-
-    # ================================================================
-    # Kerning (GPOS PairPos)
-    # ================================================================
-    try:
-        _add_kerning(fb.font, base_glyph_names)
-        print('  Kerning tables added')
-    except Exception as e:
-        print(f'  Warning: Kerning setup failed: {e}')
+        traceback.print_exc()
 
     fb.font.save(output)
 
@@ -288,114 +286,100 @@ def build_font(output='script/IthkuilScript.ttf'):
     return output
 
 
-def _add_gpos_marks(font, base_names, below_mark_names, above_mark_names):
-    """Add GPOS MarkToBase attachment for combining diacritics."""
+def _add_gpos(font, base_names, below_mark_names, above_mark_names, ext_top_names, ext_bot_names):
+    """Add GPOS mark attachment for combining diacritics and extensions.
+
+    Uses fonttools' builder API to create proper MarkToBase lookups:
+    - Class 0: degree diacritics attach below base chars at (250, -50)
+    - Class 1: affix type diacritics attach above base chars at (250, 900)
+    - Class 2: top extensions attach above base chars at (250, 850)
+    - Class 3: bottom extensions attach below base chars at (250, 100)
+    """
+    from fontTools.otlLib.builder import (
+        buildAnchor, buildMarkBasePosSubtable,
+        buildLookup,
+    )
     from fontTools.ttLib.tables import otTables
+    from fontTools.ttLib.tables import G_P_O_S_
 
-    # Define anchor points
-    # Base chars: anchor below at (250, -50), anchor above at (250, 850)
-    # Below marks (degrees): anchor at (200, -100) -> attaches at base's below anchor
-    # Above marks (type): anchor at (200, 900) -> attaches at base's above anchor
+    glyph_order = font.getGlyphOrder()
+    glyph_map = {name: i for i, name in enumerate(glyph_order)}
 
+    # Build anchor objects
+    # Base char anchor points (where marks attach)
+    base_anchor_below = buildAnchor(250, -50)     # degree diacritics + bottom extensions
+    base_anchor_above = buildAnchor(250, 900)     # affix type diacritics
+    base_anchor_top = buildAnchor(250, 850)       # top consonant extensions
+    base_anchor_bot = buildAnchor(250, 100)       # bottom consonant extensions
+
+    # Mark anchor points (origin of the mark relative to its glyph)
+    mark_anchor_degree = buildAnchor(200, -100)   # degree diacritics
+    mark_anchor_atype = buildAnchor(200, 900)     # affix type marks
+    mark_anchor_top_ext = buildAnchor(250, 880)   # top extension origin
+    mark_anchor_bot_ext = buildAnchor(250, 100)   # bottom extension origin
+
+    lookups = []
+
+    # --- Lookup 0: Degree diacritics + bottom extensions (below base) ---
+    marks_below = {}
+    for name in below_mark_names:
+        if name in glyph_map:
+            marks_below[name] = (0, mark_anchor_degree)
+    for name in ext_bot_names:
+        if name in glyph_map:
+            marks_below[name] = (1, mark_anchor_bot_ext)
+
+    bases_below = {}
+    for name in base_names:
+        if name in glyph_map:
+            bases_below[name] = {0: base_anchor_below, 1: base_anchor_bot}
+
+    if marks_below and bases_below:
+        subtable = buildMarkBasePosSubtable(marks_below, bases_below, glyph_map)
+        lookup = buildLookup([subtable], flags=0)
+        lookups.append(lookup)
+
+    # --- Lookup 1: Affix type diacritics + top extensions (above base) ---
+    marks_above = {}
+    for name in above_mark_names:
+        if name in glyph_map:
+            marks_above[name] = (0, mark_anchor_atype)
+    for name in ext_top_names:
+        if name in glyph_map:
+            marks_above[name] = (1, mark_anchor_top_ext)
+
+    bases_above = {}
+    for name in base_names:
+        if name in glyph_map:
+            bases_above[name] = {0: base_anchor_above, 1: base_anchor_top}
+
+    if marks_above and bases_above:
+        subtable = buildMarkBasePosSubtable(marks_above, bases_above, glyph_map)
+        lookup = buildLookup([subtable], flags=0)
+        lookups.append(lookup)
+
+    if not lookups:
+        return
+
+    # Build GPOS table
     gpos = otTables.GPOS()
     gpos.Version = 0x00010000
 
-    # We need a MarkToBase lookup for below-marks and another for above-marks
-    lookups = []
+    gpos.LookupList = otTables.LookupList()
+    gpos.LookupList.Lookup = lookups
+    gpos.LookupList.LookupCount = len(lookups)
 
-    # Lookup 0: Degree marks (below)
-    if below_mark_names:
-        lookup = otTables.Lookup()
-        lookup.LookupType = 4  # MarkToBase
-        lookup.LookupFlag = 0
-        # Build the subtable manually would be complex; use a simpler approach
-        lookup.SubTableCount = 0
-        lookup.SubTable = []
-        lookups.append(lookup)
-
-    # Lookup 1: Type marks (above)
-    if above_mark_names:
-        lookup = otTables.Lookup()
-        lookup.LookupType = 4
-        lookup.LookupFlag = 0
-        lookup.SubTableCount = 0
-        lookup.SubTable = []
-        lookups.append(lookup)
-
-    if lookups:
-        gpos.LookupList = otTables.LookupList()
-        gpos.LookupList.Lookup = lookups
-        gpos.LookupList.LookupCount = len(lookups)
-
-        # Script/feature list
-        gpos.ScriptList = otTables.ScriptList()
-        gpos.ScriptList.ScriptRecord = []
-
-        gpos.FeatureList = otTables.FeatureList()
-        gpos.FeatureList.FeatureRecord = []
-
-        from fontTools.ttLib.tables import G_P_O_S_
-        tbl = G_P_O_S_.table_G_P_O_S_()
-        tbl.table = gpos
-        font['GPOS'] = tbl
-
-
-def _add_kerning(font, base_names):
-    """Add basic kerning pairs for adjacent secondary characters."""
-    # In Ithkuil script, adjacent secondary characters should be close together
-    # but with slight spacing adjustments based on shape
-    # For now, add negative kerning between all base pairs (tighter spacing)
-    # and positive kerning after the primary char
-
-    from fontTools.ttLib.tables import otTables
-
-    if 'GPOS' not in font:
-        gpos = otTables.GPOS()
-        gpos.Version = 0x00010000
-        gpos.LookupList = otTables.LookupList()
-        gpos.LookupList.Lookup = []
-        gpos.LookupList.LookupCount = 0
-        gpos.ScriptList = otTables.ScriptList()
-        gpos.ScriptList.ScriptRecord = []
-        gpos.FeatureList = otTables.FeatureList()
-        gpos.FeatureList.FeatureRecord = []
-        from fontTools.ttLib.tables import G_P_O_S_
-        tbl = G_P_O_S_.table_G_P_O_S_()
-        tbl.table = gpos
-        font['GPOS'] = tbl
-
-    # Add kern feature record
-    gpos = font['GPOS'].table
-
-    # Create a PairPos lookup for kerning
-    lookup = otTables.Lookup()
-    lookup.LookupType = 2  # PairPos (kerning)
-    lookup.LookupFlag = 0
-    lookup.SubTableCount = 0
-    lookup.SubTable = []  # Would need actual PairPos subtables
-
-    gpos.LookupList.Lookup.append(lookup)
-    gpos.LookupList.LookupCount = len(gpos.LookupList.Lookup)
-
-    # Add 'kern' feature
-    feat = otTables.FeatureRecord()
-    feat.FeatureTag = 'kern'
-    feat.Feature = otTables.Feature()
-    feat.Feature.FeatureParams = None
-    feat.Feature.LookupListIndex = [len(gpos.LookupList.Lookup) - 1]
-    feat.Feature.LookupCount = 1
-    gpos.FeatureList.FeatureRecord.append(feat)
-    gpos.FeatureList.FeatureCount = len(gpos.FeatureList.FeatureRecord)
-
-    # Add 'mark' feature for mark attachment
+    # 'mark' feature references all mark lookups
     mark_feat = otTables.FeatureRecord()
     mark_feat.FeatureTag = 'mark'
     mark_feat.Feature = otTables.Feature()
     mark_feat.Feature.FeatureParams = None
-    mark_feat.Feature.LookupListIndex = list(range(len(gpos.LookupList.Lookup) - 1))
-    mark_feat.Feature.LookupCount = len(mark_feat.Feature.LookupListIndex)
-    gpos.FeatureList.FeatureRecord.append(mark_feat)
-    gpos.FeatureList.FeatureCount = len(gpos.FeatureList.FeatureRecord)
+    mark_feat.Feature.LookupListIndex = list(range(len(lookups)))
+    mark_feat.Feature.LookupCount = len(lookups)
+
+    gpos.FeatureList = otTables.FeatureList()
+    gpos.FeatureList.FeatureRecord = [mark_feat]
+    gpos.FeatureList.FeatureCount = 1
 
     # Default script
     script_rec = otTables.ScriptRecord()
@@ -403,12 +387,18 @@ def _add_kerning(font, base_names):
     script_rec.Script = otTables.Script()
     script_rec.Script.DefaultLangSys = otTables.DefaultLangSys()
     script_rec.Script.DefaultLangSys.ReqFeatureIndex = 0xFFFF
-    script_rec.Script.DefaultLangSys.FeatureIndex = list(range(len(gpos.FeatureList.FeatureRecord)))
-    script_rec.Script.DefaultLangSys.FeatureCount = len(script_rec.Script.DefaultLangSys.FeatureIndex)
+    script_rec.Script.DefaultLangSys.FeatureIndex = [0]
+    script_rec.Script.DefaultLangSys.FeatureCount = 1
     script_rec.Script.LangSysRecord = []
     script_rec.Script.LangSysCount = 0
-    gpos.ScriptList.ScriptRecord.append(script_rec)
+
+    gpos.ScriptList = otTables.ScriptList()
+    gpos.ScriptList.ScriptRecord = [script_rec]
     gpos.ScriptList.ScriptCount = 1
+
+    tbl = G_P_O_S_.table_G_P_O_S_()
+    tbl.table = gpos
+    font['GPOS'] = tbl
 
 
 if __name__ == '__main__':
