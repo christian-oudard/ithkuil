@@ -134,13 +134,20 @@ def draw_primary(x, y, w, h, spec='BSC', ctx='EXS', stem=1, func='STA',
         elements.append(svg_line(cmx - nx * 2, cmy - ny * 2,
                                   cmx + nx * 2, cmy + ny * 2, 1.5))
 
+    # --- Perspective/Extension (upper-left zone) ---
+    # Default M/DEL shows no mark; non-default values get marks
+    px, py = bx2 - 10, by2 + 5
+    if persp != 'M' or ext != 'DEL':
+        _draw_persp_ext_mark(elements, px, py, persp, ext)
+
+    # --- Affiliation/Essence (upper-right zone) ---
+    ax, ay = bx2 + 5, by2 + 10
+    if affil != 'CSL' or ess != 'NRM':
+        _draw_affil_ess_mark(elements, ax, ay, affil, ess)
+
     # --- Configuration (under-posed mark below the bar) ---
     ux, uy = bx1 + 2, by1 + 6
-    if config == 'UNI':
-        pass  # default, no mark
-    elif config == 'DPX':
-        elements.append(svg_line(ux - 4, uy, ux + 4, uy, 1.5))
-        elements.append(svg_line(ux - 4, uy + 3, ux + 4, uy + 3, 1.5))
+    _draw_config_mark(elements, ux, uy, config)
 
     # --- Relation (subscript diacritic beneath) ---
     rx, ry = bx1, by1 + 12
@@ -152,6 +159,101 @@ def draw_primary(x, y, w, h, spec='BSC', ctx='EXS', stem=1, func='STA',
         elements.append(svg_line(rx - 4, ry, rx + 4, ry, 2))
 
     return elements
+
+
+def _draw_persp_ext_mark(elements, x, y, persp, ext):
+    """Draw perspective x extension mark in upper-left zone of primary char.
+
+    From reference 12_1_perspective_extension.png: 24 distinct small marks.
+    Simplified: perspective controls direction, extension controls complexity.
+    """
+    sw = 1.5
+    # Direction based on perspective
+    dirs = {'M': (1, 0), 'G': (0, 1), 'N': (-1, 0), 'A': (0, -1)}
+    dx, dy = dirs.get(persp, (1, 0))
+    elen = 6
+
+    # Base mark for extension
+    ext_mods = {'DEL': 0, 'PRX': 1, 'ICP': 2, 'ATV': 3, 'GRA': 4, 'DPL': 5}
+    mod = ext_mods.get(ext, 0)
+
+    # Simple angled line for perspective
+    elements.append(svg_line(x, y, x + dx * elen, y + dy * elen, sw))
+
+    # Extension adds complexity
+    if mod >= 1:
+        # Additional tick perpendicular to the main stroke
+        px, py = -dy, dx  # perpendicular
+        elements.append(svg_line(x + dx * elen, y + dy * elen,
+                                  x + dx * elen + px * 3, y + dy * elen + py * 3, 1))
+    if mod >= 3:
+        # Second tick
+        elements.append(svg_line(x + dx * 3, y + dy * 3,
+                                  x + dx * 3 + px * 3, y + dy * 3 + py * 3, 1))
+
+
+def _draw_affil_ess_mark(elements, x, y, affil, ess):
+    """Draw affiliation x essence mark in upper-right zone of primary char.
+
+    From reference 12_1_config_affil_essence.png:
+    NRM: CSL=thin_stroke, ASO=thick_diagonal, COA=vertical_wedge, VAR=horizontal_bar
+    RPV: CSL=arrow, ASO=upward_wedge, COA=hook, VAR=crescent
+    """
+    sw = 1.5
+    if ess == 'NRM':
+        if affil == 'ASO':
+            elements.append(svg_line(x - 2, y + 4, x + 4, y - 2, 2.5))
+        elif affil == 'COA':
+            elements.append(svg_line(x, y, x, y + 6, sw))
+            elements.append(svg_line(x - 2, y + 3, x + 2, y + 3, sw))
+        elif affil == 'VAR':
+            elements.append(svg_line(x - 4, y + 2, x + 4, y + 2, sw))
+    else:  # RPV
+        if affil == 'CSL':
+            elements.append(svg_line(x - 3, y + 3, x + 3, y - 3, sw))
+            elements.append(svg_line(x + 3, y - 3, x + 1, y, 1))
+        elif affil == 'ASO':
+            elements.append(svg_line(x - 2, y + 3, x, y - 2, sw))
+            elements.append(svg_line(x, y - 2, x + 2, y + 3, sw))
+        elif affil == 'COA':
+            elements.append(svg_path(
+                f'M{x-3:.1f},{y:.1f} Q{x:.1f},{y+4:.1f} {x+3:.1f},{y:.1f}', sw))
+        elif affil == 'VAR':
+            elements.append(svg_path(
+                f'M{x-4:.1f},{y+2:.1f} Q{x:.1f},{y-3:.1f} {x+4:.1f},{y+2:.1f}', sw))
+
+
+def _draw_config_mark(elements, x, y, config):
+    """Draw configuration underposed mark below the primary character bar.
+
+    From reference 12_1_config_affil_essence.png:
+    10 configurations with distinct marks.
+    """
+    sw = 1.5
+    if config in ('UNI', 'UPX'):
+        return  # default, no mark
+    marks = {
+        'DPX': lambda: [svg_line(x - 4, y, x + 4, y, sw),
+                         svg_line(x - 4, y + 3, x + 4, y + 3, sw)],
+        'DSS': lambda: [svg_line(x - 3, y + 4, x, y, sw),
+                         svg_line(x, y, x + 3, y + 4, sw)],
+        'DSC': lambda: [svg_line(x - 4, y + 2, x + 4, y + 2, sw)],
+        'DSF': lambda: [svg_line(x - 4, y, x, y + 4, sw),
+                         svg_line(x, y + 4, x + 4, y, sw)],
+        'DDS': lambda: [svg_path(f'M{x-4:.1f},{y:.1f} Q{x:.1f},{y+5:.1f} {x+4:.1f},{y:.1f}', sw)],
+        'DDC': lambda: [svg_path(f'M{x-4:.1f},{y+4:.1f} Q{x:.1f},{y-1:.1f} {x+4:.1f},{y+4:.1f}', sw)],
+        'DDF': lambda: [svg_line(x - 4, y + 2, x + 4, y + 2, sw),
+                         svg_line(x, y, x, y + 4, sw)],
+        'DFS': lambda: [svg_line(x - 4, y, x + 4, y, sw),
+                         svg_path(f'M{x-3:.1f},{y+3:.1f} Q{x:.1f},{y+6:.1f} {x+3:.1f},{y+3:.1f}', sw)],
+        'DFC': lambda: [svg_path(f'M{x-3:.1f},{y:.1f} A3,3 0 1,0 {x+3:.1f},{y:.1f}', sw, fill='none')],
+        'DFF': lambda: [svg_circle(x, y + 2, 2)],
+    }
+    # Also handle MSS/MSC/MSF/MDS/MDC/MDF/MFS/MFC/MFF names
+    for key, fn in marks.items():
+        if config == key:
+            elements.extend(fn())
+            return
 
 
 # ============================================================================

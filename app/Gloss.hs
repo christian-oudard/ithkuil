@@ -191,34 +191,58 @@ wordToScriptJson word =
 formativeToJson :: ParsedFormative -> Text
 formativeToJson pf =
   let Root cr = pfRoot pf
-      (stem, _version) = pfSlotII pf
+      (stem, version) = pfSlotII pf
       (func, spec, ctx) = pfSlotIV pf
       stemN = case stem of { S0 -> 0 :: Int; S1 -> 1; S2 -> 2; S3 -> 3 }
       funcS = case func of { STA -> "STA"; DYN -> "DYN" }
+      verS = case version of { PRC -> "PRC"; CPT -> "CPT" }
       specS = case spec of { BSC -> "BSC"; CTE -> "CTE"; CSV -> "CSV"; OBJ -> "OBJ" }
       ctxS = case ctx of { EXS -> "EXS"; FNC -> "FNC"; RPS -> "RPS"; AMG -> "AMG" }
       caseS = case pfCase pf of
         Just c -> caseAbbrev c
         Nothing -> "THM"
-      -- Slot V affixes
-      slotVAffixes = map (\(cs, _vx) ->
-        "{\"cs\":" <> jsonStr cs <> ",\"degree\":0,\"type\":1,\"slot\":5}") (pfSlotV pf)
-      -- Slot VII affixes (from Ca rest)
-      slotVIIAffixes = map (\(_vx, cs) ->
-        "{\"cs\":" <> jsonStr cs <> ",\"degree\":0,\"type\":1,\"slot\":7}") (extractSlotVIIAffixes (pfCa pf))
+      -- Ca values
+      (cfgS, affilS, perspS, extS, essS) = case pfCaParsed pf of
+        Just pc -> ( T.pack (show (pcConfig pc))
+                   , T.pack (show (pcAffiliation pc))
+                   , T.pack (show (pcPerspective pc))
+                   , T.pack (show (pcExtension pc))
+                   , T.pack (show (pcEssence pc)) )
+        Nothing -> ("UNI", "CSL", "M_", "DEL", "NRM")
+      -- Slot V affixes: pairs are (cs, vx), Vx encodes degree+type
+      slotVAffixes = map (\(cs, vx) ->
+        let (deg, atype) = classifyDegreeType vx
+        in affixJson cs deg atype 5) (pfSlotV pf)
+      -- Slot VII affixes (from Ca rest): pairs are (vx, cs)
+      slotVIIAffixes = map (\(vx, cs) ->
+        let (deg, atype) = classifyDegreeType vx
+        in affixJson cs deg atype 7) (extractSlotVIIAffixes (pfCa pf))
       allAffixes = slotVAffixes ++ slotVIIAffixes
       affixArray = "[" <> T.intercalate "," allAffixes <> "]"
   in T.concat
     [ "{"
     , "\"root\":", jsonStr cr
     , ",\"stem\":", T.pack (show stemN)
+    , ",\"version\":", jsonStr verS
     , ",\"func\":", jsonStr funcS
     , ",\"spec\":", jsonStr specS
     , ",\"ctx\":", jsonStr ctxS
+    , ",\"config\":", jsonStr cfgS
+    , ",\"affil\":", jsonStr affilS
+    , ",\"persp\":", jsonStr perspS
+    , ",\"ext\":", jsonStr extS
+    , ",\"ess\":", jsonStr essS
     , ",\"case\":", jsonStr caseS
     , ",\"affixes\":", affixArray
     , "}"
     ]
+
+affixJson :: Text -> Int -> Int -> Int -> Text
+affixJson cs deg atype slot = T.concat
+  [ "{\"cs\":", jsonStr cs
+  , ",\"degree\":", T.pack (show deg)
+  , ",\"type\":", T.pack (show atype)
+  , ",\"slot\":", T.pack (show slot), "}" ]
 
 jsonStr :: Text -> Text
 jsonStr t = "\"" <> T.replace "\"" "\\\"" t <> "\""
