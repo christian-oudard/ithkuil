@@ -14,8 +14,20 @@ Character types (left to right in a word):
 import sys, os, math
 sys.path.insert(0, os.path.dirname(__file__))
 
-from glyphs import (SECONDARY, CONSONANT_ORDER, _outline as L, _arc as A, _glyph,
+from glyphs import (SECONDARY as _SECONDARY_OUTLINE, CONSONANT_ORDER,
+                     _outline as L, _arc as A, _glyph,
                      CONS_EXT_TOP, CONS_EXT_BOT)
+
+# Use pen-based glyphs (proper joins, caps) with outline fallback
+try:
+    from pen_glyphs import build_pen_secondary
+    SECONDARY = build_pen_secondary()
+    # Fill in any missing characters from the outline-based definitions
+    for c in CONSONANT_ORDER:
+        if c not in SECONDARY and c in _SECONDARY_OUTLINE:
+            SECONDARY[c] = _SECONDARY_OUTLINE[c]
+except ImportError:
+    SECONDARY = _SECONDARY_OUTLINE
 
 
 # ============================================================================

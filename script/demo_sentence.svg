@@ -3,8 +3,8 @@
 <g transform="translate(10,10)"><polygon points="11.5,97.0 46.5,27.0 38.5,23.0 3.5,93.0" fill="black"/>
 <polygon points="25.0,14.0 27.5,17.0 25.0,20.0 22.5,17.0" fill="black"/>
 <line x1="22.0" y1="66.0" x2="24.4" y2="61.2" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<g transform="translate(55,110) scale(0.08,-0.08)"><path d="M123,810 L373,210 L327,190 L77,790 Z" fill="black" fill-rule="nonzero"/></g>
-<g transform="translate(110,110) scale(0.08,-0.08)"><path d="M213,738 A275,275 0 0,1 212,262 L237,305 A225,225 0 0,0 238,695 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(55,110) scale(0.08,-0.08)"><path d="M128,799 L369,220 L331,180 L72,801 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(110,110) scale(0.08,-0.08)"><path d="M350,750 L292,717 L238,695 L191,659 L155,612 L133,558 L125,500 L133,442 L155,388 L191,341 L238,305 L292,283 L350,250 L350,250 L279,234 L212,262 L155,305 L112,362 L84,429 L75,500 L84,571 L112,638 L155,695 L212,738 L279,766 L350,750 Z" fill="black" fill-rule="nonzero"/></g>
 <g transform="translate(110,110) scale(0.08,-0.08)"><path d="M300,65 A50,50 0 1,1 250,15 L250,64 A1,1 0 1,0 251,65 Z M225,90 L225,100 L275,100 L275,90 Z" fill="black" fill-rule="nonzero"/></g>
 <line x1="131.0" y1="115.0" x2="139.0" y2="115.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
 <line x1="190.0" y1="18.0" x2="190.0" y2="102.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
@@ -13,7 +13,7 @@
 <polygon points="25.0,14.0 27.5,17.0 25.0,20.0 22.5,17.0" fill="black"/>
 <line x1="22.0" y1="66.0" x2="24.4" y2="61.2" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
 <line x1="5.1" y1="93.8" x2="40.1" y2="23.8" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<g transform="translate(55,110) scale(0.08,-0.08)"><path d="M122,811 L272,511 L228,489 L78,789 Z M275,500 L275,200 L225,200 L225,500 Z M250,225 L450,225 L450,175 L250,175 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(55,110) scale(0.08,-0.08)"><path d="M122,811 L275,506 L275,225 L450,225 L450,175 L225,175 L225,494 L78,789 Z" fill="black" fill-rule="nonzero"/></g>
 <line x1="135.0" y1="18.0" x2="135.0" y2="102.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
 <line x1="135.0" y1="102.0" x2="135.0" y2="116.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
 <line x1="135.0" y1="106.0" x2="125.0" y2="110.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/></g>
@@ -21,9 +21,9 @@
 <line x1="3.5" y1="89.0" x2="13.5" y2="83.0" stroke="black" stroke-width="2" stroke-linecap="round"/>
 <polygon points="25.0,14.0 27.5,17.0 25.0,20.0 22.5,17.0" fill="black"/>
 <line x1="22.0" y1="66.0" x2="24.4" y2="61.2" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<g transform="translate(55,110) scale(0.08,-0.08)"><path d="M100,825 L400,825 L400,775 L100,775 Z M425,800 L425,500 L375,500 L375,800 Z M418,482 L118,182 L82,218 L382,518 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(55,110) scale(0.08,-0.08)"><path d="M100,825 L425,825 L425,490 L118,182 L82,218 L375,510 L375,775 L100,775 Z" fill="black" fill-rule="nonzero"/></g>
 <g transform="translate(55,110) scale(0.08,-0.08)"><path d="M300,65 A50,50 0 0,1 200,65 L249,65 A1,1 0 0,0 251,65 Z M211,85 L261,120 L289,80 L239,45 Z" fill="black" fill-rule="nonzero"/></g>
-<g transform="translate(110,110) scale(0.08,-0.08) rotate(180 250 500)"><path d="M100,825 L350,825 L350,775 L100,775 Z M375,800 L375,550 L325,550 L325,800 Z M150,575 L350,575 L350,525 L150,525 Z M175,550 L175,200 L125,200 L125,550 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(110,110) scale(0.08,-0.08) rotate(180 250 500)"><path d="M100,825 L375,825 L375,525 L175,525 L175,200 L125,200 L125,575 L325,575 L325,775 L100,775 Z" fill="black" fill-rule="nonzero"/></g>
 <path d="M132.0,115.0 Q132.0,120.0 138.0,120.0 Q138.0,115.0 135.0,113.0" stroke="black" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="135.0" cy="7.0" r="2" fill="black"/>
 <line x1="169.0" y1="60.0" x2="211.0" y2="60.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>

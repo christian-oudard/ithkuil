@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+<rect width="100%" height="100%" fill="white"/>
+<text x="20" y="25" font-size="14" font-family="sans-serif" fill="#333">Pen Library Demo</text>
+<g transform="translate(30,120) scale(0.09,-0.09)"><path d="M100,825 L350,825 L350,775 L100,775 ZM125,800 L125,421 L97,386 L118,406 L142,421 L169,433 L196,440 L225,442 L254,440 L281,433 L308,421 L332,406 L353,386 L350,350 L350,350 L316,352 L301,366 L284,377 L265,385 L245,390 L225,392 L205,390 L185,385 L166,377 L149,366 L134,352 L75,279 L75,800 Z" fill="black" fill-rule="nonzero"/></g>
+<text x="50" y="135" font-size="10" fill="#666">p</text>
+<g transform="translate(180,120) scale(0.09,-0.09)"><path d="M129,796 L368,223 L332,177 L71,804 Z" fill="black" fill-rule="nonzero"/></g>
+<text x="200" y="135" font-size="10" fill="#666">m (chisel)</text>
+<g transform="translate(330,120) scale(0.09,-0.09)"><path d="M118,818 L385,550 L118,282 L82,318 L315,550 L82,782 Z" fill="black" fill-rule="nonzero"/></g>
+<text x="350" y="135" font-size="10" fill="#666">s</text>
+<g transform="translate(480,120) scale(0.09,-0.09)"><path d="M300,800 L229,765 L163,738 L106,694 L62,637 L35,571 L25,500 L35,429 L62,363 L106,306 L163,262 L229,235 L300,200 L300,200 L216,186 L137,218 L70,270 L18,337 L-14,416 L-25,500 L-14,584 L18,663 L70,730 L137,782 L216,814 L300,800 Z" fill="black" fill-rule="nonzero"/></g>
+<text x="500" y="135" font-size="10" fill="#666">ţ (curve)</text>
+<g transform="translate(630,120) scale(0.09,-0.09)"><path d="M127,813 L259,504 L400,200 L400,200 L241,496 L73,787 Z" fill="black" fill-rule="nonzero"/></g>
+<text x="650" y="135" font-size="10" fill="#666">taper</text>
+<g transform="translate(780,120) scale(0.09,-0.09)"><path d="M400,825 L150,825 L150,775 L400,775 ZM375,800 L375,421 L403,386 L382,406 L358,421 L331,433 L304,440 L275,442 L246,440 L219,433 L192,421 L168,406 L147,386 L150,350 L150,350 L184,352 L199,366 L216,377 L235,385 L255,390 L275,392 L295,390 L315,385 L334,377 L351,366 L366,352 L425,279 L425,800 Z" fill="black" fill-rule="nonzero"/></g>
+<text x="800" y="135" font-size="10" fill="#666">b (mirror p)</text>
+</svg>
