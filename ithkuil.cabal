@@ -55,6 +55,13 @@ executable ithkuil-gloss
                     , containers
                     , bytestring
 
+executable ithkuil-input
+    import:           warnings
+    default-language: Haskell2010
+    main-is:          AsciiInput.hs
+    hs-source-dirs:   app
+    build-depends:    base >=4.17 && <5
+
 test-suite ithkuil-test
     import:           warnings
     default-language: Haskell2010
