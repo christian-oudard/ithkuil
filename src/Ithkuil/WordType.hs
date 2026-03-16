@@ -304,8 +304,11 @@ detectFormativeError word =
       sparts = splitConjuncts stripped
   in case sparts of
     -- Shortcut (w/y) + Cs-root Vv (ëi, eë, ëu, oë)
+    -- Only Cs-root Vv values (ëi/eë/ëu/oë) are invalid with shortcuts.
+    -- Reference-root Vv (ae/ea) and degree-0 Vv (ae/ea) are fine.
     (cc:vv:_) | cc `elem` ["w", "y"]
-              , isSpecialVv vv -> Just "Shortcuts can't be used with a Cs-root"
+              , normalizeAccents vv `elem` ["ëi", "eë", "ëu", "oë"]
+              -> Just "Shortcuts can't be used with a Cs-root"
     _ -> Nothing
 
 -- | Parse a concatenated word chain (e.g., "hlamröé-úçtļořëi")
@@ -318,9 +321,16 @@ parseConcatenatedWord word =
       -- Check for sentence prefix in non-first parts
       hasInnerSentencePrefix = any (\p -> case T.uncons (T.toLower p) of
         Just ('ç', _) -> True; _ -> False) (drop 1 parts)
-      -- Check for glottal stops in non-final parts (invalid in concatenated formatives)
+      -- Check for glottal stops in non-final parts.
+      -- Allow glottal stops only if they occur at the very start of the first
+      -- part (structural a'... or ha'... prefix for slot V marking), not in
+      -- case vowels (which would indicate invalid glottal cases in concat).
       nonFinalParts = if length parts > 1 then init parts else []
-      hasGlottalInConcat = any ("'" `T.isInfixOf`) nonFinalParts
+      hasStructuralGlottal p = case T.breakOn "'" p of
+        (before, after) | not (T.null after) ->
+          T.length before <= 2  -- Only allow ' within first 2 chars (a', ha')
+        _ -> False
+      hasGlottalInConcat = any (\p -> "'" `T.isInfixOf` p && not (hasStructuralGlottal p)) nonFinalParts
       parsed = map parseFormativeReal parts
   in if hasInnerSentencePrefix
     then PError "Sentence prefix inside concatenation chain" word
@@ -1249,8 +1259,11 @@ validateSlotVMarker pf
       if pfSlotVMarker pf
         then Just "Shortcut formatives cannot have Slot V affixes"
         else Nothing  -- Any number of Slot VII affixes is fine
-  | pfSlotVMarker pf && length (pfSlotV pf) < 2 =
-      Just "Unexpectedly few slot V affixes"
+  | pfSlotVMarker pf && null (pfSlotV pf) =
+      -- Glottal marker set but no Slot V affixes found. This can happen when a'
+      -- is structural (e.g., concatenation-related) rather than a Slot V marker.
+      -- Downgrade to Nothing (allow parse) since it's ambiguous.
+      Nothing
   | not (pfSlotVMarker pf) && length (pfSlotV pf) >= 2 =
       Just "Unexpectedly many slot V affixes"
   | otherwise = Nothing

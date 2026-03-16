@@ -462,8 +462,27 @@ stripSlotVMarker cr = case T.uncons cr of
 -- First checks for special Cs-root Vv values, then tries normal parsing
 parseVowelInitial :: Stress -> [Text] -> Maybe ParsedFormative
 parseVowelInitial stress parts = case parts of
+  -- When Cr is bare glottal stop ('), it's a Slot V filled marker split
+  -- out by splitConjuncts: [Vv, ', V, Cr, Vr, ...] -> reparse as
+  -- [Vv, 'Cr, Vr, ...] with slot V flag set on the root
+  (vv:"'":v2:cr2:rest2)
+    | not (isSpecialVv vv)
+    , not (T.null v2), isVowelChar (T.head v2)
+    , not (T.null cr2), not (isVowelChar (T.head cr2)) ->
+      -- The vowel v2 between ' and Cr is actually part of the Vv+' sequence
+      -- that was broken apart. Reconstruct: Vv=vv, Cr='cr2 (with ' prefix
+      -- for slot V marker), Vr=v2, rest=rest2
+      parseVowelInitial stress (vv : ("'" <> cr2) : v2 : rest2)
   (vv:cr0:vr:rest)
     | isSpecialVv vv -> parseCsRootFormative stress vv cr0 vr rest
+    -- If Cr is w/y, reinterpret as Vv + Cc shortcut (w/y are not valid roots)
+    | cr0 == "w" || cr0 == "y" ->
+        let (_, scM) = parseCc cr0
+        in case scM of
+          Just sc -> parseVowelInitialWithShortcut sc False stress (vr:rest)
+              >>= \pf -> Just pf { pfSlotII = maybe (S1, PRC) id (parseSlotII vv)
+                                 , pfVvSeries = vvSeries vv }
+          Nothing -> Nothing
     | otherwise -> do
     let (cr, slotVFilled) = stripSlotVMarker cr0
     slotII <- parseSlotII vv
