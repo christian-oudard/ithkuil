@@ -234,17 +234,22 @@ isModularAdjunct word =
       rest = case conjs of
         (c:cs) | c == "w" || c == "y" -> cs
         cs -> cs
-      -- Must end with a vowel and have alternating V Cn V Cn ... V
-      isValidPattern [] = False
-      isValidPattern [v] = not (T.null v) && isVowelChar (T.head v)
+      -- Two valid patterns:
+      -- 1. Vowel-initial: V Cn [V Cn]... V  (standard modular adjunct)
+      -- 2. Consonant-initial: Cn V  (bare Cn + scope vowel, e.g., "hrei" = CCA)
+      isVowelFirst [] = False
+      isVowelFirst [v] = not (T.null v) && isVowelChar (T.head v)
                         && v /= "ë" && v /= "äi"
-      isValidPattern (v:c:xs)
+      isVowelFirst (v:c:xs)
         | not (T.null v) && isVowelChar (T.head v)
         , not (T.null c) && not (isVowelChar (T.head c))
-        , isCnConsonant c = isValidPattern xs
+        , isCnConsonant c = isVowelFirst xs
         | otherwise = False
+      isConsonantFirst [c, v] =
+        isCnConsonant c && not (T.null v) && isVowelChar (T.head v)
+      isConsonantFirst _ = False
       nCnPairs = (length rest - 1) `div` 2
-  in isValidPattern rest && nCnPairs <= 3
+  in (isVowelFirst rest && nCnPairs <= 3) || isConsonantFirst rest
 
 --------------------------------------------------------------------------------
 -- Word Parsing
@@ -506,12 +511,22 @@ parseModularWord word =
       (prefix, rest) = case conjs of
         (c:cs) | c == "w" || c == "y" -> (Just c, cs)
         cs -> (Nothing, cs)
-      -- Parse VnCn pairs from rest, leaving final vowel
+      -- Parse VnCn pairs from rest, leaving final vowel.
+      -- Handles both vowel-first (Vn Cn [Vn Cn]... V) and
+      -- consonant-first (Cn V) patterns.
       parsePairs [] = ([], Nothing)
       parsePairs [v] = ([], Just v)
-      parsePairs (vn:cn:xs) = let (more, final) = parsePairs xs
-                                  pair = parseOneVnCn vn cn
-                              in (pair : more, final)
+      parsePairs (vn:cn:xs)
+        | not (T.null vn) && isVowelChar (T.head vn) =
+            -- Standard: Vn + Cn pair
+            let (more, final) = parsePairs xs
+                pair = parseOneVnCn vn cn
+            in (pair : more, final)
+        | isCnConsonant vn && not (T.null cn) && isVowelChar (T.head cn) =
+            -- Consonant-first: bare Cn + trailing vowel (default Vn = MNO/FAC)
+            let pair = parseOneVnCn "a" vn  -- "a" = default Vn (MNO valence)
+            in (pair : [], Just cn)
+        | otherwise = ([], Nothing)
       (maybePairs, finalV) = parsePairs rest
       pairs = [s | Just s <- maybePairs]
       finalGloss = case finalV of
