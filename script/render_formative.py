@@ -58,20 +58,19 @@ def render_from_json(data):
         ver=data.get('version', 'PRC'),
     )
 
-    # Root consonant(s)
+    # Root consonant(s) as cluster
     root = data.get('root', '')
-    for c in render_consonant_cluster(root):
-        r.add_secondary(c)
+    r.add_cluster(render_consonant_cluster(root))
 
-    # Affixes (Slot V and VII)
+    # Affixes (Slot V and VII) as clusters
     for afx in data.get('affixes', []):
         slot = afx.get('slot', 5)
         rotated = (slot == 7)
         cs = afx.get('cs', '')
         degree = afx.get('degree')
         atype = afx.get('type', 1)
-        for c in render_consonant_cluster(cs):
-            r.add_secondary(c, rotated=rotated, degree=degree, affix_type=atype)
+        r.add_cluster(render_consonant_cluster(cs), rotated=rotated,
+                      degree=degree, affix_type=atype)
 
     # Tertiary character (valence/aspect/phase/effect)
     valence = data.get('valence', 'MNO')
@@ -114,13 +113,11 @@ def render_sentence(words_json):
             func=word_data.get('func', 'STA'),
             ver=word_data.get('version', 'PRC'),
         )
-        for c in render_consonant_cluster(word_data.get('root', '')):
-            r.add_secondary(c)
+        r.add_cluster(render_consonant_cluster(word_data.get('root', '')))
         for afx in word_data.get('affixes', []):
             rotated = afx.get('slot', 5) == 7
-            for c in render_consonant_cluster(afx.get('cs', '')):
-                r.add_secondary(c, rotated=rotated,
-                                degree=afx.get('degree'), affix_type=afx.get('type', 1))
+            r.add_cluster(render_consonant_cluster(afx.get('cs', '')), rotated=rotated,
+                          degree=afx.get('degree'), affix_type=afx.get('type', 1))
 
         # Tertiary
         valence = word_data.get('valence', 'MNO')

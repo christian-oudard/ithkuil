@@ -14,7 +14,8 @@ Character types (left to right in a word):
 import sys, os, math
 sys.path.insert(0, os.path.dirname(__file__))
 
-from glyphs import SECONDARY, CONSONANT_ORDER, _outline as L, _arc as A, _glyph
+from glyphs import (SECONDARY, CONSONANT_ORDER, _outline as L, _arc as A, _glyph,
+                     CONS_EXT_TOP, CONS_EXT_BOT)
 
 
 # ============================================================================
@@ -500,34 +501,119 @@ class FormativeRenderer:
         glyph = SECONDARY.get(consonant)
         if not glyph:
             return
+        self._draw_secondary_glyph(glyph, rotated)
+
+        # Degree diacritic below
+        if degree is not None:
+            dy = 10 + self.CHAR_HEIGHT + 5
+            _draw_degree_diac(self.elements,
+                              self.x_cursor - self.SPACING - self.CHAR_WIDTH // 2, dy, degree)
+
+        # Affix type diacritic above
+        cx = self.x_cursor - self.SPACING - self.CHAR_WIDTH // 2
+        if affix_type == 2:
+            self.elements.append(svg_circle(cx, 10 - 3, 2))
+        elif affix_type == 3:
+            self.elements.append(svg_line(cx - 5, 10 - 3, cx + 5, 10 - 3, 1.5))
+
+    def add_cluster(self, consonants, rotated=False, degree=None, affix_type=None):
+        """Add a consonant cluster as a single composite character with extensions.
+
+        For a 2-consonant cluster [C1, C2]: C1 is base, C2 is bottom extension.
+        For a 3-consonant cluster [C1, C2, C3]: C2 is base, C1 top ext, C3 bottom ext.
+        For gemination [C, C]: base C with gemination mark.
+        """
+        if not consonants:
+            return
+        if len(consonants) == 1:
+            self.add_secondary(consonants[0], rotated=rotated, degree=degree, affix_type=affix_type)
+            return
+
+        # Check for gemination
+        if len(consonants) == 2 and consonants[0] == consonants[1]:
+            base = consonants[0]
+            glyph = SECONDARY.get(base)
+            if not glyph:
+                return
+            self._draw_secondary_glyph(glyph, rotated)
+            # Draw gemination mark (small double tick below)
+            cx = self.x_cursor - self.SPACING - self.CHAR_WIDTH // 2
+            gy = 10 + self.CHAR_HEIGHT + 3
+            self.elements.append(svg_line(cx - 3, gy, cx - 3, gy + 5, 1.5))
+            self.elements.append(svg_line(cx + 3, gy, cx + 3, gy + 5, 1.5))
+        elif len(consonants) == 2:
+            base_c, ext_c = consonants[0], consonants[1]
+            glyph = SECONDARY.get(base_c)
+            if not glyph:
+                return
+            self._draw_secondary_glyph(glyph, rotated)
+            # Draw bottom extension for second consonant
+            ext = CONS_EXT_BOT.get(ext_c)
+            if ext and ext.get('path', '').strip():
+                self._draw_extension(ext, rotated)
+        elif len(consonants) == 3:
+            top_c, base_c, bot_c = consonants[0], consonants[1], consonants[2]
+            glyph = SECONDARY.get(base_c)
+            if not glyph:
+                return
+            self._draw_secondary_glyph(glyph, rotated)
+            # Draw top extension for first consonant
+            ext_top = CONS_EXT_TOP.get(top_c)
+            if ext_top and ext_top.get('path', '').strip():
+                self._draw_extension(ext_top, rotated)
+            # Draw bottom extension for third consonant
+            ext_bot = CONS_EXT_BOT.get(bot_c)
+            if ext_bot and ext_bot.get('path', '').strip():
+                self._draw_extension(ext_bot, rotated)
+        else:
+            # 4+ consonants: render first as cluster of 3, rest as separate chars
+            self.add_cluster(consonants[:3], rotated=rotated)
+            for c in consonants[3:]:
+                self.add_secondary(c, rotated=rotated)
+
+        # Degree diacritic below
+        if degree is not None:
+            dy = 10 + self.CHAR_HEIGHT + 5
+            _draw_degree_diac(self.elements,
+                              self.x_cursor - self.SPACING - self.CHAR_WIDTH // 2, dy, degree)
+        # Affix type diacritic above
+        cx = self.x_cursor - self.SPACING - self.CHAR_WIDTH // 2
+        if affix_type == 2:
+            self.elements.append(svg_circle(cx, 10 - 3, 2))
+        elif affix_type == 3:
+            self.elements.append(svg_line(cx - 5, 10 - 3, cx + 5, 10 - 3, 1.5))
+
+    def _draw_secondary_glyph(self, glyph, rotated=False):
+        """Draw a secondary character glyph at the current cursor position."""
         s = self.GLYPH_SCALE
         x = self.x_cursor
         y = 10 + self.CHAR_HEIGHT  # baseline
 
         transform = f'translate({x},{y}) scale({s},{-s})'
         if rotated:
-            cx_g, cy_g = 250, 500
-            transform = f'translate({x},{y}) scale({s},{-s}) rotate(180 {cx_g} {cy_g})'
+            transform = f'translate({x},{y}) scale({s},{-s}) rotate(180 250 500)'
 
         self.elements.append(
             f'<g transform="{transform}">'
             f'<path d="{glyph["path"]}" fill="black" fill-rule="nonzero"/></g>'
         )
-
-        # Degree diacritic below
-        if degree is not None:
-            dy = y + 5
-            _draw_degree_diac(self.elements, x + self.CHAR_WIDTH // 2, dy, degree)
-
-        # Affix type diacritic above
-        if affix_type == 2:
-            self.elements.append(svg_circle(x + self.CHAR_WIDTH // 2, 10 - 3, 2))
-        elif affix_type == 3:
-            self.elements.append(svg_line(
-                x + self.CHAR_WIDTH // 2 - 5, 10 - 3,
-                x + self.CHAR_WIDTH // 2 + 5, 10 - 3, 1.5))
-
         self.x_cursor += self.CHAR_WIDTH + self.SPACING
+
+    def _draw_extension(self, ext_glyph, rotated=False):
+        """Draw a combining extension glyph on the last secondary character."""
+        s = self.GLYPH_SCALE
+        # Extension is drawn at the same x position as the base char (it's combining)
+        x = self.x_cursor - self.CHAR_WIDTH - self.SPACING
+        y = 10 + self.CHAR_HEIGHT
+
+        transform = f'translate({x},{y}) scale({s},{-s})'
+        if rotated:
+            transform = f'translate({x},{y}) scale({s},{-s}) rotate(180 250 500)'
+
+        self.elements.append(
+            f'<g transform="{transform}">'
+            f'<path d="{ext_glyph["path"]}" fill="black" fill-rule="nonzero"/></g>'
+        )
 
     def add_primary(self, spec='BSC', ctx='EXS', stem=1, func='STA',
                     ver='PRC', config='UNI', affil='CSL', ess='NRM',
@@ -653,16 +739,16 @@ def render_word(root_consonants, affixes=None, case_type=0, case_num=1,
     # 1. Primary character
     r.add_primary(spec=spec, ctx=ctx, stem=stem, func=func)
 
-    # 2. Root consonant(s)
-    for c in render_consonant_cluster(root_consonants):
-        r.add_secondary(c)
+    # 2. Root consonant(s) as a cluster
+    root_cs = render_consonant_cluster(root_consonants)
+    r.add_cluster(root_cs)
 
-    # 3. Slot V affixes (not rotated)
+    # 3. Affixes as clusters
     if affixes:
         for cs, degree, atype, slot in affixes:
             rotated = (slot == 7)
-            for c in render_consonant_cluster(cs):
-                r.add_secondary(c, rotated=rotated, degree=degree, affix_type=atype)
+            affix_cs = render_consonant_cluster(cs)
+            r.add_cluster(affix_cs, rotated=rotated, degree=degree, affix_type=atype)
 
     # 4. Tertiary character (if non-default valence/aspect/phase/effect)
     has_tertiary = (valence != 'MNO' or aspect or phase or effect)
@@ -676,60 +762,129 @@ def render_word(root_consonants, affixes=None, case_type=0, case_num=1,
 
 
 def render_test_words():
-    """Render test words to verify the pipeline."""
-    words = []
-
-    # "Malëuţřait" - S1/BSC/EXS/STA, root -m-, affix -ţř- (degree 5), case THM
-    svg1 = render_word('m', affixes=[('ţř', 5, 1, 5)], case_type=0, case_num=1,
-                        spec='BSC', ctx='EXS', stem=1, func='STA')
-    words.append(('Malëuţřait (THM)', svg1))
-
-    # Simple word: root -l- (talk), DYN function, ERG case
-    svg2 = render_word('l', case_type=0, case_num=7, func='DYN')
-    words.append(('talk-ERG (DYN)', svg2))
-
-    # Root -rr- (cat), THM case, stem 2
-    svg3 = render_word('rr', case_type=0, case_num=1, stem=2)
-    words.append(('cat-THM (S2)', svg3))
-
-    # Root with affix and tertiary: -kš- + affix, ABS case, CRO valence, HAB aspect
-    svg4 = render_word('kš', affixes=[('r', 4, 2, 7)], case_type=0, case_num=3,
-                        valence='CRO', aspect='HAB')
-    words.append(('complex+CRO/HAB-ABS', svg4))
-
-    # All 8 case types demonstrated
-    case_type_names = ['TRANS', 'APPOS', 'ASSOC', 'ADVERB', 'RELAT', 'AFFIN', 'SPAT1', 'SPAT2']
-    case_svgs = []
-    for ct in range(8):
-        r = FormativeRenderer()
-        r.add_quaternary(case_type=ct, case_num=ct + 1)
-        case_svgs.append(r)
-
-    # Compose into test page
+    """Render comprehensive test sheet for the writing system."""
+    page_w, page_h = 950, 1400
     page_parts = [
-        '<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900">',
-        '<rect width="100%" height="100%" fill="#faf8f0"/>',
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{page_w}" height="{page_h}" '
+        f'viewBox="0 0 {page_w} {page_h}">',
+        f'<rect width="100%" height="100%" fill="#faf8f0"/>',
         '<text x="20" y="25" font-size="14" font-family="sans-serif" fill="#333">'
-        'Ithkuil V4 Script - Test Words</text>',
+        'Ithkuil V4 Script - Comprehensive Test Sheet</text>',
     ]
+    y = 45
 
-    y_off = 40
-    for label, svg_content in words:
-        inner = '\n'.join(line for line in svg_content.split('\n')
-                          if not line.startswith('<svg') and not line.startswith('</svg')
-                          and not line.startswith('<rect width="100%"'))
-        page_parts.append(f'<text x="20" y="{y_off + 10}" font-size="10" fill="#999">{label}</text>')
-        page_parts.append(f'<g transform="translate(20,{y_off + 15})">{inner}</g>')
-        y_off += 140
+    # --- Section 1: Sample Words ---
+    page_parts.append(f'<text x="20" y="{y}" font-size="11" font-weight="bold" '
+                      f'fill="#333">Sample Words</text>')
+    y += 5
 
-    # Case types showcase
-    page_parts.append(f'<text x="20" y="{y_off + 10}" font-size="10" fill="#999">'
-                      'Case Types (TRANS through SPAT2, cases 1-8):</text>')
-    for i, r in enumerate(case_svgs):
+    words = [
+        ('Malëuţřait (THM)',
+         render_word('m', affixes=[('ţř', 5, 1, 5)], case_type=0, case_num=1)),
+        ('talk-ERG (DYN)',
+         render_word('l', case_type=0, case_num=7, func='DYN')),
+        ('cat-THM (S2, geminate rr)',
+         render_word('rr', case_type=0, case_num=1, stem=2)),
+        ('clown+affix-ABS (CRO/HAB)',
+         render_word('kš', affixes=[('r', 4, 2, 7)], case_type=0, case_num=3,
+                     valence='CRO', aspect='HAB')),
+    ]
+    for label, svg in words:
+        inner = _extract_svg_inner(svg)
+        page_parts.append(f'<text x="30" y="{y + 10}" font-size="8" fill="#999">{label}</text>')
+        page_parts.append(f'<g transform="translate(30,{y + 15})">{inner}</g>')
+        y += 130
+
+    # --- Section 2: All Secondary Characters ---
+    page_parts.append(f'<text x="20" y="{y}" font-size="11" font-weight="bold" '
+                      f'fill="#333">Secondary Characters (31 consonants)</text>')
+    y += 10
+
+    cols = 11
+    cell_w, cell_h = 55, 70
+    for idx, cons in enumerate(CONSONANT_ORDER):
+        if cons not in SECONDARY:
+            continue
+        col = idx % cols
+        row = idx // cols
+        cx = 30 + col * cell_w
+        cy = y + row * cell_h
+        # Label
+        label = cons if cons != "'" else "&#x2019;"
+        page_parts.append(f'<text x="{cx + cell_w//2}" y="{cy + 10}" text-anchor="middle" '
+                          f'font-size="8" fill="#666">{label}</text>')
+        # Glyph
+        glyph = SECONDARY[cons]
+        s = 0.065
+        gx, gy = cx + 5, cy + 15 + 45
+        page_parts.append(
+            f'<g transform="translate({gx},{gy}) scale({s},{-s})">'
+            f'<path d="{glyph["path"]}" fill="black" fill-rule="nonzero"/></g>')
+
+    y += (len(CONSONANT_ORDER) // cols + 1) * cell_h + 5
+
+    # --- Section 3: Primary Character Variations ---
+    page_parts.append(f'<text x="20" y="{y}" font-size="11" font-weight="bold" '
+                      f'fill="#333">Primary Character Variations</text>')
+    y += 10
+
+    pri_examples = [
+        ('BSC/EXS/S1/STA', dict(spec='BSC', ctx='EXS', stem=1, func='STA')),
+        ('CTE/FNC/S2/STA', dict(spec='CTE', ctx='FNC', stem=2, func='STA')),
+        ('CSV/RPS/S3/DYN', dict(spec='CSV', ctx='RPS', stem=3, func='DYN')),
+        ('OBJ/AMG/S1/CPT', dict(spec='OBJ', ctx='AMG', stem=1, func='STA', ver='CPT')),
+    ]
+    for i, (label, kwargs) in enumerate(pri_examples):
+        px = 30 + i * 130
+        page_parts.append(f'<text x="{px + 25}" y="{y + 10}" text-anchor="middle" '
+                          f'font-size="7" fill="#999">{label}</text>')
+        elems = draw_primary(px, y + 15, 50, 80, **kwargs)
+        page_parts.extend(elems)
+    y += 110
+
+    # --- Section 4: Quaternary Case Types ---
+    page_parts.append(f'<text x="20" y="{y}" font-size="11" font-weight="bold" '
+                      f'fill="#333">Quaternary: 8 Case Types</text>')
+    y += 10
+
+    case_type_names = ['TRANS', 'APPOS', 'ASSOC', 'ADVERB', 'RELAT', 'AFFIN', 'SPAT-1', 'SPAT-2']
+    for ct in range(8):
+        qx = 30 + ct * 60
+        elems = draw_quaternary_case(qx, y, 50, 80, case_type=ct, case_num=ct + 1)
+        page_parts.extend(elems)
+        page_parts.append(f'<text x="{qx + 25}" y="{y + 95}" text-anchor="middle" '
+                          f'font-size="6" fill="#999">{case_type_names[ct]}</text>')
+    y += 110
+
+    # --- Section 5: Case Numbers 1-9 ---
+    page_parts.append(f'<text x="20" y="{y}" font-size="11" font-weight="bold" '
+                      f'fill="#333">Quaternary: 9 Case Numbers</text>')
+    y += 10
+
+    for cn in range(1, 10):
+        qx = 30 + (cn - 1) * 55
+        elems = draw_quaternary_case(qx, y, 50, 80, case_type=0, case_num=cn)
+        page_parts.extend(elems)
+        page_parts.append(f'<text x="{qx + 25}" y="{y + 95}" text-anchor="middle" '
+                          f'font-size="7" fill="#999">Case {cn}</text>')
+    y += 110
+
+    # --- Section 6: Degree Diacritics ---
+    page_parts.append(f'<text x="20" y="{y}" font-size="11" font-weight="bold" '
+                      f'fill="#333">Degree Diacritics (1-9)</text>')
+    y += 10
+
+    for deg in range(1, 10):
+        dx = 30 + (deg - 1) * 55
+        # Draw a sample consonant with the degree
+        r = FormativeRenderer()
+        r.x_cursor = 0
+        r.add_secondary('m', degree=deg)
         inner = '\n'.join(e for e in r.elements if e)
-        page_parts.append(f'<g transform="translate({20 + i * 60},{y_off + 15})">{inner}</g>')
-        page_parts.append(f'<text x="{20 + i * 60 + 25}" y="{y_off + 135}" '
-                          f'text-anchor="middle" font-size="7" fill="#999">{case_type_names[i]}</text>')
+        page_parts.append(f'<g transform="translate({dx},{y})">{inner}</g>')
+        page_parts.append(f'<text x="{dx + 25}" y="{y + 95}" text-anchor="middle" '
+                          f'font-size="7" fill="#999">Deg {deg}</text>')
+    y += 110
 
     page_parts.append('</svg>')
 
@@ -738,6 +893,13 @@ def render_test_words():
         f.write('\n'.join(page_parts))
     print(f'Wrote {output}')
     return output
+
+
+def _extract_svg_inner(svg_string):
+    """Extract inner content from an SVG string, removing wrapper tags."""
+    return '\n'.join(line for line in svg_string.split('\n')
+                      if not line.startswith('<svg') and not line.startswith('</svg')
+                      and not line.startswith('<rect width="100%"'))
 
 
 if __name__ == '__main__':

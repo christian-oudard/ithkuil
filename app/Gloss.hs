@@ -23,7 +23,7 @@ import Ithkuil.Render (renderSlotVIII, renderCase)
 import Ithkuil.Adjuncts (Register(..), registerForm, registerFinalForm, carrierTypeForm, Bias, biasForm)
 import Ithkuil.Numbers (numberRoot, numberAffix, powerRoots)
 import Ithkuil.Phonology (vowelForm)
-import Ithkuil.Script (renderFormativeSvg)
+import System.Process (readProcess)
 
 -- ANSI color helpers (only used when outputting to terminal)
 dim, cyan, green, yellow, magenta, bold, reset :: Text
@@ -163,21 +163,21 @@ showHelp = do
   TIO.putStrLn "  --help, -h          Show this help"
 
 handleScript :: [String] -> IO ()
-handleScript [] = TIO.putStrLn "Usage: ithkuil-gloss --script <word>"
+handleScript [] = TIO.putStrLn "Usage: ithkuil-gloss --script <word> [word2 ...]"
 handleScript ws = do
-  let word = T.pack (unwords ws)
-      parsed = parseWord word
-  case parsed of
-    PFormative pf -> TIO.putStrLn (renderFormativeSvg pf)
-    PConcatenated (pf:_) -> TIO.putStrLn (renderFormativeSvg pf)
-    _ -> TIO.putStrLn $ "Cannot render script for non-formative: " <> word
+  let ws' = map T.pack ws
+      jsons = map wordToScriptJson ws'
+      jsonArray = "[" <> T.intercalate "," jsons <> "]"
+  svg <- readProcess "python3" ["script/render_formative.py"]
+                     (T.unpack jsonArray)
+  putStr svg
 
 -- | Output JSON formative data for the Python script renderer
 handleScriptJson :: [String] -> IO ()
 handleScriptJson [] = TIO.putStrLn "Usage: ithkuil-gloss --script-json <word> [word2 ...]"
 handleScriptJson ws = do
-  let words = map T.pack ws
-      jsons = map wordToScriptJson words
+  let ws' = map T.pack ws
+      jsons = map wordToScriptJson ws'
   TIO.putStrLn $ "[" <> T.intercalate "," jsons <> "]"
 
 wordToScriptJson :: Text -> Text
@@ -191,7 +191,7 @@ wordToScriptJson word =
 formativeToJson :: ParsedFormative -> Text
 formativeToJson pf =
   let Root cr = pfRoot pf
-      (stem, version) = pfSlotII pf
+      (stem, _version) = pfSlotII pf
       (func, spec, ctx) = pfSlotIV pf
       stemN = case stem of { S0 -> 0 :: Int; S1 -> 1; S2 -> 2; S3 -> 3 }
       funcS = case func of { STA -> "STA"; DYN -> "DYN" }
