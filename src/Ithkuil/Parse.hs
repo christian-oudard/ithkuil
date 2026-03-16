@@ -721,10 +721,11 @@ splitCaVc parts =
       vcFinal = if hasGlottal
         then map addGlottalToVc (reverse vcRev)
         else reverse vcRev
-      -- When word ends in consonant and the "Vc" is the only vowel after Ca,
-      -- the V+C pair is more likely a Slot VII affix than Vc + trailing consonant
-      caHasVowels = any isVowelCluster (reverse caRev)
-  in if not (null trailingC) && not (null vcRev) && not caHasVowels
+      -- When word ends in consonant, the final V-C is more likely a Slot VII
+      -- affix (VxCs) than Vc + trailing consonant, since formatives normally
+      -- end in a vowel. In that case, Vc is elided (THM default).
+      endsInConsonant = not (null trailingC)
+  in if endsInConsonant && not (null vcRev)
      then (caClean ++ vcFinal ++ reverse trailingC, [])
      else (caClean, vcFinal)
   where

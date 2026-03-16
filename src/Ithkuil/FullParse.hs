@@ -114,64 +114,120 @@ parseRemainingSlots parts stress = do
       slotIX <- parseSlotIX vc stress
       Success ([], slotVI, [], Nothing, slotIX)
 
-    -- 3 parts: could be CsVx-Ca-Vc or Ca-VxCs-Vc
-    -- Heuristic: if first is consonant cluster and second is consonant cluster, it's CsVx-Ca-Vc
-    -- If first is consonant and second starts with vowel, it's Ca-VxCs-Vc
-    [p1, p2, p3]
-      | isConsonant p1 && isConsonant p2 -> do
-          -- CsVx-Ca-Vc (but CsVx should be C+V, so this is ambiguous)
-          -- For now treat as Ca-VxCs-Vc if p2 starts with vowel
-          slotVI <- parseFullCa p1
-          slotVII <- parseAffixes p2
-          slotIX <- parseSlotIX p3 stress
-          Success ([], slotVI, slotVII, Nothing, slotIX)
-      | isConsonant p1 -> do
-          slotVI <- parseFullCa p1
-          slotIX <- parseSlotIX p3 stress
-          Success ([], slotVI, [], Nothing, slotIX)
+    -- 3+ parts: parse Ca, then remaining V-C pairs as Slot VII affixes.
+    -- The key insight: after Ca, alternating V-C chunks are VxCs affix pairs.
+    -- If the sequence ends in a vowel (no trailing C), the final V is Vc.
+    -- If it ends in a consonant, Vc is elided (THM default).
+    -- Special case: VnCn (Slot VIII) can consume a V-C pair if the C is a valid Cn.
+    _
+      -- First: identify Slot V (if parts start with vowel before Ca)
+      | isVowelStart (head parts) -> do
+          let (slotVParts, caParts) = splitSlotV parts
+          slotV <- parseAffixes (head slotVParts)
+          parseCaAndAfter (tail caParts) slotV stress
+      -- Otherwise: first part is Ca
       | otherwise -> do
-          slotV <- parseAffixes p1
-          slotVI <- parseFullCa p2
-          slotIX <- parseSlotIX p3 stress
-          Success (slotV, slotVI, [], Nothing, slotIX)
-
-    -- 4 parts: Ca-Vn-Cn-Vc, Ca-VxCs-VnCn-Vc, or CsVx-Ca-VxCs-Vc
-    [p1, p2, p3, p4]
-      | isConsonant p1 && isVowelStart p2 && isConsonant p3 && isVowelStart p4 -> do
-          -- Ca-Vn-Cn-Vc/Vk (VnCn slot with final case/illocution)
-          slotVI <- parseFullCa p1
-          slotVIII <- parseVnCnFromParts p2 p3 stress
-          slotIX <- parseSlotIX p4 stress
-          Success ([], slotVI, [], slotVIII, slotIX)
-      | isConsonant p1 && isVowelStart p2 -> do
-          -- Ca-VxCs-VnCn-Vc (Slot VII affixes then VnCn)
-          slotVI <- parseFullCa p1
-          slotVII <- parseAffixes p2
-          slotVIII <- parseVnCnFromParts p3 p4 stress
-          case slotVIII of
-            Just s8 -> do
-              Success ([], slotVI, slotVII, Just s8, Left (Transrelative THM))
-            Nothing -> do
-              slotIX <- parseSlotIX p4 stress
-              Success ([], slotVI, slotVII, Nothing, slotIX)
-      | otherwise -> do
-          slotV <- parseAffixes p1
-          slotVI <- parseFullCa p2
-          slotVII <- parseAffixes p3
-          slotIX <- parseSlotIX p4 stress
-          Success (slotV, slotVI, slotVII, Nothing, slotIX)
-
-    -- 5+ parts: full form with VnCn
-    (p1:p2:p3:p4:p5:_) -> do
-      slotV <- parseAffixes p1
-      slotVI <- parseFullCa p2
-      slotVII <- parseAffixes p3
-      slotVIII <- parseVnCnFromParts p4 p5 stress
-      let lastPart = last parts
-      slotIX <- parseSlotIX lastPart stress
-      Success (slotV, slotVI, slotVII, slotVIII, slotIX)
+          parseCaAndAfter parts [] stress
 
     _ -> Failure $ "Unexpected slot structure: " <> T.pack (show $ length parts) <> " parts"
+
+-- | Split off Slot V vowel parts from the beginning of the part list.
+-- Slot V is present when the sequence starts with a vowel (before Ca consonant).
+splitSlotV :: [Text] -> ([Text], [Text])
+splitSlotV (v:rest)
+  | isVowelStart v = ([v], rest)
+splitSlotV xs = ([], xs)
+
+-- | Parse Ca and everything after it: Slot VII affixes, optional VnCn, and Vc.
+-- The parts list starts with Ca, followed by alternating V-C chunks.
+-- Rule: V-C pairs after Ca are Slot VII affixes.
+-- If the sequence ends in a final vowel (not followed by C), it's Vc.
+-- If it ends in a consonant, Vc is elided (THM).
+-- A V-C pair where C is a valid Cn form may be VnCn (Slot VIII) instead.
+parseCaAndAfter :: [Text] -> [Affix] -> Stress -> ParseResult ([Affix], SlotVI, [Affix], Maybe SlotVIII, Either Case FormatOrIV)
+parseCaAndAfter [] _slotV _stress =
+  Failure "Expected Ca"
+parseCaAndAfter [ca] slotV _stress = do
+  slotVI <- parseFullCa ca
+  Success (slotV, slotVI, [], Nothing, Left (Transrelative THM))
+parseCaAndAfter (ca:rest) slotV stress = do
+  slotVI <- parseFullCa ca
+  -- Pair up remaining V-C chunks as affixes, handle final Vc
+  let (affixPairs, trailing) = pairVCChunks rest
+  -- Check: does trailing end with a vowel? If so, it's Vc.
+  -- Does it end with a consonant? Then Vc is elided (THM).
+  case trailing of
+    -- No trailing: all paired as affixes, Vc elided
+    [] -> do
+      slotVII <- parseAffixPairs affixPairs
+      Success (slotV, slotVI, slotVII, Nothing, Left (Transrelative THM))
+    -- Trailing vowel: it's the Vc
+    [vc] | isVowelStart vc -> do
+      slotVII <- parseAffixPairs affixPairs
+      slotIX <- parseSlotIX vc stress
+      Success (slotV, slotVI, slotVII, Nothing, slotIX)
+    -- Trailing V-C: could be VnCn (if C is valid Cn) or last affix + elided Vc
+    [vn, cn] | isValidCn cn -> do
+      slotVII <- parseAffixPairs affixPairs
+      slotVIII <- parseVnCnFromParts vn cn stress
+      Success (slotV, slotVI, slotVII, slotVIII, Left (Transrelative THM))
+    -- Trailing V-C where C is not a valid Cn: treat as last affix, Vc elided
+    [vx, cs] -> do
+      slotVII <- parseAffixPairs (affixPairs ++ [(vx, cs)])
+      Success (slotV, slotVI, slotVII, Nothing, Left (Transrelative THM))
+    -- Trailing V-C-V: last affix + Vc
+    [vx, cs, vc] -> do
+      slotVII <- parseAffixPairs (affixPairs ++ [(vx, cs)])
+      slotIX <- parseSlotIX vc stress
+      Success (slotV, slotVI, slotVII, Nothing, slotIX)
+    -- Trailing V-C-V-C: VnCn + Vc, or two more affixes
+    [v1, c1, v2, c2] | isValidCn c1 -> do
+      slotVII <- parseAffixPairs affixPairs
+      slotVIII <- parseVnCnFromParts v1 c1 stress
+      case slotVIII of
+        Just s8 -> do
+          -- c1 was VnCn, so v2+c2 is another affix? No, after VnCn comes Vc.
+          slotIX <- parseSlotIX v2 stress
+          Success (slotV, slotVI, slotVII, Just s8, slotIX)
+        Nothing -> do
+          -- Not valid VnCn, treat both as affixes
+          slotVII2 <- parseAffixPairs (affixPairs ++ [(v1, c1), (v2, c2)])
+          Success (slotV, slotVI, slotVII2, Nothing, Left (Transrelative THM))
+    -- Fallback: pair as many affixes as possible
+    other -> do
+      let (morePairs, finalTrail) = pairVCChunks other
+          allPairs = affixPairs ++ morePairs
+      slotVII <- parseAffixPairs allPairs
+      case finalTrail of
+        [vc] | isVowelStart vc -> do
+          slotIX <- parseSlotIX vc stress
+          Success (slotV, slotVI, slotVII, Nothing, slotIX)
+        _ ->
+          Success (slotV, slotVI, slotVII, Nothing, Left (Transrelative THM))
+
+-- | Pair alternating V-C chunks into (Vx, Cs) affix pairs.
+-- Returns paired chunks and any unpaired trailing chunks.
+pairVCChunks :: [Text] -> ([(Text, Text)], [Text])
+pairVCChunks (v:c:rest)
+  | isVowelStart v && isConsonant c = let (pairs, trail) = pairVCChunks rest
+                                       in ((v, c) : pairs, trail)
+pairVCChunks rest = ([], rest)
+
+-- | Parse a list of (Vx, Cs) pairs into Affix values
+parseAffixPairs :: [(Text, Text)] -> ParseResult [Affix]
+parseAffixPairs pairs = Success $ map (\(vx, cs) -> parseOneAffix vx cs) pairs
+
+-- | Parse a single Vx+Cs affix pair
+parseOneAffix :: Text -> Text -> Affix
+parseOneAffix vx cs =
+  let (atype, _deg) = classifyAffixVowel vx
+  in Affix vx cs atype
+
+-- | Check if a consonant is a valid Cn form (Slot VIII mood/case-scope)
+-- Valid Cn: h, hl, hr, hm, hn, hň (Pattern 1) or w, y, hw, hrw, hmw, hnw, hňw (Pattern 2)
+isValidCn :: Text -> Bool
+isValidCn t = t `elem` ["h", "hl", "hr", "hm", "hn", "hň",
+                         "w", "y", "hw", "hrw", "hmw", "hnw", "hňw"]
 
 --------------------------------------------------------------------------------
 -- Slot Parsers
@@ -192,21 +248,21 @@ parseAffixes t
   | otherwise =
     -- Split into individual affixes (each is a V+C or C+V pair)
     let conjs = splitConjuncts t
-    in Success $ parseAffixPairs conjs
+    in Success $ pairConjunctAffixes conjs
 
--- | Parse conjunct pairs into affixes
-parseAffixPairs :: [Text] -> [Affix]
-parseAffixPairs [] = []
-parseAffixPairs [_] = []  -- Lone conjunct, can't form a pair
-parseAffixPairs (v:c:rest)
+-- | Parse conjunct pairs into affixes (low-level, used by parseAffixes)
+pairConjunctAffixes :: [Text] -> [Affix]
+pairConjunctAffixes [] = []
+pairConjunctAffixes [_] = []  -- Lone conjunct, can't form a pair
+pairConjunctAffixes (v:c:rest)
   | isVowelStart v && isConsonant c =
     let (affType, _) = classifyAffixVowel v
-    in Affix v c affType : parseAffixPairs rest
+    in Affix v c affType : pairConjunctAffixes rest
   | isConsonant v && isVowelStart c =
     -- CsVx (reversed) format used in Slot V
     let (affType, _) = classifyAffixVowel c
-    in Affix c v affType : parseAffixPairs rest
-  | otherwise = parseAffixPairs (c:rest)  -- Skip unmatched
+    in Affix c v affType : pairConjunctAffixes rest
+  | otherwise = pairConjunctAffixes (c:rest)  -- Skip unmatched
 
 -- | Classify affix vowel to determine type and degree
 -- Returns (AffixType, degree 0-9)
