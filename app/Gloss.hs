@@ -18,7 +18,7 @@ import Ithkuil.Parse (ParsedFormative(..), ParsedCa(..), parseCase, normalizeAcc
 import Ithkuil.Referentials (PersonalRef(..), Referent(..), ReferentEffect(..), referentLabel, categoryLabel)
 import Ithkuil.WordType
 import Ithkuil.Lexicon
-import Ithkuil.Compose (lookupGrammar, searchGrammar, lookupForm, GrammarEntry(..), searchRootsRanked, searchAffixes, dumpGrammarTable, composeFormative, composeReferential, applyStress)
+import Ithkuil.Compose (lookupGrammar, searchGrammar, lookupForm, GrammarEntry(..), searchRootsRanked, searchAffixes, dumpGrammarTable, composeFormative, composeReferential, applyStress, SearchResults(..), SearchHit(..), AffixHit(..), unifiedSearch, slotIIFormNum)
 import Ithkuil.Render (renderSlotVIII, renderCase)
 import Ithkuil.Adjuncts (Register(..), registerForm, registerFinalForm, carrierTypeForm, Bias, biasForm)
 import Ithkuil.Numbers (numberRoot, numberAffix, powerRoots)
@@ -46,6 +46,7 @@ main = do
   case args of
     ["--help"] -> showHelp
     ["-h"] -> showHelp
+    ("--search":rest) -> handleSearch rest
     ("--lookup":rest) -> handleLookup rest
     ("--root":rest) -> handleRootSearch rest
     ("--affix":rest) -> handleAffixSearch rest
@@ -68,6 +69,111 @@ main = do
           let sentence = T.pack (unwords ws)
           glossLine roots affixes sentence
 
+handleSearch :: [String] -> IO ()
+handleSearch [] = TIO.putStrLn "Usage: ithkuil-gloss --search <keyword>"
+handleSearch ws = do
+  roots <- loadLexicon "data/roots.json"
+  affixes <- loadAffixLexicon "data/affixes.json"
+  let query = T.pack (unwords ws)
+      results = unifiedSearch query roots affixes
+      hasResults = not (null (srGloss results))
+               || not (null (srDefinition results))
+               || not (null (srAffix results))
+               || not (null (srCase results))
+               || not (null (srGrammar results))
+  if not hasResults
+    then TIO.putStrLn $ "No results for: " <> query
+    else do
+      -- In gloss (roots where query matches a gloss word)
+      when (not (null (srGloss results))) $ do
+        TIO.putStrLn $ col bold "In gloss:"
+        mapM_ printGlossHit (srGloss results)
+        TIO.putStrLn ""
+      -- In root definition
+      when (not (null (srDefinition results))) $ do
+        TIO.putStrLn $ col bold "In root definition:"
+        let defs = take 20 (srDefinition results)
+            remaining = length (srDefinition results) - 20
+        mapM_ (printDefHit query) defs
+        when (remaining > 0) $
+          TIO.putStrLn $ col dim $ "  (" <> T.pack (show remaining) <> " more)"
+        TIO.putStrLn ""
+      -- In affix definition
+      when (not (null (srAffix results))) $ do
+        TIO.putStrLn $ col bold "In affix definition:"
+        let afxs = take 20 (srAffix results)
+            remaining = length (srAffix results) - 20
+        mapM_ (printAffixHit query) afxs
+        when (remaining > 0) $
+          TIO.putStrLn $ col dim $ "  (" <> T.pack (show remaining) <> " more)"
+        TIO.putStrLn ""
+      -- In case description/glosses
+      when (not (null (srCase results))) $ do
+        TIO.putStrLn $ col bold "In case:"
+        mapM_ printCaseHit (srCase results)
+        TIO.putStrLn ""
+      -- In other grammar
+      when (not (null (srGrammar results))) $ do
+        TIO.putStrLn $ col bold "In grammar:"
+        mapM_ printGrammarHit (srGrammar results)
+
+printGlossHit :: SearchHit -> IO ()
+printGlossHit (InGloss cr entry) =
+  TIO.putStrLn $ "  " <> col cyan ("-" <> cr <> "-") <> " " <> rootStem0 entry
+printGlossHit (InDefinition cr entry) =
+  TIO.putStrLn $ "  " <> col cyan ("-" <> cr <> "-") <> " " <> rootStem0 entry
+
+printDefHit :: Text -> SearchHit -> IO ()
+printDefHit query hit = do
+  let (cr, entry) = case hit of
+        InDefinition c e -> (c, e)
+        InGloss c e -> (c, e)
+      q = T.toCaseFold query
+      matchingStems = [(s, desc) | (s, desc) <- [("S1", rootStem1 entry), ("S2", rootStem2 entry)
+                                                 , ("S3", rootStem3 entry), ("S0", rootStem0 entry)]
+                                 , T.isInfixOf q (T.toCaseFold desc)]
+      nMatches = length matchingStems
+      shown = take 2 matchingStems
+      moreCount = nMatches - 2
+  TIO.putStr $ "  " <> col cyan ("-" <> cr <> "-") <> " " <> col dim (rootStem0 entry)
+  when (nMatches > 2) $ TIO.putStr $ col dim (" (" <> T.pack (show nMatches) <> " matches)")
+  TIO.putStrLn ""
+  forM_ shown $ \(s, desc) ->
+    TIO.putStrLn $ "    " <> col green s <> " " <> desc
+  when (moreCount > 0) $
+    TIO.putStrLn $ "    " <> col dim ("..." <> T.pack (show moreCount) <> " more")
+
+printAffixHit :: Text -> AffixHit -> IO ()
+printAffixHit _query (AffixHit cs entry degs) = do
+  let nMatches = length degs
+  TIO.putStr $ "  " <> col yellow ("-" <> cs <> "-") <> " " <> affixAbbrev entry
+            <> "  " <> col dim ("(" <> affixDesc entry <> ")")
+  when (nMatches > 0) $ TIO.putStr $ col dim (" (" <> T.pack (show nMatches) <> " matches)")
+  TIO.putStrLn ""
+  forM_ (take 3 degs) $ \(d, txt) ->
+    TIO.putStrLn $ "    D" <> T.pack (show d) <> " " <> txt
+  when (nMatches > 3) $
+    TIO.putStrLn $ "    " <> col dim ("..." <> T.pack (show (nMatches - 3)) <> " more")
+
+printCaseHit :: GrammarEntry -> IO ()
+printCaseHit e = do
+  TIO.putStrLn $ "  " <> col magenta (gAbbrev e) <> " " <> gName e
+              <> "  " <> col dim (gForm e)
+  when (not (null (gGlosses e))) $
+    TIO.putStrLn $ "    " <> T.intercalate ", " (gGlosses e)
+  when (not (T.null (gDescription e))) $
+    TIO.putStrLn $ "    " <> col dim (truncateDesc 100 (gDescription e))
+
+printGrammarHit :: GrammarEntry -> IO ()
+printGrammarHit e =
+  TIO.putStrLn $ "  " <> gAbbrev e <> " " <> gName e
+              <> "  [" <> gCategory e <> "]  " <> col dim (gForm e)
+
+truncateDesc :: Int -> Text -> Text
+truncateDesc maxLen t
+  | T.length t <= maxLen = t
+  | otherwise = T.take maxLen t <> "..."
+
 handleLookup :: [String] -> IO ()
 handleLookup [] = TIO.putStrLn "Usage: ithkuil-gloss --lookup <abbreviation>"
 handleLookup ws = do
@@ -76,24 +182,71 @@ handleLookup ws = do
       results = if null exact then searchGrammar query else exact
   case results of
     [] -> TIO.putStrLn $ "No grammar entry found for: " <> query
-    _ -> mapM_ (\e ->
-      TIO.putStrLn $ gAbbrev e <> "  " <> gName e
+    _ -> mapM_ (\e -> do
+      TIO.putStrLn $ col bold (gAbbrev e) <> "  " <> gName e
                   <> "  [" <> gCategory e <> "]"
-                  <> "  form: " <> gForm e) results
+                  <> "  form: " <> col cyan (gForm e)
+      when (not (null (gGlosses e))) $
+        TIO.putStrLn $ "  " <> T.intercalate ", " (gGlosses e)
+      when (not (T.null (gDescription e))) $
+        TIO.putStrLn $ "  " <> col dim (gDescription e)
+      ) results
 
 handleRootSearch :: [String] -> IO ()
 handleRootSearch [] = TIO.putStrLn "Usage: ithkuil-gloss --root <keyword>"
 handleRootSearch ws = do
   roots <- loadLexicon "data/roots.json"
   let query = T.pack (unwords ws)
-      results = searchRootsRanked query roots
-  if null results
-    then TIO.putStrLn $ "No roots found matching: " <> query
-    else mapM_ (\(_score, cr, entry) ->
-      TIO.putStrLn $ "-" <> cr <> "-  S1: " <> rootStem1 entry
-                  <> "  S2: " <> rootStem2 entry
-                  <> "  S3: " <> rootStem3 entry
-                  <> "  S0: " <> rootStem0 entry) (take 20 results)
+      stripped = T.dropWhile (== '-') . T.dropWhileEnd (== '-') $ query
+      -- Check for exact Cr match first
+      exactMatch = Map.lookup stripped roots
+  case exactMatch of
+    Just entry -> showRootDetail stripped entry
+    Nothing -> do
+      let results = searchRootsRanked query roots
+      if null results
+        then TIO.putStrLn $ "No roots found matching: " <> query
+        else mapM_ (\(_score, cr, entry) ->
+          TIO.putStrLn $ "-" <> cr <> "-  S1: " <> rootStem1 entry
+                      <> "  S2: " <> rootStem2 entry
+                      <> "  S3: " <> rootStem3 entry
+                      <> "  S0: " <> rootStem0 entry) (take 20 results)
+
+-- | Show a detailed root page with stem table
+showRootDetail :: Text -> RootEntry -> IO ()
+showRootDetail cr entry = do
+  -- Header
+  TIO.putStrLn $ col bold ("-" <> cr <> "-") <> " " <> rootStem0 entry
+  TIO.putStrLn ""
+  -- Stem table: show VrCr forms for all 4 stems × 2 versions
+  let vrCr s v = vowelForm 1 (slotIIFormNum (s, v)) <> cr
+      -- Pad based on visible text length (not ANSI codes)
+      padTo n txt = txt <> T.replicate (max 1 (n - T.length txt)) " "
+      colW = max 10 (T.length cr + 4)
+      stemDesc S1 = rootStem1 entry
+      stemDesc S2 = rootStem2 entry
+      stemDesc S3 = rootStem3 entry
+      stemDesc S0 = rootStem0 entry
+  -- Header row
+  TIO.putStrLn $ "  " <> col dim (padTo colW "PRC") <> col dim (padTo colW "CPT") <> "  "
+  TIO.putStrLn $ "  " <> T.replicate (colW * 2 + 40) "-"
+  -- Each stem
+  forM_ [S1, S2, S3] $ \s -> do
+    let prc = padTo colW (vrCr s PRC)
+        cpt = padTo colW (vrCr s CPT)
+        label = T.pack (show s)
+    TIO.putStrLn $ "  " <> col cyan prc <> col cyan cpt
+                <> "  " <> col green label <> " " <> stemDesc s
+  TIO.putStrLn $ "  " <> T.replicate (colW * 2 + 40) "-"
+  -- Stem 0
+  let prc0 = padTo colW (vrCr S0 PRC)
+      cpt0 = padTo colW (vrCr S0 CPT)
+  TIO.putStrLn $ "  " <> col cyan prc0 <> col cyan cpt0
+              <> "  " <> col green "S0" <> " " <> stemDesc S0
+  TIO.putStrLn ""
+  -- Specification reminder
+  TIO.putStrLn $ col dim "  Specifications (Slot IV): BSC(default)  CTE  CSV  OBJ"
+  TIO.putStrLn $ col dim "  Contexts (Vr series):     EXS(1)  FNC(2)  RPS(3)  AMG(4)"
 
 handleFormLookup :: [String] -> IO ()
 handleFormLookup [] = TIO.putStrLn "Usage: ithkuil-gloss --form <vowel|consonant>"
@@ -137,6 +290,7 @@ showHelp = do
   TIO.putStrLn "  echo text | ithkuil-gloss        Pipe mode (one sentence per line)"
   TIO.putStrLn ""
   TIO.putStrLn $ col bold "COMMANDS:"
+  TIO.putStrLn "  --search <keyword>  Unified dictionary search (roots, affixes, cases)"
   TIO.putStrLn "  --lookup <abbr>     Look up grammar abbreviation (e.g. THM, LOC, SUB)"
   TIO.putStrLn "  --root <keyword>    Search roots by meaning keyword"
   TIO.putStrLn "  --affix <keyword>   Search affixes by keyword"
