@@ -9,8 +9,7 @@ Usage:
   echo '{"root":"m","stem":1,"version":"PRC","func":"STA","spec":"BSC",
          "ctx":"EXS","case":"POS","affixes":[{"cs":"ţř","degree":5,"type":1,"slot":5}]}' | python3 render_formative.py
 
-  python3 render_formative.py --word malëuţřait
-  python3 render_formative.py --sentence "Malëuţřait welacu"
+  python3 render_formative.py --demo
 """
 import sys, os, json, argparse
 sys.path.insert(0, os.path.dirname(__file__))
@@ -56,6 +55,7 @@ def render_from_json(data):
         ctx=data.get('ctx', 'EXS'),
         stem=data.get('stem', 1),
         func=data.get('func', 'STA'),
+        ver=data.get('version', 'PRC'),
     )
 
     # Root consonant(s)
@@ -63,7 +63,7 @@ def render_from_json(data):
     for c in render_consonant_cluster(root):
         r.add_secondary(c)
 
-    # Slot V affixes
+    # Affixes (Slot V and VII)
     for afx in data.get('affixes', []):
         slot = afx.get('slot', 5)
         rotated = (slot == 7)
@@ -73,10 +73,25 @@ def render_from_json(data):
         for c in render_consonant_cluster(cs):
             r.add_secondary(c, rotated=rotated, degree=degree, affix_type=atype)
 
-    # Quaternary (case)
-    case_name = data.get('case', 'THM')
-    case_type, case_num = CASE_MAP.get(case_name, (0, 1))
-    r.add_quaternary(case_type=case_type, case_num=case_num)
+    # Tertiary character (valence/aspect/phase/effect)
+    valence = data.get('valence', 'MNO')
+    aspect = data.get('aspect')
+    phase = data.get('phase')
+    effect = data.get('effect')
+    if valence != 'MNO' or aspect or phase or effect:
+        r.add_tertiary(valence=valence, aspect=aspect, phase=phase, effect=effect)
+
+    # Quaternary (case or illocution/validation)
+    if 'illocution' in data:
+        r.add_quaternary_vk(
+            illoc=data.get('illocution', 'ASR'),
+            valid=data.get('validation', 'OBS'))
+    else:
+        case_name = data.get('case', 'THM')
+        case_type, case_num = CASE_MAP.get(case_name, (0, 1))
+        r.add_quaternary(
+            case_type=case_type, case_num=case_num,
+            mood=data.get('mood'))
 
     return r.to_svg()
 
@@ -90,13 +105,14 @@ def render_sentence(words_json):
     x_offset = 10
     for word_data in words_json:
         r = FormativeRenderer()
-        r.x_cursor = 0  # reset for each word
+        r.x_cursor = 0
 
         r.add_primary(
             spec=word_data.get('spec', 'BSC'),
             ctx=word_data.get('ctx', 'EXS'),
             stem=word_data.get('stem', 1),
             func=word_data.get('func', 'STA'),
+            ver=word_data.get('version', 'PRC'),
         )
         for c in render_consonant_cluster(word_data.get('root', '')):
             r.add_secondary(c)
@@ -105,14 +121,28 @@ def render_sentence(words_json):
             for c in render_consonant_cluster(afx.get('cs', '')):
                 r.add_secondary(c, rotated=rotated,
                                 degree=afx.get('degree'), affix_type=afx.get('type', 1))
-        case_name = word_data.get('case', 'THM')
-        ct, cn = CASE_MAP.get(case_name, (0, 1))
-        r.add_quaternary(case_type=ct, case_num=cn)
 
-        # Embed word SVG content
+        # Tertiary
+        valence = word_data.get('valence', 'MNO')
+        aspect = word_data.get('aspect')
+        phase = word_data.get('phase')
+        effect = word_data.get('effect')
+        if valence != 'MNO' or aspect or phase or effect:
+            r.add_tertiary(valence=valence, aspect=aspect, phase=phase, effect=effect)
+
+        # Quaternary
+        if 'illocution' in word_data:
+            r.add_quaternary_vk(
+                illoc=word_data.get('illocution', 'ASR'),
+                valid=word_data.get('validation', 'OBS'))
+        else:
+            case_name = word_data.get('case', 'THM')
+            ct, cn = CASE_MAP.get(case_name, (0, 1))
+            r.add_quaternary(case_type=ct, case_num=cn, mood=word_data.get('mood'))
+
         inner = '\n'.join(e for e in r.elements if e)
         parts.append(f'<g transform="translate({x_offset},10)">{inner}</g>')
-        x_offset += r.x_cursor + 25  # word spacing
+        x_offset += r.x_cursor + 25
 
     parts.append('</svg>')
     return '\n'.join(parts)
@@ -127,14 +157,14 @@ def main():
     args = parser.parse_args()
 
     if args.demo:
-        # Demo: render "Malëuţřait" and a simple sentence
         demo_data = [
             {"root": "m", "stem": 1, "func": "STA", "spec": "BSC", "ctx": "EXS",
-             "case": "POS", "affixes": [{"cs": "ţř", "degree": 5, "type": 1, "slot": 5}]},
+             "case": "THM", "affixes": [{"cs": "ţř", "degree": 5, "type": 1, "slot": 5}]},
             {"root": "l", "stem": 1, "func": "DYN", "spec": "BSC", "ctx": "EXS",
              "case": "ERG"},
             {"root": "kš", "stem": 1, "func": "STA", "spec": "CTE", "ctx": "EXS",
-             "case": "ABS", "affixes": [{"cs": "r", "degree": 4, "type": 2, "slot": 7}]},
+             "case": "ABS", "affixes": [{"cs": "r", "degree": 4, "type": 2, "slot": 7}],
+             "valence": "CRO", "aspect": "HAB"},
         ]
         svg = render_sentence(demo_data)
         outfile = args.output if args.output != '-' else 'script/demo_sentence.svg'
@@ -150,7 +180,6 @@ def main():
         data = json.loads(args.sentence)
         svg = render_sentence(data)
     else:
-        # Read from stdin
         data = json.load(sys.stdin)
         if isinstance(data, list):
             svg = render_sentence(data)
