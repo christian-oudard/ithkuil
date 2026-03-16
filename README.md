@@ -24,9 +24,10 @@ $ cabal run ithkuil-gloss -- 'Malëuţřait'
     Root: -m- = linguistic utterance for communication
     Stem/Version: S1/PRC
     Function/Spec/Context: STA/BSC/EXS
-    Affix: -ţř- ëu = SYS () deg 5: A feedback-driven/self-sustaining/autopoietic system based on X
-    Case: POS
-    GLOSS: 'linguistic utterance for communication'-SYS/5₂-POS
+    Affix: -ţř- ëu = SYS deg 5: A feedback-driven/self-sustaining/autopoietic system based on X
+    Affix: -t- ai = (Type-2, deg 1)
+    Case: THM (default)
+    GLOSS: 'linguistic utterance for communication'-SYS/5₂-t/1₂-THM
 ```
 
 This tool provides:
