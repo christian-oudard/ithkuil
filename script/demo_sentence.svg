@@ -1,39 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="755" height="150" viewBox="0 0 755 150">
 <rect width="100%" height="100%" fill="white"/>
-<g transform="translate(10,10)"><polygon points="11.5,97.0 46.5,27.0 38.5,23.0 3.5,93.0" fill="black"/>
-<polygon points="25.0,14.0 27.5,17.0 25.0,20.0 22.5,17.0" fill="black"/>
-<line x1="22.0" y1="66.0" x2="24.4" y2="61.2" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<g transform="translate(55,110) scale(0.08,-0.08)"><path d="M128,799 L369,220 L331,180 L72,801 Z" fill="black" fill-rule="nonzero"/></g>
-<g transform="translate(110,110) scale(0.08,-0.08)"><path d="M350,750 L292,717 L238,695 L191,659 L155,612 L133,558 L125,500 L133,442 L155,388 L191,341 L238,305 L292,283 L350,250 L350,250 L279,234 L212,262 L155,305 L112,362 L84,429 L75,500 L84,571 L112,638 L155,695 L212,738 L279,766 L350,750 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(10,10)"><polygon points="12.7,102.1 52.7,26.1 37.3,17.9 -2.7,93.9" fill="black"/>
+<polygon points="25.0,6.0 28.5,10.0 25.0,14.0 21.5,10.0" fill="black"/>
+<line x1="21.8" y1="66.1" x2="25.5" y2="59.0" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
+<g transform="translate(55,110) scale(0.08,-0.08)"><path d="M136,799 L374,226 L326,174 L64,801 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(110,110) scale(0.08,-0.08)"><path d="M350,750 L294,710 L241,688 L196,654 L162,609 L140,556 L133,500 L140,444 L162,391 L196,346 L241,312 L294,290 L350,250 L350,250 L277,227 L209,255 L150,300 L105,359 L77,427 L67,500 L77,573 L105,641 L150,700 L209,745 L277,773 L350,750 Z" fill="black" fill-rule="nonzero"/></g>
 <g transform="translate(110,110) scale(0.08,-0.08)"><path d="M300,65 A50,50 0 1,1 250,15 L250,64 A1,1 0 1,0 251,65 Z M225,90 L225,100 L275,100 L275,90 Z" fill="black" fill-rule="nonzero"/></g>
 <line x1="131.0" y1="115.0" x2="139.0" y2="115.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="190.0" y1="18.0" x2="190.0" y2="102.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="190.0" y1="102.0" x2="190.0" y2="109.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/></g>
-<g transform="translate(255,10)"><polygon points="11.5,97.0 46.5,27.0 38.5,23.0 3.5,93.0" fill="black"/>
-<polygon points="25.0,14.0 27.5,17.0 25.0,20.0 22.5,17.0" fill="black"/>
-<line x1="22.0" y1="66.0" x2="24.4" y2="61.2" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="5.1" y1="93.8" x2="40.1" y2="23.8" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<g transform="translate(55,110) scale(0.08,-0.08)"><path d="M122,811 L275,506 L275,225 L450,225 L450,175 L225,175 L225,494 L78,789 Z" fill="black" fill-rule="nonzero"/></g>
-<line x1="135.0" y1="18.0" x2="135.0" y2="102.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="135.0" y1="102.0" x2="135.0" y2="116.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="135.0" y1="106.0" x2="125.0" y2="110.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/></g>
-<g transform="translate(445,10)"><polygon points="11.5,97.0 46.5,27.0 38.5,23.0 3.5,93.0" fill="black"/>
-<line x1="3.5" y1="89.0" x2="13.5" y2="83.0" stroke="black" stroke-width="2" stroke-linecap="round"/>
-<polygon points="25.0,14.0 27.5,17.0 25.0,20.0 22.5,17.0" fill="black"/>
-<line x1="22.0" y1="66.0" x2="24.4" y2="61.2" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<g transform="translate(55,110) scale(0.08,-0.08)"><path d="M100,825 L425,825 L425,490 L118,182 L82,218 L375,510 L375,775 L100,775 Z" fill="black" fill-rule="nonzero"/></g>
+<line x1="190.0" y1="18.0" x2="190.0" y2="102.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="190.0" y1="102.0" x2="190.0" y2="111.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/></g>
+<g transform="translate(255,10)"><polygon points="12.7,102.1 52.7,26.1 37.3,17.9 -2.7,93.9" fill="black"/>
+<polygon points="25.0,6.0 28.5,10.0 25.0,14.0 21.5,10.0" fill="black"/>
+<line x1="21.8" y1="66.1" x2="25.5" y2="59.0" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
+<line x1="-0.4" y1="95.1" x2="39.6" y2="19.1" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+<g transform="translate(55,110) scale(0.08,-0.08)"><path d="M129,815 L282,508 L282,232 L450,232 L450,168 L218,168 L218,492 L71,785 Z" fill="black" fill-rule="nonzero"/></g>
+<line x1="135.0" y1="18.0" x2="135.0" y2="102.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="135.0" y1="102.0" x2="135.0" y2="120.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="135.0" y1="107.0" x2="123.0" y2="112.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/></g>
+<g transform="translate(445,10)"><polygon points="12.7,102.1 52.7,26.1 37.3,17.9 -2.7,93.9" fill="black"/>
+<line x1="-5.6" y1="91.6" x2="2.4" y2="81.6" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<polygon points="25.0,6.0 28.5,10.0 25.0,14.0 21.5,10.0" fill="black"/>
+<line x1="21.8" y1="66.1" x2="25.5" y2="59.0" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
+<g transform="translate(55,110) scale(0.08,-0.08)"><path d="M100,832 L432,832 L432,487 L123,177 L77,223 L368,513 L368,768 L100,768 Z" fill="black" fill-rule="nonzero"/></g>
 <g transform="translate(55,110) scale(0.08,-0.08)"><path d="M300,65 A50,50 0 0,1 200,65 L249,65 A1,1 0 0,0 251,65 Z M211,85 L261,120 L289,80 L239,45 Z" fill="black" fill-rule="nonzero"/></g>
-<g transform="translate(110,110) scale(0.08,-0.08) rotate(180 250 500)"><path d="M100,825 L375,825 L375,525 L175,525 L175,200 L125,200 L125,575 L325,575 L325,775 L100,775 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(110,110) scale(0.08,-0.08) rotate(180 250 500)"><path d="M100,832 L382,832 L382,518 L182,518 L182,200 L118,200 L118,582 L318,582 L318,768 L100,768 Z" fill="black" fill-rule="nonzero"/></g>
 <path d="M132.0,115.0 Q132.0,120.0 138.0,120.0 Q138.0,115.0 135.0,113.0" stroke="black" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="135.0" cy="7.0" r="2" fill="black"/>
-<line x1="169.0" y1="60.0" x2="211.0" y2="60.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="211.0" y1="60.0" x2="219.0" y2="54.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="211.0" y1="60.0" x2="219.0" y2="66.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M219.0,54.0 Q222.0,60.0 219.0,66.0" stroke="black" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="195.0" y1="35.0" x2="212.5" y2="35.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="212.5" y1="35.0" x2="209.5" y2="32.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="198.0" y1="57.0" x2="198.0" y2="60.0" stroke="black" stroke-width="1" stroke-linecap="round"/>
-<line x1="201.0" y1="57.0" x2="201.0" y2="60.0" stroke="black" stroke-width="1" stroke-linecap="round"/>
-<line x1="245.0" y1="18.0" x2="245.0" y2="102.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M245.0,102.0 L245.0,108.0 Q237.0,114.0 233.0,108.0" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+<polygon points="167.0,54.0 192.3,54.0 192.3,46.0 213.0,60.0 192.3,74.0 192.3,66.0 167.0,66.0" fill="black"/>
+<path d="M192.3,46.0 Q218.0,60.0 192.3,74.0" stroke="black" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="201.0,32.0 211.0,38.0 201.0,44.0 205.0,38.0" fill="black"/>
+<line x1="197.0" y1="47.0" x2="197.0" y2="50.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="200.0" y1="47.0" x2="200.0" y2="50.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="245.0" y1="18.0" x2="245.0" y2="102.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M245.0,102.0 L245.0,110.0 Q235.0,118.0 231.0,110.0" stroke="black" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
 </svg>

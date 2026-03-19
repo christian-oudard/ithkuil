@@ -69,9 +69,10 @@ def draw_primary(x, y, w, h, spec='BSC', ctx='EXS', stem=1, func='STA',
     elements = []
 
     # Bar geometry: lower-left to upper-right
-    bar_w = w * 0.18  # bar thickness (fraction of cell width)
-    bx1, by1 = x + w * 0.15, y + h * 0.85  # bottom-left
-    bx2, by2 = x + w * 0.85, y + h * 0.15  # top-right
+    # Reference shows a very thick bar, roughly 35% of character width
+    bar_w = w * 0.35
+    bx1, by1 = x + w * 0.10, y + h * 0.88  # bottom-left
+    bx2, by2 = x + w * 0.90, y + h * 0.12  # top-right
 
     # Draw the thick diagonal bar as a filled parallelogram
     dx = bx2 - bx1
@@ -89,86 +90,92 @@ def draw_primary(x, y, w, h, spec='BSC', ctx='EXS', stem=1, func='STA',
     elements.append(svg_polygon(bar_pts))
 
     # --- Specification (lower-left zone) ---
-    sx, sy = bx1, by1  # attachment point
+    # Reference: BSC=plain, CTE=single stroke, CSV=zigzag, OBJ=reversed zigzag
+    # Marks appear at the lower-left of the bar
+    sx, sy = bx1 - nx * 0.6, by1 - ny * 0.6  # just outside lower-left edge
+    spec_sw = 2.5
     if spec == 'CTE':
-        # Small curve/hook at lower portion
-        elements.append(svg_line(sx - 4, sy - 6, sx + 6, sy - 12, 2))
+        elements.append(svg_line(sx - 6, sy - 4, sx + 2, sy - 14, spec_sw))
     elif spec == 'CSV':
-        # Angular mark
-        elements.append(svg_line(sx - 2, sy - 4, sx + 5, sy - 12, 2))
-        elements.append(svg_line(sx + 5, sy - 12, sx - 2, sy - 18, 2))
+        elements.append(svg_line(sx - 4, sy - 2, sx + 4, sy - 12, spec_sw))
+        elements.append(svg_line(sx + 4, sy - 12, sx - 4, sy - 20, spec_sw))
     elif spec == 'OBJ':
-        # Reversed angular
-        elements.append(svg_line(sx - 2, sy - 12, sx + 5, sy - 4, 2))
-        elements.append(svg_line(sx + 5, sy - 4, sx - 2, sy + 2, 2))
+        elements.append(svg_line(sx - 4, sy - 14, sx + 4, sy - 4, spec_sw))
+        elements.append(svg_line(sx + 4, sy - 4, sx - 4, sy + 4, spec_sw))
 
     # --- Context (super-posed diacritic above the bar) ---
-    cx_d, cy_d = (bx1 + bx2) / 2, by2 - 8
+    cx_d, cy_d = (bx1 + bx2) / 2, by2 - 12
     if ctx == 'EXS':
-        # Diamond/dot
+        # Diamond
         elements.append(svg_polygon([
-            (cx_d, cy_d - 3), (cx_d + 2.5, cy_d),
-            (cx_d, cy_d + 3), (cx_d - 2.5, cy_d),
+            (cx_d, cy_d - 4), (cx_d + 3.5, cy_d),
+            (cx_d, cy_d + 4), (cx_d - 3.5, cy_d),
         ]))
     elif ctx == 'FNC':
         # Horizontal bar
-        elements.append(svg_line(cx_d - 5, cy_d, cx_d + 5, cy_d, 2))
+        elements.append(svg_line(cx_d - 7, cy_d, cx_d + 7, cy_d, 2.5))
     elif ctx == 'RPS':
         # Angled stroke (backslash)
-        elements.append(svg_line(cx_d - 4, cy_d - 3, cx_d + 4, cy_d + 3, 2))
+        elements.append(svg_line(cx_d - 6, cy_d - 4, cx_d + 6, cy_d + 4, 2.5))
     elif ctx == 'AMG':
         # Reversed angled stroke (slash)
-        elements.append(svg_line(cx_d + 4, cy_d - 3, cx_d - 4, cy_d + 3, 2))
+        elements.append(svg_line(cx_d + 6, cy_d - 4, cx_d - 6, cy_d + 4, 2.5))
 
-    # --- Stem/Function marks (lower-right zone) ---
-    # Small ticks alongside the lower-right portion of the bar
+    # --- Stem/Function/Version marks (lower-right zone) ---
+    # Reference 12_1_stem_func_version_plexity.png shows small angular marks
+    # alongside the lower-right portion of the bar
     mx = bx1 + (bx2 - bx1) * 0.35
     my = by1 + (by2 - by1) * 0.35
-    tick_dx, tick_dy = ny * 0.6, -nx * 0.6  # perpendicular to bar
+    # Direction along the bar (toward upper-right)
+    udx = dx / length
+    udy = dy / length
+    # Perpendicular outward from lower-right edge
+    pdx = -ny / (bar_w / 2)  # normalized perpendicular
+    pdy = nx / (bar_w / 2)
+    mark_len = 8
+    mark_sw = 2.0
 
-    # Stem count shown as small ticks
+    # Stem shown as small ticks perpendicular to bar
     for i in range(stem):
-        tx = mx + (i + 1) * 5 * (bx2 - bx1) / length
-        ty = my + (i + 1) * 5 * (by2 - by1) / length
-        elements.append(svg_line(tx, ty, tx + tick_dx * 2, ty + tick_dy * 2, 1.5))
+        tx = mx + (i + 1) * 6 * udx
+        ty = my + (i + 1) * 6 * udy
+        elements.append(svg_line(tx, ty, tx - pdx * mark_len, ty - pdy * mark_len, mark_sw))
 
     # Function: DYN adds a parallel thin line alongside the bar
     if func == 'DYN':
-        offset = bar_w * 0.4
         elements.append(svg_line(
-            bx1 - nx * 0.6, by1 - ny * 0.6,
-            bx2 - nx * 0.6, by2 - ny * 0.6, 1.5))
+            bx1 - nx * 0.7, by1 - ny * 0.7,
+            bx2 - nx * 0.7, by2 - ny * 0.7, 1.5))
 
-    # Version: CPT adds a small crossbar
+    # Version: CPT adds a small crossbar at midpoint
     if ver == 'CPT':
         cmx = (bx1 + bx2) / 2
         cmy = (by1 + by2) / 2
-        elements.append(svg_line(cmx - nx * 2, cmy - ny * 2,
-                                  cmx + nx * 2, cmy + ny * 2, 1.5))
+        elements.append(svg_line(cmx - nx * 1.5, cmy - ny * 1.5,
+                                  cmx + nx * 1.5, cmy + ny * 1.5, mark_sw))
 
     # --- Perspective/Extension (upper-left zone) ---
-    # Default M/DEL shows no mark; non-default values get marks
-    px, py = bx2 - 10, by2 + 5
+    px, py = bx2 + nx * 0.6 - 8, by2 + ny * 0.6 + 5
     if persp != 'M' or ext != 'DEL':
         _draw_persp_ext_mark(elements, px, py, persp, ext)
 
     # --- Affiliation/Essence (upper-right zone) ---
-    ax, ay = bx2 + 5, by2 + 10
+    ax, ay = bx2 - nx * 0.6 + 5, by2 - ny * 0.6 + 8
     if affil != 'CSL' or ess != 'NRM':
         _draw_affil_ess_mark(elements, ax, ay, affil, ess)
 
     # --- Configuration (under-posed mark below the bar) ---
-    ux, uy = bx1 + 2, by1 + 6
+    ux, uy = bx1 + 2, by1 + ny + 8
     _draw_config_mark(elements, ux, uy, config)
 
     # --- Relation (subscript diacritic beneath) ---
-    rx, ry = bx1, by1 + 12
+    rx, ry = bx1, by1 + ny + 16
     if relation == 'UNFRAMED_VERB':
         elements.append(svg_polygon([
-            (rx, ry - 2), (rx + 2, ry), (rx, ry + 2), (rx - 2, ry),
+            (rx, ry - 3), (rx + 3, ry), (rx, ry + 3), (rx - 3, ry),
         ]))
     elif relation == 'FRAMED_VERB':
-        elements.append(svg_line(rx - 4, ry, rx + 4, ry, 2))
+        elements.append(svg_line(rx - 5, ry, rx + 5, ry, 2.5))
 
     return elements
 
@@ -275,111 +282,113 @@ def _draw_config_mark(elements, x, y, config):
 def draw_quaternary_case(x, y, w, h, case_type=0, case_num=1, mood=None):
     """Draw a quaternary character for case.
 
-    Matches the shapes from reference image 12_4_quaternary_chars.png:
-    - Vertical stem
-    - Top extension encodes case type (8 shapes)
-    - Bottom extension encodes case number (9 shapes)
+    Reference 12_4_quaternary_chars.png shows bold, thick strokes:
+    - Thick vertical stem
+    - Bold top extension for case type (8 shapes)
+    - Bold bottom extension for case number (9 shapes)
     - Mood shown as superposed diacritic
     """
     elements = []
     cx = x + w / 2
     top = y + 8
     bot = y + h - 8
-    sw = 2.5  # stroke width
+    sw = 4.5  # thick stroke width matching reference
 
     # Main vertical stem
     elements.append(svg_line(cx, top, cx, bot, sw))
 
     # --- Case Type (top extension) ---
-    # From reference: 8 distinct top shapes
+    # From reference 12_4: 8 bold shapes
     if case_type == 0:
         # TRANSRELATIVE: plain vertical (no extra extension)
         pass
     elif case_type == 1:
-        # APPOSITIVE: right curve/hook at top
+        # APPOSITIVE: bold right curve/hook from top
         elements.append(svg_path(
-            f'M{cx:.1f},{top:.1f} Q{cx+14:.1f},{top:.1f} {cx+12:.1f},{top+14:.1f}', sw))
+            f'M{cx:.1f},{top:.1f} Q{cx+18:.1f},{top:.1f} {cx+14:.1f},{top+18:.1f}', sw))
     elif case_type == 2:
-        # ASSOCIATIVE: Y-fork at top
-        elements.append(svg_line(cx, top, cx + 10, top - 8, sw))
-        elements.append(svg_line(cx, top, cx - 10, top - 8, sw))
+        # ASSOCIATIVE: bold Y-fork at top
+        elements.append(svg_line(cx, top, cx + 12, top - 10, sw))
+        elements.append(svg_line(cx, top, cx - 12, top - 10, sw))
     elif case_type == 3:
-        # ADVERBIAL: right arc/hook
+        # ADVERBIAL: bold left curve from top
         elements.append(svg_path(
-            f'M{cx:.1f},{top:.1f} Q{cx+16:.1f},{top+5:.1f} {cx+12:.1f},{top+16:.1f}', sw))
+            f'M{cx:.1f},{top:.1f} Q{cx+20:.1f},{top+6:.1f} {cx+14:.1f},{top+20:.1f}', sw))
     elif case_type == 4:
-        # RELATIONAL: left hook at top
+        # RELATIONAL: bold left hook at top
         elements.append(svg_path(
-            f'M{cx:.1f},{top:.1f} Q{cx-14:.1f},{top:.1f} {cx-12:.1f},{top+14:.1f}', sw))
+            f'M{cx:.1f},{top:.1f} Q{cx-18:.1f},{top:.1f} {cx-14:.1f},{top+18:.1f}', sw))
     elif case_type == 5:
-        # AFFINITIVE: T-bar at top
-        elements.append(svg_line(cx - 12, top, cx + 12, top, sw))
+        # AFFINITIVE: bold T-bar at top
+        elements.append(svg_line(cx - 14, top, cx + 14, top, sw))
     elif case_type == 6:
         # SPATIO-TEMPORAL I: T-bar + right hook
-        elements.append(svg_line(cx - 12, top, cx + 12, top, sw))
+        elements.append(svg_line(cx - 14, top, cx + 14, top, sw))
         elements.append(svg_path(
-            f'M{cx+12:.1f},{top:.1f} Q{cx+18:.1f},{top+2:.1f} {cx+16:.1f},{top+10:.1f}', 2))
+            f'M{cx+14:.1f},{top:.1f} Q{cx+22:.1f},{top+3:.1f} {cx+18:.1f},{top+14:.1f}', sw * 0.7))
     elif case_type == 7:
         # SPATIO-TEMPORAL II: T-bar + left hook
-        elements.append(svg_line(cx - 12, top, cx + 12, top, sw))
+        elements.append(svg_line(cx - 14, top, cx + 14, top, sw))
         elements.append(svg_path(
-            f'M{cx-12:.1f},{top:.1f} Q{cx-18:.1f},{top+2:.1f} {cx-16:.1f},{top+10:.1f}', 2))
+            f'M{cx-14:.1f},{top:.1f} Q{cx-22:.1f},{top+3:.1f} {cx-18:.1f},{top+14:.1f}', sw * 0.7))
 
     # --- Case Number (bottom extension) ---
-    # From reference: 9 shapes with increasing complexity
-    # 1=plain, 2=small right hook, 3=left hook, 4=right curve, 5=left curve,
-    # 6=right S, 7=left S, 8=right double, 9=left double
     if case_num >= 1:
         _draw_case_num_extension(elements, cx, bot, case_num, sw)
 
     # --- Mood diacritic (superposed) ---
     if mood:
-        my = top - 6
+        my = top - 8
         _draw_mood_diac(elements, cx, my, mood)
 
     return elements
 
 
 def _draw_case_num_extension(elements, cx, bot, num, sw):
-    """Draw case number bottom extension (9 forms)."""
-    elen = 14  # extension length
+    """Draw case number bottom extension (9 bold forms).
+
+    Reference 12_4: thick strokes matching the stem weight.
+    """
+    elen = 18  # extension length (bigger for visibility)
     if num == 1:
-        # Plain short downward
+        # Plain short downward stub
         elements.append(svg_line(cx, bot, cx, bot + elen * 0.5, sw))
     elif num == 2:
-        # Right hook
+        # Right hook (J-shape)
         elements.append(svg_path(
-            f'M{cx:.1f},{bot:.1f} L{cx:.1f},{bot+6:.1f} Q{cx+8:.1f},{bot+12:.1f} {cx+12:.1f},{bot+6:.1f}', sw))
+            f'M{cx:.1f},{bot:.1f} L{cx:.1f},{bot+8:.1f} '
+            f'Q{cx+10:.1f},{bot+16:.1f} {cx+14:.1f},{bot+8:.1f}', sw))
     elif num == 3:
-        # Left hook
+        # Left hook (reversed J)
         elements.append(svg_path(
-            f'M{cx:.1f},{bot:.1f} L{cx:.1f},{bot+6:.1f} Q{cx-8:.1f},{bot+12:.1f} {cx-12:.1f},{bot+6:.1f}', sw))
+            f'M{cx:.1f},{bot:.1f} L{cx:.1f},{bot+8:.1f} '
+            f'Q{cx-10:.1f},{bot+16:.1f} {cx-14:.1f},{bot+8:.1f}', sw))
     elif num == 4:
-        # Right curve
+        # Right curve/swoop
         elements.append(svg_path(
-            f'M{cx:.1f},{bot:.1f} Q{cx+14:.1f},{bot+8:.1f} {cx+10:.1f},{bot+16:.1f}', sw))
+            f'M{cx:.1f},{bot:.1f} Q{cx+18:.1f},{bot+10:.1f} {cx+12:.1f},{bot+20:.1f}', sw))
     elif num == 5:
-        # Serif / horizontal at bottom
+        # Inverted T (vertical + horizontal bar)
         elements.append(svg_line(cx, bot, cx, bot + elen, sw))
-        elements.append(svg_line(cx - 8, bot + elen, cx + 8, bot + elen, sw))
+        elements.append(svg_line(cx - 10, bot + elen, cx + 10, bot + elen, sw))
     elif num == 6:
-        # Right S-curve
+        # S-curve
         elements.append(svg_path(
-            f'M{cx:.1f},{bot:.1f} Q{cx+10:.1f},{bot+5:.1f} {cx:.1f},{bot+12:.1f} '
-            f'Q{cx-8:.1f},{bot+17:.1f} {cx:.1f},{bot+20:.1f}', sw))
+            f'M{cx:.1f},{bot:.1f} Q{cx+12:.1f},{bot+6:.1f} {cx:.1f},{bot+14:.1f} '
+            f'Q{cx-10:.1f},{bot+20:.1f} {cx:.1f},{bot+24:.1f}', sw))
     elif num == 7:
-        # Left flag
+        # Left flag (vertical + left tick)
         elements.append(svg_line(cx, bot, cx, bot + elen, sw))
-        elements.append(svg_line(cx, bot + 4, cx - 10, bot + 8, sw))
+        elements.append(svg_line(cx, bot + 5, cx - 12, bot + 10, sw))
     elif num == 8:
-        # Right flag
+        # Right flag (vertical + right tick)
         elements.append(svg_line(cx, bot, cx, bot + elen, sw))
-        elements.append(svg_line(cx, bot + 4, cx + 10, bot + 8, sw))
+        elements.append(svg_line(cx, bot + 5, cx + 12, bot + 10, sw))
     elif num == 9:
-        # Fork at bottom
-        elements.append(svg_line(cx, bot, cx, bot + 8, sw))
-        elements.append(svg_line(cx, bot + 8, cx + 8, bot + elen, sw))
-        elements.append(svg_line(cx, bot + 8, cx - 8, bot + elen, sw))
+        # Fork at bottom (two diverging lines)
+        elements.append(svg_line(cx, bot, cx, bot + 10, sw))
+        elements.append(svg_line(cx, bot + 10, cx + 10, bot + elen, sw))
+        elements.append(svg_line(cx, bot + 10, cx - 10, bot + elen, sw))
 
 
 def _draw_mood_diac(elements, cx, y, mood):
@@ -404,14 +413,14 @@ def _draw_mood_diac(elements, cx, y, mood):
 def draw_quaternary_vk(x, y, w, h, illoc='ASR', valid='OBS'):
     """Draw a quaternary character for illocution/validation (Vk).
 
-    From reference: tall vertical stems with distinctive top curves (illocution)
+    Reference 12_4: bold vertical stems with thick top curves (illocution)
     and bottom hooks (validation).
     """
     elements = []
     cx = x + w / 2
     top = y + 5
     bot = y + h - 5
-    sw = 2.5
+    sw = 4.5  # match case quaternary thickness
 
     # Main vertical stem
     elements.append(svg_line(cx, top, cx, bot, sw))
@@ -419,14 +428,14 @@ def draw_quaternary_vk(x, y, w, h, illoc='ASR', valid='OBS'):
     # Illocution (top extension)
     illoc_shapes = {
         'ASR': [],  # plain
-        'DIR': [('curve_r', 12)],
-        'DEC': [('hook_r', 10), ('tick_down', 6)],
-        'IRG': [('bar', 10)],
-        'VRF': [('hook_l', 10), ('tick_down', 6)],
-        'ADM': [('curve_l', 12)],
-        'POT': [('bar', 8), ('hook_r', 6)],
-        'HOR': [('curve_r', 16)],
-        'CNJ': [('bar', 8), ('hook_l', 6)],
+        'DIR': [('curve_r', 16)],
+        'DEC': [('hook_r', 14), ('tick_down', 8)],
+        'IRG': [('bar', 14)],
+        'VRF': [('hook_l', 14), ('tick_down', 8)],
+        'ADM': [('curve_l', 16)],
+        'POT': [('bar', 12), ('hook_r', 8)],
+        'HOR': [('curve_r', 20)],
+        'CNJ': [('bar', 12), ('hook_l', 8)],
     }
 
     for shape, size in illoc_shapes.get(illoc, []):
@@ -443,7 +452,7 @@ def draw_quaternary_vk(x, y, w, h, illoc='ASR', valid='OBS'):
         elif shape == 'bar':
             elements.append(svg_line(cx - size, top, cx + size, top, sw))
         elif shape == 'tick_down':
-            elements.append(svg_line(cx, top, cx, top + size, 1.5))
+            elements.append(svg_line(cx, top, cx, top + size, sw * 0.7))
 
     # Validation (bottom extension, only with ASR illocution)
     if illoc == 'ASR':
@@ -460,82 +469,114 @@ def draw_quaternary_vk(x, y, w, h, illoc='ASR', valid='OBS'):
 # ============================================================================
 
 def draw_tertiary(x, y, w, h, valence='MNO', aspect=None, phase=None, effect=None):
-    """Draw a tertiary character.
+    """Draw a tertiary character as bold filled arrow shapes.
 
-    Structure from reference (12_3_tertiary_chars.png):
-    - Left segment: horizontal arrow shaft (valence)
-    - Right segment: arrowhead shape (aspect, phase, or effect)
+    Reference (12_3_tertiary_chars.png):
+    - Valence: thick filled right-pointing arrow (9 forms)
+    - Aspect/Phase/Effect: bold marks in upper-right portion
     """
     elements = []
-    cx = x + w / 2
     cy = y + h / 2
-    sw = 2.5
 
-    # Valence: horizontal arrow shaft
-    shaft_x1 = x + 4
-    shaft_x2 = x + w - 4
-    shaft_y = cy
+    # ---- Valence: bold filled arrow polygon ----
+    # Arrow dimensions within the 50x100 cell
+    left = x + 2
+    right = x + w - 2
+    shaft_h = 6      # half-height of shaft rectangle
+    head_h = 14      # half-height of arrowhead tips
+    neck = left + (right - left) * 0.55  # where shaft meets arrowhead
 
-    # Draw the main arrow shaft
-    elements.append(svg_line(shaft_x1, shaft_y, shaft_x2, shaft_y, sw))
+    val_names = ['MNO', 'PRL', 'CRO', 'RCP', 'CPL', 'DUP', 'DEM', 'CNG', 'PTI']
+    vi = val_names.index(valence) if valence in val_names else 0
 
-    # Arrowhead based on valence type
-    head_x = shaft_x2
-    head_spread = 6
-    head_len = 8
+    # Base filled arrow polygon: shaft rectangle + arrowhead triangle
+    arrow_pts = [
+        (left, cy - shaft_h),
+        (neck, cy - shaft_h),
+        (neck, cy - head_h),
+        (right, cy),
+        (neck, cy + head_h),
+        (neck, cy + shaft_h),
+        (left, cy + shaft_h),
+    ]
+    elements.append(svg_polygon(arrow_pts))
 
-    val_idx = ['MNO', 'PRL', 'CRO', 'RCP', 'CPL', 'DUP', 'DEM', 'CNG', 'PTI']
-    vi = val_idx.index(valence) if valence in val_idx else 0
-
-    # Simple arrowhead (all valences get one, but with variations)
-    elements.append(svg_line(head_x, shaft_y, head_x + head_len, shaft_y - head_spread, sw))
-    elements.append(svg_line(head_x, shaft_y, head_x + head_len, shaft_y + head_spread, sw))
-
-    # Additional valence markers (must produce 9 distinct forms)
-    if vi == 1:  # PRL: single back notch
-        elements.append(svg_line(shaft_x1 + 4, shaft_y - 3, shaft_x1 + 4, shaft_y + 3, 1.5))
-    elif vi == 2:  # CRO: hook on arrowhead
+    # Valence modifications (overlaid on the base arrow)
+    msw = 2.5
+    if vi == 1:  # PRL: vertical bar across shaft near back
+        bx = left + 10
+        elements.append(svg_line(bx, cy - shaft_h - 4, bx, cy + shaft_h + 4, msw))
+    elif vi == 2:  # CRO: curve connecting arrowhead tips
         elements.append(svg_path(
-            f'M{head_x + head_len:.1f},{shaft_y - head_spread:.1f} '
-            f'Q{head_x + head_len + 3:.1f},{shaft_y:.1f} '
-            f'{head_x + head_len:.1f},{shaft_y + head_spread:.1f}', 1.5))
-    elif vi == 3:  # RCP: triangle head (closed)
-        elements.append(svg_line(head_x + head_len, shaft_y - head_spread,
-                                  head_x + head_len, shaft_y + head_spread, 1.5))
-    elif vi == 4:  # CPL: bar behind arrowhead
-        elements.append(svg_line(head_x - 4, shaft_y - 5, head_x - 4, shaft_y + 5, 1.5))
-    elif vi == 5:  # DUP: double back notch
-        elements.append(svg_line(shaft_x1 + 4, shaft_y - 3, shaft_x1 + 4, shaft_y + 3, 1.5))
-        elements.append(svg_line(shaft_x1 + 8, shaft_y - 3, shaft_x1 + 8, shaft_y + 3, 1.5))
-    elif vi == 6:  # DEM: arrowhead + down-tick
-        elements.append(svg_line(head_x + head_len, shaft_y + head_spread,
-                                  head_x + head_len - 3, shaft_y + head_spread + 4, 1.5))
-    elif vi == 7:  # CNG: arrowhead + up-tick
-        elements.append(svg_line(head_x + head_len, shaft_y - head_spread,
-                                  head_x + head_len - 3, shaft_y - head_spread - 4, 1.5))
-    elif vi == 8:  # PTI: double hook on head
-        elements.append(svg_line(head_x + head_len, shaft_y - head_spread,
-                                  head_x + head_len + 3, shaft_y - head_spread + 3, 1.5))
-        elements.append(svg_line(head_x + head_len, shaft_y + head_spread,
-                                  head_x + head_len + 3, shaft_y + head_spread - 3, 1.5))
+            f'M{neck:.1f},{cy - head_h:.1f} '
+            f'Q{right + 5:.1f},{cy:.1f} '
+            f'{neck:.1f},{cy + head_h:.1f}', 2, fill='none'))
+    elif vi == 3:  # RCP: closed triangle (bar connecting tips)
+        elements.append(svg_line(neck + 2, cy - head_h + 1,
+                                  neck + 2, cy + head_h - 1, msw))
+    elif vi == 4:  # CPL: bar across shaft behind arrowhead
+        bx = neck - 6
+        elements.append(svg_line(bx, cy - shaft_h - 5, bx, cy + shaft_h + 5, msw))
+    elif vi == 5:  # DUP: two bars across shaft
+        elements.append(svg_line(left + 8, cy - shaft_h - 3,
+                                  left + 8, cy + shaft_h + 3, msw))
+        elements.append(svg_line(left + 16, cy - shaft_h - 3,
+                                  left + 16, cy + shaft_h + 3, msw))
+    elif vi == 6:  # DEM: lower tip extends down-left
+        elements.append(svg_line(neck, cy + head_h,
+                                  neck - 6, cy + head_h + 7, msw))
+    elif vi == 7:  # CNG: upper tip extends up-left
+        elements.append(svg_line(neck, cy - head_h,
+                                  neck - 6, cy - head_h - 7, msw))
+    elif vi == 8:  # PTI: tips curve outward
+        elements.append(svg_line(neck, cy - head_h,
+                                  neck + 5, cy - head_h - 5, 2))
+        elements.append(svg_line(neck, cy + head_h,
+                                  neck + 5, cy + head_h + 5, 2))
 
-    # Aspect (shown as a second arrow or mark above/below the shaft)
+    # ---- Aspect mark (upper-right zone, bold filled chevron) ----
     if aspect:
         _draw_aspect_mark(elements, x, y, w, h, aspect)
 
-    # Phase (shown as vertical double-stroke marks)
+    # ---- Phase mark (double vertical strokes in upper-right) ----
     if phase:
         _draw_phase_mark(elements, x, y, w, h, phase)
 
-    # Effect (shown as V-shapes)
+    # ---- Effect mark (V-shapes in upper-right) ----
     if effect:
         _draw_effect_mark(elements, x, y, w, h, effect)
 
     return elements
 
 
+def _draw_filled_chevron(elements, cx, cy, direction, size=8, spread=5):
+    """Draw a small bold filled chevron/arrow pointing in the given direction.
+
+    Used for aspect marks. direction: 0=right, 1=down, 2=left, 3=up.
+    """
+    s, sp = size, spread
+    if direction == 0:  # right
+        pts = [(cx, cy - sp), (cx + s, cy), (cx, cy + sp),
+               (cx + s * 0.4, cy)]
+    elif direction == 1:  # down
+        pts = [(cx - sp, cy), (cx, cy + s), (cx + sp, cy),
+               (cx, cy + s * 0.4)]
+    elif direction == 2:  # left
+        pts = [(cx, cy - sp), (cx - s, cy), (cx, cy + sp),
+               (cx - s * 0.4, cy)]
+    elif direction == 3:  # up
+        pts = [(cx - sp, cy), (cx, cy - s), (cx + sp, cy),
+               (cx, cy - s * 0.4)]
+    elements.append(svg_polygon(pts))
+
+
 def _draw_aspect_mark(elements, x, y, w, h, aspect):
-    """Draw aspect indicator on tertiary character (upper-right zone)."""
+    """Draw aspect as bold filled chevron in upper-right zone.
+
+    36 aspects: 4 rows of 9, each row points in a different direction.
+    Row 0 (RTR-ATP): right, Row 1 (RSM-IRP): down,
+    Row 2 (PMP-PPR): left, Row 3 (DCL-SQN): up.
+    """
     aspect_names = [
         'RTR', 'PRS', 'HAB', 'PRG', 'IMM', 'PCS', 'REG', 'SMM', 'ATP',
         'RSM', 'CSS', 'PAU', 'RGR', 'PCL', 'CNT', 'ICS', 'EXP', 'IRP',
@@ -545,68 +586,70 @@ def _draw_aspect_mark(elements, x, y, w, h, aspect):
     if aspect not in aspect_names:
         return
     idx = aspect_names.index(aspect)
-    col = idx // 9
-    row = idx % 9
+    row = idx // 9
+    col = idx % 9
 
-    # Draw aspect as a small arrow/chevron in the upper-right portion
-    ax = x + w * 0.6
-    ay = y + h * 0.25
-    aw = w * 0.35
-    ah = h * 0.2
+    # Position in upper-right quadrant
+    ax = x + w * 0.72
+    ay = y + h * 0.28
+
+    # Draw base chevron
+    _draw_filled_chevron(elements, ax, ay, direction=row, size=10, spread=6)
+
+    # Row-specific distinguishing marks (small ticks)
     sw = 1.5
-
-    # Arrow direction varies by column
-    if col == 0:
-        # Right-pointing
-        elements.append(svg_line(ax, ay, ax + aw, ay, sw))
-        elements.append(svg_line(ax + aw, ay, ax + aw - 3, ay - 3, sw))
-    elif col == 1:
-        # Down-pointing
-        elements.append(svg_line(ax + aw/2, ay - 3, ax + aw/2, ay + ah, sw))
-        elements.append(svg_line(ax + aw/2, ay + ah, ax + aw/2 - 3, ay + ah - 3, sw))
-    elif col == 2:
-        # Left-pointing
-        elements.append(svg_line(ax + aw, ay, ax, ay, sw))
-        elements.append(svg_line(ax, ay, ax + 3, ay - 3, sw))
-    elif col == 3:
-        # Up-pointing
-        elements.append(svg_line(ax + aw/2, ay + ah, ax + aw/2, ay - 3, sw))
-        elements.append(svg_line(ax + aw/2, ay - 3, ax + aw/2 - 3, ay, sw))
-
-    # Row adds tick marks
-    for i in range(min(row, 3)):
-        elements.append(svg_line(ax + 3 + i * 3, ay + ah + 2, ax + 3 + i * 3, ay + ah + 5, 1))
+    if col >= 1:
+        # Add small tick marks to distinguish the 9 forms within each row
+        for i in range(min(col, 4)):
+            if row == 0:
+                elements.append(svg_line(ax - 4 + i * 3, ay + 9,
+                                          ax - 4 + i * 3, ay + 12, sw))
+            elif row == 1:
+                elements.append(svg_line(ax + 9, ay - 4 + i * 3,
+                                          ax + 12, ay - 4 + i * 3, sw))
+            elif row == 2:
+                elements.append(svg_line(ax + 4 - i * 3, ay + 9,
+                                          ax + 4 - i * 3, ay + 12, sw))
+            elif row == 3:
+                elements.append(svg_line(ax - 9, ay + 4 - i * 3,
+                                          ax - 12, ay + 4 - i * 3, sw))
+    if col >= 5:
+        # Additional mark for 5-8
+        mx = ax + (6 if row in (0, 1) else -6)
+        my = ay + (6 if row in (0, 2) else -6)
+        elements.append(svg_line(mx - 2, my, mx + 2, my, sw))
 
 
 def _draw_phase_mark(elements, x, y, w, h, phase):
-    """Draw phase indicator (double vertical strokes)."""
+    """Draw phase as bold double vertical strokes in upper-right zone."""
     phase_names = ['PCT', 'ITR', 'REP', 'ITM', 'RCT', 'FRE', 'FRG', 'VAC', 'FLC']
     if phase not in phase_names:
         return
     idx = phase_names.index(phase)
-    px = x + w * 0.55
-    py = y + h * 0.2
-    ph = h * 0.25
-    sw = 1.5
+    px = x + w * 0.72
+    py = y + h * 0.18
+    ph = h * 0.22
+    sw = 2.5
 
-    # Two vertical bars with varying bottom connection
-    elements.append(svg_line(px - 3, py, px - 3, py + ph, sw))
-    elements.append(svg_line(px + 3, py, px + 3, py + ph, sw))
+    # Two vertical bars
+    elements.append(svg_line(px - 4, py, px - 4, py + ph, sw))
+    elements.append(svg_line(px + 4, py, px + 4, py + ph, sw))
     # Connection varies by phase
     if idx >= 1:
-        elements.append(svg_line(px - 3, py + ph, px + 3, py + ph, 1))
+        elements.append(svg_line(px - 4, py + ph, px + 4, py + ph, 2))
     if idx >= 4:
-        elements.append(svg_line(px - 3, py, px + 3, py, 1))
+        elements.append(svg_line(px - 4, py, px + 4, py, 2))
+    if idx >= 7:
+        elements.append(svg_line(px - 4, py + ph / 2, px + 4, py + ph / 2, 1.5))
 
 
 def _draw_effect_mark(elements, x, y, w, h, effect):
-    """Draw effect indicator (V-shape variants)."""
-    ex = x + w * 0.55
+    """Draw effect as bold V-shape in upper-right zone."""
+    ex = x + w * 0.72
     ey = y + h * 0.2
-    sw = 1.5
-    # Simple V-shape
-    elements.append(svg_line(ex - 4, ey, ex, ey + 8, sw))
-    elements.append(svg_line(ex + 4, ey, ex, ey + 8, sw))
+    sw = 2.5
+    elements.append(svg_line(ex - 5, ey, ex, ey + 10, sw))
+    elements.append(svg_line(ex + 5, ey, ex, ey + 10, sw))
 
 
 # ============================================================================

@@ -3,243 +3,240 @@
 <text x="20" y="25" font-size="14" font-family="sans-serif" fill="#333">Ithkuil V4 Script - Comprehensive Test Sheet</text>
 <text x="20" y="45" font-size="11" font-weight="bold" fill="#333">Sample Words</text>
 <text x="30" y="60" font-size="8" fill="#999">Malëuţřait (THM)</text>
-<g transform="translate(30,65)"><polygon points="21.5,97.0 56.5,27.0 48.5,23.0 13.5,93.0" fill="black"/>
-<polygon points="35.0,14.0 37.5,17.0 35.0,20.0 32.5,17.0" fill="black"/>
-<line x1="32.0" y1="66.0" x2="34.4" y2="61.2" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<g transform="translate(65,110) scale(0.08,-0.08)"><path d="M128,799 L369,220 L331,180 L72,801 Z" fill="black" fill-rule="nonzero"/></g>
-<g transform="translate(120,110) scale(0.08,-0.08)"><path d="M350,750 L292,717 L238,695 L191,659 L155,612 L133,558 L125,500 L133,442 L155,388 L191,341 L238,305 L292,283 L350,250 L350,250 L279,234 L212,262 L155,305 L112,362 L84,429 L75,500 L84,571 L112,638 L155,695 L212,738 L279,766 L350,750 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(30,65)"><polygon points="22.7,102.1 62.7,26.1 47.3,17.9 7.3,93.9" fill="black"/>
+<polygon points="35.0,6.0 38.5,10.0 35.0,14.0 31.5,10.0" fill="black"/>
+<line x1="31.8" y1="66.1" x2="35.5" y2="59.0" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
+<g transform="translate(65,110) scale(0.08,-0.08)"><path d="M136,799 L374,226 L326,174 L64,801 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(120,110) scale(0.08,-0.08)"><path d="M350,750 L294,710 L241,688 L196,654 L162,609 L140,556 L133,500 L140,444 L162,391 L196,346 L241,312 L294,290 L350,250 L350,250 L277,227 L209,255 L150,300 L105,359 L77,427 L67,500 L77,573 L105,641 L150,700 L209,745 L277,773 L350,750 Z" fill="black" fill-rule="nonzero"/></g>
 <g transform="translate(120,110) scale(0.08,-0.08)"><path d="M300,65 A50,50 0 1,1 250,15 L250,64 A1,1 0 1,0 251,65 Z M225,90 L225,100 L275,100 L275,90 Z" fill="black" fill-rule="nonzero"/></g>
 <line x1="141.0" y1="115.0" x2="149.0" y2="115.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="200.0" y1="18.0" x2="200.0" y2="102.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="200.0" y1="102.0" x2="200.0" y2="109.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/></g>
+<line x1="200.0" y1="18.0" x2="200.0" y2="102.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="200.0" y1="102.0" x2="200.0" y2="111.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/></g>
 <text x="30" y="190" font-size="8" fill="#999">talk-ERG (DYN)</text>
-<g transform="translate(30,195)"><polygon points="21.5,97.0 56.5,27.0 48.5,23.0 13.5,93.0" fill="black"/>
-<polygon points="35.0,14.0 37.5,17.0 35.0,20.0 32.5,17.0" fill="black"/>
-<line x1="32.0" y1="66.0" x2="34.4" y2="61.2" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="15.1" y1="93.8" x2="50.1" y2="23.8" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<g transform="translate(65,110) scale(0.08,-0.08)"><path d="M122,811 L275,506 L275,225 L450,225 L450,175 L225,175 L225,494 L78,789 Z" fill="black" fill-rule="nonzero"/></g>
-<line x1="145.0" y1="18.0" x2="145.0" y2="102.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="145.0" y1="102.0" x2="145.0" y2="116.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="145.0" y1="106.0" x2="135.0" y2="110.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/></g>
+<g transform="translate(30,195)"><polygon points="22.7,102.1 62.7,26.1 47.3,17.9 7.3,93.9" fill="black"/>
+<polygon points="35.0,6.0 38.5,10.0 35.0,14.0 31.5,10.0" fill="black"/>
+<line x1="31.8" y1="66.1" x2="35.5" y2="59.0" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
+<line x1="9.6" y1="95.1" x2="49.6" y2="19.1" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+<g transform="translate(65,110) scale(0.08,-0.08)"><path d="M129,815 L282,508 L282,232 L450,232 L450,168 L218,168 L218,492 L71,785 Z" fill="black" fill-rule="nonzero"/></g>
+<line x1="145.0" y1="18.0" x2="145.0" y2="102.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="145.0" y1="102.0" x2="145.0" y2="120.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="145.0" y1="107.0" x2="133.0" y2="112.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/></g>
 <text x="30" y="320" font-size="8" fill="#999">cat-THM (S2, geminate rr)</text>
-<g transform="translate(30,325)"><polygon points="21.5,97.0 56.5,27.0 48.5,23.0 13.5,93.0" fill="black"/>
-<polygon points="35.0,14.0 37.5,17.0 35.0,20.0 32.5,17.0" fill="black"/>
-<line x1="32.0" y1="66.0" x2="34.4" y2="61.2" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="34.2" y1="61.6" x2="36.6" y2="56.7" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<g transform="translate(65,110) scale(0.08,-0.08)"><path d="M100,825 L375,825 L375,525 L175,525 L175,200 L125,200 L125,575 L325,575 L325,775 L100,775 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(30,325)"><polygon points="22.7,102.1 62.7,26.1 47.3,17.9 7.3,93.9" fill="black"/>
+<polygon points="35.0,6.0 38.5,10.0 35.0,14.0 31.5,10.0" fill="black"/>
+<line x1="31.8" y1="66.1" x2="35.5" y2="59.0" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
+<line x1="34.6" y1="60.8" x2="38.3" y2="53.7" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
+<g transform="translate(65,110) scale(0.08,-0.08)"><path d="M100,832 L382,832 L382,518 L182,518 L182,200 L118,200 L118,582 L318,582 L318,768 L100,768 Z" fill="black" fill-rule="nonzero"/></g>
 <line x1="87.0" y1="113.0" x2="87.0" y2="118.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
 <line x1="93.0" y1="113.0" x2="93.0" y2="118.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="145.0" y1="18.0" x2="145.0" y2="102.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="145.0" y1="102.0" x2="145.0" y2="109.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/></g>
+<line x1="145.0" y1="18.0" x2="145.0" y2="102.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="145.0" y1="102.0" x2="145.0" y2="111.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/></g>
 <text x="30" y="450" font-size="8" fill="#999">clown+affix-ABS (CRO/HAB)</text>
-<g transform="translate(30,455)"><polygon points="21.5,97.0 56.5,27.0 48.5,23.0 13.5,93.0" fill="black"/>
-<polygon points="35.0,14.0 37.5,17.0 35.0,20.0 32.5,17.0" fill="black"/>
-<line x1="32.0" y1="66.0" x2="34.4" y2="61.2" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<g transform="translate(65,110) scale(0.08,-0.08)"><path d="M100,825 L425,825 L425,490 L118,182 L82,218 L375,510 L375,775 L100,775 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(30,455)"><polygon points="22.7,102.1 62.7,26.1 47.3,17.9 7.3,93.9" fill="black"/>
+<polygon points="35.0,6.0 38.5,10.0 35.0,14.0 31.5,10.0" fill="black"/>
+<line x1="31.8" y1="66.1" x2="35.5" y2="59.0" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
+<g transform="translate(65,110) scale(0.08,-0.08)"><path d="M100,832 L432,832 L432,487 L123,177 L77,223 L368,513 L368,768 L100,768 Z" fill="black" fill-rule="nonzero"/></g>
 <g transform="translate(65,110) scale(0.08,-0.08)"><path d="M300,65 A50,50 0 0,1 200,65 L249,65 A1,1 0 0,0 251,65 Z M211,85 L261,120 L289,80 L239,45 Z" fill="black" fill-rule="nonzero"/></g>
-<g transform="translate(120,110) scale(0.08,-0.08) rotate(180 250 500)"><path d="M100,825 L375,825 L375,525 L175,525 L175,200 L125,200 L125,575 L325,575 L325,775 L100,775 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(120,110) scale(0.08,-0.08) rotate(180 250 500)"><path d="M100,832 L382,832 L382,518 L182,518 L182,200 L118,200 L118,582 L318,582 L318,768 L100,768 Z" fill="black" fill-rule="nonzero"/></g>
 <path d="M142.0,115.0 Q142.0,120.0 148.0,120.0 Q148.0,115.0 145.0,113.0" stroke="black" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="145.0" cy="7.0" r="2" fill="black"/>
-<line x1="179.0" y1="60.0" x2="221.0" y2="60.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="221.0" y1="60.0" x2="229.0" y2="54.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="221.0" y1="60.0" x2="229.0" y2="66.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M229.0,54.0 Q232.0,60.0 229.0,66.0" stroke="black" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="205.0" y1="35.0" x2="222.5" y2="35.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="222.5" y1="35.0" x2="219.5" y2="32.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="208.0" y1="57.0" x2="208.0" y2="60.0" stroke="black" stroke-width="1" stroke-linecap="round"/>
-<line x1="211.0" y1="57.0" x2="211.0" y2="60.0" stroke="black" stroke-width="1" stroke-linecap="round"/>
-<line x1="255.0" y1="18.0" x2="255.0" y2="102.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M255.0,102.0 L255.0,108.0 Q247.0,114.0 243.0,108.0" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+<polygon points="177.0,54.0 202.3,54.0 202.3,46.0 223.0,60.0 202.3,74.0 202.3,66.0 177.0,66.0" fill="black"/>
+<path d="M202.3,46.0 Q228.0,60.0 202.3,74.0" stroke="black" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="211.0,32.0 221.0,38.0 211.0,44.0 215.0,38.0" fill="black"/>
+<line x1="207.0" y1="47.0" x2="207.0" y2="50.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="210.0" y1="47.0" x2="210.0" y2="50.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="255.0" y1="18.0" x2="255.0" y2="102.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M255.0,102.0 L255.0,110.0 Q245.0,118.0 241.0,110.0" stroke="black" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
 <text x="20" y="570" font-size="11" font-weight="bold" fill="#333">Secondary Characters (31 consonants)</text>
 <text x="57" y="590" text-anchor="middle" font-size="8" fill="#666">p</text>
-<g transform="translate(35,640) scale(0.065,-0.065)"><path d="M100,825 L350,825 L350,775 L100,775 ZM125,800 L125,421 L97,386 L118,406 L142,421 L169,433 L196,440 L225,442 L254,440 L281,433 L308,421 L332,406 L353,386 L370,365 L330,335 L316,352 L301,366 L284,377 L265,385 L245,390 L225,392 L205,390 L185,385 L166,377 L149,366 L134,352 L75,279 L75,800 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(35,640) scale(0.065,-0.065)"><path d="M100,832 L350,832 L350,768 L100,768 ZM132,800 L132,442 L91,392 L114,412 L139,428 L166,440 L195,447 L225,450 L255,447 L284,440 L311,428 L336,412 L359,392 L376,370 L324,330 L311,347 L297,360 L281,371 L263,378 L244,383 L225,384 L206,383 L187,378 L169,371 L153,360 L139,347 L68,258 L68,800 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="112" y="590" text-anchor="middle" font-size="8" fill="#666">b</text>
-<g transform="translate(90,640) scale(0.065,-0.065)"><path d="M350,775 L100,775 L100,825 L350,825 ZM375,800 L375,279 L316,352 L301,366 L284,377 L265,385 L245,390 L225,392 L205,390 L185,385 L166,377 L149,366 L134,352 L120,335 L80,365 L97,386 L118,406 L142,421 L169,433 L196,440 L225,442 L254,440 L281,433 L308,421 L332,406 L353,386 L325,421 L325,800 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(90,640) scale(0.065,-0.065)"><path d="M350,768 L100,768 L100,832 L350,832 ZM382,800 L382,258 L311,347 L297,360 L281,371 L263,378 L244,383 L225,384 L206,383 L187,378 L169,371 L153,360 L139,347 L126,330 L74,370 L91,392 L114,412 L139,428 L166,440 L195,447 L225,450 L255,447 L284,440 L311,428 L336,412 L359,392 L318,442 L318,800 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="167" y="590" text-anchor="middle" font-size="8" fill="#666">t</text>
-<g transform="translate(145,640) scale(0.065,-0.065)"><path d="M75,200 L75,825 L400,825 L400,775 L125,775 L125,200 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(145,640) scale(0.065,-0.065)"><path d="M68,200 L68,832 L400,832 L400,768 L132,768 L132,200 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="222" y="590" text-anchor="middle" font-size="8" fill="#666">d</text>
-<g transform="translate(200,640) scale(0.065,-0.065)"><path d="M250,225 L375,225 L375,775 L100,775 L100,825 L425,825 L425,175 L250,175 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(200,640) scale(0.065,-0.065)"><path d="M250,232 L368,232 L368,768 L100,768 L100,832 L432,832 L432,168 L250,168 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="277" y="590" text-anchor="middle" font-size="8" fill="#666">k</text>
-<g transform="translate(255,640) scale(0.065,-0.065)"><path d="M100,825 L425,825 L425,490 L118,182 L82,218 L375,510 L375,775 L100,775 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(255,640) scale(0.065,-0.065)"><path d="M100,832 L432,832 L432,487 L123,177 L77,223 L368,513 L368,768 L100,768 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="332" y="590" text-anchor="middle" font-size="8" fill="#666">g</text>
-<g transform="translate(310,640) scale(0.065,-0.065)"><path d="M400,775 L125,775 L125,510 L418,218 L382,182 L75,490 L75,825 L400,825 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(310,640) scale(0.065,-0.065)"><path d="M400,768 L132,768 L132,513 L423,223 L377,177 L68,487 L68,832 L400,832 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="387" y="590" text-anchor="middle" font-size="8" fill="#666">f</text>
-<g transform="translate(365,640) scale(0.065,-0.065)"><path d="M100,825 L400,825 L400,775 L100,775 ZM125,800 L125,575 L375,575 L375,185 L349,171 L335,165 L320,161 L305,158 L290,156 L275,155 L260,156 L245,158 L230,161 L215,165 L201,171 L188,178 L212,222 L222,217 L232,212 L243,209 L253,207 L264,205 L275,205 L286,205 L297,207 L307,209 L318,212 L328,217 L325,215 L325,525 L75,525 L75,800 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(365,640) scale(0.065,-0.065)"><path d="M100,832 L400,832 L400,768 L100,768 ZM132,800 L132,582 L382,582 L382,180 L352,164 L337,158 L322,154 L307,150 L291,148 L275,147 L259,148 L243,150 L228,154 L213,158 L198,164 L185,171 L215,229 L225,223 L235,220 L245,216 L255,214 L265,213 L275,212 L285,213 L295,214 L305,216 L315,220 L325,223 L318,220 L318,518 L68,518 L68,800 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="442" y="590" text-anchor="middle" font-size="8" fill="#666">v</text>
-<g transform="translate(420,640) scale(0.065,-0.065)"><path d="M400,775 L100,775 L100,825 L400,825 ZM425,800 L425,525 L175,525 L175,215 L172,217 L182,212 L193,209 L203,207 L214,205 L225,205 L236,205 L247,207 L257,209 L268,212 L278,217 L288,222 L312,178 L299,171 L285,165 L270,161 L255,158 L240,156 L225,155 L210,156 L195,158 L180,161 L165,165 L151,171 L125,185 L125,575 L375,575 L375,800 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(420,640) scale(0.065,-0.065)"><path d="M400,768 L100,768 L100,832 L400,832 ZM432,800 L432,518 L182,518 L182,220 L175,223 L185,220 L195,216 L205,214 L215,213 L225,212 L235,213 L245,214 L255,216 L265,220 L275,223 L285,229 L315,171 L302,164 L287,158 L272,154 L257,150 L241,148 L225,147 L209,148 L193,150 L178,154 L163,158 L148,164 L118,180 L118,582 L368,582 L368,800 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="497" y="590" text-anchor="middle" font-size="8" fill="#666">ţ</text>
-<g transform="translate(475,640) scale(0.065,-0.065)"><path d="M350,750 L292,717 L238,695 L191,659 L155,612 L133,558 L125,500 L133,442 L155,388 L191,341 L238,305 L292,283 L350,250 L350,250 L279,234 L212,262 L155,305 L112,362 L84,429 L75,500 L84,571 L112,638 L155,695 L212,738 L279,766 L350,750 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(475,640) scale(0.065,-0.065)"><path d="M350,750 L294,710 L241,688 L196,654 L162,609 L140,556 L133,500 L140,444 L162,391 L196,346 L241,312 L294,290 L350,250 L350,250 L277,227 L209,255 L150,300 L105,359 L77,427 L67,500 L77,573 L105,641 L150,700 L209,745 L277,773 L350,750 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="552" y="590" text-anchor="middle" font-size="8" fill="#666">ḑ</text>
-<g transform="translate(530,640) scale(0.065,-0.065)"><path d="M150,750 L221,766 L288,738 L345,695 L388,638 L416,571 L425,500 L416,429 L388,362 L345,305 L288,262 L221,234 L150,250 L150,250 L208,283 L262,305 L309,341 L345,388 L367,442 L375,500 L367,558 L345,612 L309,659 L262,695 L208,717 L150,750 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(530,640) scale(0.065,-0.065)"><path d="M150,750 L223,773 L291,745 L350,700 L395,641 L423,573 L433,500 L423,427 L395,359 L350,300 L291,255 L223,227 L150,250 L150,250 L206,290 L259,312 L304,346 L338,391 L360,444 L367,500 L360,556 L338,609 L304,654 L259,688 L206,710 L150,750 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="607" y="590" text-anchor="middle" font-size="8" fill="#666">s</text>
-<g transform="translate(585,640) scale(0.065,-0.065)"><path d="M118,818 L385,550 L118,282 L82,318 L315,550 L82,782 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(585,640) scale(0.065,-0.065)"><path d="M123,823 L396,550 L123,277 L77,323 L304,550 L77,777 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="57" y="660" text-anchor="middle" font-size="8" fill="#666">z</text>
-<g transform="translate(35,710) scale(0.065,-0.065)"><path d="M368,782 L135,550 L368,318 L332,282 L65,550 L332,818 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(35,710) scale(0.065,-0.065)"><path d="M373,777 L146,550 L373,323 L327,277 L54,550 L327,823 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="112" y="660" text-anchor="middle" font-size="8" fill="#666">š</text>
-<g transform="translate(90,710) scale(0.065,-0.065)"><path d="M125,653 L129,618 L142,588 L162,562 L188,542 L218,529 L250,525 L282,529 L312,542 L338,562 L358,588 L371,618 L375,653 L425,647 L419,605 L402,562 L374,526 L338,498 L295,481 L250,475 L205,481 L162,498 L126,526 L98,562 L81,605 L75,647 ZM121,663 L395,225 L100,225 L100,275 L305,275 L79,637 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(90,710) scale(0.065,-0.065)"><path d="M132,654 L137,620 L148,591 L167,567 L191,548 L220,537 L250,533 L280,537 L309,548 L333,567 L352,591 L363,620 L368,654 L432,646 L427,603 L408,559 L379,521 L341,492 L297,473 L250,467 L203,473 L159,492 L121,521 L92,559 L73,603 L68,646 ZM128,667 L409,218 L100,218 L100,282 L291,282 L72,633 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="167" y="660" text-anchor="middle" font-size="8" fill="#666">ž</text>
-<g transform="translate(145,710) scale(0.065,-0.065)"><path d="M425,647 L419,605 L402,562 L374,526 L338,498 L295,481 L250,475 L205,481 L162,498 L126,526 L98,562 L81,605 L75,647 L125,653 L129,618 L142,588 L162,562 L188,542 L218,529 L250,525 L282,529 L312,542 L338,562 L358,588 L371,618 L375,653 ZM421,637 L195,275 L400,275 L400,225 L105,225 L379,663 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(145,710) scale(0.065,-0.065)"><path d="M432,646 L427,603 L408,559 L379,521 L341,492 L297,473 L250,467 L203,473 L159,492 L121,521 L92,559 L73,603 L68,646 L132,654 L137,620 L148,591 L167,567 L191,548 L220,537 L250,533 L280,537 L309,548 L333,567 L352,591 L363,620 L368,654 ZM428,633 L209,282 L400,282 L400,218 L91,218 L372,667 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="222" y="660" text-anchor="middle" font-size="8" fill="#666">ç</text>
-<g transform="translate(200,710) scale(0.065,-0.065)"><path d="M400,775 L140,775 L278,500 L140,225 L400,225 L400,175 L60,175 L222,500 L60,825 L400,825 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(200,710) scale(0.065,-0.065)"><path d="M400,768 L153,768 L286,500 L153,232 L400,232 L400,168 L47,168 L214,500 L47,832 L400,832 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="277" y="660" text-anchor="middle" font-size="8" fill="#666">x</text>
-<g transform="translate(255,710) scale(0.065,-0.065)"><path d="M100,825 L400,825 L400,775 L100,775 ZM422,789 L122,189 L78,211 L378,811 ZM100,225 L400,225 L400,175 L100,175 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(255,710) scale(0.065,-0.065)"><path d="M100,832 L400,832 L400,768 L100,768 ZM429,785 L129,185 L71,215 L371,815 ZM100,232 L400,232 L400,168 L100,168 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="332" y="660" text-anchor="middle" font-size="8" fill="#666">h</text>
-<g transform="translate(310,710) scale(0.065,-0.065)"><path d="M122,812 L325,457 L325,200 L275,200 L275,443 L78,788 ZM150,475 L450,475 L450,425 L150,425 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(310,710) scale(0.065,-0.065)"><path d="M128,816 L332,459 L332,200 L268,200 L268,441 L72,784 ZM150,482 L450,482 L450,418 L150,418 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="387" y="660" text-anchor="middle" font-size="8" fill="#666">ļ</text>
-<g transform="translate(365,710) scale(0.065,-0.065)"><path d="M123,809 L250,471 L377,809 L423,791 L250,329 L77,791 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(365,710) scale(0.065,-0.065)"><path d="M130,811 L250,493 L370,811 L430,789 L250,307 L70,789 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="442" y="660" text-anchor="middle" font-size="8" fill="#666">c</text>
-<g transform="translate(420,710) scale(0.065,-0.065)"><path d="M125,800 L125,225 L400,225 L400,175 L75,175 L75,800 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(420,710) scale(0.065,-0.065)"><path d="M132,800 L132,232 L400,232 L400,168 L68,168 L68,800 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="497" y="660" text-anchor="middle" font-size="8" fill="#666">ẓ</text>
-<g transform="translate(475,710) scale(0.065,-0.065)"><path d="M250,775 L125,775 L125,225 L400,225 L400,175 L75,175 L75,825 L250,825 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(475,710) scale(0.065,-0.065)"><path d="M250,768 L132,768 L132,232 L400,232 L400,168 L68,168 L68,832 L250,832 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="552" y="660" text-anchor="middle" font-size="8" fill="#666">č</text>
-<g transform="translate(530,710) scale(0.065,-0.065)"><path d="M350,775 L125,775 L125,225 L350,225 L350,175 L75,175 L75,825 L350,825 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(530,710) scale(0.065,-0.065)"><path d="M350,768 L132,768 L132,232 L350,232 L350,168 L68,168 L68,832 L350,832 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="607" y="660" text-anchor="middle" font-size="8" fill="#666">j</text>
-<g transform="translate(585,710) scale(0.065,-0.065)"><path d="M150,825 L425,825 L425,175 L150,175 L150,225 L375,225 L375,775 L150,775 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(585,710) scale(0.065,-0.065)"><path d="M150,832 L432,832 L432,168 L150,168 L150,232 L368,232 L368,768 L150,768 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="57" y="730" text-anchor="middle" font-size="8" fill="#666">m</text>
-<g transform="translate(35,780) scale(0.065,-0.065)"><path d="M128,799 L369,220 L331,180 L72,801 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(35,780) scale(0.065,-0.065)"><path d="M136,799 L374,226 L326,174 L64,801 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="112" y="730" text-anchor="middle" font-size="8" fill="#666">n</text>
-<g transform="translate(90,780) scale(0.065,-0.065)"><path d="M127,797 L318,225 L450,225 L450,175 L282,175 L73,803 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(90,780) scale(0.065,-0.065)"><path d="M136,796 L323,232 L450,232 L450,168 L277,168 L64,804 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="167" y="730" text-anchor="middle" font-size="8" fill="#666">ň</text>
-<g transform="translate(145,780) scale(0.065,-0.065)"><path d="M128,800 L325,355 L325,200 L275,200 L275,345 L72,800 ZM314,371 L464,271 L436,229 L286,329 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(145,780) scale(0.065,-0.065)"><path d="M136,799 L332,357 L332,200 L268,200 L268,343 L64,801 ZM318,377 L468,277 L432,223 L282,323 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="222" y="730" text-anchor="middle" font-size="8" fill="#666">r</text>
-<g transform="translate(200,780) scale(0.065,-0.065)"><path d="M100,825 L375,825 L375,525 L175,525 L175,200 L125,200 L125,575 L325,575 L325,775 L100,775 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(200,780) scale(0.065,-0.065)"><path d="M100,832 L382,832 L382,518 L182,518 L182,200 L118,200 L118,582 L318,582 L318,768 L100,768 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="277" y="730" text-anchor="middle" font-size="8" fill="#666">l</text>
-<g transform="translate(255,780) scale(0.065,-0.065)"><path d="M122,811 L275,506 L275,225 L450,225 L450,175 L225,175 L225,494 L78,789 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(255,780) scale(0.065,-0.065)"><path d="M129,815 L282,508 L282,232 L450,232 L450,168 L218,168 L218,492 L71,785 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="332" y="730" text-anchor="middle" font-size="8" fill="#666">w</text>
-<g transform="translate(310,780) scale(0.065,-0.065)"><path d="M128,799 L267,474 L273,474 L295,469 L317,462 L338,452 L357,439 L374,424 L389,407 L402,388 L412,367 L419,345 L424,323 L400,300 L400,300 L374,316 L371,332 L365,348 L358,362 L349,376 L338,388 L326,399 L312,408 L298,415 L282,421 L266,424 L233,426 L72,801 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(310,780) scale(0.065,-0.065)"><path d="M136,799 L272,481 L274,481 L297,476 L320,469 L341,458 L361,445 L379,429 L395,411 L408,391 L419,370 L426,347 L431,324 L400,300 L400,300 L366,315 L363,330 L358,345 L352,359 L343,371 L333,383 L321,393 L309,402 L295,408 L280,413 L265,416 L228,419 L64,801 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="387" y="730" text-anchor="middle" font-size="8" fill="#666">y</text>
-<g transform="translate(365,780) scale(0.065,-0.065)"><path d="M378,801 L217,426 L184,424 L168,421 L152,415 L138,408 L124,399 L112,388 L101,376 L92,362 L85,348 L79,332 L76,316 L50,300 L50,300 L26,323 L31,345 L38,367 L48,388 L61,407 L76,424 L93,439 L112,452 L133,462 L155,469 L177,474 L183,474 L322,799 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(365,780) scale(0.065,-0.065)"><path d="M386,801 L222,419 L185,416 L170,413 L155,408 L141,402 L129,393 L117,383 L107,371 L98,359 L92,345 L87,330 L84,315 L50,300 L50,300 L19,324 L24,347 L31,370 L42,391 L55,411 L71,429 L89,445 L109,458 L130,469 L153,476 L176,481 L178,481 L314,799 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="442" y="730" text-anchor="middle" font-size="8" fill="#666">ř</text>
-<g transform="translate(420,780) scale(0.065,-0.065)"><path d="M75,652 L76,634 L79,618 L85,602 L92,588 L101,574 L112,562 L124,551 L138,542 L152,535 L168,529 L184,526 L202,525 L198,475 L177,476 L155,481 L133,488 L112,498 L93,511 L76,526 L61,543 L48,562 L38,583 L31,605 L26,627 L25,648 ZM225,500 L225,200 L175,200 L175,500 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(420,780) scale(0.065,-0.065)"><path d="M82,652 L84,635 L87,620 L92,605 L98,591 L107,579 L117,567 L129,557 L141,548 L155,542 L170,537 L185,534 L202,532 L198,468 L176,469 L153,474 L130,481 L109,492 L89,505 L71,521 L55,539 L42,559 L31,580 L24,603 L19,626 L18,648 ZM232,500 L232,200 L168,200 L168,500 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="497" y="730" text-anchor="middle" font-size="8" fill="#666">&#x2019;</text>
-<g transform="translate(475,780) scale(0.065,-0.065)"><path d="M225,700 L225,400 L175,400 L175,700 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(475,780) scale(0.065,-0.065)"><path d="M232,700 L232,400 L168,400 L168,700 Z" fill="black" fill-rule="nonzero"/></g>
 <text x="20" y="795" font-size="11" font-weight="bold" fill="#333">Primary Character Variations</text>
 <text x="55" y="815" text-anchor="middle" font-size="7" fill="#999">BSC/EXS/S1/STA</text>
-<polygon points="41.3,890.4 76.3,834.4 68.7,829.6 33.7,885.6" fill="black"/>
-<polygon points="55.0,821.0 57.5,824.0 55.0,827.0 52.5,824.0" fill="black"/>
-<line x1="52.4" y1="864.2" x2="55.3" y2="859.6" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="42.3,895.2 82.3,834.4 67.7,824.8 27.7,885.6" fill="black"/>
+<polygon points="55.0,813.6 58.5,817.6 55.0,821.6 51.5,817.6" fill="black"/>
+<line x1="52.3" y1="864.1" x2="56.7" y2="857.4" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
 <text x="185" y="815" text-anchor="middle" font-size="7" fill="#999">CTE/FNC/S2/STA</text>
-<polygon points="171.3,890.4 206.3,834.4 198.7,829.6 163.7,885.6" fill="black"/>
-<line x1="163.5" y1="882.0" x2="173.5" y2="876.0" stroke="black" stroke-width="2" stroke-linecap="round"/>
-<line x1="180.0" y1="824.0" x2="190.0" y2="824.0" stroke="black" stroke-width="2" stroke-linecap="round"/>
-<line x1="182.4" y1="864.2" x2="185.3" y2="859.6" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="185.0" y1="859.9" x2="187.9" y2="855.3" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="172.3,895.2 212.3,834.4 197.7,824.8 157.7,885.6" fill="black"/>
+<line x1="154.6" y1="883.5" x2="162.6" y2="873.5" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="178.0" y1="817.6" x2="192.0" y2="817.6" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="182.3" y1="864.1" x2="186.7" y2="857.4" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
+<line x1="185.6" y1="859.1" x2="190.0" y2="852.4" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
 <text x="315" y="815" text-anchor="middle" font-size="7" fill="#999">CSV/RPS/S3/DYN</text>
-<polygon points="301.3,890.4 336.3,834.4 328.7,829.6 293.7,885.6" fill="black"/>
-<line x1="295.5" y1="884.0" x2="302.5" y2="876.0" stroke="black" stroke-width="2" stroke-linecap="round"/>
-<line x1="302.5" y1="876.0" x2="295.5" y2="870.0" stroke="black" stroke-width="2" stroke-linecap="round"/>
-<line x1="311.0" y1="821.0" x2="319.0" y2="827.0" stroke="black" stroke-width="2" stroke-linecap="round"/>
-<line x1="312.4" y1="864.2" x2="315.3" y2="859.6" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="315.0" y1="859.9" x2="317.9" y2="855.3" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="317.7" y1="855.7" x2="320.6" y2="851.1" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="295.2" y1="886.6" x2="330.2" y2="830.6" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="302.3,895.2 342.3,834.4 327.7,824.8 287.7,885.6" fill="black"/>
+<line x1="286.6" y1="885.5" x2="294.6" y2="875.5" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="294.6" y1="875.5" x2="286.6" y2="867.5" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="309.0" y1="813.6" x2="321.0" y2="821.6" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="312.3" y1="864.1" x2="316.7" y2="857.4" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
+<line x1="315.6" y1="859.1" x2="320.0" y2="852.4" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
+<line x1="318.9" y1="854.1" x2="323.3" y2="847.4" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
+<line x1="289.9" y1="887.0" x2="329.9" y2="826.2" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
 <text x="445" y="815" text-anchor="middle" font-size="7" fill="#999">OBJ/AMG/S1/CPT</text>
-<polygon points="431.3,890.4 466.3,834.4 458.7,829.6 423.7,885.6" fill="black"/>
-<line x1="425.5" y1="876.0" x2="432.5" y2="884.0" stroke="black" stroke-width="2" stroke-linecap="round"/>
-<line x1="432.5" y1="884.0" x2="425.5" y2="890.0" stroke="black" stroke-width="2" stroke-linecap="round"/>
-<line x1="449.0" y1="821.0" x2="441.0" y2="827.0" stroke="black" stroke-width="2" stroke-linecap="round"/>
-<line x1="442.4" y1="864.2" x2="445.3" y2="859.6" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-<line x1="437.4" y1="855.2" x2="452.6" y2="864.8" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+<polygon points="432.3,895.2 472.3,834.4 457.7,824.8 417.7,885.6" fill="black"/>
+<line x1="416.6" y1="873.5" x2="424.6" y2="883.5" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="424.6" y1="883.5" x2="416.6" y2="891.5" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="451.0" y1="813.6" x2="439.0" y2="821.6" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="442.3" y1="864.1" x2="446.7" y2="857.4" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
+<line x1="434.0" y1="852.8" x2="456.0" y2="867.2" stroke="black" stroke-width="2.0" stroke-linecap="round"/>
 <text x="20" y="915" font-size="11" font-weight="bold" fill="#333">Quaternary: 8 Case Types</text>
-<line x1="55.0" y1="933.0" x2="55.0" y2="997.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="55.0" y1="997.0" x2="55.0" y2="1004.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="55.0" y1="933.0" x2="55.0" y2="997.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="55.0" y1="997.0" x2="55.0" y2="1006.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
 <text x="55" y="1020" text-anchor="middle" font-size="6" fill="#999">TRANS</text>
-<line x1="115.0" y1="933.0" x2="115.0" y2="997.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M115.0,933.0 Q129.0,933.0 127.0,947.0" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M115.0,997.0 L115.0,1003.0 Q123.0,1009.0 127.0,1003.0" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="115.0" y1="933.0" x2="115.0" y2="997.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M115.0,933.0 Q133.0,933.0 129.0,951.0" stroke="black" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M115.0,997.0 L115.0,1005.0 Q125.0,1013.0 129.0,1005.0" stroke="black" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="115" y="1020" text-anchor="middle" font-size="6" fill="#999">APPOS</text>
-<line x1="175.0" y1="933.0" x2="175.0" y2="997.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="175.0" y1="933.0" x2="185.0" y2="925.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="175.0" y1="933.0" x2="165.0" y2="925.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M175.0,997.0 L175.0,1003.0 Q167.0,1009.0 163.0,1003.0" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="175.0" y1="933.0" x2="175.0" y2="997.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="175.0" y1="933.0" x2="187.0" y2="923.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="175.0" y1="933.0" x2="163.0" y2="923.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M175.0,997.0 L175.0,1005.0 Q165.0,1013.0 161.0,1005.0" stroke="black" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="175" y="1020" text-anchor="middle" font-size="6" fill="#999">ASSOC</text>
-<line x1="235.0" y1="933.0" x2="235.0" y2="997.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M235.0,933.0 Q251.0,938.0 247.0,949.0" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M235.0,997.0 Q249.0,1005.0 245.0,1013.0" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="235.0" y1="933.0" x2="235.0" y2="997.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M235.0,933.0 Q255.0,939.0 249.0,953.0" stroke="black" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M235.0,997.0 Q253.0,1007.0 247.0,1017.0" stroke="black" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="235" y="1020" text-anchor="middle" font-size="6" fill="#999">ADVERB</text>
-<line x1="295.0" y1="933.0" x2="295.0" y2="997.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M295.0,933.0 Q281.0,933.0 283.0,947.0" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="295.0" y1="997.0" x2="295.0" y2="1011.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="287.0" y1="1011.0" x2="303.0" y2="1011.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="295.0" y1="933.0" x2="295.0" y2="997.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M295.0,933.0 Q277.0,933.0 281.0,951.0" stroke="black" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="295.0" y1="997.0" x2="295.0" y2="1015.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="285.0" y1="1015.0" x2="305.0" y2="1015.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
 <text x="295" y="1020" text-anchor="middle" font-size="6" fill="#999">RELAT</text>
-<line x1="355.0" y1="933.0" x2="355.0" y2="997.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="343.0" y1="933.0" x2="367.0" y2="933.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M355.0,997.0 Q365.0,1002.0 355.0,1009.0 Q347.0,1014.0 355.0,1017.0" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="355.0" y1="933.0" x2="355.0" y2="997.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="341.0" y1="933.0" x2="369.0" y2="933.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M355.0,997.0 Q367.0,1003.0 355.0,1011.0 Q345.0,1017.0 355.0,1021.0" stroke="black" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="355" y="1020" text-anchor="middle" font-size="6" fill="#999">AFFIN</text>
-<line x1="415.0" y1="933.0" x2="415.0" y2="997.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="403.0" y1="933.0" x2="427.0" y2="933.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M427.0,933.0 Q433.0,935.0 431.0,943.0" stroke="black" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="415.0" y1="997.0" x2="415.0" y2="1011.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="415.0" y1="1001.0" x2="405.0" y2="1005.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="415.0" y1="933.0" x2="415.0" y2="997.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="401.0" y1="933.0" x2="429.0" y2="933.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M429.0,933.0 Q437.0,936.0 433.0,947.0" stroke="black" stroke-width="3.15" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="415.0" y1="997.0" x2="415.0" y2="1015.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="415.0" y1="1002.0" x2="403.0" y2="1007.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
 <text x="415" y="1020" text-anchor="middle" font-size="6" fill="#999">SPAT-1</text>
-<line x1="475.0" y1="933.0" x2="475.0" y2="997.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="463.0" y1="933.0" x2="487.0" y2="933.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M463.0,933.0 Q457.0,935.0 459.0,943.0" stroke="black" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<line x1="475.0" y1="997.0" x2="475.0" y2="1011.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="475.0" y1="1001.0" x2="485.0" y2="1005.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="475.0" y1="933.0" x2="475.0" y2="997.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="461.0" y1="933.0" x2="489.0" y2="933.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M461.0,933.0 Q453.0,936.0 457.0,947.0" stroke="black" stroke-width="3.15" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="475.0" y1="997.0" x2="475.0" y2="1015.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="475.0" y1="1002.0" x2="487.0" y2="1007.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
 <text x="475" y="1020" text-anchor="middle" font-size="6" fill="#999">SPAT-2</text>
 <text x="20" y="1035" font-size="11" font-weight="bold" fill="#333">Quaternary: 9 Case Numbers</text>
-<line x1="55.0" y1="1053.0" x2="55.0" y2="1117.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="55.0" y1="1117.0" x2="55.0" y2="1124.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="55.0" y1="1053.0" x2="55.0" y2="1117.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="55.0" y1="1117.0" x2="55.0" y2="1126.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
 <text x="55" y="1140" text-anchor="middle" font-size="7" fill="#999">Case 1</text>
-<line x1="110.0" y1="1053.0" x2="110.0" y2="1117.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M110.0,1117.0 L110.0,1123.0 Q118.0,1129.0 122.0,1123.0" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="110.0" y1="1053.0" x2="110.0" y2="1117.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M110.0,1117.0 L110.0,1125.0 Q120.0,1133.0 124.0,1125.0" stroke="black" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="110" y="1140" text-anchor="middle" font-size="7" fill="#999">Case 2</text>
-<line x1="165.0" y1="1053.0" x2="165.0" y2="1117.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M165.0,1117.0 L165.0,1123.0 Q157.0,1129.0 153.0,1123.0" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="165.0" y1="1053.0" x2="165.0" y2="1117.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M165.0,1117.0 L165.0,1125.0 Q155.0,1133.0 151.0,1125.0" stroke="black" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="165" y="1140" text-anchor="middle" font-size="7" fill="#999">Case 3</text>
-<line x1="220.0" y1="1053.0" x2="220.0" y2="1117.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M220.0,1117.0 Q234.0,1125.0 230.0,1133.0" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="220.0" y1="1053.0" x2="220.0" y2="1117.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M220.0,1117.0 Q238.0,1127.0 232.0,1137.0" stroke="black" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="220" y="1140" text-anchor="middle" font-size="7" fill="#999">Case 4</text>
-<line x1="275.0" y1="1053.0" x2="275.0" y2="1117.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="275.0" y1="1117.0" x2="275.0" y2="1131.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="267.0" y1="1131.0" x2="283.0" y2="1131.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="275.0" y1="1053.0" x2="275.0" y2="1117.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="275.0" y1="1117.0" x2="275.0" y2="1135.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="265.0" y1="1135.0" x2="285.0" y2="1135.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
 <text x="275" y="1140" text-anchor="middle" font-size="7" fill="#999">Case 5</text>
-<line x1="330.0" y1="1053.0" x2="330.0" y2="1117.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M330.0,1117.0 Q340.0,1122.0 330.0,1129.0 Q322.0,1134.0 330.0,1137.0" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="330.0" y1="1053.0" x2="330.0" y2="1117.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M330.0,1117.0 Q342.0,1123.0 330.0,1131.0 Q320.0,1137.0 330.0,1141.0" stroke="black" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="330" y="1140" text-anchor="middle" font-size="7" fill="#999">Case 6</text>
-<line x1="385.0" y1="1053.0" x2="385.0" y2="1117.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="385.0" y1="1117.0" x2="385.0" y2="1131.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="385.0" y1="1121.0" x2="375.0" y2="1125.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="385.0" y1="1053.0" x2="385.0" y2="1117.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="385.0" y1="1117.0" x2="385.0" y2="1135.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="385.0" y1="1122.0" x2="373.0" y2="1127.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
 <text x="385" y="1140" text-anchor="middle" font-size="7" fill="#999">Case 7</text>
-<line x1="440.0" y1="1053.0" x2="440.0" y2="1117.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="440.0" y1="1117.0" x2="440.0" y2="1131.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="440.0" y1="1121.0" x2="450.0" y2="1125.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="440.0" y1="1053.0" x2="440.0" y2="1117.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="440.0" y1="1117.0" x2="440.0" y2="1135.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="440.0" y1="1122.0" x2="452.0" y2="1127.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
 <text x="440" y="1140" text-anchor="middle" font-size="7" fill="#999">Case 8</text>
-<line x1="495.0" y1="1053.0" x2="495.0" y2="1117.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="495.0" y1="1117.0" x2="495.0" y2="1125.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="495.0" y1="1125.0" x2="503.0" y2="1131.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
-<line x1="495.0" y1="1125.0" x2="487.0" y2="1131.0" stroke="black" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="495.0" y1="1053.0" x2="495.0" y2="1117.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="495.0" y1="1117.0" x2="495.0" y2="1127.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="495.0" y1="1127.0" x2="505.0" y2="1135.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="495.0" y1="1127.0" x2="485.0" y2="1135.0" stroke="black" stroke-width="4.5" stroke-linecap="round"/>
 <text x="495" y="1140" text-anchor="middle" font-size="7" fill="#999">Case 9</text>
 <text x="20" y="1155" font-size="11" font-weight="bold" fill="#333">Degree Diacritics (1-9)</text>
-<g transform="translate(30,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M128,799 L369,220 L331,180 L72,801 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(30,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M136,799 L374,226 L326,174 L64,801 Z" fill="black" fill-rule="nonzero"/></g>
 <circle cx="25.0" cy="115.0" r="1.5" fill="black"/></g>
 <text x="55" y="1260" text-anchor="middle" font-size="7" fill="#999">Deg 1</text>
-<g transform="translate(85,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M128,799 L369,220 L331,180 L72,801 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(85,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M136,799 L374,226 L326,174 L64,801 Z" fill="black" fill-rule="nonzero"/></g>
 <path d="M22.0,115.0 Q25.0,120.0 28.0,113.0" stroke="black" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
 <text x="110" y="1260" text-anchor="middle" font-size="7" fill="#999">Deg 2</text>
-<g transform="translate(140,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M128,799 L369,220 L331,180 L72,801 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(140,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M136,799 L374,226 L326,174 L64,801 Z" fill="black" fill-rule="nonzero"/></g>
 <line x1="22.0" y1="117.0" x2="28.0" y2="113.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/></g>
 <text x="165" y="1260" text-anchor="middle" font-size="7" fill="#999">Deg 3</text>
-<g transform="translate(195,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M128,799 L369,220 L331,180 L72,801 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(195,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M136,799 L374,226 L326,174 L64,801 Z" fill="black" fill-rule="nonzero"/></g>
 <path d="M22.0,115.0 Q22.0,120.0 28.0,120.0 Q28.0,115.0 25.0,113.0" stroke="black" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
 <text x="220" y="1260" text-anchor="middle" font-size="7" fill="#999">Deg 4</text>
-<g transform="translate(250,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M128,799 L369,220 L331,180 L72,801 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(250,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M136,799 L374,226 L326,174 L64,801 Z" fill="black" fill-rule="nonzero"/></g>
 <line x1="21.0" y1="115.0" x2="29.0" y2="115.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/></g>
 <text x="275" y="1260" text-anchor="middle" font-size="7" fill="#999">Deg 5</text>
-<g transform="translate(305,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M128,799 L369,220 L331,180 L72,801 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(305,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M136,799 L374,226 L326,174 L64,801 Z" fill="black" fill-rule="nonzero"/></g>
 <path d="M21.0,113.0 Q25.0,119.0 29.0,113.0" stroke="black" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
 <text x="330" y="1260" text-anchor="middle" font-size="7" fill="#999">Deg 6</text>
-<g transform="translate(360,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M128,799 L369,220 L331,180 L72,801 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(360,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M136,799 L374,226 L326,174 L64,801 Z" fill="black" fill-rule="nonzero"/></g>
 <line x1="22.0" y1="117.0" x2="25.0" y2="112.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
 <line x1="25.0" y1="112.0" x2="28.0" y2="117.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/></g>
 <text x="385" y="1260" text-anchor="middle" font-size="7" fill="#999">Deg 7</text>
-<g transform="translate(415,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M128,799 L369,220 L331,180 L72,801 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(415,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M136,799 L374,226 L326,174 L64,801 Z" fill="black" fill-rule="nonzero"/></g>
 <line x1="21.0" y1="115.0" x2="24.0" y2="112.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
 <line x1="24.0" y1="112.0" x2="26.0" y2="118.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
 <line x1="26.0" y1="118.0" x2="29.0" y2="115.0" stroke="black" stroke-width="1.5" stroke-linecap="round"/></g>
 <text x="440" y="1260" text-anchor="middle" font-size="7" fill="#999">Deg 8</text>
-<g transform="translate(470,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M128,799 L369,220 L331,180 L72,801 Z" fill="black" fill-rule="nonzero"/></g>
+<g transform="translate(470,1165)"><g transform="translate(0,110) scale(0.08,-0.08)"><path d="M136,799 L374,226 L326,174 L64,801 Z" fill="black" fill-rule="nonzero"/></g>
 <path d="M21.0,117.0 Q25.0,111.0 29.0,117.0" stroke="black" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
 <text x="495" y="1260" text-anchor="middle" font-size="7" fill="#999">Deg 9</text>
 <text x="20" y="1275" font-size="11" font-weight="bold" fill="#333">Bias Characters (4 base forms)</text>

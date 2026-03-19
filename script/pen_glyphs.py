@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from pen import Pen, CAP_FLAT, CAP_POINTED, CAP_CHISEL, mirror_x
 
-SW = 50  # standard stroke width
+SW = 65  # standard stroke width (thicker to match reference weight)
 
 
 # ============================================================================

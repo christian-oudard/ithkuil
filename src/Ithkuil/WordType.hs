@@ -18,7 +18,6 @@ module Ithkuil.WordType
   , extractVnCn
   , parseOneVnCn
   , classifyDegree
-  , classifyDegreeType
   , glossCz
   , glossVz
   , glossOneAffix
