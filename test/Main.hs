@@ -16,6 +16,11 @@ import Ithkuil.Validation (StressError(..), validateStress, ValidationResult(..)
 import Ithkuil.Compose (lookupGrammar, GrammarEntry(..), composeFormative, composeReferential, applyStress, searchRootsRanked)
 import Ithkuil.Allomorph (constructCa, parseCaSlot)
 import Ithkuil.Lexicon (loadRoots)
+import qualified Ithkuil.V3.Grammar as V3
+import qualified Ithkuil.V3.Parse as V3P
+import qualified Ithkuil.V3.Phonology as V3Ph
+import qualified Ithkuil.Common as Common
+import qualified Data.Map.Strict as Map
 
 main :: IO ()
 main = hspec $ do
@@ -2721,6 +2726,130 @@ main = hspec $ do
       case parseWord "yu" of
         PModular _ _ _ -> return ()
         pw -> expectationFailure $ "yu: " ++ show pw
+
+  describe "V3 Grammar" $ do
+    it "has 4 functions" $
+      length (V3.allOf :: [V3.Function]) `shouldBe` 4
+
+    it "has 3 patterns" $
+      length (V3.allOf :: [V3.Pattern]) `shouldBe` 3
+
+    it "has 3 stems" $
+      length (V3.allOf :: [V3.Stem]) `shouldBe` 3
+
+    it "has 9 configurations" $
+      length (V3.allOf :: [V3.Configuration]) `shouldBe` 9
+
+    it "has 8 moods" $
+      length (V3.allOf :: [V3.Mood]) `shouldBe` 8
+
+    it "has 6 illocutions" $
+      length (V3.allOf :: [V3.Illocution]) `shouldBe` 6
+
+    it "has 6 versions" $
+      length (V3.allOf :: [V3.Version]) `shouldBe` 6
+
+    it "has 49 biases" $
+      length (V3.allOf :: [V3.Bias]) `shouldBe` 49
+
+    it "has 72 base + 24 compound = 96 total cases" $ do
+      let baseCases = length (V3.allOf :: [V3.TransrelativeCase])
+                    + length (V3.allOf :: [V3.PossessiveCase])
+                    + length (V3.allOf :: [V3.AssociativeCase])
+                    + length (V3.allOf :: [V3.AdverbialCase])
+                    + length (V3.allOf :: [V3.RelationalCase])
+                    + length (V3.allOf :: [V3.TemporalCase1])
+                    + length (V3.allOf :: [V3.TemporalCase2])
+          compoundCases = length (V3.allOf :: [V3.CompoundGroup])
+                        * length (V3.allOf :: [V3.CompoundSeries])
+      baseCases `shouldBe` 72
+      compoundCases `shouldBe` 24
+
+    it "tone-version round trips" $ do
+      V3.toneToVersion V3.Falling `shouldBe` V3.PRC
+      V3.versionToTone V3.CPT `shouldBe` V3.High
+      V3.toneToVersion (V3.versionToTone V3.EFC) `shouldBe` V3.EFC
+
+    it "creates default formative" $ do
+      let f = V3.defaultFormative "l"
+      V3.fRoot f `shouldBe` V3.Root "l"
+      V3.fVr f `shouldBe` (V3.STA, V3.P1, V3.S1)
+      V3.fCase f `shouldBe` V3.Transrelative V3.OBL
+      V3.fDesig f `shouldBe` V3.IFL
+
+  describe "V3 Phonology" $ do
+    it "has 45 consonants" $
+      length V3Ph.consonants `shouldBe` 45
+
+    it "classifies vowels" $ do
+      V3Ph.isVowel 'a' `shouldBe` True
+      V3Ph.isVowel 'e' `shouldBe` True
+      V3Ph.isVowel 'p' `shouldBe` False
+
+    it "classifies consonants" $ do
+      V3Ph.isConsonant 'p' `shouldBe` True
+      V3Ph.isConsonant 'a' `shouldBe` False
+
+    it "splits conjuncts" $ do
+      let cs = V3Ph.splitConjuncts "elartkha"
+      -- e(V) l(C) a(V) rtkh(C) a(V)
+      length cs `shouldBe` 5
+      map fst cs `shouldBe` [True, False, True, False, True]
+
+  describe "V3 Parse tables" $ do
+    it "Vr table has 36 entries" $
+      Map.size V3P.vrTable `shouldBe` 36
+
+    it "Vr reverse table maps 'a' to (STA,P1,S1)" $
+      Map.lookup "a" V3P.vrTableReverse `shouldBe` Just (V3.STA, V3.P1, V3.S1)
+
+    it "Vr reverse table maps 'e' to (STA,P1,S2)" $
+      Map.lookup "e" V3P.vrTableReverse `shouldBe` Just (V3.STA, V3.P1, V3.S2)
+
+    it "Vc table has 96 entries" $
+      Map.size V3P.vcTable `shouldBe` 96
+
+    it "Vc maps OBL to 'a'" $
+      Map.lookup (V3.Transrelative V3.OBL) V3P.vcTable `shouldBe` Just ["a"]
+
+    it "Vc reverse maps 'a' to OBL" $
+      Map.lookup "a" V3P.vcTableReverse `shouldBe` Just (V3.Transrelative V3.OBL)
+
+    it "CiVi table has 41 entries" $
+      Map.size V3P.civiTable `shouldBe` 41
+
+    it "Vf table has 40 entries" $
+      Map.size V3P.vfTable `shouldBe` 40
+
+    it "Cb table has 49 entries" $
+      Map.size V3P.cbTable `shouldBe` 49
+
+  describe "V3 Parse formative" $ do
+    it "parses simple formative 'ala'" $ do
+      case V3P.parseFormative "ala" of
+        Right f -> do
+          V3.fRoot f `shouldBe` V3.Root "l"
+          V3.fCase f `shouldBe` V3.Transrelative V3.OBL
+          let (func, pat, stem) = V3.fVr f
+          func `shouldBe` V3.STA
+          pat `shouldBe` V3.P1
+          stem `shouldBe` V3.S1
+        Left err -> expectationFailure $ "Parse failed: " ++ show err
+
+  describe "Common abstractions" $ do
+    it "extracts FormativeInfo from V4" $ do
+      let f = minimalFormative "ml"
+          info = Common.toFormativeInfo f
+      Common.fiRoot info `shouldBe` "ml"
+      Common.fiStem info `shouldBe` 1
+      Common.fiVersion info `shouldBe` "PRC"
+
+    it "extracts FormativeInfo from V3" $ do
+      let f = V3.defaultFormative "l"
+          info = Common.toFormativeInfoV3 f
+      Common.fiRoot info `shouldBe` "l"
+      Common.fiStem info `shouldBe` 1
+      Common.fiVersion info `shouldBe` "PRC"
 
 -- Helper for test assertions on Maybe errors
 isJustErr :: Maybe a -> Bool

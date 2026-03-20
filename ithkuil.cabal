@@ -20,12 +20,15 @@ library
                     , Ithkuil.Referentials
                     , Ithkuil.Numbers
                     , Ithkuil.Lexicon
-                    , Ithkuil.Script
                     , Ithkuil.Validation
                     , Ithkuil.FullParse
                     , Ithkuil.Concatenation
                     , Ithkuil.WordType
                     , Ithkuil.Compose
+                    , Ithkuil.Common
+                    , Ithkuil.V3.Grammar
+                    , Ithkuil.V3.Phonology
+                    , Ithkuil.V3.Parse
     build-depends:    base >=4.17 && <5
                     , text
                     , containers
@@ -54,6 +57,7 @@ executable ithkuil-gloss
                     , text
                     , containers
                     , bytestring
+                    , process
 
 executable ithkuil-input
     import:           warnings
@@ -72,3 +76,4 @@ test-suite ithkuil-test
                     , ithkuil
                     , hspec
                     , text
+                    , containers
