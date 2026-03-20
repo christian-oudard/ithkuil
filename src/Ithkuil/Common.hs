@@ -27,8 +27,10 @@
 module Ithkuil.Common
   ( -- * Formative interface
     FormativeInfo(..)
+  , CaInfo(..)
   , toFormativeInfo
   , toFormativeInfoV3
+  , compareFormatives
     -- * Root
   , rootText
   , rootTextV3
@@ -55,9 +57,22 @@ import qualified Ithkuil.V3.Grammar as V3
 data FormativeInfo = FormativeInfo
   { fiRoot        :: Text          -- ^ Consonant root
   , fiStem        :: Int           -- ^ Stem number (1-3/4)
+  , fiFunction    :: Text          -- ^ Function (STA/DYN, V3 adds MNF/DSC)
   , fiCaseLabel   :: Text          -- ^ Case abbreviation
   , fiVersion     :: Text          -- ^ Version name
+  , fiCa          :: CaInfo        -- ^ Ca complex values
   , fiDescription :: Text          -- ^ Human-readable summary
+  }
+  deriving (Show, Eq)
+
+-- | Version-independent Ca complex.
+-- All five Ca components are shared between V3 and V4.
+data CaInfo = CaInfo
+  { caConfig      :: Text
+  , caAffiliation :: Text
+  , caPerspective :: Text
+  , caExtension   :: Text
+  , caEssence     :: Text
   }
   deriving (Show, Eq)
 
@@ -66,12 +81,14 @@ toFormativeInfo :: V4.Formative -> FormativeInfo
 toFormativeInfo f = FormativeInfo
   { fiRoot = rootText (V4.fSlotIII f)
   , fiStem = stemNum (fst (V4.fSlotII f))
+  , fiFunction = let (func, _, _) = V4.fSlotIV f in T.pack (show func)
   , fiCaseLabel = case V4.fSlotIX f of
       Left c  -> v4CaseAbbrev c
       Right _ -> "Vk"
   , fiVersion = case snd (V4.fSlotII f) of
       V4.PRC -> "PRC"
       V4.CPT -> "CPT"
+  , fiCa = v4CaInfo (V4.fSlotVI f)
   , fiDescription = ""
   }
   where
@@ -79,12 +96,20 @@ toFormativeInfo f = FormativeInfo
     stemNum V4.S2 = 2
     stemNum V4.S3 = 3
     stemNum V4.S0 = 0
+    v4CaInfo (cfg, aff, per, ext, ess) = CaInfo
+      { caConfig      = T.pack (show cfg)
+      , caAffiliation = T.pack (show aff)
+      , caPerspective = T.pack (show per)
+      , caExtension   = T.pack (show ext)
+      , caEssence     = T.pack (show ess)
+      }
 
 -- | Extract common info from a V3 formative
 toFormativeInfoV3 :: V3.Formative -> FormativeInfo
 toFormativeInfoV3 f = FormativeInfo
   { fiRoot = rootTextV3 (V3.fRoot f)
   , fiStem = v3StemNum (let (_, _, s) = V3.fVr f in s)
+  , fiFunction = T.pack (show (let (func, _, _) = V3.fVr f in func))
   , fiCaseLabel = V3.caseAbbrev (V3.fCase f)
   , fiVersion = case V3.fTone f of
       V3.Falling       -> "PRC"
@@ -93,12 +118,39 @@ toFormativeInfoV3 f = FormativeInfo
       V3.Low           -> "INC"
       V3.FallingRising -> "PST"
       V3.RisingFalling -> "EFC"
+  , fiCa = v3CaInfo (V3.fCa f)
   , fiDescription = ""
   }
   where
     v3StemNum V3.S1 = 1
     v3StemNum V3.S2 = 2
     v3StemNum V3.S3 = 3
+    v3CaInfo (ess, ext, per, aff, cfg) = CaInfo
+      { caConfig      = T.pack (show cfg)
+      , caAffiliation = T.pack (show aff)
+      , caPerspective = showV3Per per
+      , caExtension   = T.pack (show ext)
+      , caEssence     = T.pack (show ess)
+      }
+    showV3Per V3.M_ = "M_"
+    showV3Per V3.U_ = "U_"
+    showV3Per V3.N_ = "N_"
+    showV3Per V3.A_ = "A_"
+
+-- | Compare two FormativeInfo values, returning a list of (field, v3, v4) differences.
+compareFormatives :: FormativeInfo -> FormativeInfo -> [(Text, Text, Text)]
+compareFormatives v3 v4 = filter (\(_, a, b) -> a /= b)
+  [ ("Root", fiRoot v3, fiRoot v4)
+  , ("Stem", T.pack (show (fiStem v3)), T.pack (show (fiStem v4)))
+  , ("Function", fiFunction v3, fiFunction v4)
+  , ("Case", fiCaseLabel v3, fiCaseLabel v4)
+  , ("Version", fiVersion v3, fiVersion v4)
+  , ("Config", caConfig (fiCa v3), caConfig (fiCa v4))
+  , ("Affiliation", caAffiliation (fiCa v3), caAffiliation (fiCa v4))
+  , ("Perspective", caPerspective (fiCa v3), caPerspective (fiCa v4))
+  , ("Extension", caExtension (fiCa v3), caExtension (fiCa v4))
+  , ("Essence", caEssence (fiCa v3), caEssence (fiCa v4))
+  ]
 
 -- | Extract text from a V4 root
 rootText :: V4.Root -> Text

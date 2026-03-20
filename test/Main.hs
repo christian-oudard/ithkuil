@@ -3204,6 +3204,15 @@ main = hspec $ do
       Common.fiStem info `shouldBe` 1
       Common.fiVersion info `shouldBe` "PRC"
 
+    it "compares V3 and V4 formatives" $ do
+      let v3Info = Common.toFormativeInfoV3 (V3.defaultFormative "l")
+          v4Info = Common.toFormativeInfo (minimalFormative "l")
+          diffs = Common.compareFormatives v3Info v4Info
+      -- Default case differs: V3=OBL, V4=THM
+      any (\(field, _, _) -> field == "Case") diffs `shouldBe` True
+      -- Both have same root
+      any (\(field, _, _) -> field == "Root") diffs `shouldBe` False
+
     it "searches grammar for 'Illocution' across versions" $ do
       let results = Common.searchGrammar "Illocution"
       -- V3: ASR,DIR,IRG,ADM,HOR,DEC = 6; V4: ASR,DIR,IRG,ADM,HOR + DEC,EXV,AXM,PFM = 9
