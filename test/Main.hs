@@ -21,6 +21,7 @@ import qualified Ithkuil.V3.Parse as V3P
 import qualified Ithkuil.V3.Gloss as V3G
 import qualified Ithkuil.V3.Render as V3R
 import qualified Ithkuil.V3.Lexicon as V3L
+import qualified Ithkuil.V3.FullParse as V3FP
 import System.Directory (doesFileExist)
 import qualified Ithkuil.V3.Phonology as V3Ph
 import qualified Ithkuil.Common as Common
@@ -2962,6 +2963,43 @@ main = hspec $ do
           lex' <- V3L.loadV3Lexicon lexPath
           V3L.lookupV3Root "b" lex' `shouldBe` Just "want / desire / request"
         else pendingWith "data/v3_lexicon.dat not found"
+
+  describe "V3 FullParse" $ do
+    it "parses elartkha with full analysis" $ do
+      let caPath = "data/v3_ca_table.dat"
+      exists <- doesFileExist caPath
+      if exists
+        then do
+          ca <- V3P.loadCaTables caPath
+          case V3FP.parseFormative ca "elartkha" of
+            V3FP.Success f -> do
+              V3.fVr f `shouldBe` (V3.STA, V3.P1, V3.S2)
+              V3.fRoot f `shouldBe` V3.Root "l"
+              V3.fCase f `shouldBe` V3.Transrelative V3.OBL
+              -- Default: IFL/Unframed (penultimate stress, falling tone)
+              V3.fDesig f `shouldBe` V3.IFL
+              V3.fRelation f `shouldBe` V3.Unframed
+              V3.fTone f `shouldBe` V3.Falling
+            V3FP.Failure err -> expectationFailure $ "Parse failed: " ++ T.unpack err
+        else pendingWith "data/v3_ca_table.dat not found"
+
+    it "deconstructs elartkha with lexicon" $ do
+      let caPath = "data/v3_ca_table.dat"
+          lexPath = "data/v3_lexicon.dat"
+      caExists <- doesFileExist caPath
+      lexExists <- doesFileExist lexPath
+      if caExists && lexExists
+        then do
+          ca <- V3P.loadCaTables caPath
+          lex' <- V3L.loadV3Lexicon lexPath
+          case V3FP.parseFormative ca "elartkha" of
+            V3FP.Success f -> do
+              let slots = V3FP.deconstructFormative lex' f
+              -- Cr slot should have root meaning
+              let crSlot = filter (\s -> V3FP.dsSlotName s == "Cr") slots
+              length crSlot `shouldBe` 1
+            V3FP.Failure err -> expectationFailure $ "Parse failed: " ++ T.unpack err
+        else pendingWith "data files not found"
 
   describe "Common abstractions" $ do
     it "extracts FormativeInfo from V4" $ do
