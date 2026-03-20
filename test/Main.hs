@@ -25,6 +25,7 @@ import qualified Ithkuil.V3.FullParse as V3FP
 import System.Directory (doesFileExist)
 import qualified Ithkuil.V3.Phonology as V3Ph
 import qualified Ithkuil.V3.Compose as V3C
+import qualified Ithkuil.V3.Validation as V3Val
 import qualified Ithkuil.Common as Common
 import qualified Data.Map.Strict as Map
 
@@ -3096,6 +3097,34 @@ main = hspec $ do
           V3.fVf f `shouldBe` Just (V3.AMG, V3.NOF)
         Left err -> expectationFailure $ "Parse failed: " ++ show err
 
+  describe "V3 Validation" $ do
+    it "validates a well-formed formative" $
+      V3Val.validateFormative (V3.defaultFormative "l") `shouldBe` V3Val.Valid
+
+    it "rejects formative with empty root" $
+      V3Val.validateFormative (V3.defaultFormative "") `shouldSatisfy` isV3Invalid
+
+    it "rejects formative with vowels in root" $
+      V3Val.validateFormative (V3.defaultFormative "la") `shouldSatisfy` isV3Invalid
+
+    it "validates well-formed word" $ do
+      let caPath = "data/v3_ca_table.dat"
+      exists <- doesFileExist caPath
+      if exists
+        then do
+          ca <- V3P.loadCaTables caPath
+          V3Val.validateWord ca "elartkha" `shouldBe` V3Val.Valid
+        else pendingWith "data/v3_ca_table.dat not found"
+
+    it "rejects empty word" $ do
+      let caPath = "data/v3_ca_table.dat"
+      exists <- doesFileExist caPath
+      if exists
+        then do
+          ca <- V3P.loadCaTables caPath
+          V3Val.validateWord ca "" `shouldSatisfy` isV3Invalid
+        else pendingWith "data/v3_ca_table.dat not found"
+
   describe "V3 Compose" $ do
     let withCaLex action = do
           let caPath = "data/v3_ca_table.dat"
@@ -3210,3 +3239,7 @@ isJustErr Nothing = False
 isInvalid :: ValidationResult -> Bool
 isInvalid (Invalid _) = True
 isInvalid Valid = False
+
+isV3Invalid :: V3Val.ValidationResult -> Bool
+isV3Invalid (V3Val.Invalid _) = True
+isV3Invalid V3Val.Valid = False

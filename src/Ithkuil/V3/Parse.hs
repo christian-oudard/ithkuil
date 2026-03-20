@@ -25,6 +25,8 @@ module Ithkuil.V3.Parse
   , parseFormative
   , parseFormativeWithCa
   , ParseError(..)
+    -- * Utilities
+  , isV
   ) where
 
 import Data.Text (Text)
