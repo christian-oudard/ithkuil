@@ -105,13 +105,12 @@ cabal run ithkuil-gloss  # Launch interactive glosser
 cabal run ithkuil-input
 ```
 
-| Char | ASCII | Char | ASCII | Char | ASCII |
-|------|-------|------|-------|------|-------|
-| ä | `aa` | ë | `ee` | ö | `oo` |
-| ü | `uu` | ţ | `t,` | ḑ | `d,` |
-| ļ | `l,` | ç | `c,` | š | `sq` |
-| ž | `zq` | č | `cq` | ň | `nq` |
-| ř | `rq` | ẓ | `dz` | | |
+| | Char | ASCII | Char | ASCII | Char | ASCII | Char | ASCII | Char | ASCII |
+|----------|------|-------|------|-------|------|-------|------|-------|------|-------|
+| Umlaut   | ä | `aa` | ë | `ee` | ö | `oo` | ü | `uu` | | |
+| Cedilla  | ţ | `t,` | ḑ | `d,` | ļ | `l,` | ç | `c,` | | |
+| Háček    | š | `sq` | ž | `zq` | č | `cq` | ň | `nq` | ř | `rq` |
+| Underdot | ẓ | `dz` | | | | | | | | |
 
 Vowel runs use right-grouping: `eee`→eë, `eeee`→ëë. Pending characters are shown dimmed until resolved.
 
