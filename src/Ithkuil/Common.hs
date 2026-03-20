@@ -213,6 +213,25 @@ grammarTable = concat
   -- Mood: V3 has 8, V4 has 6
   , entries V3V4 "Mood" [("FAC","Factual"),("SUB","Subjunctive"),("ASM","Assumptive"),("SPC","Speculative"),("COU","Counterfactive"),("HYP","Hypothetical")]
   , entries V3Only "Mood" [("IPL","Implicative"),("ASC","Ascriptive")]
+
+  -- Illocution: V3 has 6, V4 has 9
+  , entries V3V4 "Illocution" [("ASR","Assertive"),("DIR","Directive"),("IRG","Interrogative"),("ADM","Admonitive"),("HOR","Hortative")]
+  , entries V3Only "Illocution" [("DEC","Declarative")]
+  , entries V4Only "Illocution" [("DEC","Declarative"),("EXV","Exhortative"),("AXM","Axiomatic"),("PFM","Performative")]
+
+  -- Configuration: V3 has 9, V4 has 20 (9 base + similarity/separability)
+  , entries V3V4 "Configuration" [("UNI","Uniplex"),("DPX","Duplex"),("DCT","Discrete"),("AGG","Aggregative"),("SEG","Segmentive"),("CPN","Componential"),("COH","Coherent"),("CST","Composite"),("MLT","Multiform")]
+
+  -- Sanction (V3 only) vs Validation (V4)
+  , entries V3Only "Sanction" [("PPS","Propositional"),("EPI","Epistemic"),("ALG","Allegative"),("IPU","Imputative"),("RFU","Refutative"),("REB","Rebutative"),("CJT","Conjectural"),("EXV","Expatiative"),("AXM","Axiomatic")]
+  , entries V4Only "Validation" [("OBS","Observational"),("REC","Recollective"),("PUP","Purportive"),("RPR","Reportive"),("USP","Unspecified"),("IMA","Imaginary"),("CVN","Conventional"),("ITU","Intuitive"),("INF","Inferential")]
+
+  -- Aspect: many shared between V3 and V4
+  , entries V3V4 "Aspect" [("RTR","Retrospective"),("PRS","Prospective"),("HAB","Habitual"),("PRG","Progressive"),("IMM","Imminent"),("PCS","Precessive"),("REG","Regressive"),("RSM","Resumptive"),("CSS","Cessative"),("PAU","Pausal"),("CNT","Continuative"),("ICS","Incessative"),("EXP","Experiential"),("IRP","Interruptive"),("PMP","Preemptive"),("CLM","Climactic"),("DLT","Dilatory"),("TMP","Temporary"),("LIM","Limitative"),("EPD","Expeditious"),("PTC","Protractive"),("PPR","Preparatory"),("DCL","Disclusive"),("CCL","Conclusive"),("CUL","Culminative")]
+  , entries V3Only "Aspect" [("SMM","Summative"),("ATP","Anticipatory"),("RGR","Regressive+"),("PCL","Preclusive"),("XPD","Expeditive"),("IMD","Intermediative"),("TRD","Tardative")]
+
+  -- Level (V3 only, V4 uses affixes)
+  , entries V3Only "Level" [("MIN","Minimal"),("SBE","Subequative"),("IFR","Inferior"),("DFI","Deficient"),("EQU","Equative"),("SUR","Surpassive"),("SPL","Superlative"),("SPQ","Superequative"),("MAX","Maximal")]
   ]
   where
     entries ver cat = map (\(a,n) -> GrammarEntry a n cat ver "")

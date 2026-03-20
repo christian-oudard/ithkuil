@@ -3135,6 +3135,33 @@ main = hspec $ do
       Common.fiStem info `shouldBe` 1
       Common.fiVersion info `shouldBe` "PRC"
 
+    it "searches grammar for 'Illocution' across versions" $ do
+      let results = Common.searchGrammar "Illocution"
+      -- V3: ASR,DIR,IRG,ADM,HOR,DEC = 6; V4: ASR,DIR,IRG,ADM,HOR + DEC,EXV,AXM,PFM = 9
+      -- Shared: ASR,DIR,IRG,ADM,HOR (5 V3V4) + DEC (V3Only + V4Only) + 3 V4Only
+      length results `shouldSatisfy` (>= 9)
+      any (\e -> Common.geAbbrev e == "DEC" && Common.geVersion e == Common.V3Only) results `shouldBe` True
+
+    it "searches grammar for 'Configuration' across versions" $ do
+      let results = Common.searchGrammar "Configuration"
+      length results `shouldSatisfy` (>= 9)
+      any (\e -> Common.geAbbrev e == "UNI" && Common.geVersion e == Common.V3V4) results `shouldBe` True
+
+    it "searches grammar for 'Aspect' across versions" $ do
+      let results = Common.searchGrammar "Aspect"
+      -- 25 shared + 7 V3-only = 32 total
+      length results `shouldSatisfy` (>= 32)
+
+    it "finds V3-only Level category" $ do
+      let results = Common.searchGrammar "Level"
+      length results `shouldBe` 9
+      all (\e -> Common.geVersion e == Common.V3Only) results `shouldBe` True
+
+    it "finds V3-only Sanction category" $ do
+      let results = Common.searchGrammar "Sanction"
+      length results `shouldBe` 9
+      all (\e -> Common.geVersion e == Common.V3Only) results `shouldBe` True
+
 -- Helper for test assertions on Maybe errors
 isJustErr :: Maybe a -> Bool
 isJustErr (Just _) = True
