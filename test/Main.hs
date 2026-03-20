@@ -18,6 +18,7 @@ import Ithkuil.Allomorph (constructCa, parseCaSlot)
 import Ithkuil.Lexicon (loadRoots)
 import qualified Ithkuil.V3.Grammar as V3
 import qualified Ithkuil.V3.Parse as V3P
+import qualified Ithkuil.V3.Gloss as V3G
 import System.Directory (doesFileExist)
 import qualified Ithkuil.V3.Phonology as V3Ph
 import qualified Ithkuil.Common as Common
@@ -2875,6 +2876,32 @@ main = hspec $ do
           ca <- V3P.loadCaTables caPath
           Map.lookup "l" (V3P.caReverse ca)
             `shouldBe` Just (V3.NRM, V3.DEL, V3.M_, V3.CSL, V3.UNI)
+        else pendingWith "data/v3_ca_table.dat not found"
+
+  describe "V3 Gloss" $ do
+    it "glosses a default formative" $ do
+      let f = V3.defaultFormative "l"
+          gloss = V3G.glossFormative f
+      -- Should contain root and case at minimum
+      T.isInfixOf "'l'" gloss `shouldBe` True
+      T.isInfixOf "OBL" gloss `shouldBe` True
+
+    it "glosses elartkha with Ca detail" $ do
+      let caPath = "data/v3_ca_table.dat"
+      exists <- doesFileExist caPath
+      if exists
+        then do
+          ca <- V3P.loadCaTables caPath
+          case V3P.parseFormativeWithCa ca "elartkha" of
+            Right f -> do
+              let gloss = V3G.glossFormative f
+                  slots = V3G.glossSlots f
+              T.isInfixOf "'l'" gloss `shouldBe` True
+              -- Vr slot should show STA/P1/S2
+              lookup "Vr" slots `shouldBe` Just "STA/P1/S2"
+              -- Vc slot should show OBL
+              lookup "Vc" slots `shouldBe` Just "OBL"
+            Left err -> expectationFailure $ "Parse failed: " ++ show err
         else pendingWith "data/v3_ca_table.dat not found"
 
   describe "Common abstractions" $ do
