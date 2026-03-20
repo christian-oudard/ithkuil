@@ -18,6 +18,7 @@ import Ithkuil.Allomorph (constructCa, parseCaSlot)
 import Ithkuil.Lexicon (loadRoots)
 import qualified Ithkuil.V3.Grammar as V3
 import qualified Ithkuil.V3.Parse as V3P
+import System.Directory (doesFileExist)
 import qualified Ithkuil.V3.Phonology as V3Ph
 import qualified Ithkuil.Common as Common
 import qualified Data.Map.Strict as Map
@@ -2835,6 +2836,46 @@ main = hspec $ do
           pat `shouldBe` V3.P1
           stem `shouldBe` V3.S1
         Left err -> expectationFailure $ "Parse failed: " ++ show err
+
+  describe "V3 Parse with Ca (elartkha)" $ do
+    it "loads Ca table and parses elartkha" $ do
+      let caPath = "data/v3_ca_table.dat"
+      exists <- doesFileExist caPath
+      if exists
+        then do
+          ca <- V3P.loadCaTables caPath
+          case V3P.parseFormativeWithCa ca "elartkha" of
+            Right f -> do
+              -- Vr: e = (STA, P1, S2)
+              V3.fVr f `shouldBe` (V3.STA, V3.P1, V3.S2)
+              -- Cr: l (root for language/speech)
+              V3.fRoot f `shouldBe` V3.Root "l"
+              -- Vc: a = OBL
+              V3.fCase f `shouldBe` V3.Transrelative V3.OBL
+              -- Ca: rtkh should map to some Ca value
+              V3.fCa f `shouldNotBe` V3.defaultCa
+            Left err -> expectationFailure $ "Parse failed: " ++ show err
+        else pendingWith "data/v3_ca_table.dat not found"
+
+    it "Ca table has 1728 entries" $ do
+      let caPath = "data/v3_ca_table.dat"
+      exists <- doesFileExist caPath
+      if exists
+        then do
+          ca <- V3P.loadCaTables caPath
+          -- Forward table maps (Ess,Ext,Per,Aff,Cfg) → consonant(s)
+          Map.size (V3P.caForward ca) `shouldBe` 1728
+        else pendingWith "data/v3_ca_table.dat not found"
+
+    it "Ca default 'l' maps to (NRM,DEL,M_,CSL,UNI)" $ do
+      let caPath = "data/v3_ca_table.dat"
+      exists <- doesFileExist caPath
+      if exists
+        then do
+          ca <- V3P.loadCaTables caPath
+          Map.lookup "l" (V3P.caReverse ca)
+            `shouldBe` Just (V3.NRM, V3.DEL, V3.M_, V3.CSL, V3.UNI)
+        else pendingWith "data/v3_ca_table.dat not found"
 
   describe "Common abstractions" $ do
     it "extracts FormativeInfo from V4" $ do

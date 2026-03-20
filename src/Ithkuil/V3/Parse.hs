@@ -18,13 +18,18 @@ module Ithkuil.V3.Parse
   , vfTableReverse
   , cbTable
   , cbTableReverse
+    -- * Ca table (loaded from file)
+  , CaTables(..)
+  , loadCaTables
     -- * Parsing
   , parseFormative
+  , parseFormativeWithCa
   , ParseError(..)
   ) where
 
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 
@@ -238,6 +243,58 @@ cbTableReverse = Map.fromList
   [(v, k) | (k, vs) <- cbEntries, v <- vs]
 
 --------------------------------------------------------------------------------
+-- Ca table (loaded from data/v3_ca_table.dat)
+-- Essence × Extension × Perspective × Affiliation × Configuration
+-- 2 × 6 × 4 × 4 × 9 = 1728 entries
+--------------------------------------------------------------------------------
+
+data CaTables = CaTables
+  { caForward :: Map CaComplex [Text]
+  , caReverse :: Map Text CaComplex
+  }
+  deriving (Show)
+
+-- | Load Ca tables from a data file.
+-- Each line is a consonant cluster (with | for alternatives).
+-- Lines correspond to the Cartesian product:
+--   Essence × Extension × Perspective × Affiliation × Configuration
+-- Both Unicode and ASCII forms are indexed for lookup.
+loadCaTables :: FilePath -> IO CaTables
+loadCaTables path = do
+  contents <- TIO.readFile path
+  let lns = T.lines contents
+      keys = [ (ess, ext, per, aff, cfg)
+             | ess <- allOf, ext <- allOf
+             , per <- allOf, aff <- allOf, cfg <- allOf
+             ]
+      entries = zip keys (map splitAlts lns)
+      fwd = Map.fromList entries
+      -- Index both Unicode original and ASCII-normalized forms
+      rev = Map.fromList
+        [ (form, k)
+        | (k, vs) <- entries, v <- vs
+        , form <- [v, unicodeToAscii v]
+        ]
+  return CaTables { caForward = fwd, caReverse = rev }
+
+-- | Convert Unicode consonant clusters to ASCII equivalents
+-- Handles the common substitutions in V3 Ca data
+unicodeToAscii :: Text -> Text
+unicodeToAscii = T.concatMap charToAscii
+  where
+    charToAscii 'ʰ' = "h"    -- modifier small h → h
+    charToAscii 'ţ' = "t,"
+    charToAscii 'ḑ' = "dh"
+    charToAscii 'ç' = "c,"
+    charToAscii 'č' = "c^"
+    charToAscii 'š' = "s^"
+    charToAscii 'ž' = "z^"
+    charToAscii 'ň' = "n^"
+    charToAscii 'ř' = "r^"
+    charToAscii 'ļ' = "l,"
+    charToAscii c   = T.singleton c
+
+--------------------------------------------------------------------------------
 -- Parsing
 --------------------------------------------------------------------------------
 
@@ -251,14 +308,10 @@ data ParseError
   | MalformedWord Text
   deriving (Show, Eq)
 
--- | Parse a V3 formative from romanized text.
--- Currently handles the simplified structure:
---   Vr + Cr + Vc (+Ci+Vi) + Ca (+Vf (+Cb))
--- Returns Left on parse failure, Right on success.
+-- | Parse a V3 formative from romanized text (without Ca table).
+-- Handles: Vr + Cr + Vc
 parseFormative :: Text -> Either ParseError Formative
 parseFormative word = do
-  -- For now, just attempt to look up the Vr from the beginning
-  -- This is a simplified parser that will be expanded
   let w = T.toLower word
   case findVr w of
     Nothing -> Left (MalformedWord word)
@@ -273,6 +326,68 @@ parseFormative word = do
                 { fVr = vr
                 , fCase = vc
                 }
+
+-- | Parse a V3 formative with full Ca support.
+-- Handles: Vr + Cr + Vc (+CiVi) + Ca (+Vf (+Cb))
+parseFormativeWithCa :: CaTables -> Text -> Either ParseError Formative
+parseFormativeWithCa ca word = do
+  let w = T.toLower word
+  -- Step 1: Parse Vr (vowel at start)
+  (vr, afterVr) <- maybe (Left (MalformedWord word)) Right (findVr w)
+  -- Step 2: Parse Cr (consonant root)
+  (cr, afterCr) <- maybe (Left (MalformedWord word)) Right (splitAtFirstVowel afterVr)
+  -- Step 3: Parse Vc (case vowel), try with optional CiVi
+  (vc, civiMaybe, afterVc) <- parseVcCivi afterCr
+  -- Step 4: Parse Ca (consonant complex)
+  (caVal, afterCa) <- parseCaCluster ca afterVc
+  -- Step 5: Parse optional Vf
+  (vfMaybe, afterVf) <- parseOptionalVf afterCa
+  -- Step 6: Parse optional Cb
+  let cbMaybe = if T.null afterVf then Nothing
+                else Map.lookup afterVf cbTableReverse
+  Right (defaultFormative cr)
+    { fVr    = vr
+    , fCase  = vc
+    , fCiVi  = civiMaybe
+    , fCa    = caVal
+    , fVf    = vfMaybe
+    , fBias  = cbMaybe
+    }
+
+-- | Parse Vc, possibly followed by CiVi
+parseVcCivi :: Text -> Either ParseError (Case, Maybe SlotCiVi, Text)
+parseVcCivi t = do
+  -- Try longest Vc match, then check if CiVi follows
+  case findVcGreedy t of
+    Nothing -> Left (UnknownVc t)
+    Just (vc, rest) ->
+      -- Try to parse CiVi from the rest
+      case findCiVi rest of
+        Just (civi, rest') -> Right (vc, Just civi, rest')
+        Nothing            -> Right (vc, Nothing, rest)
+
+-- | Find Vc (prefer shorter match if CiVi can follow)
+findVcGreedy :: Text -> Maybe (Case, Text)
+findVcGreedy t = tryLengths [4, 3, 2, 1] t vcTableReverse
+
+findCiVi :: Text -> Maybe (SlotCiVi, Text)
+findCiVi t = tryLengths [3, 2] t civiTableReverse
+
+-- | Parse Ca consonant cluster using the loaded table
+parseCaCluster :: CaTables -> Text -> Either ParseError (CaComplex, Text)
+parseCaCluster ca t =
+  let (cons, rest) = T.span (not . isV) t
+  in case Map.lookup cons (caReverse ca) of
+       Just caVal -> Right (caVal, rest)
+       Nothing    -> Left (UnknownCa cons)
+
+-- | Parse optional Vf slot
+parseOptionalVf :: Text -> Either ParseError (Maybe SlotVf, Text)
+parseOptionalVf t
+  | T.null t  = Right (Nothing, t)
+  | otherwise = case tryLengths [3, 2, 1] t vfTableReverse of
+      Just (vf, rest) -> Right (Just vf, rest)
+      Nothing         -> Right (Nothing, t)  -- not a Vf, might be Cb
 
 -- | Try to match a Vr vowel at the start of the text
 findVr :: Text -> Maybe (SlotVr, Text)
@@ -292,11 +407,13 @@ tryLengths (n:ns) t table
         Nothing  -> tryLengths ns t table
   | otherwise = tryLengths ns t table
 
+-- | Check if a character is a vowel
+isV :: Char -> Bool
+isV c = c `elem` ("aâäeêëiîoôöuûüáéíóúàèìòùæøɨ" :: [Char])
+
 -- | Split text at the first vowel character (returning consonants, then rest)
 splitAtFirstVowel :: Text -> Maybe (Text, Text)
 splitAtFirstVowel t =
   let (cons, rest) = T.span (not . isV) t
   in if T.null cons then Nothing
      else Just (cons, rest)
-  where
-    isV c = c `elem` ("aâäeêëiîoôöuûüáéíóúàèìòùæøɨ" :: [Char])

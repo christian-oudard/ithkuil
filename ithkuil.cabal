@@ -77,3 +77,4 @@ test-suite ithkuil-test
                     , hspec
                     , text
                     , containers
+                    , directory
