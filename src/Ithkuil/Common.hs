@@ -38,9 +38,15 @@ module Ithkuil.Common
   , extensionName
   , essenceName
   , contextName
+    -- * Cross-version grammar search
+  , GrammarEntry(..)
+  , LanguageVersion(..)
+  , grammarTable
+  , searchGrammar
   ) where
 
 import Data.Text (Text)
+import qualified Data.Text as T
 import qualified Ithkuil.Grammar as V4
 import qualified Ithkuil.V3.Grammar as V3
 
@@ -146,6 +152,79 @@ contextName x     = x
 --------------------------------------------------------------------------------
 -- V4 case abbreviation helper (avoiding circular import)
 --------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+-- Cross-version grammar search
+--------------------------------------------------------------------------------
+
+data LanguageVersion = V3Only | V4Only | V3V4
+  deriving (Show, Eq, Ord)
+
+data GrammarEntry = GrammarEntry
+  { geAbbrev   :: Text           -- ^ Abbreviation (e.g. "ERG")
+  , geName     :: Text           -- ^ Full name
+  , geCategory :: Text           -- ^ Category (e.g. "Case", "Mood")
+  , geVersion  :: LanguageVersion -- ^ Which version(s)
+  , geNote     :: Text           -- ^ Additional notes
+  }
+  deriving (Show, Eq)
+
+-- | Comprehensive grammar table covering both V3 and V4 categories
+grammarTable :: [GrammarEntry]
+grammarTable = concat
+  -- Shared categories (identical in both versions)
+  [ entries V3V4 "Affiliation" [("CSL","Consolidative"),("ASO","Associative"),("VAR","Variative"),("COA","Coalescent")]
+  , entries V3V4 "Essence" [("NRM","Normal"),("RPV","Representative")]
+  , entries V3V4 "Context" [("EXS","Existential"),("FNC","Functional"),("RPS","Representational"),("AMG","Amalgamative")]
+
+  -- Perspective: same concept, V3 uses M/U/N/A, V4 uses M/G/N/A
+  , [GrammarEntry "M" "Monadic" "Perspective" V3V4 ""
+    ,GrammarEntry "U" "Unbounded" "Perspective" V3Only "V4 equivalent: G (Agglomerative)"
+    ,GrammarEntry "G" "Agglomerative" "Perspective" V4Only "V3 equivalent: U (Unbounded)"
+    ,GrammarEntry "N" "Nomic" "Perspective" V3V4 ""
+    ,GrammarEntry "A" "Abstract" "Perspective" V3V4 ""]
+
+  -- Extension: mostly shared
+  , entries V3V4 "Extension" [("DEL","Delimitive"),("PRX","Proximal"),("ICP","Incipient"),("DPL","Depletive"),("GRA","Graduative")]
+  , [GrammarEntry "TRM" "Terminative" "Extension" V3Only "V4 equivalent: ATV (Attenuative)"
+    ,GrammarEntry "ATV" "Attenuative" "Extension" V4Only "V3 equivalent: TRM (Terminative)"]
+
+  -- Function: V3 has 4, V4 has 2
+  , entries V3V4 "Function" [("STA","Stative"),("DYN","Dynamic")]
+  , entries V3Only "Function" [("MNF","Manifestive"),("DSC","Descriptive")]
+
+  -- V3-only categories
+  , entries V3Only "Pattern" [("P1","Pattern 1"),("P2","Pattern 2"),("P3","Pattern 3")]
+  , entries V3Only "Designation" [("FML","Formal"),("IFL","Informal")]
+  , entries V3Only "Format" [("NOF","No Format"),("SCH","Schematic"),("ISR","Instrumental"),("ATH","Authoritative"),("RSL","Resultative"),("SBQ","Subsequent"),("CCM","Concomitant"),("OBJ","Objective"),("PRT","Precurrent"),("AFI","Affinitive")]
+
+  -- V4-only categories
+  , entries V4Only "Specification" [("BSC","Basic"),("CTE","Contential"),("CSV","Constitutive"),("OBJ","Objective")]
+  , entries V4Only "Effect" [("BEN1","Beneficial-1"),("BEN2","Beneficial-2"),("BEN3","Beneficial-3"),("BSLF","Beneficial-self"),("UNK","Unknown"),("DSLF","Detrimental-self"),("DET3","Detrimental-3"),("DET2","Detrimental-2"),("DET1","Detrimental-1")]
+
+  -- Version: V3 has 6 (tone), V4 has 2
+  , entries V3V4 "Version" [("PRC","Processual"),("CPT","Completive")]
+  , entries V3Only "Version" [("INE","Ineffective"),("INC","Incompletive"),("PST","Positive"),("EFC","Effective")]
+
+  -- Stem: V3 has 3, V4 has 4
+  , entries V3V4 "Stem" [("S1","Stem 1"),("S2","Stem 2"),("S3","Stem 3")]
+  , entries V4Only "Stem" [("S0","Stem 0")]
+
+  -- Mood: V3 has 8, V4 has 6
+  , entries V3V4 "Mood" [("FAC","Factual"),("SUB","Subjunctive"),("ASM","Assumptive"),("SPC","Speculative"),("COU","Counterfactive"),("HYP","Hypothetical")]
+  , entries V3Only "Mood" [("IPL","Implicative"),("ASC","Ascriptive")]
+  ]
+  where
+    entries ver cat = map (\(a,n) -> GrammarEntry a n cat ver "")
+
+-- | Search grammar entries by abbreviation or name (case-insensitive)
+searchGrammar :: Text -> [GrammarEntry]
+searchGrammar query = filter matches grammarTable
+  where
+    q = T.toLower query
+    matches ge = q `T.isInfixOf` T.toLower (geAbbrev ge)
+              || q `T.isInfixOf` T.toLower (geName ge)
+              || q `T.isInfixOf` T.toLower (geCategory ge)
 
 v4CaseAbbrev :: V4.Case -> Text
 v4CaseAbbrev (V4.Transrelative c) = case c of

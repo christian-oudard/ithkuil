@@ -33,6 +33,7 @@ library
                     , Ithkuil.V3.Render
                     , Ithkuil.V3.Lexicon
                     , Ithkuil.V3.FullParse
+                    , Ithkuil.V3.WordType
     build-depends:    base >=4.17 && <5
                     , text
                     , containers

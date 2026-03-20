@@ -3009,6 +3009,31 @@ main = hspec $ do
       Common.fiStem info `shouldBe` 1
       Common.fiVersion info `shouldBe` "PRC"
 
+    it "searches grammar for 'Mood' across versions" $ do
+      let results = Common.searchGrammar "Mood"
+      -- V3 has 8 moods, V4 has 6, shared 6 = 8 total entries
+      length results `shouldSatisfy` (>= 8)
+      -- IPL should be V3-only
+      let iplEntries = filter (\e -> Common.geAbbrev e == "IPL") results
+      length iplEntries `shouldBe` 1
+      Common.geVersion (head iplEntries) `shouldBe` Common.V3Only
+
+    it "searches grammar for 'STA' across versions" $ do
+      let results = Common.searchGrammar "STA"
+      -- STA (Stative) should be in both versions
+      length results `shouldSatisfy` (>= 1)
+      any (\e -> Common.geVersion e == Common.V3V4) results `shouldBe` True
+
+    it "finds V3-only Pattern category" $ do
+      let results = Common.searchGrammar "Pattern"
+      length results `shouldBe` 3  -- P1, P2, P3
+      all (\e -> Common.geVersion e == Common.V3Only) results `shouldBe` True
+
+    it "finds V4-only Specification category" $ do
+      let results = Common.searchGrammar "Specification"
+      length results `shouldBe` 4  -- BSC, CTE, CSV, OBJ
+      all (\e -> Common.geVersion e == Common.V4Only) results `shouldBe` True
+
     it "extracts FormativeInfo from V3" $ do
       let f = V3.defaultFormative "l"
           info = Common.toFormativeInfoV3 f
