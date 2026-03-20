@@ -328,12 +328,18 @@ parseFormative word = do
                 }
 
 -- | Parse a V3 formative with full Ca support.
--- Handles: Vr + Cr + Vc (+CiVi) + Ca (+Vf (+Cb))
+-- Handles: [Vr] + Cr + Vc (+CiVi) + Ca (+Vf (+Cb))
+-- Vr can be empty (STA/P1/S1), in which case word starts with Cr consonant.
 parseFormativeWithCa :: CaTables -> Text -> Either ParseError Formative
 parseFormativeWithCa ca word = do
   let w = T.toLower word
-  -- Step 1: Parse Vr (vowel at start)
-  (vr, afterVr) <- maybe (Left (MalformedWord word)) Right (findVr w)
+  -- Step 1: Try to parse Vr. If word starts with consonant, Vr is empty (STA/P1/S1).
+  let (vr, afterVr) = case findVr w of
+        Just result -> result
+        Nothing
+          | not (T.null w) && not (isV (T.head w)) ->
+              ((STA, P1, S1), w)  -- Empty Vr = STA/P1/S1
+          | otherwise -> ((STA, P1, S1), w)  -- Fallback
   -- Step 2: Parse Cr (consonant root)
   (cr, afterCr) <- maybe (Left (MalformedWord word)) Right (splitAtFirstVowel afterVr)
   -- Step 3: Parse Vc (case vowel), try with optional CiVi
@@ -342,7 +348,7 @@ parseFormativeWithCa ca word = do
   (caVal, afterCa) <- parseCaCluster ca afterVc
   -- Step 5: Parse optional Vf
   (vfMaybe, afterVf) <- parseOptionalVf afterCa
-  -- Step 6: Parse optional Cb
+  -- Step 6: Parse optional Cb (remaining consonants)
   let cbMaybe = if T.null afterVf then Nothing
                 else Map.lookup afterVf cbTableReverse
   Right (defaultFormative cr)

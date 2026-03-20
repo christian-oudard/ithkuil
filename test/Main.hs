@@ -3001,6 +3001,81 @@ main = hspec $ do
             V3FP.Failure err -> expectationFailure $ "Parse failed: " ++ T.unpack err
         else pendingWith "data files not found"
 
+  describe "V3 Reference formatives" $ do
+    let withCa action = do
+          let caPath = "data/v3_ca_table.dat"
+          exists <- doesFileExist caPath
+          if exists
+            then V3P.loadCaTables caPath >>= action
+            else pendingWith "data/v3_ca_table.dat not found"
+
+    it "parses eqal (simple: Vr+Cr+Vc+Ca)" $ withCa $ \ca ->
+      case V3P.parseFormativeWithCa ca "eqal" of
+        Right f -> do
+          V3.fVr f `shouldBe` (V3.STA, V3.P1, V3.S2)
+          V3.fRoot f `shouldBe` V3.Root "q"
+          V3.fCase f `shouldBe` V3.Transrelative V3.OBL
+          V3.fCa f `shouldBe` V3.defaultCa
+        Left err -> expectationFailure $ "Parse failed: " ++ show err
+
+    it "parses phal (empty Vr = STA/P1/S1)" $ withCa $ \ca ->
+      case V3P.parseFormativeWithCa ca "phal" of
+        Right f -> do
+          V3.fVr f `shouldBe` (V3.STA, V3.P1, V3.S1)
+          V3.fRoot f `shouldBe` V3.Root "ph"
+          V3.fCase f `shouldBe` V3.Transrelative V3.OBL
+          V3.fCa f `shouldBe` V3.defaultCa
+        Left err -> expectationFailure $ "Parse failed: " ++ show err
+
+    it "parses uakal (DYN/P3/S1 Vr)" $ withCa $ \ca ->
+      case V3P.parseFormativeWithCa ca "uakal" of
+        Right f -> do
+          V3.fVr f `shouldBe` (V3.DYN, V3.P3, V3.S1)
+          V3.fRoot f `shouldBe` V3.Root "k"
+          V3.fCase f `shouldBe` V3.Transrelative V3.OBL
+          V3.fCa f `shouldBe` V3.defaultCa
+        Left err -> expectationFailure $ "Parse failed: " ++ show err
+
+    it "parses eglayës (with CiVi=ASR/ASM)" $ withCa $ \ca ->
+      case V3P.parseFormativeWithCa ca "eglayës" of
+        Right f -> do
+          V3.fVr f `shouldBe` (V3.STA, V3.P1, V3.S2)
+          V3.fRoot f `shouldBe` V3.Root "gl"
+          V3.fCase f `shouldBe` V3.Transrelative V3.OBL
+          V3.fCiVi f `shouldBe` Just (V3.ASR, V3.ASM)
+          V3.fCa f `shouldBe` (V3.NRM, V3.PRX, V3.M_, V3.CSL, V3.UNI)
+        Left err -> expectationFailure $ "Parse failed: " ++ show err
+
+    it "parses ilma\x0161qi (Unicode: Ca=COA/CST, Vf=FNC)" $ withCa $ \ca ->
+      case V3P.parseFormativeWithCa ca "ilma\x0161qi" of
+        Right f -> do
+          V3.fVr f `shouldBe` (V3.DYN, V3.P1, V3.S1)
+          V3.fRoot f `shouldBe` V3.Root "lm"
+          V3.fCase f `shouldBe` V3.Transrelative V3.OBL
+          V3.fCa f `shouldBe` (V3.NRM, V3.DEL, V3.M_, V3.COA, V3.CST)
+          V3.fVf f `shouldBe` Just (V3.FNC, V3.NOF)
+        Left err -> expectationFailure $ "Parse failed: " ++ show err
+
+    it "parses ilmas^qi (ASCII form of ilmašqi)" $ withCa $ \ca ->
+      case V3P.parseFormativeWithCa ca "ilmas^qi" of
+        Right f -> do
+          V3.fVr f `shouldBe` (V3.DYN, V3.P1, V3.S1)
+          V3.fRoot f `shouldBe` V3.Root "lm"
+          V3.fCa f `shouldBe` (V3.NRM, V3.DEL, V3.M_, V3.COA, V3.CST)
+          V3.fVf f `shouldBe` Just (V3.FNC, V3.NOF)
+        Left err -> expectationFailure $ "Parse failed: " ++ show err
+
+    it "parses isvala\x2019kss (with Vf and Cb bias)" $ withCa $ \ca ->
+      case V3P.parseFormativeWithCa ca "isvala\x2019kss" of
+        Right f -> do
+          V3.fVr f `shouldBe` (V3.DYN, V3.P1, V3.S1)
+          V3.fRoot f `shouldBe` V3.Root "sv"
+          V3.fCase f `shouldBe` V3.Transrelative V3.OBL
+          V3.fCa f `shouldBe` V3.defaultCa
+          V3.fVf f `shouldBe` Just (V3.EXS, V3.NOF)
+          V3.fBias f `shouldBe` Just V3.SKP_P
+        Left err -> expectationFailure $ "Parse failed: " ++ show err
+
   describe "Common abstractions" $ do
     it "extracts FormativeInfo from V4" $ do
       let f = minimalFormative "ml"
