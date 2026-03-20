@@ -30,6 +30,8 @@ library
                     , Ithkuil.V3.Phonology
                     , Ithkuil.V3.Parse
                     , Ithkuil.V3.Gloss
+                    , Ithkuil.V3.Render
+                    , Ithkuil.V3.Lexicon
     build-depends:    base >=4.17 && <5
                     , text
                     , containers

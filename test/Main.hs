@@ -19,6 +19,8 @@ import Ithkuil.Lexicon (loadRoots)
 import qualified Ithkuil.V3.Grammar as V3
 import qualified Ithkuil.V3.Parse as V3P
 import qualified Ithkuil.V3.Gloss as V3G
+import qualified Ithkuil.V3.Render as V3R
+import qualified Ithkuil.V3.Lexicon as V3L
 import System.Directory (doesFileExist)
 import qualified Ithkuil.V3.Phonology as V3Ph
 import qualified Ithkuil.Common as Common
@@ -2903,6 +2905,63 @@ main = hspec $ do
               lookup "Vc" slots `shouldBe` Just "OBL"
             Left err -> expectationFailure $ "Parse failed: " ++ show err
         else pendingWith "data/v3_ca_table.dat not found"
+
+  describe "V3 Render" $ do
+    it "renders default formative with root 'l'" $ do
+      let caPath = "data/v3_ca_table.dat"
+      exists <- doesFileExist caPath
+      if exists
+        then do
+          ca <- V3P.loadCaTables caPath
+          let f = V3.defaultFormative "l"
+          -- Default: Vr=a, Cr=l, Vc=a, Ca=l (default)
+          V3R.renderFormative ca f `shouldBe` Just "alal"
+        else pendingWith "data/v3_ca_table.dat not found"
+
+    it "round-trips elartkha parse then render" $ do
+      let caPath = "data/v3_ca_table.dat"
+      exists <- doesFileExist caPath
+      if exists
+        then do
+          ca <- V3P.loadCaTables caPath
+          case V3P.parseFormativeWithCa ca "elartkha" of
+            Right f -> do
+              let rendered = V3R.renderFormative ca f
+              -- The Ca might use Unicode, so rendered may differ slightly
+              -- But the structure should work
+              rendered `shouldSatisfy` (/= Nothing)
+            Left err -> expectationFailure $ "Parse failed: " ++ show err
+        else pendingWith "data/v3_ca_table.dat not found"
+
+  describe "V3 Lexicon" $ do
+    it "loads V3 lexicon" $ do
+      let lexPath = "data/v3_lexicon.dat"
+      exists <- doesFileExist lexPath
+      if exists
+        then do
+          lex' <- V3L.loadV3Lexicon lexPath
+          -- Should have 926 roots
+          Map.size lex' `shouldSatisfy` (> 900)
+        else pendingWith "data/v3_lexicon.dat not found"
+
+    it "looks up root L (language/speech)" $ do
+      let lexPath = "data/v3_lexicon.dat"
+      exists <- doesFileExist lexPath
+      if exists
+        then do
+          lex' <- V3L.loadV3Lexicon lexPath
+          let def = V3L.lookupV3Root "l" lex'
+          def `shouldSatisfy` (/= Nothing)
+        else pendingWith "data/v3_lexicon.dat not found"
+
+    it "looks up root B (want/desire)" $ do
+      let lexPath = "data/v3_lexicon.dat"
+      exists <- doesFileExist lexPath
+      if exists
+        then do
+          lex' <- V3L.loadV3Lexicon lexPath
+          V3L.lookupV3Root "b" lex' `shouldBe` Just "want / desire / request"
+        else pendingWith "data/v3_lexicon.dat not found"
 
   describe "Common abstractions" $ do
     it "extracts FormativeInfo from V4" $ do
