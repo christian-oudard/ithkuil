@@ -24,6 +24,7 @@ import qualified Ithkuil.V3.Lexicon as V3L
 import qualified Ithkuil.V3.FullParse as V3FP
 import System.Directory (doesFileExist)
 import qualified Ithkuil.V3.Phonology as V3Ph
+import qualified Ithkuil.V3.Compose as V3C
 import qualified Ithkuil.Common as Common
 import qualified Data.Map.Strict as Map
 
@@ -3094,6 +3095,45 @@ main = hspec $ do
           V3.fAffixes f `shouldBe` [V3.Affix "a" "st", V3.Affix "o" "rk"]
           V3.fVf f `shouldBe` Just (V3.AMG, V3.NOF)
         Left err -> expectationFailure $ "Parse failed: " ++ show err
+
+  describe "V3 Compose" $ do
+    let withCaLex action = do
+          let caPath = "data/v3_ca_table.dat"
+              lexPath = "data/v3_lexicon.dat"
+          caExists <- doesFileExist caPath
+          lexExists <- doesFileExist lexPath
+          if caExists && lexExists
+            then do
+              ca <- V3P.loadCaTables caPath
+              lex' <- V3L.loadLexicon lexPath
+              action ca lex'
+            else pendingWith "data files not found"
+
+    it "composes default formative" $ withCaLex $ \ca _lex ->
+      V3C.composeFormative ca (V3.defaultFormative "l") `shouldBe` Just "alal"
+
+    it "round-trips composed formative" $ withCaLex $ \ca _lex -> do
+      let f = (V3.defaultFormative "q") { V3.fVr = (V3.STA, V3.P1, V3.S2) }
+      case V3C.composeFormative ca f of
+        Just text -> case V3P.parseFormativeWithCa ca text of
+          Right f' -> do
+            V3.fVr f' `shouldBe` V3.fVr f
+            V3.fRoot f' `shouldBe` V3.fRoot f
+          Left err -> expectationFailure $ "Round-trip parse failed: " ++ show err
+        Nothing -> expectationFailure "Composition failed"
+
+    it "searches V3 lexicon" $ withCaLex $ \_ca lex' -> do
+      let results = V3C.searchRoots lex' "speak"
+      length results `shouldSatisfy` (> 0)
+
+    it "looks up V3 grammar by abbreviation" $ do
+      let results = V3C.lookupGrammar "STA"
+      length results `shouldSatisfy` (>= 1)
+      any (\e -> V3C.geCategory e == "Function") results `shouldBe` True
+
+    it "V3 grammar table has all 96 cases" $ do
+      let cases = filter (\e -> V3C.geCategory e == "Case") V3C.grammarTable
+      length cases `shouldBe` 96
 
   describe "Common abstractions" $ do
     it "extracts FormativeInfo from V4" $ do
