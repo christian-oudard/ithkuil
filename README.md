@@ -105,11 +105,13 @@ cabal run ithkuil-gloss  # Launch interactive glosser
 cabal run ithkuil-input
 ```
 
-Modifier strategies matching diacritic types:
-- **Doubling** for dieresis vowels: `aa`→ä, `ee`→ë, `oo`→ö, `uu`→ü
-- **Comma** for cedilla consonants: `t,`→ţ, `d,`→ḑ, `l,`→ļ, `c,`→ç
-- **Q-suffix** for háček consonants: `sq`→š, `zq`→ž, `cq`→č, `nq`→ň, `rq`→ř
-- **Special**: `dz`→ẓ
+| Char | ASCII | Char | ASCII | Char | ASCII |
+|------|-------|------|-------|------|-------|
+| ä | `aa` | ë | `ee` | ö | `oo` |
+| ü | `uu` | ţ | `t,` | ḑ | `d,` |
+| ļ | `l,` | ç | `c,` | š | `sq` |
+| ž | `zq` | č | `cq` | ň | `nq` |
+| ř | `rq` | ẓ | `dz` | | |
 
 Vowel runs use right-grouping: `eee`→eë, `eeee`→ëë. Pending characters are shown dimmed until resolved.
 
