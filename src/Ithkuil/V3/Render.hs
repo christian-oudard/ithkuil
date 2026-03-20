@@ -20,7 +20,7 @@ import Ithkuil.V3.Grammar
 import Ithkuil.V3.Parse (CaTables(..), vrTable, vcTable, civiTable, vfTable, cbTable)
 
 -- | Render a complete V3 formative to romanized text.
--- Structure: [Tone] Vr + Cr + Vc (+CiVi) + Ca (+Vf (+Cb))
+-- Structure: [Tone] Vr + Cr + Vc (+CiVi) + Ca (+VxCx)* (+Vf (+Cb))
 renderFormative :: CaTables -> Formative -> Maybe Text
 renderFormative ca f = do
   vr <- renderVr (fVr f)
@@ -29,11 +29,12 @@ renderFormative ca f = do
   caC <- renderCa ca (fCa f)
   let civiPart = maybe (Just "") renderCiVi (fCiVi f)
   civi <- civiPart
+  let affixParts = T.concat [affixVowel a <> affixConsonant a | a <- fAffixes f]
   let vfPart = maybe (Just "") renderVf (fVf f)
   vf <- vfPart
   let cbPart = maybe (Just "") renderCb (fBias f)
   cb <- cbPart
-  return $ vr <> cr <> vc <> civi <> caC <> vf <> cb
+  return $ vr <> cr <> vc <> civi <> caC <> affixParts <> vf <> cb
 
 -- | Render Vr slot (Function + Pattern + Stem) to vowel
 renderVr :: SlotVr -> Maybe Text

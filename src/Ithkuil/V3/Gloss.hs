@@ -22,20 +22,23 @@ glossFormative f = T.intercalate "-" $ filter (not . T.null)
   , maybe "" (T.pack . show) (fBias f)
   , glossDesigRel (fDesig f) (fRelation f)
   , glossVersion (toneToVersion (fTone f))
-  ]
+  ] ++ map glossAffix (fAffixes f)
   where
     rootText (Root t) = t
 
 -- | Gloss a formative as slot-by-slot breakdown
 glossSlots :: Formative -> [(Text, Text)]
-glossSlots f = filter ((/= "") . snd)
+glossSlots f = filter ((/= "") . snd) $
   [ ("Tone",    glossVersion (toneToVersion (fTone f)))
   , ("Vr",      glossVr (fVr f))
   , ("Cr",      let Root t = fRoot f in t)
   , ("Vc",      caseAbbrev (fCase f))
   , ("Ci+Vi",   maybe "" glossCiVi (fCiVi f))
   , ("Ca",      glossCa (fCa f))
-  , ("Vf",      maybe "" glossVf (fVf f))
+  ] ++ zipWith (\i a -> (T.pack ("VxCx" ++ show i), glossAffix a))
+               [(1::Int)..] (fAffixes f)
+  ++
+  [ ("Vf",      maybe "" glossVf (fVf f))
   , ("Cb",      maybe "" (T.pack . show) (fBias f))
   , ("Stress",  glossDesigRel (fDesig f) (fRelation f))
   ]
@@ -80,6 +83,9 @@ glossVf (ctx, fmt)
 glossVersion :: Version -> Text
 glossVersion PRC = ""  -- Default, don't show
 glossVersion v   = T.pack (show v)
+
+glossAffix :: Affix -> Text
+glossAffix (Affix vx cx) = vx <> "+" <> cx
 
 glossDesigRel :: Designation -> Relation -> Text
 glossDesigRel IFL Unframed = ""  -- Default

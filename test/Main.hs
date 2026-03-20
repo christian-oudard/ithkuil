@@ -3076,6 +3076,25 @@ main = hspec $ do
           V3.fBias f `shouldBe` Just V3.SKP_P
         Left err -> expectationFailure $ "Parse failed: " ++ show err
 
+    it "parses VxCx affix (single)" $ withCa $ \ca ->
+      -- e(Vr) + q(Cr) + a(Vc) + l(Ca) + a(Vx) + st(Cx) + e(Vf)
+      case V3P.parseFormativeWithCa ca "eqalaste" of
+        Right f -> do
+          V3.fRoot f `shouldBe` V3.Root "q"
+          V3.fCa f `shouldBe` V3.defaultCa
+          V3.fAffixes f `shouldBe` [V3.Affix "a" "st"]
+          V3.fVf f `shouldBe` Just (V3.RPS, V3.NOF)
+        Left err -> expectationFailure $ "Parse failed: " ++ show err
+
+    it "parses VxCx affixes (multiple)" $ withCa $ \ca ->
+      -- e(Vr) + q(Cr) + a(Vc) + l(Ca) + a(Vx1) + st(Cx1) + o(Vx2) + rk(Cx2) + u(Vf)
+      case V3P.parseFormativeWithCa ca "eqalastorku" of
+        Right f -> do
+          V3.fRoot f `shouldBe` V3.Root "q"
+          V3.fAffixes f `shouldBe` [V3.Affix "a" "st", V3.Affix "o" "rk"]
+          V3.fVf f `shouldBe` Just (V3.AMG, V3.NOF)
+        Left err -> expectationFailure $ "Parse failed: " ++ show err
+
   describe "Common abstractions" $ do
     it "extracts FormativeInfo from V4" $ do
       let f = minimalFormative "ml"

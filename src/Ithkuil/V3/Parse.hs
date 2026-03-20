@@ -328,7 +328,7 @@ parseFormative word = do
                 }
 
 -- | Parse a V3 formative with full Ca support.
--- Handles: [Vr] + Cr + Vc (+CiVi) + Ca (+Vf (+Cb))
+-- Handles: [Vr] + Cr + Vc (+CiVi) + Ca (+VxCx)* (+Vf (+Cb))
 -- Vr can be empty (STA/P1/S1), in which case word starts with Cr consonant.
 parseFormativeWithCa :: CaTables -> Text -> Either ParseError Formative
 parseFormativeWithCa ca word = do
@@ -346,19 +346,40 @@ parseFormativeWithCa ca word = do
   (vc, civiMaybe, afterVc) <- parseVcCivi afterCr
   -- Step 4: Parse Ca (consonant complex)
   (caVal, afterCa) <- parseCaCluster ca afterVc
-  -- Step 5: Parse optional Vf
-  (vfMaybe, afterVf) <- parseOptionalVf afterCa
+  -- Step 5: Parse VxCx affix pairs, then optional Vf, then optional Cb
+  let (affixes, afterAffixes) = parseAffixes afterCa
+  (vfMaybe, afterVf) <- parseOptionalVf afterAffixes
   -- Step 6: Parse optional Cb (remaining consonants)
   let cbMaybe = if T.null afterVf then Nothing
                 else Map.lookup afterVf cbTableReverse
   Right (defaultFormative cr)
-    { fVr    = vr
-    , fCase  = vc
-    , fCiVi  = civiMaybe
-    , fCa    = caVal
-    , fVf    = vfMaybe
-    , fBias  = cbMaybe
+    { fVr      = vr
+    , fCase    = vc
+    , fCiVi    = civiMaybe
+    , fCa      = caVal
+    , fAffixes = affixes
+    , fVf      = vfMaybe
+    , fBias    = cbMaybe
     }
+
+-- | Parse zero or more VxCx affix pairs.
+-- Each pair is a vowel sequence (Vx, degree) followed by a consonant cluster (Cx, affix type).
+-- Stops when the remaining text can't form a V+C+V pattern (need vowels after Cx
+-- to distinguish from final Vf+Cb).
+parseAffixes :: Text -> ([Affix], Text)
+parseAffixes t = go [] t
+  where
+    go acc rest
+      | T.null rest = (reverse acc, rest)
+      | not (isV (T.head rest)) = (reverse acc, rest)  -- No vowel = no more affixes
+      | otherwise =
+          let (vx, afterVx) = T.span isV rest
+              (cx, afterCx) = T.span (not . isV) afterVx
+          in if T.null cx
+               then (reverse acc, rest)  -- Vowel-only remainder = Vf, not affix
+             else if T.null afterCx
+               then (reverse acc, rest)  -- V+C at end = Vf+Cb, not affix
+             else go (Affix vx cx : acc) afterCx
 
 -- | Parse Vc, possibly followed by CiVi
 parseVcCivi :: Text -> Either ParseError (Case, Maybe SlotCiVi, Text)
