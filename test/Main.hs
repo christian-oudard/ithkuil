@@ -2940,7 +2940,7 @@ main = hspec $ do
       exists <- doesFileExist lexPath
       if exists
         then do
-          lex' <- V3L.loadV3Lexicon lexPath
+          lex' <- V3L.loadLexicon lexPath
           -- Should have 926 roots
           Map.size lex' `shouldSatisfy` (> 900)
         else pendingWith "data/v3_lexicon.dat not found"
@@ -2950,8 +2950,8 @@ main = hspec $ do
       exists <- doesFileExist lexPath
       if exists
         then do
-          lex' <- V3L.loadV3Lexicon lexPath
-          let def = V3L.lookupV3Root "l" lex'
+          lex' <- V3L.loadLexicon lexPath
+          let def = V3L.lookupRoot "l" lex'
           def `shouldSatisfy` (/= Nothing)
         else pendingWith "data/v3_lexicon.dat not found"
 
@@ -2960,8 +2960,8 @@ main = hspec $ do
       exists <- doesFileExist lexPath
       if exists
         then do
-          lex' <- V3L.loadV3Lexicon lexPath
-          V3L.lookupV3Root "b" lex' `shouldBe` Just "want / desire / request"
+          lex' <- V3L.loadLexicon lexPath
+          V3L.lookupRoot "b" lex' `shouldBe` Just "want / desire / request"
         else pendingWith "data/v3_lexicon.dat not found"
 
   describe "V3 FullParse" $ do
@@ -2991,7 +2991,7 @@ main = hspec $ do
       if caExists && lexExists
         then do
           ca <- V3P.loadCaTables caPath
-          lex' <- V3L.loadV3Lexicon lexPath
+          lex' <- V3L.loadLexicon lexPath
           case V3FP.parseFormative ca "elartkha" of
             V3FP.Success f -> do
               let slots = V3FP.deconstructFormative lex' f

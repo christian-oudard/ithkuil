@@ -97,6 +97,22 @@ cabal test               # Run test suite (359 tests)
 cabal run ithkuil-gloss  # Launch interactive glosser
 ```
 
+### ASCII Input Method
+
+`ithkuil-input` is a TUI for typing Ithkuil Unicode from ASCII keystrokes:
+
+```bash
+cabal run ithkuil-input
+```
+
+Modifier strategies matching diacritic types:
+- **Doubling** for dieresis vowels: `aa`→ä, `ee`→ë, `oo`→ö, `uu`→ü
+- **Comma** for cedilla consonants: `t,`→ţ, `d,`→ḑ, `l,`→ļ, `c,`→ç
+- **Q-suffix** for háček consonants: `sq`→š, `zq`→ž, `cq`→č, `nq`→ň, `rq`→ř
+- **Special**: `dz`→ẓ
+
+Vowel runs use right-grouping: `eee`→eë, `eeee`→ëë. Pending characters are shown dimmed until resolved.
+
 ### Interactive Glosser Commands
 
 ```

@@ -23,7 +23,7 @@ import qualified Data.Text as T
 
 import Ithkuil.V3.Grammar
 import qualified Ithkuil.V3.Parse as P
-import Ithkuil.V3.Lexicon (V3Lexicon, lookupV3Root)
+import Ithkuil.V3.Lexicon (Lexicon, lookupRoot)
 
 --------------------------------------------------------------------------------
 -- Parser Types
@@ -145,7 +145,7 @@ data DeconstructedSlot = DeconstructedSlot
   } deriving (Show, Eq)
 
 -- | Deconstruct a parsed formative into labeled slots with meanings
-deconstructFormative :: V3Lexicon -> Formative -> [DeconstructedSlot]
+deconstructFormative :: Lexicon -> Formative -> [DeconstructedSlot]
 deconstructFormative lex' f =
   [ DeconstructedSlot "Tone" (T.pack (show (fTone f)))
       [("Version", T.pack (show (toneToVersion (fTone f))))]
@@ -155,7 +155,7 @@ deconstructFormative lex' f =
       , ("Stem", T.pack (show stem))
       ]
   , DeconstructedSlot "Cr" cr
-      [("Root", maybe "?" id (lookupV3Root cr lex'))]
+      [("Root", maybe "?" id (lookupRoot cr lex'))]
   , DeconstructedSlot "Vc" ""
       [("Case", caseAbbrev (fCase f))]
   , DeconstructedSlot "Ca" ""

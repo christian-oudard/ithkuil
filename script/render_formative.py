@@ -50,28 +50,34 @@ def render_from_json(data):
     r = FormativeRenderer()
 
     # Primary character
+    # Clean up perspective label (M_ -> M)
+    persp = data.get('persp', 'M').rstrip('_')
     r.add_primary(
         spec=data.get('spec', 'BSC'),
         ctx=data.get('ctx', 'EXS'),
         stem=data.get('stem', 1),
         func=data.get('func', 'STA'),
         ver=data.get('version', 'PRC'),
+        config=data.get('config', 'UNI'),
+        affil=data.get('affil', 'CSL'),
+        persp=persp,
+        ext=data.get('ext', 'DEL'),
+        ess=data.get('ess', 'NRM'),
     )
 
-    # Root consonant(s)
+    # Root consonant(s) as cluster
     root = data.get('root', '')
-    for c in render_consonant_cluster(root):
-        r.add_secondary(c)
+    r.add_cluster(render_consonant_cluster(root))
 
-    # Affixes (Slot V and VII)
+    # Affixes (Slot V and VII) as clusters
     for afx in data.get('affixes', []):
         slot = afx.get('slot', 5)
         rotated = (slot == 7)
         cs = afx.get('cs', '')
         degree = afx.get('degree')
         atype = afx.get('type', 1)
-        for c in render_consonant_cluster(cs):
-            r.add_secondary(c, rotated=rotated, degree=degree, affix_type=atype)
+        r.add_cluster(render_consonant_cluster(cs), rotated=rotated,
+                      degree=degree, affix_type=atype)
 
     # Tertiary character (valence/aspect/phase/effect)
     valence = data.get('valence', 'MNO')
@@ -93,34 +99,41 @@ def render_from_json(data):
             case_type=case_type, case_num=case_num,
             mood=data.get('mood'))
 
+    # Bias (if present, rendered after quaternary)
+    bias = data.get('bias')
+    if bias:
+        r.add_bias(bias)
+
     return r.to_svg()
 
 
 def render_sentence(words_json):
     """Render multiple formatives as a sentence."""
-    parts = [
-        '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="150" viewBox="0 0 1200 150">',
-        '<rect width="100%" height="100%" fill="white"/>',
-    ]
+    # First pass: compute total width
+    word_renderers = []
     x_offset = 10
     for word_data in words_json:
         r = FormativeRenderer()
         r.x_cursor = 0
 
+        persp = word_data.get('persp', 'M').rstrip('_')
         r.add_primary(
             spec=word_data.get('spec', 'BSC'),
             ctx=word_data.get('ctx', 'EXS'),
             stem=word_data.get('stem', 1),
             func=word_data.get('func', 'STA'),
             ver=word_data.get('version', 'PRC'),
+            config=word_data.get('config', 'UNI'),
+            affil=word_data.get('affil', 'CSL'),
+            persp=persp,
+            ext=word_data.get('ext', 'DEL'),
+            ess=word_data.get('ess', 'NRM'),
         )
-        for c in render_consonant_cluster(word_data.get('root', '')):
-            r.add_secondary(c)
+        r.add_cluster(render_consonant_cluster(word_data.get('root', '')))
         for afx in word_data.get('affixes', []):
             rotated = afx.get('slot', 5) == 7
-            for c in render_consonant_cluster(afx.get('cs', '')):
-                r.add_secondary(c, rotated=rotated,
-                                degree=afx.get('degree'), affix_type=afx.get('type', 1))
+            r.add_cluster(render_consonant_cluster(afx.get('cs', '')), rotated=rotated,
+                          degree=afx.get('degree'), affix_type=afx.get('type', 1))
 
         # Tertiary
         valence = word_data.get('valence', 'MNO')
@@ -140,9 +153,24 @@ def render_sentence(words_json):
             ct, cn = CASE_MAP.get(case_name, (0, 1))
             r.add_quaternary(case_type=ct, case_num=cn, mood=word_data.get('mood'))
 
-        inner = '\n'.join(e for e in r.elements if e)
-        parts.append(f'<g transform="translate({x_offset},10)">{inner}</g>')
+        # Bias
+        bias = word_data.get('bias')
+        if bias:
+            r.add_bias(bias)
+
+        word_renderers.append((r, x_offset))
         x_offset += r.x_cursor + 25
+
+    total_w = x_offset + 10
+    total_h = 150
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{total_w}" height="{total_h}" '
+        f'viewBox="0 0 {total_w} {total_h}">',
+        '<rect width="100%" height="100%" fill="white"/>',
+    ]
+    for r, wx in word_renderers:
+        inner = '\n'.join(e for e in r.elements if e)
+        parts.append(f'<g transform="translate({wx},10)">{inner}</g>')
 
     parts.append('</svg>')
     return '\n'.join(parts)

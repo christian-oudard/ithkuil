@@ -3,9 +3,9 @@
 -- Loads root consonant definitions from data/v3_lexicon.dat.
 -- Format: ROOT|definition (one per line, roots in uppercase)
 module Ithkuil.V3.Lexicon
-  ( V3Lexicon
-  , loadV3Lexicon
-  , lookupV3Root
+  ( Lexicon
+  , loadLexicon
+  , lookupRoot
   ) where
 
 import Data.Text (Text)
@@ -15,12 +15,12 @@ import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 
 -- | V3 lexicon: maps root consonant clusters to definitions
-type V3Lexicon = Map Text Text
+type Lexicon = Map Text Text
 
 -- | Load V3 lexicon from a pipe-delimited file.
 -- Each line: ROOT|definition
-loadV3Lexicon :: FilePath -> IO V3Lexicon
-loadV3Lexicon path = do
+loadLexicon :: FilePath -> IO Lexicon
+loadLexicon path = do
   contents <- TIO.readFile path
   let entries = [ (T.toLower root, def)
                 | line <- T.lines contents
@@ -32,5 +32,5 @@ loadV3Lexicon path = do
   return $ Map.fromList entries
 
 -- | Look up a root in the V3 lexicon (case-insensitive)
-lookupV3Root :: Text -> V3Lexicon -> Maybe Text
-lookupV3Root root = Map.lookup (T.toLower root)
+lookupRoot :: Text -> Lexicon -> Maybe Text
+lookupRoot root = Map.lookup (T.toLower root)

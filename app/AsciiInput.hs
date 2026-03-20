@@ -26,10 +26,10 @@ main = bracket_ setup teardown run
       putStrLn "  Q-suffix: sq\x2192\x0161  zq\x2192\x017E  cq\x2192\x010D  nq\x2192\x0148  rq\x2192\x0159"
       putStrLn "  Special:  dz\x2192\x1E93"
       putStrLn ""
-      loop Idle 0
+      loop Idle 0 []
 
-loop :: InputState -> Int -> IO ()
-loop state pw = do
+loop :: InputState -> Int -> String -> IO ()
+loop state pw buf = do
   mc <- safeGetChar
   case mc of
     Nothing     -> finish state pw
@@ -38,9 +38,9 @@ loop state pw = do
       eraseBack pw
       putStr (commitState state)
       putStrLn ""
-      loop Idle 0
-    Just '\DEL' -> handleBS state pw
-    Just '\b'   -> handleBS state pw
+      loop Idle 0 []
+    Just '\DEL' -> handleBS state pw buf
+    Just '\b'   -> handleBS state pw buf
     Just c      -> do
       let (committed, state') = step state c
           pw' = pendingWidth state'
@@ -48,7 +48,7 @@ loop state pw = do
       putStr committed
       showPending state'
       hFlush stdout
-      loop state' pw'
+      loop state' pw' (reverse committed ++ buf)
 
 finish :: InputState -> Int -> IO ()
 finish state pw = do
@@ -60,13 +60,19 @@ finish state pw = do
 safeGetChar :: IO (Maybe Char)
 safeGetChar = (Just <$> getChar) `catch` \(_ :: IOException) -> return Nothing
 
-handleBS :: InputState -> Int -> IO ()
-handleBS state pw = do
+handleBS :: InputState -> Int -> String -> IO ()
+handleBS Idle _ buf = case buf of
+  []     -> loop Idle 0 []
+  (_:rest) -> do
+    putStr "\b\ESC[K"
+    hFlush stdout
+    loop Idle 0 rest
+handleBS state pw buf = do
   eraseBack pw
   let state' = backspace state
   showPending state'
   hFlush stdout
-  loop state' (pendingWidth state')
+  loop state' (pendingWidth state') buf
 
 eraseBack :: Int -> IO ()
 eraseBack 0 = return ()
