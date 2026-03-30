@@ -480,6 +480,18 @@ TLCedilla = mx(NHacek,    'TLCedilla', pronunciation='tl,')
 # Consonant list (same order as reference)
 # ---------------------------------------------------------------------------
 
+consonants_by_pronunciation = {c.pronunciation: c for c in [
+    P, T, K, Q, C, CHacek,
+    B, D, G, Stop, ZDot, J,
+    PStop, TStop, KStop, QStop, CStop, CHacekStop,
+    PH, TH, KH, QH, CH, CHacekH,
+    F, TCedilla, X, Xh,
+    S, SHacek, V, Dh,
+    H, RHacek, Z, ZHacek,
+    W, L, Y, LCedilla,
+    R, CCedilla, M, N, NHacek, TLCedilla,
+]}
+
 consonants = [
     P, T, K, Q, C, CHacek,
     B, D, G, Stop, ZDot, J,
