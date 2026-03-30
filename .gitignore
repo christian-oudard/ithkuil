@@ -4,6 +4,10 @@ dist-newstyle/
 *.dyn_hi
 *.dyn_o
 grammar_reference_pdf/
+grammar_reference/images/
+grammar_reference/*.html
+grammar_reference/*.pdf
+reference/
 *.ttf
 *.otf
 .venv/
