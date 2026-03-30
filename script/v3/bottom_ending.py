@@ -280,7 +280,7 @@ class HookLeftOnRight(BottomEnding):
         pen.line_to_y(BOTTOM + slant_width / slant45 / 2, end_slant=45)
         pen.turn_to(45)
         pen.move_forward(slant_width / 2)
-        hook(pen, -90, 30, 2.5, adjust_outside=15)
+        hook(pen, -90, 90, 3.5, adjust_outside=15)
 
 
 class HookRightOnRight(BottomEnding):
@@ -291,7 +291,7 @@ class HookRightOnRight(BottomEnding):
         pen.line_to_y(BOTTOM + slant_width / slant45 / 2, end_slant=45)
         pen.turn_to(45)
         pen.move_forward(slant_width / 2)
-        hook(pen, -90, -30, 2.5, adjust_outside=15)
+        hook(pen, -90, -90, 3.5, adjust_outside=15)
 
 
 class FoldHookRight(BottomEnding):
@@ -303,12 +303,12 @@ class FoldHookRight(BottomEnding):
             pen.line_to_y(BOTTOM + w / 2, end_slant=-45)
             pen.turn_to(-45)
             pen.move_forward(w * slant45 / 2)
-            hook(pen, 90, -30, 2.5, adjust_outside=15)
+            hook(pen, 90, -90, 3.0, adjust_outside=15)
         else:
             pen.line_to_y(BOTTOM, end_slant=0)
             pen.turn_to(0)
             pen.move_forward(pen.last_slant_width() / 2)
-            hook(pen, 60, -30, 2.5, adjust_outside=15)
+            hook(pen, 60, -90, 3.0, adjust_outside=15)
 
 
 class FoldHookLeft(BottomEnding):
@@ -320,12 +320,12 @@ class FoldHookLeft(BottomEnding):
             pen.line_to_y(BOTTOM + w / 2, end_slant=-45)
             pen.turn_to(-45)
             pen.move_forward(w * slant45 / 2)
-            hook(pen, 60, 30, 2.5, adjust_outside=15)
+            hook(pen, 60, 90, 3.0, adjust_outside=15)
         else:
             pen.line_to_y(BOTTOM, end_slant=0)
             pen.turn_to(0)
             pen.move_forward(pen.last_slant_width() / 2)
-            hook(pen, 60, 30, 2.5, adjust_outside=15)
+            hook(pen, 60, 90, 3.0, adjust_outside=15)
 
 
 class TowardRightHookLeft(BottomEnding):
@@ -336,7 +336,7 @@ class TowardRightHookLeft(BottomEnding):
         pen.line_to_y(BOTTOM + slant_width / slant45 / 2, end_slant=45)
         pen.turn_to(-135)
         pen.move_to_y(BOTTOM)
-        hook(pen, 120, 30, 3.5, adjust_outside=5)
+        hook(pen, 120, 90, 4.5, adjust_outside=5)
 
 
 class TowardLeftHookLeft(BottomEnding):
@@ -348,12 +348,12 @@ class TowardLeftHookLeft(BottomEnding):
             pen.line_to_y(BOTTOM + w / 2, end_slant=-45)
             pen.turn_to(-45)
             pen.move_forward(w * slant45 / 2)
-            hook(pen, -120, 30, 2.5, adjust_outside=15)
+            hook(pen, -120, 90, 4.0, adjust_outside=15)
         else:
             pen.line_to_y(BOTTOM, end_slant=0)
             pen.turn_to(0)
             pen.move_forward(pen.last_slant_width() / 2)
-            hook(pen, -120, 30, 2.5, adjust_outside=15)
+            hook(pen, -120, 90, 4.0, adjust_outside=15)
 
 
 class TowardLeftHookRight(BottomEnding):
@@ -365,12 +365,12 @@ class TowardLeftHookRight(BottomEnding):
             pen.line_to_y(BOTTOM + w / 2, end_slant=-45)
             pen.turn_to(-45)
             pen.move_forward(w * slant45 / 2)
-            hook(pen, -120, -45, 3.0, adjust_outside=5)
+            hook(pen, -120, -90, 4.0, adjust_outside=5)
         else:
             pen.line_to_y(BOTTOM, end_slant=0)
             pen.turn_to(0)
             pen.move_forward(pen.last_slant_width() / 2)
-            hook(pen, -120, -45, 3.0, adjust_outside=5)
+            hook(pen, -120, -90, 4.0, adjust_outside=5)
 
 
 class TowardRightHookRight(BottomEnding):
@@ -381,7 +381,7 @@ class TowardRightHookRight(BottomEnding):
         pen.line_to_y(BOTTOM + slant_width / slant45 / 2, end_slant=45)
         pen.turn_to(-135)
         pen.move_to_y(BOTTOM)
-        hook(pen, 120, -30, 3.5, adjust_outside=15)
+        hook(pen, 120, -90, 4.5, adjust_outside=15)
 
 
 class BendBreak(BottomEnding):
