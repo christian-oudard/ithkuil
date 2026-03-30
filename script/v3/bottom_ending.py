@@ -605,6 +605,27 @@ class BreakSlightRight(BottomEnding):
 # Bottom ending list and lookup tables
 # ---------------------------------------------------------------------------
 
+bottom_endings_by_pronunciation = {}
+for _be in [
+    Normal, Long,
+    DiagonalDownRightOnRight, DownOnRight, RightOnRight, DiagonalDownLeftOnRight,
+    Bend, Fold, Barb,
+    DiagonalUpRight, Acute, RightOnBottom,
+    Break, BreakTurnLeft, BreakTurnRight,
+    HookLeftOnRight, HookRightOnRight,
+    FoldHookRight, FoldHookLeft,
+    TowardRightHookLeft, TowardLeftHookLeft, TowardLeftHookRight, TowardRightHookRight,
+    BendBreak, AcuteFold, BendBarb, AcuteBarb, AcuteBreak,
+    AcuteLineHigh, AcuteLineLow, DoubleBend, BreakSlightRight,
+]:
+    _p = _be.pronunciation
+    if isinstance(_p, str):
+        if _p:
+            bottom_endings_by_pronunciation[_p] = _be
+    else:
+        for _key in _p:
+            bottom_endings_by_pronunciation[_key] = _be
+
 bottom_endings = [
     Normal, Long,
     DiagonalDownRightOnRight, DownOnRight, RightOnRight, DiagonalDownLeftOnRight,

@@ -230,14 +230,15 @@ class _ClosedFill:
     def close(self):
         self._cmds.append(('Z',))
 
-    def to_svg_path(self, p, n_per_90=8):
-        """Render as SVG path data string (Y-flipped for SVG)."""
+    def to_svg_path(self, p, n_per_90=8, flip_y=True):
+        """Render as SVG path data string."""
+        pt = _pt if flip_y else _pt_yup
         parts = []
         for cmd in self._cmds:
             if cmd[0] == 'M':
-                parts.append(f'M{_pt(cmd[1], cmd[2], p)}')
+                parts.append(f'M{pt(cmd[1], cmd[2], p)}')
             elif cmd[0] == 'L':
-                parts.append(f'L{_pt(cmd[1], cmd[2], p)}')
+                parts.append(f'L{pt(cmd[1], cmd[2], p)}')
             elif cmd[0] == 'A':
                 _, cx, cy, r, sa, ea = cmd
                 arc_span = abs(ea - sa)
@@ -246,7 +247,7 @@ class _ClosedFill:
                     a = sa + (ea - sa) * i / n
                     px_ = cx + r * math.cos(a)
                     py_ = cy + r * math.sin(a)
-                    parts.append(f'L{_pt(px_, py_, p)}')
+                    parts.append(f'L{pt(px_, py_, p)}')
             elif cmd[0] == 'Z':
                 parts.append('Z')
         return ' '.join(parts)
@@ -468,16 +469,17 @@ class _Path:
             if p_right and forward(a, p_right, 'right') and forward(b, p_right, 'right'):
                 a.b_right = b.a_right = p_right
 
-    def to_svg_paths(self, precision: int = 3) -> List[str]:
+    def to_svg_paths(self, precision: int = 3,
+                     flip_y: bool = True) -> List[str]:
         """Render each segment as a separate filled SVG path."""
         if not self.segs:
             return []
         paths = []
         for seg in self.segs:
             if seg.arc_data is not None:
-                paths.append(_arc_seg_to_svg(seg, precision))
+                paths.append(_arc_seg_to_svg(seg, precision, flip_y=flip_y))
             else:
-                paths.append(_line_seg_to_svg(seg, precision))
+                paths.append(_line_seg_to_svg(seg, precision, flip_y=flip_y))
         return [p for p in paths if p]
 
 
@@ -502,19 +504,26 @@ def _fmt(v, p):
 
 
 def _pt(x, y, p):
-    """Format a point for SVG (Y is flipped)."""
+    """Format a point for SVG (Y is flipped to SVG-down convention)."""
     return f'{_fmt(x, p)},{_fmt(-y, p)}'
 
 
-def _line_seg_to_svg(seg: _Seg, p: int) -> Optional[str]:
+def _pt_yup(x, y, p):
+    """Format a point in Y-up coordinates (no flip, for external transforms)."""
+    return f'{_fmt(x, p)},{_fmt(y, p)}'
+
+
+def _line_seg_to_svg(seg: _Seg, p: int, flip_y: bool = True) -> Optional[str]:
     """Filled quadrilateral for a line segment."""
     al, ar, bl, br = seg.a_left, seg.a_right, seg.b_left, seg.b_right
     if any(c is None for c in [al, ar, bl, br]):
         return None
-    return f'M{_pt(*al,p)} L{_pt(*bl,p)} L{_pt(*br,p)} L{_pt(*ar,p)} Z'
+    pt = _pt if flip_y else _pt_yup
+    return f'M{pt(*al,p)} L{pt(*bl,p)} L{pt(*br,p)} L{pt(*ar,p)} Z'
 
 
-def _arc_seg_to_svg(seg: _Seg, p: int, n_per_90: int = 8) -> Optional[str]:
+def _arc_seg_to_svg(seg: _Seg, p: int, n_per_90: int = 8,
+                    flip_y: bool = True) -> Optional[str]:
     """
     Filled arc segment as polygon approximation.
     Left side (a_left→b_left) and right side (b_right→a_right) are
@@ -539,12 +548,13 @@ def _arc_seg_to_svg(seg: _Seg, p: int, n_per_90: int = 8) -> Optional[str]:
     left_pts[0]  = al;  left_pts[-1]  = bl
     right_pts[0] = ar;  right_pts[-1] = br
 
-    parts = [f'M{_pt(*al, p)}']
-    for pt in left_pts[1:]:
-        parts.append(f'L{_pt(*pt, p)}')
-    parts.append(f'L{_pt(*br, p)}')
-    for pt in reversed(right_pts[:-1]):
-        parts.append(f'L{_pt(*pt, p)}')
+    pt = _pt if flip_y else _pt_yup
+    parts = [f'M{pt(*al, p)}']
+    for lp in left_pts[1:]:
+        parts.append(f'L{pt(*lp, p)}')
+    parts.append(f'L{pt(*br, p)}')
+    for rp in reversed(right_pts[:-1]):
+        parts.append(f'L{pt(*rp, p)}')
     parts.append('Z')
     return ' '.join(parts)
 
@@ -641,6 +651,21 @@ class Paper:
         if not xs:
             return Bounds(0, 0, 0, 0)
         return Bounds(min(xs), min(ys), max(xs), max(ys))
+
+    def to_path_data(self, precision: int = 3) -> str:
+        """
+        Return all paths as a Y-up SVG path data string.
+
+        Coordinates are NOT Y-flipped, suitable for embedding in SVG with
+        an external scale(s, -s) transform (as used by render.py).
+        """
+        self.finish()
+        parts = []
+        for path in self._paths:
+            parts.extend(path.to_svg_paths(precision, flip_y=False))
+        for cf in self._closed:
+            parts.append(cf.to_svg_path(precision, flip_y=False))
+        return ' '.join(parts)
 
     def override_bounds(self, bounds: Bounds):
         """Override bounds for typesetting (doesn't change actual geometry)."""

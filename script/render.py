@@ -26,7 +26,7 @@ try:
     for c in CONSONANT_ORDER:
         if c not in SECONDARY and c in _SECONDARY_OUTLINE:
             SECONDARY[c] = _SECONDARY_OUTLINE[c]
-except ImportError:
+except Exception:
     SECONDARY = _SECONDARY_OUTLINE
 
 

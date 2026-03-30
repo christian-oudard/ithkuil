@@ -1,283 +1,287 @@
 #!/usr/bin/env python3
 """
-Ithkuil V4 Secondary Characters defined with the pen library.
+Ithkuil V4 Secondary Characters drawn with pen.py.
 
-Each consonant is a function that draws with a Pen.
-Connected strokes produce single contours with proper miter joins.
+Each consonant function receives a blank Pen and draws into pen.paper.
+The em-square is 0-500 wide, 0-1000 tall (Y-up).
+Characters occupy roughly x=50-450, y=100-900.
+SW = stroke width.
+
+Arc geometry matches glyphs.py: arc centers and radii are identical;
+angles in standard math convention (0=east, 90=north, Y-up).
 """
-import sys, os
+import sys, os, math
 sys.path.insert(0, os.path.dirname(__file__))
 
-from pen import Pen, CAP_FLAT, CAP_POINTED, CAP_CHISEL, mirror_x
+from pen import Pen
 
-SW = 65  # standard stroke width (thicker to match reference weight)
+SW = 65  # stroke width
 
 
-# ============================================================================
-# Secondary Character Draw Functions
-# ============================================================================
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _arc_end(cx, cy, r, a_deg):
+    """Point on circle at angle a_deg (degrees)."""
+    a = math.radians(a_deg)
+    return cx + r * math.cos(a), cy + r * math.sin(a)
+
+
+# ---------------------------------------------------------------------------
+# Draw functions  (one per consonant)
+# ---------------------------------------------------------------------------
 
 def draw_p(pen):
-    """p: Top horizontal, vertical down, bottom curve right."""
+    """p: top horiz + vertical stem + CW foot arc."""
     pen.set_width(SW)
-    pen.move_to(100, 800)
-    pen.line_to(350, 800)
-    pen.move_to(100, 800)
-    pen.line_to(100, 350)
-    pen.arc_to(350, 350, radius=150, clockwise=True)
+    pen.move_to(100, 800); pen.line_to(350, 800)          # top horiz
+    pen.move_to(100, 800); pen.line_to(100, 350)          # stem
+    pen.arc_to(*_arc_end(250, 350, 150, 270), cx=250, cy=350)  # CW foot to (250,200)
+
 
 def draw_b(pen):
-    """b: Mirror of p."""
+    """b: top horiz + right stem + CW foot arc."""
     pen.set_width(SW)
-    pen.move_to(350, 800)
-    pen.line_to(100, 800)
-    pen.move_to(350, 800)
-    pen.line_to(350, 350)
-    pen.arc_to(100, 350, radius=150, clockwise=False)
+    pen.move_to(100, 800); pen.line_to(350, 800)          # top horiz
+    pen.move_to(350, 800); pen.line_to(350, 350)          # right stem
+    pen.arc_to(*_arc_end(200, 350, 150, 270), cx=200, cy=350)  # CW to (200,200)
+
 
 def draw_t(pen):
-    """t: Gamma shape."""
+    """t: Gamma shape (stem + top horiz)."""
     pen.set_width(SW)
-    pen.move_to(100, 200)
-    pen.line_to(100, 800)
-    pen.line_to(400, 800)
+    pen.move_to(100, 200); pen.line_to(100, 800); pen.line_to(400, 800)
+
 
 def draw_d(pen):
-    """d: Reversed Gamma with serif."""
+    """d: reversed Gamma with bottom serif."""
     pen.set_width(SW)
-    pen.move_to(250, 200)
-    pen.line_to(400, 200)
-    pen.line_to(400, 800)
-    pen.line_to(100, 800)
+    pen.move_to(250, 200); pen.line_to(400, 200)
+    pen.move_to(400, 200); pen.line_to(400, 800); pen.line_to(100, 800)
+
 
 def draw_k(pen):
-    """k: Top horizontal, stub down, diagonal."""
+    """k: top horiz + stub + diagonal."""
     pen.set_width(SW)
-    pen.move_to(100, 800)
-    pen.line_to(400, 800)
-    pen.line_to(400, 500)
-    pen.line_to(100, 200)
+    pen.move_to(100, 800); pen.line_to(400, 800)
+    pen.line_to(400, 500); pen.line_to(100, 200)
+
 
 def draw_g(pen):
-    """g: Mirror of k."""
+    """g: mirror of k."""
     pen.set_width(SW)
-    pen.move_to(400, 800)
-    pen.line_to(100, 800)
-    pen.line_to(100, 500)
-    pen.line_to(400, 200)
+    pen.move_to(400, 800); pen.line_to(100, 800)
+    pen.line_to(100, 500); pen.line_to(400, 200)
+
 
 def draw_f(pen):
-    """f: S-shape (reversed 5)."""
+    """f: reversed-5 (top horiz, two verts, mid horiz, CCW foot arc)."""
     pen.set_width(SW)
-    pen.move_to(100, 800)
-    pen.line_to(400, 800)
-    pen.move_to(100, 800)
-    pen.line_to(100, 550)
-    pen.line_to(350, 550)
-    pen.line_to(350, 200)
-    pen.set_end_cap(CAP_FLAT)
-    pen.arc_to(200, 200, radius=150, clockwise=True)
+    pen.move_to(100, 800); pen.line_to(400, 800)     # top horiz
+    pen.move_to(100, 800); pen.line_to(100, 550)     # upper vert
+    pen.line_to(350, 550); pen.line_to(350, 50)      # mid horiz + lower vert
+    # foot: 270° CCW arc from (350,50) around (350,200) to (200,200)
+    # at (350,50), heading east to start CCW arc
+    pen.break_stroke()
+    pen.move_to(350, 50); pen.turn_to(0)
+    pen.arc_left(270, 150)
+
 
 def draw_v(pen):
-    """v: Mirror of f (like 5)."""
+    """v: mirror of f."""
     pen.set_width(SW)
-    pen.move_to(400, 800)
-    pen.line_to(100, 800)
-    pen.move_to(400, 800)
-    pen.line_to(400, 550)
-    pen.line_to(150, 550)
-    pen.line_to(150, 200)
-    pen.arc_to(300, 200, radius=150, clockwise=False)
+    pen.move_to(400, 800); pen.line_to(100, 800)
+    pen.move_to(400, 800); pen.line_to(400, 550)
+    pen.line_to(150, 550); pen.line_to(150, 50)
+    # foot: 270° CW arc from (150,50) around (150,200) to (300,200)
+    pen.break_stroke()
+    pen.move_to(150, 50); pen.turn_to(180)
+    pen.arc_right(270, 150)
+
 
 def draw_s(pen):
-    """s: Zigzag."""
+    """s: zigzag."""
     pen.set_width(SW)
-    pen.move_to(100, 800)
-    pen.line_to(350, 550)
-    pen.line_to(100, 300)
+    pen.move_to(100, 800); pen.line_to(350, 550); pen.line_to(100, 300)
+
 
 def draw_z(pen):
-    """z: Mirror zigzag."""
+    """z: mirror zigzag."""
     pen.set_width(SW)
-    pen.move_to(350, 800)
-    pen.line_to(100, 550)
-    pen.line_to(350, 300)
+    pen.move_to(350, 800); pen.line_to(100, 550); pen.line_to(350, 300)
+
 
 def draw_tc(pen):
-    """ţ: C-curve opening right."""
+    """ţ: C-curve opening right (semicircle)."""
     pen.set_width(SW)
-    pen.set_caps(CAP_POINTED)
-    pen.move_to(350, 750)
-    pen.arc_to(350, 250, radius=250, clockwise=False)
+    # Semicircle: center (350,500), r=250, from 90° to -90° (CW 180°)
+    # top (350,750) → CW 180° → bottom (350,250)
+    pen.move_to(350, 750); pen.turn_to(180)
+    pen.arc_right(180, 250)
+
 
 def draw_dh(pen):
-    """ḑ: C-curve opening left."""
+    """ḑ: C-curve opening left (mirror of ţ)."""
     pen.set_width(SW)
-    pen.set_caps(CAP_POINTED)
-    pen.move_to(150, 750)
-    pen.arc_to(150, 250, radius=250, clockwise=True)
+    pen.move_to(150, 750); pen.turn_to(0)
+    pen.arc_left(180, 250)
+
 
 def draw_sh(pen):
-    """š: 2-like shape (arc + diagonal + horizontal)."""
+    """š: 2-like shape."""
     pen.set_width(SW)
+    # Top arc: CCW from (100,650) to (400,650), center (250,650), r=150
     pen.move_to(100, 650)
-    pen.arc_to(400, 650, radius=150, clockwise=False)
-    pen.move_to(100, 650)
-    pen.line_to(350, 250)
-    pen.line_to(100, 250)
+    pen.arc_to(400, 650, cx=250, cy=650)
+    # Diagonal and bottom horiz: break then draw
+    pen.move_to(100, 650); pen.line_to(350, 250); pen.line_to(100, 250)
+
 
 def draw_zh(pen):
-    """ž: Mirror 2."""
+    """ž: mirror of š."""
     pen.set_width(SW)
     pen.move_to(400, 650)
-    pen.arc_to(100, 650, radius=150, clockwise=True)
-    pen.move_to(400, 650)
-    pen.line_to(150, 250)
-    pen.line_to(400, 250)
+    pen.arc_to(100, 650, cx=250, cy=650)
+    pen.move_to(400, 650); pen.line_to(150, 250); pen.line_to(400, 250)
+
 
 def draw_ch(pen):
-    """č: Square bracket [."""
+    """č: square bracket [."""
     pen.set_width(SW)
-    pen.move_to(350, 800)
-    pen.line_to(100, 800)
-    pen.line_to(100, 200)
-    pen.line_to(350, 200)
+    pen.move_to(350, 800); pen.line_to(100, 800)
+    pen.line_to(100, 200); pen.line_to(350, 200)
+
 
 def draw_j(pen):
-    """j: Reversed bracket ]."""
+    """j: reversed bracket ]."""
     pen.set_width(SW)
-    pen.move_to(150, 800)
-    pen.line_to(400, 800)
-    pen.line_to(400, 200)
-    pen.line_to(150, 200)
+    pen.move_to(150, 800); pen.line_to(400, 800)
+    pen.line_to(400, 200); pen.line_to(150, 200)
+
 
 def draw_c(pen):
-    """c: L-shape."""
+    """c: L-shape (vert + bottom horiz)."""
     pen.set_width(SW)
-    pen.move_to(100, 800)
-    pen.line_to(100, 200)
-    pen.line_to(400, 200)
+    pen.move_to(100, 800); pen.line_to(100, 200); pen.line_to(400, 200)
+
 
 def draw_zd(pen):
     """ẓ: L with top serif."""
     pen.set_width(SW)
-    pen.move_to(250, 800)
-    pen.line_to(100, 800)
-    pen.line_to(100, 200)
-    pen.line_to(400, 200)
+    pen.move_to(250, 800); pen.line_to(100, 800)
+    pen.line_to(100, 200); pen.line_to(400, 200)
+
 
 def draw_x(pen):
     """x: Z-shape."""
     pen.set_width(SW)
-    pen.move_to(100, 800)
-    pen.line_to(400, 800)
-    pen.move_to(400, 800)
-    pen.line_to(100, 200)
-    pen.move_to(100, 200)
-    pen.line_to(400, 200)
+    pen.move_to(100, 800); pen.line_to(400, 800)
+    pen.move_to(400, 800); pen.line_to(100, 200)
+    pen.move_to(100, 200); pen.line_to(400, 200)
+
 
 def draw_cy(pen):
-    """ç: Sigma shape."""
+    """ç: sigma shape (horiz-diag-diag-horiz)."""
     pen.set_width(SW)
-    pen.move_to(400, 800)
-    pen.line_to(100, 800)
-    pen.line_to(250, 500)
-    pen.line_to(100, 200)
+    pen.move_to(400, 800); pen.line_to(100, 800)
+    pen.line_to(250, 500); pen.line_to(100, 200)
     pen.line_to(400, 200)
+
 
 def draw_h(pen):
     """h: 4-like shape."""
     pen.set_width(SW)
-    pen.move_to(100, 800)
-    pen.line_to(300, 450)
-    pen.line_to(300, 200)
-    pen.move_to(150, 450)
-    pen.line_to(450, 450)
+    pen.move_to(100, 800); pen.line_to(300, 450); pen.line_to(300, 200)
+    pen.move_to(150, 450); pen.line_to(450, 450)
 
-def draw_l(pen):
-    """l: Diagonal + vertical + horizontal."""
-    pen.set_width(SW)
-    pen.move_to(100, 800)
-    pen.line_to(250, 500)
-    pen.line_to(250, 200)
-    pen.line_to(450, 200)
-
-def draw_r(pen):
-    """r: Step shape."""
-    pen.set_width(SW)
-    pen.move_to(100, 800)
-    pen.line_to(350, 800)
-    pen.line_to(350, 550)
-    pen.line_to(150, 550)
-    pen.line_to(150, 200)
 
 def draw_lh(pen):
     """ļ: V-chevron pointing down."""
     pen.set_width(SW)
-    pen.move_to(100, 800)
-    pen.line_to(250, 400)
-    pen.line_to(400, 800)
+    pen.move_to(100, 800); pen.line_to(250, 400); pen.line_to(400, 800)
+
+
+def draw_c_cedilla(pen):
+    """c, (c-cedilla): L-shape like c but with extra mark."""
+    # Using same shape as c for now
+    draw_c(pen)
+
 
 def draw_rh(pen):
-    """ř: Loop at top + stem."""
+    """ř: loop at top + stem."""
     pen.set_width(SW)
+    # Loop: CCW from (50, 650) around (200, 650) to (200, 500)
+    # At (50, 650): angle from center (200,650) = 180°. End (200,500): angle 270°.
+    # CCW from 180° to 270° = 90°
     pen.move_to(50, 650)
-    pen.arc_to(200, 500, radius=150, clockwise=False)
-    pen.move_to(200, 500)
+    pen.arc_to(200, 500, cx=200, cy=650)  # CCW 90°
     pen.line_to(200, 200)
 
+
 def draw_m(pen):
-    """m: Single diagonal with chisel ends."""
+    """m: diagonal with chisel ends."""
     pen.set_width(SW)
-    pen.set_start_cap(CAP_CHISEL, 25)
-    pen.set_end_cap(CAP_CHISEL, -25)
-    pen.move_to(100, 800)
-    pen.line_to(350, 200)
+    # Chisel start = slant at start; chisel -25 at end
+    pen.move_to(100, 800); pen.line_to(350, 200, start_slant=25, end_slant=-25)
+
 
 def draw_n(pen):
-    """n: Diagonal with serif."""
+    """n: diagonal with bottom serif."""
     pen.set_width(SW)
-    pen.set_start_cap(CAP_CHISEL, 25)
-    pen.move_to(100, 800)
-    pen.line_to(300, 200)
+    pen.move_to(100, 800); pen.line_to(300, 200, start_slant=25)
     pen.line_to(450, 200)
 
+
 def draw_ny(pen):
-    """ň: Diagonal with rightward kick."""
+    """ň: diagonal with rightward kick."""
     pen.set_width(SW)
-    pen.set_start_cap(CAP_CHISEL, 25)
-    pen.move_to(100, 800)
-    pen.line_to(300, 350)
+    pen.move_to(100, 800); pen.line_to(300, 350, start_slant=25)
     pen.line_to(300, 200)
-    pen.move_to(300, 350)
-    pen.line_to(450, 250)
+    pen.move_to(300, 350); pen.line_to(450, 250)
+
+
+def draw_l(pen):
+    """l: diagonal + vertical + bottom horiz."""
+    pen.set_width(SW)
+    pen.move_to(100, 800); pen.line_to(250, 500)
+    pen.line_to(250, 200); pen.line_to(450, 200)
+
+
+def draw_r(pen):
+    """r: step shape."""
+    pen.set_width(SW)
+    pen.move_to(100, 800); pen.line_to(350, 800)
+    pen.line_to(350, 550); pen.line_to(150, 550)
+    pen.line_to(150, 200)
+
 
 def draw_w(pen):
-    """w: Diagonal + bottom-right curve."""
+    """w: diagonal + bottom-right curve."""
     pen.set_width(SW)
-    pen.set_start_cap(CAP_CHISEL, 25)
-    pen.move_to(100, 800)
-    pen.line_to(250, 450)
-    pen.set_end_cap(CAP_POINTED)
-    pen.arc_to(400, 300, radius=150, clockwise=True)
+    pen.move_to(100, 800); pen.line_to(250, 450, start_slant=25)
+    # CW quarter-arc from (250,450) to (400,300): center (250,300)
+    pen.arc_to(400, 300, cx=250, cy=300)
+
 
 def draw_y(pen):
-    """y: Diagonal from right + bottom-left curve."""
+    """y: diagonal from right + bottom-left curve."""
     pen.set_width(SW)
-    pen.set_start_cap(CAP_CHISEL, -25)
-    pen.move_to(350, 800)
-    pen.line_to(200, 450)
-    pen.set_end_cap(CAP_POINTED)
-    pen.arc_to(50, 300, radius=150, clockwise=False)
+    pen.move_to(350, 800); pen.line_to(200, 450, start_slant=-25)
+    # CCW quarter-arc from (200,450) to (50,300): center (200,300)
+    pen.arc_to(50, 300, cx=200, cy=300)
+
 
 def draw_glottal(pen):
-    """': Short vertical tick."""
+    """' (glottal stop): short vertical tick."""
     pen.set_width(SW)
-    pen.move_to(200, 700)
-    pen.line_to(200, 400)
+    pen.move_to(200, 700); pen.line_to(200, 400)
 
 
-# Map consonants to draw functions
+# ---------------------------------------------------------------------------
+# Consonant → draw function map
+# ---------------------------------------------------------------------------
+
 PEN_CHARS = {
     'p': draw_p, 'b': draw_b, 't': draw_t, 'd': draw_d,
     'k': draw_k, 'g': draw_g, 'f': draw_f, 'v': draw_v,
@@ -292,16 +296,17 @@ PEN_CHARS = {
 
 
 def build_pen_secondary():
-    """Build SECONDARY dict compatible with glyphs.py format, using pen strokes."""
+    """Build SECONDARY dict (path data in Y-up coordinates) using pen strokes."""
     from glyphs import CONSONANT_ORDER, _ASCII_NAMES, PUA_SECONDARY
 
     result = {}
     for cons in CONSONANT_ORDER:
         if cons not in PEN_CHARS:
             continue
-        pen = Pen(width=SW)
+        pen = Pen()
+        pen.set_width(SW)
         PEN_CHARS[cons](pen)
-        path_d = pen.to_path()
+        path_d = pen.paper.to_path_data()
 
         ascii_name = _ASCII_NAMES.get(cons, cons)
         result[cons] = {
@@ -309,62 +314,7 @@ def build_pen_secondary():
             'consonant': cons,
             'width': 500,
             'path': path_d,
+            'codepoint': PUA_SECONDARY + CONSONANT_ORDER.index(cons),
         }
-        result[cons]['codepoint'] = PUA_SECONDARY + CONSONANT_ORDER.index(cons)
 
     return result
-
-
-def render_comparison():
-    """Render pen vs outline characters side by side."""
-    from glyphs import SECONDARY, CONSONANT_ORDER
-
-    page_w, page_h = 950, 600
-    svg = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{page_w}" height="{page_h}" '
-        f'viewBox="0 0 {page_w} {page_h}">',
-        '<rect width="100%" height="100%" fill="white"/>',
-        '<text x="20" y="20" font-size="11" font-family="sans-serif" fill="#333">'
-        'Top: pen strokes (joined contours, caps).  '
-        'Bottom: outline parallelograms (separate shapes).</text>',
-    ]
-
-    scale = 0.065
-    chars = [c for c in CONSONANT_ORDER if c in PEN_CHARS and c in SECONDARY]
-
-    cols = 11
-    for idx, ch in enumerate(chars):
-        col = idx % cols
-        row = idx // cols
-        x_off = 20 + col * 85
-        label = ch if ch != "'" else "'"
-
-        # Pen version (top)
-        pen = Pen(width=SW)
-        PEN_CHARS[ch](pen)
-        path_d = pen.to_path()
-        y_top = 35 + row * 260
-        transform = f'translate({x_off},{y_top + 55}) scale({scale},{-scale})'
-        svg.append(f'<g transform="{transform}">'
-                   f'<path d="{path_d}" fill="#2a4858" fill-rule="nonzero"/></g>')
-
-        # Outline version (bottom)
-        glyph = SECONDARY[ch]
-        y_bot = 35 + row * 260 + 100
-        transform = f'translate({x_off},{y_bot + 55}) scale({scale},{-scale})'
-        svg.append(f'<g transform="{transform}">'
-                   f'<path d="{glyph["path"]}" fill="#8b4513" fill-rule="nonzero"/></g>')
-
-        svg.append(f'<text x="{x_off + 15}" y="{y_top + 68}" text-anchor="middle" '
-                   f'font-size="8" fill="#666">{label}</text>')
-
-    svg.append('</svg>')
-
-    output = 'script/pen_comparison.svg'
-    with open(output, 'w') as f:
-        f.write('\n'.join(svg))
-    print(f'Wrote {output} ({len(chars)} characters)')
-
-
-if __name__ == '__main__':
-    render_comparison()
