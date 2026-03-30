@@ -14,7 +14,7 @@ import math
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-from pen import spine_arc, width_taper, ease_linear
+from pen import spine_arc, width_taper, ease_out
 
 
 def hook(pen, slant_angle, arc_angle, distance, adjust_inside=0, adjust_outside=0):
@@ -48,7 +48,7 @@ def hook(pen, slant_angle, arc_angle, distance, adjust_inside=0, adjust_outside=
     end_angle = start_angle + (sweep if arc_angle > 0 else -sweep)
 
     s_fn = spine_arc(cx, cy, radius, start_angle, end_angle)
-    w_fn = width_taper(hook_width, 0.0, ease=ease_linear)
+    w_fn = width_taper(hook_width, 0.0, ease=ease_out)
 
     # Hook is a decorative appendage: save and restore pen state
     saved = (pen._x, pen._y, pen._heading, pen._in_stroke)
