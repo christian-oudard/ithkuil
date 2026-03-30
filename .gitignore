@@ -13,4 +13,7 @@ reference/
 .venv/
 script/*.png
 script/__pycache__/
+script/**/__pycache__/
+script/*.svg
+script/v3/*.svg
 discord_archive/data/
