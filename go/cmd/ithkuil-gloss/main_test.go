@@ -179,6 +179,43 @@ func TestCmd_Trace(t *testing.T) {
 	}
 }
 
+func TestCmd_Diff(t *testing.T) {
+	// Single-word pair: stress and Slot V+VII differ between the full
+	// formative and its bare root.
+	out, _, code := runCLI("--diff", "malëuţřait", "mal")
+	if code != 0 {
+		t.Fatalf("--diff exit %d; out=%q", code, out)
+	}
+	for _, want := range []string{"Slot III(Cr)", "stress", "→", "rows changed"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("--diff output missing %q; got %q", want, out)
+		}
+	}
+}
+
+func TestCmd_Diff_Sentence(t *testing.T) {
+	// Sentence pair separated by `--`. Both pairs render their own block.
+	out, _, code := runCLI("--diff", "amlala", "la", "--", "imlalo", "la")
+	if code != 0 {
+		t.Fatalf("--diff sentence exit %d; out=%q", code, out)
+	}
+	for _, want := range []string{"[1]", "[2]", "amlala", "imlalo"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("--diff sentence output missing %q; got %q", want, out)
+		}
+	}
+}
+
+func TestCmd_Diff_NoArgs(t *testing.T) {
+	_, errOut, code := runCLI("--diff")
+	if code != 2 {
+		t.Errorf("expected exit 2 for empty --diff, got %d", code)
+	}
+	if !strings.Contains(errOut, "usage") {
+		t.Errorf("expected usage on stderr; got %q", errOut)
+	}
+}
+
 func TestCmd_Search(t *testing.T) {
 	out, _, code := runCLI("-lex", dataDir(), "--search", "yellow")
 	if code != 0 {

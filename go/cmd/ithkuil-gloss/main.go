@@ -12,6 +12,8 @@
 //	--affix QUERY       Substring-search the affix lexicon.
 //	--biases [QUERY]    List bias adjuncts (optional filter).
 //	--trace WORDS...    Per-slot polygraph view across a sentence.
+//	--diff A B          Slot-by-slot diff between two formatives.
+//	                     Use `--diff A... -- B...` for sentences.
 //	--search QUERY      Unified search across grammar/roots/affixes.
 //	--compose ROOT ...  Build a formative from a root + grammar flags.
 //	--validate WORDS... Gloss + run phonotactic validation.
@@ -63,6 +65,8 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return cmdBiases(args[1:], stdout)
 	case "--trace":
 		return cmdTrace(args[1:], stdout, stderr, lexDir)
+	case "--diff":
+		return cmdDiff(args[1:], stdout, stderr)
 	case "--search":
 		return cmdSearch(args[1:], stdout, stderr, lexDir)
 	case "--compose":
@@ -85,6 +89,8 @@ Subcommands:
   --affix QUERY       Substring search the affix lexicon.
   --biases [QUERY]    List every bias adjunct (optional filter).
   --trace WORDS...    Per-slot polygraph across a sentence.
+  --diff A B          Slot-by-slot diff between two formatives.
+  --diff A... -- B... Slot-by-slot diff between two sentences.
   --search QUERY      Unified search (grammar + roots + affixes).
   --compose ROOT FLAGS...
                       Build a formative from a root and grammar flags.
