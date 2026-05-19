@@ -6,5 +6,6 @@ pkgs.mkShell {
     pkgs.cabal-install
     pkgs.ghc
     pkgs.curl
+    pkgs.go
   ];
 }
