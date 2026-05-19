@@ -1645,6 +1645,173 @@ main = hspec $ do
       let g = glossWord mempty mempty (parseWord "agulouwá")
       T.isInfixOf "CNT" g `shouldBe` True
 
+  -- Worked examples: real-world translation drafts the parser must round-trip.
+  -- Each test asserts (a) the form parses as a Formative or Referential
+  -- (i.e., is well-formed Ithkuil), and (b) the gloss contains key features
+  -- matching the intended meaning. Failure here means the form is malformed
+  -- and should not ship in translations.
+  describe "Corpus: translation drafts (alpha)" $ do
+    -- Sentence 1: "I will be home late tonight, don't wait for me, just sleep."
+    it "ärmaläwi'a = '(I) will be at home' (rm CPT, PRS aspect, LOC case)" $ do
+      let g = glossWord mempty mempty (parseWord "ärmaläwi'a")
+      T.isInfixOf "CPT" g `shouldBe` True
+      T.isInfixOf "PRS" g `shouldBe` True
+      T.isInfixOf "LOC" g `shouldBe` True
+
+    it "la = '1m-THM (I, as theme)'" $ do
+      let g = glossWord mempty mempty (parseWord "la")
+      T.isInfixOf "1m" g `shouldBe` True
+      T.isInfixOf "THM" g `shouldBe` True
+
+    it "wäḑḑái = 'sleep!' (ḑḑ CPT, DIR illocution)" $ do
+      let g = glossWord mempty mempty (parseWord "wäḑḑái")
+      T.isInfixOf "CPT" g `shouldBe` True
+      T.isInfixOf "DIR" g `shouldBe` True
+
+    it "wäfsöróu = 'don't await' (fs CPT, -r-/6 NEG affix, ADM illocution)" $ do
+      let g = glossWord mempty mempty (parseWord "wäfsöróu")
+      T.isInfixOf "CPT" g `shouldBe` True
+      T.isInfixOf "r/6" g `shouldBe` True  -- NEG affix when lexicon not loaded
+      T.isInfixOf "ADM" g `shouldBe` True
+
+    it "lü = '1m-DAT (for me)'" $ do
+      let g = glossWord mempty mempty (parseWord "lü")
+      T.isInfixOf "1m" g `shouldBe` True
+      T.isInfixOf "DAT" g `shouldBe` True
+
+    -- Sentence 2: "Don't open my cabinet, exciting surprise waiting for you."
+    it "wäčnöróu = 'don't open' (čn CPT, -r-/6 NEG affix, ADM illocution)" $ do
+      let g = glossWord mempty mempty (parseWord "wäčnöróu")
+      T.isInfixOf "CPT" g `shouldBe` True
+      T.isInfixOf "r/6" g `shouldBe` True
+      T.isInfixOf "ADM" g `shouldBe` True
+
+    -- Sentence 3: "Big kiss (hopefully very soon)"
+    it "wämžwüxói = 'big kiss (hopefully)' (mžw CPT, -x-/8 SIZ affix, POT illocution)" $ do
+      let g = glossWord mempty mempty (parseWord "wämžwüxói")
+      T.isInfixOf "CPT" g `shouldBe` True
+      T.isInfixOf "x/8" g `shouldBe` True
+      T.isInfixOf "POT" g `shouldBe` True
+
+    -- Counter-examples: the malformed first-draft forms must NOT parse as
+    -- verbal formatives. If these ever start parsing as Formatives, the test
+    -- has caught a real ambiguity we need to investigate.
+    it "MALFORMED 'aḑḑái' does not parse as a verbal formative" $ do
+      case parseWord "aḑḑái" of
+        PFormative _ -> expectationFailure "aḑḑái should not parse as a Formative; verbal forms need w-/y- prefix"
+        _            -> return ()
+
+    -- v2 forms: stem refinements (rm S3 = house with conveniences;
+    -- mty S3 = specialty cabinet/wardrobe; km S3 = late; ln S2 = nighttime;
+    -- kll S1 = surprise — v1 wrongly used klw which is "sling/bolas/lasso");
+    -- exercises Slot IV (OBJ, CTE specifications) and Slot VIII (IMM aspect).
+    it "v2: ürmaläwi'a = 'will come home' (rm S3, CPT, PRS, LOC)" $ do
+      let g = glossWord mempty mempty (parseWord "ürmaläwi'a")
+      T.isInfixOf "S3" g `shouldBe` True
+      T.isInfixOf "CPT" g `shouldBe` True
+      T.isInfixOf "PRS" g `shouldBe` True
+      T.isInfixOf "LOC" g `shouldBe` True
+
+    it "v2: wükmao = 'lately' (km S3, CPT, FUN manner case)" $ do
+      let g = glossWord mempty mempty (parseWord "wükmao")
+      T.isInfixOf "S3" g `shouldBe` True
+      T.isInfixOf "FUN" g `shouldBe` True
+
+    it "v2: ilnali'a = 'in the nighttime' (ln S2, CPT, LOC)" $ do
+      let g = glossWord mempty mempty (parseWord "ilnali'a")
+      T.isInfixOf "S2" g `shouldBe` True
+      T.isInfixOf "LOC" g `shouldBe` True
+
+    it "v2: ümtyile = 'my (specialty) cabinet' (mty S3, CPT, OBJ spec, ABS)" $ do
+      let g = glossWord mempty mempty (parseWord "ümtyile")
+      T.isInfixOf "S3" g `shouldBe` True
+      T.isInfixOf "OBJ" g `shouldBe` True
+      T.isInfixOf "ABS" g `shouldBe` True
+
+    it "v2: äklläla = 'the surprise' (kll S1 surprise, CPT, CTE specification)" $ do
+      let g = glossWord mempty mempty (parseWord "äklläla")
+      T.isInfixOf "CPT" g `shouldBe` True
+      T.isInfixOf "CTE" g `shouldBe` True
+
+    it "v2: wämžwüxëiwói = 'huge kiss, hopefully imminent' (mžw CPT, SIZ/8, IMM aspect, POT)" $ do
+      let g = glossWord mempty mempty (parseWord "wämžwüxëiwói")
+      T.isInfixOf "CPT" g `shouldBe` True
+      T.isInfixOf "x/8" g `shouldBe` True  -- SIZ/8 when lexicon not loaded
+      T.isInfixOf "IMM" g `shouldBe` True  -- imminent aspect: very soon
+      T.isInfixOf "POT" g `shouldBe` True  -- hopefully
+
+    -- v3 forms: bias adjuncts carry tone (řs "OK", ňňs "Please", lst
+    -- "Anticipation:", mmh "Ahhhh!"); softer NEG/4 contrasts with emphatic
+    -- NEG/8; SIZ/7 "big" replaces /8 "enormous"; ST2/6 affix compresses
+    -- "later tonight" into the verb; ḑḑ shifts to PRC (sleep as state).
+    it "v3: ärmalöxbäwi'a = 'will be home later-tonight' (rm CPT, ST2/6 affix, PRS, LOC)" $ do
+      let g = glossWord mempty mempty (parseWord "ärmalöxbäwi'a")
+      T.isInfixOf "CPT" g `shouldBe` True
+      T.isInfixOf "xb/6" g `shouldBe` True  -- ST2/6 = later today/tonight
+      T.isInfixOf "PRS" g `shouldBe` True
+      T.isInfixOf "LOC" g `shouldBe` True
+
+    it "v3: wäfsiróu = 'don't wait (soft)' (fs CPT, NEG/4 relative negation, ADM)" $ do
+      let g = glossWord mempty mempty (parseWord "wäfsiróu")
+      T.isInfixOf "r/4" g `shouldBe` True  -- relative negation, softer than /6 or /8
+      T.isInfixOf "ADM" g `shouldBe` True
+
+    it "v3: waḑḑái = 'sleep!' (ḑḑ PRC stative, DIR — process not completive)" $ do
+      -- PRC is the default version and gets elided in the gloss; verify via
+      -- parsed Slot II directly instead.
+      case parseWord "waḑḑái" of
+        PFormative pf -> do
+          snd (pfSlotII pf) `shouldBe` PRC
+          let g = glossWord mempty mempty (PFormative pf)
+          T.isInfixOf "DIR" g `shouldBe` True
+        _ -> expectationFailure "waḑḑái should parse as a Formative"
+
+    it "v3: řs parses as APB bias adjunct ('OK')" $ do
+      case parseWord "řs" of
+        PBias _ -> return ()
+        _       -> expectationFailure "řs should parse as a bias adjunct (APB)"
+
+    it "v3: ňňs parses as SOL bias adjunct ('Please')" $ do
+      case parseWord "ňňs" of
+        PBias _ -> return ()
+        _       -> expectationFailure "ňňs should parse as a bias adjunct (SOL)"
+
+    it "v3: lst parses as ANP bias adjunct ('Anticipation:')" $ do
+      case parseWord "lst" of
+        PBias _ -> return ()
+        _       -> expectationFailure "lst should parse as a bias adjunct (ANP)"
+
+    it "v3: mmh parses as GRT bias adjunct ('Ahhhh!')" $ do
+      case parseWord "mmh" of
+        PBias _ -> return ()
+        _       -> expectationFailure "mmh should parse as a bias adjunct (GRT)"
+
+    it "v3: wäčnüróu = 'absolutely don't open' (čn CPT, NEG/8 emphatic, ADM)" $ do
+      let g = glossWord mempty mempty (parseWord "wäčnüróu")
+      T.isInfixOf "r/8" g `shouldBe` True  -- emphatic absolute negation
+      T.isInfixOf "ADM" g `shouldBe` True
+
+    it "v3: iklläla = 'the amazement-surprise' (kll S2 amazement, CPT, CTE)" $ do
+      let g = glossWord mempty mempty (parseWord "iklläla")
+      T.isInfixOf "S2" g `shouldBe` True  -- amazement, not mere surprise
+      T.isInfixOf "CTE" g `shouldBe` True
+
+    it "v3: wafsöţpao = 'awaiting, for later' (fs PRC, FUN, TPR/6 temporal viewpoint)" $ do
+      -- PRC is default and elided in gloss; check parsed Slot II directly.
+      case parseWord "wafsöţpao" of
+        PFormative pf -> do
+          snd (pfSlotII pf) `shouldBe` PRC
+          let g = glossWord mempty mempty (PFormative pf)
+          T.isInfixOf "ţp/6" g `shouldBe` True  -- TPR/6 affix
+          T.isInfixOf "FUN" g `shouldBe` True
+        _ -> expectationFailure "wafsöţpao should parse as a Formative"
+
+    it "v3: wämžwoxëiwói = 'big kiss, hopefully imminent' (mžw CPT, SIZ/7 big, IMM, POT)" $ do
+      let g = glossWord mempty mempty (parseWord "wämžwoxëiwói")
+      T.isInfixOf "x/7" g `shouldBe` True  -- SIZ/7 = big/large (not /8 enormous)
+      T.isInfixOf "IMM" g `shouldBe` True
+      T.isInfixOf "POT" g `shouldBe` True
+
   describe "Mood vs CaseScope Disambiguation" $ do
     it "verbs (ultimate stress) get Mood" $ do
       let g = glossWord mempty mempty (parseWord "agulahá")

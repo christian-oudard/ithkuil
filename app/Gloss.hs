@@ -20,7 +20,7 @@ import Ithkuil.WordType
 import Ithkuil.Lexicon
 import Ithkuil.Compose (lookupGrammar, searchGrammar, lookupForm, GrammarEntry(..), searchRootsRanked, searchAffixes, dumpGrammarTable, composeFormative, composeReferential, applyStress, SearchResults(..), SearchHit(..), AffixHit(..), unifiedSearch, slotIIFormNum)
 import Ithkuil.Render (renderSlotVIII, renderCase)
-import Ithkuil.Adjuncts (Register(..), registerForm, registerFinalForm, carrierTypeForm, Bias, biasForm)
+import Ithkuil.Adjuncts (Register(..), registerForm, registerFinalForm, carrierTypeForm, Bias, biasForm, biasGloss)
 import Ithkuil.Numbers (numberRoot, numberAffix, powerRoots)
 import Ithkuil.Phonology (vowelForm)
 import System.Process (readProcess)
@@ -56,6 +56,8 @@ main = do
     ("--script-json":rest) -> handleScriptJson rest
     ("--compose":rest) -> handleCompose rest
     ("--sentence":rest) -> handleSentence rest
+    ("--trace":rest) -> handleTrace rest
+    ("--biases":rest) -> handleBiases rest
     _ -> do
       roots <- loadLexicon "data/roots.json"
       affixes <- loadAffixLexicon "data/affixes.json"
@@ -314,6 +316,10 @@ showHelp = do
   TIO.putStrLn "    +BIAS              Bias adjunct (+FSC, +DOL, +IRO)"
   TIO.putStrLn "    %N[:FLAG]         Number, centesimal (%42, %7:ERG, %4229, %269766)"
   TIO.putStrLn "    >root / >>root    Type 1/2 concatenation"
+  TIO.putStrLn "  --trace <words...>  Per-slot polygraph: rows=slots, cols=words"
+  TIO.putStrLn "                      Reveals monotony (e.g. all Slot II default)"
+  TIO.putStrLn "  --biases [filter]   List all bias adjuncts with form and gloss"
+  TIO.putStrLn "                      Optional filter substring on abbr/form/gloss"
   TIO.putStrLn "  --help, -h          Show this help"
 
 handleScript :: [String] -> IO ()
@@ -1712,3 +1718,208 @@ showReferentialDetail (PersonalRef ref eff) mc vc = do
   case mc of
     Just c -> TIO.putStrLn $ "    Case: " <> T.pack (showCaseDetail c)
     Nothing -> TIO.putStrLn $ "    Case vowel: " <> vc <> " (unrecognized)"
+
+-- | --biases: tabulate the bias-adjunct inventory with consonant form and
+-- English gloss. Useful during composition for picking the right tonal
+-- marker without grepping through source. Optional filter substring.
+handleBiases :: [String] -> IO ()
+handleBiases args = do
+  let needle = T.toCaseFold (T.pack (unwords args))
+      biases = [minBound .. maxBound :: Bias]
+      matches b
+        | T.null needle = True
+        | otherwise =
+            T.isInfixOf needle (T.toCaseFold (T.pack (show b)))
+            || T.isInfixOf needle (T.toCaseFold (biasGloss b))
+            || T.isInfixOf needle (T.toCaseFold (biasForm b))
+      filtered = filter matches biases
+      maxAbbr = maximum (4 : map (T.length . T.pack . show) filtered)
+      maxForm = maximum (4 : map (T.length . biasForm) filtered)
+      padTo n t = t <> T.replicate (max 1 (n - T.length t)) " "
+  if null filtered
+    then TIO.putStrLn $ "No biases match: " <> T.pack (unwords args)
+    else do
+      TIO.putStrLn $ col bold (padTo maxAbbr "ABBR")
+                  <> col bold (padTo (maxForm + 2) "FORM")
+                  <> col bold "GLOSS"
+      mapM_ (\b -> TIO.putStrLn $
+        col cyan (padTo maxAbbr (T.pack (show b)))
+        <> col yellow (padTo (maxForm + 2) (biasForm b))
+        <> col green (biasGloss b)) filtered
+
+-- | --trace: per-slot polygraph across a sentence's words.
+-- Each slot is a row, each word a column. Reveals composition aesthetics:
+-- repeated default values across columns flag a row as monotone.
+handleTrace :: [String] -> IO ()
+handleTrace [] = TIO.putStrLn "Usage: ithkuil-gloss --trace <word1> <word2> ..."
+handleTrace ws = do
+  let sentence = T.pack (unwords ws)
+      tokens   = T.words sentence
+      parsed   = map parseWord tokens
+      rows     = traceRows tokens parsed
+      colW     = max 10 (maximum (map T.length tokens) + 2)
+      labelW   = 18
+      pad t    = t <> T.replicate (colW - T.length t) " "
+      padLbl t = t <> T.replicate (labelW - T.length t) " "
+      renderRow lbl cells =
+        col cyan (padLbl lbl) <> T.concat (map pad cells)
+  TIO.putStrLn $ col bold (padLbl "") <> T.concat (map (col bold . pad) tokens)
+  TIO.putStrLn $ col dim (T.replicate (labelW + colW * length tokens) "─")
+  mapM_ (\(lbl, cells) -> TIO.putStrLn (renderRow lbl cells)) rows
+  -- Summary stats. We only count slots in *real* formative columns (a
+  -- "Form" parse that isn't the foreign-text content of a preceding
+  -- Carrier adjunct). Referentials, biases, and carriers contribute
+  -- visual columns but no formative-slot data.
+  -- With one real formative, monotony has no meaning across columns, so
+  -- collapse to "filled vs. unused". With multiple, distinguish exercised
+  -- (varied) from monotone (used but identical everywhere).
+  let formativeRows = drop 2 rows  -- skip "type" and "Slot I"; focus on Vv..stress
+      totalRows = length formativeRows
+      withPrev = zip (Nothing : map Just parsed) parsed
+      isCarrierContent (Just (PCarrier _ _), PFormative _) = True
+      isCarrierContent _ = False
+      -- Indices (0-based) of columns that are real formatives.
+      realFormCols = [ i | (i, (prev, pw)) <- zip [0..] withPrev
+                         , traceType pw == "Form"
+                         , not (isCarrierContent (prev, pw)) ]
+      pickReal cells = [ cells !! i | i <- realFormCols, i < length cells ]
+      isAllDefault cs = all (== traceDot) cs
+      isMonotone cs = case filter (/= traceDot) cs of
+        []     -> True
+        (x:xs) -> all (== x) xs
+      realCellsPer = map (\(_, cells) -> pickReal cells) formativeRows
+      defaultRows = length (filter isAllDefault realCellsPer)
+      n = length realFormCols
+  TIO.putStrLn ""
+  if n <= 1
+    then TIO.putStrLn $ col dim "  slots filled: " <> col green (T.pack (show (totalRows - defaultRows)))
+                     <> col dim " / unused: " <> col dim (T.pack (show defaultRows))
+                     <> col dim (" (of " <> T.pack (show totalRows)
+                                 <> "; single-formative sentence, no monotony to measure)")
+    else do
+      let monoRows = length (filter (\cs -> isMonotone cs && not (isAllDefault cs)) realCellsPer)
+          exercisedRows = totalRows - defaultRows - monoRows
+      TIO.putStrLn $ col dim "  slots exercised: " <> col green (T.pack (show exercisedRows))
+                  <> col dim " / monotone: " <> col yellow (T.pack (show monoRows))
+                  <> col dim " / unused: " <> col dim (T.pack (show defaultRows))
+                  <> col dim (" (of " <> T.pack (show totalRows) <> ")")
+
+-- | Build trace rows: each row is (label, one cell per word).
+-- "·" means default/absent for that slot; brings monotony into relief.
+traceRows :: [Text] -> [ParsedWord] -> [(Text, [Text])]
+traceRows _ pws =
+  [ ("type",          map traceType pws)
+  , ("Slot I  (Cc)",  map traceSlotI pws)
+  , ("Slot II (Vv)",  map traceSlotII pws)
+  , ("Slot III(Cr)",  map traceSlotIII pws)
+  , ("Slot IV (Vr)",  map traceSlotIV pws)
+  , ("Slot V+VII afx", map traceSlotV pws)
+  , ("Slot VI (Ca)",  map traceSlotVI pws)
+  , ("Slot VIII",     map traceSlotVIII pws)
+  , ("Slot IX (Vc/k)", map traceSlotIX pws)
+  , ("stress",        map traceStress pws)
+  ]
+
+traceDot :: Text
+traceDot = "·"
+
+traceType :: ParsedWord -> Text
+traceType pw = case pw of
+  PFormative _        -> "Form"
+  PConcatenated _     -> "Concat"
+  PReferential _ _ _ _ _ -> "Ref"
+  PBias _             -> "Bias"
+  PRegister _         -> "Reg"
+  PModular _ _ _      -> "Mod"
+  PAffixual _ _ _ _   -> "Affix"
+  PMultipleAffix _ _ _ _ -> "Affix*"
+  PCarrier _ _        -> "Carrier"
+  PCombinationRef{}   -> "CombRef"
+  PError _ _          -> "ERR"
+  _                   -> "?"
+
+traceSlotI :: ParsedWord -> Text
+traceSlotI (PFormative pf) = case pfConcatenation pf of
+  Just Type1 -> "T1"
+  Just Type2 -> "T2"
+  Nothing    -> traceDot
+traceSlotI _ = traceDot
+
+traceSlotII :: ParsedWord -> Text
+traceSlotII (PFormative pf) =
+  let (s, v) = pfSlotII pf
+  in T.pack (show s) <> "/" <> T.pack (show v)
+traceSlotII _ = traceDot
+
+traceSlotIII :: ParsedWord -> Text
+traceSlotIII (PFormative pf) = let Root r = pfRoot pf in r
+traceSlotIII (PReferential refs _ _ _ _) =
+  T.intercalate "+" (map (\(PersonalRef ref _) -> T.pack (show ref)) refs)
+traceSlotIII _ = traceDot
+
+traceSlotIV :: ParsedWord -> Text
+traceSlotIV (PFormative pf) =
+  let (fn, sp, ct) = pfSlotIV pf
+      parts = filter (not . T.null)
+        [ if fn /= STA then T.pack (show fn) else ""
+        , if sp /= BSC then T.pack (show sp) else ""
+        , if ct /= EXS then T.pack (show ct) else ""
+        ]
+  in if null parts then traceDot else T.intercalate "/" parts
+traceSlotIV _ = traceDot
+
+traceSlotV :: ParsedWord -> Text
+traceSlotV (PFormative pf) =
+  let slotV = pfSlotV pf
+      slotVII = extractAffixes (pfCa pf)
+      total = length slotV + length slotVII
+  in if total == 0 then traceDot
+     else T.pack (show (length slotV)) <> "+" <> T.pack (show (length slotVII))
+traceSlotV _ = traceDot
+
+traceSlotVI :: ParsedWord -> Text
+traceSlotVI (PFormative pf) = case pfCaParsed pf of
+  Just pc -> let d = showCaDetail pc in if T.null d then traceDot else d
+  Nothing -> traceDot
+traceSlotVI _ = traceDot
+
+traceSlotVIII :: ParsedWord -> Text
+traceSlotVIII (PFormative pf) =
+  let s8 = case pfSlotVIII pf of
+        Just x  -> Just x
+        Nothing -> case extractVnCn (pfCa pf) of
+          Just (vn, cn) -> parseOneVnCn vn cn
+          Nothing       -> Nothing
+  in case fmap (disambiguateSlotVIII (pfStress pf)) s8 of
+       Just sl8 -> compactSlotVIII sl8
+       Nothing  -> traceDot
+traceSlotVIII _ = traceDot
+
+-- | Compact one-cell rendering of SlotVIII (just the aspect/phase/etc + mood).
+compactSlotVIII :: SlotVIII -> Text
+compactSlotVIII s8 = case s8 of
+  VnCnAspect a m  -> T.pack (show a) <> "/" <> compactMS m
+  VnCnValence v m -> T.pack (show v) <> "/" <> compactMS m
+  VnCnPhase p m   -> T.pack (show p) <> "/" <> compactMS m
+  VnCnEffect e m  -> T.pack (show e) <> "/" <> compactMS m
+  VnCnLevel l _ m -> T.pack (show l) <> "/" <> compactMS m
+  where
+    compactMS (MoodVal m)    = T.pack (show m)
+    compactMS (CaseScope cs) = T.pack (show cs)
+
+traceSlotIX :: ParsedWord -> Text
+traceSlotIX (PFormative pf) =
+  case (pfCase pf, pfIllocVal pf) of
+    (Just c, _)         -> T.pack (showCaseDetail c)
+    (_, Just (i, _v))   -> T.pack (show i)
+    _                   -> traceDot
+traceSlotIX (PReferential _ (Just c) _ _ _) = T.pack (showCaseDetail c)
+traceSlotIX _ = traceDot
+
+traceStress :: ParsedWord -> Text
+traceStress (PFormative pf) = case pfStress pf of
+  Monosyllabic    -> "mono"
+  Penultimate     -> "pen"
+  Ultimate        -> "ult"
+  Antepenultimate -> "ante"
+traceStress _ = traceDot
