@@ -3,9 +3,7 @@ let
 in
 pkgs.mkShell {
   buildInputs = [
-    pkgs.cabal-install
-    pkgs.ghc
-    pkgs.curl
     pkgs.go
+    pkgs.curl
   ];
 }
