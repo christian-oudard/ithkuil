@@ -17,6 +17,9 @@ func Parse(word string) (Layout, error) {
 		return Layout{}, fmt.Errorf("layout: empty word")
 	}
 	bare, stress := surface.Strip(word)
+	if stress == surface.InvalidStress {
+		return Layout{}, fmt.Errorf("word %q has more than one stress mark", word)
+	}
 	body, sentenceStarter := stripSentencePrefix(bare)
 	conjs := surface.MergeGlottalVowels(surface.SplitConjuncts(body))
 	conjs, movedGlottal := stripMovedGlottal(conjs)

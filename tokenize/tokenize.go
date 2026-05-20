@@ -376,6 +376,9 @@ func hasDoubledLetter(s string) bool {
 // surface doesn't consume cleanly to this shape.
 func tryReferential(word string) (ReferentialWord, bool) {
 	bare, stress := surface.Strip(word)
+	if stress == surface.InvalidStress {
+		return ReferentialWord{}, false
+	}
 	conjs := surface.MergeGlottalVowels(surface.SplitConjuncts(bare))
 	if len(conjs) < 2 {
 		return ReferentialWord{}, false

@@ -32,10 +32,15 @@ const (
 	Penultimate
 	Ultimate
 	Antepenultimate
+	// InvalidStress signals the surface form carried more than one
+	// stress diacritic, so no single stress position can be derived.
+	// Returned by Strip; callers that need an unambiguous reading
+	// should reject the input.
+	InvalidStress
 )
 
 func (s Stress) String() string {
-	return [...]string{"Monosyllabic", "Penultimate", "Ultimate", "Antepenultimate"}[s]
+	return [...]string{"Monosyllabic", "Penultimate", "Ultimate", "Antepenultimate", "InvalidStress"}[s]
 }
 
 // stripMap drops a stress diacritic but preserves the umlaut layer.
@@ -75,25 +80,29 @@ func Strip(word string) (string, Stress) {
 	vowelIdx := vowelConjunctIndices(word)
 	conjs := SplitConjuncts(word)
 
-	// Find the first vowel-conjunct (counted in syllable position)
-	// that carries a stress mark.
+	// Find each stress-marked syllable.
 	stressedSyllable := -1
+	markCount := 0
 	for i, vi := range vowelIdx {
 		for _, r := range conjs[vi] {
 			if isStressMark(r) {
-				stressedSyllable = i
+				if stressedSyllable < 0 {
+					stressedSyllable = i
+				}
+				markCount++
 				break
 			}
 		}
-		if stressedSyllable >= 0 {
-			break
-		}
 	}
 
-	// Derive Stress from position.
+	// Derive Stress from position. >1 stress mark is a malformed
+	// surface form — the spec marks at most one syllable per word
+	// (§1.3.1) — so report it instead of silently picking one.
 	n := len(vowelIdx)
 	var stress Stress
 	switch {
+	case markCount > 1:
+		stress = InvalidStress
 	case stressedSyllable < 0 && n <= 1:
 		stress = Monosyllabic
 	case stressedSyllable < 0:

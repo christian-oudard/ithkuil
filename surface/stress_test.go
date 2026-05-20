@@ -119,9 +119,22 @@ func TestStress_String(t *testing.T) {
 		{Penultimate, "Penultimate"},
 		{Ultimate, "Ultimate"},
 		{Antepenultimate, "Antepenultimate"},
+		{InvalidStress, "InvalidStress"},
 	} {
 		if got := c.s.String(); got != c.want {
 			t.Errorf("Stress(%d).String() = %q, want %q", c.s, got, c.want)
+		}
+	}
+}
+
+func TestStrip_DoubleMarked(t *testing.T) {
+	// More than one stress diacritic in the same word is malformed
+	// per §1.3.1; Strip should signal that rather than silently picking
+	// one position.
+	for _, w := range []string{"amláláu", "malëúţřáit", "lálá"} {
+		_, s := Strip(w)
+		if s != InvalidStress {
+			t.Errorf("Strip(%q) stress = %v, want InvalidStress", w, s)
 		}
 	}
 }
