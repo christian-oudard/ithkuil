@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/christian-oudard/ithkuil/allomorph"
 	"github.com/christian-oudard/ithkuil/compose"
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/layout"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/surface"
@@ -96,180 +98,66 @@ func Headword(f g.Formative, lex *lexicon.Lexicon) RootHead {
 // hr/hn) are recognized when the conjuncts don't begin where the
 // parser says the root starts.
 func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
-	conjs := surface.SplitConjuncts(word)
-	if len(conjs) == 0 {
+	l, err := layout.Parse(word)
+	if err != nil {
 		return nil
 	}
-	switch r := f.Root.(type) {
-	case g.CrRoot:
-		return segmentsCrRoot(conjs, f, r, lex)
-	case g.CsRoot:
-		return segmentsCsRoot(conjs, f, r, lex)
-	case g.RefRoot:
-		return segmentsRefRoot(conjs, f, r, lex)
-	}
-	return nil
+	return segmentsFromLayout(l, f, lex)
 }
 
-func segmentsCrRoot(conjs []string, f g.Formative, cr g.CrRoot, lex *lexicon.Lexicon) []Segment {
+// segmentsFromLayout walks the slot fields of a Layout and emits one
+// Segment per surface chunk. Layout already knows which conjunct is
+// which slot, so this function doesn't have to re-derive shape.
+func segmentsFromLayout(l layout.Layout, f g.Formative, lex *lexicon.Lexicon) []Segment {
 	var segs []Segment
-	i := 0
-	rootLower := strings.ToLower(cr.Cluster)
-	shortcut := false
 
-	// Detect a Slot I shortcut. When the first consonant conjunct
-	// isn't the parser's root cluster, the leading conjunct(s) form
-	// a Cc prefix (h-, hw-, w-, y-, hl-, hm-, hr-, hn-). For these
-	// forms Vr is elided and Ca is encoded in the (Cc, Vv) pair, so
-	// the table after Cr skips straight to Slot V/VII affixes.
-	if surface.IsConsonantConjunct(conjs[0]) && strings.ToLower(conjs[0]) != rootLower {
+	if l.Cc != "" {
 		segs = append(segs, Segment{
-			Raw:     strings.ToLower(conjs[0]),
+			Raw:     strings.ToLower(l.Cc),
 			Slot:    "Cc",
-			Encodes: []string{"Slot I shortcut"},
-		})
-		shortcut = true
-		i++
-	}
-
-	// Slot II (Vv) — explicit when vowel-initial (at position i) or
-	// elided otherwise.
-	stemVer := []string{cr.Stem.String(), cr.Version.String()}
-	if i < len(conjs) && surface.IsVowelConjunct(conjs[i]) {
-		segs = append(segs, Segment{
-			Raw:      strings.ToLower(conjs[i]),
-			Slot:     "Vv",
-			Encodes:  stemVer,
-			Defaults: cr.Stem == g.S1 && cr.Version == g.PRC,
-		})
-		i++
-	} else {
-		segs = append(segs, Segment{
-			Raw:      ElidedMark,
-			Slot:     "Vv",
-			Encodes:  stemVer,
-			Defaults: cr.Stem == g.S1 && cr.Version == g.PRC,
-			Elided:   true,
+			Encodes: ccCodes(l.Cc),
 		})
 	}
 
-	// Slot III (Cr) — root. Use the parser's authoritative cluster.
-	segs = append(segs, Segment{
-		Raw:     rootLower,
-		Slot:    "Cr",
-		Encodes: []string{fmt.Sprintf("Root %q", rootLower)},
-	})
-	if i < len(conjs) && strings.ToLower(conjs[i]) == rootLower {
-		i++
+	segs = append(segs, vvSegment(l, f))
+	segs = append(segs, rootSegment(l, f))
+	if vr, ok := vrSegment(l, f); ok {
+		segs = append(segs, vr)
 	}
 
-	// Slot IV (Vr) — elided for Slot I shortcut forms (Vr defaults
-	// to STA/BSC/EXS, encoded into the Cc choice instead).
-	if !shortcut {
-		if i < len(conjs) && surface.IsVowelConjunct(conjs[i]) {
-			segs = append(segs, Segment{
-				Raw:      strings.ToLower(conjs[i]),
-				Slot:     "Vr",
-				Encodes:  []string{cr.SlotIV.Function.String(), cr.SlotIV.Specification.String(), cr.SlotIV.Context.String()},
-				Defaults: cr.SlotIV == g.DefaultSlotIV,
-			})
-			i++
-		}
+	for ax, a := range l.SlotV {
+		segs = append(segs, slotVCsSegment(a, ax, f, lex))
+		segs = append(segs, slotVVxSegment(a, ax, f))
 	}
 
-	// Slot V affixes (pre-Ca), CsVx reversed order.
-	for ax, a := range f.SlotV {
-		if i+1 >= len(conjs) {
-			break
-		}
-		_, deg := parse.ClassifyAffixVowel(conjs[i+1])
-		abbrev := affixAbbrev(a.Consonant, lex)
-		segs = append(segs, Segment{
-			Raw:     strings.ToLower(conjs[i]),
-			Slot:    fmt.Sprintf("Cs₅%s", subscript(ax+1)),
-			Encodes: []string{abbrev},
-			Ordinal: ax + 1,
-			Cluster: a.Consonant,
-			Degree:  deg,
-		})
-		i++
-		segs = append(segs, Segment{
-			Raw:     strings.ToLower(conjs[i]),
-			Slot:    fmt.Sprintf("Vx₅%s", subscript(ax+1)),
-			Encodes: []string{fmt.Sprintf("DEG%d", deg)},
-			Ordinal: ax + 1,
-		})
-		i++
+	if l.Ca != "" {
+		segs = append(segs, caSegment(l, f))
 	}
 
-	// Slot VI (Ca) — elided for shortcut forms (Ca derived from
-	// the Cc+Vv pair). For regular forms, the next conjunct is Ca.
-	if !shortcut && i < len(conjs) && surface.IsConsonantConjunct(conjs[i]) {
-		segs = append(segs, Segment{
-			Raw:      strings.ToLower(conjs[i]),
-			Slot:     "Ca",
-			Encodes:  slotVICodes(f.SlotVI),
-			Defaults: f.SlotVI == g.DefaultSlotVI,
-		})
-		i++
+	for ax, a := range l.SlotVII {
+		segs = append(segs, slotVIIVxSegment(a, ax, f))
+		segs = append(segs, slotVIICsSegment(a, ax, f, lex))
 	}
 
-	// Slot VII affixes (post-Ca), VxCs standard order.
-	for ax, a := range f.SlotVII {
-		if i+1 >= len(conjs) {
-			break
-		}
-		_, deg := parse.ClassifyAffixVowel(conjs[i])
-		abbrev := affixAbbrev(a.Consonant, lex)
-		segs = append(segs, Segment{
-			Raw:     strings.ToLower(conjs[i]),
-			Slot:    fmt.Sprintf("Vx%s", subscript(ax+1)),
-			Encodes: []string{fmt.Sprintf("DEG%d", deg)},
-			Ordinal: ax + 1,
-		})
-		i++
-		segs = append(segs, Segment{
-			Raw:     strings.ToLower(conjs[i]),
-			Slot:    fmt.Sprintf("Cs%s", subscript(ax+1)),
-			Encodes: []string{abbrev},
-			Ordinal: ax + 1,
-			Cluster: a.Consonant,
-			Degree:  deg,
-		})
-		i++
+	if l.Cn != "" && f.SlotVIII != nil {
+		segs = append(segs,
+			Segment{Raw: strings.ToLower(l.Vn), Slot: "Vn", Encodes: []string{slotVIIIVnCode(f.SlotVIII)}},
+			Segment{Raw: strings.ToLower(l.Cn), Slot: "Cn", Encodes: []string{slotVIIICnCode(f.SlotVIII, f.Final)}},
+		)
+	} else if l.Cn != "" {
+		// VnCn that didn't decode as Slot VIII — folded into Slot VII
+		// by ToGrammar. The trailing affix already appears in the
+		// SlotVII loop above when present; nothing extra to do here.
 	}
 
-	// Slot VIII (VnCn) — handled as a single pair if remaining
-	// conjuncts look like one.
-	if f.SlotVIII != nil {
-		if i < len(conjs) && surface.IsVowelConjunct(conjs[i]) {
-			segs = append(segs, Segment{
-				Raw:     strings.ToLower(conjs[i]),
-				Slot:    "Vn",
-				Encodes: []string{slotVIIIVnCode(f.SlotVIII)},
-			})
-			i++
-		}
-		if i < len(conjs) && surface.IsConsonantConjunct(conjs[i]) {
-			segs = append(segs, Segment{
-				Raw:     strings.ToLower(conjs[i]),
-				Slot:    "Cn",
-				Encodes: []string{slotVIIICnCode(f.SlotVIII, f.Final)},
-			})
-			i++
-		}
-	}
-
-	// Slot IX (Vc or Vk).
 	slot, codes, isDefault := slotIXLabelCodes(f.Final)
-	if i < len(conjs) && surface.IsVowelConjunct(conjs[i]) {
+	if l.Vc != "" {
 		segs = append(segs, Segment{
-			Raw:      strings.ToLower(conjs[i]),
+			Raw:      strings.ToLower(l.Vc),
 			Slot:     slot,
 			Encodes:  codes,
 			Defaults: isDefault,
 		})
-		i++
 	} else {
 		segs = append(segs, Segment{
 			Raw:      ElidedMark,
@@ -282,6 +170,179 @@ func segmentsCrRoot(conjs []string, f g.Formative, cr g.CrRoot, lex *lexicon.Lex
 
 	decorateHyphens(segs)
 	return segs
+}
+
+// ccCodes describes what a Cc consonant encodes — concat status,
+// shortcut variant, or both.
+func ccCodes(cc string) []string {
+	r := parse.ParseCc(cc)
+	var codes []string
+	if r.Concat != nil {
+		switch *r.Concat {
+		case g.Type1:
+			codes = append(codes, "Type1 concat")
+		case g.Type2:
+			codes = append(codes, "Type2 concat")
+		}
+	}
+	if r.Shortcut != parse.ShortcutNone {
+		codes = append(codes, "Slot I shortcut")
+	}
+	if len(codes) == 0 {
+		codes = []string{cc}
+	}
+	return codes
+}
+
+// vvSegment emits the Slot II segment. For CrFormatives the Vv carries
+// (Stem, Version); for Cs- and Ref-roots it's the special-Vv marker
+// that selects the root kind and carries Version (and Function for Cs).
+func vvSegment(l layout.Layout, f g.Formative) Segment {
+	switch r := f.Root.(type) {
+	case g.CrRoot:
+		stemVer := []string{r.Stem.String(), r.Version.String()}
+		isDefault := r.Stem == g.S1 && r.Version == g.PRC
+		if l.Vv == "" {
+			return Segment{Raw: ElidedMark, Slot: "Vv", Encodes: stemVer, Defaults: isDefault, Elided: true}
+		}
+		return Segment{Raw: strings.ToLower(displayVv(l)), Slot: "Vv", Encodes: stemVer, Defaults: isDefault}
+	case g.CsRoot:
+		return Segment{Raw: strings.ToLower(l.Vv), Slot: "Vv", Encodes: []string{r.Version.String(), r.Function.String()}}
+	case g.RefRoot:
+		return Segment{Raw: strings.ToLower(l.Vv), Slot: "Vv", Encodes: []string{r.Version.String()}}
+	}
+	return Segment{}
+}
+
+// displayVv returns the Vv as it appears on the surface, re-inserting
+// the §3.5.1 glottal-stop when Slot V has 2+ affixes.
+func displayVv(l layout.Layout) string {
+	if len(l.SlotV) < 2 || l.Vv == "" {
+		return l.Vv
+	}
+	rs := []rune(l.Vv)
+	if len(rs) == 1 {
+		return string(rs[0]) + "'" + string(rs[0])
+	}
+	if len(rs) == 2 {
+		return string(rs[0]) + "'" + string(rs[1])
+	}
+	return l.Vv + "'"
+}
+
+// rootSegment emits the Slot III segment — Cr for CrFormative, Cs for
+// CsRootFormative, C1 for RefRootFormative.
+func rootSegment(l layout.Layout, f g.Formative) Segment {
+	cr := strings.ToLower(l.Cr)
+	switch r := f.Root.(type) {
+	case g.CrRoot:
+		return Segment{Raw: cr, Slot: "Cr", Encodes: []string{fmt.Sprintf("Root %q", cr)}}
+	case g.CsRoot:
+		return Segment{Raw: cr, Slot: "Cs (root)", Encodes: []string{fmt.Sprintf("(Cs)%q at degree %d", cr, r.Degree)}}
+	case g.RefRoot:
+		return Segment{Raw: cr, Slot: "C1 (ref)", Encodes: []string{fmt.Sprintf("Ref %q", cr)}}
+	}
+	return Segment{}
+}
+
+// vrSegment emits the Slot IV segment when Vr is present. For shortcut
+// CrFormatives Vr is elided (Ca is encoded in Cc+Vv), so no segment is
+// emitted there.
+func vrSegment(l layout.Layout, f g.Formative) (Segment, bool) {
+	if l.Vr == "" {
+		return Segment{}, false
+	}
+	raw := strings.ToLower(l.Vr)
+	switch r := f.Root.(type) {
+	case g.CrRoot:
+		return Segment{
+			Raw:      raw,
+			Slot:     "Vr",
+			Encodes:  []string{r.SlotIV.Function.String(), r.SlotIV.Specification.String(), r.SlotIV.Context.String()},
+			Defaults: r.SlotIV == g.DefaultSlotIV,
+		}, true
+	case g.CsRoot:
+		return Segment{
+			Raw:     raw,
+			Slot:    "Vr",
+			Encodes: []string{fmt.Sprintf("DEG%d", r.Degree), r.Context.String()},
+		}, true
+	case g.RefRoot:
+		return Segment{
+			Raw:      raw,
+			Slot:     "Vr",
+			Encodes:  []string{r.SlotIV.Function.String(), r.SlotIV.Specification.String(), r.SlotIV.Context.String()},
+			Defaults: r.SlotIV == g.DefaultSlotIV,
+		}, true
+	}
+	return Segment{}, false
+}
+
+// caSegment emits the Slot VI segment. When Slot V has any affixes the
+// Ca is geminated on the surface, so we re-apply gemination for display.
+func caSegment(l layout.Layout, f g.Formative) Segment {
+	raw := l.Ca
+	if len(l.SlotV) > 0 {
+		raw = allomorph.GeminateCa(raw)
+	}
+	return Segment{
+		Raw:      strings.ToLower(raw),
+		Slot:     "Ca",
+		Encodes:  slotVICodes(f.SlotVI),
+		Defaults: f.SlotVI == g.DefaultSlotVI,
+	}
+}
+
+func slotVCsSegment(a layout.AffixChunk, idx int, f g.Formative, lex *lexicon.Lexicon) Segment {
+	_, deg := parse.ClassifyAffixVowel(a.Vx)
+	abbrev := ""
+	if idx < len(f.SlotV) {
+		abbrev = affixAbbrev(f.SlotV[idx].Consonant, lex)
+	}
+	return Segment{
+		Raw:     strings.ToLower(a.Cs),
+		Slot:    fmt.Sprintf("Cs₅%s", subscript(idx+1)),
+		Encodes: []string{abbrev},
+		Ordinal: idx + 1,
+		Cluster: a.Cs,
+		Degree:  deg,
+	}
+}
+
+func slotVVxSegment(a layout.AffixChunk, idx int, _ g.Formative) Segment {
+	_, deg := parse.ClassifyAffixVowel(a.Vx)
+	return Segment{
+		Raw:     strings.ToLower(a.Vx),
+		Slot:    fmt.Sprintf("Vx₅%s", subscript(idx+1)),
+		Encodes: []string{fmt.Sprintf("DEG%d", deg)},
+		Ordinal: idx + 1,
+	}
+}
+
+func slotVIIVxSegment(a layout.AffixChunk, idx int, _ g.Formative) Segment {
+	_, deg := parse.ClassifyAffixVowel(a.Vx)
+	return Segment{
+		Raw:     strings.ToLower(a.Vx),
+		Slot:    fmt.Sprintf("Vx%s", subscript(idx+1)),
+		Encodes: []string{fmt.Sprintf("DEG%d", deg)},
+		Ordinal: idx + 1,
+	}
+}
+
+func slotVIICsSegment(a layout.AffixChunk, idx int, f g.Formative, lex *lexicon.Lexicon) Segment {
+	_, deg := parse.ClassifyAffixVowel(a.Vx)
+	abbrev := ""
+	if idx < len(f.SlotVII) {
+		abbrev = affixAbbrev(f.SlotVII[idx].Consonant, lex)
+	}
+	return Segment{
+		Raw:     strings.ToLower(a.Cs),
+		Slot:    fmt.Sprintf("Cs%s", subscript(idx+1)),
+		Encodes: []string{abbrev},
+		Ordinal: idx + 1,
+		Cluster: a.Cs,
+		Degree:  deg,
+	}
 }
 
 // SegmentsModular returns one segment per phonetic chunk of a
@@ -518,159 +579,6 @@ func vhMeaning(v string) string {
 		return "scope over formative + adjacent affixual adjuncts"
 	}
 	return "V_H " + v
-}
-
-// segmentsCsRoot handles Cs-root formatives (§4.2): special Vv
-// (ëi/eë/ëu/oë) + Cs + Vr-as-affix-degree + Ca + post-Ca tail. The
-// "root" here is the affix cluster Cs at a specific degree.
-func segmentsCsRoot(conjs []string, f g.Formative, cs g.CsRoot, lex *lexicon.Lexicon) []Segment {
-	var segs []Segment
-	if len(conjs) < 4 {
-		return nil
-	}
-	csLower := strings.ToLower(cs.Cs)
-
-	// Vv (special) — encodes (Version, Function).
-	segs = append(segs, Segment{
-		Raw:     strings.ToLower(conjs[0]),
-		Slot:    "Vv",
-		Encodes: []string{cs.Version.String(), cs.Function.String()},
-	})
-
-	// Cs as root.
-	segs = append(segs, Segment{
-		Raw:     csLower,
-		Slot:    "Cs (root)",
-		Encodes: []string{fmt.Sprintf("(Cs)%q at degree %d", csLower, cs.Degree)},
-	})
-
-	// Vr (special) — encodes (Degree, Context).
-	segs = append(segs, Segment{
-		Raw:     strings.ToLower(conjs[2]),
-		Slot:    "Vr",
-		Encodes: []string{fmt.Sprintf("DEG%d", cs.Degree), cs.Context.String()},
-	})
-
-	// Ca.
-	segs = append(segs, Segment{
-		Raw:      strings.ToLower(conjs[3]),
-		Slot:     "Ca",
-		Encodes:  slotVICodes(f.SlotVI),
-		Defaults: f.SlotVI == g.DefaultSlotVI,
-	})
-
-	// Post-Ca tail: Slot VII affixes, Slot VIII, Slot IX.
-	postCa(&segs, conjs, 4, f, lex)
-	decorateHyphens(segs)
-	return segs
-}
-
-// segmentsRefRoot handles reference-root formatives (§5.3): special
-// Vv (ae/ea) + C1 referential + normal Vr + Ca + post-Ca tail.
-func segmentsRefRoot(conjs []string, f g.Formative, rr g.RefRoot, lex *lexicon.Lexicon) []Segment {
-	var segs []Segment
-	if len(conjs) < 4 {
-		return nil
-	}
-	c1Lower := strings.ToLower(rr.C1)
-
-	// Vv (special) — encodes Version (Function implicit).
-	segs = append(segs, Segment{
-		Raw:     strings.ToLower(conjs[0]),
-		Slot:    "Vv",
-		Encodes: []string{rr.Version.String()},
-	})
-
-	// C1 as root.
-	segs = append(segs, Segment{
-		Raw:     c1Lower,
-		Slot:    "C1 (ref)",
-		Encodes: []string{fmt.Sprintf("Ref %q", c1Lower)},
-	})
-
-	// Vr — normal SlotIV.
-	segs = append(segs, Segment{
-		Raw:      strings.ToLower(conjs[2]),
-		Slot:     "Vr",
-		Encodes:  []string{rr.SlotIV.Function.String(), rr.SlotIV.Specification.String(), rr.SlotIV.Context.String()},
-		Defaults: rr.SlotIV == g.DefaultSlotIV,
-	})
-
-	// Ca.
-	segs = append(segs, Segment{
-		Raw:      strings.ToLower(conjs[3]),
-		Slot:     "Ca",
-		Encodes:  slotVICodes(f.SlotVI),
-		Defaults: f.SlotVI == g.DefaultSlotVI,
-	})
-
-	postCa(&segs, conjs, 4, f, lex)
-	decorateHyphens(segs)
-	return segs
-}
-
-// postCa appends Slot VII affixes, optional Slot VIII (VnCn), and
-// Slot IX (Vc/Vk) starting from index i in conjs.
-func postCa(segs *[]Segment, conjs []string, i int, f g.Formative, lex *lexicon.Lexicon) {
-	for ax, a := range f.SlotVII {
-		if i+1 >= len(conjs) {
-			break
-		}
-		_, deg := parse.ClassifyAffixVowel(conjs[i])
-		abbrev := affixAbbrev(a.Consonant, lex)
-		*segs = append(*segs, Segment{
-			Raw:     strings.ToLower(conjs[i]),
-			Slot:    fmt.Sprintf("Vx%s", subscript(ax+1)),
-			Encodes: []string{fmt.Sprintf("DEG%d", deg)},
-			Ordinal: ax + 1,
-		})
-		i++
-		*segs = append(*segs, Segment{
-			Raw:     strings.ToLower(conjs[i]),
-			Slot:    fmt.Sprintf("Cs%s", subscript(ax+1)),
-			Encodes: []string{abbrev},
-			Ordinal: ax + 1,
-			Cluster: a.Consonant,
-			Degree:  deg,
-		})
-		i++
-	}
-	if f.SlotVIII != nil {
-		if i < len(conjs) && surface.IsVowelConjunct(conjs[i]) {
-			*segs = append(*segs, Segment{
-				Raw:     strings.ToLower(conjs[i]),
-				Slot:    "Vn",
-				Encodes: []string{slotVIIIVnCode(f.SlotVIII)},
-			})
-			i++
-		}
-		if i < len(conjs) && surface.IsConsonantConjunct(conjs[i]) {
-			*segs = append(*segs, Segment{
-				Raw:     strings.ToLower(conjs[i]),
-				Slot:    "Cn",
-				Encodes: []string{slotVIIICnCode(f.SlotVIII, f.Final)},
-			})
-			i++
-		}
-	}
-	slot, codes, isDefault := slotIXLabelCodes(f.Final)
-	if i < len(conjs) && surface.IsVowelConjunct(conjs[i]) {
-		*segs = append(*segs, Segment{
-			Raw:      strings.ToLower(conjs[i]),
-			Slot:     slot,
-			Encodes:  codes,
-			Defaults: isDefault,
-		})
-		i++
-	} else {
-		*segs = append(*segs, Segment{
-			Raw:      ElidedMark,
-			Slot:     slot,
-			Encodes:  codes,
-			Defaults: isDefault,
-			Elided:   true,
-		})
-	}
 }
 
 // decorateHyphens fills Segment.Chunk with hyphens: word-initial
