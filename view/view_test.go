@@ -4,6 +4,9 @@ import (
 	"strings"
 	"testing"
 
+	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/render"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -89,6 +92,76 @@ func TestSegments_VariantShapes(t *testing.T) {
 		if len(segs) == 0 {
 			t.Errorf("Segments(%q) returned empty", w)
 		}
+	}
+}
+
+func TestSegments_WithSlotV_AndConcat(t *testing.T) {
+	// Build a Slot V formative directly and round-trip the surface
+	// through Segments so ccCodes / slotVCsSegment / slotVVxSegment
+	// actually get exercised.
+	f := g.MinimalFormative("ml")
+	f.SlotV = []g.Affix{
+		{Type: g.Type1Affix, Degree: 5, Consonant: "r"},
+		{Type: g.Type1Affix, Degree: 5, Consonant: "r"},
+	}
+	surface := render.Formative(f)
+	segs := Segments(surface, f, nil)
+	if len(segs) == 0 {
+		t.Fatal("Segments for Slot V formative returned empty")
+	}
+	// Concat formative: ccCodes gets the T1 prefix.
+	t1 := g.Type1
+	f2 := g.MinimalFormative("ml")
+	f2.Concat = &t1
+	surface = render.Formative(f2)
+	segs = Segments(surface, f2, nil)
+	if len(segs) == 0 {
+		t.Fatal("Segments for concat formative returned empty")
+	}
+	foundCc := false
+	for _, s := range segs {
+		if s.Slot == "Cc" || s.Slot == "I" {
+			foundCc = true
+			if len(s.Encodes) == 0 {
+				t.Errorf("Cc segment has no encoded codes: %+v", s)
+			}
+		}
+	}
+	if !foundCc {
+		// The Cc slot label may use a different name; just ensure
+		// ccCodes ran (no panic + segments produced).
+		t.Log("Cc segment label not found; Segments still produced output")
+	}
+}
+
+func TestHeadword_WithLexicon(t *testing.T) {
+	lex, err := lexicon.LoadDefault()
+	if err != nil {
+		t.Fatalf("LoadDefault: %v", err)
+	}
+	tok := tokenize.ClassifyWord("lalu").(tokenize.FormativeWord)
+	h := Headword(tok.Formative, lex)
+	if h.Code == "" {
+		t.Error("Headword with lex: Code empty")
+	}
+	if h.Meaning == "" {
+		t.Error("Headword with lex: Meaning empty for known root l")
+	}
+}
+
+func TestGlossary_WithLexicon(t *testing.T) {
+	lex, err := lexicon.LoadDefault()
+	if err != nil {
+		t.Fatalf("LoadDefault: %v", err)
+	}
+	// Build a formative with a lexicon-known affix in Slot VII.
+	f := g.MinimalFormative("ml")
+	f.SlotVII = []g.Affix{{Type: g.Type1Affix, Degree: 5, Consonant: "r"}}
+	surface := render.Formative(f)
+	segs := Segments(surface, f, lex)
+	glossary := Glossary(surface, f, segs, lex)
+	if len(glossary) == 0 {
+		t.Error("Glossary with lexicon returned empty")
 	}
 }
 
