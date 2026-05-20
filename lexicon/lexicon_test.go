@@ -89,3 +89,37 @@ func TestLoadRoots_BadPath(t *testing.T) {
 		t.Error("LoadRoots(/nonexistent) succeeded, want error")
 	}
 }
+
+func TestLoadAffixes_BadPath(t *testing.T) {
+	if _, err := LoadAffixes("/nonexistent/path.json"); err == nil {
+		t.Error("LoadAffixes(/nonexistent) succeeded, want error")
+	}
+}
+
+func TestLoad_BadPaths(t *testing.T) {
+	if _, err := Load("/no/roots.json", "/no/affixes.json"); err == nil {
+		t.Error("Load with bad paths succeeded, want error")
+	}
+}
+
+func TestLoadDefault(t *testing.T) {
+	// LoadDefault reads from the embedded JSON, which is always
+	// available. Sanity-check a few well-known entries are present.
+	lex, err := LoadDefault()
+	if err != nil {
+		t.Fatalf("LoadDefault: %v", err)
+	}
+	if len(lex.Roots) == 0 {
+		t.Error("LoadDefault: Roots empty")
+	}
+	if len(lex.Affixes) == 0 {
+		t.Error("LoadDefault: Affixes empty")
+	}
+	// Canonical root "ml" exists; canonical affix "rf" (SIZ) exists.
+	if _, ok := lex.Roots["ml"]; !ok {
+		t.Error("LoadDefault: root \"ml\" missing")
+	}
+	if _, ok := lex.Affixes["rf"]; !ok {
+		t.Error("LoadDefault: affix \"rf\" missing")
+	}
+}

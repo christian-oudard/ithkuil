@@ -138,3 +138,89 @@ func TestApplyFlag_StemOnNonCrErrors(t *testing.T) {
 		t.Error("ApplyFlag S2 on CsRoot didn't error")
 	}
 }
+
+func TestApplyFlag_AllIllocutions(t *testing.T) {
+	// Each illocution flag should produce an UnframedVerbal Final
+	// with the matching Vk variant.
+	cases := []struct {
+		flag string
+		ok   bool
+	}{
+		{"ASR", true}, {"DIR", true}, {"DEC", true},
+		{"IRG", true}, {"VER", true}, {"ADM", true},
+		{"POT", true}, {"HOR", true}, {"CNJ", true},
+	}
+	for _, c := range cases {
+		f := g.MinimalFormative("ml")
+		err := ApplyFlag(&f, c.flag)
+		if (err == nil) != c.ok {
+			t.Errorf("ApplyFlag(%s): err=%v, want ok=%v", c.flag, err, c.ok)
+			continue
+		}
+		if c.ok {
+			if _, ok := f.Final.(g.UnframedVerbal); !ok {
+				t.Errorf("ApplyFlag(%s) Final = %T, want UnframedVerbal", c.flag, f.Final)
+			}
+		}
+	}
+}
+
+func TestApplyFlag_FunctionAndSpecification(t *testing.T) {
+	f := g.MinimalFormative("ml")
+	if err := ApplyFlag(&f, "DYN"); err != nil {
+		t.Fatalf("ApplyFlag DYN: %v", err)
+	}
+	cr := f.Root.(g.CrRoot)
+	if cr.SlotIV.Function != g.DYN {
+		t.Errorf("Function = %v, want DYN", cr.SlotIV.Function)
+	}
+	if err := ApplyFlag(&f, "OBJ"); err != nil {
+		t.Fatalf("ApplyFlag OBJ: %v", err)
+	}
+	cr = f.Root.(g.CrRoot)
+	if cr.SlotIV.Specification != g.OBJ {
+		t.Errorf("Specification = %v, want OBJ", cr.SlotIV.Specification)
+	}
+}
+
+func TestApplyFlag_Context(t *testing.T) {
+	f := g.MinimalFormative("ml")
+	if err := ApplyFlag(&f, "FNC"); err != nil {
+		t.Fatalf("ApplyFlag FNC: %v", err)
+	}
+	cr := f.Root.(g.CrRoot)
+	if cr.SlotIV.Context != g.FNC {
+		t.Errorf("Context = %v, want FNC", cr.SlotIV.Context)
+	}
+}
+
+func TestApplyFlag_StressVariants(t *testing.T) {
+	cases := []string{"MON", "PEN", "ULT", "ANT"}
+	for _, s := range cases {
+		f := g.MinimalFormative("ml")
+		if err := ApplyFlag(&f, s); err != nil {
+			t.Errorf("ApplyFlag(%s): %v", s, err)
+		}
+	}
+}
+
+func TestApplyFlag_ManyCaseValues(t *testing.T) {
+	// ApplyFlag for any Case abbrev should set the Final's case.
+	for _, c := range []g.Case{g.THM, g.INS, g.ERG, g.DAT, g.GEN, g.LOC} {
+		f := g.MinimalFormative("ml")
+		if err := ApplyFlag(&f, c.String()); err != nil {
+			t.Errorf("ApplyFlag(%s): %v", c.String(), err)
+			continue
+		}
+		switch v := f.Final.(type) {
+		case g.UnframedNominal:
+			if v.Case != c {
+				t.Errorf("%s: nominal case = %v, want %v", c.String(), v.Case, c)
+			}
+		case g.FramedVerbal:
+			if v.Case != c {
+				t.Errorf("%s: framed case = %v, want %v", c.String(), v.Case, c)
+			}
+		}
+	}
+}
