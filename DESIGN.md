@@ -27,9 +27,9 @@ Semantic structure    {Pairs decoded, Slot 4 = V_H scope marker}
 |-------|----------------------------------------|-------------------|
 | A     | `surface/` (stress.go)                 | ✅ extracted, round-trip tested |
 | B     | `surface/` (conjunct.go)               | ✅ extracted, round-trip tested |
-| C     | inside `fullparse/`, mirrored in `render/` and `inspect/` | ⚠️ not extracted; conceptually present |
-| D     | mostly in `parse/` (ParseSlotII, ParseSlotIV, allomorph.ParseCa, etc.) + `render/` (SlotIIToVv, SlotIVToVr, etc.) | ⚠️ paired but not formally typed as one layer |
-| E     | inside `inspect/`, `render/`, `gloss/` | ⚠️ entangled with C/D |
+| C     | `layout/` (parse.go + render.go)       | ✅ extracted, round-trip tested |
+| D     | `layout/` (grammar.go) on top of `parse/` and `allomorph/` decoders | ✅ extracted, round-trip tested |
+| E     | inside `inspect/` and `gloss/`         | ⚠️ entangled with C/D (V_N vs V_H, Mood vs CaseScope) |
 
 ## What `surface/` owns
 
@@ -72,35 +72,42 @@ here anymore.
 - `Stress` is now a type alias for `surface.Stress`, kept so older
   signatures in `fullparse` still compile against the familiar name.
 
-## What's not separated yet
+## What `layout/` owns
 
-`fullparse.ParseFormative` runs Layers C, D, and E together. The
-function does shape detection (consonant-initial / vowel-initial /
-shortcut / special-Vv), assigns conjuncts to slots, decodes each
-slot's bytes to grammar values, and chooses the Final variant based
-on Stress — all in one pass.
+The `layout.Layout` struct is the slot-labelled surface form of a
+formative. Every string field carries a raw conjunct (Cc, Vv, Cr,
+Vr, Ca, Vn, Cn, Vc) or a list of (Vx, Cs) affix pairs (Slot V,
+Slot VII). `Stress` is the surface stress observed (Layer A); a
+`Kind` discriminator picks Cr / Cs-root / ref-root.
 
-Likewise `render.Formative` runs E → D → C → B → A in reverse, but
-internally entangled.
+Layer C — pattern recognition, no grammar decoding:
 
-`inspect.Segments` and `inspect.SegmentsModular` re-do the shape
-detection that `fullparse` already did, because there's no shared
-"slot layout" intermediate to consume.
+- `layout.Parse(word) (Layout, error)` — runs Strip + SplitConjuncts
+  internally, then assigns each conjunct to its slot based on shape
+  (vowel-initial, consonant-initial, shortcut, special-Vv).
+- `layout.Render(Layout) string` — the inverse. Re-applies the
+  §3.5.1 Vv glottal-stop and §3.6.1 Ca gemination based on Slot V
+  presence, then Apply for the stress diacritic.
 
-The natural Layer C refactor: introduce a `layout` package with a
-`Layout` struct that records the slot positions of a surface word
-(SentenceStarter, Concat, Shortcut, Vv, Cr/Cs/C1, Vr, SlotV
-affixes, Ca, SlotVII affixes, Vn, Cn, Vc, Stress, plus a Kind
-discriminator for Cr/Cs/RefRoot). Then:
+Layer D — string ↔ grammar value translation:
 
-- `layout.Parse(word) (Layout, error)` — Layer C
-- `layout.Render(Layout) string` — inverse
-- `layout.FromGrammar(Formative) Layout` — convert decoded grammar back to layout (for renderers)
-- `layout.ToGrammar(Layout) (Formative, error)` — Layer D
+- `layout.ToGrammar(Layout) (Formative, error)` — looks up each
+  slot's string in the grammar tables.
+- `layout.FromGrammar(Formative) Layout` — the inverse. Picks
+  shortcut yes/no, applies default-value elisions, and emits a
+  Layout ready for `Render`.
 
-Both `fullparse.ParseFormative` and `render.Formative` would become
-thin compositions over the layout layer. `inspect.Segments` would
-consume `Layout` directly and stop duplicating pattern matching.
+`fullparse.ParseFormative` is `Parse` ∘ `ToGrammar`.
+`render.FormativeWithOpts` is `FromGrammar` ∘ `Render`.
+`inspect.Segments` consumes the Layout directly to emit the
+slot-by-slot phonetic breakdown.
 
-This is a substantial refactor (probably 4–6 commits) and is best
-done after a checkpoint, not in a single sitting.
+Round-trip tests in `layout/roundtrip_test.go` (surface↔Layout)
+and `layout/grammar_test.go` (Layout↔Formative) exercise the
+inverses against the working corpus.
+
+## What's still entangled
+
+Layer E — context-dependent semantics — lives in `inspect/` and
+`gloss/`. V_N-vs-V_H disambiguation, Mood-vs-CaseScope selection,
+and the prose meanings of slot codes are decided here.
