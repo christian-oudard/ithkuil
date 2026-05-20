@@ -37,14 +37,6 @@ func (s *server) registerTools(srv *mcp.Server) {
 	}, s.compose)
 
 	mcp.AddTool(srv, &mcp.Tool{
-		Name: "diff",
-		Description: "Slot-by-slot diff between two formatives or two aligned sentences. " +
-			"Returns one row per slot (label, A value, B value, changed flag) for each " +
-			"paired word, plus a formatted text view. Words present only on one side are " +
-			"listed as a_only/b_only. Example: a=\"arralo\", b=\"erralo\" → Slot II changed.",
-	}, s.diff)
-
-	mcp.AddTool(srv, &mcp.Tool{
 		Name: "grammar",
 		Description: "Look up the grammar inventory. With no args, lists every category " +
 			"name. With category, lists all entries in that category (Case, Aspect, Bias, " +
@@ -248,72 +240,6 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 		})
 	}
 	return nil, out, nil
-}
-
-// --------------------------------------------------------------------
-// diff
-// --------------------------------------------------------------------
-
-type diffIn struct {
-	A string `json:"a" jsonschema:"first formative or sentence"`
-	B string `json:"b" jsonschema:"second formative or sentence"`
-}
-
-type diffRowOut struct {
-	Label   string `json:"label"`
-	A       string `json:"a"`
-	B       string `json:"b"`
-	Changed bool   `json:"changed"`
-}
-
-type diffWordOut struct {
-	A    string       `json:"a"`
-	B    string       `json:"b"`
-	Rows []diffRowOut `json:"rows"`
-}
-
-type diffOut struct {
-	Words     []diffWordOut `json:"words"`
-	AOnly     []string      `json:"a_only,omitempty"`
-	BOnly     []string      `json:"b_only,omitempty"`
-	Formatted string        `json:"formatted"`
-}
-
-func (s *server) diff(_ context.Context, _ *mcp.CallToolRequest, in diffIn) (*mcp.CallToolResult, diffOut, error) {
-	if strings.TrimSpace(in.A) == "" || strings.TrimSpace(in.B) == "" {
-		return nil, diffOut{}, fmt.Errorf("both a and b are required")
-	}
-	lhs := tokenize.Tokenize(in.A)
-	rhs := tokenize.Tokenize(in.B)
-
-	pairs := len(lhs)
-	if len(rhs) < pairs {
-		pairs = len(rhs)
-	}
-	words := make([]diffWordOut, pairs)
-	for i := 0; i < pairs; i++ {
-		rows := inspect.DiffRows(lhs[i], rhs[i])
-		out := make([]diffRowOut, len(rows))
-		for j, r := range rows {
-			out[j] = diffRowOut{Label: r.Label, A: r.A, B: r.B, Changed: r.A != r.B}
-		}
-		words[i] = diffWordOut{A: lhs[i].Surface(), B: rhs[i].Surface(), Rows: out}
-	}
-	var aOnly, bOnly []string
-	for i := pairs; i < len(lhs); i++ {
-		aOnly = append(aOnly, lhs[i].Surface())
-	}
-	for i := pairs; i < len(rhs); i++ {
-		bOnly = append(bOnly, rhs[i].Surface())
-	}
-	var buf strings.Builder
-	inspect.Diff(&buf, lhs, rhs)
-	return nil, diffOut{
-		Words:     words,
-		AOnly:     aOnly,
-		BOnly:     bOnly,
-		Formatted: buf.String(),
-	}, nil
 }
 
 // --------------------------------------------------------------------

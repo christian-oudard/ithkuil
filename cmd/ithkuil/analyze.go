@@ -56,13 +56,11 @@ func (iw *indentedWriter) Write(p []byte) (int, error) {
 // cmdAnalyze tokenizes the input and renders a learner-oriented
 // breakdown of each formative: phonetic segmentation paired with a
 // glossary that expands every code. --short collapses each word to a
-// single surface/type/gloss line; --polygraph renders the multi-column
-// trace table.
+// single surface/type/gloss line.
 func cmdAnalyze(args []string, stdin io.Reader, stdout, stderr io.Writer, lexDir string) int {
 	fs := newFlagSet("analyze", stderr)
 	fs.describe("Tokenize, parse, and gloss each word (detailed by default).", "TEXT...")
 	short := fs.Bool("short", "s", false, "one-line surface · type · gloss view")
-	polygraph := fs.Bool("polygraph", "p", false, "render as a multi-column slot polygraph")
 	color := fs.String("color", "", "auto", "MODE", "when to use ANSI color: auto|always|never")
 	if err := fs.Parse(args); err != nil {
 		return 2
@@ -103,11 +101,7 @@ func cmdAnalyze(args []string, stdin io.Reader, stdout, stderr io.Writer, lexDir
 	lex := loadLex(lexDir, stderr)
 	glosser := gloss.Glosser{Lex: lex}
 
-	switch {
-	case *polygraph:
-		inspect.Polygraph(stdout, tokens)
-		return 0
-	case *short:
+	if *short {
 		for _, t := range tokens {
 			fmt.Fprintf(stdout, "%s  %s  %s\n", t.Surface(), inspect.Type(t), glosser.Token(t))
 		}

@@ -1,7 +1,6 @@
 // Command ithkuil is the command-line interface for working with the
 // Ithkuil V4 language: parse text, compose words, look up the grammar
-// inventory, search the lexicon, diff formatives, validate
-// phonotactics.
+// inventory, search the lexicon, validate phonotactics.
 //
 // Usage: ithkuil [-lex DIR] <subcommand> [args...]
 //
@@ -9,7 +8,6 @@
 //
 //	analyze TEXT...   Tokenize, parse, and gloss each word.
 //	compose ROOT ...  Build a surface formative from grammar choices.
-//	diff A B          Slot-by-slot diff between two formatives.
 //	grammar [Q]       Look up the grammar inventory.
 //	lexicon Q         Substring search the root and/or affix lexicons.
 //	validate TEXT...  Phonotactic validation per word.
@@ -50,8 +48,6 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return cmdAnalyze(rest, stdin, stdout, stderr, lexDir)
 	case "compose":
 		return cmdCompose(rest, stdout, stderr, lexDir)
-	case "diff":
-		return cmdDiff(rest, stdout, stderr)
 	case "grammar":
 		return cmdGrammar(rest, stdout, stderr)
 	case "lexicon":
@@ -69,13 +65,10 @@ const usage = `usage: ithkuil [--lex DIR] <subcommand> [args...]
 Subcommands:
   analyze TEXT...    Tokenize, parse, and gloss each word (detailed).
                        --short / -s        one-line surface/type/gloss
-                       --polygraph / -p    multi-column slot polygraph
   compose ROOT ...   Build a surface formative from grammar choices.
                        --stem --version --function --specification
                        --context --case --aspect --valence --mood
                        --illocution --stress
-  diff A B           Slot-by-slot diff (single word pair).
-  diff A... -- B...  Slot-by-slot diff (aligned sentences).
   grammar [Q]        Look up grammar inventory.
                        --category / -c CAT
                        --exact    / -e

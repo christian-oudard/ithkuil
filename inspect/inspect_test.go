@@ -1,7 +1,6 @@
 package inspect
 
 import (
-	"bytes"
 	"strings"
 	"testing"
 
@@ -89,48 +88,6 @@ func TestStress_Variants(t *testing.T) {
 		if got != c.want && got != Dot {
 			t.Errorf("Stress(%q) = %q, want %q", c.w, got, c.want)
 		}
-	}
-}
-
-// Polygraph / Diff -------------------------------------------------
-
-func TestPolygraph_SmokeRun(t *testing.T) {
-	toks := tokenize.Tokenize("malëuţřait amlalú")
-	var buf bytes.Buffer
-	Polygraph(&buf, toks)
-	if buf.Len() == 0 {
-		t.Error("Polygraph wrote nothing")
-	}
-	out := buf.String()
-	// Should contain at least the slot headers for filled rows.
-	for _, label := range []string{"III"} {
-		if !strings.Contains(out, label) {
-			t.Errorf("Polygraph output missing slot label %q", label)
-		}
-	}
-}
-
-func TestDiff_FormativeVsFormative(t *testing.T) {
-	a := tok(t, "amlala")
-	b := tok(t, "amlalú")
-	var buf bytes.Buffer
-	Diff(&buf, []tokenize.WordToken{a}, []tokenize.WordToken{b})
-	if buf.Len() == 0 {
-		t.Error("Diff wrote nothing for differing tokens")
-	}
-}
-
-func TestDiff_EmptyOnIdentical(t *testing.T) {
-	a := tok(t, "amlala")
-	b := tok(t, "amlala")
-	var buf bytes.Buffer
-	Diff(&buf, []tokenize.WordToken{a}, []tokenize.WordToken{b})
-	// Permitted to write headers but should not report any differences;
-	// loose check: output should not contain a row prefix marker on
-	// every line (the "differs" indicator).
-	out := buf.String()
-	if strings.Count(out, "!=") > 0 {
-		t.Errorf("Diff on identical inputs reported differences:\n%s", out)
 	}
 }
 

@@ -44,7 +44,7 @@ func TestRun_Help(t *testing.T) {
 		if code != 0 {
 			t.Fatalf("%q exit %d", flag, code)
 		}
-		for _, want := range []string{"analyze", "compose", "diff", "grammar", "lexicon", "validate"} {
+		for _, want := range []string{"analyze", "compose", "grammar", "lexicon", "validate"} {
 			if !strings.Contains(out, want) {
 				t.Errorf("%q missing %q", flag, want)
 			}
@@ -125,18 +125,6 @@ func TestAnalyze_ShortFlag(t *testing.T) {
 	}
 }
 
-func TestAnalyze_Polygraph(t *testing.T) {
-	out, _, code := runCLI("analyze", "--polygraph", "amlala", "la", "řřx")
-	if code != 0 {
-		t.Fatalf("analyze --polygraph exit %d", code)
-	}
-	for _, want := range []string{"Slot II", "type", "Form"} {
-		if !strings.Contains(out, want) {
-			t.Errorf("--polygraph missing %q; got %q", want, out)
-		}
-	}
-}
-
 func TestAnalyze_Stdin(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	code := run([]string{"analyze", "--short"}, strings.NewReader("amlala\n"), &stdout, &stderr)
@@ -177,42 +165,6 @@ func TestCompose_NoRoot(t *testing.T) {
 	}
 	if !strings.Contains(errOut, "usage") {
 		t.Errorf("expected usage in stderr; got %q", errOut)
-	}
-}
-
-// ---- diff ----
-
-func TestDiff_TwoWords(t *testing.T) {
-	out, _, code := runCLI("diff", "malëuţřait", "mal")
-	if code != 0 {
-		t.Fatalf("diff exit %d; out=%q", code, out)
-	}
-	for _, want := range []string{"Slot III(Cr)", "→", "rows changed"} {
-		if !strings.Contains(out, want) {
-			t.Errorf("diff output missing %q; got %q", want, out)
-		}
-	}
-}
-
-func TestDiff_Sentence(t *testing.T) {
-	out, _, code := runCLI("diff", "amlala", "la", "--", "imlalo", "la")
-	if code != 0 {
-		t.Fatalf("diff sentence exit %d; out=%q", code, out)
-	}
-	for _, want := range []string{"[1]", "[2]", "amlala", "imlalo"} {
-		if !strings.Contains(out, want) {
-			t.Errorf("diff sentence output missing %q; got %q", want, out)
-		}
-	}
-}
-
-func TestDiff_NoArgs(t *testing.T) {
-	_, errOut, code := runCLI("diff")
-	if code != 2 {
-		t.Errorf("expected exit 2 for empty diff, got %d", code)
-	}
-	if !strings.Contains(errOut, "usage") {
-		t.Errorf("expected usage; got %q", errOut)
 	}
 }
 
