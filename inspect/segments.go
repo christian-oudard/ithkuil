@@ -404,17 +404,17 @@ func cmMeaning(code string) string {
 	return ""
 }
 
-// vnAsCode tries to identify the grammatical category a modular Vn
-// encodes. We use the spec's pattern: Pattern-2 (Aspect) when Cn is
-// in {w, y, hw, hrw, hmw, hnw, hňw}; otherwise Pattern-1 (Valence/
-// Phase/Effect/Level depending on the vowel-series of Vn).
+// vnAsCode identifies the grammatical category a modular Vn encodes.
+// Spec rules:
+//
+//   - Slot 2 Cn = w/y/hw/hrw/hmw/hnw/hňw → Vn is an Aspect.
+//   - Slot 2 Cn = h/hl/hr/hm/hn/hň → Vn is one of Valence/Phase/
+//     Effect/Level (determined by Vn's vowel-series).
+//   - Slot 3 Cm = "n" → preceding Vn is an Aspect.
+//   - Slot 3 Cm = "ň" → preceding Vn is Valence/Phase/Effect/Level.
+//   - Lone final vowel (no Cn) → Aspect.
 func vnAsCode(vn, cn string) string {
-	if cn == "" || isAspectCn(cn) {
-		if t, _ := parse.ClassifyAffixVowel(vn); t == g.Type1Affix {
-			if a, ok := parse.ParseVnAspect(vn); ok {
-				return a.String()
-			}
-		}
+	if cn == "" || isAspectCn(cn) || cn == "n" {
 		if a, ok := parse.ParseVnAspect(vn); ok {
 			return a.String()
 		}
