@@ -125,17 +125,25 @@ func modularLabel(m g.ModularAdjunct, marksMood *bool) string {
 }
 
 // combinationRefLabel formats a combination-referential word as
-// "REF[<refs>]-<case>.<spec>(-<affix>...)(-<case2>)".
+// "REF[<refs>]-<case>.<spec>(-<affix>...)(-<case2>)". When Carrier is
+// set the C1 was a C_P suppletive (per §4.6.3) and we show
+// "CARR[<type>]" in place of the referent list.
 func combinationRefLabel(c tokenize.CombinationRefWord) string {
-	parts := make([]string, len(c.Refs))
-	for i, pr := range c.Refs {
-		s := pr.Referent.String()
-		if pr.Effect != referentials.NEU {
-			s += "/" + pr.Effect.String()
+	var head string
+	if c.Carrier != nil {
+		head = "CARR[" + c.Carrier.String() + "]"
+	} else {
+		parts := make([]string, len(c.Refs))
+		for i, pr := range c.Refs {
+			s := pr.Referent.String()
+			if pr.Effect != referentials.NEU {
+				s += "/" + pr.Effect.String()
+			}
+			parts[i] = s
 		}
-		parts[i] = s
+		head = "REF[" + strings.Join(parts, "+") + "]"
 	}
-	out := "REF[" + strings.Join(parts, "+") + "]-" + c.Case.String() + "." + c.Spec
+	out := head + "-" + c.Case.String() + "." + c.Spec
 	for _, a := range c.Affixes {
 		out += "-" + a.Cs + ":" + a.Vx
 	}
@@ -157,11 +165,16 @@ func refLabel(r tokenize.ReferentialWord) string {
 		}
 		return strings.Join(parts, "+")
 	}
-	joined := formatRefs(r.Refs)
-	if r.Category != nil {
-		joined = r.Category.String() + ":" + joined
+	var label string
+	if r.Carrier != nil {
+		label = "CARR[" + r.Carrier.String() + "]"
+	} else {
+		joined := formatRefs(r.Refs)
+		if r.Category != nil {
+			joined = r.Category.String() + ":" + joined
+		}
+		label = "REF[" + joined + "]"
 	}
-	label := "REF[" + joined + "]"
 	if r.Case != nil {
 		label += "-" + r.Case.String()
 	}

@@ -130,9 +130,15 @@ func (CarrierWord) word()             {}
 // that scopes the entire reference. Per §4.6.1, the full surface shape
 // is [ë]C1 [Vc1] [w/y Vc2 [C2 [ë]]] with ultimate stress flipping
 // Essence from NRM to RPV.
+//
+// Carrier is non-nil when C1 is a C_P suppletive cluster (§4.6.3); in
+// that case Refs is empty and the word reads as a carrier/quotative/
+// naming/phrasal adjunct extended with referential machinery. The
+// surface form starts with the epenthetic diphthong "üo-".
 type ReferentialWord struct {
 	Text       string
 	Category   *referentials.Category // nil if no category modifier
+	Carrier    *g.CarrierType         // §4.6.3: C_P in place of personal C1
 	Refs       []referentials.PersonalRef
 	Case       *g.Case // Vc1: case of Referential A; nil when no Vc at all
 	Case2      *g.Case // Vc2: case of Referential B, or stacked second case
@@ -147,9 +153,12 @@ type ReferentialWord struct {
 //	[ë] C1 Vc Spec [VxCs...] [Vc2]
 //
 // The Spec field is the raw consonant cluster (one of x/xt/xp/xx);
-// the rest are decoded values.
+// the rest are decoded values. Carrier is non-nil when C1 is a C_P
+// suppletive cluster (§4.6.3, "a-" epenthetic prefix); Refs is empty
+// in that case.
 type CombinationRefWord struct {
 	Text    string
+	Carrier *g.CarrierType
 	Refs    []referentials.PersonalRef
 	Case    g.Case
 	Spec    string
@@ -221,6 +230,18 @@ func ClassifyWord(word string) WordToken {
 	if len(conjs) >= 2 && surface.IsConsonantConjunct(conjs[0]) {
 		if c, err := parse.ParseCarrier(word); err == nil {
 			return CarrierWord{Text: word, Carrier: c}
+		}
+	}
+
+	// 4. §4.6.3 Cp-in-referential epenthesis: "üo" + a Cp cluster
+	//    (hl/hm/hn/hň) is a referential, not a modular adjunct — the
+	//    "üo-" prefix exists precisely to disambiguate. Run referential
+	//    first so the modular pattern doesn't snatch it.
+	if len(conjs) >= 2 && conjs[0] == "üo" {
+		if _, isCp := parse.ParseCarrierType(conjs[1]); isCp {
+			if r, ok := tryReferential(word); ok {
+				return r
+			}
 		}
 	}
 
@@ -384,19 +405,37 @@ func tryReferential(word string) (ReferentialWord, bool) {
 		return ReferentialWord{}, false
 	}
 	i := 0
+	// §4.6.3 epenthesis: "üo-" lets a C_P suppletive cluster occupy
+	// C1 instead of a personal-reference cluster. We track that and
+	// route the C_P through ParseCarrierType below.
+	cpEpenthesis := false
 	if conjs[i] == "ë" || conjs[i] == "äi" {
 		i++
 		if i+1 >= len(conjs) {
 			return ReferentialWord{}, false
+		}
+	} else if conjs[i] == "üo" && i+1 < len(conjs) {
+		if _, isCp := parse.ParseCarrierType(conjs[i+1]); isCp {
+			cpEpenthesis = true
+			i++
 		}
 	}
 	c1 := conjs[i]
 	if !surface.IsConsonantConjunct(c1) {
 		return ReferentialWord{}, false
 	}
-	cat, refs, ok := referentials.DecomposeRefWithCategory(c1)
-	if !ok || len(refs) == 0 {
-		return ReferentialWord{}, false
+	var cat *referentials.Category
+	var refs []referentials.PersonalRef
+	var carrier *g.CarrierType
+	if cpEpenthesis {
+		ct, _ := parse.ParseCarrierType(c1)
+		carrier = &ct
+	} else {
+		var ok bool
+		cat, refs, ok = referentials.DecomposeRefWithCategory(c1)
+		if !ok || len(refs) == 0 {
+			return ReferentialWord{}, false
+		}
 	}
 	i++
 	if i >= len(conjs) || !surface.IsVowelConjunct(conjs[i]) {
@@ -439,6 +478,7 @@ func tryReferential(word string) (ReferentialWord, bool) {
 	return ReferentialWord{
 		Text:       word,
 		Category:   cat,
+		Carrier:    carrier,
 		Refs:       refs,
 		Case:       &caseA,
 		Case2:      case2,
@@ -452,8 +492,16 @@ func tryReferential(word string) (ReferentialWord, bool) {
 // fails. The Vc2 special form "üa" maps to THM and "a" alone means
 // "no second case".
 func tryCombinationRef(text string, conjs []string) (CombinationRefWord, bool) {
-	// Strip optional leading "ë" prefix.
-	if len(conjs) > 0 && conjs[0] == "ë" {
+	// §4.6.3 epenthesis: "a-" lets a C_P suppletive cluster occupy C1
+	// instead of a personal-reference cluster. Otherwise "ë" is the
+	// only acceptable prefix.
+	cpEpenthesis := false
+	if len(conjs) > 1 && conjs[0] == "a" {
+		if _, isCp := parse.ParseCarrierType(conjs[1]); isCp {
+			cpEpenthesis = true
+			conjs = conjs[1:]
+		}
+	} else if len(conjs) > 0 && conjs[0] == "ë" {
 		conjs = conjs[1:]
 	}
 	if len(conjs) < 3 {
@@ -463,9 +511,17 @@ func tryCombinationRef(text string, conjs []string) (CombinationRefWord, bool) {
 	if !surface.IsConsonantConjunct(c1) || !surface.IsVowelConjunct(vc) || !isCombinationSpec(spec) {
 		return CombinationRefWord{}, false
 	}
-	refs, refsOk := referentials.DecomposeRefCluster(c1)
-	if !refsOk || len(refs) == 0 {
-		return CombinationRefWord{}, false
+	var refs []referentials.PersonalRef
+	var carrier *g.CarrierType
+	if cpEpenthesis {
+		ct, _ := parse.ParseCarrierType(c1)
+		carrier = &ct
+	} else {
+		var refsOk bool
+		refs, refsOk = referentials.DecomposeRefCluster(c1)
+		if !refsOk || len(refs) == 0 {
+			return CombinationRefWord{}, false
+		}
 	}
 	caseVal, caseOk := parse.ParseCase(vc)
 	if !caseOk {
@@ -511,6 +567,7 @@ func tryCombinationRef(text string, conjs []string) (CombinationRefWord, bool) {
 	}
 	return CombinationRefWord{
 		Text:    text,
+		Carrier: carrier,
 		Refs:    refs,
 		Case:    caseVal,
 		Spec:    spec,
