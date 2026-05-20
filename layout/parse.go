@@ -19,11 +19,13 @@ func Parse(word string) (Layout, error) {
 	bare, stress := surface.Strip(word)
 	body, sentenceStarter := stripSentencePrefix(bare)
 	conjs := surface.MergeGlottalVowels(surface.SplitConjuncts(body))
+	conjs, movedGlottal := stripMovedGlottal(conjs)
 	if len(conjs) < 3 {
 		return Layout{}, fmt.Errorf("word %q too short (got %d conjuncts, need at least 3)", word, len(conjs))
 	}
 	l := Layout{
 		SentenceStarter: sentenceStarter,
+		MovedGlottal:    movedGlottal,
 		Stress:          stress,
 	}
 	i := 0
@@ -255,6 +257,28 @@ func parseAfterCa(l *Layout, conjs []string, i int) error {
 		l.SlotVII = append(l.SlotVII, AffixChunk{Vx: p.v, Cs: p.c})
 	}
 	return nil
+}
+
+// stripMovedGlottal handles the §3.9.1 SPECIAL NOTE rule: the V_C
+// glottal-stop for cases 37-52 may be shifted to any earlier vocalic
+// form (V_R / V_X / V_N). On the surface this manifests as a
+// consonant conjunct whose first rune is "'" (e.g., "la'la" splits as
+// [l, a, 'l, a]). When the preceding conjunct is a vowel we strip the
+// leading "'" and flag the layout so ToGrammar reads the Vc with the
+// glottal re-attached.
+func stripMovedGlottal(conjs []string) ([]string, bool) {
+	moved := false
+	out := make([]string, 0, len(conjs))
+	for i, c := range conjs {
+		if !moved && i > 0 && surface.IsVowelConjunct(conjs[i-1]) &&
+			len(c) > 1 && c[0] == '\'' {
+			moved = true
+			out = append(out, c[1:])
+			continue
+		}
+		out = append(out, c)
+	}
+	return out, moved
 }
 
 // stripVvGlottal removes a §3.5.1 glottal-stop from a Vv vowel. The

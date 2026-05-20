@@ -98,6 +98,13 @@ type Layout struct {
 	// when the slot is elided.
 	Vc string
 
+	// MovedGlottal is true when the §3.9.1 SPECIAL NOTE shortening
+	// rule has been applied: the Vc glottal-stop for cases 37-52
+	// has been shifted onto an earlier vocalic form, leaving Vc in
+	// its un-glottalized shape. ToGrammar reconstructs the proper
+	// case by re-adding the glottal.
+	MovedGlottal bool
+
 	// Stress is the prosodic stress observed (or to apply).
 	Stress surface.Stress
 }

@@ -19,7 +19,11 @@ func ToGrammar(l Layout) (g.Formative, error) {
 	concat := cc.Concat
 	shortcut := cc.Shortcut
 
-	final, err := finalFromVc(l.Vc, l.Stress)
+	vcLookup := l.Vc
+	if l.MovedGlottal {
+		vcLookup = restoreMovedGlottal(l.Vc)
+	}
+	final, err := finalFromVc(vcLookup, l.Stress)
 	if err != nil {
 		return g.Formative{}, err
 	}
@@ -160,6 +164,21 @@ func affixesVxCs(chunks []AffixChunk) []g.Affix {
 		out[i] = g.Affix{Type: t, Degree: d, Consonant: c.Cs}
 	}
 	return out
+}
+
+// restoreMovedGlottal re-inserts the glottal stop that the §3.9.1
+// SPECIAL NOTE shortening rule shifted off the Vc. Per §1.7: a single
+// vowel reduplicates around the glottal (a → a'a), and a multi-rune
+// disyllabic conjunct takes an intervocalic glottal (ai → a'i, uä → u'ä).
+func restoreMovedGlottal(vc string) string {
+	rs := []rune(vc)
+	switch len(rs) {
+	case 0:
+		return vc
+	case 1:
+		return string(rs[0]) + "'" + string(rs[0])
+	}
+	return string(rs[0]) + "'" + string(rs[1:])
 }
 
 // finalFromVc builds the Final variant from the trailing Slot IX

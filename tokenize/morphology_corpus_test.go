@@ -66,12 +66,11 @@ func TestMorphologyCorpus_Sec4_6_1_Referential(t *testing.T) {
 			"triwejvë", "sme'e", "ka'u", "fo'we'is",
 			"smlo", "püwüp", "zäwiez",
 		},
-		// Forms still falling through use a glottalized Vc (sme'e,
-		// ka'u, fo'we'is) for cases 37-52, or shapes ParseCase doesn't
-		// yet accept (zëmse). The §4.6.1 referentials with w/y + Vc2
-		// suffixes (laiwe, püwüp, smoyút, triwejvë, zäwiez, ëpgói,
-		// ëztewim) now classify.
-		unknown: []string{"fo'we'is", "ka'u", "sme'e", "zëmse"},
+		// Still falling through: fo'we'is (two glottal stops — the
+		// second is a moved-glottal landing on the Vc2 of a referential
+		// suffix, not yet handled) and zëmse (3-conjunct cluster shape
+		// our referential matcher doesn't yet accept).
+		unknown: []string{"fo'we'is", "zëmse"},
 	})
 }
 
