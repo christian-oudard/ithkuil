@@ -39,5 +39,15 @@ func (FramedVerbal) Tag() string { return "ANT" }
 // UnframedVerbal: ultimate stress, Slot IX is Vk.
 type UnframedVerbal struct{ Vk Vk }
 
-func (UnframedVerbal) final()    {}
+func (UnframedVerbal) final()      {}
 func (UnframedVerbal) Tag() string { return "ULT" }
+
+// IsVerbal reports whether the formative's Final selects the verbal
+// reading for the Slot VIII Cn (Mood vs. Case-Scope) and for any
+// modular adjunct that scopes over it. Per §3.8.1, only UNFRAMED
+// verbal formatives (ultimate stress) take Mood; nominal and
+// FRAMED-verbal formatives take Case-Scope.
+func IsVerbal(f Final) bool {
+	_, ok := f.(UnframedVerbal)
+	return ok
+}

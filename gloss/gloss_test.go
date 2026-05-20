@@ -145,6 +145,20 @@ func TestFormative_SlotVIIIAspect(t *testing.T) {
 	}
 }
 
+func TestFormative_FramedVerbal_SlotVIIIAsCaseScope(t *testing.T) {
+	// Per §3.8.1, FRAMED-verbal formatives gloss Slot VIII Cn as
+	// Case-Scope (not Mood). Only UNFRAMED verbal formatives (ultimate
+	// stress) take the Mood reading.
+	f := g.MinimalFormative("ml")
+	f.Final = g.FramedVerbal{Case: g.THM}
+	f.SlotVIII = g.VnCnValence{Valence: g.PRL, MoodScope: g.SUB}
+	got := Formative(f)
+	want := "-ml--PRL.CCA-ANT"
+	if got != want {
+		t.Errorf("Formative(framed PRL/SUB) = %q, want %q", got, want)
+	}
+}
+
 func TestFormative_SentenceStarter(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.SentenceStarter = true

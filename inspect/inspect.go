@@ -467,10 +467,7 @@ func slotVIIIMoodScope(s g.SlotVIII) g.Mood {
 	return g.FAC
 }
 
-func isVerbal(fin g.Final) bool {
-	_, ok := fin.(g.UnframedVerbal)
-	return ok
-}
+func isVerbal(fin g.Final) bool { return g.IsVerbal(fin) }
 
 // moodAsCaseScope maps the Mood ordinal to its case-scope twin
 // (FAC↔CCN, SUB↔CCA, ASM↔CCS, SPC↔CCQ, COU↔CCP, HYP↔CCV).

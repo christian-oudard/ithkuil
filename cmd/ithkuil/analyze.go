@@ -85,7 +85,7 @@ func renderDetailed(w io.Writer, t tokenize.WordToken, lex interface{}, glosser 
 // adjunct: optional w/y prefix + 0-3 (Vn, Cn) pairs + optional final
 // vowel.
 func renderModular(w io.Writer, mw tokenize.ModularWord) {
-	segs := inspect.SegmentsModular(mw.Text, mw.Modular)
+	segs := inspect.SegmentsModular(mw.Text, mw.Modular, mw.MarksMood)
 	glossary := inspect.GlossaryModular(segs)
 
 	fmt.Fprintln(w, strings.ToLower(mw.Text))

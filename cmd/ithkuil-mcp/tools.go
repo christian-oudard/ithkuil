@@ -154,7 +154,7 @@ func (s *server) analyze(_ context.Context, _ *mcp.CallToolRequest, in analyzeIn
 				})
 			}
 		case tokenize.ModularWord:
-			segs := inspect.SegmentsModular(tt.Text, tt.Modular)
+			segs := inspect.SegmentsModular(tt.Text, tt.Modular, tt.MarksMood)
 			for _, sg := range segs {
 				w.Segments = append(w.Segments, segmentOut{
 					Chunk: sg.Chunk, Raw: sg.Raw, Slot: sg.Slot,

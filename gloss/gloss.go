@@ -142,16 +142,11 @@ func (gl *Glosser) csRootLabel(x g.CsRoot) string {
 	return fmt.Sprintf("(%s)/%d", abbr, x.Degree)
 }
 
-// isVerbalFinal reports whether a Final carries a verbal interpretation
-// (UnframedVerbal or FramedVerbal). MoodScope is glossed as Mood when
-// verbal and as CaseScope when nominal.
-func isVerbalFinal(f g.Final) bool {
-	switch f.(type) {
-	case g.UnframedVerbal, g.FramedVerbal:
-		return true
-	}
-	return false
-}
+// isVerbalFinal reports whether the formative's Slot VIII C_N should be
+// glossed as Mood. Per spec §3.8.1, only UNFRAMED verbal formatives
+// (ultimate stress) take Mood; nominal and FRAMED-verbal formatives
+// take Case-Scope.
+func isVerbalFinal(f g.Final) bool { return g.IsVerbal(f) }
 
 // finalTag emits the grammatical-category tag for non-default Final
 // variants. UnframedNominal (penultimate) is the unmarked default and

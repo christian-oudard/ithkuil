@@ -287,7 +287,12 @@ func segmentsCrRoot(conjs []string, f g.Formative, cr g.CrRoot, lex *lexicon.Lex
 // modular adjunct: an optional w/y prefix, zero-to-three (Vn, Cn)
 // pairs, and an optional final vowel. The label "Vn₁/Cn₁/Vn₂/…"
 // makes each pair's slot inside the adjunct visible.
-func SegmentsModular(word string, ma g.ModularAdjunct) []Segment {
+//
+// marksMood disambiguates the Cn surface form (which is shared between
+// Mood and Case-Scope). When nil, no adjacent formative was found and
+// Cn defaults to Mood — matching the spec's verbal-formative reading.
+func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segment {
+	asMood := marksMood == nil || *marksMood
 	var segs []Segment
 	if ma.Prefix != "" {
 		segs = append(segs, Segment{
@@ -306,7 +311,7 @@ func SegmentsModular(word string, ma g.ModularAdjunct) []Segment {
 		segs = append(segs, Segment{
 			Raw:     strings.ToLower(p.Cn),
 			Slot:    fmt.Sprintf("Cn%s", idx),
-			Encodes: []string{cnAsCode(p.Cn)},
+			Encodes: []string{cnAsCode(p.Cn, asMood)},
 		})
 	}
 	if ma.Final != "" {
@@ -438,16 +443,17 @@ func isAspectCn(cn string) bool {
 	return false
 }
 
-func cnAsCode(cn string) string {
-	if isAspectCn(cn) {
-		if m, ok := parse.ParseCnMoodP2(cn); ok {
+func cnAsCode(cn string, asMood bool) string {
+	if asMood {
+		if isAspectCn(cn) {
+			if m, ok := parse.ParseCnMoodP2(cn); ok {
+				return m.String()
+			}
+		}
+		if m, ok := parse.ParseCnMood(cn); ok {
 			return m.String()
 		}
-	}
-	if m, ok := parse.ParseCnMood(cn); ok {
-		return m.String()
-	}
-	if cs, ok := parse.ParseCnCaseScope(cn); ok {
+	} else if cs, ok := parse.ParseCnCaseScope(cn); ok {
 		return cs.String()
 	}
 	switch cn {

@@ -81,9 +81,15 @@ func (r RegisterEndWord) Surface() string { return r.Text }
 func (RegisterEndWord) word()             {}
 
 // ModularWord carries a Vn+Cn modular adjunct.
+//
+// MarksMood reflects the next formative's verbal/nominal status, used
+// to disambiguate the Cn surface form: true = the adjacent formative is
+// verbal (Cn → Mood); false = nominal or framed-verbal (Cn → Case-
+// Scope); nil = no adjacent formative was found in the token stream.
 type ModularWord struct {
-	Text    string
-	Modular g.ModularAdjunct
+	Text      string
+	Modular   g.ModularAdjunct
+	MarksMood *bool
 }
 
 func (m ModularWord) Surface() string { return m.Text }
@@ -250,7 +256,35 @@ func Tokenize(sentence string) []WordToken {
 			out[i+1] = ForeignWord{Text: out[i+1].Surface()}
 		}
 	}
+	for i, t := range out {
+		if mw, ok := t.(ModularWord); ok {
+			if verbal, found := nextFormativeIsVerbal(out, i); found {
+				mw.MarksMood = &verbal
+				out[i] = mw
+			}
+		}
+	}
 	return out
+}
+
+// nextFormativeIsVerbal scans forward from i+1 for the next formative-
+// bearing token and returns whether its (parent, for chains) Final is
+// verbal (ultimate stress). Returns found=false if no formative-bearing
+// token is encountered.
+func nextFormativeIsVerbal(toks []WordToken, i int) (verbal, found bool) {
+	for j := i + 1; j < len(toks); j++ {
+		switch w := toks[j].(type) {
+		case FormativeWord:
+			return g.IsVerbal(w.Formative.Final), true
+		case ConcatenatedFormativeWord:
+			fs := w.Chain.Formatives()
+			if len(fs) == 0 {
+				return false, false
+			}
+			return g.IsVerbal(fs[len(fs)-1].Final), true
+		}
+	}
+	return false, false
 }
 
 // isCarrierToken reports whether tok semantically scopes a foreign word

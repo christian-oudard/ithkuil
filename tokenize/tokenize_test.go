@@ -174,6 +174,47 @@ func TestTokenize_Sentence(t *testing.T) {
 	}
 }
 
+func TestTokenize_ModularMarksMood(t *testing.T) {
+	// Modular Cn is shared between Mood and Case-Scope; the surrounding
+	// formative's verbal/nominal status disambiguates (§3.8.1).
+	cases := []struct {
+		sentence string
+		wantNil  bool
+		wantMood bool
+	}{
+		// Verbal next formative (ultimate stress) → MarksMood=true.
+		{"ah amlalú", false, true},
+		// Nominal next formative (penultimate stress) → MarksMood=false.
+		{"ah amlala", false, false},
+		// Framed-verbal (antepenultimate stress) → also CaseScope per §3.8.1.
+		{"ah ámlala", false, false},
+		// No following formative → MarksMood=nil (default to Mood).
+		{"ah řřx", true, false},
+		{"ah", true, false},
+	}
+	for _, c := range cases {
+		toks := Tokenize(c.sentence)
+		mw, ok := toks[0].(ModularWord)
+		if !ok {
+			t.Fatalf("Tokenize(%q)[0] = %T, want ModularWord", c.sentence, toks[0])
+		}
+		if c.wantNil {
+			if mw.MarksMood != nil {
+				t.Errorf("Tokenize(%q): MarksMood = %v, want nil", c.sentence, *mw.MarksMood)
+			}
+			continue
+		}
+		if mw.MarksMood == nil {
+			t.Errorf("Tokenize(%q): MarksMood = nil, want %v", c.sentence, c.wantMood)
+			continue
+		}
+		if *mw.MarksMood != c.wantMood {
+			t.Errorf("Tokenize(%q): MarksMood = %v, want %v",
+				c.sentence, *mw.MarksMood, c.wantMood)
+		}
+	}
+}
+
 func TestTokenize_Empty(t *testing.T) {
 	if tokens := Tokenize(""); len(tokens) != 0 {
 		t.Errorf("Tokenize(\"\") = %v, want empty", tokens)
