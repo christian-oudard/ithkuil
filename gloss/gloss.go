@@ -256,9 +256,27 @@ func slotVI(s g.SlotVI) string {
 
 // affixes renders a list of affixes, hyphenated. With a lexicon each
 // affix shows its ABBREV/degree; without one, the surface "Cs:Vx" form.
+//
+// §4.6.5 special case: a lone Type-3 affix whose Cs is a referential
+// consonant reads as a personal-reference shortcut rather than a
+// regular affix. We render that as "(refs/degree)" to make the
+// referential reading visible.
 func (gl *Glosser) affixes(as []g.Affix) string {
 	if len(as) == 0 {
 		return ""
+	}
+	if len(as) == 1 && as[0].Type == g.Type3Affix {
+		if refs, ok := referentials.DecomposeRefCluster(as[0].Consonant); ok && len(refs) > 0 {
+			parts := make([]string, len(refs))
+			for i, pr := range refs {
+				s := pr.Referent.String()
+				if pr.Effect != referentials.NEU {
+					s += "/" + pr.Effect.String()
+				}
+				parts[i] = s
+			}
+			return fmt.Sprintf("(%s)/%d", strings.Join(parts, "+"), as[0].Degree)
+		}
 	}
 	parts := make([]string, len(as))
 	for i, a := range as {
