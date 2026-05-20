@@ -268,9 +268,12 @@ func ClassifyWord(word string) WordToken {
 	// 4a. Single-affix adjunct (§4.1.1): V-C[-V], starting with a
 	//     vowel other than "ë". Tried before referential/formative so
 	//     a leading vowel doesn't get re-read as Vv of an under-sized
-	//     formative.
+	//     formative. A special-Vv marker (ae/ea/ëi/eë/ëu/oë) at conjs[0]
+	//     means this is a §4.6.4 / §4.2 specialised root formative,
+	//     not an affix — skip and let the formative recogniser handle it.
 	if len(conjs) >= 2 && len(conjs) <= 3 &&
-		surface.IsVowelConjunct(conjs[0]) && conjs[0] != "ë" {
+		surface.IsVowelConjunct(conjs[0]) && conjs[0] != "ë" &&
+		!parse.IsSpecialVv(conjs[0]) {
 		if a, err := parse.ParseSingleAffix(word); err == nil {
 			return SingleAffixWord{Text: word, Affix: a}
 		}

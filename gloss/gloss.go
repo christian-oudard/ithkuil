@@ -15,6 +15,7 @@ import (
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/semantics"
 )
 
@@ -83,7 +84,10 @@ func (gl *Glosser) rootPrefix(r g.Root) string {
 }
 
 // rootBody returns the root identifier itself — the lexical cluster
-// for CrRoot, "(Cs)/degree" for CsRoot, "(C1)" for RefRoot.
+// for CrRoot, "(Cs)/degree" for CsRoot, "(refs)" for RefRoot. The
+// RefRoot label decomposes its C1 into the underlying personal-
+// reference chain (§4.6.4); when decomposition fails we fall back to
+// the raw cluster so the gloss still names what it parsed.
 func (gl *Glosser) rootBody(r g.Root) string {
 	switch x := r.(type) {
 	case g.CrRoot:
@@ -91,6 +95,17 @@ func (gl *Glosser) rootBody(r g.Root) string {
 	case g.CsRoot:
 		return gl.csRootLabel(x)
 	case g.RefRoot:
+		if refs, ok := referentials.DecomposeRefCluster(x.C1); ok && len(refs) > 0 {
+			parts := make([]string, len(refs))
+			for i, pr := range refs {
+				s := pr.Referent.String()
+				if pr.Effect != referentials.NEU {
+					s += "/" + pr.Effect.String()
+				}
+				parts[i] = s
+			}
+			return "-(" + strings.Join(parts, "+") + ")-"
+		}
 		return "-(" + x.C1 + ")-"
 	}
 	return ""
