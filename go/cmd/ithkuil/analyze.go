@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/coudard/ithkuil/go/gloss"
+	g "github.com/coudard/ithkuil/go/grammar"
 	"github.com/coudard/ithkuil/go/inspect"
 	"github.com/coudard/ithkuil/go/tokenize"
 )
@@ -68,16 +69,24 @@ func cmdAnalyze(args []string, stdin io.Reader, stdout, stderr io.Writer, lexDir
 }
 
 func renderDetailed(w io.Writer, t tokenize.WordToken, lex interface{}, glosser gloss.Glosser) {
-	fw, ok := t.(tokenize.FormativeWord)
-	if !ok {
+	switch tt := t.(type) {
+	case tokenize.FormativeWord:
+		renderFormativeBlock(w, tt.Text, tt.Formative, glosser)
+	case tokenize.ConcatenatedFormativeWord:
+		renderConcatenated(w, tt, glosser)
+	default:
 		fmt.Fprintf(w, "%s  %s  %s\n", t.Surface(), inspect.Type(t), glosser.Token(t))
-		return
 	}
-	head := inspect.Headword(fw.Formative, glosser.Lex)
-	segs := inspect.Segments(fw.Text, fw.Formative, glosser.Lex)
-	glossary := inspect.Glossary(fw.Text, fw.Formative, segs, glosser.Lex)
+}
 
-	fmt.Fprintln(w, strings.ToLower(fw.Text))
+// renderFormativeBlock prints the surface, headword, phonetic table,
+// and glossary for one formative.
+func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss.Glosser) {
+	head := inspect.Headword(f, glosser.Lex)
+	segs := inspect.Segments(text, f, glosser.Lex)
+	glossary := inspect.Glossary(text, f, segs, glosser.Lex)
+
+	fmt.Fprintln(w, strings.ToLower(text))
 	if head.Code != "" {
 		if head.Meaning != "" {
 			fmt.Fprintf(w, "  %s — %s\n", head.Code, head.Meaning)
@@ -89,6 +98,29 @@ func renderDetailed(w io.Writer, t tokenize.WordToken, lex interface{}, glosser 
 	renderPhoneticTable(w, segs)
 	fmt.Fprintln(w)
 	renderGlossaryTable(w, glossary)
+}
+
+// renderConcatenated walks every formative in a concatenation chain,
+// rendering each as its own block with a section marker. The chain's
+// surface is hyphen-joined; we split on "-" to recover each piece's
+// individual surface for the phonetic table.
+func renderConcatenated(w io.Writer, cw tokenize.ConcatenatedFormativeWord, glosser gloss.Glosser) {
+	fmt.Fprintln(w, strings.ToLower(cw.Text))
+	fmt.Fprintln(w, "  (concatenated chain)")
+	parts := strings.Split(cw.Text, "-")
+	for i, f := range cw.Chain.Formatives() {
+		fmt.Fprintln(w)
+		label := "[head]"
+		if i > 0 && f.Concat != nil {
+			label = fmt.Sprintf("[%s dependent]", f.Concat.String())
+		}
+		fmt.Fprintln(w, label)
+		surface := ""
+		if i < len(parts) {
+			surface = parts[i]
+		}
+		renderFormativeBlock(w, surface, f, glosser)
+	}
 }
 
 func renderPhoneticTable(w io.Writer, segs []inspect.Segment) {
