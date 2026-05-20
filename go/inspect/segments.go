@@ -99,18 +99,18 @@ func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
 	if len(conjs) == 0 {
 		return nil
 	}
-	cr, ok := f.Root.(g.CrRoot)
-	if !ok {
-		// CsRoot / RefRoot fall through for now — emit a single
-		// chunk with the surface and stop.
-		return []Segment{{
-			Raw:     strings.ToLower(word),
-			Chunk:   strings.ToLower(word),
-			Slot:    "(root variant)",
-			Encodes: []string{Headword(f, lex).Code},
-		}}
+	switch r := f.Root.(type) {
+	case g.CrRoot:
+		return segmentsCrRoot(conjs, f, r, lex)
+	case g.CsRoot:
+		return segmentsCsRoot(conjs, f, r, lex)
+	case g.RefRoot:
+		return segmentsRefRoot(conjs, f, r, lex)
 	}
+	return nil
+}
 
+func segmentsCrRoot(conjs []string, f g.Formative, cr g.CrRoot, lex *lexicon.Lexicon) []Segment {
 	var segs []Segment
 	i := 0
 	rootLower := strings.ToLower(cr.Cluster)
@@ -281,6 +281,159 @@ func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
 
 	decorateHyphens(segs)
 	return segs
+}
+
+// segmentsCsRoot handles Cs-root formatives (§4.2): special Vv
+// (ëi/eë/ëu/oë) + Cs + Vr-as-affix-degree + Ca + post-Ca tail. The
+// "root" here is the affix cluster Cs at a specific degree.
+func segmentsCsRoot(conjs []string, f g.Formative, cs g.CsRoot, lex *lexicon.Lexicon) []Segment {
+	var segs []Segment
+	if len(conjs) < 4 {
+		return nil
+	}
+	csLower := strings.ToLower(cs.Cs)
+
+	// Vv (special) — encodes (Version, Function).
+	segs = append(segs, Segment{
+		Raw:     strings.ToLower(conjs[0]),
+		Slot:    "Vv",
+		Encodes: []string{cs.Version.String(), cs.Function.String()},
+	})
+
+	// Cs as root.
+	segs = append(segs, Segment{
+		Raw:     csLower,
+		Slot:    "Cs (root)",
+		Encodes: []string{fmt.Sprintf("(Cs)%q at degree %d", csLower, cs.Degree)},
+	})
+
+	// Vr (special) — encodes (Degree, Context).
+	segs = append(segs, Segment{
+		Raw:     strings.ToLower(conjs[2]),
+		Slot:    "Vr",
+		Encodes: []string{fmt.Sprintf("DEG%d", cs.Degree), cs.Context.String()},
+	})
+
+	// Ca.
+	segs = append(segs, Segment{
+		Raw:      strings.ToLower(conjs[3]),
+		Slot:     "Ca",
+		Encodes:  slotVICodes(f.SlotVI),
+		Defaults: f.SlotVI == g.DefaultSlotVI,
+	})
+
+	// Post-Ca tail: Slot VII affixes, Slot VIII, Slot IX.
+	postCa(&segs, conjs, 4, f, lex)
+	decorateHyphens(segs)
+	return segs
+}
+
+// segmentsRefRoot handles reference-root formatives (§5.3): special
+// Vv (ae/ea) + C1 referential + normal Vr + Ca + post-Ca tail.
+func segmentsRefRoot(conjs []string, f g.Formative, rr g.RefRoot, lex *lexicon.Lexicon) []Segment {
+	var segs []Segment
+	if len(conjs) < 4 {
+		return nil
+	}
+	c1Lower := strings.ToLower(rr.C1)
+
+	// Vv (special) — encodes Version (Function implicit).
+	segs = append(segs, Segment{
+		Raw:     strings.ToLower(conjs[0]),
+		Slot:    "Vv",
+		Encodes: []string{rr.Version.String()},
+	})
+
+	// C1 as root.
+	segs = append(segs, Segment{
+		Raw:     c1Lower,
+		Slot:    "C1 (ref)",
+		Encodes: []string{fmt.Sprintf("Ref %q", c1Lower)},
+	})
+
+	// Vr — normal SlotIV.
+	segs = append(segs, Segment{
+		Raw:      strings.ToLower(conjs[2]),
+		Slot:     "Vr",
+		Encodes:  []string{rr.SlotIV.Function.String(), rr.SlotIV.Specification.String(), rr.SlotIV.Context.String()},
+		Defaults: rr.SlotIV == g.DefaultSlotIV,
+	})
+
+	// Ca.
+	segs = append(segs, Segment{
+		Raw:      strings.ToLower(conjs[3]),
+		Slot:     "Ca",
+		Encodes:  slotVICodes(f.SlotVI),
+		Defaults: f.SlotVI == g.DefaultSlotVI,
+	})
+
+	postCa(&segs, conjs, 4, f, lex)
+	decorateHyphens(segs)
+	return segs
+}
+
+// postCa appends Slot VII affixes, optional Slot VIII (VnCn), and
+// Slot IX (Vc/Vk) starting from index i in conjs.
+func postCa(segs *[]Segment, conjs []string, i int, f g.Formative, lex *lexicon.Lexicon) {
+	for ax, a := range f.SlotVII {
+		if i+1 >= len(conjs) {
+			break
+		}
+		_, deg := parse.ClassifyAffixVowel(conjs[i])
+		abbrev := affixAbbrev(a.Consonant, lex)
+		*segs = append(*segs, Segment{
+			Raw:     strings.ToLower(conjs[i]),
+			Slot:    fmt.Sprintf("Vx%s", subscript(ax+1)),
+			Encodes: []string{fmt.Sprintf("DEG%d", deg)},
+			Ordinal: ax + 1,
+		})
+		i++
+		*segs = append(*segs, Segment{
+			Raw:     strings.ToLower(conjs[i]),
+			Slot:    fmt.Sprintf("Cs%s", subscript(ax+1)),
+			Encodes: []string{abbrev},
+			Ordinal: ax + 1,
+			Cluster: a.Consonant,
+			Degree:  deg,
+		})
+		i++
+	}
+	if f.SlotVIII != nil {
+		if i < len(conjs) && parse.IsVowelConjunct(conjs[i]) {
+			*segs = append(*segs, Segment{
+				Raw:     strings.ToLower(conjs[i]),
+				Slot:    "Vn",
+				Encodes: []string{slotVIIIVnCode(f.SlotVIII)},
+			})
+			i++
+		}
+		if i < len(conjs) && parse.IsConsonantConjunct(conjs[i]) {
+			*segs = append(*segs, Segment{
+				Raw:     strings.ToLower(conjs[i]),
+				Slot:    "Cn",
+				Encodes: []string{slotVIIICnCode(f.SlotVIII, f.Final)},
+			})
+			i++
+		}
+	}
+	slot, codes, isDefault := slotIXLabelCodes(f.Final)
+	if i < len(conjs) && parse.IsVowelConjunct(conjs[i]) {
+		*segs = append(*segs, Segment{
+			Raw:      strings.ToLower(conjs[i]),
+			Slot:     slot,
+			Encodes:  codes,
+			Defaults: isDefault,
+		})
+		i++
+	} else {
+		*segs = append(*segs, Segment{
+			Raw:      ElidedMark,
+			Slot:     slot,
+			Encodes:  codes,
+			Defaults: isDefault,
+			Elided:   true,
+		})
+	}
 }
 
 // decorateHyphens fills Segment.Chunk with hyphens: word-initial
