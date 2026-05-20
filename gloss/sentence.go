@@ -144,22 +144,33 @@ func combinationRefLabel(c tokenize.CombinationRefWord) string {
 }
 
 func refLabel(r tokenize.ReferentialWord) string {
-	parts := make([]string, len(r.Refs))
-	for i, pr := range r.Refs {
-		// Suffix effect only when non-NEU.
-		s := pr.Referent.String()
-		if pr.Effect != referentials.NEU {
-			s += "/" + pr.Effect.String()
+	formatRefs := func(refs []referentials.PersonalRef) string {
+		parts := make([]string, len(refs))
+		for i, pr := range refs {
+			s := pr.Referent.String()
+			if pr.Effect != referentials.NEU {
+				s += "/" + pr.Effect.String()
+			}
+			parts[i] = s
 		}
-		parts[i] = s
+		return strings.Join(parts, "+")
 	}
-	joined := strings.Join(parts, "+")
+	joined := formatRefs(r.Refs)
 	if r.Category != nil {
 		joined = r.Category.String() + ":" + joined
 	}
 	label := "REF[" + joined + "]"
 	if r.Case != nil {
 		label += "-" + r.Case.String()
+	}
+	if r.Case2 != nil {
+		label += "-" + r.Case2.String()
+	}
+	if len(r.RefB) > 0 {
+		label += "-[" + formatRefs(r.RefB) + "]"
+	}
+	if r.RpvEssence {
+		label += "\\RPV"
 	}
 	return label
 }

@@ -126,13 +126,18 @@ func (c CarrierWord) Surface() string { return c.Text }
 func (CarrierWord) word()             {}
 
 // ReferentialWord wraps one or more personal references parsed from
-// a single referential cluster, optionally followed by a Vc case
-// vowel that scopes the entire reference.
+// a single referential cluster, optionally followed by a Vc case vowel
+// that scopes the entire reference. Per §4.6.1, the full surface shape
+// is [ë]C1 [Vc1] [w/y Vc2 [C2 [ë]]] with ultimate stress flipping
+// Essence from NRM to RPV.
 type ReferentialWord struct {
-	Text     string
-	Category *referentials.Category // nil if no category modifier
-	Refs     []referentials.PersonalRef
-	Case     *g.Case // nil when no trailing Vc was present
+	Text       string
+	Category   *referentials.Category // nil if no category modifier
+	Refs       []referentials.PersonalRef
+	Case       *g.Case // Vc1: case of Referential A; nil when no Vc at all
+	Case2      *g.Case // Vc2: case of Referential B, or stacked second case
+	RefB       []referentials.PersonalRef
+	RpvEssence bool // true when stress is ultimate (Representative Essence)
 }
 
 // CombinationRefWord is the richer referential shape that pairs a
@@ -245,20 +250,11 @@ func ClassifyWord(word string) WordToken {
 		return MultipleAffixWord{Text: word, Affixes: a}
 	}
 
-	// 5. Two-conjunct referential: C1-cluster + Vc-vowel.
-	if len(conjs) == 2 &&
-		surface.IsConsonantConjunct(conjs[0]) &&
-		surface.IsVowelConjunct(conjs[1]) {
-		if cat, refs, ok := referentials.DecomposeRefWithCategory(conjs[0]); ok {
-			if c, cok := parse.ParseCase(conjs[1]); cok {
-				return ReferentialWord{
-					Text:     word,
-					Category: cat,
-					Refs:     refs,
-					Case:     &c,
-				}
-			}
-		}
+	// 5. Single/dual referential per §4.6.1:
+	//    [ë]C1 Vc1 [w/y Vc2 [C2 [ë]]], with ultimate stress signalling
+	//    the RPV essence override.
+	if r, ok := tryReferential(word); ok {
+		return r
 	}
 
 	// 5b. Combination referential: [ë] C1 Vc Spec [VxCs...] [Vc2].
@@ -368,6 +364,82 @@ func hasDoubledLetter(s string) bool {
 		prev = r
 	}
 	return false
+}
+
+// tryReferential matches the Single/Dual Referential shape (§4.6.1):
+//
+//	[ë] C1 Vc1 [w/y Vc2 [C2 [ë]]]
+//
+// Ultimate stress maps to RPV essence. Returns ok=false when the
+// surface doesn't consume cleanly to this shape.
+func tryReferential(word string) (ReferentialWord, bool) {
+	bare, stress := surface.Strip(word)
+	conjs := surface.SplitConjuncts(bare)
+	if len(conjs) < 2 {
+		return ReferentialWord{}, false
+	}
+	i := 0
+	if conjs[i] == "ë" || conjs[i] == "äi" {
+		i++
+		if i+1 >= len(conjs) {
+			return ReferentialWord{}, false
+		}
+	}
+	c1 := conjs[i]
+	if !surface.IsConsonantConjunct(c1) {
+		return ReferentialWord{}, false
+	}
+	cat, refs, ok := referentials.DecomposeRefWithCategory(c1)
+	if !ok || len(refs) == 0 {
+		return ReferentialWord{}, false
+	}
+	i++
+	if i >= len(conjs) || !surface.IsVowelConjunct(conjs[i]) {
+		return ReferentialWord{}, false
+	}
+	caseA, caseAok := parse.ParseCase(conjs[i])
+	if !caseAok {
+		return ReferentialWord{}, false
+	}
+	i++
+
+	var case2 *g.Case
+	var refB []referentials.PersonalRef
+	if i < len(conjs) && (conjs[i] == "w" || conjs[i] == "y") {
+		i++
+		if i >= len(conjs) || !surface.IsVowelConjunct(conjs[i]) {
+			return ReferentialWord{}, false
+		}
+		c2v, c2ok := parse.ParseCase(conjs[i])
+		if !c2ok {
+			return ReferentialWord{}, false
+		}
+		case2 = &c2v
+		i++
+		if i < len(conjs) && surface.IsConsonantConjunct(conjs[i]) {
+			rs, dok := referentials.DecomposeRefCluster(conjs[i])
+			if !dok || len(rs) == 0 {
+				return ReferentialWord{}, false
+			}
+			refB = rs
+			i++
+			if i < len(conjs) && conjs[i] == "ë" {
+				i++
+			}
+		}
+	}
+	if i != len(conjs) {
+		return ReferentialWord{}, false
+	}
+	return ReferentialWord{
+		Text:       word,
+		Category:   cat,
+		Refs:       refs,
+		Case:       &caseA,
+		Case2:      case2,
+		RefB:       refB,
+		RpvEssence: stress == surface.Ultimate,
+	}, true
 }
 
 // tryCombinationRef matches the combination-referential shape

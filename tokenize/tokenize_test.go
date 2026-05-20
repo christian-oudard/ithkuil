@@ -142,8 +142,6 @@ func TestClassifyWord_Unknown(t *testing.T) {
 // Known divergences (not asserted here):
 //   - "adni'lö", "la'la" — both need the moved-glottal rule (§3.9.3.3
 //     SPECIAL NOTE) in our slot parser.
-//   - "layá", "miyüs" — our referential classifier rejects shapes
-//     longer than (C, Vc).
 //   - "çëhamala-lala" — sentence prefix on a concat-chain head; our
 //     concat detector parses the whole thing as one big formative.
 //   - "hrei" — was a standalone Mood/Case-Scope adjunct in earlier
@@ -192,6 +190,8 @@ func TestClassifyWord_IthkuilGlossCorpus(t *testing.T) {
 		{"are", singleAffix},         // V-C-V with VIIDom scope
 		{"xaheitr", multiAffix},      // multi-affix with Cz=h
 		{"xa'heitr", multiAffix},     // multi-affix with Cz='h (VSub)
+		{"layá", ref},                // 1m-THM-THM\RPV (Vc2 + RPV stress)
+		{"miyüs", ref},               // ma-AFF-DAT-2m (Vc2 + C2)
 		{"amlala-hamlala", concatenated},
 	}
 	typeName := func(w WordToken) string {
