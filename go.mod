@@ -2,7 +2,10 @@ module github.com/christian-oudard/ithkuil
 
 go 1.25.0
 
-require github.com/modelcontextprotocol/go-sdk v1.6.0
+require (
+	github.com/modelcontextprotocol/go-sdk v1.6.0
+	golang.org/x/term v0.36.0
+)
 
 require (
 	github.com/google/jsonschema-go v0.4.3 // indirect

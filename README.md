@@ -93,7 +93,7 @@ Install the CLIs to `$GOBIN` (typically `~/go/bin`, or `~/.local/bin` if you've 
 
 ```bash
 nix-shell                # Enter dev shell with go on PATH
-go install ./cmd/ithkuil ./cmd/ithkuil-mcp
+go install ./cmd/ithkuil ./cmd/ithkuil-mcp ./cmd/ithkuil-input
 ```
 
 Then `ithkuil 'Malëuţřait'` works from anywhere on PATH.
@@ -108,10 +108,11 @@ go run ./cmd/ithkuil 'Malëuţřait'
 
 ### ASCII Input Method
 
-`ithkuil-input` is a TUI for typing Ithkuil Unicode from ASCII keystrokes:
+`ithkuil-input` is a TUI for typing Ithkuil Unicode from ASCII keystrokes. Pending characters are shown dimmed until they resolve into a digraph or are broken by a different vowel:
 
 ```bash
-cabal run ithkuil-input
+ithkuil-input            # interactive raw-mode TUI
+echo 't,Maleeut,rqait' | ithkuil-input   # batch: ASCII in, Unicode out
 ```
 
 | | Char | ASCII | Char | ASCII | Char | ASCII | Char | ASCII | Char | ASCII |

@@ -8,7 +8,7 @@ Enter the dev shell first, then use `go` directly:
 
 ```bash
 nix-shell                # Provides go on PATH with CGO_ENABLED=0
-go install ./cmd/ithkuil ./cmd/ithkuil-mcp   # Drop binaries into $GOBIN
+go install ./cmd/ithkuil ./cmd/ithkuil-mcp ./cmd/ithkuil-input   # Drop binaries into $GOBIN
 go build ./...           # Build everything in place
 go test ./...            # Run the full test suite
 ```
@@ -45,6 +45,7 @@ Command-line entrypoints under `cmd/`:
 
 - `cmd/ithkuil/` - The main CLI. Subcommands: analyze, compose, diff, grammar, lexicon, validate. `main.go` dispatches; `flags.go` parses shared flags.
 - `cmd/ithkuil-mcp/` - Model Context Protocol server exposing the parser/glosser/lexicon as MCP tools and resources.
+- `cmd/ithkuil-input/` - Raw-mode TUI that types Ithkuil Unicode from ASCII digraphs (aa→ä, t,→ţ, sq→š, dz→ẓ). Pending chars are shown dim. Backed by `surface.InputState`; `surface.FromASCII` / `ToASCII` provide the batch transforms.
 
 ## Key Conventions
 
