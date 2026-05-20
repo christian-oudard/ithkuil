@@ -1,12 +1,16 @@
 // Package lexicon loads Ithkuil V4 roots and affixes from JSON and
-// exposes lookup by consonant form. Both data files live under data/
-// at the repo root (data/roots.json, data/affixes.json).
+// exposes lookup by consonant form. The canonical data files live
+// under data/ at the repo root and are also embedded into binaries
+// via the github.com/christian-oudard/ithkuil/data package — use
+// LoadDefault for the embedded copy or Load to read from disk.
 package lexicon
 
 import (
 	"encoding/json"
 	"fmt"
 	"os"
+
+	"github.com/christian-oudard/ithkuil/data"
 )
 
 // RootEntry pairs a root consonant cluster with its four-stem meaning.
@@ -37,30 +41,36 @@ type Lexicon struct {
 	Affixes map[string]AffixEntry
 }
 
+// LoadDefault returns the lexicon bundled with the binary via
+// //go:embed. Use Load to override with a different on-disk copy.
+func LoadDefault() (*Lexicon, error) {
+	roots, err := parseRoots(data.Roots)
+	if err != nil {
+		return nil, fmt.Errorf("embedded roots: %w", err)
+	}
+	affixes, err := parseAffixes(data.Affixes)
+	if err != nil {
+		return nil, fmt.Errorf("embedded affixes: %w", err)
+	}
+	return &Lexicon{Roots: roots, Affixes: affixes}, nil
+}
+
 // LoadRoots reads and parses a roots.json file.
 func LoadRoots(path string) (map[string]RootEntry, error) {
-	var entries []RootEntry
-	if err := readJSON(path, &entries); err != nil {
+	bytes, err := os.ReadFile(path)
+	if err != nil {
 		return nil, fmt.Errorf("load roots: %w", err)
 	}
-	m := make(map[string]RootEntry, len(entries))
-	for _, e := range entries {
-		m[e.Cr] = e
-	}
-	return m, nil
+	return parseRoots(bytes)
 }
 
 // LoadAffixes reads and parses an affixes.json file.
 func LoadAffixes(path string) (map[string]AffixEntry, error) {
-	var entries []AffixEntry
-	if err := readJSON(path, &entries); err != nil {
+	bytes, err := os.ReadFile(path)
+	if err != nil {
 		return nil, fmt.Errorf("load affixes: %w", err)
 	}
-	m := make(map[string]AffixEntry, len(entries))
-	for _, e := range entries {
-		m[e.Cs] = e
-	}
-	return m, nil
+	return parseAffixes(bytes)
 }
 
 // Load reads both lexicon files from the given paths.
@@ -91,10 +101,26 @@ func (r RootEntry) Stem(i int) string {
 	}
 }
 
-func readJSON(path string, v any) error {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return err
+func parseRoots(bytes []byte) (map[string]RootEntry, error) {
+	var entries []RootEntry
+	if err := json.Unmarshal(bytes, &entries); err != nil {
+		return nil, err
 	}
-	return json.Unmarshal(data, v)
+	m := make(map[string]RootEntry, len(entries))
+	for _, e := range entries {
+		m[e.Cr] = e
+	}
+	return m, nil
+}
+
+func parseAffixes(bytes []byte) (map[string]AffixEntry, error) {
+	var entries []AffixEntry
+	if err := json.Unmarshal(bytes, &entries); err != nil {
+		return nil, err
+	}
+	m := make(map[string]AffixEntry, len(entries))
+	for _, e := range entries {
+		m[e.Cs] = e
+	}
+	return m, nil
 }

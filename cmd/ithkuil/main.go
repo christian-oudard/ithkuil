@@ -86,20 +86,21 @@ Subcommands:
   help               Show this help.
 
 Global flags:
-  --lex / -l DIR     Lexicon directory (default ./data).
+  --lex / -l DIR     Override the embedded lexicon with one read from DIR
+                     (expects roots.json and affixes.json).
 `
 
 // extractLexFlag walks args for `--lex DIR` (or `-lex` or short `-l`)
-// and returns the value plus the args with the flag removed. Defaults
-// to "./data".
+// and returns the value plus the args with the flag removed. An empty
+// string means "use the embedded lexicon".
 func extractLexFlag(args []string) (string, []string) {
-	def := "./data"
+	dir := ""
 	out := make([]string, 0, len(args))
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "-l", "-lex", "--lex":
 			if i+1 < len(args) {
-				def = args[i+1]
+				dir = args[i+1]
 				i++
 				continue
 			}
@@ -107,17 +108,24 @@ func extractLexFlag(args []string) (string, []string) {
 			out = append(out, args[i])
 		}
 	}
-	return def, out
+	return dir, out
 }
 
-// loadLex returns the lexicon at the given directory, or nil on
-// failure (with a warning to stderr). Most subcommands tolerate a
-// nil lexicon and degrade their output accordingly.
+// loadLex returns the lexicon: the embedded copy when dir is empty,
+// otherwise read from dir/roots.json and dir/affixes.json. Nil on
+// failure (with a warning to stderr); most subcommands tolerate a nil
+// lexicon and degrade their output accordingly.
 func loadLex(dir string, stderr io.Writer) *lexicon.Lexicon {
-	lex, err := lexicon.Load(
-		filepath.Join(dir, "roots.json"),
-		filepath.Join(dir, "affixes.json"),
-	)
+	var lex *lexicon.Lexicon
+	var err error
+	if dir == "" {
+		lex, err = lexicon.LoadDefault()
+	} else {
+		lex, err = lexicon.Load(
+			filepath.Join(dir, "roots.json"),
+			filepath.Join(dir, "affixes.json"),
+		)
+	}
 	if err != nil {
 		fmt.Fprintf(stderr, "warning: lexicon load failed (%v); continuing without lexicon\n", err)
 		return nil

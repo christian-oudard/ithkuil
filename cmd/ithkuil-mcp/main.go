@@ -4,8 +4,9 @@
 //
 // Usage: ithkuil-mcp [-lex DIR] [-grammar DIR]
 //
-//	-lex DIR       Directory holding roots.json and affixes.json
-//	               (default ./data). Lexicon is loaded once at startup.
+//	-lex DIR       Override the embedded lexicon with one read from DIR
+//	               (expects roots.json and affixes.json). Loaded once at
+//	               startup.
 //	-grammar DIR   Directory holding grammar reference markdown
 //	               (default ./grammar_reference). Files are served as
 //	               MCP resources.
@@ -33,14 +34,20 @@ type server struct {
 }
 
 func main() {
-	lexDir := flag.String("lex", "./data", "directory with roots.json and affixes.json")
+	lexDir := flag.String("lex", "", "override the embedded lexicon with one read from DIR")
 	grammarDir := flag.String("grammar", "./grammar_reference", "directory with grammar reference markdown")
 	flag.Parse()
 
-	lex, err := lexicon.Load(
-		filepath.Join(*lexDir, "roots.json"),
-		filepath.Join(*lexDir, "affixes.json"),
-	)
+	var lex *lexicon.Lexicon
+	var err error
+	if *lexDir == "" {
+		lex, err = lexicon.LoadDefault()
+	} else {
+		lex, err = lexicon.Load(
+			filepath.Join(*lexDir, "roots.json"),
+			filepath.Join(*lexDir, "affixes.json"),
+		)
+	}
 	if err != nil {
 		log.Printf("warning: lexicon load failed (%v); roots/affixes lookups will return empty", err)
 		lex = &lexicon.Lexicon{}
