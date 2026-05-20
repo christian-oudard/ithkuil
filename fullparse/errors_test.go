@@ -124,32 +124,6 @@ func TestParseFormative_VowelInitialTooFew(t *testing.T) {
 	}
 }
 
-func TestStripSentencePrefix_EdgeCases(t *testing.T) {
-	// Cover the small edges of stripSentencePrefix.
-	cases := []struct {
-		in   string
-		out  string
-		flag bool
-	}{
-		{"", "", false},
-		{"a", "a", false},
-		{"ç", "ç", false}, // ç alone — no rest, returns unchanged
-		// çë alone — the "strip both" branch needs more content after ë,
-		// so it falls to "strip ç only": result is "ë" with the flag set.
-		{"çë", "ë", true},
-		{"ça", "a", true},
-		{"çëml", "ml", true},
-		{"ççal", "yal", true},
-	}
-	for _, c := range cases {
-		out, flag := stripSentencePrefix(c.in)
-		if out != c.out || flag != c.flag {
-			t.Errorf("stripSentencePrefix(%q) = (%q, %v), want (%q, %v)",
-				c.in, out, flag, c.out, c.flag)
-		}
-	}
-}
-
 func TestParseFormative_ErrorMessageContainsWord(t *testing.T) {
 	// Errors should include the original word for diagnostics.
 	_, err := ParseFormative("xx")

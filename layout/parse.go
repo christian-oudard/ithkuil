@@ -85,8 +85,14 @@ func stripSentencePrefix(word string) (string, bool) {
 func parseVowelInitial(l *Layout, conjs []string, i int) error {
 	vv := conjs[i]
 
-	// Special Vv selects an alternate root kind.
+	// Special Vv selects an alternate root kind. Shortcut forms can
+	// never combine with special-Vv (they encode SlotVI in the
+	// Cc+Vv pair, which is mutually exclusive with the Cs/Ref-root
+	// Vv markers).
 	if parse.IsSpecialVv(vv) {
+		if isShortcutCc(l.Cc) {
+			return fmt.Errorf("shortcut Cc %q cannot combine with special Vv %q", l.Cc, vv)
+		}
 		l.Vv = vv
 		i++
 		if i >= len(conjs) {
