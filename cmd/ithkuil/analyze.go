@@ -62,9 +62,11 @@ func cmdAnalyze(args []string, stdin io.Reader, stdout, stderr io.Writer, lexDir
 	fs.describe("Tokenize, parse, and gloss each word (detailed by default).", "TEXT...")
 	short := fs.Bool("short", "s", false, "one-line surface · type · gloss view")
 	polygraph := fs.Bool("polygraph", "p", false, "render as a multi-column slot polygraph")
+	color := fs.String("color", "", "auto", "MODE", "when to use ANSI color: auto|always|never")
 	if err := fs.Parse(args); err != nil {
 		return 2
 	}
+	setColorMode(stdout, *color)
 	rest := fs.Args()
 
 	text := strings.Join(rest, " ")
@@ -129,9 +131,9 @@ func renderModular(w io.Writer, mw tokenize.ModularWord) {
 	segs := inspect.SegmentsModular(mw.Text, mw.Modular, mw.MarksMood)
 	glossary := inspect.GlossaryModular(segs)
 
-	fmt.Fprintln(w, strings.ToLower(mw.Text))
+	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(mw.Text)))
 	iw := indented(w, "  ")
-	fmt.Fprintln(iw, "(modular adjunct)")
+	fmt.Fprintln(iw, stylize(ansiDim, "(modular adjunct)"))
 	fmt.Fprintln(iw)
 	renderPhoneticTable(iw, segs)
 	if len(glossary) > 0 {
@@ -148,13 +150,15 @@ func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss
 	segs := inspect.Segments(text, f, glosser.Lex)
 	glossary := inspect.Glossary(text, f, segs, glosser.Lex)
 
-	fmt.Fprintln(w, strings.ToLower(text))
+	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(text)))
 	iw := indented(w, "  ")
 	if head.Code != "" {
 		if head.Meaning != "" {
-			fmt.Fprintf(iw, "%s — %s\n", head.Code, head.Meaning)
+			fmt.Fprintf(iw, "%s — %s\n",
+				stylize(ansiCyan, head.Code),
+				stylize(ansiDim, head.Meaning))
 		} else {
-			fmt.Fprintf(iw, "%s\n", head.Code)
+			fmt.Fprintf(iw, "%s\n", stylize(ansiCyan, head.Code))
 		}
 	}
 	fmt.Fprintln(iw)
@@ -168,9 +172,9 @@ func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss
 // surface is hyphen-joined; we split on "-" to recover each piece's
 // individual surface for the phonetic table.
 func renderConcatenated(w io.Writer, cw tokenize.ConcatenatedFormativeWord, glosser gloss.Glosser) {
-	fmt.Fprintln(w, strings.ToLower(cw.Text))
+	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(cw.Text)))
 	iw := indented(w, "  ")
-	fmt.Fprintln(iw, "(concatenated chain)")
+	fmt.Fprintln(iw, stylize(ansiDim, "(concatenated chain)"))
 	parts := strings.Split(cw.Text, "-")
 	for i, f := range cw.Chain.Formatives() {
 		fmt.Fprintln(iw)
@@ -197,12 +201,16 @@ func renderPhoneticTable(w io.Writer, segs []inspect.Segment) {
 			slW = n
 		}
 	}
-	fmt.Fprintf(w, "%-*s  %-*s  %s\n",
-		phW, "PHONETIC", slW, "SLOT", "ENCODES")
+	fmt.Fprintf(w, "%s  %s  %s\n",
+		stylize(ansiDim, padRunes("PHONETIC", phW)),
+		stylize(ansiDim, padRunes("SLOT", slW)),
+		stylize(ansiDim, "ENCODES"))
 	for _, s := range segs {
 		encodes := strings.Join(s.Encodes, " / ")
-		fmt.Fprintf(w, "%-*s  %-*s  %s\n",
-			phW, padRunes(s.Chunk, phW), slW, padRunes(s.Slot, slW), encodes)
+		fmt.Fprintf(w, "%s  %s  %s\n",
+			stylize(ansiCyan, padRunes(s.Chunk, phW)),
+			stylize(ansiYellow, padRunes(s.Slot, slW)),
+			stylize(ansiMagenta, encodes))
 	}
 }
 
@@ -219,14 +227,17 @@ func renderGlossaryTable(w io.Writer, entries []inspect.GlossaryEntry) {
 			nameW = n
 		}
 	}
-	fmt.Fprintf(w, "%-*s  %-*s  %-*s  %s\n",
-		catW, "CATEGORY", codeW, "CODE", nameW, "NAME", "MEANING")
+	fmt.Fprintf(w, "%s  %s  %s  %s\n",
+		stylize(ansiDim, padRunes("CATEGORY", catW)),
+		stylize(ansiDim, padRunes("CODE", codeW)),
+		stylize(ansiDim, padRunes("NAME", nameW)),
+		stylize(ansiDim, "MEANING"))
 	for _, e := range entries {
-		fmt.Fprintf(w, "%-*s  %-*s  %-*s  %s\n",
-			catW, padRunes(e.Category, catW),
-			codeW, padRunes(e.Code, codeW),
-			nameW, padRunes(e.Name, nameW),
-			e.Meaning)
+		fmt.Fprintf(w, "%s  %s  %s  %s\n",
+			stylize(ansiDim, padRunes(e.Category, catW)),
+			stylize(ansiMagenta, padRunes(e.Code, codeW)),
+			stylize(ansiBold, padRunes(e.Name, nameW)),
+			stylize(ansiDim, e.Meaning))
 	}
 }
 

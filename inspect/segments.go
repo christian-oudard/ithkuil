@@ -298,7 +298,7 @@ func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segmen
 		segs = append(segs, Segment{
 			Raw:     strings.ToLower(ma.Prefix),
 			Slot:    "scope",
-			Encodes: []string{ma.Prefix},
+			Encodes: []string{prefixCode(ma.Prefix)},
 		})
 	}
 	for i, p := range ma.Pairs {
@@ -315,20 +315,21 @@ func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segmen
 		})
 	}
 	if ma.Final != "" {
-		// Lone final vowel (no pairs) = aspect modular. Otherwise
-		// the final is a V_H scope marker — we render the vowel
-		// itself as the code; the glossary explains its scope.
 		if len(ma.Pairs) == 0 {
+			// Lone vowel = aspect modular.
 			segs = append(segs, Segment{
 				Raw:     strings.ToLower(ma.Final),
 				Slot:    "Vn",
 				Encodes: []string{vnAsCode(ma.Final, "")},
 			})
 		} else {
+			// Vh — scope marker. Encode as a tag indicating reach
+			// (e.g. "→Case/Mood") instead of the bare letter,
+			// which would duplicate the PHONETIC column.
 			segs = append(segs, Segment{
 				Raw:     strings.ToLower(ma.Final),
 				Slot:    "Vh",
-				Encodes: []string{ma.Final},
+				Encodes: []string{vhCode(ma.Final)},
 			})
 		}
 	}
@@ -355,11 +356,11 @@ func GlossaryModular(segs []Segment) []GlossaryEntry {
 			case "scope":
 				cat = "scope"
 				name = ""
-				meaning = prefixMeaning(code)
+				meaning = prefixMeaning(s.Raw)
 			case "Vh":
 				cat = "scope"
 				name = ""
-				meaning = vhMeaning(code)
+				meaning = vhMeaning(s.Raw)
 			case "Cn₁", "Cn₂", "Cn₃":
 				if code == "CmAspect" || code == "CmOther" {
 					name = cmName(code)
@@ -372,6 +373,34 @@ func GlossaryModular(segs []Segment) []GlossaryEntry {
 		}
 	}
 	return out
+}
+
+// prefixCode returns a short tag for a w/y scope prefix that's
+// distinct from the bare letter shown in PHONETIC.
+func prefixCode(p string) string {
+	switch p {
+	case "w":
+		return "→parent"
+	case "y":
+		return "→concat"
+	}
+	return p
+}
+
+// vhCode returns a short tag for the Vh scope vowel indicating its
+// scope reach. Distinct from the bare letter shown in PHONETIC.
+func vhCode(v string) string {
+	switch v {
+	case "a":
+		return "→Case/Mood/Val/Illoc"
+	case "e":
+		return "→Case/Mood"
+	case "i", "u":
+		return "→formative"
+	case "o":
+		return "→formative+adjuncts"
+	}
+	return "→" + v
 }
 
 func prefixMeaning(p string) string {
