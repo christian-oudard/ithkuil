@@ -29,10 +29,26 @@ func TestParseModular_Valid(t *testing.T) {
 }
 
 func TestParseModular_Invalid(t *testing.T) {
-	for _, w := range []string{"", "h", "a", "ax", "axyz"} {
+	// A single vowel (e.g. "a") is now valid per §4.3 — a lone
+	// aspect modular adjunct. Truly invalid inputs: empty string,
+	// consonant-only forms (no Vn), and unrecognised conjunct
+	// patterns.
+	for _, w := range []string{"", "h", "ax", "axyz"} {
 		if _, err := ParseModular(w); err == nil {
 			t.Errorf("ParseModular(%q) succeeded, want error", w)
 		}
+	}
+}
+
+func TestParseModular_SingleVowel(t *testing.T) {
+	// Per §4.3, a single vowel is a lone-aspect modular: no prefix,
+	// no VnCn pairs, just a final vowel.
+	ma, err := ParseModular("a")
+	if err != nil {
+		t.Fatalf("ParseModular(%q): %v", "a", err)
+	}
+	if ma.Final != "a" || ma.Prefix != "" || len(ma.Pairs) != 0 {
+		t.Errorf("ParseModular(\"a\") = %+v, want lone final \"a\"", ma)
 	}
 }
 

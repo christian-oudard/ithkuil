@@ -190,11 +190,13 @@ func ClassifyWord(word string) WordToken {
 		}
 	}
 
-	// 4. Modular adjunct: 2-conjunct word, vowel + valid Cn.
-	if len(conjs) == 2 {
-		if m, err := parse.ParseModular(word); err == nil {
-			return ModularWord{Text: word, Modular: m}
-		}
+	// 4. Modular adjunct: 1-7 conjuncts of the shape
+	//    [w/y] (Vn Cn){0-3} V(final). Single-vowel words are valid as
+	//    "lone aspect" modulars (§4.3). Larger forms can have up to
+	//    three VnCn pairs plus a final vowel, plus an optional w/y
+	//    scope prefix.
+	if m, err := parse.ParseModular(word); err == nil {
+		return ModularWord{Text: word, Modular: m}
 	}
 
 	// 5. Two-conjunct referential: C1-cluster + Vc-vowel.

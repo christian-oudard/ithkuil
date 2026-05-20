@@ -283,6 +283,196 @@ func segmentsCrRoot(conjs []string, f g.Formative, cr g.CrRoot, lex *lexicon.Lex
 	return segs
 }
 
+// SegmentsModular returns one segment per phonetic chunk of a
+// modular adjunct: an optional w/y prefix, zero-to-three (Vn, Cn)
+// pairs, and an optional final vowel. The label "Vn₁/Cn₁/Vn₂/…"
+// makes each pair's slot inside the adjunct visible.
+func SegmentsModular(word string, ma g.ModularAdjunct) []Segment {
+	var segs []Segment
+	if ma.Prefix != "" {
+		segs = append(segs, Segment{
+			Raw:     strings.ToLower(ma.Prefix),
+			Slot:    "scope",
+			Encodes: []string{ma.Prefix},
+		})
+	}
+	for i, p := range ma.Pairs {
+		idx := subscript(i + 1)
+		segs = append(segs, Segment{
+			Raw:     strings.ToLower(p.Vn),
+			Slot:    fmt.Sprintf("Vn%s", idx),
+			Encodes: []string{vnAsCode(p.Vn, p.Cn)},
+		})
+		segs = append(segs, Segment{
+			Raw:     strings.ToLower(p.Cn),
+			Slot:    fmt.Sprintf("Cn%s", idx),
+			Encodes: []string{cnAsCode(p.Cn)},
+		})
+	}
+	if ma.Final != "" {
+		// Lone final vowel (no pairs) = aspect modular. Otherwise
+		// the final is a V_H scope marker — we render the vowel
+		// itself as the code; the glossary explains its scope.
+		if len(ma.Pairs) == 0 {
+			segs = append(segs, Segment{
+				Raw:     strings.ToLower(ma.Final),
+				Slot:    "Vn",
+				Encodes: []string{vnAsCode(ma.Final, "")},
+			})
+		} else {
+			segs = append(segs, Segment{
+				Raw:     strings.ToLower(ma.Final),
+				Slot:    "Vh",
+				Encodes: []string{ma.Final},
+			})
+		}
+	}
+	decorateHyphens(segs)
+	return segs
+}
+
+// GlossaryModular returns one row per unique code referenced by a
+// modular adjunct's segments. Scope-prefix and V_H rows get prose
+// meanings since they don't map to the standard grammar.Name table.
+func GlossaryModular(segs []Segment) []GlossaryEntry {
+	seen := map[string]bool{}
+	var out []GlossaryEntry
+	for _, s := range segs {
+		for _, code := range s.Encodes {
+			if code == "" || seen[s.Slot+"|"+code] {
+				continue
+			}
+			seen[s.Slot+"|"+code] = true
+			cat := s.Slot
+			name := g.Name(code)
+			meaning := g.Meaning(code)
+			switch s.Slot {
+			case "scope":
+				cat = "scope"
+				name = ""
+				meaning = prefixMeaning(code)
+			case "Vh":
+				cat = "scope"
+				name = ""
+				meaning = vhMeaning(code)
+			case "Cn₁", "Cn₂", "Cn₃":
+				if code == "CmAspect" || code == "CmOther" {
+					name = cmName(code)
+					meaning = cmMeaning(code)
+				}
+			}
+			out = append(out, GlossaryEntry{
+				Category: cat, Code: code, Name: name, Meaning: meaning,
+			})
+		}
+	}
+	return out
+}
+
+func prefixMeaning(p string) string {
+	switch p {
+	case "w":
+		return "applies to parent formative only"
+	case "y":
+		return "applies to concatenated formative only"
+	}
+	return ""
+}
+
+func cmName(code string) string {
+	switch code {
+	case "CmAspect":
+		return "Cm (n)"
+	case "CmOther":
+		return "Cm (ň)"
+	}
+	return ""
+}
+
+func cmMeaning(code string) string {
+	switch code {
+	case "CmAspect":
+		return "marks the previous Vn as an aspect"
+	case "CmOther":
+		return "marks the previous Vn as valence/phase/effect/level"
+	}
+	return ""
+}
+
+// vnAsCode tries to identify the grammatical category a modular Vn
+// encodes. We use the spec's pattern: Pattern-2 (Aspect) when Cn is
+// in {w, y, hw, hrw, hmw, hnw, hňw}; otherwise Pattern-1 (Valence/
+// Phase/Effect/Level depending on the vowel-series of Vn).
+func vnAsCode(vn, cn string) string {
+	if cn == "" || isAspectCn(cn) {
+		if t, _ := parse.ClassifyAffixVowel(vn); t == g.Type1Affix {
+			if a, ok := parse.ParseVnAspect(vn); ok {
+				return a.String()
+			}
+		}
+		if a, ok := parse.ParseVnAspect(vn); ok {
+			return a.String()
+		}
+		return "Aspect?"
+	}
+	if v, ok := parse.ParseVnValence(vn); ok {
+		return v.String()
+	}
+	if p, ok := parse.ParseVnPhase(vn); ok {
+		return p.String()
+	}
+	if e, ok := parse.ParseVnEffect(vn); ok {
+		return e.String()
+	}
+	if l, ok := parse.ParseVnLevel(vn); ok {
+		return l.String()
+	}
+	return "Vn?"
+}
+
+func isAspectCn(cn string) bool {
+	switch cn {
+	case "w", "y", "hw", "hrw", "hmw", "hnw", "hňw":
+		return true
+	}
+	return false
+}
+
+func cnAsCode(cn string) string {
+	if isAspectCn(cn) {
+		if m, ok := parse.ParseCnMoodP2(cn); ok {
+			return m.String()
+		}
+	}
+	if m, ok := parse.ParseCnMood(cn); ok {
+		return m.String()
+	}
+	if cs, ok := parse.ParseCnCaseScope(cn); ok {
+		return cs.String()
+	}
+	switch cn {
+	case "n":
+		return "CmAspect"
+	case "ň":
+		return "CmOther"
+	}
+	return "Cn?"
+}
+
+func vhMeaning(v string) string {
+	switch v {
+	case "a":
+		return "scope over Case/Mood + Validation+Illocution"
+	case "e":
+		return "scope over Case/Mood"
+	case "i", "u":
+		return "scope over formative only"
+	case "o":
+		return "scope over formative + adjacent affixual adjuncts"
+	}
+	return "V_H " + v
+}
+
 // segmentsCsRoot handles Cs-root formatives (§4.2): special Vv
 // (ëi/eë/ëu/oë) + Cs + Vr-as-affix-degree + Ca + post-Ca tail. The
 // "root" here is the affix cluster Cs at a specific degree.

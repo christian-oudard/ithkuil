@@ -6,6 +6,21 @@ import (
 	"github.com/coudard/ithkuil/go/grammar"
 )
 
+// isValidModularConsonant reports whether c is permitted as the
+// consonant of a modular-adjunct VnCn pair (Slot 2 Cn or Slot 3 Cm).
+// The set is h-prefixed (h/hl/hr/hm/hn/hň plus their aspect-pattern
+// twins hw/hrw/hmw/hnw/hňw), the lone w/y aspect-pattern markers,
+// and n/ň for Slot 3 Cm.
+func isValidModularConsonant(c string) bool {
+	switch c {
+	case "h", "hl", "hr", "hm", "hn", "hň",
+		"w", "y", "hw", "hrw", "hmw", "hnw", "hňw",
+		"n", "ň":
+		return true
+	}
+	return false
+}
+
 // ParseModular reads a modular adjunct from its conjunct list. The
 // general shape is [w/y] (Vn Cn){0-3} V(final).
 //
@@ -16,8 +31,8 @@ import (
 //     and a trailing final vowel.
 func ParseModular(word string) (grammar.ModularAdjunct, error) {
 	conjs := SplitConjuncts(word)
-	if len(conjs) < 2 {
-		return grammar.ModularAdjunct{}, fmt.Errorf("modular adjunct: expected at least 2 conjuncts, got %d", len(conjs))
+	if len(conjs) == 0 {
+		return grammar.ModularAdjunct{}, fmt.Errorf("modular adjunct: empty input")
 	}
 
 	// Optional w/y scope prefix.
@@ -32,13 +47,14 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 	}
 
 	// Walk Vn Cn pairs; whatever vowel comes alone at the end is the
-	// final aspect/scope vowel.
+	// final aspect/scope vowel. The first pair uses Cn (h-prefixed
+	// or w/y); subsequent pairs may use Cm (n/ň) per §4.3 Slot 3.
 	var pairs []grammar.VnCnPair
 	var final string
 	for i := 0; i < len(conjs); {
 		if i+1 < len(conjs) &&
 			IsVowelConjunct(conjs[i]) &&
-			IsValidCn(conjs[i+1]) {
+			isValidModularConsonant(conjs[i+1]) {
 			pairs = append(pairs, grammar.VnCnPair{Vn: conjs[i], Cn: conjs[i+1]})
 			i += 2
 			continue

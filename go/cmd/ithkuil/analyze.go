@@ -74,8 +74,27 @@ func renderDetailed(w io.Writer, t tokenize.WordToken, lex interface{}, glosser 
 		renderFormativeBlock(w, tt.Text, tt.Formative, glosser)
 	case tokenize.ConcatenatedFormativeWord:
 		renderConcatenated(w, tt, glosser)
+	case tokenize.ModularWord:
+		renderModular(w, tt)
 	default:
 		fmt.Fprintf(w, "%s  %s  %s\n", t.Surface(), inspect.Type(t), glosser.Token(t))
+	}
+}
+
+// renderModular prints the phonetic + glossary tables for a modular
+// adjunct: optional w/y prefix + 0-3 (Vn, Cn) pairs + optional final
+// vowel.
+func renderModular(w io.Writer, mw tokenize.ModularWord) {
+	segs := inspect.SegmentsModular(mw.Text, mw.Modular)
+	glossary := inspect.GlossaryModular(segs)
+
+	fmt.Fprintln(w, strings.ToLower(mw.Text))
+	fmt.Fprintln(w, "  (modular adjunct)")
+	fmt.Fprintln(w)
+	renderPhoneticTable(w, segs)
+	if len(glossary) > 0 {
+		fmt.Fprintln(w)
+		renderGlossaryTable(w, glossary)
 	}
 }
 

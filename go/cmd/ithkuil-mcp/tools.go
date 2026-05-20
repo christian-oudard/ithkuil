@@ -134,19 +134,34 @@ func (s *server) analyze(_ context.Context, _ *mcp.CallToolRequest, in analyzeIn
 			Type:    inspect.Type(t),
 			Gloss:   glosser.Token(t),
 		}
-		if fw, ok := t.(tokenize.FormativeWord); ok {
-			head := inspect.Headword(fw.Formative, s.lex)
+		switch tt := t.(type) {
+		case tokenize.FormativeWord:
+			head := inspect.Headword(tt.Formative, s.lex)
 			if head.Code != "" {
 				w.Root = &rootHead{Code: head.Code, Meaning: head.Meaning}
 			}
-			segs := inspect.Segments(fw.Text, fw.Formative, s.lex)
+			segs := inspect.Segments(tt.Text, tt.Formative, s.lex)
 			for _, sg := range segs {
 				w.Segments = append(w.Segments, segmentOut{
 					Chunk: sg.Chunk, Raw: sg.Raw, Slot: sg.Slot,
 					Encodes: sg.Encodes, Default: sg.Defaults, Elided: sg.Elided,
 				})
 			}
-			for _, ge := range inspect.Glossary(fw.Text, fw.Formative, segs, s.lex) {
+			for _, ge := range inspect.Glossary(tt.Text, tt.Formative, segs, s.lex) {
+				w.Glossary = append(w.Glossary, glossaryRow{
+					Category: ge.Category, Code: ge.Code,
+					Name: ge.Name, Meaning: ge.Meaning,
+				})
+			}
+		case tokenize.ModularWord:
+			segs := inspect.SegmentsModular(tt.Text, tt.Modular)
+			for _, sg := range segs {
+				w.Segments = append(w.Segments, segmentOut{
+					Chunk: sg.Chunk, Raw: sg.Raw, Slot: sg.Slot,
+					Encodes: sg.Encodes, Default: sg.Defaults, Elided: sg.Elided,
+				})
+			}
+			for _, ge := range inspect.GlossaryModular(segs) {
 				w.Glossary = append(w.Glossary, glossaryRow{
 					Category: ge.Category, Code: ge.Code,
 					Name: ge.Name, Meaning: ge.Meaning,
