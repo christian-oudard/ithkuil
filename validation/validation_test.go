@@ -221,6 +221,69 @@ func TestValidateClusterAt_Length(t *testing.T) {
 	}
 }
 
+func TestValidateClusterAt_Rule212_Triples(t *testing.T) {
+	// §2.12 triples — m + bilabial stop + indistinct follower.
+	for _, c := range []string{"mpf", "mpţ", "mbv", "mbḑ", "mbd"} {
+		r := ValidateClusterAt(Medial, c)
+		if r.Valid {
+			t.Errorf("expected %q to fail rule 2.12", c)
+			continue
+		}
+		found := false
+		for _, e := range r.Errors {
+			if e.Rule == "2.12" {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("expected %q to flag rule 2.12, got %v", c, r.Errors)
+		}
+	}
+	// "ngḑ" specifically prohibited; "nkţ" allowed.
+	if r := ValidateClusterAt(Medial, "ngḑ"); r.Valid {
+		t.Error("ngḑ should fail rule 2.12")
+	}
+	// nkţ is fine — but our existing pair checks may complain about
+	// other things, so test only that 2.12 doesn't fire.
+	for _, e := range ValidateClusterAt(Medial, "nkţ").Errors {
+		if e.Rule == "2.12" {
+			t.Errorf("nkţ should not trigger 2.12: %v", e)
+		}
+	}
+}
+
+func TestCheckProhibitedPair_Rule219(t *testing.T) {
+	// §2.19: final-h preceded by ļ/x/ç is prohibited. Some of these
+	// pairs also fail under other rules (xh under §2.17, çh under
+	// §2.10); we only require that they get rejected — the specific
+	// rule that catches them first is informational.
+	for _, a := range []rune{'ļ', 'x', 'ç'} {
+		rule, _ := CheckProhibitedPair(a, 'h')
+		if rule == "" {
+			t.Errorf("%s+h not flagged by any rule (expected at least §2.19)", string(a))
+		}
+	}
+	// ļ+h is the case §2.19 catches that nothing else does.
+	if rule, _ := CheckProhibitedPair('ļ', 'h'); rule != "2.19" {
+		t.Errorf("ļ+h: expected 2.19, got %q", rule)
+	}
+}
+
+func TestValidateClusterAt_Rule51_IntervocalicLam(t *testing.T) {
+	// §5.1: bare intervocalic -ļ- prohibited.
+	r := ValidateClusterAt(Medial, "ļ")
+	if r.Valid {
+		t.Error("intervocalic ļ alone should fail rule 5.1")
+	}
+	// Same letter in cluster is fine if not alone.
+	for _, e := range ValidateClusterAt(Medial, "pļ").Errors {
+		if e.Rule == "5.1" {
+			t.Errorf("pļ should not trigger 5.1: %v", e)
+		}
+	}
+}
+
 func TestValidateClusterAt_Final(t *testing.T) {
 	// w word-final → rule 4.1.
 	r := ValidateClusterAt(Final, "aw")

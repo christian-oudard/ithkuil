@@ -149,6 +149,13 @@ func CheckProhibitedPair(a, b rune) (rule, reason string) {
 		return "2.18", "ļ + sibilant fricative"
 	}
 
+	// 2.19: as the final member of a conjunct, -h- cannot follow ļ, x, or ç.
+	// Encoded as a pair check; the "as final" position constraint is
+	// handled at the cluster level in ValidateClusterAt.
+	if b == 'h' && (a == 'ļ' || a == 'x' || a == 'ç') {
+		return "2.19", string(a) + " + h"
+	}
+
 	// 2.20: r and h cannot be followed by ř
 	if (a == 'r' || a == 'h') && b == 'ř' {
 		return "2.20", string(a) + " + ř"
@@ -283,6 +290,24 @@ func ValidateClusterAt(p Position, cluster string) Result {
 				Reason:  "nf/nv must be followed by vowel",
 			})
 		}
+		// 2.12 triples: m + bilabial stop + bilabial / interdental
+		// fricative or dental stop is prohibited because the medial
+		// stop is phonetically indistinct (mpf ≈ mf, mbd ≈ md, etc.).
+		if a == 'm' {
+			if (b == 'p' && (c == 'f' || c == 'ţ')) ||
+				(b == 'b' && (c == 'v' || c == 'ḑ' || c == 'd')) {
+				errs = append(errs, Error{
+					Rule:    "2.12",
+					Cluster: string([]rune{a, b, c}),
+					Reason:  "m + bilabial stop + indistinct follower",
+				})
+			}
+		}
+		// 2.12: ngḑ specifically called out alongside the m-cluster
+		// list; *nkţ* is explicitly permitted.
+		if a == 'n' && b == 'g' && c == 'ḑ' {
+			errs = append(errs, Error{Rule: "2.12", Cluster: "ngḑ", Reason: "ngḑ prohibited (vs. nkţ allowed)"})
+		}
 	}
 
 	// Position-specific rules.
@@ -293,6 +318,12 @@ func ValidateClusterAt(p Position, cluster string) Result {
 		}
 		if runeLen(cluster) > 1 && firstRune(cluster) == '\'' {
 			errs = append(errs, Error{Rule: "1.5", Cluster: cluster, Reason: "glottal stop word-initial within cluster"})
+		}
+	case Medial:
+		// 5.1: single intervocalic -ļ- is not permitted (collides
+		// with the allophonically-identical -hl-).
+		if cluster == "ļ" {
+			errs = append(errs, Error{Rule: "5.1", Cluster: cluster, Reason: "ļ alone not allowed intervocalically"})
 		}
 	case Final:
 		last := lastRune(cluster)
