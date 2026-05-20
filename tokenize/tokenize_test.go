@@ -133,6 +133,103 @@ func TestClassifyWord_Unknown(t *testing.T) {
 	}
 }
 
+// TestClassifyWord_IthkuilGlossCorpus is a smoke test seeded with
+// example words from the Kotlin IthkuilGloss test suite (WordTests.kt).
+// We assert classifier types only — our gloss surface differs from
+// theirs so a literal port isn't useful, but the classifier should at
+// least agree on what kind of word each input is.
+//
+// Known divergences (not asserted here): "adni'lö", "la'la", "layá",
+// "miyüs", "äst", "hrei", "ţnaxekka", and "çëhamala-lala" (sentence
+// prefix on a concat chain) each round-trip differently from Kotlin
+// and would each need spec/lexicon investigation.
+func TestClassifyWord_IthkuilGlossCorpus(t *testing.T) {
+	type want int
+	const (
+		formative want = iota
+		concatenated
+		ref
+		combref
+		modular
+		bias
+		registerStart
+		carrier
+	)
+	cases := []struct {
+		word string
+		kind want
+	}{
+		{"yužgrá", formative},        // S3 verbal, **žgr** root
+		{"eolaleici", formative},     // S2 PRC nominal, **l** root
+		{"khe", ref},                 // Rdp/DET referential, ABS
+		{"lalu", formative},          // basic **l** + IND
+		{"ha", registerStart},        // DSV register open
+		{"pļļ", bias},                // CMD "Funny!"
+		{"çalal", formative},         // sentence prefix + **l**
+		{"çëlal", formative},         // sentence prefix (ëi form) + **l**
+		{"ççala", formative},         // sentence prefix + y shortcut
+		{"çwala", formative},         // sentence prefix + w shortcut
+		{"ihnú", modular},            // RCP.COU modular
+		{"lala'a", formative},        // glottalized PRN
+		{"wala'ana", formative},      // w-prefix, **l** + affix
+		{"ëilal", formative},         // Cs-root (D1, **l**)
+		{"oërmölá", formative},       // Cs-root CPT.DYN
+		{"oërmoulá", formative},      // Cs-root CPT.DYN.FNC
+		{"lála'a", formative},        // PRN + ANT (framed)
+		{"hnas", carrier},            // Naming carrier (cf. TestTokenize_CarrierForeign)
+		{"ţnaxeka", combref},         // [mi.BEN+2p] combination referential
+		{"amlala-hamlala", concatenated},
+	}
+	typeName := func(w WordToken) string {
+		switch w.(type) {
+		case FormativeWord:
+			return "FormativeWord"
+		case ConcatenatedFormativeWord:
+			return "ConcatenatedFormativeWord"
+		case ReferentialWord:
+			return "ReferentialWord"
+		case CombinationRefWord:
+			return "CombinationRefWord"
+		case ModularWord:
+			return "ModularWord"
+		case BiasWord:
+			return "BiasWord"
+		case RegisterStartWord:
+			return "RegisterStartWord"
+		case CarrierWord:
+			return "CarrierWord"
+		case UnknownWord:
+			return "UnknownWord"
+		}
+		return "?"
+	}
+	for _, c := range cases {
+		w := ClassifyWord(c.word)
+		matched := false
+		switch c.kind {
+		case formative:
+			_, matched = w.(FormativeWord)
+		case concatenated:
+			_, matched = w.(ConcatenatedFormativeWord)
+		case ref:
+			_, matched = w.(ReferentialWord)
+		case combref:
+			_, matched = w.(CombinationRefWord)
+		case modular:
+			_, matched = w.(ModularWord)
+		case bias:
+			_, matched = w.(BiasWord)
+		case registerStart:
+			_, matched = w.(RegisterStartWord)
+		case carrier:
+			_, matched = w.(CarrierWord)
+		}
+		if !matched {
+			t.Errorf("ClassifyWord(%q) = %s, want kind %d", c.word, typeName(w), c.kind)
+		}
+	}
+}
+
 func TestTokenize_CarrierForeign(t *testing.T) {
 	// "hnas John malá" — "hnas" is a Naming carrier, so "John" is
 	// foreign text. "malá" should still gloss normally.
