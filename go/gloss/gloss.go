@@ -32,6 +32,12 @@ type Glosser struct {
 // render their root as "(Cs)/degree" to distinguish them from regular
 // roots.
 func (gl *Glosser) Formative(f g.Formative) string {
+	if f.Root == nil {
+		panic("gloss: Formative.Root is nil")
+	}
+	if f.Final == nil {
+		panic("gloss: Formative.Final is nil")
+	}
 	parts := []string{
 		slotI(f.Concat),
 		gl.rootPrefix(f.Root),

@@ -35,7 +35,17 @@ func Formative(f g.Formative) string {
 
 // FormativeWithOpts renders a formative with the given options. See
 // Options for what each toggle controls.
+//
+// Panics if f.Root or f.Final is nil — the zero value Formative{} is
+// not a valid input. Construct via grammar.MinimalFormative or set
+// Root and Final explicitly.
 func FormativeWithOpts(f g.Formative, opts Options) string {
+	if f.Root == nil {
+		panic("render: Formative.Root is nil")
+	}
+	if f.Final == nil {
+		panic("render: Formative.Final is nil")
+	}
 	if opts.Shortcut && canUseShortcut(f) {
 		return renderShortcut(f)
 	}

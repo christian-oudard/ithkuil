@@ -6,6 +6,11 @@ package grammar
 // placement, §3.5.1 / §3.6.1 signals for Slot V presence, special Vv
 // markers for Cs/Ref roots) live in the render package.
 //
+// Invariants — Root and Final must be non-nil; every formative has a
+// root and a final case/illocution marker. The zero value
+// (Formative{}) is not a valid formative — use MinimalFormative as a
+// starting point. render and gloss panic on nil Root or nil Final.
+//
 // Concat is the optional concatenation status — nil for a standalone
 // formative; Type1 or Type2 for the corresponding chain position.
 //
