@@ -105,6 +105,15 @@ type Layout struct {
 	// case by re-adding the glottal.
 	MovedGlottal bool
 
+	// CnInCa is true when the §3.8.1.2 shortening rule has been
+	// applied: a Pattern-1 Mood/Case-Scope Cn (hl/hr/hm/hn/hň) has
+	// been written in the Ca slot in place of the default "l", and
+	// Slot VIII's Vn is implicitly MNO ("a"). Layer C populates
+	// Ca = "l" (default), Cn = the Pattern-1 cluster, Vn = "a" so
+	// Layer D can build the SlotVIII normally; the flag lets Render
+	// emit the shortcut form again.
+	CnInCa bool
+
 	// Stress is the prosodic stress observed (or to apply).
 	Stress surface.Stress
 }

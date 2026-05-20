@@ -33,13 +33,22 @@ func Render(l Layout) string {
 	if len(l.SlotV) > 0 {
 		ca = allomorph.GeminateCa(ca)
 	}
-	b.WriteString(ca)
+	// §3.8.1.2 shortcut: the Pattern-1 Cn cluster takes the Ca slot
+	// and Vn is elided. Layer C populated Ca/Vn/Cn with defaults so
+	// Layer D could decode normally; here we collapse them back.
+	if l.CnInCa {
+		b.WriteString(l.Cn)
+	} else {
+		b.WriteString(ca)
+	}
 	for _, a := range l.SlotVII {
 		b.WriteString(a.Vx)
 		b.WriteString(a.Cs)
 	}
-	b.WriteString(l.Vn)
-	b.WriteString(l.Cn)
+	if !l.CnInCa {
+		b.WriteString(l.Vn)
+		b.WriteString(l.Cn)
+	}
 	b.WriteString(l.Vc)
 
 	body := surface.Apply(b.String(), l.Stress)

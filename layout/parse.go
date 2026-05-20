@@ -219,8 +219,29 @@ func parseFromCa(l *Layout, conjs []string, i int, allowSlotV bool) error {
 	if !surface.IsConsonantConjunct(conjs[i]) {
 		return fmt.Errorf("expected Ca consonant cluster, got %q", conjs[i])
 	}
+	// §3.8.1.2 shortcut: a Pattern-1 Cn cluster in the Ca slot
+	// (hl/hr/hm/hn/hň, but not the FAC/CCN "h") means Vn=MNO and
+	// Ca=default-l were both elided. The cluster is the Cn affix.
+	if isMovedCn(conjs[i]) {
+		l.Ca = "l"
+		l.Vn = "a"
+		l.Cn = conjs[i]
+		l.CnInCa = true
+		return parseAfterCa(l, conjs, i+1)
+	}
 	l.Ca = conjs[i]
 	return parseAfterCa(l, conjs, i+1)
+}
+
+// isMovedCn reports whether c is a Pattern-1 Cn consonant cluster
+// that has been moved into the Ca slot per §3.8.1.2. FAC/CCN ("h") is
+// excluded: it elides instead of being moved.
+func isMovedCn(c string) bool {
+	switch c {
+	case "hl", "hr", "hm", "hn", "hň":
+		return true
+	}
+	return false
 }
 
 // parseAfterCa decodes the conjuncts that follow Ca: zero-or-more

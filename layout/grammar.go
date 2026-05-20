@@ -281,7 +281,36 @@ func FromGrammar(f g.Formative, opts Options) Layout {
 	l.Vc, l.Stress = slotIXFromFinal(f.Final)
 
 	applyDefaultElisions(&l, f)
+	maybeMoveCnToCa(&l, f)
 	return l
+}
+
+// maybeMoveCnToCa applies the §3.8.1.2 shortening: when Slot VIII has
+// default MNO Valence with a Pattern-1 non-FAC Mood/Case-Scope, and
+// Slot VI is default ("l"), the Cn consonant takes the Ca position and
+// Vn/Cn elide. Render reads CnInCa to emit the shortcut form.
+//
+// We only apply the shortcut when the resulting body would still carry
+// enough syllables to host the stress diacritic — dropping below that
+// minimum would render the formative ambiguous against the
+// monosyllabic-default rule.
+func maybeMoveCnToCa(l *Layout, f g.Formative) {
+	if len(f.SlotV) > 0 || l.Ca != "l" || f.SlotVI != g.DefaultSlotVI {
+		return
+	}
+	v, ok := f.SlotVIII.(g.VnCnValence)
+	if !ok || v.Valence != g.MNO {
+		return
+	}
+	if !isMovedCn(l.Cn) {
+		return
+	}
+	// CnInCa elides the Vn vowel — confirm the body still has room
+	// for the stress diacritic afterwards.
+	if vowelCount(l)-1 < requiredSyllables(f.Final) {
+		return
+	}
+	l.CnInCa = true
 }
 
 // Options controls orthographic choices that don't affect the grammar.

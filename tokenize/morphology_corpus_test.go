@@ -192,7 +192,9 @@ func TestMorphologyCorpus_Sec5_8_CHC_Sing(t *testing.T) {
 			"ellyahru", "ellyuleeihru",
 			"Ellyula", "ro", "Ellyulerza", "Ellyalerza",
 		},
-		unknown: []string{"Yubskirfui", "ellyahru", "ellyuhru"},
+		// ellyahru and ellyuhru previously fell through; both classify
+		// now via the §3.8.1.2 Cn-in-Ca shortcut (hr in the Ca slot).
+		unknown: []string{"Yubskirfui"},
 	})
 }
 
