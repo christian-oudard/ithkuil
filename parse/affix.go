@@ -73,13 +73,6 @@ func ClassifyAffixVowel(v string) (grammar.AffixType, int) {
 	return grammar.Type1Affix, 0
 }
 
-// IsVowelConjunct reports whether a conjunct begins with a vowel.
-// Re-exported from surface for backward compat.
-func IsVowelConjunct(s string) bool { return surface.IsVowelConjunct(s) }
-
-// IsConsonantConjunct reports whether a conjunct begins with a
-// non-vowel. Re-exported from surface for backward compat.
-func IsConsonantConjunct(s string) bool { return surface.IsConsonantConjunct(s) }
 
 // ParseAffixes parses a sub-string of a formative into a list of affixes.
 // Both orderings work:
@@ -92,7 +85,7 @@ func ParseAffixes(text string) []grammar.Affix {
 	if text == "" {
 		return nil
 	}
-	return pairConjunctAffixes(SplitConjuncts(text))
+	return pairConjunctAffixes(surface.SplitConjuncts(text))
 }
 
 func pairConjunctAffixes(parts []string) []grammar.Affix {
@@ -101,11 +94,11 @@ func pairConjunctAffixes(parts []string) []grammar.Affix {
 	for i+1 < len(parts) {
 		a, b := parts[i], parts[i+1]
 		switch {
-		case IsVowelConjunct(a) && IsConsonantConjunct(b):
+		case surface.IsVowelConjunct(a) && surface.IsConsonantConjunct(b):
 			t, d := ClassifyAffixVowel(a)
 			out = append(out, grammar.Affix{Type: t, Degree: d, Consonant: b})
 			i += 2
-		case IsConsonantConjunct(a) && IsVowelConjunct(b):
+		case surface.IsConsonantConjunct(a) && surface.IsVowelConjunct(b):
 			t, d := ClassifyAffixVowel(b)
 			out = append(out, grammar.Affix{Type: t, Degree: d, Consonant: a})
 			i += 2

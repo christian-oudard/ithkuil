@@ -13,6 +13,7 @@ import (
 	"github.com/christian-oudard/ithkuil/allomorph"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
+	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/phonology"
 )
 
@@ -295,12 +296,12 @@ func requiredSyllables(f g.Final) int {
 
 func countVowelConjuncts(s string) int {
 	n := 0
-	for _, c := range parse.SplitConjuncts(s) {
+	for _, c := range surface.SplitConjuncts(s) {
 		if c == "" {
 			continue
 		}
 		r, _ := utf8.DecodeRuneInString(c)
-		if parse.IsVowelChar(r) {
+		if surface.IsVowel(r) {
 			n++
 		}
 	}
@@ -437,7 +438,7 @@ func sentencePrefix(body string) string {
 		return body
 	}
 	first, _ := utf8.DecodeRuneInString(body)
-	if parse.IsVowelChar(first) {
+	if surface.IsVowel(first) {
 		return "ç" + body
 	}
 	return "çë" + body

@@ -1,24 +1,20 @@
 package parse
 
-// Stress is an orthographic observation about a surface word: where
-// the acute/circumflex diacritic falls (or its absence).
-//
-// This type and its constants mirror surface.Stress (Layer A of the
-// parse stack). They live here because fullparse and the slot-level
-// parsers still pass Stress through their signatures; new code should
-// prefer surface.Strip / surface.Stress directly.
-type Stress int
+import "github.com/christian-oudard/ithkuil/surface"
+
+// Stress is a type alias for surface.Stress. The orthographic
+// observation lives at the surface layer (where the bytes of the
+// stress mark are interpreted); this alias keeps fullparse and the
+// slot-level parsers compiling against the existing type name while
+// new code should reach for surface.Stress directly.
+type Stress = surface.Stress
 
 const (
-	Monosyllabic Stress = iota
-	Penultimate
-	Ultimate
-	Antepenultimate
+	Monosyllabic    = surface.Monosyllabic
+	Penultimate     = surface.Penultimate
+	Ultimate        = surface.Ultimate
+	Antepenultimate = surface.Antepenultimate
 )
-
-func (s Stress) String() string {
-	return [...]string{"Monosyllabic", "Penultimate", "Ultimate", "Antepenultimate"}[s]
-}
 
 // stressedVowels are the acute (á é í ó ú) and circumflex (â ê ô û)
 // forms — these mark the stressed syllable. The set is asymmetric

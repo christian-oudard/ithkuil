@@ -89,3 +89,30 @@ func IsConsonantConjunct(s string) bool {
 	r, _ := utf8.DecodeRuneInString(s)
 	return !IsVowel(r)
 }
+
+// MergeGlottalVowels collapses V-'-V triples back into a single
+// conjunct of the form "V'V". SplitConjuncts treats the glottal
+// stop as a non-vowel (it isn't in the vowel set), which would
+// split glottalized case vowels like "i'a" into three conjuncts.
+// Callers that consume the conjunct list as slot-level chunks
+// need them re-merged so case lookup (LOC = "i'a") works.
+//
+// Leading or trailing glottals without a vowel on both sides are
+// left alone.
+func MergeGlottalVowels(conjs []string) []string {
+	out := make([]string, 0, len(conjs))
+	i := 0
+	for i < len(conjs) {
+		if i+2 < len(conjs) &&
+			IsVowelConjunct(conjs[i]) &&
+			conjs[i+1] == "'" &&
+			IsVowelConjunct(conjs[i+2]) {
+			out = append(out, conjs[i]+"'"+conjs[i+2])
+			i += 3
+		} else {
+			out = append(out, conjs[i])
+			i++
+		}
+	}
+	return out
+}

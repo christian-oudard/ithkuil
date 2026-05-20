@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/surface"
 )
 
 // ParseSingleAffix reads a single-affix adjunct word: one Vx-Cs pair,
@@ -11,15 +12,15 @@ import (
 // The Cs-Vx ordering is also accepted for compatibility with the
 // older affix-pair form.
 func ParseSingleAffix(word string) (grammar.SingleAffixAdjunct, error) {
-	conjs := SplitConjuncts(word)
+	conjs := surface.SplitConjuncts(word)
 	var a grammar.SingleAffixAdjunct
 	switch len(conjs) {
 	case 2:
 		x, y := conjs[0], conjs[1]
 		switch {
-		case IsVowelConjunct(x) && IsConsonantConjunct(y):
+		case surface.IsVowelConjunct(x) && surface.IsConsonantConjunct(y):
 			a = grammar.SingleAffixAdjunct{Vx: x, Cs: y}
-		case IsConsonantConjunct(x) && IsVowelConjunct(y):
+		case surface.IsConsonantConjunct(x) && surface.IsVowelConjunct(y):
 			a = grammar.SingleAffixAdjunct{Vx: y, Cs: x}
 		default:
 			return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: %q + %q is not a vowel/consonant pair", x, y)
@@ -27,7 +28,7 @@ func ParseSingleAffix(word string) (grammar.SingleAffixAdjunct, error) {
 	case 3:
 		// Vx-Cs-Vs form: vowel, consonant, vowel.
 		x, y, z := conjs[0], conjs[1], conjs[2]
-		if !(IsVowelConjunct(x) && IsConsonantConjunct(y) && IsVowelConjunct(z)) {
+		if !(surface.IsVowelConjunct(x) && surface.IsConsonantConjunct(y) && surface.IsVowelConjunct(z)) {
 			return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: %q+%q+%q doesn't match Vx-Cs-Vs", x, y, z)
 		}
 		a = grammar.SingleAffixAdjunct{Vx: x, Cs: y, Vs: z}
@@ -62,7 +63,7 @@ func isCzConsonant(c string) bool {
 // "xaheitre" → first=(x, a), Cz=h, more=[(ei, tr)], Vz="e"
 // "xa'heitr" → first=(x, a), Cz='h, more=[(ei, tr)], Vz=""
 func ParseMultipleAffix(word string) (grammar.MultipleAffixAdjunct, error) {
-	conjs := SplitConjuncts(word)
+	conjs := surface.SplitConjuncts(word)
 	// Strip optional leading "ë" prefix.
 	if len(conjs) > 0 && conjs[0] == "ë" {
 		conjs = conjs[1:]
@@ -71,7 +72,7 @@ func ParseMultipleAffix(word string) (grammar.MultipleAffixAdjunct, error) {
 		return grammar.MultipleAffixAdjunct{}, fmt.Errorf("multiple-affix adjunct: expected ≥4 conjuncts after ë-prefix, got %d", len(conjs))
 	}
 	cs, vx, cz := conjs[0], conjs[1], conjs[2]
-	if !IsConsonantConjunct(cs) || !IsVowelConjunct(vx) {
+	if !surface.IsConsonantConjunct(cs) || !surface.IsVowelConjunct(vx) {
 		return grammar.MultipleAffixAdjunct{}, fmt.Errorf("multiple-affix adjunct: first pair %q+%q not Cs+Vx", cs, vx)
 	}
 	if !isCzConsonant(cz) {
@@ -84,14 +85,14 @@ func ParseMultipleAffix(word string) (grammar.MultipleAffixAdjunct, error) {
 	var vz string
 	for i := 0; i < len(rest); {
 		if i+1 < len(rest) &&
-			IsVowelConjunct(rest[i]) &&
-			IsConsonantConjunct(rest[i+1]) {
+			surface.IsVowelConjunct(rest[i]) &&
+			surface.IsConsonantConjunct(rest[i+1]) {
 			more = append(more, grammar.AffixPair{Vx: rest[i], Cs: rest[i+1]})
 			i += 2
 			continue
 		}
 		// Trailing vowel (Vz).
-		if i == len(rest)-1 && IsVowelConjunct(rest[i]) {
+		if i == len(rest)-1 && surface.IsVowelConjunct(rest[i]) {
 			vz = rest[i]
 			i++
 			continue

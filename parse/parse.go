@@ -1,5 +1,5 @@
 // Package parse contains the primitives for segmenting Ithkuil text into
-// morphological pieces. SplitConjuncts is the entry point that every higher
+// morphological pieces. surface.SplitConjuncts is the entry point that every higher
 // layer of parsing builds on; per-slot parsers (ParseSlotII, …) decode
 // individual vowel/consonant conjuncts into grammar values.
 package parse
@@ -9,43 +9,8 @@ import (
 
 	"github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/surface"
 )
 
-// IsVowelChar reports whether r is a vowel character. Re-exported
-// from the surface package; new code should call surface.IsVowel.
-func IsVowelChar(r rune) bool { return surface.IsVowel(r) }
-
-// SplitConjuncts segments a word into alternating runs of consonant
-// and vowel characters. Re-exported from the surface package; new
-// code should call surface.SplitConjuncts.
-func SplitConjuncts(s string) []string { return surface.SplitConjuncts(s) }
-
-// MergeGlottalVowels collapses V-'-V triples back into a single conjunct
-// of the form "V'V". SplitConjuncts treats the glottal stop as a
-// consonant (it isn't in the vowel-character set), which would split
-// glottalized case vowels like "i'a" into three conjuncts. Higher-level
-// parsers need them re-merged so case lookup (LOC = "i'a") works.
-//
-// Leading or trailing glottals without a vowel on both sides are left
-// alone.
-func MergeGlottalVowels(conjs []string) []string {
-	out := make([]string, 0, len(conjs))
-	i := 0
-	for i < len(conjs) {
-		if i+2 < len(conjs) &&
-			IsVowelConjunct(conjs[i]) &&
-			conjs[i+1] == "'" &&
-			IsVowelConjunct(conjs[i+2]) {
-			out = append(out, conjs[i]+"'"+conjs[i+2])
-			i += 3
-		} else {
-			out = append(out, conjs[i])
-			i++
-		}
-	}
-	return out
-}
 
 // accentMap strips stress and hiatus marks for parsing. Acute accents map
 // to the plain vowel (á→a); circumflex maps to the umlauted variant

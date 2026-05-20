@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/surface"
 )
 
 func TestSplitConjuncts(t *testing.T) {
@@ -19,9 +20,9 @@ func TestSplitConjuncts(t *testing.T) {
 		{"Malëuţřait", []string{"M", "a", "l", "ëu", "ţř", "ai", "t"}},
 	}
 	for _, c := range cases {
-		got := SplitConjuncts(c.in)
+		got := surface.SplitConjuncts(c.in)
 		if !reflect.DeepEqual(got, c.want) {
-			t.Errorf("SplitConjuncts(%q) = %#v, want %#v", c.in, got, c.want)
+			t.Errorf("surface.SplitConjuncts(%q) = %#v, want %#v", c.in, got, c.want)
 		}
 	}
 }
@@ -112,13 +113,13 @@ func TestParseSlotIV(t *testing.T) {
 
 func TestIsVowelChar(t *testing.T) {
 	for _, r := range "aäeëiïoöuü" {
-		if !IsVowelChar(r) {
-			t.Errorf("IsVowelChar(%q) = false, want true", r)
+		if !surface.IsVowel(r) {
+			t.Errorf("surface.IsVowel(%q) = false, want true", r)
 		}
 	}
 	for _, r := range "mtkpřţ'" {
-		if IsVowelChar(r) {
-			t.Errorf("IsVowelChar(%q) = true, want false", r)
+		if surface.IsVowel(r) {
+			t.Errorf("surface.IsVowel(%q) = true, want false", r)
 		}
 	}
 }

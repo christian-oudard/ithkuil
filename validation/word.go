@@ -3,7 +3,7 @@ package validation
 import (
 	"unicode/utf8"
 
-	"github.com/christian-oudard/ithkuil/parse"
+	"github.com/christian-oudard/ithkuil/surface"
 )
 
 // ValidateWord runs the full battery of phonotactic checks on a single
@@ -30,13 +30,13 @@ func ValidateWord(word string) Result {
 
 	// Walk conjuncts, classifying each as a consonant cluster or vowel
 	// sequence and tracking position.
-	conjs := parse.SplitConjuncts(word)
+	conjs := surface.SplitConjuncts(word)
 	for i, c := range conjs {
 		if c == "" {
 			continue
 		}
 		firstRune, _ := utf8.DecodeRuneInString(c)
-		if parse.IsVowelChar(firstRune) {
+		if surface.IsVowel(firstRune) {
 			res := ValidateVowelSequence(c)
 			if !res.Valid {
 				errs = append(errs, res.Errors...)

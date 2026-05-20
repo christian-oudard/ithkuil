@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/surface"
 )
 
 // isValidModularConsonant reports whether c is permitted as the
@@ -30,7 +31,7 @@ func isValidModularConsonant(c string) bool {
 //   - "[w/y] Vn Cn ... V" — full form with prefix, up to 3 pairs,
 //     and a trailing final vowel.
 func ParseModular(word string) (grammar.ModularAdjunct, error) {
-	conjs := SplitConjuncts(word)
+	conjs := surface.SplitConjuncts(word)
 	if len(conjs) == 0 {
 		return grammar.ModularAdjunct{}, fmt.Errorf("modular adjunct: empty input")
 	}
@@ -53,13 +54,13 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 	var final string
 	for i := 0; i < len(conjs); {
 		if i+1 < len(conjs) &&
-			IsVowelConjunct(conjs[i]) &&
+			surface.IsVowelConjunct(conjs[i]) &&
 			isValidModularConsonant(conjs[i+1]) {
 			pairs = append(pairs, grammar.VnCnPair{Vn: conjs[i], Cn: conjs[i+1]})
 			i += 2
 			continue
 		}
-		if i == len(conjs)-1 && IsVowelConjunct(conjs[i]) {
+		if i == len(conjs)-1 && surface.IsVowelConjunct(conjs[i]) {
 			final = conjs[i]
 			i++
 			continue

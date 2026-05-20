@@ -96,7 +96,7 @@ func Headword(f g.Formative, lex *lexicon.Lexicon) RootHead {
 // hr/hn) are recognized when the conjuncts don't begin where the
 // parser says the root starts.
 func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
-	conjs := parse.SplitConjuncts(word)
+	conjs := surface.SplitConjuncts(word)
 	if len(conjs) == 0 {
 		return nil
 	}
@@ -122,7 +122,7 @@ func segmentsCrRoot(conjs []string, f g.Formative, cr g.CrRoot, lex *lexicon.Lex
 	// a Cc prefix (h-, hw-, w-, y-, hl-, hm-, hr-, hn-). For these
 	// forms Vr is elided and Ca is encoded in the (Cc, Vv) pair, so
 	// the table after Cr skips straight to Slot V/VII affixes.
-	if parse.IsConsonantConjunct(conjs[0]) && strings.ToLower(conjs[0]) != rootLower {
+	if surface.IsConsonantConjunct(conjs[0]) && strings.ToLower(conjs[0]) != rootLower {
 		segs = append(segs, Segment{
 			Raw:     strings.ToLower(conjs[0]),
 			Slot:    "Cc",
@@ -135,7 +135,7 @@ func segmentsCrRoot(conjs []string, f g.Formative, cr g.CrRoot, lex *lexicon.Lex
 	// Slot II (Vv) — explicit when vowel-initial (at position i) or
 	// elided otherwise.
 	stemVer := []string{cr.Stem.String(), cr.Version.String()}
-	if i < len(conjs) && parse.IsVowelConjunct(conjs[i]) {
+	if i < len(conjs) && surface.IsVowelConjunct(conjs[i]) {
 		segs = append(segs, Segment{
 			Raw:      strings.ToLower(conjs[i]),
 			Slot:     "Vv",
@@ -166,7 +166,7 @@ func segmentsCrRoot(conjs []string, f g.Formative, cr g.CrRoot, lex *lexicon.Lex
 	// Slot IV (Vr) — elided for Slot I shortcut forms (Vr defaults
 	// to STA/BSC/EXS, encoded into the Cc choice instead).
 	if !shortcut {
-		if i < len(conjs) && parse.IsVowelConjunct(conjs[i]) {
+		if i < len(conjs) && surface.IsVowelConjunct(conjs[i]) {
 			segs = append(segs, Segment{
 				Raw:      strings.ToLower(conjs[i]),
 				Slot:     "Vr",
@@ -204,7 +204,7 @@ func segmentsCrRoot(conjs []string, f g.Formative, cr g.CrRoot, lex *lexicon.Lex
 
 	// Slot VI (Ca) — elided for shortcut forms (Ca derived from
 	// the Cc+Vv pair). For regular forms, the next conjunct is Ca.
-	if !shortcut && i < len(conjs) && parse.IsConsonantConjunct(conjs[i]) {
+	if !shortcut && i < len(conjs) && surface.IsConsonantConjunct(conjs[i]) {
 		segs = append(segs, Segment{
 			Raw:      strings.ToLower(conjs[i]),
 			Slot:     "Ca",
@@ -242,7 +242,7 @@ func segmentsCrRoot(conjs []string, f g.Formative, cr g.CrRoot, lex *lexicon.Lex
 	// Slot VIII (VnCn) — handled as a single pair if remaining
 	// conjuncts look like one.
 	if f.SlotVIII != nil {
-		if i < len(conjs) && parse.IsVowelConjunct(conjs[i]) {
+		if i < len(conjs) && surface.IsVowelConjunct(conjs[i]) {
 			segs = append(segs, Segment{
 				Raw:     strings.ToLower(conjs[i]),
 				Slot:    "Vn",
@@ -250,7 +250,7 @@ func segmentsCrRoot(conjs []string, f g.Formative, cr g.CrRoot, lex *lexicon.Lex
 			})
 			i++
 		}
-		if i < len(conjs) && parse.IsConsonantConjunct(conjs[i]) {
+		if i < len(conjs) && surface.IsConsonantConjunct(conjs[i]) {
 			segs = append(segs, Segment{
 				Raw:     strings.ToLower(conjs[i]),
 				Slot:    "Cn",
@@ -262,7 +262,7 @@ func segmentsCrRoot(conjs []string, f g.Formative, cr g.CrRoot, lex *lexicon.Lex
 
 	// Slot IX (Vc or Vk).
 	slot, codes, isDefault := slotIXLabelCodes(f.Final)
-	if i < len(conjs) && parse.IsVowelConjunct(conjs[i]) {
+	if i < len(conjs) && surface.IsVowelConjunct(conjs[i]) {
 		segs = append(segs, Segment{
 			Raw:      strings.ToLower(conjs[i]),
 			Slot:     slot,
@@ -636,7 +636,7 @@ func postCa(segs *[]Segment, conjs []string, i int, f g.Formative, lex *lexicon.
 		i++
 	}
 	if f.SlotVIII != nil {
-		if i < len(conjs) && parse.IsVowelConjunct(conjs[i]) {
+		if i < len(conjs) && surface.IsVowelConjunct(conjs[i]) {
 			*segs = append(*segs, Segment{
 				Raw:     strings.ToLower(conjs[i]),
 				Slot:    "Vn",
@@ -644,7 +644,7 @@ func postCa(segs *[]Segment, conjs []string, i int, f g.Formative, lex *lexicon.
 			})
 			i++
 		}
-		if i < len(conjs) && parse.IsConsonantConjunct(conjs[i]) {
+		if i < len(conjs) && surface.IsConsonantConjunct(conjs[i]) {
 			*segs = append(*segs, Segment{
 				Raw:     strings.ToLower(conjs[i]),
 				Slot:    "Cn",
@@ -654,7 +654,7 @@ func postCa(segs *[]Segment, conjs []string, i int, f g.Formative, lex *lexicon.
 		}
 	}
 	slot, codes, isDefault := slotIXLabelCodes(f.Final)
-	if i < len(conjs) && parse.IsVowelConjunct(conjs[i]) {
+	if i < len(conjs) && surface.IsVowelConjunct(conjs[i]) {
 		*segs = append(*segs, Segment{
 			Raw:      strings.ToLower(conjs[i]),
 			Slot:     slot,

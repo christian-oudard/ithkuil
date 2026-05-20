@@ -4,6 +4,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/christian-oudard/ithkuil/parse"
+	"github.com/christian-oudard/ithkuil/surface"
 )
 
 // StressError categorizes ways a stress mark can be wrong.
@@ -39,14 +40,14 @@ func ValidateStress(word string) (parse.Stress, error) {
 			accentCount++
 		}
 	}
-	conjs := parse.SplitConjuncts(word)
+	conjs := surface.SplitConjuncts(word)
 	syllables := 0
 	for _, c := range conjs {
 		if c == "" {
 			continue
 		}
 		r, _ := utf8.DecodeRuneInString(c)
-		if parse.IsVowelChar(r) {
+		if surface.IsVowel(r) {
 			syllables++
 		}
 	}
@@ -72,7 +73,7 @@ func ValidateStress(word string) (parse.Stress, error) {
 			continue
 		}
 		r, _ := utf8.DecodeRuneInString(c)
-		if !parse.IsVowelChar(r) {
+		if !surface.IsVowel(r) {
 			continue
 		}
 		if containsStressedRune(c) {

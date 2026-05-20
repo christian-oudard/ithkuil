@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/surface"
 )
 
 // carrierByForm is the reverse index from consonant cluster to
@@ -31,7 +32,7 @@ func ParseCarrierType(s string) (grammar.CarrierType, bool) {
 // accepts longer trailing matter ("hnas" → {Naming, "as"}) so this
 // parser does too.
 func ParseCarrier(word string) (grammar.CarrierAdjunct, error) {
-	conjs := SplitConjuncts(word)
+	conjs := surface.SplitConjuncts(word)
 	if len(conjs) < 2 {
 		return grammar.CarrierAdjunct{}, fmt.Errorf("carrier adjunct: expected ≥2 conjuncts, got %d", len(conjs))
 	}

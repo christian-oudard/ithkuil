@@ -22,6 +22,7 @@ import (
 	"github.com/christian-oudard/ithkuil/fullparse"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
+	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/referentials"
 )
 
@@ -169,10 +170,10 @@ func ClassifyWord(word string) WordToken {
 		}
 		// Fall through and try other classifications anyway.
 	}
-	conjs := parse.SplitConjuncts(word)
+	conjs := surface.SplitConjuncts(word)
 
 	// 1. Single consonant cluster → Bias.
-	if len(conjs) == 1 && parse.IsConsonantConjunct(conjs[0]) {
+	if len(conjs) == 1 && surface.IsConsonantConjunct(conjs[0]) {
 		if b, ok := parse.ParseBias(conjs[0]); ok {
 			return BiasWord{Text: word, Bias: b}
 		}
@@ -190,7 +191,7 @@ func ClassifyWord(word string) WordToken {
 	// (hl/hm/hn/hň) followed by trailing content. Tried before
 	// formative parsing so that "hnas" is a Naming carrier rather
 	// than a formative with Cr=hn.
-	if len(conjs) >= 2 && parse.IsConsonantConjunct(conjs[0]) {
+	if len(conjs) >= 2 && surface.IsConsonantConjunct(conjs[0]) {
 		if c, err := parse.ParseCarrier(word); err == nil {
 			return CarrierWord{Text: word, Carrier: c}
 		}
@@ -207,8 +208,8 @@ func ClassifyWord(word string) WordToken {
 
 	// 5. Two-conjunct referential: C1-cluster + Vc-vowel.
 	if len(conjs) == 2 &&
-		parse.IsConsonantConjunct(conjs[0]) &&
-		parse.IsVowelConjunct(conjs[1]) {
+		surface.IsConsonantConjunct(conjs[0]) &&
+		surface.IsVowelConjunct(conjs[1]) {
 		if cat, refs, ok := referentials.DecomposeRefWithCategory(conjs[0]); ok {
 			if c, cok := parse.ParseCase(conjs[1]); cok {
 				return ReferentialWord{
@@ -232,7 +233,7 @@ func ClassifyWord(word string) WordToken {
 	}
 
 	// 7. Referential without case: single consonant cluster that decomposes.
-	if len(conjs) == 1 && parse.IsConsonantConjunct(conjs[0]) {
+	if len(conjs) == 1 && surface.IsConsonantConjunct(conjs[0]) {
 		if cat, refs, ok := referentials.DecomposeRefWithCategory(conjs[0]); ok {
 			return ReferentialWord{Text: word, Category: cat, Refs: refs}
 		}
@@ -327,7 +328,7 @@ func tryCombinationRef(text string, conjs []string) (CombinationRefWord, bool) {
 		return CombinationRefWord{}, false
 	}
 	c1, vc, spec := conjs[0], conjs[1], conjs[2]
-	if !parse.IsConsonantConjunct(c1) || !parse.IsVowelConjunct(vc) || !isCombinationSpec(spec) {
+	if !surface.IsConsonantConjunct(c1) || !surface.IsVowelConjunct(vc) || !isCombinationSpec(spec) {
 		return CombinationRefWord{}, false
 	}
 	refs, refsOk := referentials.DecomposeRefCluster(c1)
@@ -344,13 +345,13 @@ func tryCombinationRef(text string, conjs []string) (CombinationRefWord, bool) {
 	var case2 *g.Case
 	for i := 0; i < len(rest); {
 		if i+1 < len(rest) &&
-			parse.IsVowelConjunct(rest[i]) &&
-			parse.IsConsonantConjunct(rest[i+1]) {
+			surface.IsVowelConjunct(rest[i]) &&
+			surface.IsConsonantConjunct(rest[i+1]) {
 			affixes = append(affixes, g.AffixPair{Vx: rest[i], Cs: rest[i+1]})
 			i += 2
 			continue
 		}
-		if i == len(rest)-1 && parse.IsVowelConjunct(rest[i]) {
+		if i == len(rest)-1 && surface.IsVowelConjunct(rest[i]) {
 			// Final Vc2: special-case "a" (no case) and "üa" → THM.
 			switch rest[i] {
 			case "a":

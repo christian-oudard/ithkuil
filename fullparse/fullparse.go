@@ -46,10 +46,10 @@ func stripSentencePrefix(word string) (string, bool) {
 // formative shape.
 func ParseFormative(word string) (g.Formative, error) {
 	word, hasSentencePrefix := stripSentencePrefix(word)
-	conjs := parse.SplitConjuncts(word)
+	conjs := surface.SplitConjuncts(word)
 	_, surfStress := surface.Strip(word)
 	stress := parse.Stress(surfStress) // surface.Stress and parse.Stress share an iota layout
-	conjs = parse.MergeGlottalVowels(conjs)
+	conjs = surface.MergeGlottalVowels(conjs)
 
 	if len(conjs) < 3 {
 		return g.Formative{}, fmt.Errorf("word %q too short for formative (got %d conjuncts, need at least 3)", word, len(conjs))
@@ -59,7 +59,7 @@ func ParseFormative(word string) (g.Formative, error) {
 	// status, a Ca shortcut indicator, or both.
 	var concat *g.ConcatenationStatus
 	shortcut := parse.ShortcutNone
-	if parse.IsConsonantConjunct(conjs[0]) {
+	if surface.IsConsonantConjunct(conjs[0]) {
 		r := parse.ParseCc(conjs[0])
 		if r.Concat != nil || r.Shortcut != parse.ShortcutNone {
 			concat = r.Concat
@@ -85,7 +85,7 @@ func ParseFormative(word string) (g.Formative, error) {
 		return g.Formative{}, fmt.Errorf("word %q too short after Slot I (got %d conjuncts)", word, len(conjs))
 	}
 
-	if parse.IsVowelConjunct(conjs[0]) {
+	if surface.IsVowelConjunct(conjs[0]) {
 		f, err := parseVowelInitial(conjs, concat, stress)
 		if err != nil {
 			return g.Formative{}, fmt.Errorf("%v (word %q)", err, word)
@@ -113,7 +113,7 @@ func parseShortcutFormative(conjs []string, sc parse.ShortcutVariant, concat *g.
 	if len(conjs) < 2 {
 		return g.Formative{}, fmt.Errorf("shortcut formative needs Vv+Cr, got %d conjuncts", len(conjs))
 	}
-	if !parse.IsVowelConjunct(conjs[0]) {
+	if !surface.IsVowelConjunct(conjs[0]) {
 		return g.Formative{}, fmt.Errorf("shortcut formative: expected Vv vowel, got %q", conjs[0])
 	}
 	slotII, ok := parse.ParseSlotII(conjs[0])
@@ -207,7 +207,7 @@ func parseSlotVAndCa(conjs []string, startIdx int) (g.SlotVI, []g.Affix, int, er
 	geminatedAt := -1
 	var slotVIFromGem g.SlotVI
 	for i := startIdx; i < len(conjs); i += 2 {
-		if !parse.IsConsonantConjunct(conjs[i]) {
+		if !surface.IsConsonantConjunct(conjs[i]) {
 			break
 		}
 		if vi, ok := allomorph.ParseGeminatedCa(conjs[i]); ok {
@@ -328,7 +328,7 @@ func parseAfterCa(tail []string, stress parse.Stress) ([]g.Affix, g.SlotVIII, g.
 	i := 0
 	for i+1 < len(tail) {
 		v, c := tail[i], tail[i+1]
-		if !parse.IsVowelConjunct(v) || !parse.IsConsonantConjunct(c) {
+		if !surface.IsVowelConjunct(v) || !surface.IsConsonantConjunct(c) {
 			break
 		}
 		pairs = append(pairs, vcPair{v: v, c: c})
@@ -341,7 +341,7 @@ func parseAfterCa(tail []string, stress parse.Stress) ([]g.Affix, g.SlotVIII, g.
 
 	trailingV := ""
 	if len(trailing) == 1 {
-		if !parse.IsVowelConjunct(trailing[0]) {
+		if !surface.IsVowelConjunct(trailing[0]) {
 			return nil, nil, nil, fmt.Errorf("expected vowel for Slot IX, got %q", trailing[0])
 		}
 		trailingV = trailing[0]
