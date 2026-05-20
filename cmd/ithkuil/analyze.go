@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"strings"
@@ -10,6 +11,46 @@ import (
 	"github.com/christian-oudard/ithkuil/inspect"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
+
+// indentedWriter wraps an io.Writer and prefixes every non-empty
+// line with the configured indent. Blank lines pass through clean
+// so the output doesn't carry trailing whitespace.
+type indentedWriter struct {
+	w           io.Writer
+	indent      []byte
+	atLineStart bool
+}
+
+func indented(w io.Writer, indent string) *indentedWriter {
+	return &indentedWriter{w: w, indent: []byte(indent), atLineStart: true}
+}
+
+func (iw *indentedWriter) Write(p []byte) (int, error) {
+	total := 0
+	for len(p) > 0 {
+		if iw.atLineStart {
+			if p[0] != '\n' {
+				if _, err := iw.w.Write(iw.indent); err != nil {
+					return total, err
+				}
+			}
+			iw.atLineStart = false
+		}
+		idx := bytes.IndexByte(p, '\n')
+		if idx < 0 {
+			n, err := iw.w.Write(p)
+			return total + n, err
+		}
+		n, err := iw.w.Write(p[:idx+1])
+		total += n
+		if err != nil {
+			return total, err
+		}
+		p = p[idx+1:]
+		iw.atLineStart = true
+	}
+	return total, nil
+}
 
 // cmdAnalyze tokenizes the input and renders a learner-oriented
 // breakdown of each formative: phonetic segmentation paired with a
@@ -82,41 +123,44 @@ func renderDetailed(w io.Writer, t tokenize.WordToken, lex interface{}, glosser 
 }
 
 // renderModular prints the phonetic + glossary tables for a modular
-// adjunct: optional w/y prefix + 0-3 (Vn, Cn) pairs + optional final
-// vowel.
+// adjunct. The surface word sits at column 0; the body is indented
+// two spaces so consecutive word blocks are visually separated.
 func renderModular(w io.Writer, mw tokenize.ModularWord) {
 	segs := inspect.SegmentsModular(mw.Text, mw.Modular, mw.MarksMood)
 	glossary := inspect.GlossaryModular(segs)
 
 	fmt.Fprintln(w, strings.ToLower(mw.Text))
-	fmt.Fprintln(w, "  (modular adjunct)")
-	fmt.Fprintln(w)
-	renderPhoneticTable(w, segs)
+	iw := indented(w, "  ")
+	fmt.Fprintln(iw, "(modular adjunct)")
+	fmt.Fprintln(iw)
+	renderPhoneticTable(iw, segs)
 	if len(glossary) > 0 {
-		fmt.Fprintln(w)
-		renderGlossaryTable(w, glossary)
+		fmt.Fprintln(iw)
+		renderGlossaryTable(iw, glossary)
 	}
 }
 
 // renderFormativeBlock prints the surface, headword, phonetic table,
-// and glossary for one formative.
+// and glossary for one formative. The surface word sits at column 0
+// and everything below is indented under it.
 func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss.Glosser) {
 	head := inspect.Headword(f, glosser.Lex)
 	segs := inspect.Segments(text, f, glosser.Lex)
 	glossary := inspect.Glossary(text, f, segs, glosser.Lex)
 
 	fmt.Fprintln(w, strings.ToLower(text))
+	iw := indented(w, "  ")
 	if head.Code != "" {
 		if head.Meaning != "" {
-			fmt.Fprintf(w, "  %s — %s\n", head.Code, head.Meaning)
+			fmt.Fprintf(iw, "%s — %s\n", head.Code, head.Meaning)
 		} else {
-			fmt.Fprintf(w, "  %s\n", head.Code)
+			fmt.Fprintf(iw, "%s\n", head.Code)
 		}
 	}
-	fmt.Fprintln(w)
-	renderPhoneticTable(w, segs)
-	fmt.Fprintln(w)
-	renderGlossaryTable(w, glossary)
+	fmt.Fprintln(iw)
+	renderPhoneticTable(iw, segs)
+	fmt.Fprintln(iw)
+	renderGlossaryTable(iw, glossary)
 }
 
 // renderConcatenated walks every formative in a concatenation chain,
@@ -125,20 +169,21 @@ func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss
 // individual surface for the phonetic table.
 func renderConcatenated(w io.Writer, cw tokenize.ConcatenatedFormativeWord, glosser gloss.Glosser) {
 	fmt.Fprintln(w, strings.ToLower(cw.Text))
-	fmt.Fprintln(w, "  (concatenated chain)")
+	iw := indented(w, "  ")
+	fmt.Fprintln(iw, "(concatenated chain)")
 	parts := strings.Split(cw.Text, "-")
 	for i, f := range cw.Chain.Formatives() {
-		fmt.Fprintln(w)
+		fmt.Fprintln(iw)
 		label := "[head]"
 		if i > 0 && f.Concat != nil {
 			label = fmt.Sprintf("[%s dependent]", f.Concat.String())
 		}
-		fmt.Fprintln(w, label)
+		fmt.Fprintln(iw, label)
 		surface := ""
 		if i < len(parts) {
 			surface = parts[i]
 		}
-		renderFormativeBlock(w, surface, f, glosser)
+		renderFormativeBlock(iw, surface, f, glosser)
 	}
 }
 
