@@ -33,10 +33,10 @@ func TestBiasFormSpotCheck(t *testing.T) {
 		{DIS, "kff"},
 		{ACC, "lf"},
 		{DLC, "ẓmm"},
-		{BIAS_EXP, "pss"},
-		{RNC, "msf"},
+		{MNF, "pss"},
+		{RSG, "msf"},
 		{ARB, "xtļ"},
-		{BIAS_ADM, "lļ"},
+		{ADS, "lļ"},
 	}
 	for _, c := range cases {
 		if got := BiasForm(c.b); got != c.want {

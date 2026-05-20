@@ -1,6 +1,6 @@
 # Ithkuil V4 Affix Reference
 
-Complete reference for all 527 VxCs affixes in New Ithkuil (v1.3.1).
+Complete reference for all 527 VxCs affixes in New Ithkuil (v1.3.2).
 Each affix has a consonant form (Cs), a gradient type, and 9 degrees of meaning.
 
 ## Gradient Types

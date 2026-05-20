@@ -1,4 +1,4 @@
-# NEW ITHKUIL: GRAMMAR DESIGN (Version 1.3.1, Feb. 11, 2023)
+# NEW ITHKUIL: GRAMMAR DESIGN (Version 1.3.2, Feb. 15, 2023)
 
 This document updates and replaces previous version 1.2.1 from January 18, 2023; changes since that version are summarized below. This document assumes the reader is familiar with Ithkuil 2011 (i.e., Ithkuil III) grammar.
 
@@ -21,6 +21,11 @@ This document updates and replaces previous version 1.2.1 from January 18, 2023;
 - **Sec. 3.9.2:** A note has been added regarding constraints/limitations on the use of Type-3 affixes.
 - **Sec. 3.9.3.1:** The table providing descriptions of the nine validations has been reinstated.
 - **Sec. 5.8:** A few typos in the example sentences have been corrected.
+
+**Version 1.3.2:**
+
+- **Sec. 3.9.3.3:** The 3-letter abbreviation for VERIFICATIVE Illocution has been changed to **VER**.
+- **Sec. 4.7:** The 3-letter abbreviation of ADMISSIVE Bias has been changed to **ADS**. The EXPERIENTIAL Bias has been renamed the **MNF** MANIFESTIVE Bias, and the RENUNCIATIVE Bias has been renamed the **RSG** RESIGNATIVE Bias.
 
 ---
 
@@ -851,7 +856,7 @@ Illocution refers to the type of "speech act" being made by a speaker, i.e., the
 | **DIR** | DIRECTIVE | the statement is either an imperative command to another party to do/be something, or a "commissive" statement committing the speaker to a specific state or course of action (i.e., a vow, promise, guarantee, etc.) |
 | **DEC** | DECLARATIVE | a "performative" statement which, by its utterance/publication, creates a change of state (at least psychologically) for the addressees (i.e., a declaration, announcement, edict, etc.) |
 | **IRG** | INTERROGATIVE | a statement whose purpose is to inquire or seek information from the addressee (i.e., equivalent to an English WH-question) -- see Sec. 5.6 for further explanation on the use of IRG Illocution |
-| **VRF** | VERIFICATIVE | a statement whose purpose is to seek/obtain corroboration, confirmation, or verification (i.e., equivalent to a Yes/No question) |
+| **VER** | VERIFICATIVE | a statement whose purpose is to seek/obtain corroboration, confirmation, or verification (i.e., equivalent to a Yes/No question) |
 | **ADM** | ADMONITIVE | a statement whose purpose is to provide advisory/admonitive information to the addressee (i.e., a warning) |
 | **POT** | POTENTIATIVE | a statement of wishing, hoping, or other unreal(ized) provenance |
 | **HOR** | HORTATIVE | a counterfactual statement indicating a desired but impossible state of affairs that cannot be realized (equivalent to English hortative constructions such as *If only..., Were that..., If only it were so that...*) |
@@ -878,7 +883,7 @@ Validation refers to the evidential basis for a statement in ASSERTIVE illocutio
 | **DIR** | DIRECTIVE Illocution | ái |
 | **DEC** | DECLARATIVE Illocution | áu |
 | **IRG** | INTERROGATIVE Illocution | éi |
-| **VRF** | VERIFICATIVE Illocution | éu |
+| **VER** | VERIFICATIVE Illocution | éu |
 | **ADM** | ADMONITIVE Illocution | óu |
 | **POT** | POTENTIATIVE Illocution | ói |
 | **HOR** | HORTATIVE Illocution | íu |
@@ -896,7 +901,7 @@ Since Slot IX of a FRAMED formative is already taken up by the V_C case affix, a
 | 2 | DIR DIRECTIVE | REC Recollective |
 | 3 | DEC DECLARATIVE | PUP Purportive |
 | 4 | IRG INTERROGATIVE | RPR Reportive |
-| 5 | VRF VERIFICATIVE | USP Unspecified |
+| 5 | VER VERIFICATIVE | USP Unspecified |
 | 6 | ADM ADMONITIVE | IMA Imaginary |
 | 7 | POT POTENTIATIVE | CVN Conventional |
 | 8 | HOR HORTATIVE | ITU Intuitive |
@@ -1193,7 +1198,7 @@ Each Bias adjunct has the same consonant-form as an associated lexico-semantic r
 |------|------|------|---------|
 | **ACC** | ACCIDENTAL | lf | *'As luck would have it...' 'Fate has decided that...' 'What luck!'* |
 | **ACH** | ARCHETYPAL | mçt | *what (a) ...!; how . . .! ; Boy! Did (does) X ever ...* |
-| **ADM** | ADMISSIVE | lļ | *'Mm-hm' 'Uh-huh' (said as mere acknowledgement of a statement without any implied agreement with or assent to the statement)* |
+| **ADS** | ADMISSIVE | lļ | *'Mm-hm' 'Uh-huh' (said as mere acknowledgement of a statement without any implied agreement with or assent to the statement)* |
 | **ANN** | ANNUNCIATIVE | drr | *'Guess what!' or 'Wait till you hear this!* |
 | **ANP** | ANTICIPATIVE | lst | *'I'm looking foward to this!'* |
 | **APB** | APPROBATIVE | řs | *'(That's) OK' '(That's) alright' '(That's) good' '(That's) fine' 'Very well' 'Sure'* |
@@ -1221,7 +1226,7 @@ Each Bias adjunct has the same consonant-form as an associated lexico-semantic r
 | **EUP** | EUPHEMISTIC | vvt | *'Let's just say that….' or 'Well, let me put it this way….'* |
 | **EXA** | EXASPERATIVE | kçç | *'Dammit!' 'Look, don't you get it?…' 'Look, I'm trying to tell you….'* |
 | **EXG** | EXIGENT | rrs | *'It's now or never!'* |
-| **EXP** | EXPERIENTIAL | pss | *'Ah!' 'Well, now!' 'So!' [Italian 'Allora!' ]* |
+| **MNF** | MANIFESTIVE | pss | *'Ah!' 'Well, now!' 'So!' [Italian 'Allora!' ]* |
 | **FOR** | FORTUITOUS | lzp | *'It's just as well that…' or 'All's well that ends well…'* |
 | **FSC** | FASCINATIVE | žžj | *'Cool!' 'Wow!' 'Awesome!'* |
 | **GRT** | GRATIFICATIVE | mmh | *'Ah! What bliss...!' 'Oh, there's nothing like….' [physical pleasure only]* |
@@ -1242,7 +1247,7 @@ Each Bias adjunct has the same consonant-form as an associated lexico-semantic r
 | **PSM** | PRESUMPTIVE | nnţ | *'It can only mean one thing…,' 'and that's that!' 'and that's all there is to it!' or 'There's no two ways about it,….'* |
 | **RAC** | REACTIVE | kll | *'My goodness!' 'Wow!' 'Amazing!'* |
 | **RFL** | REFLECTIVE | llm | *'Look at it this way…' 'As I see it,…' 'In my opinion…' 'From my point of view…'* |
-| **RNC** | RENUNCIATIVE | msf | *'So much for...!' 'There goes...!'* |
+| **RSG** | RESIGNATIVE | msf | *'So much for...!' 'There goes...!'* |
 | **RPU** | REPULSIVE | šštļ | *'Yuck! Ew! How gross!'* |
 | **RVL** | REVELATIVE | mmļ | *'No wonder…!' or 'So that's why…!' 'A-ha!….' 'Well, well, well!….'* |
 | **SAT** | SATIATIVE | lţ | *'How satisfying...!' 'At last, the pleasure of knowing/being/seeing/doing....' [psychological/emotional pleasure/satiety only]* |
@@ -2266,7 +2271,7 @@ Cases 1-9 within each type are shown by bottom extensions (1 = plain, up to 9).
 | DIR (Directive) | curve |
 | DEC (Declarative) | hook |
 | IRG (Interrogative) | bracket |
-| VRF (Verificative) | double hook |
+| VER (Verificative) | double hook |
 | ADM (Admonitive) | curve + hook |
 | POT (Potentiative) | zigzag |
 | HOR (Hortative) | angular |
@@ -2351,7 +2356,7 @@ Case Type shown by super-posed diacritic (same shapes as Quaternary top extensio
 
 #### Showing V_K Illocution/Validation (on C_R character)
 
-| | ASR | DIR | DEC | IRG | VRF | ADM | POT | HOR | CNJ |
+| | ASR | DIR | DEC | IRG | VER | ADM | POT | HOR | CNJ |
 |---|---|---|---|---|---|---|---|---|---|
 | Super-posed | dot | bar | curve | arch | arrow | zigzag | hook | crescent | — |
 | Under-posed | OBS | REC | PUP | RPR | IMA | CVN | ITU | INF | USP |
@@ -2381,7 +2386,7 @@ If sentence-initial, place immediately before the first formative or referential
 | Approbation | APB | Impatience | IPT | — | — | Trepidation | TRP |
 | Apprehension | APH | Ironic | IRO | Reactive | RAC | Vexation | VEX |
 | Arbitrary | ARB | Inspiration | ISP | Reflective | RFL | — | — |
-| Attentive | ATE | Invidious | IVD | Renunciative | RNC | — | — |
+| Attentive | ATE | Invidious | IVD | Resignative | RSG | — | — |
 | Comedic | CMD | Mandatory | MAN | Repulsive | RPU | — | — |
 | Contensive | CNV | Optimal | OPT | Revelative | RVL | — | — |
 | Coincidental | COI | — | — | — | — | — | — |
@@ -2394,7 +2399,7 @@ If sentence-initial, place immediately before the first formative or referential
 | Dismissive | DRS | Dubitative | DUB | — | — | — | — |
 | Euphemistic | EUH | Euphoric | EUP | — | — | — | — |
 | Exasperation | EXA | Exigent | EXG | — | — | — | — |
-| Experiential | EXP | Fortuitous | FOR | — | — | — | — |
+| Manifestive | MNF | Fortuitous | FOR | — | — | — | — |
 | Presumptuous | PSM* | — | — | — | — | — | — |
 
 \* DCC and PSM Biases are distinguished from the ACC and FSC biases by use of a dot diacritic.

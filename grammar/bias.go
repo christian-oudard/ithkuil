@@ -58,16 +58,16 @@ const (
 	COI             // Coincidental
 	FOR             // Fortuitous
 	ANN             // Annunciative
-	RNC             // Renunciative
+	RSG             // Resignative
 	ISP             // Insipid
 	IPL             // Implicative
-	BIAS_EXP        // Experiential (prefixed to avoid clash with Aspect EXP)
+	MNF             // Manifestive
 	ARB             // Arbitrary
 	PPT             // Propitious
 	CTV             // Contemplative
 	CRP             // Corruptive
 	DEJ             // Dejective
-	BIAS_ADM        // Admissive (prefixed to avoid clash with Illocution ADM)
+	ADS             // Admissive
 )
 
 var biasNames = [...]string{
@@ -80,9 +80,9 @@ var biasNames = [...]string{
 	"APB", "OPT", "CNV", "ACC", "ACH",
 	"IRO", "PSM", "CRR", "EUP", "PSC", "CMD",
 	"PPV", "SGS", "DFD", "RFL", "DES", "COI", "FOR",
-	"ANN", "RNC", "ISP", "IPL", "EXP",
+	"ANN", "RSG", "ISP", "IPL", "MNF",
 	"ARB", "PPT", "CTV", "CRP", "DEJ",
-	"ADM",
+	"ADS",
 }
 
 func (b Bias) String() string { return biasNames[b] }
@@ -139,17 +139,17 @@ var biasForms = [...]string{
 	DES:      "mřř",
 	COI:      "ššč",
 	FOR:      "lzp",
-	ANN:      "drr",
-	RNC:      "msf",
-	ISP:      "lçp",
-	IPL:      "vll",
-	BIAS_EXP: "pss",
-	ARB:      "xtļ",
-	PPT:      "mll",
-	CTV:      "gvv",
-	CRP:      "gžž",
-	DEJ:      "žžg",
-	BIAS_ADM: "lļ",
+	ANN: "drr",
+	RSG: "msf",
+	ISP: "lçp",
+	IPL: "vll",
+	MNF: "pss",
+	ARB: "xtļ",
+	PPT: "mll",
+	CTV: "gvv",
+	CRP: "gžž",
+	DEJ: "žžg",
+	ADS: "lļ",
 }
 
 // biasExpressions are the representative English glosses.
@@ -204,17 +204,17 @@ var biasExpressions = [...]string{
 	DES:      "I'm sorry to have to tell you...",
 	COI:      "What a coincidence!",
 	FOR:      "All is well that ends well",
-	ANN:      "Wait till you hear this!",
-	RNC:      "So much for...!",
-	ISP:      "How boring!",
-	IPL:      "Of course,...",
-	BIAS_EXP: "Ah! Well, now! So!",
-	ARB:      "Yeah, whatever...",
-	PPT:      "It's a wonder that...",
-	CTV:      "Hmmmm...",
-	CRP:      "What corruption!",
-	DEJ:      "[dejected sigh]",
-	BIAS_ADM: "Mm-hm",
+	ANN: "Wait till you hear this!",
+	RSG: "So much for...!",
+	ISP: "How boring!",
+	IPL: "Of course,...",
+	MNF: "Ah! Well, now! So!",
+	ARB: "Yeah, whatever...",
+	PPT: "It's a wonder that...",
+	CTV: "Hmmmm...",
+	CRP: "What corruption!",
+	DEJ: "[dejected sigh]",
+	ADS: "Mm-hm",
 }
 
 // BiasForm returns the surface consonant cluster for a Bias.
@@ -235,7 +235,7 @@ var AllBiases = []Bias{
 	APB, OPT, CNV, ACC, ACH,
 	IRO, PSM, CRR, EUP, PSC, CMD,
 	PPV, SGS, DFD, RFL, DES, COI, FOR,
-	ANN, RNC, ISP, IPL, BIAS_EXP,
+	ANN, RSG, ISP, IPL, MNF,
 	ARB, PPT, CTV, CRP, DEJ,
-	BIAS_ADM,
+	ADS,
 }

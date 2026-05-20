@@ -16,10 +16,10 @@ func TestParseBias_Known(t *testing.T) {
 		{"kff", grammar.DIS},
 		{"lf", grammar.ACC},
 		{"ẓmm", grammar.DLC},
-		{"pss", grammar.BIAS_EXP},
-		{"msf", grammar.RNC},
+		{"pss", grammar.MNF},
+		{"msf", grammar.RSG},
 		{"xtļ", grammar.ARB},
-		{"lļ", grammar.BIAS_ADM},
+		{"lļ", grammar.ADS},
 	}
 	for _, c := range cases {
 		got, ok := ParseBias(c.in)
