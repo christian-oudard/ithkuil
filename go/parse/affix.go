@@ -18,6 +18,34 @@ var type2Degrees = map[string]int{
 	"ou": 6, "oi": 7, "iu": 8, "ui": 9, "ea": 0,
 }
 
+// Type2DegreeToVowel returns the Series-2 vowel for a degree (0-9).
+// Inverse of type2Degrees.
+func Type2DegreeToVowel(degree int) string {
+	switch degree {
+	case 0:
+		return "ea"
+	case 1:
+		return "ai"
+	case 2:
+		return "au"
+	case 3:
+		return "ei"
+	case 4:
+		return "eu"
+	case 5:
+		return "ëu"
+	case 6:
+		return "ou"
+	case 7:
+		return "oi"
+	case 8:
+		return "iu"
+	case 9:
+		return "ui"
+	}
+	return ""
+}
+
 // type3Degrees maps Series-3 vowels to degree, including series-3
 // alternates (uä/uë/üä/üë/öë/öä/ië/iä) and the "üo" 0-degree special.
 var type3Degrees = map[string]int{

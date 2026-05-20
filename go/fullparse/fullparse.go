@@ -133,7 +133,7 @@ func ParseFormative(word string) (g.Formative, error) {
 		f.SlotI = slotI
 		f.SlotIShortcut = shortcut
 		f.SentenceStarter = hasSentencePrefix
-		return f, nil
+		return absorbIVLAffix(f), nil
 	}
 
 	if len(conjs) < 3 {
@@ -147,7 +147,7 @@ func ParseFormative(word string) (g.Formative, error) {
 		}
 		f.SlotI = slotI
 		f.SentenceStarter = hasSentencePrefix
-		return f, nil
+		return absorbIVLAffix(f), nil
 	}
 
 	// Consonant-initial: Vv elided to default S1/PRC.
@@ -159,7 +159,41 @@ func ParseFormative(word string) (g.Formative, error) {
 		return g.Formative{}, fmt.Errorf("%v (word %q)", err, word)
 	}
 	f.SentenceStarter = hasSentencePrefix
-	return f, nil
+	return absorbIVLAffix(f), nil
+}
+
+// absorbIVLAffix is the parser-side counterpart of the §3.9.3.2
+// Validation collapse workaround in render. If the formative is a
+// verbal (IllocValSlot) with a default OBS Validation and a trailing
+// IVL Type-2 affix in Slot VII, the affix is consumed and its degree
+// becomes the Validation on the IllocValSlot. This is the inverse of
+// render.applyIVLWorkaround so that non-ASR + non-OBS Validation
+// round-trips cleanly.
+func absorbIVLAffix(f g.Formative) g.Formative {
+	iv, ok := f.SlotIX.(g.IllocValSlot)
+	if !ok || iv.Validation != g.OBS {
+		return f
+	}
+	n := len(f.SlotVII)
+	if n == 0 {
+		return f
+	}
+	last := f.SlotVII[n-1]
+	if last.Consonant != "nļ" || last.Type != g.Type2Affix {
+		return f
+	}
+	_, degree := parse.ClassifyAffixVowel(last.Vowel)
+	if degree < 1 || degree > 9 {
+		return f
+	}
+	val := g.Validation(degree - 1)
+	iv.Validation = val
+	f.SlotIX = iv
+	f.SlotVII = f.SlotVII[:n-1]
+	if len(f.SlotVII) == 0 {
+		f.SlotVII = nil
+	}
+	return f
 }
 
 // parseShortcutFormative handles the Vv-Cr-… shape that follows a
@@ -206,7 +240,7 @@ func parseVowelInitial(conjs []string, stress g.Stress) (g.Formative, error) {
 	if parse.IsSpecialVv(conjs[0]) {
 		return parseSpecialVvFormative(conjs, stress)
 	}
-	slotII, ok := parse.ParseSlotII(conjs[0])
+	slotII, ok := parse.ParseSlotII(stripVvGlottal(conjs[0]))
 	if !ok {
 		return g.Formative{}, fmt.Errorf("invalid Vv %q", conjs[0])
 	}
@@ -215,11 +249,11 @@ func parseVowelInitial(conjs []string, stress g.Stress) (g.Formative, error) {
 	if !ok {
 		return g.Formative{}, fmt.Errorf("invalid Vr %q", conjs[2])
 	}
-	slotVI, ok := allomorph.ParseCa(conjs[3])
-	if !ok {
-		return g.Formative{}, fmt.Errorf("unrecognized Ca %q", conjs[3])
+	slotVI, slotV, afterCa, err := parseSlotVAndCa(conjs, 3)
+	if err != nil {
+		return g.Formative{}, err
 	}
-	slotVII, slotVIII, slotIX, err := parseAfterCa(conjs[4:], stress)
+	slotVII, slotVIII, slotIX, err := parseAfterCa(conjs[afterCa:], stress)
 	if err != nil {
 		return g.Formative{}, err
 	}
@@ -227,12 +261,79 @@ func parseVowelInitial(conjs []string, stress g.Stress) (g.Formative, error) {
 		SlotII:   slotII,
 		SlotIII:  root,
 		SlotIV:   slotIV,
+		SlotV:    slotV,
 		SlotVI:   slotVI,
 		SlotVII:  slotVII,
 		SlotVIII: slotVIII,
 		SlotIX:   slotIX,
 		Stress:   stress,
 	}, nil
+}
+
+// stripVvGlottal removes a §3.5.1 glottal-stop from Vv. For single
+// vowels the glottal is inserted between a reduplicated pair (V → V'V),
+// so we collapse back to one vowel. For diphthongs it sits between the
+// two members (V1V2 → V1'V2), so we just drop the glottal.
+func stripVvGlottal(v string) string {
+	rs := []rune(v)
+	for i, r := range rs {
+		if r != '\'' {
+			continue
+		}
+		before := rs[:i]
+		after := rs[i+1:]
+		if len(before) == 1 && len(after) == 1 && before[0] == after[0] {
+			return string(before[0])
+		}
+		return string(before) + string(after)
+	}
+	return v
+}
+
+// parseSlotVAndCa decodes Slot V (if any) and Slot VI starting at
+// startIdx in conjs. Slot V's presence is signaled by the gemination
+// of the Slot VI Ca per §3.6.1.
+//
+// Returns the SlotVI, the Slot V affix list (nil if absent), and the
+// index just past the Ca conjunct so the caller can continue parsing.
+func parseSlotVAndCa(conjs []string, startIdx int) (g.SlotVI, []g.Affix, int, error) {
+	// Scan odd-offset positions (consonants) for the first cluster
+	// that matches a geminated Ca. Cs forms cannot contain geminates
+	// (§3.6.1 note), so the first geminated match identifies Slot VI.
+	geminatedAt := -1
+	var slotVIFromGem g.SlotVI
+	for i := startIdx; i < len(conjs); i += 2 {
+		if !parse.IsConsonantConjunct(conjs[i]) {
+			break
+		}
+		if vi, ok := allomorph.ParseGeminatedCa(conjs[i]); ok {
+			geminatedAt = i
+			slotVIFromGem = vi
+			break
+		}
+	}
+	if geminatedAt == -1 || geminatedAt == startIdx {
+		// No Slot V — conjs[startIdx] is the plain (un-geminated) Ca.
+		// (A geminated Ca at startIdx itself would mean Slot V is
+		// empty but Ca is geminated, which the spec doesn't allow.)
+		slotVI, ok := allomorph.ParseCa(conjs[startIdx])
+		if !ok {
+			return g.SlotVI{}, nil, 0, fmt.Errorf("unrecognized Ca %q", conjs[startIdx])
+		}
+		return slotVI, nil, startIdx + 1, nil
+	}
+	// Decode Slot V Cs-Vx pairs between Vr and the geminated Ca.
+	var slotV []g.Affix
+	for i := startIdx; i < geminatedAt; i += 2 {
+		if i+1 >= geminatedAt {
+			return g.SlotVI{}, nil, 0, fmt.Errorf("Slot V missing Vx at conj %d", i)
+		}
+		cs := conjs[i]
+		vx := conjs[i+1]
+		t, _ := parse.ClassifyAffixVowel(vx)
+		slotV = append(slotV, g.Affix{Consonant: cs, Vowel: vx, Type: t})
+	}
+	return slotVIFromGem, slotV, geminatedAt + 1, nil
 }
 
 // parseSpecialVvFormative handles Vv markers that select an alternate

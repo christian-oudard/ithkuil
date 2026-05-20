@@ -26,11 +26,12 @@ type Glosser struct {
 }
 
 // Formative renders a one-line gloss of f. Components at their default
-// values are suppressed. Antepenultimate stress (framed verb) is
-// tagged with a trailing "FRA". A leading "§" marks a sentence-starter
-// formative (one that carried a ç prefix in the surface form).
-// Cs-root formatives render their root as "(Cs)/degree" to distinguish
-// them from regular roots.
+// values are suppressed. Stress is shown explicitly as a trailing tag
+// (MONO/ULT/ANT); penultimate stress is the unmarked default and stays
+// off the gloss. A leading "§" marks a sentence-starter formative (one
+// that carried a ç prefix in the surface form). Cs-root formatives
+// render their root as "(Cs)/degree" to distinguish them from regular
+// roots.
 func (gl *Glosser) Formative(f g.Formative) string {
 	parts := []string{
 		slotI(f.SlotI),
@@ -42,7 +43,7 @@ func (gl *Glosser) Formative(f g.Formative) string {
 		gl.affixes(f.SlotVII),
 		slotVIII(f.SlotVIII),
 		slotIX(f.SlotIX),
-		framedTag(f.Stress),
+		stressTag(f.Stress),
 	}
 	body := strings.Join(nonEmpty(parts), "-")
 	if f.SentenceStarter {
@@ -68,11 +69,17 @@ func (gl *Glosser) rootOrCsRoot(f g.Formative) string {
 	return fmt.Sprintf("(%s)/%d", abbr, *f.CsRootDegree)
 }
 
-// framedTag returns "FRA" for antepenultimate-stressed formatives
-// (framed verbs), empty for any other stress.
-func framedTag(s g.Stress) string {
-	if s == g.Antepenultimate {
-		return "FRA"
+// stressTag emits a tag for each non-default stress value. Penultimate
+// is the unmarked default (omitted). The tag is independent of Slot IX
+// shape so a Formative's stress can be read directly off the gloss.
+func stressTag(s g.Stress) string {
+	switch s {
+	case g.Monosyllabic:
+		return "MONO"
+	case g.Ultimate:
+		return "ULT"
+	case g.Antepenultimate:
+		return "ANT"
 	}
 	return ""
 }

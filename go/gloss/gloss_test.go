@@ -82,14 +82,14 @@ func TestFormative_Verbal(t *testing.T) {
 	f.Stress = g.Ultimate
 	f.SlotIX = g.IllocValSlot{Illocution: g.DIR, Validation: g.OBS}
 	got := Formative(f)
-	want := "-ml--DIR"
+	want := "-ml--DIR-ULT"
 	if got != want {
 		t.Errorf("Formative(DIR/OBS) = %q, want %q", got, want)
 	}
 	// Non-default validation should appear.
 	f.SlotIX = g.IllocValSlot{Illocution: g.ASR, Validation: g.INF}
 	got = Formative(f)
-	want = "-ml--ASR/INF"
+	want = "-ml--ASR/INF-ULT"
 	if got != want {
 		t.Errorf("Formative(ASR/INF) = %q, want %q", got, want)
 	}
@@ -137,6 +137,26 @@ func TestFormative_SentenceStarter(t *testing.T) {
 	got := Formative(f)
 	if got != "§ -ml-" {
 		t.Errorf("Formative(sentence-starter) = %q, want \"§ -ml-\"", got)
+	}
+}
+
+func TestFormative_StressTag(t *testing.T) {
+	cases := []struct {
+		stress g.Stress
+		want   string
+	}{
+		{g.Penultimate, "-ml-"},
+		{g.Monosyllabic, "-ml--MONO"},
+		{g.Ultimate, "-ml--ULT"},
+		{g.Antepenultimate, "-ml--ANT"},
+	}
+	for _, c := range cases {
+		f := g.MinimalFormative("ml")
+		f.Stress = c.stress
+		got := Formative(f)
+		if got != c.want {
+			t.Errorf("Formative(Stress=%v) = %q, want %q", c.stress, got, c.want)
+		}
 	}
 }
 

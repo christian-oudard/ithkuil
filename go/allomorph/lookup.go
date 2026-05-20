@@ -20,6 +20,8 @@ func init() {
 	const expected = 20 * 4 * 4 * 6 * 2 // 3840
 	CaForward = make(map[g.SlotVI]string, expected)
 	CaReverse = make(map[string]g.SlotVI, expected)
+	CaGeminated = make(map[string]string, expected)
+	CaGeminatedReverse = make(map[string]g.SlotVI, expected)
 	for _, c := range g.AllConfigurations {
 		for _, a := range g.AllAffiliations {
 			for _, p := range g.AllPerspectives {
@@ -36,6 +38,11 @@ func init() {
 						CaForward[s] = cluster
 						if _, exists := CaReverse[cluster]; !exists {
 							CaReverse[cluster] = s
+						}
+						gem := GeminateCa(cluster)
+						CaGeminated[cluster] = gem
+						if _, exists := CaGeminatedReverse[gem]; !exists {
+							CaGeminatedReverse[gem] = s
 						}
 					}
 				}

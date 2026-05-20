@@ -164,17 +164,17 @@ func TestCorpus_DisambiguateSUB_CCA(t *testing.T) {
 	assertContains(t, "agulahla", gNoun, "CCA")
 }
 
-func TestCorpus_FramedVerb_FRA(t *testing.T) {
-	// Antepenultimate stress = framed verb → FRA tag in gloss.
+func TestCorpus_FramedVerb_ANT(t *testing.T) {
+	// Antepenultimate stress = framed verb → ANT tag in gloss.
 	g := glossOne(t, "ágala")
-	assertContains(t, "ágala", g, "FRA")
+	assertContains(t, "ágala", g, "ANT")
 }
 
 func TestCorpus_FramedVerb_MoodNotScope(t *testing.T) {
 	// Framed verb with VnCn ("arţtúliwa") uses Mood (FAC, suppressed),
-	// not CaseScope (CCN). The FRA tag should appear.
+	// not CaseScope (CCN). The ANT tag should appear.
 	g := glossOne(t, "arţtúliwa")
-	assertContains(t, "arţtúliwa", g, "FRA")
+	assertContains(t, "arţtúliwa", g, "ANT")
 	// PRG aspect should appear (from Vn "i" + Cn "w").
 	assertContains(t, "arţtúliwa", g, "PRG")
 }

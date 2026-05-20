@@ -8,10 +8,11 @@ import (
 
 func TestFormative_Minimal(t *testing.T) {
 	// MinimalFormative("ml"): I=∅, II=S1/PRC ("a"), III="ml", IV=STA/BSC/EXS ("a"),
-	// V=[], VI=default ("l"), VII=[], VIII=nil, IX=CaseSlot{THM} ("a")
+	// V=[], VI=default ("l"), VII=[], VIII=nil, IX=CaseSlot{THM} ("a").
+	// Default Vv elides per §3.2 → short form "mlala".
 	f := g.MinimalFormative("ml")
 	got := Formative(f)
-	want := "amlala"
+	want := "mlala"
 	if got != want {
 		t.Errorf("Formative(minimal \"ml\") = %q, want %q", got, want)
 	}
@@ -39,12 +40,12 @@ func TestFormative_NonDefaultSlots(t *testing.T) {
 
 func TestFormative_Ultimate(t *testing.T) {
 	// Verbal formative: SlotIX is IllocValSlot, stress is Ultimate.
+	// Ultimate marks the last vowel; default Vv elides → "mlalú".
 	f := g.MinimalFormative("ml")
 	f.Stress = g.Ultimate
 	f.SlotIX = g.IllocValSlot{Illocution: g.ASR, Validation: g.INF}
 	got := Formative(f)
-	// Vk for ASR+INF = "u"; everything else default.
-	want := "amlalu"
+	want := "mlalú"
 	if got != want {
 		t.Errorf("Formative(verbal) = %q, want %q", got, want)
 	}
@@ -57,9 +58,9 @@ func TestFormative_WithSlotVIII(t *testing.T) {
 		MS:      g.MoodVal{Mood: g.SUB},
 	}
 	got := Formative(f)
-	// Slot VIII: Vn=a (MNO), Cn=hl (SUB). Slotted between VII and IX.
-	// Full: I="" II=a III=ml IV=a V="" VI=l VII="" VIII=ahl IX=a → "amlalahla"
-	want := "amlalahla"
+	// Long: a-ml-a-l-ahl-a. 4 vowels, PEN needs 2, slack 2 → both the
+	// default Vv and the THM Vc elide → "mlalahl".
+	want := "mlalahl"
 	if got != want {
 		t.Errorf("Formative(with VIII) = %q, want %q", got, want)
 	}
@@ -70,8 +71,8 @@ func TestFormative_WithAffixes(t *testing.T) {
 	// Slot VII affix: vowel=a, cons=r → "ar"
 	f.SlotVII = []g.Affix{{Vowel: "a", Consonant: "r", Type: g.Type1Affix}}
 	got := Formative(f)
-	// I="" II=a III=ml IV=a V="" VI=l VII=ar IX=a → "amlalara"
-	want := "amlalara"
+	// Long: a-ml-a-l-ar-a. Both default Vv and THM Vc elide → "mlalar".
+	want := "mlalar"
 	if got != want {
 		t.Errorf("Formative(with affix) = %q, want %q", got, want)
 	}
@@ -244,6 +245,166 @@ func TestMoodOrScopeP1(t *testing.T) {
 		if got := MoodOrScopeP1(c.ms); got != c.want {
 			t.Errorf("MoodOrScopeP1(%v) = %q, want %q", c.ms, got, c.want)
 		}
+	}
+}
+
+func TestFormative_THMVcElision_KeepsForMinimal(t *testing.T) {
+	// MinimalFormative("ml") has 3 syllables in long form (a-ml-a-l-a).
+	// PEN needs 2; slack is 1; only one elision fits. Prefer Vv.
+	f := g.MinimalFormative("ml")
+	got := Formative(f)
+	want := "mlala"
+	if got != want {
+		t.Errorf("Formative(minimal) = %q, want %q", got, want)
+	}
+}
+
+func TestFormative_THMVcElision_NotForUltimate(t *testing.T) {
+	// Ultimate stress carries Vk, not Vc — the trailing-a rule doesn't
+	// apply, only Vv elides. The diacritic still lands on the last vowel.
+	f := g.MinimalFormative("ml")
+	f.Stress = g.Ultimate
+	f.SlotIX = g.IllocValSlot{Illocution: g.ASR, Validation: g.OBS}
+	got := Formative(f)
+	want := "mlalá"
+	if got != want {
+		t.Errorf("Formative(ultimate-ASR) = %q, want %q", got, want)
+	}
+}
+
+func TestFormative_ShortForm_AntepenultKeepsLong(t *testing.T) {
+	// Antepenult stress needs ≥3 syllables. Eliding the leading "a" of a
+	// 3-syllable long form would leave 2 syllables, breaking the stress.
+	// The renderer must keep the long form so the diacritic can land.
+	f := g.MinimalFormative("ml")
+	f.Stress = g.Antepenultimate
+	got := Formative(f)
+	want := "ámlala"
+	if got != want {
+		t.Errorf("Formative(antepenult) = %q, want %q", got, want)
+	}
+}
+
+func TestFormative_ShortForm_NonDefaultVvNoElision(t *testing.T) {
+	// Non-default Vv (S2/PRC = "e") never elides; the THM Vc still does.
+	f := g.MinimalFormative("ml")
+	f.SlotII = g.SlotII{Stem: g.S2, Version: g.PRC}
+	got := Formative(f)
+	want := "emlal"
+	if got != want {
+		t.Errorf("Formative(S2/PRC) = %q, want %q", got, want)
+	}
+}
+
+func TestFormative_ShortForm_WithSlotI_NoElision(t *testing.T) {
+	// Slot I prefix locks the formative into long form for Vv; THM Vc
+	// still elides.
+	f := g.MinimalFormative("ml")
+	t1 := g.Type1
+	f.SlotI = &t1
+	got := Formative(f)
+	want := "hamlal"
+	if got != want {
+		t.Errorf("Formative(T1) = %q, want %q", got, want)
+	}
+}
+
+func TestFormative_ANTPaddingNilSlotIX(t *testing.T) {
+	// A Formative with nil Slot IX renders Vv+Cr+Vr+Ca = 2 syllables
+	// (a-m-a-l). ANT stress needs 3; §5.8.8 says pad with default Slot
+	// IX → append "a", yielding "amala", then mark ANT → "ámala".
+	f := g.Formative{
+		SlotIII: g.Root("m"),
+		SlotII:  g.DefaultSlotII,
+		SlotIV:  g.DefaultSlotIV,
+		SlotVI:  g.DefaultSlotVI,
+		Stress:  g.Antepenultimate,
+	}
+	got := Formative(f)
+	want := "ámala"
+	if got != want {
+		t.Errorf("Formative(ANT, nil SlotIX) = %q, want %q", got, want)
+	}
+}
+
+func TestFormative_ShortcutW_Series1(t *testing.T) {
+	f := g.MinimalFormative("ml")
+	sw := g.ShortcutW
+	f.SlotIShortcut = &sw
+	// MinimalFormative sets SlotIX=THM, so body is "waml" + "a" = "wamla"
+	// (2 vowels). PEN needs 2; slack 0; no elision. Result "wamla".
+	got := Formative(f)
+	want := "wamla"
+	if got != want {
+		t.Errorf("Formative(W shortcut series 1) = %q, want %q", got, want)
+	}
+}
+
+func TestFormative_ShortcutW_Series2(t *testing.T) {
+	f := g.MinimalFormative("ml")
+	sw := g.ShortcutW
+	f.SlotIShortcut = &sw
+	f.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL,
+		Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}
+	// W + G perspective → series 2, Vv "ai" for S1/PRC.
+	// Body: w + ai + ml + a = "waimla" (3 vowels: ai, a → 2 syllables).
+	got := Formative(f)
+	want := "waimla"
+	if got != want {
+		t.Errorf("Formative(W shortcut series 2) = %q, want %q", got, want)
+	}
+}
+
+func TestFormative_ShortcutY_Series1(t *testing.T) {
+	f := g.MinimalFormative("ml")
+	sy := g.ShortcutY
+	f.SlotIShortcut = &sy
+	f.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL,
+		Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}
+	// Y + PRX → series 1, Vv "a" for S1/PRC.
+	got := Formative(f)
+	want := "yamla"
+	if got != want {
+		t.Errorf("Formative(Y shortcut series 1) = %q, want %q", got, want)
+	}
+}
+
+func TestFormative_ShortcutWithConcat(t *testing.T) {
+	f := g.MinimalFormative("ml")
+	t1 := g.Type1
+	sw := g.ShortcutW
+	f.SlotI = &t1
+	f.SlotIShortcut = &sw
+	// hl- = Type1 + ShortcutW. Default Slot VI → series 1.
+	got := Formative(f)
+	want := "hlamla"
+	if got != want {
+		t.Errorf("Formative(T1+W shortcut) = %q, want %q", got, want)
+	}
+}
+
+func TestApplyStress(t *testing.T) {
+	cases := []struct {
+		name   string
+		word   string
+		stress g.Stress
+		want   string
+	}{
+		{"penultimate-unmarked", "amlala", g.Penultimate, "amlala"},
+		{"monosyllabic-unmarked", "mal", g.Monosyllabic, "mal"},
+		{"ultimate-3syl", "amlalu", g.Ultimate, "amlalú"},
+		{"ultimate-marks-first-of-diphthong", "amlaleu", g.Ultimate, "amlaléu"},
+		{"antepenult-3syl", "amlala", g.Antepenultimate, "ámlala"},
+		{"antepenult-4syl", "agulahla", g.Antepenultimate, "agúlahla"},
+		{"antepenult-too-short-noop", "amla", g.Antepenultimate, "amla"},
+		{"ultimate-umlaut", "amläl", g.Ultimate, "amlâl"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := applyStress(c.word, c.stress); got != c.want {
+				t.Errorf("applyStress(%q, %v) = %q, want %q", c.word, c.stress, got, c.want)
+			}
+		})
 	}
 }
 

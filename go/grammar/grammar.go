@@ -42,23 +42,38 @@ type SlotII struct {
 // the vowel form table. Form 5 ("ëi") is reserved for the Cs-root special
 // and never produced from a regular SlotII.
 func SlotIIToVv(s SlotII) string {
+	return SlotIIToVvSeries(s, 1)
+}
+
+// SlotIIToVvSeries encodes a SlotII as its Vv vowel in the given series
+// (1-4). Series 1 is the canonical non-shortcut form; series 2-4 are
+// used in Cc-shortcut forms to encode the elided Slot VI Ca alongside
+// the Vv.
+func SlotIIToVvSeries(s SlotII, series int) string {
+	return phonology.VowelForm(series, slotIIForm(s))
+}
+
+// slotIIForm returns the form number (1-9) corresponding to a SlotII.
+// Form 5 is reserved for the Cs-root special and is never produced
+// from a regular SlotII.
+func slotIIForm(s SlotII) int {
 	switch s {
 	case SlotII{S1, PRC}:
-		return phonology.VowelForm(1, 1)
+		return 1
 	case SlotII{S1, CPT}:
-		return phonology.VowelForm(1, 2)
+		return 2
 	case SlotII{S2, PRC}:
-		return phonology.VowelForm(1, 3)
+		return 3
 	case SlotII{S2, CPT}:
-		return phonology.VowelForm(1, 4)
+		return 4
 	case SlotII{S0, CPT}:
-		return phonology.VowelForm(1, 6)
+		return 6
 	case SlotII{S0, PRC}:
-		return phonology.VowelForm(1, 7)
+		return 7
 	case SlotII{S3, CPT}:
-		return phonology.VowelForm(1, 8)
+		return 8
 	case SlotII{S3, PRC}:
-		return phonology.VowelForm(1, 9)
+		return 9
 	}
 	panic("grammar: unreachable SlotII")
 }
