@@ -187,13 +187,15 @@ func ClassifyWord(word string) WordToken {
 	if word == "" {
 		return UnknownWord{Text: word}
 	}
-	// Hyphenated input: try as a concatenation chain. Every part must
-	// parse as a formative; non-final parts must carry Slot I.
+	// Hyphenated input: try as a concatenation chain. A hyphen is only
+	// meaningful as a concat-pair separator, so if the chain doesn't
+	// parse, don't let other classifiers (whose input model has no
+	// hyphen) snatch the word with a stretchy match.
 	if strings.Contains(word, "-") {
 		if c, ok := tryConcatenation(word); ok {
 			return ConcatenatedFormativeWord{Text: word, Chain: c}
 		}
-		// Fall through and try other classifications anyway.
+		return UnknownWord{Text: word}
 	}
 	conjs := surface.SplitConjuncts(word)
 
@@ -515,8 +517,9 @@ func tryCombinationRef(text string, conjs []string) (CombinationRefWord, bool) {
 }
 
 // tryConcatenation attempts to read word as a hyphen-joined formative
-// chain. All parts must parse as formatives; every non-final part
-// must carry a Slot I concatenation marker. Returns ok=false if any
+// chain (§3.1.7). Surface order: every leading formative is a
+// "concatenated" dependent carrying a Slot I Cc marker, and the LAST
+// formative is the "parent" with no Cc. Returns ok=false if any
 // constraint fails.
 func tryConcatenation(word string) (*concatenation.Chain, bool) {
 	parts := strings.Split(word, "-")
@@ -531,18 +534,19 @@ func tryConcatenation(word string) (*concatenation.Chain, bool) {
 		}
 		formatives = append(formatives, f)
 	}
-	// Head must be plain (no Concat).
-	if formatives[0].Concat != nil {
+	last := len(formatives) - 1
+	// Parent (last) must be plain.
+	if formatives[last].Concat != nil {
 		return nil, false
 	}
-	// Every dependent must carry Concat.
-	for i := 1; i < len(formatives); i++ {
+	// Every leading dependent must carry a Cc.
+	for i := 0; i < last; i++ {
 		if formatives[i].Concat == nil {
 			return nil, false
 		}
 	}
-	chain := concatenation.New(formatives[0])
-	for i := 1; i < len(formatives); i++ {
+	chain := concatenation.New(formatives[last])
+	for i := 0; i < last; i++ {
 		switch *formatives[i].Concat {
 		case g.Type1:
 			chain.Tail = append(chain.Tail, concatenation.Link{

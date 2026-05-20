@@ -105,12 +105,14 @@ func TestClassifyWord_ReferentialWithoutCase(t *testing.T) {
 }
 
 func TestClassifyWord_Concatenated(t *testing.T) {
-	// "amlala-hamlala" — head "amlala" + Type1-concat dependent
-	// "hamlala". The "h" prefix gives the dependent Slot I = Type1.
-	w := ClassifyWord("amlala-hamlala")
+	// Per §3.1.1, the concatenated formative comes FIRST in surface
+	// order with a Cc marker, and the parent comes LAST without one.
+	// "hamlala-amlala" = Type1-concat "hamlala" (h prefix) + parent
+	// "amlala".
+	w := ClassifyWord("hamlala-amlala")
 	cf, ok := w.(ConcatenatedFormativeWord)
 	if !ok {
-		t.Fatalf("ClassifyWord(\"amlala-hamlala\") = %T, want ConcatenatedFormativeWord", w)
+		t.Fatalf("ClassifyWord(\"hamlala-amlala\") = %T, want ConcatenatedFormativeWord", w)
 	}
 	if cf.Chain.Length() != 2 {
 		t.Errorf("chain length = %d, want 2", cf.Chain.Length())
@@ -140,8 +142,6 @@ func TestClassifyWord_Unknown(t *testing.T) {
 // least agree on what kind of word each input is.
 //
 // Known divergences (not asserted here):
-//   - "çëhamala-lala" — sentence prefix on a concat-chain head; our
-//     concat detector parses the whole thing as one big formative.
 //   - "hrei" — was a standalone Mood/Case-Scope adjunct in earlier
 //     spec versions. **Eliminated in v1.3** (replaced by the MCS
 //     affix), so we're correct to reject it; Kotlin tracks v0.19.0
@@ -192,7 +192,8 @@ func TestClassifyWord_IthkuilGlossCorpus(t *testing.T) {
 		{"miyüs", ref},               // ma-AFF-DAT-2m (Vc2 + C2)
 		{"adni'lö", formative},       // dn root + UTL with moved-glottal Vc
 		{"la'la", formative},         // l root + PRN with moved-glottal Vc
-		{"amlala-hamlala", concatenated},
+		{"hamlala-amlala", concatenated},
+		{"çëhamala-lala", concatenated},
 	}
 	typeName := func(w WordToken) string {
 		switch w.(type) {

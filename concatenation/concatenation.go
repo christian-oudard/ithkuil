@@ -26,9 +26,11 @@ type Link struct {
 	Formative g.Formative
 }
 
-// Chain is a head formative plus a list of dependents. Each dependent
-// carries its concatenation type and a fully populated Formative
-// (with SlotI set to match the link type).
+// Chain is a list of concatenated dependents followed by the parent
+// formative (§3.1.7). On the surface the parent comes LAST: the spec
+// terms the leading formative(s) "concatenated" — each carries a Cc
+// marker in Slot I — and the trailing one "parent" — which has no Cc.
+// Head holds the parent; Tail holds the dependents in surface order.
 type Chain struct {
 	Head Formative
 	Tail []Link
@@ -62,13 +64,14 @@ func (c *Chain) AddType2(f g.Formative) *Chain {
 	return c
 }
 
-// Formatives returns every formative in the chain (head first).
+// Formatives returns every formative in the chain in surface order:
+// the leading concatenated dependents first, then the parent.
 func (c *Chain) Formatives() []g.Formative {
 	out := make([]g.Formative, 0, 1+len(c.Tail))
-	out = append(out, c.Head)
 	for _, l := range c.Tail {
 		out = append(out, l.Formative)
 	}
+	out = append(out, c.Head)
 	return out
 }
 

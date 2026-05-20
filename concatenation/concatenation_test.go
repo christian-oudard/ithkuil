@@ -69,6 +69,9 @@ func TestSemantics_Mixed(t *testing.T) {
 }
 
 func TestFormatives_OrderAndCount(t *testing.T) {
+	// New() takes the parent; AddType1/AddType2 register the
+	// concatenated dependents. Formatives() walks them in surface
+	// order: dependents first, then the parent.
 	c := New(g.MinimalFormative("a")).
 		AddType1(g.MinimalFormative("b")).
 		AddType2(g.MinimalFormative("c"))
@@ -76,7 +79,7 @@ func TestFormatives_OrderAndCount(t *testing.T) {
 	if len(all) != 3 {
 		t.Fatalf("Formatives() = %d, want 3", len(all))
 	}
-	if cluster(all[0]) != "a" || cluster(all[1]) != "b" || cluster(all[2]) != "c" {
+	if cluster(all[0]) != "b" || cluster(all[1]) != "c" || cluster(all[2]) != "a" {
 		t.Errorf("Formatives order: %s %s %s",
 			cluster(all[0]), cluster(all[1]), cluster(all[2]))
 	}
