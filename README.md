@@ -19,7 +19,7 @@ This project implements a parser, renderer, and glosser for Ithkuil formatives a
 Given an Ithkuil word or sentence, the glosser parses it into its morphological components, looks up roots and affixes in the lexicon, and produces a human-readable gloss:
 
 ```
-$ cabal run ithkuil-gloss -- 'Malëuţřait'
+$ ithkuil 'Malëuţřait'
   Malëuţřait  [WFormative]
     Root: -m- = linguistic utterance for communication
     Stem/Version: S1/PRC
@@ -87,14 +87,23 @@ This tool provides:
 
 ## Building and Running
 
-Requires [Nix](https://nixos.org/) for reproducible builds:
+Requires Go 1.25+. The repo uses [Nix](https://nixos.org/) to pin the toolchain, but `go` from any source works.
+
+Install the CLIs to `$GOBIN` (typically `~/go/bin`, or `~/.local/bin` if you've set `GOBIN`):
 
 ```bash
-nix-shell                # Enter dev shell with GHC + cabal
-cabal update             # Fetch package index (first time only)
-cabal build              # Build library + executable
-cabal test               # Run test suite (359 tests)
-cabal run ithkuil-gloss  # Launch interactive glosser
+nix-shell                # Enter dev shell with go on PATH
+go install ./cmd/ithkuil ./cmd/ithkuil-mcp
+```
+
+Then `ithkuil 'Malëuţřait'` works from anywhere on PATH.
+
+For development:
+
+```bash
+go build ./...           # Build everything
+go test ./...            # Run the test suite
+go run ./cmd/ithkuil 'Malëuţřait'
 ```
 
 ### ASCII Input Method

@@ -6,4 +6,5 @@ pkgs.mkShell {
     pkgs.go
     pkgs.curl
   ];
+  CGO_ENABLED = "0";
 }

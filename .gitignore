@@ -1,5 +1,4 @@
 dist-newstyle/
-/bin/
 *.hi
 *.o
 *.dyn_hi
@@ -18,3 +17,7 @@ script/**/__pycache__/
 script/*.svg
 script/v3/*.svg
 discord_archive/data/
+
+# Built Go binaries at the module root after `go build ./cmd/...`.
+/ithkuil
+/ithkuil-mcp

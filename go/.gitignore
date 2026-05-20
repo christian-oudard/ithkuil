@@ -1,3 +1,0 @@
-# Built CLI binary lives at the go module root after `go build ./cmd/...`.
-# Pin to root so this doesn't accidentally ignore cmd/ithkuil-gloss/.
-/ithkuil-gloss
