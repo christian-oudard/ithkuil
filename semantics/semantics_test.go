@@ -151,4 +151,80 @@ func TestPrefixCode(t *testing.T) {
 	if got := PrefixCode("y"); got != "→concat" {
 		t.Errorf("PrefixCode(y) = %q", got)
 	}
+	if PrefixCode("z") != "z" {
+		t.Error("PrefixCode echoes unknown input")
+	}
+}
+
+func TestVhMeaning(t *testing.T) {
+	for _, v := range []string{"a", "e", "i", "u", "o"} {
+		if VhMeaning(v) == "" {
+			t.Errorf("VhMeaning(%q) empty", v)
+		}
+	}
+	// Unknown vowel: prose still non-empty, includes the input.
+	got := VhMeaning("x")
+	if got == "" {
+		t.Error("VhMeaning(x) empty for unrecognized input")
+	}
+}
+
+func TestPrefixMeaning(t *testing.T) {
+	if PrefixMeaning("w") == "" || PrefixMeaning("y") == "" {
+		t.Error("PrefixMeaning empty for w/y")
+	}
+	if PrefixMeaning("z") != "" {
+		t.Error("PrefixMeaning should be empty for unknown prefix")
+	}
+}
+
+func TestCmName(t *testing.T) {
+	if got := CmName("CmAspect"); got != "Cm (n)" {
+		t.Errorf("CmName(CmAspect) = %q", got)
+	}
+	if got := CmName("CmOther"); got != "Cm (ň)" {
+		t.Errorf("CmName(CmOther) = %q", got)
+	}
+	if CmName("unknown") != "" {
+		t.Error("CmName(unknown) should be empty")
+	}
+}
+
+func TestCmMeaning(t *testing.T) {
+	if CmMeaning("CmAspect") == "" || CmMeaning("CmOther") == "" {
+		t.Error("CmMeaning empty for known marker")
+	}
+	if CmMeaning("unknown") != "" {
+		t.Error("CmMeaning(unknown) should be empty")
+	}
+}
+
+func TestCnLabel_FailureCases(t *testing.T) {
+	// Invalid Cn returns the sentinel.
+	if got := CnLabel("zzz", true); got != "Cn?" {
+		t.Errorf("CnLabel(zzz) = %q, want Cn?", got)
+	}
+}
+
+func TestVnCategory_AllVnCategories(t *testing.T) {
+	// Exercise each fallback branch in VnCategory.
+	cases := []struct {
+		vn, cn, want string
+	}{
+		// Aspect when no Cn or Pattern-2 Cn.
+		{"a", "w", "RTR"},  // Aspect series 1
+		// Pattern-1 fallback chain for Vn series.
+		{"a", "hl", "MNO"}, // Valence (series 1)
+		{"ai", "h", "PCT"}, // Phase (series 2)
+		{"ia", "h", "BEN1"}, // Effect (series 3)
+		{"ao", "h", "MIN"}, // Level (series 4)
+		// Unknown Vn but valid Pattern-1 Cn → final fallback.
+		{"zz", "h", "Vn?"},
+	}
+	for _, c := range cases {
+		got := VnCategory(c.vn, c.cn)
+		if got != c.want {
+			t.Errorf("VnCategory(%q, %q) = %q, want %q", c.vn, c.cn, got, c.want)
+		}
+	}
 }

@@ -69,6 +69,46 @@ func TestSegmentsModular_BasicAndScope(t *testing.T) {
 	}
 }
 
+func TestSegments_VariantShapes(t *testing.T) {
+	// Walk a few formative shapes to exercise the per-slot segment
+	// builders: Cs-root, ref-root, Slot V affixes, Slot VIII present.
+	for _, w := range []string{
+		"ealali",    // RefRoot (ae Vv)
+		"ëilal",     // CsRoot (ëi Vv)
+		"oërmölá",   // CsRoot CPT.DYN + ASR ULT
+		"amlalara",  // CrRoot with Slot V (geminated Ca + reversed Cs/Vx)
+		"amlalahla", // CrRoot with Slot VIII
+	} {
+		tok := tokenize.ClassifyWord(w)
+		v, ok := tok.(tokenize.FormativeWord)
+		if !ok {
+			t.Errorf("%q didn't tokenize as a formative (%T)", w, tok)
+			continue
+		}
+		segs := Segments(v.Text, v.Formative, nil)
+		if len(segs) == 0 {
+			t.Errorf("Segments(%q) returned empty", w)
+		}
+	}
+}
+
+func TestGlossary_FormativeWithLexicon(t *testing.T) {
+	// Without the embedded lexicon we still want Glossary to walk the
+	// segments and emit category rows for non-default slots. Use a
+	// formative known to have a non-default Ca + Vc.
+	tok := tokenize.ClassifyWord("emlölo").(tokenize.FormativeWord)
+	segs := Segments(tok.Text, tok.Formative, nil)
+	glossary := Glossary(tok.Text, tok.Formative, segs, nil)
+	if len(glossary) == 0 {
+		t.Error("Glossary returned empty for emlölo")
+	}
+	for i, e := range glossary {
+		if e.Category == "" || e.Code == "" {
+			t.Errorf("Glossary[%d] missing Category or Code: %+v", i, e)
+		}
+	}
+}
+
 func TestSegmentsModular_VerbalVsNominal(t *testing.T) {
 	mw := tok(t, "ah").(tokenize.ModularWord)
 	verbal := true
