@@ -23,6 +23,7 @@ func cmdValidate(args []string, stdout, stderr io.Writer) int {
 		fs.Usage()
 		return 2
 	}
+	text = normalizeASCII(text)
 	any := false
 	for _, word := range strings.Fields(text) {
 		res := validation.ValidateWord(word)

@@ -10,6 +10,7 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/inspect"
 	"github.com/christian-oudard/ithkuil/tokenize"
+	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // indentedWriter wraps an io.Writer and prefixes every non-empty
@@ -83,8 +84,20 @@ func cmdAnalyze(args []string, stdin io.Reader, stdout, stderr io.Writer, lexDir
 		return 2
 	}
 
+	text = normalizeASCII(text)
+
+	// Validate each word's phonotactics before parsing so we fail
+	// loudly on garbage input instead of synthesizing nonsense slot
+	// breakdowns from a Cs cluster like "t,rq".
+	invalid := make(map[string]validation.Result)
+	for _, w := range strings.Fields(text) {
+		if r := validation.ValidateWord(w); !r.Valid {
+			invalid[w] = r
+		}
+	}
+
 	tokens := tokenize.Tokenize(text)
-	if len(tokens) == 0 {
+	if len(tokens) == 0 && len(invalid) == 0 {
 		return 0
 	}
 	lex := loadLex(lexDir, stderr)
@@ -102,13 +115,31 @@ func cmdAnalyze(args []string, stdin io.Reader, stdout, stderr io.Writer, lexDir
 	}
 
 	// Detailed view.
+	exit := 0
 	for i, t := range tokens {
 		if i > 0 {
 			fmt.Fprintln(stdout)
 		}
+		if res, bad := invalid[t.Surface()]; bad {
+			renderValidationError(stderr, t.Surface(), res)
+			exit = 1
+			continue
+		}
 		renderDetailed(stdout, t, lex, glosser)
 	}
-	return 0
+	return exit
+}
+
+// renderValidationError reports a phonotactically invalid word in
+// the same shape as `ithkuil validate`.
+func renderValidationError(w io.Writer, word string, res validation.Result) {
+	for _, e := range res.Errors {
+		fmt.Fprintf(w, "%s  %s: %s", word, e.Rule, e.Reason)
+		if e.Cluster != "" {
+			fmt.Fprintf(w, " (cluster %s)", e.Cluster)
+		}
+		fmt.Fprintln(w)
+	}
 }
 
 func renderDetailed(w io.Writer, t tokenize.WordToken, lex interface{}, glosser gloss.Glosser) {

@@ -72,6 +72,38 @@ func TestAnalyze_Detailed(t *testing.T) {
 	}
 }
 
+func TestAnalyze_ASCIIInput(t *testing.T) {
+	// ASCII typing convention: "maleeut,rqait" must normalize to
+	// "malëuţřait" before parsing, so the slot breakdown shows the
+	// right affixes (ţř → SYS at degree 5, not literal "t,rq").
+	out, _, code := runCLI("-lex", dataDir(), "analyze", "maleeut,rqait")
+	if code != 0 {
+		t.Fatalf("analyze exit %d", code)
+	}
+	for _, want := range []string{"malëuţřait", "SYS", "DEG5"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("ASCII analyze missing %q; got %q", want, out)
+		}
+	}
+	for _, bad := range []string{"t,rq", "DEG0"} {
+		if strings.Contains(out, bad) {
+			t.Errorf("ASCII analyze should not contain %q; got %q", bad, out)
+		}
+	}
+}
+
+func TestAnalyze_InvalidWord(t *testing.T) {
+	// Phonotactically invalid input must fail loudly instead of
+	// rendering a garbage slot breakdown.
+	out, errOut, code := runCLI("analyze", "akxq")
+	if code != 1 {
+		t.Fatalf("analyze invalid exit = %d, want 1; out=%q err=%q", code, out, errOut)
+	}
+	if !strings.Contains(errOut, "non-Ithkuil characters") {
+		t.Errorf("expected non-Ithkuil error; got stderr=%q", errOut)
+	}
+}
+
 func TestAnalyze_Short(t *testing.T) {
 	out, _, code := runCLI("analyze", "--short", "malëuţřait")
 	if code != 0 {
