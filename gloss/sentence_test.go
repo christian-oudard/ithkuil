@@ -110,6 +110,87 @@ func TestSentence_CarrierForeign(t *testing.T) {
 	}
 }
 
+func TestToken_SingleAffixWord(t *testing.T) {
+	tok := tokenize.ClassifyWord("are")
+	got := (&Glosser{}).Token(tok)
+	if !strings.HasPrefix(got, "AFFIX[") {
+		t.Errorf("Token(are) = %q, want AFFIX[...]", got)
+	}
+}
+
+func TestToken_MultipleAffixWord(t *testing.T) {
+	tok := tokenize.ClassifyWord("xaheitr")
+	got := (&Glosser{}).Token(tok)
+	if !strings.HasPrefix(got, "AFFIXES[") {
+		t.Errorf("Token(xaheitr) = %q, want AFFIXES[...]", got)
+	}
+}
+
+func TestToken_CombinationRef(t *testing.T) {
+	tok := tokenize.ClassifyWord("ţnaxeka")
+	got := (&Glosser{}).Token(tok)
+	if !strings.Contains(got, "REF[") || !strings.Contains(got, ".x") {
+		t.Errorf("Token(ţnaxeka) = %q, want REF[...]-...x", got)
+	}
+}
+
+func TestToken_CombinationRef_WithCarrier(t *testing.T) {
+	tok := tokenize.ClassifyWord("ahlax")
+	got := (&Glosser{}).Token(tok)
+	if !strings.Contains(got, "CARR[") {
+		t.Errorf("Token(ahlax) = %q, want CARR[...]", got)
+	}
+}
+
+func TestToken_Ref_WithCarrier(t *testing.T) {
+	tok := tokenize.ClassifyWord("üohla")
+	got := (&Glosser{}).Token(tok)
+	if !strings.Contains(got, "CARR[") {
+		t.Errorf("Token(üohla) = %q, want CARR[...]", got)
+	}
+}
+
+func TestToken_Ref_RpvAndCase2(t *testing.T) {
+	tok := tokenize.ClassifyWord("layá")
+	got := (&Glosser{}).Token(tok)
+	if !strings.Contains(got, "\\RPV") {
+		t.Errorf("Token(layá) = %q, want \\RPV suffix", got)
+	}
+}
+
+func TestToken_Concatenated(t *testing.T) {
+	tok := tokenize.ClassifyWord("hamlala-amlala")
+	got := (&Glosser{}).Token(tok)
+	if !strings.Contains(got, " >> ") {
+		t.Errorf("Token(hamlala-amlala) = %q, want \" >> \" separator", got)
+	}
+}
+
+func TestFormative_CsRoot(t *testing.T) {
+	tok := tokenize.ClassifyWord("oërmölá").(tokenize.FormativeWord)
+	got := (&Glosser{}).Formative(tok.Formative)
+	if got == "" {
+		t.Fatal("Formative of oërmölá returned empty")
+	}
+	// CsRoot should mention DYN (function) per the test corpus and use
+	// the (Cs)/degree shape.
+	if !strings.Contains(got, "(") || !strings.Contains(got, "/") {
+		t.Errorf("CsRoot gloss = %q; expected (Cs)/degree shape", got)
+	}
+}
+
+func TestFormative_RefRoot(t *testing.T) {
+	tok := tokenize.ClassifyWord("ealali").(tokenize.FormativeWord)
+	got := (&Glosser{}).Formative(tok.Formative)
+	if got == "" {
+		t.Fatal("Formative of ealali returned empty")
+	}
+	// RefRoot gloss has the "-(refs)-" shape from §4.6.4 decomposition.
+	if !strings.Contains(got, "(1m)") {
+		t.Errorf("RefRoot gloss = %q, want \"(1m)\" segment", got)
+	}
+}
+
 func TestToken_Unknown(t *testing.T) {
 	// "qpqp" has only non-Ithkuil "q"s plus a non-referential "p"
 	// arrangement; nothing claims it.
