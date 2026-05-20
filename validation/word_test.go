@@ -13,6 +13,16 @@ func TestValidateWord_Valid(t *testing.T) {
 	}
 }
 
+func TestValidateWord_CapitalizedIsValid(t *testing.T) {
+	// Capital letters are orthographic (sentence-initial, proper
+	// nouns); the canonical name of the language is conventionally
+	// written "Malëuţřait" and must validate.
+	r := ValidateWord("Malëuţřait")
+	if !r.Valid {
+		t.Errorf("Malëuţřait should validate, got %v", r.Errors)
+	}
+}
+
 func TestValidateWord_BadStress(t *testing.T) {
 	// "lá" — single-syllable with explicit stress = MarkedDefaultStress.
 	r := ValidateWord("lá")

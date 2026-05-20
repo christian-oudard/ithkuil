@@ -39,10 +39,12 @@ var ithkuilRunes = func() map[rune]bool {
 
 // ValidateChars reports any character in word that isn't part of the
 // V4 alphabet (consonants, vowels with diacritic variants, glottal,
-// hyphen). The error names each offending rune with its codepoint.
+// hyphen). Capital letters are folded to lowercase first — case is
+// orthographic in V4, not phonemic. The error names each offending
+// rune with its codepoint.
 func ValidateChars(word string) Result {
 	var bad []rune
-	for _, r := range word {
+	for _, r := range strings.ToLower(word) {
 		if !ithkuilRunes[r] {
 			bad = append(bad, r)
 		}
@@ -79,6 +81,11 @@ func ValidateWord(word string) Result {
 	if cr := ValidateChars(word); !cr.Valid {
 		return cr
 	}
+
+	// Stress/cluster lookups all assume lowercase; fold here so that
+	// orthographic capitals (sentence-initial, proper nouns) don't
+	// trip downstream tables.
+	word = strings.ToLower(word)
 
 	var errs []Error
 
