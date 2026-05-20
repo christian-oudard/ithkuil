@@ -114,16 +114,20 @@ func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
 	var segs []Segment
 	i := 0
 	rootLower := strings.ToLower(cr.Cluster)
+	shortcut := false
 
 	// Detect a Slot I shortcut. When the first consonant conjunct
 	// isn't the parser's root cluster, the leading conjunct(s) form
-	// a Cc prefix (h-, hw-, w-, y-, hl-, hm-, hr-, hn-).
+	// a Cc prefix (h-, hw-, w-, y-, hl-, hm-, hr-, hn-). For these
+	// forms Vr is elided and Ca is encoded in the (Cc, Vv) pair, so
+	// the table after Cr skips straight to Slot V/VII affixes.
 	if parse.IsConsonantConjunct(conjs[0]) && strings.ToLower(conjs[0]) != rootLower {
 		segs = append(segs, Segment{
 			Raw:     strings.ToLower(conjs[0]),
 			Slot:    "Cc",
-			Encodes: []string{"shortcut"},
+			Encodes: []string{"Slot I shortcut"},
 		})
+		shortcut = true
 		i++
 	}
 
@@ -154,21 +158,22 @@ func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
 		Slot:    "Cr",
 		Encodes: []string{fmt.Sprintf("Root %q", rootLower)},
 	})
-	// Skip the matching conjunct(s) if they exist, otherwise leave
-	// i alone (the root was elided into a shortcut).
 	if i < len(conjs) && strings.ToLower(conjs[i]) == rootLower {
 		i++
 	}
 
-	// Slot IV (Vr).
-	if i < len(conjs) && parse.IsVowelConjunct(conjs[i]) {
-		segs = append(segs, Segment{
-			Raw:      strings.ToLower(conjs[i]),
-			Slot:     "Vr",
-			Encodes:  []string{cr.SlotIV.Function.String(), cr.SlotIV.Specification.String(), cr.SlotIV.Context.String()},
-			Defaults: cr.SlotIV == g.DefaultSlotIV,
-		})
-		i++
+	// Slot IV (Vr) — elided for Slot I shortcut forms (Vr defaults
+	// to STA/BSC/EXS, encoded into the Cc choice instead).
+	if !shortcut {
+		if i < len(conjs) && parse.IsVowelConjunct(conjs[i]) {
+			segs = append(segs, Segment{
+				Raw:      strings.ToLower(conjs[i]),
+				Slot:     "Vr",
+				Encodes:  []string{cr.SlotIV.Function.String(), cr.SlotIV.Specification.String(), cr.SlotIV.Context.String()},
+				Defaults: cr.SlotIV == g.DefaultSlotIV,
+			})
+			i++
+		}
 	}
 
 	// Slot V affixes (pre-Ca), CsVx reversed order.
@@ -196,8 +201,9 @@ func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
 		i++
 	}
 
-	// Slot VI (Ca).
-	if i < len(conjs) {
+	// Slot VI (Ca) — elided for shortcut forms (Ca derived from
+	// the Cc+Vv pair). For regular forms, the next conjunct is Ca.
+	if !shortcut && i < len(conjs) && parse.IsConsonantConjunct(conjs[i]) {
 		segs = append(segs, Segment{
 			Raw:      strings.ToLower(conjs[i]),
 			Slot:     "Ca",
