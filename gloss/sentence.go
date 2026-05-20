@@ -7,6 +7,7 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/referentials"
+	"github.com/christian-oudard/ithkuil/semantics"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -47,7 +48,7 @@ func (gl *Glosser) Token(t tokenize.WordToken) string {
 	case tokenize.CarrierWord:
 		return "CARR-" + v.Carrier.Type.String() + "(" + v.Carrier.Vc + ")"
 	case tokenize.ModularWord:
-		return modularLabel(v.Modular)
+		return modularLabel(v.Modular, v.MarksMood)
 	case tokenize.SingleAffixWord:
 		return singleAffixLabel(v.Affix)
 	case tokenize.MultipleAffixWord:
@@ -105,16 +106,17 @@ func biasLabel(b g.Bias) string {
 // modularLabel formats a parsed modular adjunct. When ParseVnCn
 // succeeds we show the typed SlotVIII content (e.g. "MOD(PRL.SUB)");
 // otherwise we fall back to the raw "MOD(Vn+Cn)" surface form.
-func modularLabel(m g.ModularAdjunct) string {
+//
+// marksMood comes from the tokenizer's cross-formative scan: when the
+// next formative is verbal it's *true (Cn → Mood); when it's nominal
+// or framed-verbal it's *false (Cn → CaseScope); when no neighbor was
+// found it's nil and we fall back to the Vn-pattern heuristic.
+func modularLabel(m g.ModularAdjunct, marksMood *bool) string {
 	s, ok := parse.ParseVnCn(m.Vn, m.Cn)
 	if !ok {
 		return "MOD(" + m.Vn + "+" + m.Cn + ")"
 	}
-	// Modular adjuncts have no Final. Conventional labelling matches
-	// the Cn pattern: Pattern-1 (Valence/Phase/Effect/Level) → Mood;
-	// Pattern-2 (Aspect) → CaseScope.
-	_, isAspect := s.(g.VnCnAspect)
-	inner := slotVIII(s, !isAspect)
+	inner := slotVIII(s, semantics.ModularIsVerbal(s, marksMood))
 	if inner == "" {
 		// Both Vn and Cn were defaults; surface just "MOD".
 		return "MOD"

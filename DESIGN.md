@@ -29,7 +29,7 @@ Semantic structure    {Pairs decoded, Slot 4 = V_H scope marker}
 | B     | `surface/` (conjunct.go)               | ✅ extracted, round-trip tested |
 | C     | `layout/` (parse.go + render.go)       | ✅ extracted, round-trip tested |
 | D     | `layout/` (grammar.go) on top of `parse/` and `allomorph/` decoders | ✅ extracted, round-trip tested |
-| E     | inside `inspect/` and `gloss/`         | ⚠️ entangled with C/D (V_N vs V_H, Mood vs CaseScope) |
+| E     | `semantics/`                           | ✅ extracted, unit-tested |
 
 ## What `surface/` owns
 
@@ -106,22 +106,36 @@ Round-trip tests in `layout/roundtrip_test.go` (surface↔Layout)
 and `layout/grammar_test.go` (Layout↔Formative) exercise the
 inverses against the working corpus.
 
-## What's still entangled
+## What `semantics/` owns
 
-Layer E — context-dependent semantics — lives in `inspect/` and
-`gloss/`. The decisions made here:
+Layer E is pure functions that turn Layer-D values into
+context-dependent labels. Nothing in `semantics/` looks at surface
+text directly; callers hand it the grammar-side objects plus the
+neighbor information already inferred by `tokenize/`.
 
-- Mood-vs-CaseScope label selection for Slot VIII Cn. Driven by
-  the formative's `Final` variant via `grammar.IsVerbal` and
-  `grammar.MoodToCaseScope`.
-- V_N-vs-V_H reading of a modular adjunct's slot 4. Driven by
-  stress + the presence of (Vn, Cn) pairs (§4.3). Single-site in
-  `inspect/segments.go`.
-- Modular adjunct Cn pattern (Mood vs CaseScope label). Driven by
-  the adjacent formative's `IsVerbal` via `tokenize.MarksMood`.
-- Prose meanings of slot codes (`grammar.Name`, `grammar.Meaning`,
-  `inspect.vhMeaning`, `inspect.prefixMeaning`). Pure lookup tables.
+- `MoodOrCaseScope(mood, isVerbal)` — verbal Mood label vs nominal
+  CaseScope twin (§3.8.1).
+- `SlotVIIICnLabel(slotVIII, final)` — applies the above to a parsed
+  formative's Slot VIII, picking verbal/nominal from `IsVerbal(final)`.
+- `IsVH(stress, pairCount)` — modular slot 4 = V_H when ultimate
+  stress AND ≥1 (Vn, Cn) pair (§4.3); otherwise V_N.
+- `ModularIsVerbal(slotVIII, marksMood)` — modular Cn pattern. When
+  `tokenize.MarksMood` set the verbal/nominal flag from a neighbor,
+  that wins; otherwise we fall back to the Vn pattern (Pattern-1 →
+  Mood, Pattern-2 → CaseScope).
+- `VnCategory(vn, cn)` — picks Aspect vs Valence/Phase/Effect/Level
+  for a modular Vn based on the paired Cn.
+- `CnLabel(cn, asMood)` — modular Cn as Mood or CaseScope (or the
+  Cm "n"/"ň" marker codes).
+- `VhCode`/`VhMeaning`, `PrefixCode`/`PrefixMeaning`, `CmName`/
+  `CmMeaning` — pure prose lookups for the scope-bearing pieces of
+  a modular adjunct.
 
 Common visitors over the SlotVIII sum type live in `grammar/` as
 `SlotVIIIMoodScope` and `SlotVIIIVnLabel`. `inspect/` and `gloss/`
 use them instead of re-doing the five-case type switch.
+
+`inspect/` and `gloss/` are the consumers — they take parsed tokens,
+ask `semantics/` for the context-dependent labels, and render them
+into the per-slot trace, side-by-side diff, or hyphen-separated
+gloss strings.

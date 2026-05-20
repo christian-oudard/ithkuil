@@ -15,6 +15,7 @@ import (
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/semantics"
 )
 
 // Glosser carries the optional lexicon used for enriching root and
@@ -272,20 +273,12 @@ func slotVIII(s g.SlotVIII, isVerbal bool) string {
 	if v, ok := s.(g.VnCnValence); ok && v.Valence == g.MNO {
 		vn = ""
 	}
-	return joinDot(vn, moodOrScope(g.SlotVIIIMoodScope(s), isVerbal))
-}
-
-// moodOrScope renders the MoodScope field of a SlotVIII using the Mood
-// label set for verbal formatives and the CaseScope label set for
-// nominal ones. FAC / CCN — the default value — is suppressed.
-func moodOrScope(m g.Mood, isVerbal bool) string {
-	if m == g.FAC {
-		return ""
+	mood := g.SlotVIIIMoodScope(s)
+	scope := ""
+	if mood != g.FAC {
+		scope = semantics.MoodOrCaseScope(mood, isVerbal)
 	}
-	if isVerbal {
-		return m.String()
-	}
-	return g.MoodToCaseScope(m).String()
+	return joinDot(vn, scope)
 }
 
 func joinDot(parts ...string) string {

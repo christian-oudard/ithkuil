@@ -10,6 +10,7 @@ import (
 	"github.com/christian-oudard/ithkuil/layout"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
+	"github.com/christian-oudard/ithkuil/semantics"
 	"github.com/christian-oudard/ithkuil/surface"
 )
 
@@ -360,7 +361,7 @@ func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segmen
 		segs = append(segs, Segment{
 			Raw:     strings.ToLower(ma.Prefix),
 			Slot:    "scope",
-			Encodes: []string{prefixCode(ma.Prefix)},
+			Encodes: []string{semantics.PrefixCode(ma.Prefix)},
 		})
 	}
 	for i, p := range ma.Pairs {
@@ -368,34 +369,27 @@ func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segmen
 		segs = append(segs, Segment{
 			Raw:     strings.ToLower(p.Vn),
 			Slot:    fmt.Sprintf("Vn%s", idx),
-			Encodes: []string{vnAsCode(p.Vn, p.Cn)},
+			Encodes: []string{semantics.VnCategory(p.Vn, p.Cn)},
 		})
 		segs = append(segs, Segment{
 			Raw:     strings.ToLower(p.Cn),
 			Slot:    fmt.Sprintf("Cn%s", idx),
-			Encodes: []string{cnAsCode(p.Cn, asMood)},
+			Encodes: []string{semantics.CnLabel(p.Cn, asMood)},
 		})
 	}
 	if ma.Final != "" {
-		// Per §4.3, slot 4 of a modular adjunct is V_H (a scope
-		// marker) only when the adjunct has ultimate stress AND
-		// there are affixes in slots 2/3 for V_H to scope over.
-		// Otherwise slot 4 is V_N — another aspect/valence/etc.
-		// position with default Cn (which we render as a lone
-		// aspect at default FAC mood / CCN case-scope).
 		_, stress := surface.Strip(word)
-		isVH := stress == surface.Ultimate && len(ma.Pairs) > 0
-		if isVH {
+		if semantics.IsVH(stress, len(ma.Pairs)) {
 			segs = append(segs, Segment{
 				Raw:     strings.ToLower(ma.Final),
 				Slot:    "Vh",
-				Encodes: []string{vhCode(ma.Final)},
+				Encodes: []string{semantics.VhCode(ma.Final)},
 			})
 		} else {
 			segs = append(segs, Segment{
 				Raw:     strings.ToLower(ma.Final),
 				Slot:    "Vn",
-				Encodes: []string{vnAsCode(ma.Final, "")},
+				Encodes: []string{semantics.VnCategory(ma.Final, "")},
 			})
 		}
 	}
@@ -426,16 +420,16 @@ func GlossaryModular(segs []Segment) []GlossaryEntry {
 			case "scope":
 				cat = "scope"
 				name = ""
-				meaning = prefixMeaning(s.Raw)
+				meaning = semantics.PrefixMeaning(s.Raw)
 			case "Vh":
 				cat = "scope"
 				name = ""
-				meaning = vhMeaning(s.Raw)
+				meaning = semantics.VhMeaning(s.Raw)
 			case "Cn₁", "Cn₂", "Cn₃":
 				if code == "CmAspect" || code == "CmOther" {
 					cat = "marker"
-					name = cmName(code)
-					meaning = cmMeaning(code)
+					name = semantics.CmName(code)
+					meaning = semantics.CmMeaning(code)
 				}
 			}
 			out = append(out, GlossaryEntry{
@@ -444,141 +438,6 @@ func GlossaryModular(segs []Segment) []GlossaryEntry {
 		}
 	}
 	return out
-}
-
-// prefixCode returns a short tag for a w/y scope prefix that's
-// distinct from the bare letter shown in PHONETIC.
-func prefixCode(p string) string {
-	switch p {
-	case "w":
-		return "→parent"
-	case "y":
-		return "→concat"
-	}
-	return p
-}
-
-// vhCode returns a short tag for the Vh scope vowel indicating its
-// scope reach. Distinct from the bare letter shown in PHONETIC. The
-// vowel may carry an acute (ultimate stress mark) — strip it before
-// the lookup so "ó" matches "o".
-func vhCode(v string) string {
-	switch parse.NormalizeAccents(v) {
-	case "a":
-		return "→Case/Mood/Val/Illoc"
-	case "e":
-		return "→Case/Mood"
-	case "i", "u":
-		return "→formative"
-	case "o":
-		return "→formative+adjuncts"
-	}
-	return "→" + v
-}
-
-func prefixMeaning(p string) string {
-	switch p {
-	case "w":
-		return "applies to parent formative only"
-	case "y":
-		return "applies to concatenated formative only"
-	}
-	return ""
-}
-
-func cmName(code string) string {
-	switch code {
-	case "CmAspect":
-		return "Cm (n)"
-	case "CmOther":
-		return "Cm (ň)"
-	}
-	return ""
-}
-
-func cmMeaning(code string) string {
-	switch code {
-	case "CmAspect":
-		return "marks the previous Vn as an aspect"
-	case "CmOther":
-		return "marks the previous Vn as valence/phase/effect/level"
-	}
-	return ""
-}
-
-// vnAsCode identifies the grammatical category a modular Vn encodes.
-// Spec rules:
-//
-//   - Slot 2 Cn = w/y/hw/hrw/hmw/hnw/hňw → Vn is an Aspect.
-//   - Slot 2 Cn = h/hl/hr/hm/hn/hň → Vn is one of Valence/Phase/
-//     Effect/Level (determined by Vn's vowel-series).
-//   - Slot 3 Cm = "n" → preceding Vn is an Aspect.
-//   - Slot 3 Cm = "ň" → preceding Vn is Valence/Phase/Effect/Level.
-//   - Lone final vowel (no Cn) → Aspect.
-func vnAsCode(vn, cn string) string {
-	if cn == "" || isAspectCn(cn) || cn == "n" {
-		if a, ok := parse.ParseVnAspect(vn); ok {
-			return a.String()
-		}
-		return "Aspect?"
-	}
-	if v, ok := parse.ParseVnValence(vn); ok {
-		return v.String()
-	}
-	if p, ok := parse.ParseVnPhase(vn); ok {
-		return p.String()
-	}
-	if e, ok := parse.ParseVnEffect(vn); ok {
-		return e.String()
-	}
-	if l, ok := parse.ParseVnLevel(vn); ok {
-		return l.String()
-	}
-	return "Vn?"
-}
-
-func isAspectCn(cn string) bool {
-	switch cn {
-	case "w", "y", "hw", "hrw", "hmw", "hnw", "hňw":
-		return true
-	}
-	return false
-}
-
-func cnAsCode(cn string, asMood bool) string {
-	if asMood {
-		if isAspectCn(cn) {
-			if m, ok := parse.ParseCnMoodP2(cn); ok {
-				return m.String()
-			}
-		}
-		if m, ok := parse.ParseCnMood(cn); ok {
-			return m.String()
-		}
-	} else if cs, ok := parse.ParseCnCaseScope(cn); ok {
-		return cs.String()
-	}
-	switch cn {
-	case "n":
-		return "CmAspect"
-	case "ň":
-		return "CmOther"
-	}
-	return "Cn?"
-}
-
-func vhMeaning(v string) string {
-	switch parse.NormalizeAccents(v) {
-	case "a":
-		return "scope over Case/Mood + Validation+Illocution"
-	case "e":
-		return "scope over Case/Mood"
-	case "i", "u":
-		return "scope over formative only"
-	case "o":
-		return "scope over formative + adjacent affixual adjuncts"
-	}
-	return "V_H " + v
 }
 
 // decorateHyphens fills Segment.Chunk with hyphens: word-initial
@@ -631,17 +490,9 @@ func slotVICodes(s g.SlotVI) []string {
 
 // slotVIIICnCode renders the Slot VIII Cn as either a Mood label
 // (for verbal formatives) or a CaseScope label (for nominal/framed
-// formatives). The underlying MoodScope field carries the Mood-typed
-// value either way.
+// formatives). Thin wrapper around semantics.SlotVIIICnLabel.
 func slotVIIICnCode(s g.SlotVIII, fin g.Final) string {
-	if s == nil {
-		return ""
-	}
-	m := g.SlotVIIIMoodScope(s)
-	if g.IsVerbal(fin) {
-		return m.String()
-	}
-	return g.MoodToCaseScope(m).String()
+	return semantics.SlotVIIICnLabel(s, fin)
 }
 
 // slotIXLabelCodes returns the slot label ("Vc" or "Vk"), the codes

@@ -1,0 +1,154 @@
+package semantics
+
+import (
+	"testing"
+
+	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/surface"
+)
+
+func TestMoodOrCaseScope(t *testing.T) {
+	tests := []struct {
+		mood     g.Mood
+		isVerbal bool
+		want     string
+	}{
+		{g.FAC, true, "FAC"},
+		{g.FAC, false, "CCN"},
+		{g.HYP, true, "HYP"},
+		{g.HYP, false, "CCV"},
+		{g.SUB, true, "SUB"},
+		{g.SUB, false, "CCA"},
+	}
+	for _, tt := range tests {
+		got := MoodOrCaseScope(tt.mood, tt.isVerbal)
+		if got != tt.want {
+			t.Errorf("MoodOrCaseScope(%v,%v) = %q, want %q",
+				tt.mood, tt.isVerbal, got, tt.want)
+		}
+	}
+}
+
+func TestSlotVIIICnLabel(t *testing.T) {
+	// nil → ""
+	if got := SlotVIIICnLabel(nil, g.UnframedNominal{Case: g.THM}); got != "" {
+		t.Errorf("SlotVIIICnLabel(nil) = %q, want \"\"", got)
+	}
+	// Verbal final → Mood label
+	s := g.VnCnValence{Valence: g.PRL, MoodScope: g.SUB}
+	got := SlotVIIICnLabel(s, g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}})
+	if got != "SUB" {
+		t.Errorf("verbal final SlotVIIICnLabel = %q, want \"SUB\"", got)
+	}
+	// Nominal final → CaseScope
+	got = SlotVIIICnLabel(s, g.UnframedNominal{Case: g.THM})
+	if got != "CCA" {
+		t.Errorf("nominal final SlotVIIICnLabel = %q, want \"CCA\"", got)
+	}
+	// Framed-verbal final → CaseScope (framed counts as nominal for Cn)
+	got = SlotVIIICnLabel(s, g.FramedVerbal{Case: g.THM})
+	if got != "CCA" {
+		t.Errorf("framed-verbal SlotVIIICnLabel = %q, want \"CCA\"", got)
+	}
+}
+
+func TestIsVH(t *testing.T) {
+	cases := []struct {
+		stress    surface.Stress
+		pairCount int
+		want      bool
+	}{
+		{surface.Ultimate, 1, true},
+		{surface.Ultimate, 3, true},
+		{surface.Ultimate, 0, false}, // no pairs → V_N
+		{surface.Penultimate, 1, false},
+		{surface.Monosyllabic, 0, false},
+	}
+	for _, c := range cases {
+		if got := IsVH(c.stress, c.pairCount); got != c.want {
+			t.Errorf("IsVH(%v,%d) = %v, want %v", c.stress, c.pairCount, got, c.want)
+		}
+	}
+}
+
+func TestModularIsVerbal(t *testing.T) {
+	yes, no := true, false
+	// marksMood wins when set
+	if !ModularIsVerbal(g.VnCnAspect{Aspect: g.PRG}, &yes) {
+		t.Error("marksMood=true should win even over Aspect Vn")
+	}
+	if ModularIsVerbal(g.VnCnValence{Valence: g.MNO}, &no) {
+		t.Error("marksMood=false should win even over Pattern-1 Vn")
+	}
+	// Fallback: Pattern-1 Vn → verbal
+	if !ModularIsVerbal(g.VnCnValence{Valence: g.PRL}, nil) {
+		t.Error("Pattern-1 Vn fallback should be verbal")
+	}
+	// Fallback: Aspect Vn → nominal (CaseScope)
+	if ModularIsVerbal(g.VnCnAspect{Aspect: g.HAB}, nil) {
+		t.Error("Aspect Vn fallback should be nominal")
+	}
+	// nil SlotVIII: with no Vn pattern info, treat as verbal (Mood is the
+	// pattern-1 default).
+	if !ModularIsVerbal(nil, nil) {
+		t.Error("nil SlotVIII fallback should default to verbal")
+	}
+}
+
+func TestVnCategory(t *testing.T) {
+	cases := []struct {
+		vn, cn, want string
+	}{
+		{"a", "", "RTR"},    // no Cn → Aspect
+		{"e", "hňw", "HAB"}, // Pattern-2 Cn → Aspect
+		{"ä", "hl", "PRL"},  // Pattern-1 Cn → Valence
+		{"i", "n", "PRG"},   // Cm "n" → Aspect
+		{"u", "ň", "PTI"},   // Cm "ň" → Pattern-1 (Valence first)
+	}
+	for _, c := range cases {
+		got := VnCategory(c.vn, c.cn)
+		if got != c.want {
+			t.Errorf("VnCategory(%q,%q) = %q, want %q", c.vn, c.cn, got, c.want)
+		}
+	}
+}
+
+func TestCnLabel(t *testing.T) {
+	if got := CnLabel("hl", true); got != "SUB" {
+		t.Errorf("CnLabel(hl,Mood) = %q, want \"SUB\"", got)
+	}
+	if got := CnLabel("hl", false); got != "CCA" {
+		t.Errorf("CnLabel(hl,CaseScope) = %q, want \"CCA\"", got)
+	}
+	if got := CnLabel("hňw", true); got != "HYP" {
+		t.Errorf("CnLabel(hňw,Mood) = %q, want \"HYP\"", got)
+	}
+	if got := CnLabel("n", true); got != "CmAspect" {
+		t.Errorf("CnLabel(n) = %q, want \"CmAspect\"", got)
+	}
+}
+
+func TestVhCode(t *testing.T) {
+	cases := map[string]string{
+		"a": "→Case/Mood/Val/Illoc",
+		"e": "→Case/Mood",
+		"i": "→formative",
+		"u": "→formative",
+		"o": "→formative+adjuncts",
+		"á": "→Case/Mood/Val/Illoc", // stripped of stress mark
+	}
+	for in, want := range cases {
+		if got := VhCode(in); got != want {
+			t.Errorf("VhCode(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
+func TestPrefixCode(t *testing.T) {
+	if got := PrefixCode("w"); got != "→parent" {
+		t.Errorf("PrefixCode(w) = %q", got)
+	}
+	if got := PrefixCode("y"); got != "→concat" {
+		t.Errorf("PrefixCode(y) = %q", got)
+	}
+}

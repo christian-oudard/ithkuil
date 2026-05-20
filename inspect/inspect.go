@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/semantics"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -431,19 +432,7 @@ func SlotVIII(t tokenize.WordToken) string {
 	if label == "" {
 		return Dot
 	}
-	return label + "." + moodOrScopeLabel(f.Formative)
-}
-
-// moodOrScopeLabel renders the Slot VIII Mood field as either a Mood
-// label (when the formative is verbal) or its CaseScope twin (when
-// nominal/framed). The mapping mirrors the Mood / CaseScope ordinal
-// correspondence in the spec.
-func moodOrScopeLabel(f g.Formative) string {
-	mood := g.SlotVIIIMoodScope(f.SlotVIII)
-	if g.IsVerbal(f.Final) {
-		return mood.String()
-	}
-	return g.MoodToCaseScope(mood).String()
+	return label + "." + semantics.SlotVIIICnLabel(f.Formative.SlotVIII, f.Formative.Final)
 }
 
 // SlotIX returns the case (Vc) or illocution/validation (Vk) encoded
