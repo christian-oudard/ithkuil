@@ -16,12 +16,18 @@ var CaForward map[g.SlotVI]string
 // Haskell reference implementation's reverse+fromList behavior.
 var CaReverse map[string]g.SlotVI
 
+// CaUngeminate maps each geminated Ca cluster back to its bare form.
+// Useful for string-level layers that want to recover the un-geminated
+// surface form without going through the SlotVI value.
+var CaUngeminate map[string]string
+
 func init() {
 	const expected = 20 * 4 * 4 * 6 * 2 // 3840
 	CaForward = make(map[g.SlotVI]string, expected)
 	CaReverse = make(map[string]g.SlotVI, expected)
 	CaGeminated = make(map[string]string, expected)
 	CaGeminatedReverse = make(map[string]g.SlotVI, expected)
+	CaUngeminate = make(map[string]string, expected)
 	for _, c := range g.AllConfigurations {
 		for _, a := range g.AllAffiliations {
 			for _, p := range g.AllPerspectives {
@@ -43,6 +49,9 @@ func init() {
 						CaGeminated[cluster] = gem
 						if _, exists := CaGeminatedReverse[gem]; !exists {
 							CaGeminatedReverse[gem] = s
+						}
+						if _, exists := CaUngeminate[gem]; !exists {
+							CaUngeminate[gem] = cluster
 						}
 					}
 				}
