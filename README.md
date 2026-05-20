@@ -1,6 +1,6 @@
 # Ithkuil V4 Grammar Implementation
 
-A Haskell implementation of the grammar of **New Ithkuil** (v1.3.1, 2023), the constructed language created by John Quijada. Ithkuil is a philosophical language designed to express deeper levels of human cognition with precision and conciseness. It features a highly regular morpho-phonological system.
+A Go implementation of the grammar of **New Ithkuil** (v1.3.1, 2023), the constructed language created by John Quijada. Ithkuil is a philosophical language designed to express deeper levels of human cognition with precision and conciseness. It features a highly regular morpho-phonological system.
 
 This project implements a parser, renderer, and glosser for Ithkuil formatives and adjuncts. In New Ithkuil, the language's name for itself is *Malëuţřait*. The goal of this codebase is to serve as a canonical programmatic reference for the language's grammar.
 
@@ -16,18 +16,35 @@ This project implements a parser, renderer, and glosser for Ithkuil formatives a
 
 ## What This Project Does
 
-Given an Ithkuil word or sentence, the glosser parses it into its morphological components, looks up roots and affixes in the lexicon, and produces a human-readable gloss:
+Given an Ithkuil word or sentence, the parser decomposes it into its morphological slots, looks up roots and affixes in the lexicon, and renders a learner-oriented breakdown:
 
 ```
-$ ithkuil 'Malëuţřait'
-  Malëuţřait  [WFormative]
-    Root: -m- = linguistic utterance for communication
-    Stem/Version: S1/PRC
-    Function/Spec/Context: STA/BSC/EXS
-    Affix: -ţř- ëu = SYS deg 5: A feedback-driven/self-sustaining/autopoietic system based on X
-    Affix: -t- ai = (Type-2, deg 1)
-    Case: THM (default)
-    GLOSS: 'linguistic utterance for communication'-SYS/5₂-t/1₂-THM
+$ ithkuil analyze Malëuţřait
+malëuţřait
+  PHONETIC  SLOT  ENCODES
+   ∅        Vv    S1 / PRC
+   m-       Cr    Root "m"
+  -a-       Vr    STA / BSC / EXS
+  -l-       Ca    UNI / CSL / M / DEL / NRM
+  -ëu-      Vx₁   DEG5
+  -ţř-      Cs₁   SYS
+  -ai-      Vx₂   DEG1
+  -t        Cs₂   DCD
+   ∅        Vc    THM
+  ROOT
+  "m" / S1 / BSC — stem 1: linguistic utterance for communication
+  CATEGORY       CODE   NAME                    MEANING
+  version        PRC    Processual              the act/state as a process
+  function       STA    Static                  entity as a state, condition, or quality
+  context        EXS    Existential             pure existence (default ontology)
+  configuration  UNI    Uniplex                 a single instance
+  affiliation    CSL    Consolidative           no specific affiliation among members
+  perspective    M      Monadic                 single instance/individual
+  extension      DEL    Delimitive              default — bounded, demarcated
+  essence        NRM    Normal                  the entity as it actually exists
+  affix          SYS/5  Networks & Systems      A feedback-driven/self-sustaining/autopoietic system based on X
+  affix          DCD/1  Deictic Demonstratives  this
+  case           THM    Thematic                inactive participant (CONTENT role)
 ```
 
 This tool provides:
@@ -37,6 +54,7 @@ This tool provides:
 - **Composition**: Building formatives from grammatical specifications
 - **Grammar search**: Looking up grammatical categories, roots, and affixes by keyword
 - **Sentence glossing**: Multi-word sentence parsing with concatenation chain detection
+- **MCP server**: Same parser/composer/lexicon exposed as Model Context Protocol tools
 
 ## Implementation Status
 
@@ -96,14 +114,14 @@ nix-shell                # Enter dev shell with go on PATH
 go install ./cmd/ithkuil ./cmd/ithkuil-mcp ./cmd/ithkuil-input
 ```
 
-Then `ithkuil 'Malëuţřait'` works from anywhere on PATH.
+Then `ithkuil analyze Malëuţřait` works from anywhere on PATH.
 
 For development:
 
 ```bash
-go build ./...           # Build everything
-go test ./...            # Run the test suite
-go run ./cmd/ithkuil 'Malëuţřait'
+go build ./...                              # Build everything
+go test ./...                               # Run the test suite
+go run ./cmd/ithkuil analyze Malëuţřait     # Run without installing
 ```
 
 ### ASCII Input Method
@@ -124,17 +142,29 @@ echo 't,Maleeut,rqait' | ithkuil-input   # batch: ASCII in, Unicode out
 
 Vowel runs use right-grouping: `eee`→eë, `eeee`→ëë. Pending characters are shown dimmed until resolved.
 
-### Interactive Glosser Commands
+### CLI Subcommands
 
+```bash
+ithkuil analyze Malëuţřait              # full slot breakdown (above)
+ithkuil analyze --short Malëuţřait      # one-line surface / type / gloss
+ithkuil analyze --polygraph kala mala   # multi-column slot polygraph
+
+ithkuil compose --stem=S2 --case=ERG ml # build a formative → "emlalo"
+
+ithkuil diff malëuţřait melëuţřait      # slot-by-slot diff
+ithkuil diff a b c -- a b d             # aligned sentence diff
+
+ithkuil grammar Ergative --exact        # look up by abbreviation
+ithkuil grammar please                  # substring search across all categories
+ithkuil grammar --category Case         # list every entry in a category
+
+ithkuil lexicon clown --kind=root       # search the root lexicon
+ithkuil lexicon -k=affix system         # search the affix lexicon
+
+ithkuil validate tttest                 # phonotactic checks per word
 ```
-> Malëuţřait             # Gloss a word
-> wambalásk              # Parse any formative
-> :root -m-              # Look up a root
-> :affix -ţř-            # Look up an affix
-> :search clown          # Search roots by keyword
-> :compose S1 PRC -m- STA BSC EXS THM   # Build a formative
-> :grammar Case          # Browse grammar tables
-```
+
+Pass `--lex DIR` globally to override the embedded lexicon with `roots.json` + `affixes.json` from a local directory. Pass `--color=auto|always|never` to `analyze` to control ANSI styling.
 
 ## References
 
