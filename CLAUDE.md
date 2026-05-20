@@ -4,54 +4,62 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build Commands
 
-Enter the dev shell first, then use cabal directly:
+Enter the dev shell first, then use `go` directly:
 
 ```bash
-nix-shell                # Provides ghc + cabal-install
-cabal build              # Build library + executable
-cabal test               # Run hspec test suite (test/Main.hs)
-cabal run gloss-test     # Run morphological analysis demo (GlossTest.hs)
+nix-shell                # Provides go on PATH with CGO_ENABLED=0
+go install ./cmd/ithkuil ./cmd/ithkuil-mcp   # Drop binaries into $GOBIN
+go build ./...           # Build everything in place
+go test ./...            # Run the full test suite
 ```
 
-Run `cabal update` on first build to fetch the Hackage index. `-Wall` is enabled project-wide.
+`CGO_ENABLED=0` is set in `shell.nix` because `segmentio/asm` (transitive from the MCP SDK) tries to invoke gcc otherwise; the pure-Go fallback is used.
 
 ## What This Project Is
 
-A Haskell implementation of the Ithkuil V4 ("Malëuţřait") constructed language grammar (v1.3.1, 2023). The system parses formatives (words) into their morphological slots, looks up roots in a JSON lexicon, and renders glosses.
+A Go implementation of the Ithkuil V4 ("Malëuţřait") constructed language grammar (v1.3.1, 2023). The system parses formatives (words) into their morphological slots, looks up roots in a JSON lexicon, and renders glosses. There is also an MCP server that exposes the same functionality to AI assistants.
 
 The canonical test word is the language's name for itself: "Malëuţřait".
 
 ## Architecture
 
-**V4 core modules** (under `src/Ithkuil/`):
-- `Phonology.hs` - 31 consonants, 9 vowels, vowel form table (4 series x 9 forms)
-- `Grammar.hs` - All morphological types: 68 cases, 20 configurations, stems, versions, Ca complex features. Defines `Formative` with 10 slots (I-IX + stress)
-- `Parse.hs` - Conjunct splitting (vowel/consonant sequences), slot-by-slot parsing into `ParsedFormative`. Contains all lookup tables (Vv, Vr, Vc, Vn, Cn)
-- `Allomorph.hs` - Ca complex construction and parsing. Pre-generates all 3840 Ca forms from component tables (Ca1-Ca4) with allomorphic substitutions, stores bidirectional lookup
-- `FullParse.hs` - Complete parsing with stress detection, uses `ParseResult` monad for error reporting
-- `Render.hs` - Formative-to-text rendering, uses Allomorph for Ca and Parse tables for Vr/Vc
-- `Gloss.hs` - Human-readable glossing at three precision levels (Short/Regular/Full)
-- `Validation.hs` - Phonotactic constraint checking (cluster lengths, vowel sequences)
-- `Lexicon.hs` - Loads roots and affixes from `data/roots.json` (4717 entries) and `data/affixes.json`
-- `Script.hs` - Morpho-phonemic writing system (Primary/Secondary/Tertiary/Quaternary characters)
+Go packages at the repo root:
 
-**Supplementary modules**: `Concatenation.hs` (Type 1/2 compound formatives), `Adjuncts.hs` (70+ bias markers, registers), `Numbers.hs` (centesimal/base-100 system), `Referentials.hs` (anaphoric references)
+- `phonology/` - 31 consonants, 9 vowels, vowel form table (4 series x 9 forms)
+- `grammar/` - All morphological types. `Formative` is the central struct (Concat, Root, SlotV, SlotVI, SlotVII, SlotVIII, Final, SentenceStarter). `Root` and `Final` are sum-type interfaces; see `root.go` and `final.go`.
+- `parse/` - Conjunct splitting and slot-by-slot parsing primitives. Contains all lookup tables (Vv, Vr, Vc, Vn, Cn).
+- `allomorph/` - Slot VI Ca complex construction and parsing. Pre-generates all Ca forms from component tables with allomorphic substitutions, stores bidirectional lookup.
+- `fullparse/` - Turns surface text into a `grammar.Formative` (handles stress detection, returns errors).
+- `render/` - Renders a `grammar.Formative` back to surface text. All encoding decisions (shortcut form, default-value elision, stress placement, etc.) live here, not in `grammar`.
+- `gloss/` - Human-readable morphological glossing.
+- `validation/` - Phonotactic constraint checking (cluster lengths, vowel sequences, stress).
+- `tokenize/` - Classifies words in a sentence into formatives, referentials, bias adjuncts, etc.
+- `concatenation/` - Type 1/2 compound formative chains.
+- `referentials/` - Anaphoric references (11 referent categories x 3 effects, combinations).
+- `numbers/` - Centesimal/base-100 number system.
+- `compose/` - Builds formatives from grammatical specifications + lexicon search helpers.
+- `inspect/` - Compact per-slot string extractors used by analyze/diff visualizations.
+- `lexicon/` - Loads roots and affixes from JSON; `LoadDefault()` returns the embedded lexicon.
+
+Command-line entrypoints under `cmd/`:
+
+- `cmd/ithkuil/` - The main CLI. Subcommands: analyze, compose, diff, grammar, lexicon, validate. `main.go` dispatches; `flags.go` parses shared flags.
+- `cmd/ithkuil-mcp/` - Model Context Protocol server exposing the parser/glosser/lexicon as MCP tools and resources.
 
 ## Key Conventions
 
-- `type SlotVI = (Configuration, Affiliation, Perspective, Extension, Essence)` - note the order
-- Record fields use version-prefixed names: `fSlotII` (V4 Formative), `pfRoot` (ParsedFormative)
+- `Formative` lives in `grammar/formative.go`. Invariants: `Root` and `Final` must be non-nil; the zero value is not valid. Use `MinimalFormative(cluster)` as a starting point. `render` and `gloss` panic on nil Root or Final.
+- `Root` is a sum-type interface with three variants (`CrRoot`, `CsRoot`, `RefRoot`); it consolidates the lexical identity that the spec splits across Slots II/III/IV.
+- `Final` is a sum-type interface covering the various case/illocution endings (UnframedNominal, UnframedVerbal, FramedVerbal, etc.).
+- `Affix` stores `(Type, Degree)` plus the consonant cluster; never the surface vowel string.
 - Grammatical values use standard Ithkuil abbreviations (3-letter uppercase): THM, INS, ABS, STA, DYN, BSC, CTE, etc.
-- `vowelForm :: Int -> Int -> Text` is the central encoding table mapping grammatical values to vowels
-- `splitConjuncts :: Text -> [Text]` is the key parsing primitive that segments words into alternating V/C chunks
-- Ca complex is built compositionally: Ca1(config) + Ca2(extension) + Ca3(affiliation) + Ca4(perspective+essence), then allomorphic substitutions applied
-- Series 1 Vr skips form 4 (STA/OBJ = form 5); Series 2-4 skip form 5 (STA/OBJ = form 4)
-- Reference implementations in `reference/` (gitignored): `IthkuilGloss/` (Kotlin), `mamkait/` (Haskell)
+- `lexicon.LoadDefault()` returns the embedded lexicon; pass `-lex DIR` on the CLI to override with a local copy.
+- Reference implementations in `reference/` (gitignored): `IthkuilGloss/` (Kotlin), `mamkait/` (Haskell).
 
 ## Data Files
 
-- `data/roots.json` / `data/affixes.json` - Lexicon (JSON, loaded via aeson)
-- `data/convert_lexicon.py` - Converter script for lexicon formats
+- `data/roots.json` / `data/affixes.json` - Lexicon, also embedded into the binaries via `//go:embed`.
+- `data/convert_lexicon.py` / `data/update_affixes.py` - Maintenance scripts.
 
 ## Grammar Reference
 
@@ -59,8 +67,3 @@ The canonical test word is the language's name for itself: "Malëuţřait".
 - `grammar_reference/affixes_reference.md` - All 527 affixes with gradient types and 9 degrees
 - `grammar_reference/phonotactics.md` - Detailed consonant cluster rules
 - `grammar_reference_pdf/` - Gitignored: source PDFs
-
-## Planning Documents
-
-- `PARSER_PLAN.md` - Phase-by-phase implementation plan for all four version parsers
-- `COMPARISON.md` - Cross-language (Haskell/OCaml/Lean) implementation comparison
