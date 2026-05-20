@@ -317,16 +317,7 @@ func TestRoundTrip_ShortcutEncodableSlotVI(t *testing.T) {
 // Affiliation × Perspective × Extension × Essence combination — the
 // full 20·4·4·6·2 = 3840-cell space of the Ca complex. Catches any
 // allomorph table entry that doesn't round-trip.
-//
-// BUG: allomorph.ConstructCaRaw drops the Affiliation when
-// Configuration is UNI and Extension is non-DEL: the rule fires
-// ca2Standalone[Extension]+perspective and never consults
-// ca3[Affiliation]. That collapses UNI-{ASO,COA,VAR}-*-{PRX,ICP,ATV,
-// GRA,DPL}-* onto the CSL form, 120 cells in total. The remaining
-// 3720 cells round-trip cleanly. For now we exclude the collision
-// class from the assertion and leave a guard against the count growing.
 func TestRoundTrip_Grid_AllSlotVI(t *testing.T) {
-	collisions := 0
 	for _, cfg := range g.AllConfigurations {
 		for _, aff := range g.AllAffiliations {
 			for _, per := range g.AllPerspectives {
@@ -339,11 +330,6 @@ func TestRoundTrip_Grid_AllSlotVI(t *testing.T) {
 							Extension:     ext,
 							Essence:       ess,
 						}
-						known := cfg == g.UNI && aff != g.CSL && ext != g.DEL
-						if known {
-							collisions++
-							continue
-						}
 						f := g.MinimalFormative("ml")
 						f.SlotVI = s6
 						name := cfg.String() + "-" + aff.String() + "-" +
@@ -355,9 +341,6 @@ func TestRoundTrip_Grid_AllSlotVI(t *testing.T) {
 				}
 			}
 		}
-	}
-	if collisions != 120 {
-		t.Errorf("known-bad UNI/non-CSL/non-DEL collision count = %d, want 120 (allomorph bug grew or shrank)", collisions)
 	}
 }
 

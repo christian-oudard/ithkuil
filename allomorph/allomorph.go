@@ -120,7 +120,13 @@ func ConstructCaRaw(s g.SlotVI) string {
 	persp := ca4(s.Perspective, s.Essence)
 
 	if s.Configuration == g.UNI && s.Extension != g.DEL {
-		return ca2Standalone[s.Extension] + persp.suffix
+		// UNI Configuration contributes no consonant of its own, so
+		// Extension always takes its voiced standalone form
+		// (d/g/b/gz/bz) — this is the rule for UNIPLEX in the §3.6
+		// table, not the "alternate when preceded by [C]t/k/p" rule
+		// that applies to non-UNI Configurations. The Affiliation
+		// prefix sits in front; the original code dropped it.
+		return ca3[s.Affiliation] + ca2Standalone[s.Extension] + persp.suffix
 	}
 	if s.Configuration == g.UNI && s.Affiliation != g.CSL {
 		if persp.suffix == "" {
