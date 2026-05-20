@@ -222,16 +222,16 @@ func TestRoundTrip_SlotVII(t *testing.T) {
 // stress and CaseScope otherwise. Each variant is tested in the stress
 // regime that makes its MS reading grammatical.
 func TestRoundTrip_SlotVIII_AllVariants(t *testing.T) {
-	scope := g.CaseScopeVal{CaseScope: g.CCA}
+	scope := g.SUB
 	cases := []struct {
 		name string
 		s8   g.SlotVIII
 	}{
-		{"valence", g.VnCnValence{Valence: g.PRL, MS: scope}},
-		{"phase", g.VnCnPhase{Phase: g.PCT, MS: scope}},
-		{"effect", g.VnCnEffect{Effect: g.BEN1, MS: scope}},
-		{"level", g.VnCnLevel{Level: g.MIN, MS: scope}},
-		{"aspect", g.VnCnAspect{Aspect: g.RTR, MS: scope}},
+		{"valence", g.VnCnValence{Valence: g.PRL, MoodScope: scope}},
+		{"phase", g.VnCnPhase{Phase: g.PCT, MoodScope: scope}},
+		{"effect", g.VnCnEffect{Effect: g.BEN1, MoodScope: scope}},
+		{"level", g.VnCnLevel{Level: g.MIN, MoodScope: scope}},
+		{"aspect", g.VnCnAspect{Aspect: g.RTR, MoodScope: scope}},
 	}
 	for _, c := range cases {
 		f := g.MinimalFormative("ml")
@@ -246,16 +246,16 @@ func TestRoundTrip_SlotVIII_AllVariants(t *testing.T) {
 // formative) with MoodVal so Pattern-1 Cn is read as Mood, not
 // CaseScope. Aspect uses Pattern-2 Cn so it round-trips either way.
 func TestRoundTrip_SlotVIII_VerbalMood(t *testing.T) {
-	mood := g.MoodVal{Mood: g.SUB}
+	mood := g.SUB
 	cases := []struct {
 		name string
 		s8   g.SlotVIII
 	}{
-		{"valence", g.VnCnValence{Valence: g.PRL, MS: mood}},
-		{"phase", g.VnCnPhase{Phase: g.PCT, MS: mood}},
-		{"effect", g.VnCnEffect{Effect: g.BEN1, MS: mood}},
-		{"level", g.VnCnLevel{Level: g.MIN, MS: mood}},
-		{"aspect", g.VnCnAspect{Aspect: g.RTR, MS: mood}},
+		{"valence", g.VnCnValence{Valence: g.PRL, MoodScope: mood}},
+		{"phase", g.VnCnPhase{Phase: g.PCT, MoodScope: mood}},
+		{"effect", g.VnCnEffect{Effect: g.BEN1, MoodScope: mood}},
+		{"level", g.VnCnLevel{Level: g.MIN, MoodScope: mood}},
+		{"aspect", g.VnCnAspect{Aspect: g.RTR, MoodScope: mood}},
 	}
 	for _, c := range cases {
 		f := g.MinimalFormative("ml")
@@ -425,47 +425,28 @@ func TestRoundTrip_Grid_CaseScopeNominal(t *testing.T) {
 }
 
 func withMood(s8 g.SlotVIII, m g.Mood) g.SlotVIII {
-	ms := g.MoodVal{Mood: m}
 	switch v := s8.(type) {
 	case g.VnCnValence:
-		v.MS = ms
+		v.MoodScope = m
 		return v
 	case g.VnCnPhase:
-		v.MS = ms
+		v.MoodScope = m
 		return v
 	case g.VnCnEffect:
-		v.MS = ms
+		v.MoodScope = m
 		return v
 	case g.VnCnLevel:
-		v.MS = ms
+		v.MoodScope = m
 		return v
 	case g.VnCnAspect:
-		v.MS = ms
+		v.MoodScope = m
 		return v
 	}
 	return s8
 }
 
 func withCaseScope(s8 g.SlotVIII, cs g.CaseScope) g.SlotVIII {
-	ms := g.CaseScopeVal{CaseScope: cs}
-	switch v := s8.(type) {
-	case g.VnCnValence:
-		v.MS = ms
-		return v
-	case g.VnCnPhase:
-		v.MS = ms
-		return v
-	case g.VnCnEffect:
-		v.MS = ms
-		return v
-	case g.VnCnLevel:
-		v.MS = ms
-		return v
-	case g.VnCnAspect:
-		v.MS = ms
-		return v
-	}
-	return s8
+	return withMood(s8, g.CaseScopeToMood(cs))
 }
 
 // TestRoundTrip_SlotV exercises Slot V affixes (reversed Cs-Vx form

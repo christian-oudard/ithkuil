@@ -434,10 +434,9 @@ func TestParseFormative_WithSlotVIII(t *testing.T) {
 	if vc.Valence != g.MNO {
 		t.Errorf("Valence = %v, want MNO", vc.Valence)
 	}
-	// Penultimate stress = nominal → CaseScopeVal.
-	csv, ok := vc.MS.(g.CaseScopeVal)
-	if !ok || csv.CaseScope != g.CCA {
-		t.Errorf("MS = %v, want CaseScopeVal{CCA}", vc.MS)
+	// MoodScope encodes the 6-value Cn pattern as a Mood; CCA = SUB.
+	if vc.MoodScope != g.SUB {
+		t.Errorf("MoodScope = %v, want SUB (CCA)", vc.MoodScope)
 	}
 	// SlotVII should be empty.
 	if f.SlotVII != nil {
@@ -462,9 +461,8 @@ func TestParseFormative_SlotVIIIVerbal(t *testing.T) {
 	if !ok {
 		t.Fatalf("SlotVIII = %T, want VnCnValence", f.SlotVIII)
 	}
-	mv, ok := vc.MS.(g.MoodVal)
-	if !ok || mv.Mood != g.SUB {
-		t.Errorf("MS = %v, want MoodVal{SUB}", vc.MS)
+	if vc.MoodScope != g.SUB {
+		t.Errorf("MoodScope = %v, want SUB", vc.MoodScope)
 	}
 }
 
@@ -488,7 +486,7 @@ func TestRoundTrip_WithSlotVIII(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.SlotVIII = g.VnCnValence{
 		Valence: g.MNO,
-		MS:      g.CaseScopeVal{CaseScope: g.CCA},
+		MoodScope: g.SUB,
 	}
 	surface := render.Formative(f)
 	parsed, err := ParseFormative(surface)

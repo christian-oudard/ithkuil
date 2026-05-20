@@ -429,12 +429,13 @@ func parseAfterCa(tail []string, stress parse.Stress) ([]g.Affix, g.SlotVIII, g.
 	}
 
 	// Slot VIII: if the last pair's consonant is a valid Cn, it is
-	// VnCn (and is removed from the affix list).
+	// VnCn (and is removed from the affix list). The MoodScope value
+	// is stored as a Mood enum regardless of pattern; gloss layer
+	// chooses the Mood vs CaseScope label based on Final.
 	var slotVIII g.SlotVIII
 	if n := len(pairs); n > 0 && parse.IsValidCn(pairs[n-1].c) {
-		s8, ok := parse.ParseVnCn(pairs[n-1].v, pairs[n-1].c)
-		if ok {
-			slotVIII = disambiguateSlotVIII(final, s8)
+		if s8, ok := parse.ParseVnCn(pairs[n-1].v, pairs[n-1].c); ok {
+			slotVIII = s8
 			pairs = pairs[:n-1]
 		}
 	}
@@ -447,43 +448,6 @@ func parseAfterCa(tail []string, stress parse.Stress) ([]g.Affix, g.SlotVIII, g.
 	}
 
 	return slotVII, slotVIII, final, nil
-}
-
-// disambiguateSlotVIII rewrites the MoodOrScope variant inside a
-// SlotVIII to match the formative's grammatical category. Verbal
-// formatives (UnframedVerbal, FramedVerbal) carry MoodVal; nominal
-// formatives (UnframedNominal) carry CaseScopeVal.
-func disambiguateSlotVIII(final g.Final, s g.SlotVIII) g.SlotVIII {
-	verbal := false
-	switch final.(type) {
-	case g.UnframedVerbal, g.FramedVerbal:
-		verbal = true
-	}
-	flip := func(ms g.MoodOrScope) g.MoodOrScope {
-		if verbal {
-			if cs, ok := ms.(g.CaseScopeVal); ok {
-				return g.MoodVal{Mood: g.CaseScopeToMood(cs.CaseScope)}
-			}
-			return ms
-		}
-		if m, ok := ms.(g.MoodVal); ok {
-			return g.CaseScopeVal{CaseScope: g.MoodToCaseScope(m.Mood)}
-		}
-		return ms
-	}
-	switch v := s.(type) {
-	case g.VnCnValence:
-		return g.VnCnValence{Valence: v.Valence, MS: flip(v.MS)}
-	case g.VnCnPhase:
-		return g.VnCnPhase{Phase: v.Phase, MS: flip(v.MS)}
-	case g.VnCnEffect:
-		return g.VnCnEffect{Effect: v.Effect, MS: flip(v.MS)}
-	case g.VnCnLevel:
-		return g.VnCnLevel{Level: v.Level, Absolute: v.Absolute, MS: flip(v.MS)}
-	case g.VnCnAspect:
-		return g.VnCnAspect{Aspect: v.Aspect, MS: flip(v.MS)}
-	}
-	return s
 }
 
 // parseFinal builds the Formative.Final from the observed surface

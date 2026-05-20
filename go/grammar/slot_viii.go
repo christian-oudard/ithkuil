@@ -196,53 +196,38 @@ func CaseScopeToMood(c CaseScope) Mood {
 	return [...]Mood{FAC, SUB, ASM, SPC, COU, HYP}[c]
 }
 
-// MoodOrScope is the {Mood | CaseScope} sum type, encoded in the Cn
-// consonant of Slot VIII. Implementations: MoodVal, CaseScopeVal.
-//
-// The Vn/Cn parser produces one variant or the other based on which
-// Cn pattern matched; the parsing layer coerces to the right variant
-// using the formative's Final category (Mood for verbal, CaseScope
-// for nominal).
-type MoodOrScope interface {
-	moodOrScope()
-}
-
-// MoodVal wraps a Mood as a MoodOrScope.
-type MoodVal struct{ Mood Mood }
-
-func (MoodVal) moodOrScope() {}
-
-// CaseScopeVal wraps a CaseScope as a MoodOrScope.
-type CaseScopeVal struct{ CaseScope CaseScope }
-
-func (CaseScopeVal) moodOrScope() {}
-
 // SlotVIII is the sealed sum type for the VnCn slot. Exactly one of:
 // VnCnValence, VnCnPhase, VnCnEffect, VnCnLevel, VnCnAspect.
+//
+// The MoodScope field on each variant holds one of six values shared
+// between the Mood enum (verbal labelling: FAC/SUB/ASM/SPC/COU/HYP)
+// and the CaseScope enum (nominal labelling: CCN/CCA/CCS/CCQ/CCP/CCV).
+// The same Cn consonant encodes both — the gloss layer picks the
+// label based on the formative's Final category.
 type SlotVIII interface {
 	slotVIII()
 }
 
 // VnCnValence: Pattern-1, Vn = Series 1 (Valence).
 type VnCnValence struct {
-	Valence Valence
-	MS      MoodOrScope
+	Valence   Valence
+	MoodScope Mood
 }
 
 func (VnCnValence) slotVIII() {}
 
 // VnCnPhase: Pattern-1, Vn = Series 2 (Phase).
 type VnCnPhase struct {
-	Phase Phase
-	MS    MoodOrScope
+	Phase     Phase
+	MoodScope Mood
 }
 
 func (VnCnPhase) slotVIII() {}
 
 // VnCnEffect: Pattern-1, Vn = Series 3 (Effect).
 type VnCnEffect struct {
-	Effect Effect
-	MS     MoodOrScope
+	Effect    Effect
+	MoodScope Mood
 }
 
 func (VnCnEffect) slotVIII() {}
@@ -250,17 +235,17 @@ func (VnCnEffect) slotVIII() {}
 // VnCnLevel: Pattern-1, Vn = Series 4 (Level). Absolute marks the rare
 // alternate "absolute level" reading; the default (relative) is false.
 type VnCnLevel struct {
-	Level    Level
-	Absolute bool
-	MS       MoodOrScope
+	Level     Level
+	Absolute  bool
+	MoodScope Mood
 }
 
 func (VnCnLevel) slotVIII() {}
 
 // VnCnAspect: Pattern-2, Vn = any aspect column.
 type VnCnAspect struct {
-	Aspect Aspect
-	MS     MoodOrScope
+	Aspect    Aspect
+	MoodScope Mood
 }
 
 func (VnCnAspect) slotVIII() {}

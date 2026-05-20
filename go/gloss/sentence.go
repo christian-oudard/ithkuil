@@ -76,7 +76,11 @@ func modularLabel(m g.ModularAdjunct) string {
 	if !ok {
 		return "MOD(" + m.Vn + "+" + m.Cn + ")"
 	}
-	inner := slotVIII(s)
+	// Modular adjuncts have no Final. Conventional labelling matches
+	// the Cn pattern: Pattern-1 (Valence/Phase/Effect/Level) → Mood;
+	// Pattern-2 (Aspect) → CaseScope.
+	_, isAspect := s.(g.VnCnAspect)
+	inner := slotVIII(s, !isAspect)
 	if inner == "" {
 		// Both Vn and Cn were defaults; surface just "MOD".
 		return "MOD"

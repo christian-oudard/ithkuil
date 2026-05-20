@@ -225,15 +225,15 @@ func SlotVIII(s g.SlotVIII) string {
 	}
 	switch v := s.(type) {
 	case g.VnCnValence:
-		return Valence(v.Valence) + MoodOrScopeP1(v.MS)
+		return Valence(v.Valence) + moodCnP1[v.MoodScope]
 	case g.VnCnPhase:
-		return Phase(v.Phase) + MoodOrScopeP1(v.MS)
+		return Phase(v.Phase) + moodCnP1[v.MoodScope]
 	case g.VnCnEffect:
-		return Effect(v.Effect) + MoodOrScopeP1(v.MS)
+		return Effect(v.Effect) + moodCnP1[v.MoodScope]
 	case g.VnCnLevel:
-		return Level(v.Level) + MoodOrScopeP1(v.MS)
+		return Level(v.Level) + moodCnP1[v.MoodScope]
 	case g.VnCnAspect:
-		return Aspect(v.Aspect) + MoodOrScopeP2(v.MS)
+		return Aspect(v.Aspect) + moodCnP2[v.MoodScope]
 	}
 	return ""
 }
@@ -322,31 +322,9 @@ func Aspect(a g.Aspect) string {
 	return aspectForms[a]
 }
 
-// MoodOrScopeP1 renders a MoodOrScope as a Pattern-1 Cn consonant.
-// Pattern 1 collapses the parallel Mood/CaseScope values to the same
-// consonant ("h"/"hl"/"hr"/"hm"/"hn"/"hň").
-func MoodOrScopeP1(ms g.MoodOrScope) string {
-	switch v := ms.(type) {
-	case g.MoodVal:
-		return moodCnP1[v.Mood]
-	case g.CaseScopeVal:
-		return moodCnP1[g.CaseScopeToMood(v.CaseScope)]
-	}
-	return ""
-}
-
-// MoodOrScopeP2 renders a MoodOrScope as a Pattern-2 Cn consonant
-// (used with Aspect Vn). "w" is used for FAC mood / CCN case-scope;
-// other values get an "h…w" wrapping.
-func MoodOrScopeP2(ms g.MoodOrScope) string {
-	switch v := ms.(type) {
-	case g.MoodVal:
-		return moodCnP2[v.Mood]
-	case g.CaseScopeVal:
-		return moodCnP2[g.CaseScopeToMood(v.CaseScope)]
-	}
-	return ""
-}
-
+// moodCnP1 and moodCnP2 map the 6-value Mood/CaseScope axis to its
+// Pattern-1 ("h"-prefixed) and Pattern-2 ("w"-suffixed) Cn consonant
+// respectively. The same enum value drives both — the gloss layer
+// picks the Mood or CaseScope label based on the formative's Final.
 var moodCnP1 = [...]string{"h", "hl", "hr", "hm", "hn", "hň"}
 var moodCnP2 = [...]string{"w", "hw", "hrw", "hmw", "hnw", "hňw"}

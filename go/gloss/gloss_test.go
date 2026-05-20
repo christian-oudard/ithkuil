@@ -95,38 +95,48 @@ func TestFormative_Verbal(t *testing.T) {
 }
 
 func TestFormative_SlotVIIIValence(t *testing.T) {
+	// MinimalFormative defaults to UnframedNominal (nominal context),
+	// so MoodScope glosses as a CaseScope label.
 	f := g.MinimalFormative("ml")
 	f.SlotVIII = g.VnCnValence{
-		Valence: g.PRL,
-		MS:      g.MoodVal{Mood: g.FAC}, // FAC suppressed
+		Valence:   g.PRL,
+		MoodScope: g.FAC, // FAC/CCN suppressed
 	}
 	got := Formative(f)
 	want := "-ml--PRL"
 	if got != want {
 		t.Errorf("Formative(PRL/FAC) = %q, want %q", got, want)
 	}
-	// With non-default mood:
+	// Nominal context labels MoodScope as CaseScope: SUB ↔ CCA.
 	f.SlotVIII = g.VnCnValence{
-		Valence: g.PRL,
-		MS:      g.MoodVal{Mood: g.SUB},
+		Valence:   g.PRL,
+		MoodScope: g.SUB,
 	}
 	got = Formative(f)
-	want = "-ml--PRL.SUB"
+	want = "-ml--PRL.CCA"
 	if got != want {
-		t.Errorf("Formative(PRL/SUB) = %q, want %q", got, want)
+		t.Errorf("Formative(PRL/CCA) = %q, want %q", got, want)
+	}
+	// Verbal context labels the same MoodScope as Mood: SUB.
+	f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
+	got = Formative(f)
+	want = "-ml--PRL.SUB-ASR-ULT"
+	if got != want {
+		t.Errorf("Formative(verbal PRL/SUB) = %q, want %q", got, want)
 	}
 }
 
 func TestFormative_SlotVIIIAspect(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.SlotVIII = g.VnCnAspect{
-		Aspect: g.RTR,
-		MS:     g.CaseScopeVal{CaseScope: g.CCA},
+		Aspect:    g.RTR,
+		MoodScope: g.SUB,
 	}
+	// Nominal context → CaseScope label.
 	got := Formative(f)
 	want := "-ml--RTR.CCA"
 	if got != want {
-		t.Errorf("Formative(RTR/CCA) = %q, want %q", got, want)
+		t.Errorf("Formative(nominal RTR/CCA) = %q, want %q", got, want)
 	}
 }
 

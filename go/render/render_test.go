@@ -54,7 +54,7 @@ func TestFormative_WithSlotVIII(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.SlotVIII = g.VnCnValence{
 		Valence: g.MNO,
-		MS:      g.MoodVal{Mood: g.SUB},
+		MoodScope: g.SUB,
 	}
 	got := Formative(f)
 	// Long: a-ml-a-l-ahl-a. 4 vowels, PEN needs 2, slack 2 → both the
@@ -200,15 +200,15 @@ func TestSlotVIII_AllVariants(t *testing.T) {
 		s    g.SlotVIII
 	}{
 		{"Valence",
-			g.VnCnValence{Valence: g.MNO, MS: g.MoodVal{Mood: g.FAC}}},
+			g.VnCnValence{Valence: g.MNO, MoodScope: g.FAC}},
 		{"Phase",
-			g.VnCnPhase{Phase: g.PCT, MS: g.MoodVal{Mood: g.FAC}}},
+			g.VnCnPhase{Phase: g.PCT, MoodScope: g.FAC}},
 		{"Effect",
-			g.VnCnEffect{Effect: g.BEN1, MS: g.MoodVal{Mood: g.FAC}}},
+			g.VnCnEffect{Effect: g.BEN1, MoodScope: g.FAC}},
 		{"Level",
-			g.VnCnLevel{Level: g.MAX, MS: g.MoodVal{Mood: g.FAC}}},
+			g.VnCnLevel{Level: g.MAX, MoodScope: g.FAC}},
 		{"Aspect",
-			g.VnCnAspect{Aspect: g.RTR, MS: g.MoodVal{Mood: g.FAC}}},
+			g.VnCnAspect{Aspect: g.RTR, MoodScope: g.FAC}},
 	}
 	for _, c := range cases {
 		if got := SlotVIII(c.s); got == "" {
@@ -225,26 +225,6 @@ func TestSlotV_AffixOrdering(t *testing.T) {
 	})
 	if got != "ratu" {
 		t.Errorf("SlotV = %q, want \"ratu\"", got)
-	}
-}
-
-func TestMoodOrScopeP1(t *testing.T) {
-	cases := []struct {
-		ms   g.MoodOrScope
-		want string
-	}{
-		{g.MoodVal{Mood: g.FAC}, "h"},
-		{g.MoodVal{Mood: g.SUB}, "hl"},
-		{g.MoodVal{Mood: g.HYP}, "hň"},
-		// CaseScope renders to the same Pattern-1 consonant as the
-		// parallel Mood.
-		{g.CaseScopeVal{CaseScope: g.CCN}, "h"},
-		{g.CaseScopeVal{CaseScope: g.CCV}, "hň"},
-	}
-	for _, c := range cases {
-		if got := MoodOrScopeP1(c.ms); got != c.want {
-			t.Errorf("MoodOrScopeP1(%v) = %q, want %q", c.ms, got, c.want)
-		}
 	}
 }
 
@@ -411,20 +391,3 @@ func TestApplyFinalStress(t *testing.T) {
 	}
 }
 
-func TestMoodOrScopeP2(t *testing.T) {
-	cases := []struct {
-		ms   g.MoodOrScope
-		want string
-	}{
-		{g.MoodVal{Mood: g.FAC}, "w"},
-		{g.MoodVal{Mood: g.SUB}, "hw"},
-		{g.MoodVal{Mood: g.HYP}, "hňw"},
-		{g.CaseScopeVal{CaseScope: g.CCN}, "w"},
-		{g.CaseScopeVal{CaseScope: g.CCV}, "hňw"},
-	}
-	for _, c := range cases {
-		if got := MoodOrScopeP2(c.ms); got != c.want {
-			t.Errorf("MoodOrScopeP2(%v) = %q, want %q", c.ms, got, c.want)
-		}
-	}
-}

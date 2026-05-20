@@ -171,20 +171,19 @@ func IsPattern2Cn(c string) bool {
 }
 
 // ParseVnCn parses a Vn vowel + Cn consonant into one of the five
-// SlotVIII variants. The returned MoodOrScope is the initial parse:
-// Pattern-1 Cn produces a MoodVal; Pattern-2 Cn produces a
-// CaseScopeVal. Callers should apply grammar.DisambiguateSlotVIII
-// using the formative's stress to coerce variants where verbal/nominal
-// role disagrees with the surface form.
+// SlotVIII variants. The returned MoodScope is the initial parse:
+// The Cn consonant encodes a value shared by Mood and CaseScope; this
+// parser stores it as a grammar.Mood (the labelling depends on the
+// formative's Final category, applied at gloss time).
 //
 // Returns (nil, false) if Cn is not a valid Slot VIII consonant or Vn
 // doesn't match any category in the corresponding pattern.
 func ParseVnCn(vn, cn string) (grammar.SlotVIII, bool) {
-	var ms grammar.MoodOrScope
+	var ms grammar.Mood
 	if m, ok := ParseCnMood(cn); ok {
-		ms = grammar.MoodVal{Mood: m}
+		ms = m
 	} else if cs, ok := ParseCnCaseScope(cn); ok {
-		ms = grammar.CaseScopeVal{CaseScope: cs}
+		ms = grammar.CaseScopeToMood(cs)
 	} else {
 		return nil, false
 	}
@@ -194,22 +193,22 @@ func ParseVnCn(vn, cn string) (grammar.SlotVIII, bool) {
 		if !ok {
 			return nil, false
 		}
-		return grammar.VnCnAspect{Aspect: asp, MS: ms}, true
+		return grammar.VnCnAspect{Aspect: asp, MoodScope: ms}, true
 	}
 
 	// Pattern 1: probe in declaration order
 	// (Valence → Phase → Effect → Level by vowel series).
 	if val, ok := ParseVnValence(vn); ok {
-		return grammar.VnCnValence{Valence: val, MS: ms}, true
+		return grammar.VnCnValence{Valence: val, MoodScope: ms}, true
 	}
 	if ph, ok := ParseVnPhase(vn); ok {
-		return grammar.VnCnPhase{Phase: ph, MS: ms}, true
+		return grammar.VnCnPhase{Phase: ph, MoodScope: ms}, true
 	}
 	if eff, ok := ParseVnEffect(vn); ok {
-		return grammar.VnCnEffect{Effect: eff, MS: ms}, true
+		return grammar.VnCnEffect{Effect: eff, MoodScope: ms}, true
 	}
 	if lvl, ok := ParseVnLevel(vn); ok {
-		return grammar.VnCnLevel{Level: lvl, Absolute: false, MS: ms}, true
+		return grammar.VnCnLevel{Level: lvl, Absolute: false, MoodScope: ms}, true
 	}
 	return nil, false
 }

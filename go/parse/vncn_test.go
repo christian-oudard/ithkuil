@@ -11,17 +11,17 @@ func TestParseVnCn_Pattern1(t *testing.T) {
 		vn, cn string
 		want   grammar.SlotVIII
 	}{
-		// Valence (Series 1) + Mood.
-		{"a", "h", grammar.VnCnValence{Valence: grammar.MNO, MS: grammar.MoodVal{Mood: grammar.FAC}}},
-		{"u", "hň", grammar.VnCnValence{Valence: grammar.PTI, MS: grammar.MoodVal{Mood: grammar.HYP}}},
+		// Valence (Series 1).
+		{"a", "h", grammar.VnCnValence{Valence: grammar.MNO, MoodScope: grammar.FAC}},
+		{"u", "hň", grammar.VnCnValence{Valence: grammar.PTI, MoodScope: grammar.HYP}},
 		// Phase (Series 2).
-		{"ai", "h", grammar.VnCnPhase{Phase: grammar.PCT, MS: grammar.MoodVal{Mood: grammar.FAC}}},
+		{"ai", "h", grammar.VnCnPhase{Phase: grammar.PCT, MoodScope: grammar.FAC}},
 		// Effect (Series 3, canonical + alternate).
-		{"ia", "h", grammar.VnCnEffect{Effect: grammar.BEN1, MS: grammar.MoodVal{Mood: grammar.FAC}}},
-		{"uä", "hl", grammar.VnCnEffect{Effect: grammar.BEN1, MS: grammar.MoodVal{Mood: grammar.SUB}}},
+		{"ia", "h", grammar.VnCnEffect{Effect: grammar.BEN1, MoodScope: grammar.FAC}},
+		{"uä", "hl", grammar.VnCnEffect{Effect: grammar.BEN1, MoodScope: grammar.SUB}},
 		// Level (Series 4).
-		{"ao", "h", grammar.VnCnLevel{Level: grammar.MIN, Absolute: false, MS: grammar.MoodVal{Mood: grammar.FAC}}},
-		{"oa", "hm", grammar.VnCnLevel{Level: grammar.MAX, Absolute: false, MS: grammar.MoodVal{Mood: grammar.SPC}}},
+		{"ao", "h", grammar.VnCnLevel{Level: grammar.MIN, Absolute: false, MoodScope: grammar.FAC}},
+		{"oa", "hm", grammar.VnCnLevel{Level: grammar.MAX, Absolute: false, MoodScope: grammar.SPC}},
 	}
 	for _, c := range cases {
 		got, ok := ParseVnCn(c.vn, c.cn)
@@ -36,15 +36,16 @@ func TestParseVnCn_Pattern1(t *testing.T) {
 }
 
 func TestParseVnCn_Pattern2(t *testing.T) {
-	// Pattern-2 Cn produces a CaseScopeVal initial parse. Aspect Vn applies.
+	// Pattern-2 Cn pairs with Aspect Vn. MoodScope is stored as Mood
+	// (CaseScope label is applied by gloss for nominal contexts).
 	cases := []struct {
 		vn, cn string
 		want   grammar.SlotVIII
 	}{
-		{"a", "w", grammar.VnCnAspect{Aspect: grammar.RTR, MS: grammar.CaseScopeVal{CaseScope: grammar.CCN}}},
-		{"a", "y", grammar.VnCnAspect{Aspect: grammar.RTR, MS: grammar.CaseScopeVal{CaseScope: grammar.CCN}}},
-		{"ai", "hw", grammar.VnCnAspect{Aspect: grammar.RSM, MS: grammar.CaseScopeVal{CaseScope: grammar.CCA}}},
-		{"ia", "hňw", grammar.VnCnAspect{Aspect: grammar.PMP, MS: grammar.CaseScopeVal{CaseScope: grammar.CCV}}},
+		{"a", "w", grammar.VnCnAspect{Aspect: grammar.RTR, MoodScope: grammar.FAC}},
+		{"a", "y", grammar.VnCnAspect{Aspect: grammar.RTR, MoodScope: grammar.FAC}},
+		{"ai", "hw", grammar.VnCnAspect{Aspect: grammar.RSM, MoodScope: grammar.SUB}},
+		{"ia", "hňw", grammar.VnCnAspect{Aspect: grammar.PMP, MoodScope: grammar.HYP}},
 	}
 	for _, c := range cases {
 		got, ok := ParseVnCn(c.vn, c.cn)
@@ -72,4 +73,3 @@ func TestParseVnCn_InvalidVn(t *testing.T) {
 		t.Errorf("ParseVnCn(\"xyz\", \"h\") = %#v, want failure", got)
 	}
 }
-

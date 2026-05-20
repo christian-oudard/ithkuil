@@ -294,29 +294,35 @@ func traceSlotVIII(t tokenize.WordToken) string {
 	if !ok || f.Formative.SlotVIII == nil {
 		return traceDot
 	}
+	verbal := traceFinalIsVerbal(f.Formative.Final)
 	switch v := f.Formative.SlotVIII.(type) {
 	case g.VnCnAspect:
-		return v.Aspect.String() + "." + moodOrScopeShort(v.MS)
+		return v.Aspect.String() + "." + moodScopeLabel(v.MoodScope, verbal)
 	case g.VnCnValence:
-		return v.Valence.String() + "." + moodOrScopeShort(v.MS)
+		return v.Valence.String() + "." + moodScopeLabel(v.MoodScope, verbal)
 	case g.VnCnPhase:
-		return v.Phase.String() + "." + moodOrScopeShort(v.MS)
+		return v.Phase.String() + "." + moodScopeLabel(v.MoodScope, verbal)
 	case g.VnCnEffect:
-		return v.Effect.String() + "." + moodOrScopeShort(v.MS)
+		return v.Effect.String() + "." + moodScopeLabel(v.MoodScope, verbal)
 	case g.VnCnLevel:
-		return v.Level.String() + "." + moodOrScopeShort(v.MS)
+		return v.Level.String() + "." + moodScopeLabel(v.MoodScope, verbal)
 	}
 	return traceDot
 }
 
-func moodOrScopeShort(ms g.MoodOrScope) string {
-	switch v := ms.(type) {
-	case g.MoodVal:
-		return v.Mood.String()
-	case g.CaseScopeVal:
-		return v.CaseScope.String()
+func traceFinalIsVerbal(f g.Final) bool {
+	switch f.(type) {
+	case g.UnframedVerbal, g.FramedVerbal:
+		return true
 	}
-	return ""
+	return false
+}
+
+func moodScopeLabel(m g.Mood, verbal bool) string {
+	if verbal {
+		return m.String()
+	}
+	return g.MoodToCaseScope(m).String()
 }
 
 func traceSlotIX(t tokenize.WordToken) string {

@@ -40,7 +40,7 @@ func (gl *Glosser) Formative(f g.Formative) string {
 		gl.affixes(f.SlotV),
 		slotVI(f.SlotVI),
 		gl.affixes(f.SlotVII),
-		slotVIII(f.SlotVIII),
+		slotVIII(f.SlotVIII, isVerbalFinal(f.Final)),
 		finalSlotIX(f.Final),
 		finalTag(f.Final),
 	}
@@ -66,6 +66,17 @@ func (gl *Glosser) rootOrCsRoot(f g.Formative) string {
 		}
 	}
 	return fmt.Sprintf("(%s)/%d", abbr, *f.CsRootDegree)
+}
+
+// isVerbalFinal reports whether a Final carries a verbal interpretation
+// (UnframedVerbal or FramedVerbal). MoodScope is glossed as Mood when
+// verbal and as CaseScope when nominal.
+func isVerbalFinal(f g.Final) bool {
+	switch f.(type) {
+	case g.UnframedVerbal, g.FramedVerbal:
+		return true
+	}
+	return false
 }
 
 // finalTag emits the grammatical-category tag for non-default Final
@@ -201,21 +212,21 @@ func (gl *Glosser) affix(a g.Affix) string {
 	return fmt.Sprintf("%s/%d", a.Consonant, a.Degree)
 }
 
-func slotVIII(s g.SlotVIII) string {
+func slotVIII(s g.SlotVIII, isVerbal bool) string {
 	if s == nil {
 		return ""
 	}
 	switch v := s.(type) {
 	case g.VnCnValence:
-		return joinDot(valenceLabel(v.Valence), moodOrScope(v.MS))
+		return joinDot(valenceLabel(v.Valence), moodOrScope(v.MoodScope, isVerbal))
 	case g.VnCnPhase:
-		return joinDot(v.Phase.String(), moodOrScope(v.MS))
+		return joinDot(v.Phase.String(), moodOrScope(v.MoodScope, isVerbal))
 	case g.VnCnEffect:
-		return joinDot(v.Effect.String(), moodOrScope(v.MS))
+		return joinDot(v.Effect.String(), moodOrScope(v.MoodScope, isVerbal))
 	case g.VnCnLevel:
-		return joinDot(v.Level.String(), moodOrScope(v.MS))
+		return joinDot(v.Level.String(), moodOrScope(v.MoodScope, isVerbal))
 	case g.VnCnAspect:
-		return joinDot(v.Aspect.String(), moodOrScope(v.MS))
+		return joinDot(v.Aspect.String(), moodOrScope(v.MoodScope, isVerbal))
 	}
 	return ""
 }
@@ -229,23 +240,17 @@ func valenceLabel(v g.Valence) string {
 	return v.String()
 }
 
-// moodOrScope renders the MoodOrScope part of a SlotVIII. FAC mood
-// (the default) is suppressed; CCN case-scope is also suppressed since
-// it's the nominal counterpart of FAC.
-func moodOrScope(ms g.MoodOrScope) string {
-	switch v := ms.(type) {
-	case g.MoodVal:
-		if v.Mood == g.FAC {
-			return ""
-		}
-		return v.Mood.String()
-	case g.CaseScopeVal:
-		if v.CaseScope == g.CCN {
-			return ""
-		}
-		return v.CaseScope.String()
+// moodOrScope renders the MoodScope field of a SlotVIII using the Mood
+// label set for verbal formatives and the CaseScope label set for
+// nominal ones. FAC / CCN — the default value — is suppressed.
+func moodOrScope(m g.Mood, isVerbal bool) string {
+	if m == g.FAC {
+		return ""
 	}
-	return ""
+	if isVerbal {
+		return m.String()
+	}
+	return g.MoodToCaseScope(m).String()
 }
 
 func joinDot(parts ...string) string {

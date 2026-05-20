@@ -150,7 +150,7 @@ func applyComposeFlag(f *g.Formative, flag string) error {
 	// Aspect.
 	for _, a := range g.AllAspects {
 		if a.String() == flag {
-			f.SlotVIII = g.VnCnAspect{Aspect: a, MS: g.CaseScopeVal{CaseScope: g.CCN}}
+			f.SlotVIII = g.VnCnAspect{Aspect: a, MoodScope: g.FAC}
 			return nil
 		}
 	}
@@ -158,24 +158,23 @@ func applyComposeFlag(f *g.Formative, flag string) error {
 	// Valence.
 	for _, v := range g.AllValences {
 		if v.String() == flag {
-			f.SlotVIII = g.VnCnValence{Valence: v, MS: g.MoodVal{Mood: g.FAC}}
+			f.SlotVIII = g.VnCnValence{Valence: v, MoodScope: g.FAC}
 			return nil
 		}
 	}
 
-	// Mood: only meaningful with verbal stress.
+	// Mood: replaces the MoodScope field on whatever Slot VIII is there.
 	for _, m := range g.AllMoods {
 		if m.String() == flag {
-			// Wrap whatever Slot VIII is there with the given mood.
 			switch s := f.SlotVIII.(type) {
 			case g.VnCnValence:
-				s.MS = g.MoodVal{Mood: m}
+				s.MoodScope = m
 				f.SlotVIII = s
 			case g.VnCnAspect:
-				s.MS = g.MoodVal{Mood: m}
+				s.MoodScope = m
 				f.SlotVIII = s
 			default:
-				f.SlotVIII = g.VnCnValence{Valence: g.MNO, MS: g.MoodVal{Mood: m}}
+				f.SlotVIII = g.VnCnValence{Valence: g.MNO, MoodScope: m}
 			}
 			return nil
 		}
