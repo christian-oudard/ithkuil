@@ -2,7 +2,7 @@ package grammar
 
 // Validation is evidentiality — how the speaker knows what they assert.
 // Only meaningful with ASSERTIVE illocution (§3.9.3.2), so it appears
-// only as a field on Assertive (one of the SlotIX variants).
+// only as a field on Assertive (one of the Vk variants).
 type Validation int
 
 const (

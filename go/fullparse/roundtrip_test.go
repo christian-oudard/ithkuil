@@ -19,9 +19,6 @@ func assertRoundTrip(t *testing.T, name string, f g.Formative) {
 		t.Errorf("%s: ParseFormative(%q): %v", name, surface, err)
 		return
 	}
-	if parsed.Stress != f.Stress {
-		t.Errorf("%s: Stress: got %v, want %v (surface %q)", name, parsed.Stress, f.Stress, surface)
-	}
 	if parsed.SlotII != f.SlotII {
 		t.Errorf("%s: SlotII: got %v, want %v (surface %q)", name, parsed.SlotII, f.SlotII, surface)
 	}
@@ -40,8 +37,8 @@ func assertRoundTrip(t *testing.T, name string, f g.Formative) {
 	if !reflect.DeepEqual(parsed.SlotVIII, f.SlotVIII) {
 		t.Errorf("%s: SlotVIII: got %v, want %v (surface %q)", name, parsed.SlotVIII, f.SlotVIII, surface)
 	}
-	if !reflect.DeepEqual(parsed.SlotIX, f.SlotIX) {
-		t.Errorf("%s: SlotIX: got %v, want %v (surface %q)", name, parsed.SlotIX, f.SlotIX, surface)
+	if !reflect.DeepEqual(parsed.Final, f.Final) {
+		t.Errorf("%s: Final: got %v, want %v (surface %q)", name, parsed.Final, f.Final, surface)
 	}
 	gotCc := derefConcat(parsed.SlotI)
 	wantCc := derefConcat(f.SlotI)
@@ -69,16 +66,14 @@ func derefShortcut(p *g.CcShortcut) interface{} {
 	return *p
 }
 
-// TestRoundTrip_Stress asserts parse(render(F)).Stress == F.Stress for
-// every reasonable combination of stress + Slot IX shape. This is the
-// guard rail that catches accidental category shifts where the rendered
-// surface form's default stress disagrees with the Formative's intended
-// stress.
-func TestRoundTrip_Stress(t *testing.T) {
-	mkFormative := func(stress g.Stress, slotIX g.SlotIX) g.Formative {
+// TestRoundTrip_Final asserts parse(render(F)).Final == F.Final for
+// every reasonable Final variant. This is the guard rail that catches
+// accidental category shifts where the rendered surface form's default
+// stress disagrees with the Formative's intended category.
+func TestRoundTrip_Final(t *testing.T) {
+	mkFormative := func(final g.Final) g.Formative {
 		f := g.MinimalFormative("ml")
-		f.Stress = stress
-		f.SlotIX = slotIX
+		f.Final = final
 		return f
 	}
 	cases := []struct {
@@ -86,24 +81,24 @@ func TestRoundTrip_Stress(t *testing.T) {
 		f    g.Formative
 	}{
 		{
-			"nominal-penultimate",
-			mkFormative(g.Penultimate, g.CaseSlot{Case: g.THM}),
+			"nominal-thm",
+			mkFormative(g.UnframedNominal{Case: g.THM}),
 		},
 		{
-			"nominal-penultimate-erg",
-			mkFormative(g.Penultimate, g.CaseSlot{Case: g.ERG}),
+			"nominal-erg",
+			mkFormative(g.UnframedNominal{Case: g.ERG}),
 		},
 		{
-			"verbal-ultimate-asr-inf",
-			mkFormative(g.Ultimate, g.Assertive{Validation: g.INF}),
+			"verbal-asr-inf",
+			mkFormative(g.UnframedVerbal{Vk: g.Assertive{Validation: g.INF}}),
 		},
 		{
-			"verbal-ultimate-dir",
-			mkFormative(g.Ultimate, g.Directive{}),
+			"verbal-dir",
+			mkFormative(g.UnframedVerbal{Vk: g.Directive{}}),
 		},
 		{
-			"framed-antepenultimate",
-			mkFormative(g.Antepenultimate, g.CaseSlot{Case: g.THM}),
+			"framed-thm",
+			mkFormative(g.FramedVerbal{Case: g.THM}),
 		},
 	}
 	for _, tc := range cases {
@@ -113,8 +108,8 @@ func TestRoundTrip_Stress(t *testing.T) {
 			if err != nil {
 				t.Fatalf("ParseFormative(%q): %v", surface, err)
 			}
-			if parsed.Stress != tc.f.Stress {
-				t.Errorf("Stress: got %v, want %v (surface: %q)", parsed.Stress, tc.f.Stress, surface)
+			if !reflect.DeepEqual(parsed.Final, tc.f.Final) {
+				t.Errorf("Final: got %v, want %v (surface: %q)", parsed.Final, tc.f.Final, surface)
 			}
 		})
 	}
@@ -141,18 +136,17 @@ func TestRoundTrip_Formative_Equality(t *testing.T) {
 		}()},
 		{"erg-case", func() g.Formative {
 			f := g.MinimalFormative("ml")
-			f.SlotIX = g.CaseSlot{Case: g.ERG}
+			f.Final = g.UnframedNominal{Case: g.ERG}
 			return f
 		}()},
 		{"verbal-ultimate", func() g.Formative {
 			f := g.MinimalFormative("ml")
-			f.Stress = g.Ultimate
-			f.SlotIX = g.Assertive{Validation: g.INF}
+			f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.INF}}
 			return f
 		}()},
 		{"framed-antepenult", func() g.Formative {
 			f := g.MinimalFormative("ml")
-			f.Stress = g.Antepenultimate
+			f.Final = g.FramedVerbal{Case: g.THM}
 			return f
 		}()},
 	}
@@ -177,22 +171,20 @@ func TestRoundTrip_AllSlotII(t *testing.T) {
 	}
 }
 
-// TestRoundTrip_AllStress exercises every stress value with a 4-syllable
-// long-form so all four can fit without padding.
-func TestRoundTrip_AllStress(t *testing.T) {
+// TestRoundTrip_AllFinal exercises every Final variant with a multi-
+// syllable body so every diacritic position is reachable.
+func TestRoundTrip_AllFinal(t *testing.T) {
 	cases := []struct {
-		name   string
-		stress g.Stress
-		slotIX g.SlotIX
+		name  string
+		final g.Final
 	}{
-		{"penultimate", g.Penultimate, g.CaseSlot{Case: g.THM}},
-		{"ultimate", g.Ultimate, g.Assertive{Validation: g.OBS}},
-		{"antepenultimate", g.Antepenultimate, g.CaseSlot{Case: g.THM}},
+		{"nominal", g.UnframedNominal{Case: g.THM}},
+		{"verbal", g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}},
+		{"framed", g.FramedVerbal{Case: g.THM}},
 	}
 	for _, c := range cases {
 		f := g.MinimalFormative("ml")
-		f.Stress = c.stress
-		f.SlotIX = c.slotIX
+		f.Final = c.final
 		// Add a Slot VII affix to give the body more syllables, ensuring
 		// every stress can land.
 		f.SlotVII = []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}}
@@ -267,8 +259,7 @@ func TestRoundTrip_SlotVIII_VerbalMood(t *testing.T) {
 	}
 	for _, c := range cases {
 		f := g.MinimalFormative("ml")
-		f.Stress = g.Ultimate
-		f.SlotIX = g.Assertive{Validation: g.OBS}
+		f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
 		f.SlotVIII = c.s8
 		t.Run(c.name, func(t *testing.T) {
 			assertRoundTrip(t, c.name, f)
@@ -328,7 +319,7 @@ func TestRoundTrip_SlotIShortcuts(t *testing.T) {
 func TestRoundTrip_Grid_AllCases(t *testing.T) {
 	for _, c := range g.AllCases {
 		f := g.MinimalFormative("ml")
-		f.SlotIX = g.CaseSlot{Case: c}
+		f.Final = g.UnframedNominal{Case: c}
 		name := c.String()
 		t.Run(name, func(t *testing.T) {
 			assertRoundTrip(t, name, f)
@@ -343,16 +334,14 @@ func TestRoundTrip_Grid_AllCases(t *testing.T) {
 func TestRoundTrip_Grid_AllVk(t *testing.T) {
 	for _, val := range g.AllValidations {
 		f := g.MinimalFormative("ml")
-		f.Stress = g.Ultimate
-		f.SlotIX = g.Assertive{Validation: val}
+		f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: val}}
 		name := "ASR-" + val.String()
 		t.Run(name, func(t *testing.T) { assertRoundTrip(t, name, f) })
 	}
 	// Skip index 0 (Assertive); the rest are leaf illocutions.
-	for _, v := range g.AllIllocutionVariants[1:] {
+	for _, v := range g.AllVk[1:] {
 		f := g.MinimalFormative("ml")
-		f.Stress = g.Ultimate
-		f.SlotIX = v
+		f.Final = g.UnframedVerbal{Vk: v}
 		name := v.Tag()
 		t.Run(name, func(t *testing.T) { assertRoundTrip(t, name, f) })
 	}
@@ -365,8 +354,7 @@ func TestRoundTrip_Grid_AllVk(t *testing.T) {
 func TestRoundTrip_Grid_MoodVerbal(t *testing.T) {
 	mkVerb := func(s8 g.SlotVIII, mood g.Mood) g.Formative {
 		f := g.MinimalFormative("ml")
-		f.Stress = g.Ultimate
-		f.SlotIX = g.Assertive{Validation: g.OBS}
+		f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
 		f.SlotVIII = withMood(s8, mood)
 		return f
 	}

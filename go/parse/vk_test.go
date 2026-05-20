@@ -35,7 +35,7 @@ func TestParseVk_Series1(t *testing.T) {
 func TestParseVk_Series2(t *testing.T) {
 	cases := []struct {
 		in   string
-		want grammar.SlotIX
+		want grammar.Vk
 	}{
 		{"ai", grammar.Directive{}},
 		{"au", grammar.Declarative{}},

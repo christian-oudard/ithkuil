@@ -41,8 +41,8 @@ func (gl *Glosser) Formative(f g.Formative) string {
 		slotVI(f.SlotVI),
 		gl.affixes(f.SlotVII),
 		slotVIII(f.SlotVIII),
-		slotIX(f.SlotIX),
-		stressTag(f.Stress),
+		finalSlotIX(f.Final),
+		finalTag(f.Final),
 	}
 	body := strings.Join(nonEmpty(parts), "-")
 	if f.SentenceStarter {
@@ -68,19 +68,14 @@ func (gl *Glosser) rootOrCsRoot(f g.Formative) string {
 	return fmt.Sprintf("(%s)/%d", abbr, *f.CsRootDegree)
 }
 
-// stressTag emits a tag for each non-default stress value. Penultimate
-// is the unmarked default (omitted). The tag is independent of Slot IX
-// shape so a Formative's stress can be read directly off the gloss.
-func stressTag(s g.Stress) string {
-	switch s {
-	case g.Monosyllabic:
-		return "MONO"
-	case g.Ultimate:
-		return "ULT"
-	case g.Antepenultimate:
-		return "ANT"
+// finalTag emits the grammatical-category tag for non-default Final
+// variants. UnframedNominal (penultimate) is the unmarked default and
+// stays off the gloss. UnframedVerbal → "ULT"; FramedVerbal → "ANT".
+func finalTag(f g.Final) string {
+	if f == nil {
+		return ""
 	}
-	return ""
+	return f.Tag()
 }
 
 // Formative is the no-lexicon convenience form of Glosser.Formative.
@@ -257,22 +252,40 @@ func joinDot(parts ...string) string {
 	return strings.Join(nonEmpty(parts), ".")
 }
 
-func slotIX(s g.SlotIX) string {
-	if s == nil {
+// finalSlotIX glosses the Slot IX content of the Formative's Final.
+// THM Case is the unmarked default and is suppressed. Assertive
+// Vk renders as "ASR" (or "ASR/<val>" for non-OBS Validations);
+// the other Vk variants render as their illocution tag.
+func finalSlotIX(f g.Final) string {
+	if f == nil {
 		return ""
 	}
-	switch v := s.(type) {
-	case g.CaseSlot:
+	switch v := f.(type) {
+	case g.UnframedNominal:
 		if v.Case == g.THM {
 			return ""
 		}
 		return v.Case.String()
-	case g.Assertive:
-		// OBS is the default ASR Validation; suppress it.
-		if v.Validation == g.OBS {
+	case g.FramedVerbal:
+		if v.Case == g.THM {
+			return ""
+		}
+		return v.Case.String()
+	case g.UnframedVerbal:
+		return vkTag(v.Vk)
+	}
+	return ""
+}
+
+// vkTag returns the gloss label for a Vk variant. Assertive shows ASR
+// plus Validation when non-default; the other eight illocutions just
+// use their Tag().
+func vkTag(v g.Vk) string {
+	if as, ok := v.(g.Assertive); ok {
+		if as.Validation == g.OBS {
 			return "ASR"
 		}
-		return "ASR/" + v.Validation.String()
+		return "ASR/" + as.Validation.String()
 	}
-	return s.Tag()
+	return v.Tag()
 }

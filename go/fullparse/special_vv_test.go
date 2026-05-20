@@ -48,9 +48,13 @@ func TestCsRoot_oërmölá(t *testing.T) {
 	if f.SlotIV != (g.SlotIV{Function: g.DYN, Specification: g.BSC, Context: g.EXS}) {
 		t.Errorf("SlotIV = %v, want (DYN, BSC, EXS)", f.SlotIV)
 	}
-	as, ok := f.SlotIX.(g.Assertive)
+	uv, ok := f.Final.(g.UnframedVerbal)
+	if !ok {
+		t.Fatalf("Final = %v, want UnframedVerbal", f.Final)
+	}
+	as, ok := uv.Vk.(g.Assertive)
 	if !ok || as.Validation != g.OBS {
-		t.Errorf("SlotIX = %v, want Assertive{OBS}", f.SlotIX)
+		t.Errorf("Vk = %v, want Assertive{OBS}", uv.Vk)
 	}
 }
 

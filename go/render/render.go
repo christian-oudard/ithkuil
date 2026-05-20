@@ -11,15 +11,16 @@ import (
 	"github.com/coudard/ithkuil/go/parse"
 )
 
-// Formative renders a complete formative as a single string. Stress
-// is applied as a post-pass driven by f.Stress (independent of Slot IX
-// shape). Two default elisions are applied greedily, preferring both
-// over either: the leading default Slot II Vv "a" per §3.2 and the
-// trailing THM Vc "a" per §3.1.3. Both are skipped when they would
-// shorten the body past the syllable count the stress requires, and
-// the Vv elision is skipped when Slot V carries the §3.5.1 glottal
-// signal. Formatives with a Slot I shortcut go through renderShortcut
-// instead.
+// Formative renders a complete formative as a single string. The
+// stress diacritic and required syllable count are derived from
+// f.Final (UnframedNominal → penultimate, FramedVerbal → antepenult,
+// UnframedVerbal → ultimate). Two default elisions are applied
+// greedily, preferring both over either: the leading default Slot II
+// Vv "a" per §3.2 and the trailing THM Vc "a" per §3.1.3. Both are
+// skipped when they would shorten the body past the syllable count
+// the stress requires, and the Vv elision is skipped when Slot V
+// carries the §3.5.1 glottal signal. Formatives with a Slot I
+// shortcut go through renderShortcut instead.
 func Formative(f g.Formative) string {
 	if f.SlotIShortcut != nil {
 		return renderShortcut(f)
@@ -41,10 +42,10 @@ func Formative(f g.Formative) string {
 	b.WriteString(ca)
 	b.WriteString(SlotVII(f.SlotVII))
 	b.WriteString(SlotVIII(f.SlotVIII))
-	b.WriteString(SlotIX(f.SlotIX))
+	b.WriteString(SlotIX(f.Final))
 	body := padForANT(f, b.String())
 	body = applyDefaultElisions(f, body)
-	return applyStress(body, f.Stress)
+	return applyFinalStress(body, f.Final)
 }
 
 // insertGlottalVv inserts a glottal stop into a Slot II Vv per §1.7.
@@ -64,19 +65,19 @@ func insertGlottalVv(v string) string {
 	return v + "'"
 }
 
-// padForANT implements §5.8.8: if Stress is Antepenultimate and the
+// padForANT implements §5.8.8: if Final is FramedVerbal and the
 // rendered body has fewer than three syllables, append the default Slot
 // IX Vc "a" (THM) so the diacritic has somewhere to land. Only triggers
-// when Slot IX is genuinely absent — a constructed Formative with a
-// non-nil Slot IX will already render its Vc/Vk vowel.
+// when Slot IX renders empty — a Formative whose Final.Case is anything
+// other than THM already produces a non-empty Vc.
 func padForANT(f g.Formative, body string) string {
-	if f.Stress != g.Antepenultimate {
+	if _, ok := f.Final.(g.FramedVerbal); !ok {
 		return body
 	}
 	if countVowelConjuncts(body) >= 3 {
 		return body
 	}
-	if f.SlotIX == nil {
+	if SlotIX(f.Final) == "" {
 		body += "a"
 	}
 	return body
@@ -84,13 +85,13 @@ func padForANT(f g.Formative, body string) string {
 
 // applyDefaultElisions drops the leading Vv "a" and/or trailing THM Vc
 // "a" when the slot configuration allows and the result still has
-// enough syllables for f.Stress. Both elide together when possible; if
-// only one fits, the leading Vv is preferred (consonant-initial is the
-// idiomatic surface form).
+// enough syllables for f.Final's stress role. Both elide together when
+// possible; if only one fits, the leading Vv is preferred (consonant-
+// initial is the idiomatic surface form).
 func applyDefaultElisions(f g.Formative, body string) string {
 	canVv := canElideLeadingVv(f, body)
 	canVc := canElideTrailingTHMVc(f, body)
-	slack := countVowelConjuncts(body) - requiredSyllables(f.Stress)
+	slack := countVowelConjuncts(body) - requiredSyllables(f.Final)
 	if slack < 0 {
 		slack = 0
 	}
@@ -126,34 +127,38 @@ func canElideLeadingVv(f g.Formative, body string) bool {
 	return strings.HasPrefix(body, "a")
 }
 
-// canElideTrailingTHMVc reports whether Slot IX is THM with an "a"
-// marker that can be dropped per §3.1.3. Ultimate-stressed formatives
-// carry Vk, not Vc, so the rule does not apply there.
+// canElideTrailingTHMVc reports whether Final is a Case-carrying
+// variant with THM that can drop its trailing "a" per §3.1.3.
+// UnframedVerbal carries Vk, not Vc, so the rule does not apply.
 func canElideTrailingTHMVc(f g.Formative, body string) bool {
-	if f.Stress == g.Ultimate {
+	var c g.Case
+	switch v := f.Final.(type) {
+	case g.UnframedNominal:
+		c = v.Case
+	case g.FramedVerbal:
+		c = v.Case
+	default:
 		return false
 	}
-	cs, ok := f.SlotIX.(g.CaseSlot)
-	if !ok || cs.Case != g.THM {
+	if c != g.THM {
 		return false
 	}
 	return strings.HasSuffix(body, "a")
 }
 
 // requiredSyllables returns the minimum vowel-conjunct count that
-// preserves the formative's stress through a round-trip parse. ANT
-// needs three syllables to place the diacritic; PEN needs two (going
-// to one flips the reading to Monosyllabic/verbal); ULT and MONO need
-// one. §5.8.8 says short formatives that can't reach the ANT minimum
-// should be padded with default Slot II/VIII/IX syllables; we don't
-// auto-pad yet — instead we just decline to elide.
-func requiredSyllables(s g.Stress) int {
-	switch s {
-	case g.Antepenultimate:
+// preserves the formative's category through a round-trip parse.
+// FramedVerbal (antepenult) needs three syllables to place the
+// diacritic; UnframedNominal (penult) needs two (going to one flips
+// the reading to UnframedVerbal/monosyllabic); UnframedVerbal needs
+// one — monosyllabic is implicit ultimate per §3.10.
+func requiredSyllables(f g.Final) int {
+	switch f.(type) {
+	case g.FramedVerbal:
 		return 3
-	case g.Penultimate:
+	case g.UnframedNominal:
 		return 2
-	case g.Ultimate, g.Monosyllabic:
+	case g.UnframedVerbal:
 		return 1
 	}
 	return 0
@@ -233,15 +238,27 @@ func SlotVIII(s g.SlotVIII) string {
 	return ""
 }
 
-// SlotIX renders the final slot (Vc or Vk) based on the variant.
-// Assertive yields its Validation as a Series-1 vowel; the eight non-
-// ASR illocutions each yield their dedicated Series-2 diphthong.
-func SlotIX(s g.SlotIX) string {
-	switch v := s.(type) {
-	case g.CaseSlot:
+// SlotIX renders the final slot (Vc or Vk) based on the Final variant.
+// UnframedNominal / FramedVerbal yield the Vc case marker; UnframedVerbal
+// yields the Vk illocution vowel (Series 1 for ASR, dedicated diphthong
+// for the other eight).
+func SlotIX(f g.Final) string {
+	switch v := f.(type) {
+	case g.UnframedNominal:
 		return g.CaseToVc(v.Case)
+	case g.FramedVerbal:
+		return g.CaseToVc(v.Case)
+	case g.UnframedVerbal:
+		return Vk(v.Vk)
+	}
+	return ""
+}
+
+// Vk renders a verbal-ending variant as its surface vowel.
+func Vk(v g.Vk) string {
+	switch x := v.(type) {
 	case g.Assertive:
-		return Validation(v.Validation)
+		return Validation(x.Validation)
 	case g.Directive:
 		return "ai"
 	case g.Declarative:

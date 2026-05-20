@@ -200,8 +200,9 @@ func CaseScopeToMood(c CaseScope) Mood {
 // consonant of Slot VIII. Implementations: MoodVal, CaseScopeVal.
 //
 // The Vn/Cn parser produces one variant or the other based on which
-// Cn pattern matched; callers apply DisambiguateMoodScope using the
-// formative's actual stress to coerce the variant if needed.
+// Cn pattern matched; the parsing layer coerces to the right variant
+// using the formative's Final category (Mood for verbal, CaseScope
+// for nominal).
 type MoodOrScope interface {
 	moodOrScope()
 }
@@ -215,28 +216,6 @@ func (MoodVal) moodOrScope() {}
 type CaseScopeVal struct{ CaseScope CaseScope }
 
 func (CaseScopeVal) moodOrScope() {}
-
-// DisambiguateMoodScope converts a MoodOrScope to the right variant
-// for the formative's grammatical role:
-//   - Ultimate or Antepenultimate stress = verbal → Mood.
-//   - Penultimate or Monosyllabic stress = nominal → CaseScope.
-//
-// Verbal flips CaseScopeVal → MoodVal; nominal flips MoodVal → CaseScopeVal.
-// Already-correct variants pass through unchanged.
-func DisambiguateMoodScope(stress Stress, ms MoodOrScope) MoodOrScope {
-	switch stress {
-	case Ultimate, Antepenultimate:
-		if cs, ok := ms.(CaseScopeVal); ok {
-			return MoodVal{Mood: CaseScopeToMood(cs.CaseScope)}
-		}
-		return ms
-	default:
-		if m, ok := ms.(MoodVal); ok {
-			return CaseScopeVal{CaseScope: MoodToCaseScope(m.Mood)}
-		}
-		return ms
-	}
-}
 
 // SlotVIII is the sealed sum type for the VnCn slot. Exactly one of:
 // VnCnValence, VnCnPhase, VnCnEffect, VnCnLevel, VnCnAspect.
@@ -286,20 +265,3 @@ type VnCnAspect struct {
 
 func (VnCnAspect) slotVIII() {}
 
-// DisambiguateSlotVIII applies DisambiguateMoodScope to the MS field of
-// whichever SlotVIII variant is held.
-func DisambiguateSlotVIII(stress Stress, s SlotVIII) SlotVIII {
-	switch v := s.(type) {
-	case VnCnValence:
-		return VnCnValence{Valence: v.Valence, MS: DisambiguateMoodScope(stress, v.MS)}
-	case VnCnPhase:
-		return VnCnPhase{Phase: v.Phase, MS: DisambiguateMoodScope(stress, v.MS)}
-	case VnCnEffect:
-		return VnCnEffect{Effect: v.Effect, MS: DisambiguateMoodScope(stress, v.MS)}
-	case VnCnLevel:
-		return VnCnLevel{Level: v.Level, Absolute: v.Absolute, MS: DisambiguateMoodScope(stress, v.MS)}
-	case VnCnAspect:
-		return VnCnAspect{Aspect: v.Aspect, MS: DisambiguateMoodScope(stress, v.MS)}
-	}
-	return s
-}

@@ -2,28 +2,26 @@ package parse
 
 import (
 	"testing"
-
-	"github.com/coudard/ithkuil/go/grammar"
 )
 
 func TestDetectStress(t *testing.T) {
 	cases := []struct {
 		word string
-		want grammar.Stress
+		want Stress
 	}{
 		// Default penultimate when multi-syllable without marks.
-		{"malëuţřait", grammar.Penultimate},
-		{"mala", grammar.Penultimate},
+		{"malëuţřait", Penultimate},
+		{"mala", Penultimate},
 		// Ultimate: stress on the final syllable.
-		{"malí", grammar.Ultimate},
-		{"malëuţřáit", grammar.Ultimate},
+		{"malí", Ultimate},
+		{"malëuţřáit", Ultimate},
 		// Penultimate via explicit mark.
-		{"malëúţřait", grammar.Penultimate},
+		{"malëúţřait", Penultimate},
 		// Antepenultimate: stress earlier than penultimate.
-		{"málëuţřait", grammar.Antepenultimate},
+		{"málëuţřait", Antepenultimate},
 		// Monosyllabic.
-		{"ma", grammar.Monosyllabic},
-		{"a", grammar.Monosyllabic},
+		{"ma", Monosyllabic},
+		{"a", Monosyllabic},
 	}
 	for _, c := range cases {
 		got := DetectStress(c.word)

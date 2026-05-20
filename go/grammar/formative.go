@@ -1,7 +1,6 @@
 package grammar
 
 // Formative is the full V4 morphological structure of an Ithkuil word.
-// All ten slots plus the formative's stress are recorded.
 //
 // SlotI, SlotIShortcut, and SlotVIII are pointer-valued to express
 // optionality: nil means "absent" (the slot did not appear in the
@@ -15,6 +14,11 @@ package grammar
 // Cs-root forms put an affix Cs in the Cr slot and encode the affix
 // degree in the Vr slot; the int here records that degree (0-9). nil
 // means the formative is a normal root or a reference-root.
+//
+// Final is the grammatical category — encodes Slot IX content together
+// with the verbal/nominal/framed-verbal discrimination that surface
+// stress reflects. Replaces the older independent Stress + SlotIX
+// fields, eliminating the ability to construct inconsistent pairs.
 type Formative struct {
 	SlotI           *ConcatenationStatus // Cc: optional concatenation
 	SlotIShortcut   *CcShortcut          // Cc: optional Ca shortcut
@@ -25,8 +29,7 @@ type Formative struct {
 	SlotVI          SlotVI               // Ca: configuration complex
 	SlotVII         []Affix              // VxCs: Ca-scoped affixes
 	SlotVIII        SlotVIII             // VnCn (sum type or nil)
-	SlotIX          SlotIX               // Vc or Vk (sum type)
-	Stress          Stress               // Penultimate / Ultimate / etc.
+	Final           Final                // grammatical Slot IX + stress role
 	SentenceStarter bool                 // ç prefix was present
 	CsRootDegree    *int                 // Cs-root degree (nil for normal roots)
 }
@@ -40,7 +43,6 @@ func MinimalFormative(root string) Formative {
 		SlotIII: Root(root),
 		SlotIV:  DefaultSlotIV,
 		SlotVI:  DefaultSlotVI,
-		SlotIX:  CaseSlot{Case: THM},
-		Stress:  Penultimate,
+		Final:   UnframedNominal{Case: THM},
 	}
 }

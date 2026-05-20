@@ -69,61 +69,23 @@ func TestSlotIVToVr_Panic(t *testing.T) {
 	SlotIVToVr(SlotIV{Function: 99, Specification: 99, Context: 99})
 }
 
-// fakeSlotVIII implements the unexported SlotVIII marker so we can drive
-// DisambiguateSlotVIII into its fallthrough return — unreachable from
-// the public API but worth keeping covered against future refactors.
-type fakeSlotVIII struct{}
-
-func (fakeSlotVIII) slotVIII() {}
-
-func TestDisambiguateSlotVIII_UnknownVariantPassthrough(t *testing.T) {
-	var in SlotVIII = fakeSlotVIII{}
-	if got := DisambiguateSlotVIII(Ultimate, in); got != in {
-		t.Errorf("unknown SlotVIII variant should pass through unchanged; got %#v", got)
-	}
-}
-
-// TestDisambiguateSlotVIII_AllVariants exercises every SlotVIII variant
-// (Valence, Phase, Effect, Level, Aspect) through DisambiguateSlotVIII so
-// that the stress-driven Mood↔CaseScope flip is verified per variant.
-// Pattern-1 forms parse as MoodVal; Ultimate stress should leave them
-// unchanged; Penultimate stress should flip a freshly-constructed MoodVal
-// to CaseScopeVal (and vice versa).
-func TestDisambiguateSlotVIII_AllVariants(t *testing.T) {
-	mood := MoodVal{Mood: SUB}
-	scope := CaseScopeVal{CaseScope: CCA} // SUB ↔ CCA
-
+// TestMoodCaseScopePairing verifies the 1:1 mapping between Mood and
+// CaseScope values used when the parser disambiguates a Pattern-1 Cn
+// based on the formative's grammatical category.
+func TestMoodCaseScopePairing(t *testing.T) {
 	cases := []struct {
-		name   string
-		in     SlotVIII
-		stress Stress
-		want   SlotVIII
+		m  Mood
+		cs CaseScope
 	}{
-		{"Valence/verbal-noop", VnCnValence{Valence: MNO, MS: mood}, Ultimate,
-			VnCnValence{Valence: MNO, MS: mood}},
-		{"Valence/nominal-flip", VnCnValence{Valence: MNO, MS: mood}, Penultimate,
-			VnCnValence{Valence: MNO, MS: scope}},
-		{"Phase/verbal-flip", VnCnPhase{Phase: PCT, MS: scope}, Ultimate,
-			VnCnPhase{Phase: PCT, MS: mood}},
-		{"Phase/nominal-noop", VnCnPhase{Phase: PCT, MS: scope}, Penultimate,
-			VnCnPhase{Phase: PCT, MS: scope}},
-		{"Effect/verbal-flip", VnCnEffect{Effect: BEN1, MS: scope}, Antepenultimate,
-			VnCnEffect{Effect: BEN1, MS: mood}},
-		{"Effect/nominal-noop", VnCnEffect{Effect: BEN1, MS: scope}, Monosyllabic,
-			VnCnEffect{Effect: BEN1, MS: scope}},
-		{"Level/verbal-flip", VnCnLevel{Level: MIN, MS: scope}, Ultimate,
-			VnCnLevel{Level: MIN, MS: mood}},
-		{"Level/nominal-flip", VnCnLevel{Level: MIN, Absolute: true, MS: mood}, Penultimate,
-			VnCnLevel{Level: MIN, Absolute: true, MS: scope}},
-		{"Aspect/verbal-flip", VnCnAspect{Aspect: RTR, MS: scope}, Ultimate,
-			VnCnAspect{Aspect: RTR, MS: mood}},
-		{"Aspect/nominal-noop", VnCnAspect{Aspect: RTR, MS: scope}, Penultimate,
-			VnCnAspect{Aspect: RTR, MS: scope}},
+		{FAC, CCN}, {SUB, CCA}, {ASM, CCS},
+		{SPC, CCQ}, {COU, CCP}, {HYP, CCV},
 	}
 	for _, c := range cases {
-		if got := DisambiguateSlotVIII(c.stress, c.in); got != c.want {
-			t.Errorf("%s: DisambiguateSlotVIII(%v, %#v) = %#v, want %#v",
-				c.name, c.stress, c.in, got, c.want)
+		if got := MoodToCaseScope(c.m); got != c.cs {
+			t.Errorf("MoodToCaseScope(%v) = %v, want %v", c.m, got, c.cs)
+		}
+		if got := CaseScopeToMood(c.cs); got != c.m {
+			t.Errorf("CaseScopeToMood(%v) = %v, want %v", c.cs, got, c.m)
 		}
 	}
 }

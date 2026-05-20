@@ -3,7 +3,6 @@ package validation
 import (
 	"unicode/utf8"
 
-	g "github.com/coudard/ithkuil/go/grammar"
 	"github.com/coudard/ithkuil/go/parse"
 )
 
@@ -33,7 +32,7 @@ func (e StressError) Error() string {
 
 // ValidateStress decides which Stress a word is marked for, or
 // returns an error if the marking is ill-formed.
-func ValidateStress(word string) (g.Stress, error) {
+func ValidateStress(word string) (parse.Stress, error) {
 	accentCount := 0
 	for _, r := range word {
 		if parse.IsStressedVowel(r) {
@@ -60,10 +59,10 @@ func ValidateStress(word string) (g.Stress, error) {
 		if hasAccent {
 			return 0, MarkedDefaultStress
 		}
-		return g.Monosyllabic, nil
+		return parse.Monosyllabic, nil
 	}
 	if !hasAccent {
-		return g.Penultimate, nil
+		return parse.Penultimate, nil
 	}
 
 	// Find the 0-based index of the stressed syllable.
@@ -84,11 +83,11 @@ func ValidateStress(word string) (g.Stress, error) {
 	fromEnd := syllables - 1 - stressIdx
 	switch fromEnd {
 	case 0:
-		return g.Ultimate, nil
+		return parse.Ultimate, nil
 	case 1:
 		return 0, MarkedDefaultStress
 	case 2:
-		return g.Antepenultimate, nil
+		return parse.Antepenultimate, nil
 	}
 	return 0, UnrecognizedPlacement
 }

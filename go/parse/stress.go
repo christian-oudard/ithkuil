@@ -2,9 +2,26 @@ package parse
 
 import (
 	"unicode/utf8"
-
-	"github.com/coudard/ithkuil/go/grammar"
 )
+
+// Stress is an orthographic observation about a surface word: where the
+// acute/circumflex diacritic falls (or its absence). It exists in the
+// parse layer because it's a property of the written form, not of the
+// grammatical structure — the grammatical category lives in
+// grammar.Final, which the parser builds from the observed Stress
+// together with Slot IX content.
+type Stress int
+
+const (
+	Monosyllabic Stress = iota
+	Penultimate
+	Ultimate
+	Antepenultimate
+)
+
+func (s Stress) String() string {
+	return [...]string{"Monosyllabic", "Penultimate", "Ultimate", "Antepenultimate"}[s]
+}
 
 // stressedVowels are the acute (á é í ó ú) and circumflex (â ê ô û)
 // forms — these mark the stressed syllable. The set is asymmetric
@@ -38,7 +55,7 @@ func containsStress(s string) bool {
 //
 // Syllables are the vowel conjuncts of the word as segmented by
 // SplitConjuncts.
-func DetectStress(word string) grammar.Stress {
+func DetectStress(word string) Stress {
 	conjs := SplitConjuncts(word)
 	var syllables []string
 	for _, c := range conjs {
@@ -53,10 +70,10 @@ func DetectStress(word string) grammar.Stress {
 	n := len(syllables)
 	wordHasStress := containsStress(word)
 	if n <= 1 && !wordHasStress {
-		return grammar.Monosyllabic
+		return Monosyllabic
 	}
 	if !wordHasStress {
-		return grammar.Penultimate
+		return Penultimate
 	}
 	// Find the 1-based position of the first stressed syllable.
 	stressPos := 1
@@ -68,10 +85,10 @@ func DetectStress(word string) grammar.Stress {
 	}
 	switch {
 	case stressPos == n:
-		return grammar.Ultimate
+		return Ultimate
 	case stressPos <= n-2:
-		return grammar.Antepenultimate
+		return Antepenultimate
 	default:
-		return grammar.Penultimate
+		return Penultimate
 	}
 }

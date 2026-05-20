@@ -28,7 +28,7 @@ func TestFormative_NonDefaultSlots(t *testing.T) {
 		Specification: g.OBJ,
 		Context:       g.EXS,
 	}
-	f.SlotIX = g.CaseSlot{Case: g.ERG} // Vc = "o"
+	f.Final = g.UnframedNominal{Case: g.ERG} // Vc = "o"
 
 	got := Formative(f)
 	// Vv=e, Cr=ml, Vr=DYN+OBJ → form 6 series 1 (EXS) = "ö", Ca="l", Vc="o"
@@ -39,11 +39,10 @@ func TestFormative_NonDefaultSlots(t *testing.T) {
 }
 
 func TestFormative_Ultimate(t *testing.T) {
-	// Verbal formative: SlotIX is Assertive, stress is Ultimate.
+	// Verbal formative: Final is UnframedVerbal{Assertive{INF}}.
 	// Ultimate marks the last vowel; default Vv elides → "mlalú".
 	f := g.MinimalFormative("ml")
-	f.Stress = g.Ultimate
-	f.SlotIX = g.Assertive{Validation: g.INF}
+	f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.INF}}
 	got := Formative(f)
 	want := "mlalú"
 	if got != want {
@@ -97,16 +96,16 @@ func TestSlotIRenderings(t *testing.T) {
 }
 
 func TestVk(t *testing.T) {
-	// Assertive uses validation vowel.
-	if got := SlotIX(g.Assertive{Validation: g.OBS}); got != "a" {
-		t.Errorf("SlotIX(Assertive OBS) = %q, want \"a\"", got)
+	// Assertive renders the Validation Series-1 vowel.
+	if got := Vk(g.Assertive{Validation: g.OBS}); got != "a" {
+		t.Errorf("Vk(Assertive OBS) = %q, want \"a\"", got)
 	}
-	if got := SlotIX(g.Assertive{Validation: g.INF}); got != "u" {
-		t.Errorf("SlotIX(Assertive INF) = %q, want \"u\"", got)
+	if got := Vk(g.Assertive{Validation: g.INF}); got != "u" {
+		t.Errorf("Vk(Assertive INF) = %q, want \"u\"", got)
 	}
 	// Each non-ASR illocution renders its dedicated diphthong.
 	cases := []struct {
-		variant g.SlotIX
+		variant g.Vk
 		want    string
 	}{
 		{g.Directive{}, "ai"}, {g.Declarative{}, "au"},
@@ -115,8 +114,8 @@ func TestVk(t *testing.T) {
 		{g.Hortative{}, "iu"}, {g.Conjectural{}, "ui"},
 	}
 	for _, c := range cases {
-		if got := SlotIX(c.variant); got != c.want {
-			t.Errorf("SlotIX(%T) = %q, want %q", c.variant, got, c.want)
+		if got := Vk(c.variant); got != c.want {
+			t.Errorf("Vk(%T) = %q, want %q", c.variant, got, c.want)
 		}
 	}
 }
@@ -264,8 +263,7 @@ func TestFormative_THMVcElision_NotForUltimate(t *testing.T) {
 	// Ultimate stress carries Vk, not Vc — the trailing-a rule doesn't
 	// apply, only Vv elides. The diacritic still lands on the last vowel.
 	f := g.MinimalFormative("ml")
-	f.Stress = g.Ultimate
-	f.SlotIX = g.Assertive{Validation: g.OBS}
+	f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
 	got := Formative(f)
 	want := "mlalá"
 	if got != want {
@@ -278,7 +276,7 @@ func TestFormative_ShortForm_AntepenultKeepsLong(t *testing.T) {
 	// 3-syllable long form would leave 2 syllables, breaking the stress.
 	// The renderer must keep the long form so the diacritic can land.
 	f := g.MinimalFormative("ml")
-	f.Stress = g.Antepenultimate
+	f.Final = g.FramedVerbal{Case: g.THM}
 	got := Formative(f)
 	want := "ámlala"
 	if got != want {
@@ -311,15 +309,16 @@ func TestFormative_ShortForm_WithSlotI_NoElision(t *testing.T) {
 }
 
 func TestFormative_ANTPaddingNilSlotIX(t *testing.T) {
-	// A Formative with nil Slot IX renders Vv+Cr+Vr+Ca = 2 syllables
-	// (a-m-a-l). ANT stress needs 3; §5.8.8 says pad with default Slot
-	// IX → append "a", yielding "amala", then mark ANT → "ámala".
+	// A Formative with empty Slot IX content (FramedVerbal{THM}) renders
+	// Vv+Cr+Vr+Ca = 2 syllables (a-m-a-l). ANT stress needs 3; §5.8.8
+	// says pad with default Slot IX → append "a", yielding "amala",
+	// then mark ANT → "ámala".
 	f := g.Formative{
 		SlotIII: g.Root("m"),
 		SlotII:  g.DefaultSlotII,
 		SlotIV:  g.DefaultSlotIV,
 		SlotVI:  g.DefaultSlotVI,
-		Stress:  g.Antepenultimate,
+		Final:   g.FramedVerbal{Case: g.THM},
 	}
 	got := Formative(f)
 	want := "ámala"
@@ -384,26 +383,29 @@ func TestFormative_ShortcutWithConcat(t *testing.T) {
 	}
 }
 
-func TestApplyStress(t *testing.T) {
+func TestApplyFinalStress(t *testing.T) {
+	verbal := g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
+	nominal := g.UnframedNominal{Case: g.THM}
+	framed := g.FramedVerbal{Case: g.THM}
 	cases := []struct {
-		name   string
-		word   string
-		stress g.Stress
-		want   string
+		name  string
+		word  string
+		final g.Final
+		want  string
 	}{
-		{"penultimate-unmarked", "amlala", g.Penultimate, "amlala"},
-		{"monosyllabic-unmarked", "mal", g.Monosyllabic, "mal"},
-		{"ultimate-3syl", "amlalu", g.Ultimate, "amlalú"},
-		{"ultimate-marks-first-of-diphthong", "amlaleu", g.Ultimate, "amlaléu"},
-		{"antepenult-3syl", "amlala", g.Antepenultimate, "ámlala"},
-		{"antepenult-4syl", "agulahla", g.Antepenultimate, "agúlahla"},
-		{"antepenult-too-short-noop", "amla", g.Antepenultimate, "amla"},
-		{"ultimate-umlaut", "amläl", g.Ultimate, "amlâl"},
+		{"nominal-unmarked", "amlala", nominal, "amlala"},
+		{"monosyllabic-verbal-unmarked", "mal", verbal, "mal"},
+		{"ultimate-3syl", "amlalu", verbal, "amlalú"},
+		{"ultimate-marks-first-of-diphthong", "amlaleu", verbal, "amlaléu"},
+		{"antepenult-3syl", "amlala", framed, "ámlala"},
+		{"antepenult-4syl", "agulahla", framed, "agúlahla"},
+		{"antepenult-too-short-noop", "amla", framed, "amla"},
+		{"ultimate-umlaut", "amläl", verbal, "amlâl"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			if got := applyStress(c.word, c.stress); got != c.want {
-				t.Errorf("applyStress(%q, %v) = %q, want %q", c.word, c.stress, got, c.want)
+			if got := applyFinalStress(c.word, c.final); got != c.want {
+				t.Errorf("applyFinalStress(%q, %v) = %q, want %q", c.word, c.final, got, c.want)
 			}
 		})
 	}

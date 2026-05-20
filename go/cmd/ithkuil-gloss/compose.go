@@ -118,26 +118,31 @@ func applyComposeFlag(f *g.Formative, flag string) error {
 		return nil
 	}
 
-	// Stress.
+	// Stress / grammatical category. MON and ULT both mean a verbal
+	// formative; the renderer omits the diacritic on monosyllabic bodies
+	// per §3.10.
 	switch flag {
-	case "MON":
-		f.Stress = g.Monosyllabic
+	case "MON", "ULT":
+		f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
 		return nil
 	case "PEN":
-		f.Stress = g.Penultimate
-		return nil
-	case "ULT":
-		f.Stress = g.Ultimate
+		f.Final = g.UnframedNominal{Case: caseOf(f.Final)}
 		return nil
 	case "ANT":
-		f.Stress = g.Antepenultimate
+		f.Final = g.FramedVerbal{Case: caseOf(f.Final)}
 		return nil
 	}
 
-	// Case (any of 68): treat any matching abbreviation as Slot IX case.
+	// Case (any of 68): apply to the existing Final variant. If the
+	// formative is currently verbal, coerce to nominal.
 	for _, c := range g.AllCases {
 		if c.String() == flag {
-			f.SlotIX = g.CaseSlot{Case: c}
+			switch f.Final.(type) {
+			case g.FramedVerbal:
+				f.Final = g.FramedVerbal{Case: c}
+			default:
+				f.Final = g.UnframedNominal{Case: c}
+			}
 			return nil
 		}
 	}
@@ -176,16 +181,27 @@ func applyComposeFlag(f *g.Formative, flag string) error {
 		}
 	}
 
-	// Illocution (forces ultimate stress). Looks up by tag — Assertive
-	// matches "ASR" with default OBS Validation; the eight non-ASR
-	// illocutions each match their own tag.
-	for _, v := range g.AllIllocutionVariants {
+	// Illocution: sets UnframedVerbal with the Vk variant. Looks up by
+	// tag — "ASR" yields Assertive with default OBS Validation; the
+	// eight non-ASR illocutions each match their own tag.
+	for _, v := range g.AllVk {
 		if v.Tag() == flag {
-			f.SlotIX = v
-			f.Stress = g.Ultimate
+			f.Final = g.UnframedVerbal{Vk: v}
 			return nil
 		}
 	}
 
 	return fmt.Errorf("unknown grammar flag %q", flag)
+}
+
+// caseOf extracts the Case from a Final variant that carries one,
+// defaulting to THM for verbal Finals.
+func caseOf(f g.Final) g.Case {
+	switch v := f.(type) {
+	case g.UnframedNominal:
+		return v.Case
+	case g.FramedVerbal:
+		return v.Case
+	}
+	return g.THM
 }

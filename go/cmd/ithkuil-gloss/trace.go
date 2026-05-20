@@ -324,22 +324,29 @@ func traceSlotIX(t tokenize.WordToken) string {
 	if !ok {
 		return traceDot
 	}
-	if f.Formative.SlotIX == nil {
+	switch v := f.Formative.Final.(type) {
+	case nil:
 		return traceDot
-	}
-	switch v := f.Formative.SlotIX.(type) {
-	case g.CaseSlot:
+	case g.UnframedNominal:
 		if v.Case == g.THM {
 			return traceDot
 		}
 		return v.Case.String()
-	case g.Assertive:
-		if v.Validation == g.OBS {
-			return "ASR"
+	case g.FramedVerbal:
+		if v.Case == g.THM {
+			return traceDot
 		}
-		return "ASR/" + v.Validation.String()
+		return v.Case.String()
+	case g.UnframedVerbal:
+		if as, ok := v.Vk.(g.Assertive); ok {
+			if as.Validation == g.OBS {
+				return "ASR"
+			}
+			return "ASR/" + as.Validation.String()
+		}
+		return v.Vk.Tag()
 	}
-	return f.Formative.SlotIX.Tag()
+	return traceDot
 }
 
 func traceStress(t tokenize.WordToken) string {
@@ -347,8 +354,12 @@ func traceStress(t tokenize.WordToken) string {
 	if !ok {
 		return traceDot
 	}
-	if f.Formative.Stress == g.Penultimate {
+	if f.Formative.Final == nil {
 		return traceDot
 	}
-	return f.Formative.Stress.String()
+	tag := f.Formative.Final.Tag()
+	if tag == "" {
+		return traceDot
+	}
+	return tag
 }

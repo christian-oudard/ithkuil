@@ -33,13 +33,13 @@ func renderShortcut(f g.Formative) string {
 	b.WriteString(string(f.SlotIII))
 	b.WriteString(SlotVII(f.SlotVII))
 	b.WriteString(SlotVIII(f.SlotVIII))
-	b.WriteString(SlotIX(f.SlotIX))
+	b.WriteString(SlotIX(f.Final))
 	body := b.String()
 	if canElideTrailingTHMVc(f, body) &&
-		countVowelConjuncts(body)-1 >= requiredSyllables(f.Stress) {
+		countVowelConjuncts(body)-1 >= requiredSyllables(f.Final) {
 		body = body[:len(body)-1]
 	}
-	return applyStress(body, f.Stress)
+	return applyFinalStress(body, f.Final)
 }
 
 // shortcutCc encodes Slot I as one of the eight Cc consonants. Standalone

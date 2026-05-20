@@ -3,11 +3,11 @@ package parse
 import "github.com/coudard/ithkuil/go/grammar"
 
 // ParseVk decodes the Vk vowel (Slot IX when stress is ultimate) into
-// a SlotIX variant. Series-1 vowels yield an Assertive with the
+// a grammar.Vk variant. Series-1 vowels yield an Assertive with the
 // corresponding Validation; the eight non-ASR diphthongs each yield
 // the leaf variant for that illocution. Stress marks are normalized
 // away before lookup.
-func ParseVk(v string) (grammar.SlotIX, bool) {
+func ParseVk(v string) (grammar.Vk, bool) {
 	switch NormalizeAccents(v) {
 	case "a":
 		return grammar.Assertive{Validation: grammar.OBS}, true

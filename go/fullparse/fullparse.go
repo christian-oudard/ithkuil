@@ -165,7 +165,7 @@ func ParseFormative(word string) (g.Formative, error) {
 // parseShortcutFormative handles the Vv-Cr-… shape that follows a
 // shortcut Cc. The shortcut elides Vr (defaults to STA/BSC/EXS) and
 // supplies SlotVI from a fixed table indexed by the Vv series.
-func parseShortcutFormative(conjs []string, sc g.CcShortcut, stress g.Stress) (g.Formative, error) {
+func parseShortcutFormative(conjs []string, sc g.CcShortcut, stress parse.Stress) (g.Formative, error) {
 	if len(conjs) < 2 {
 		return g.Formative{}, fmt.Errorf("shortcut formative needs Vv+Cr, got %d conjuncts", len(conjs))
 	}
@@ -180,7 +180,7 @@ func parseShortcutFormative(conjs []string, sc g.CcShortcut, stress g.Stress) (g
 	slotVI := parse.ShortcutCa(sc, series)
 	root := g.Root(conjs[1])
 
-	slotVII, slotVIII, slotIX, err := parseAfterCa(conjs[2:], stress)
+	slotVII, slotVIII, final, err := parseAfterCa(conjs[2:], stress)
 	if err != nil {
 		return g.Formative{}, err
 	}
@@ -191,15 +191,14 @@ func parseShortcutFormative(conjs []string, sc g.CcShortcut, stress g.Stress) (g
 		SlotVI:   slotVI,
 		SlotVII:  slotVII,
 		SlotVIII: slotVIII,
-		SlotIX:   slotIX,
-		Stress:   stress,
+		Final:    final,
 	}, nil
 }
 
 // parseVowelInitial handles the canonical Vv-Cr-Vr-Ca-... structure.
 // conjs must start with a vowel and have at least 4 entries.
 // Special Vv markers (ëi/eë/ëu/oë/ae/ea) route to parseSpecialVvFormative.
-func parseVowelInitial(conjs []string, stress g.Stress) (g.Formative, error) {
+func parseVowelInitial(conjs []string, stress parse.Stress) (g.Formative, error) {
 	if len(conjs) < 4 {
 		return g.Formative{}, fmt.Errorf("vowel-initial formative needs at least 4 conjuncts, got %d", len(conjs))
 	}
@@ -219,7 +218,7 @@ func parseVowelInitial(conjs []string, stress g.Stress) (g.Formative, error) {
 	if err != nil {
 		return g.Formative{}, err
 	}
-	slotVII, slotVIII, slotIX, err := parseAfterCa(conjs[afterCa:], stress)
+	slotVII, slotVIII, final, err := parseAfterCa(conjs[afterCa:], stress)
 	if err != nil {
 		return g.Formative{}, err
 	}
@@ -231,8 +230,7 @@ func parseVowelInitial(conjs []string, stress g.Stress) (g.Formative, error) {
 		SlotVI:   slotVI,
 		SlotVII:  slotVII,
 		SlotVIII: slotVIII,
-		SlotIX:   slotIX,
-		Stress:   stress,
+		Final:    final,
 	}, nil
 }
 
@@ -313,7 +311,7 @@ func parseSlotVAndCa(conjs []string, startIdx int) (g.SlotVI, []g.Affix, int, er
 //     the Cr position holds a referential C1; Vr decodes normally.
 //
 // In both cases SlotII.Stem is S1.
-func parseSpecialVvFormative(conjs []string, stress g.Stress) (g.Formative, error) {
+func parseSpecialVvFormative(conjs []string, stress parse.Stress) (g.Formative, error) {
 	sv, ok := parse.ParseSpecialVv(conjs[0])
 	if !ok {
 		return g.Formative{}, fmt.Errorf("invalid special Vv %q", conjs[0])
@@ -323,7 +321,7 @@ func parseSpecialVvFormative(conjs []string, stress g.Stress) (g.Formative, erro
 	if !ok {
 		return g.Formative{}, fmt.Errorf("unrecognized Ca %q", conjs[3])
 	}
-	slotVII, slotVIII, slotIX, err := parseAfterCa(conjs[4:], stress)
+	slotVII, slotVIII, final, err := parseAfterCa(conjs[4:], stress)
 	if err != nil {
 		return g.Formative{}, err
 	}
@@ -334,8 +332,7 @@ func parseSpecialVvFormative(conjs []string, stress g.Stress) (g.Formative, erro
 		SlotVI:   slotVI,
 		SlotVII:  slotVII,
 		SlotVIII: slotVIII,
-		SlotIX:   slotIX,
-		Stress:   stress,
+		Final:    final,
 	}
 
 	if sv.Function != nil {
@@ -363,7 +360,7 @@ func parseSpecialVvFormative(conjs []string, stress g.Stress) (g.Formative, erro
 
 // parseConsonantInitial handles Cr-Vr-Ca-... where Vv is elided. Slot II
 // defaults to (S1, PRC).
-func parseConsonantInitial(conjs []string, stress g.Stress) (g.Formative, error) {
+func parseConsonantInitial(conjs []string, stress parse.Stress) (g.Formative, error) {
 	if len(conjs) < 3 {
 		return g.Formative{}, fmt.Errorf("consonant-initial formative needs at least 3 conjuncts, got %d", len(conjs))
 	}
@@ -376,7 +373,7 @@ func parseConsonantInitial(conjs []string, stress g.Stress) (g.Formative, error)
 	if !ok {
 		return g.Formative{}, fmt.Errorf("unrecognized Ca %q", conjs[2])
 	}
-	slotVII, slotVIII, slotIX, err := parseAfterCa(conjs[3:], stress)
+	slotVII, slotVIII, final, err := parseAfterCa(conjs[3:], stress)
 	if err != nil {
 		return g.Formative{}, err
 	}
@@ -387,20 +384,20 @@ func parseConsonantInitial(conjs []string, stress g.Stress) (g.Formative, error)
 		SlotVI:   slotVI,
 		SlotVII:  slotVII,
 		SlotVIII: slotVIII,
-		SlotIX:   slotIX,
-		Stress:   stress,
+		Final:    final,
 	}, nil
 }
 
 // parseAfterCa decodes the conjuncts that follow Ca into Slot VII
-// affixes, optional Slot VIII (VnCn), and Slot IX (Vc/Vk or elided
-// THM). Conjuncts alternate V-C; a final unpaired V is Slot IX.
+// affixes, optional Slot VIII (VnCn), and the Formative's Final
+// category. Conjuncts alternate V-C; a final unpaired V is the Vc/Vk
+// vowel that, together with the surface stress, determines Final.
 //
 // Detection rule for Slot VIII: if the LAST V-C pair has a consonant
 // that is a valid Cn (h/hl/hr/hm/hn/hň or w/y/hw/hrw/hmw/hnw/hňw),
 // that pair is VnCn rather than an affix. This matches the Kotlin
 // and Haskell reference implementations.
-func parseAfterCa(tail []string, stress g.Stress) ([]g.Affix, g.SlotVIII, g.SlotIX, error) {
+func parseAfterCa(tail []string, stress parse.Stress) ([]g.Affix, g.SlotVIII, g.Final, error) {
 	// Pair leading (V, C) chunks. Anything left over is the trailing Vc.
 	type vcPair struct{ v, c string }
 	var pairs []vcPair
@@ -418,19 +415,17 @@ func parseAfterCa(tail []string, stress g.Stress) ([]g.Affix, g.SlotVIII, g.Slot
 		return nil, nil, nil, fmt.Errorf("unexpected trailing conjuncts after Ca: %v", trailing)
 	}
 
-	// Slot IX: either the trailing vowel, or elided to THM.
-	var slotIX g.SlotIX
+	// Slot IX: either the trailing vowel, or elided.
+	trailingV := ""
 	if len(trailing) == 1 {
 		if !parse.IsVowelConjunct(trailing[0]) {
 			return nil, nil, nil, fmt.Errorf("expected vowel for Slot IX, got %q", trailing[0])
 		}
-		var ok bool
-		slotIX, ok = parseSlotIX(trailing[0], stress)
-		if !ok {
-			return nil, nil, nil, fmt.Errorf("invalid Slot IX %q", trailing[0])
-		}
-	} else {
-		slotIX = g.CaseSlot{Case: g.THM}
+		trailingV = trailing[0]
+	}
+	final, ok := parseFinal(trailingV, stress)
+	if !ok {
+		return nil, nil, nil, fmt.Errorf("invalid Slot IX %q for stress %v", trailingV, stress)
 	}
 
 	// Slot VIII: if the last pair's consonant is a valid Cn, it is
@@ -439,7 +434,7 @@ func parseAfterCa(tail []string, stress g.Stress) ([]g.Affix, g.SlotVIII, g.Slot
 	if n := len(pairs); n > 0 && parse.IsValidCn(pairs[n-1].c) {
 		s8, ok := parse.ParseVnCn(pairs[n-1].v, pairs[n-1].c)
 		if ok {
-			slotVIII = g.DisambiguateSlotVIII(stress, s8)
+			slotVIII = disambiguateSlotVIII(final, s8)
 			pairs = pairs[:n-1]
 		}
 	}
@@ -451,19 +446,82 @@ func parseAfterCa(tail []string, stress g.Stress) ([]g.Affix, g.SlotVIII, g.Slot
 		slotVII = append(slotVII, g.Affix{Type: t, Degree: d, Consonant: p.c})
 	}
 
-	return slotVII, slotVIII, slotIX, nil
+	return slotVII, slotVIII, final, nil
 }
 
-// parseSlotIX dispatches between case (Vc) and illocution+validation
-// (Vk) based on stress: Ultimate stress reads the vowel as Vk;
-// everything else reads it as Vc.
-func parseSlotIX(v string, stress g.Stress) (g.SlotIX, bool) {
-	if stress == g.Ultimate {
-		return parse.ParseVk(v)
+// disambiguateSlotVIII rewrites the MoodOrScope variant inside a
+// SlotVIII to match the formative's grammatical category. Verbal
+// formatives (UnframedVerbal, FramedVerbal) carry MoodVal; nominal
+// formatives (UnframedNominal) carry CaseScopeVal.
+func disambiguateSlotVIII(final g.Final, s g.SlotVIII) g.SlotVIII {
+	verbal := false
+	switch final.(type) {
+	case g.UnframedVerbal, g.FramedVerbal:
+		verbal = true
 	}
-	c, ok := parse.ParseCase(v)
-	if !ok {
-		return nil, false
+	flip := func(ms g.MoodOrScope) g.MoodOrScope {
+		if verbal {
+			if cs, ok := ms.(g.CaseScopeVal); ok {
+				return g.MoodVal{Mood: g.CaseScopeToMood(cs.CaseScope)}
+			}
+			return ms
+		}
+		if m, ok := ms.(g.MoodVal); ok {
+			return g.CaseScopeVal{CaseScope: g.MoodToCaseScope(m.Mood)}
+		}
+		return ms
 	}
-	return g.CaseSlot{Case: c}, true
+	switch v := s.(type) {
+	case g.VnCnValence:
+		return g.VnCnValence{Valence: v.Valence, MS: flip(v.MS)}
+	case g.VnCnPhase:
+		return g.VnCnPhase{Phase: v.Phase, MS: flip(v.MS)}
+	case g.VnCnEffect:
+		return g.VnCnEffect{Effect: v.Effect, MS: flip(v.MS)}
+	case g.VnCnLevel:
+		return g.VnCnLevel{Level: v.Level, Absolute: v.Absolute, MS: flip(v.MS)}
+	case g.VnCnAspect:
+		return g.VnCnAspect{Aspect: v.Aspect, MS: flip(v.MS)}
+	}
+	return s
+}
+
+// parseFinal builds the Formative.Final from the observed surface
+// stress and the trailing Vc/Vk vowel (or "" if elided). Stress drives
+// the variant choice; Ultimate/Monosyllabic produce UnframedVerbal,
+// Antepenultimate produces FramedVerbal, Penultimate produces
+// UnframedNominal.
+func parseFinal(vowel string, stress parse.Stress) (g.Final, bool) {
+	switch stress {
+	case parse.Ultimate, parse.Monosyllabic:
+		if vowel == "" {
+			return g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}, true
+		}
+		vk, ok := parse.ParseVk(vowel)
+		if !ok {
+			return nil, false
+		}
+		return g.UnframedVerbal{Vk: vk}, true
+	case parse.Antepenultimate:
+		c := g.THM
+		if vowel != "" {
+			cs, ok := parse.ParseCase(vowel)
+			if !ok {
+				return nil, false
+			}
+			c = cs
+		}
+		return g.FramedVerbal{Case: c}, true
+	case parse.Penultimate:
+		c := g.THM
+		if vowel != "" {
+			cs, ok := parse.ParseCase(vowel)
+			if !ok {
+				return nil, false
+			}
+			c = cs
+		}
+		return g.UnframedNominal{Case: c}, true
+	}
+	return nil, false
 }

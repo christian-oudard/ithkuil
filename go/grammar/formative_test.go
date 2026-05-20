@@ -16,12 +16,9 @@ func TestMinimalFormative(t *testing.T) {
 	if f.SlotVI != DefaultSlotVI {
 		t.Errorf("SlotVI = %v, want %v", f.SlotVI, DefaultSlotVI)
 	}
-	if f.Stress != Penultimate {
-		t.Errorf("Stress = %v, want Penultimate", f.Stress)
-	}
-	cs, ok := f.SlotIX.(CaseSlot)
-	if !ok || cs.Case != THM {
-		t.Errorf("SlotIX = %v, want CaseSlot{THM}", f.SlotIX)
+	un, ok := f.Final.(UnframedNominal)
+	if !ok || un.Case != THM {
+		t.Errorf("Final = %v, want UnframedNominal{THM}", f.Final)
 	}
 	if f.SlotI != nil {
 		t.Errorf("SlotI = %v, want nil", f.SlotI)
@@ -40,19 +37,24 @@ func TestMinimalFormative(t *testing.T) {
 	}
 }
 
-func TestSlotIXVariants(t *testing.T) {
-	// Both variants should satisfy SlotIX.
-	var s SlotIX = CaseSlot{Case: ERG}
-	if cs, ok := s.(CaseSlot); !ok || cs.Case != ERG {
-		t.Errorf("CaseSlot mismatch: %v", s)
+func TestFinalVariants(t *testing.T) {
+	// All three Final variants should satisfy the interface.
+	var f Final = UnframedNominal{Case: ERG}
+	if un, ok := f.(UnframedNominal); !ok || un.Case != ERG {
+		t.Errorf("UnframedNominal mismatch: %v", f)
 	}
-	s = Directive{}
-	if _, ok := s.(Directive); !ok {
-		t.Errorf("Directive mismatch: %v", s)
+	f = FramedVerbal{Case: THM}
+	if fv, ok := f.(FramedVerbal); !ok || fv.Case != THM {
+		t.Errorf("FramedVerbal mismatch: %v", f)
 	}
-	s = Assertive{Validation: INF}
-	if as, ok := s.(Assertive); !ok || as.Validation != INF {
-		t.Errorf("Assertive mismatch: %v", s)
+	f = UnframedVerbal{Vk: Assertive{Validation: INF}}
+	uv, ok := f.(UnframedVerbal)
+	if !ok {
+		t.Fatalf("UnframedVerbal mismatch: %v", f)
+	}
+	as, ok := uv.Vk.(Assertive)
+	if !ok || as.Validation != INF {
+		t.Errorf("UnframedVerbal Vk = %v, want Assertive{INF}", uv.Vk)
 	}
 }
 

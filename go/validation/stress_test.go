@@ -3,7 +3,7 @@ package validation
 import (
 	"testing"
 
-	g "github.com/coudard/ithkuil/go/grammar"
+	"github.com/coudard/ithkuil/go/parse"
 )
 
 func TestValidateStress_Monosyllabic(t *testing.T) {
@@ -11,7 +11,7 @@ func TestValidateStress_Monosyllabic(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if s != g.Monosyllabic {
+	if s != parse.Monosyllabic {
 		t.Errorf("got %v, want Monosyllabic", s)
 	}
 }
@@ -21,7 +21,7 @@ func TestValidateStress_Penultimate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if s != g.Penultimate {
+	if s != parse.Penultimate {
 		t.Errorf("got %v, want Penultimate", s)
 	}
 }
@@ -31,7 +31,7 @@ func TestValidateStress_Ultimate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if s != g.Ultimate {
+	if s != parse.Ultimate {
 		t.Errorf("got %v, want Ultimate", s)
 	}
 }
@@ -43,7 +43,7 @@ func TestValidateStress_Antepenultimate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if s != g.Antepenultimate {
+	if s != parse.Antepenultimate {
 		t.Errorf("got %v, want Antepenultimate", s)
 	}
 }

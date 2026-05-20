@@ -69,7 +69,7 @@ func TestFormative_NonDefaultCa(t *testing.T) {
 
 func TestFormative_ErgCase(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	f.SlotIX = g.CaseSlot{Case: g.ERG}
+	f.Final = g.UnframedNominal{Case: g.ERG}
 	got := Formative(f)
 	want := "-ml--ERG"
 	if got != want {
@@ -79,15 +79,14 @@ func TestFormative_ErgCase(t *testing.T) {
 
 func TestFormative_Verbal(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	f.Stress = g.Ultimate
-	f.SlotIX = g.Directive{}
+	f.Final = g.UnframedVerbal{Vk: g.Directive{}}
 	got := Formative(f)
 	want := "-ml--DIR-ULT"
 	if got != want {
 		t.Errorf("Formative(DIR) = %q, want %q", got, want)
 	}
 	// Non-default validation should appear.
-	f.SlotIX = g.Assertive{Validation: g.INF}
+	f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.INF}}
 	got = Formative(f)
 	want = "-ml--ASR/INF-ULT"
 	if got != want {
@@ -140,22 +139,22 @@ func TestFormative_SentenceStarter(t *testing.T) {
 	}
 }
 
-func TestFormative_StressTag(t *testing.T) {
+func TestFormative_FinalTag(t *testing.T) {
 	cases := []struct {
-		stress g.Stress
-		want   string
+		name  string
+		final g.Final
+		want  string
 	}{
-		{g.Penultimate, "-ml-"},
-		{g.Monosyllabic, "-ml--MONO"},
-		{g.Ultimate, "-ml--ULT"},
-		{g.Antepenultimate, "-ml--ANT"},
+		{"nominal", g.UnframedNominal{Case: g.THM}, "-ml-"},
+		{"verbal", g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}, "-ml--ASR-ULT"},
+		{"framed", g.FramedVerbal{Case: g.THM}, "-ml--ANT"},
 	}
 	for _, c := range cases {
 		f := g.MinimalFormative("ml")
-		f.Stress = c.stress
+		f.Final = c.final
 		got := Formative(f)
 		if got != c.want {
-			t.Errorf("Formative(Stress=%v) = %q, want %q", c.stress, got, c.want)
+			t.Errorf("Formative(Final=%v) = %q, want %q", c.final, got, c.want)
 		}
 	}
 }

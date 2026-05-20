@@ -16,20 +16,21 @@ var stressMap = map[rune]rune{
 	'ä': 'â', 'ë': 'ê', 'ö': 'ô', 'ü': 'û',
 }
 
-// applyStress places a stress diacritic on the appropriate vowel of
-// word per §1.3.1 of the V4 grammar. Monosyllabic and Penultimate stay
-// unmarked (penultimate is the orthographic default). Ultimate marks
-// the last vowel-conjunct; Antepenultimate marks the third-from-last.
+// applyFinalStress places a stress diacritic on the appropriate vowel
+// of word, driven by the Formative's Final variant (§1.3.1):
+//   - UnframedNominal: no diacritic (penultimate is the orthographic
+//     default).
+//   - UnframedVerbal: acute on the last vowel-conjunct. A monosyllabic
+//     word is left unmarked — monosyllabic is implicit ultimate per
+//     §3.10.
+//   - FramedVerbal: acute on the third-from-last vowel-conjunct.
 //
 // Inside a multi-vowel conjunct (diphthong, hiatus pair), the diacritic
 // goes on the first vowel — the prominent member of a falling diphthong.
 //
 // If the word has fewer vowel-conjuncts than the requested stress
 // position needs, the original string is returned unchanged.
-func applyStress(word string, s g.Stress) string {
-	if s == g.Monosyllabic || s == g.Penultimate {
-		return word
-	}
+func applyFinalStress(word string, f g.Final) string {
 	conjs := parse.SplitConjuncts(word)
 	var vowelIdx []int
 	for i, c := range conjs {
@@ -46,10 +47,13 @@ func applyStress(word string, s g.Stress) string {
 		return word
 	}
 	var target int
-	switch s {
-	case g.Ultimate:
+	switch f.(type) {
+	case g.UnframedVerbal:
+		if n < 2 {
+			return word
+		}
 		target = vowelIdx[n-1]
-	case g.Antepenultimate:
+	case g.FramedVerbal:
 		if n < 3 {
 			return word
 		}

@@ -25,12 +25,9 @@ func TestParseFormative_Minimal(t *testing.T) {
 	if f.SlotVI != g.DefaultSlotVI {
 		t.Errorf("SlotVI = %v, want %v", f.SlotVI, g.DefaultSlotVI)
 	}
-	cs, ok := f.SlotIX.(g.CaseSlot)
-	if !ok || cs.Case != g.THM {
-		t.Errorf("SlotIX = %v, want CaseSlot{THM}", f.SlotIX)
-	}
-	if f.Stress != g.Penultimate {
-		t.Errorf("Stress = %v, want Penultimate", f.Stress)
+	un, ok := f.Final.(g.UnframedNominal)
+	if !ok || un.Case != g.THM {
+		t.Errorf("Final = %v, want UnframedNominal{THM}", f.Final)
 	}
 }
 
@@ -46,9 +43,9 @@ func TestParseFormative_NonDefault(t *testing.T) {
 	if f.SlotIV != (g.SlotIV{Function: g.DYN, Specification: g.OBJ, Context: g.EXS}) {
 		t.Errorf("SlotIV = %v, want (DYN, OBJ, EXS)", f.SlotIV)
 	}
-	cs, ok := f.SlotIX.(g.CaseSlot)
-	if !ok || cs.Case != g.ERG {
-		t.Errorf("SlotIX = %v, want CaseSlot{ERG}", f.SlotIX)
+	un, ok := f.Final.(g.UnframedNominal)
+	if !ok || un.Case != g.ERG {
+		t.Errorf("Final = %v, want UnframedNominal{ERG}", f.Final)
 	}
 }
 
@@ -59,12 +56,13 @@ func TestParseFormative_Verbal(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"amlalú\") error: %v", err)
 	}
-	if f.Stress != g.Ultimate {
-		t.Errorf("Stress = %v, want Ultimate", f.Stress)
+	uv, ok := f.Final.(g.UnframedVerbal)
+	if !ok {
+		t.Fatalf("Final = %v, want UnframedVerbal", f.Final)
 	}
-	as, ok := f.SlotIX.(g.Assertive)
+	as, ok := uv.Vk.(g.Assertive)
 	if !ok || as.Validation != g.INF {
-		t.Errorf("SlotIX = %v, want Assertive{INF}", f.SlotIX)
+		t.Errorf("Vk = %v, want Assertive{INF}", uv.Vk)
 	}
 }
 
@@ -74,9 +72,9 @@ func TestParseFormative_ElidedVc(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"amlal\") error: %v", err)
 	}
-	cs, ok := f.SlotIX.(g.CaseSlot)
-	if !ok || cs.Case != g.THM {
-		t.Errorf("SlotIX = %v, want CaseSlot{THM}", f.SlotIX)
+	un, ok := f.Final.(g.UnframedNominal)
+	if !ok || un.Case != g.THM {
+		t.Errorf("Final = %v, want UnframedNominal{THM}", f.Final)
 	}
 }
 
@@ -93,10 +91,8 @@ func TestRoundTripMinimal(t *testing.T) {
 		parsed.SlotVI != original.SlotVI {
 		t.Errorf("round trip mismatch:\noriginal: %+v\nparsed:   %+v", original, parsed)
 	}
-	cs1, ok1 := original.SlotIX.(g.CaseSlot)
-	cs2, ok2 := parsed.SlotIX.(g.CaseSlot)
-	if !ok1 || !ok2 || cs1 != cs2 {
-		t.Errorf("SlotIX mismatch: original=%v parsed=%v", original.SlotIX, parsed.SlotIX)
+	if original.Final != parsed.Final {
+		t.Errorf("Final mismatch: original=%v parsed=%v", original.Final, parsed.Final)
 	}
 }
 
@@ -159,11 +155,8 @@ func TestParseFormative_MalëuţřaitCanonical(t *testing.T) {
 	if f.SlotVII[1] != (g.Affix{Type: g.Type2Affix, Degree: 1, Consonant: "t"}) {
 		t.Errorf("Affix 2 = %v", f.SlotVII[1])
 	}
-	if cs, ok := f.SlotIX.(g.CaseSlot); !ok || cs.Case != g.THM {
-		t.Errorf("Slot IX = %v, want CaseSlot{THM}", f.SlotIX)
-	}
-	if f.Stress != g.Penultimate {
-		t.Errorf("Stress = %v, want Penultimate", f.Stress)
+	if un, ok := f.Final.(g.UnframedNominal); !ok || un.Case != g.THM {
+		t.Errorf("Final = %v, want UnframedNominal{THM}", f.Final)
 	}
 }
 
@@ -275,9 +268,8 @@ func TestParseFormative_ShortcutWithAffix(t *testing.T) {
 	if f.SlotVII[0] != (g.Affix{Type: g.Type1Affix, Degree: 1, Consonant: "r"}) {
 		t.Errorf("Affix = %v", f.SlotVII[0])
 	}
-	cs, ok := f.SlotIX.(g.CaseSlot)
-	if !ok || cs.Case != g.THM {
-		t.Errorf("SlotIX = %v, want CaseSlot{THM}", f.SlotIX)
+	if un, ok := f.Final.(g.UnframedNominal); !ok || un.Case != g.THM {
+		t.Errorf("Final = %v, want UnframedNominal{THM}", f.Final)
 	}
 }
 
@@ -307,9 +299,8 @@ func TestParseFormative_Corpus_Ärmaläwia(t *testing.T) {
 	if vc.Aspect != g.PRS {
 		t.Errorf("Aspect = %v, want PRS", vc.Aspect)
 	}
-	cs, ok := f.SlotIX.(g.CaseSlot)
-	if !ok || cs.Case != g.LOC {
-		t.Errorf("SlotIX = %v, want CaseSlot{LOC}", f.SlotIX)
+	if un, ok := f.Final.(g.UnframedNominal); !ok || un.Case != g.LOC {
+		t.Errorf("Final = %v, want UnframedNominal{LOC}", f.Final)
 	}
 }
 
@@ -375,9 +366,8 @@ func TestParseFormative_GlottalCaseAlone(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"amlali'a\") error: %v", err)
 	}
-	cs, ok := f.SlotIX.(g.CaseSlot)
-	if !ok || cs.Case != g.LOC {
-		t.Errorf("SlotIX = %v, want CaseSlot{LOC}", f.SlotIX)
+	if un, ok := f.Final.(g.UnframedNominal); !ok || un.Case != g.LOC {
+		t.Errorf("Final = %v, want UnframedNominal{LOC}", f.Final)
 	}
 }
 
@@ -420,9 +410,8 @@ func TestParseFormative_WithSlotVIIAffix(t *testing.T) {
 	if len(f.SlotVII) != 1 || f.SlotVII[0] != want[0] {
 		t.Errorf("SlotVII = %v, want %v", f.SlotVII, want)
 	}
-	cs, ok := f.SlotIX.(g.CaseSlot)
-	if !ok || cs.Case != g.THM {
-		t.Errorf("SlotIX = %v, want CaseSlot{THM}", f.SlotIX)
+	if un, ok := f.Final.(g.UnframedNominal); !ok || un.Case != g.THM {
+		t.Errorf("Final = %v, want UnframedNominal{THM}", f.Final)
 	}
 	if f.SlotVIII != nil {
 		t.Errorf("SlotVIII = %v, want nil", f.SlotVIII)
@@ -454,21 +443,20 @@ func TestParseFormative_WithSlotVIII(t *testing.T) {
 	if f.SlotVII != nil {
 		t.Errorf("SlotVII = %v, want nil", f.SlotVII)
 	}
-	cs, ok := f.SlotIX.(g.CaseSlot)
-	if !ok || cs.Case != g.THM {
-		t.Errorf("SlotIX = %v, want CaseSlot{THM}", f.SlotIX)
+	if un, ok := f.Final.(g.UnframedNominal); !ok || un.Case != g.THM {
+		t.Errorf("Final = %v, want UnframedNominal{THM}", f.Final)
 	}
 }
 
 func TestParseFormative_SlotVIIIVerbal(t *testing.T) {
 	// Same shape as above but ultimate stress on the final vowel.
-	// "amlalahlá" → stress Ultimate. SlotIX is Vk, SlotVIII MoodVal.
+	// "amlalahlá" → Final = UnframedVerbal{Assertive{OBS}}, SlotVIII MoodVal.
 	f, err := ParseFormative("amlalahlá")
 	if err != nil {
 		t.Fatalf("ParseFormative(\"amlalahlá\") error: %v", err)
 	}
-	if f.Stress != g.Ultimate {
-		t.Errorf("Stress = %v, want Ultimate", f.Stress)
+	if _, ok := f.Final.(g.UnframedVerbal); !ok {
+		t.Errorf("Final = %v, want UnframedVerbal", f.Final)
 	}
 	vc, ok := f.SlotVIII.(g.VnCnValence)
 	if !ok {
@@ -520,13 +508,13 @@ func TestParseFormative_RoundTripVariants(t *testing.T) {
 		{"S2/PRC, ERG", func() g.Formative {
 			f := g.MinimalFormative("ml")
 			f.SlotII = g.SlotII{Stem: g.S2, Version: g.PRC}
-			f.SlotIX = g.CaseSlot{Case: g.ERG}
+			f.Final = g.UnframedNominal{Case: g.ERG}
 			return f
 		}()},
 		{"DYN/CTE/FNC, ABS", func() g.Formative {
 			f := g.MinimalFormative("t")
 			f.SlotIV = g.SlotIV{Function: g.DYN, Specification: g.CTE, Context: g.FNC}
-			f.SlotIX = g.CaseSlot{Case: g.ABS}
+			f.Final = g.UnframedNominal{Case: g.ABS}
 			return f
 		}()},
 	}
@@ -543,8 +531,8 @@ func TestParseFormative_RoundTripVariants(t *testing.T) {
 			if parsed.SlotIV != c.f.SlotIV {
 				t.Errorf("SlotIV: got %v, want %v", parsed.SlotIV, c.f.SlotIV)
 			}
-			if parsed.SlotIX != c.f.SlotIX {
-				t.Errorf("SlotIX: got %v, want %v", parsed.SlotIX, c.f.SlotIX)
+			if parsed.Final != c.f.Final {
+				t.Errorf("Final: got %v, want %v", parsed.Final, c.f.Final)
 			}
 		})
 	}

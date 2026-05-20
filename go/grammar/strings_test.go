@@ -77,14 +77,6 @@ func TestStringer_AffixScope(t *testing.T) {
 	}
 }
 
-func TestStringer_Stress(t *testing.T) {
-	for _, s := range []Stress{Monosyllabic, Penultimate, Ultimate, Antepenultimate} {
-		if s.String() == "" {
-			t.Errorf("Stress %d String() empty", s)
-		}
-	}
-}
-
 func TestStringer_ConcatenationAndShortcut(t *testing.T) {
 	if Type1.String() == "" || Type2.String() == "" {
 		t.Error("ConcatenationStatus String() empty")
