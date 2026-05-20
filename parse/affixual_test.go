@@ -36,6 +36,32 @@ func TestParseSingleAffix_WithVs(t *testing.T) {
 	}
 }
 
+func TestParseSingleAffix_ScopeFromVs(t *testing.T) {
+	cases := []struct {
+		word string
+		want grammar.AffixScope
+	}{
+		// Default: no Vs → VDom.
+		{"ar", grammar.ScopeVDom},
+		// Vs="a" → VDom (explicit default).
+		{"ara", grammar.ScopeVDom},
+		{"aru", grammar.ScopeVSub},
+		{"are", grammar.ScopeVIIDom},
+		{"ari", grammar.ScopeVIISub},
+		{"aro", grammar.ScopeFormative},
+		{"arö", grammar.ScopeAdjacent},
+	}
+	for _, c := range cases {
+		a, err := ParseSingleAffix(c.word)
+		if err != nil {
+			t.Fatalf("ParseSingleAffix(%q): %v", c.word, err)
+		}
+		if a.Scope != c.want {
+			t.Errorf("ParseSingleAffix(%q).Scope = %v, want %v", c.word, a.Scope, c.want)
+		}
+	}
+}
+
 func TestParseSingleAffix_Rejects(t *testing.T) {
 	for _, w := range []string{"", "a", "r", "aa", "rr"} {
 		if _, err := ParseSingleAffix(w); err == nil {
@@ -91,6 +117,57 @@ func TestParseMultipleAffix_LeadingEPrefix(t *testing.T) {
 	}
 	if ma.First.Cs != "x" {
 		t.Errorf("after ë prefix: First.Cs = %q, want x", ma.First.Cs)
+	}
+}
+
+func TestParseMultipleAffix_FirstScopeFromCz(t *testing.T) {
+	cases := []struct {
+		word string
+		want grammar.AffixScope
+	}{
+		{"xaheitr", grammar.ScopeVDom},
+		{"xa'heitr", grammar.ScopeVSub},
+		{"xa'hleitr", grammar.ScopeVIIDom},
+		{"xa'hreitr", grammar.ScopeVIISub},
+		{"xahweitr", grammar.ScopeFormative},
+		{"xa'hweitr", grammar.ScopeAdjacent},
+	}
+	for _, c := range cases {
+		ma, err := ParseMultipleAffix(c.word)
+		if err != nil {
+			t.Fatalf("ParseMultipleAffix(%q): %v", c.word, err)
+		}
+		if ma.FirstScope != c.want {
+			t.Errorf("%q: FirstScope = %v, want %v", c.word, ma.FirstScope, c.want)
+		}
+	}
+}
+
+func TestParseMultipleAffix_RestScopeFromVz(t *testing.T) {
+	// Vz="" or "ai" → RestScope mirrors FirstScope (from Cz).
+	ma, err := ParseMultipleAffix("xahweitr")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ma.RestScope != ma.FirstScope {
+		t.Errorf("Vz absent: RestScope = %v, want = FirstScope %v",
+			ma.RestScope, ma.FirstScope)
+	}
+	ma, err = ParseMultipleAffix("xahweitrai")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ma.RestScope != ma.FirstScope {
+		t.Errorf("Vz=ai: RestScope = %v, want = FirstScope %v",
+			ma.RestScope, ma.FirstScope)
+	}
+	// Explicit Vz overrides.
+	ma, err = ParseMultipleAffix("xaheitre")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ma.RestScope != grammar.ScopeVIIDom {
+		t.Errorf("Vz=e: RestScope = %v, want VIIDom", ma.RestScope)
 	}
 }
 

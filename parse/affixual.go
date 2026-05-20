@@ -12,27 +12,34 @@ import (
 // older affix-pair form.
 func ParseSingleAffix(word string) (grammar.SingleAffixAdjunct, error) {
 	conjs := SplitConjuncts(word)
+	var a grammar.SingleAffixAdjunct
 	switch len(conjs) {
 	case 2:
-		a, b := conjs[0], conjs[1]
+		x, y := conjs[0], conjs[1]
 		switch {
-		case IsVowelConjunct(a) && IsConsonantConjunct(b):
-			return grammar.SingleAffixAdjunct{Vx: a, Cs: b}, nil
-		case IsConsonantConjunct(a) && IsVowelConjunct(b):
-			return grammar.SingleAffixAdjunct{Vx: b, Cs: a}, nil
+		case IsVowelConjunct(x) && IsConsonantConjunct(y):
+			a = grammar.SingleAffixAdjunct{Vx: x, Cs: y}
+		case IsConsonantConjunct(x) && IsVowelConjunct(y):
+			a = grammar.SingleAffixAdjunct{Vx: y, Cs: x}
 		default:
-			return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: %q + %q is not a vowel/consonant pair", a, b)
+			return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: %q + %q is not a vowel/consonant pair", x, y)
 		}
 	case 3:
 		// Vx-Cs-Vs form: vowel, consonant, vowel.
-		a, b, c := conjs[0], conjs[1], conjs[2]
-		if IsVowelConjunct(a) && IsConsonantConjunct(b) && IsVowelConjunct(c) {
-			return grammar.SingleAffixAdjunct{Vx: a, Cs: b, Vs: c}, nil
+		x, y, z := conjs[0], conjs[1], conjs[2]
+		if !(IsVowelConjunct(x) && IsConsonantConjunct(y) && IsVowelConjunct(z)) {
+			return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: %q+%q+%q doesn't match Vx-Cs-Vs", x, y, z)
 		}
-		return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: %q+%q+%q doesn't match Vx-Cs-Vs", a, b, c)
+		a = grammar.SingleAffixAdjunct{Vx: x, Cs: y, Vs: z}
 	default:
 		return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: expected 2 or 3 conjuncts, got %d", len(conjs))
 	}
+	scope, ok := grammar.VsScope(a.Vs)
+	if !ok {
+		return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: %q is not a valid Vs scope vowel", a.Vs)
+	}
+	a.Scope = scope
+	return a, nil
 }
 
 // isCzConsonant reports whether c is a valid Cz scope consonant used
@@ -94,10 +101,25 @@ func ParseMultipleAffix(word string) (grammar.MultipleAffixAdjunct, error) {
 	if len(more) < 1 {
 		return grammar.MultipleAffixAdjunct{}, fmt.Errorf("multiple-affix adjunct: at least one trailing VxCs pair required")
 	}
+	firstScope, ok := grammar.CzScope(cz)
+	if !ok {
+		// isCzConsonant already accepted cz, so this is unreachable.
+		return grammar.MultipleAffixAdjunct{}, fmt.Errorf("multiple-affix adjunct: %q has no scope mapping", cz)
+	}
+	restScope := firstScope
+	if vz != "" && vz != "ai" {
+		s, ok := grammar.VzScope(vz)
+		if !ok {
+			return grammar.MultipleAffixAdjunct{}, fmt.Errorf("multiple-affix adjunct: %q is not a valid Vz scope vowel", vz)
+		}
+		restScope = s
+	}
 	return grammar.MultipleAffixAdjunct{
-		First:   grammar.AffixPair{Vx: vx, Cs: cs},
-		Cz:      cz,
-		Affixes: more,
-		Vz:      vz,
+		First:      grammar.AffixPair{Vx: vx, Cs: cs},
+		Cz:         cz,
+		Affixes:    more,
+		Vz:         vz,
+		FirstScope: firstScope,
+		RestScope:  restScope,
 	}, nil
 }

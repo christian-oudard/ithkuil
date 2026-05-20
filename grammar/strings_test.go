@@ -70,7 +70,7 @@ func TestStringer_AffixType(t *testing.T) {
 }
 
 func TestStringer_AffixScope(t *testing.T) {
-	for _, s := range []AffixScope{ScopeVII, ScopeV, ScopeAdj} {
+	for _, s := range AllAffixScopes {
 		if s.String() == "" {
 			t.Errorf("AffixScope %d String() empty", s)
 		}
