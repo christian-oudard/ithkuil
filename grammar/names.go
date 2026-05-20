@@ -486,6 +486,13 @@ var meanings = map[string]string{
 	"SPC": "speculative — guessed",
 	"COU": "counterfactive — would have been",
 	"HYP": "hypothetical — imagined",
+	// Case-Scope
+	"CCN": "default — case follows clause head or main verb",
+	"CCA": "head — governs case of clause's unmarked nouns",
+	"CCS": "head — paired with CCQ qualifier(s)",
+	"CCQ": "qualifier — modifies a CCS head",
+	"CCP": "scope over next formative only",
+	"CCV": "scope over previous formative only",
 	// Illocution
 	"ASR": "I assert / state",
 	"DIR": "I direct / command",
