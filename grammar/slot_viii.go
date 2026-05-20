@@ -203,7 +203,8 @@ func CaseScopeToMood(c CaseScope) Mood {
 // between the Mood enum (verbal labelling: FAC/SUB/ASM/SPC/COU/HYP)
 // and the CaseScope enum (nominal labelling: CCN/CCA/CCS/CCQ/CCP/CCV).
 // The same Cn consonant encodes both — the gloss layer picks the
-// label based on the formative's Final category.
+// label based on the formative's Final category. SlotVIIIMoodScope
+// extracts the field without a type switch at the call site.
 type SlotVIII interface {
 	slotVIII()
 }
@@ -249,4 +250,42 @@ type VnCnAspect struct {
 }
 
 func (VnCnAspect) slotVIII() {}
+
+// SlotVIIIMoodScope returns the MoodScope field of any SlotVIII
+// variant. Returns FAC for a nil receiver (the grammatical default
+// when Slot VIII is absent).
+func SlotVIIIMoodScope(s SlotVIII) Mood {
+	switch v := s.(type) {
+	case VnCnValence:
+		return v.MoodScope
+	case VnCnPhase:
+		return v.MoodScope
+	case VnCnEffect:
+		return v.MoodScope
+	case VnCnLevel:
+		return v.MoodScope
+	case VnCnAspect:
+		return v.MoodScope
+	}
+	return FAC
+}
+
+// SlotVIIIVnLabel returns the abbreviation of the Vn category stored
+// in a SlotVIII variant (Valence/Phase/Effect/Level/Aspect). Returns
+// "" for a nil receiver.
+func SlotVIIIVnLabel(s SlotVIII) string {
+	switch v := s.(type) {
+	case VnCnValence:
+		return v.Valence.String()
+	case VnCnPhase:
+		return v.Phase.String()
+	case VnCnEffect:
+		return v.Effect.String()
+	case VnCnLevel:
+		return v.Level.String()
+	case VnCnAspect:
+		return v.Aspect.String()
+	}
+	return ""
+}
 

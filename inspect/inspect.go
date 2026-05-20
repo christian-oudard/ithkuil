@@ -423,20 +423,11 @@ func SlotVIII(t tokenize.WordToken) string {
 	if !ok || f.Formative.SlotVIII == nil {
 		return Dot
 	}
-	scope := moodOrScopeLabel(f.Formative)
-	switch v := f.Formative.SlotVIII.(type) {
-	case g.VnCnAspect:
-		return v.Aspect.String() + "." + scope
-	case g.VnCnValence:
-		return v.Valence.String() + "." + scope
-	case g.VnCnPhase:
-		return v.Phase.String() + "." + scope
-	case g.VnCnEffect:
-		return v.Effect.String() + "." + scope
-	case g.VnCnLevel:
-		return v.Level.String() + "." + scope
+	label := g.SlotVIIIVnLabel(f.Formative.SlotVIII)
+	if label == "" {
+		return Dot
 	}
-	return Dot
+	return label + "." + moodOrScopeLabel(f.Formative)
 }
 
 // moodOrScopeLabel renders the Slot VIII Mood field as either a Mood
@@ -444,35 +435,11 @@ func SlotVIII(t tokenize.WordToken) string {
 // nominal/framed). The mapping mirrors the Mood / CaseScope ordinal
 // correspondence in the spec.
 func moodOrScopeLabel(f g.Formative) string {
-	mood := slotVIIIMoodScope(f.SlotVIII)
-	if isVerbal(f.Final) {
+	mood := g.SlotVIIIMoodScope(f.SlotVIII)
+	if g.IsVerbal(f.Final) {
 		return mood.String()
 	}
-	return moodAsCaseScope(mood).String()
-}
-
-func slotVIIIMoodScope(s g.SlotVIII) g.Mood {
-	switch v := s.(type) {
-	case g.VnCnValence:
-		return v.MoodScope
-	case g.VnCnPhase:
-		return v.MoodScope
-	case g.VnCnEffect:
-		return v.MoodScope
-	case g.VnCnLevel:
-		return v.MoodScope
-	case g.VnCnAspect:
-		return v.MoodScope
-	}
-	return g.FAC
-}
-
-func isVerbal(fin g.Final) bool { return g.IsVerbal(fin) }
-
-// moodAsCaseScope maps the Mood ordinal to its case-scope twin
-// (FAC↔CCN, SUB↔CCA, ASM↔CCS, SPC↔CCQ, COU↔CCP, HYP↔CCV).
-func moodAsCaseScope(m g.Mood) g.CaseScope {
-	return [...]g.CaseScope{g.CCN, g.CCA, g.CCS, g.CCQ, g.CCP, g.CCV}[m]
+	return g.MoodToCaseScope(mood).String()
 }
 
 // SlotIX returns the case (Vc) or illocution/validation (Vk) encoded

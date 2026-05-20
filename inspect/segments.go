@@ -141,7 +141,7 @@ func segmentsFromLayout(l layout.Layout, f g.Formative, lex *lexicon.Lexicon) []
 
 	if l.Cn != "" && f.SlotVIII != nil {
 		segs = append(segs,
-			Segment{Raw: strings.ToLower(l.Vn), Slot: "Vn", Encodes: []string{slotVIIIVnCode(f.SlotVIII)}},
+			Segment{Raw: strings.ToLower(l.Vn), Slot: "Vn", Encodes: []string{g.SlotVIIIVnLabel(f.SlotVIII)}},
 			Segment{Raw: strings.ToLower(l.Cn), Slot: "Cn", Encodes: []string{slotVIIICnCode(f.SlotVIII, f.Final)}},
 		)
 	} else if l.Cn != "" {
@@ -629,50 +629,19 @@ func slotVICodes(s g.SlotVI) []string {
 	}
 }
 
-func slotVIIIVnCode(s g.SlotVIII) string {
-	switch v := s.(type) {
-	case g.VnCnAspect:
-		return v.Aspect.String()
-	case g.VnCnValence:
-		return v.Valence.String()
-	case g.VnCnPhase:
-		return v.Phase.String()
-	case g.VnCnEffect:
-		return v.Effect.String()
-	case g.VnCnLevel:
-		return v.Level.String()
-	}
-	return ""
-}
-
 // slotVIIICnCode renders the Slot VIII Cn as either a Mood label
 // (for verbal formatives) or a CaseScope label (for nominal/framed
 // formatives). The underlying MoodScope field carries the Mood-typed
 // value either way.
 func slotVIIICnCode(s g.SlotVIII, fin g.Final) string {
-	var m g.Mood
-	switch v := s.(type) {
-	case g.VnCnValence:
-		m = v.MoodScope
-	case g.VnCnPhase:
-		m = v.MoodScope
-	case g.VnCnEffect:
-		m = v.MoodScope
-	case g.VnCnLevel:
-		m = v.MoodScope
-	case g.VnCnAspect:
-		m = v.MoodScope
-	default:
+	if s == nil {
 		return ""
 	}
-	if _, verbal := fin.(g.UnframedVerbal); verbal {
+	m := g.SlotVIIIMoodScope(s)
+	if g.IsVerbal(fin) {
 		return m.String()
 	}
-	return moodToCaseScope(m).String()
-}
-
-func moodToCaseScope(m g.Mood) g.CaseScope {
-	return [...]g.CaseScope{g.CCN, g.CCA, g.CCS, g.CCQ, g.CCP, g.CCV}[m]
+	return g.MoodToCaseScope(m).String()
 }
 
 // slotIXLabelCodes returns the slot label ("Vc" or "Vk"), the codes

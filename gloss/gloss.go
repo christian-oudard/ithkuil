@@ -266,28 +266,13 @@ func slotVIII(s g.SlotVIII, isVerbal bool) string {
 	if s == nil {
 		return ""
 	}
-	switch v := s.(type) {
-	case g.VnCnValence:
-		return joinDot(valenceLabel(v.Valence), moodOrScope(v.MoodScope, isVerbal))
-	case g.VnCnPhase:
-		return joinDot(v.Phase.String(), moodOrScope(v.MoodScope, isVerbal))
-	case g.VnCnEffect:
-		return joinDot(v.Effect.String(), moodOrScope(v.MoodScope, isVerbal))
-	case g.VnCnLevel:
-		return joinDot(v.Level.String(), moodOrScope(v.MoodScope, isVerbal))
-	case g.VnCnAspect:
-		return joinDot(v.Aspect.String(), moodOrScope(v.MoodScope, isVerbal))
+	vn := g.SlotVIIIVnLabel(s)
+	// MNO is the unmarked default valence and is suppressed in gloss
+	// output, matching the Haskell convention.
+	if v, ok := s.(g.VnCnValence); ok && v.Valence == g.MNO {
+		vn = ""
 	}
-	return ""
-}
-
-// valenceLabel suppresses MNO (the unmarked default valence) to match
-// the Haskell convention.
-func valenceLabel(v g.Valence) string {
-	if v == g.MNO {
-		return ""
-	}
-	return v.String()
+	return joinDot(vn, moodOrScope(g.SlotVIIIMoodScope(s), isVerbal))
 }
 
 // moodOrScope renders the MoodScope field of a SlotVIII using the Mood
