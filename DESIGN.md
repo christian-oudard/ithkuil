@@ -109,5 +109,19 @@ inverses against the working corpus.
 ## What's still entangled
 
 Layer E — context-dependent semantics — lives in `inspect/` and
-`gloss/`. V_N-vs-V_H disambiguation, Mood-vs-CaseScope selection,
-and the prose meanings of slot codes are decided here.
+`gloss/`. The decisions made here:
+
+- Mood-vs-CaseScope label selection for Slot VIII Cn. Driven by
+  the formative's `Final` variant via `grammar.IsVerbal` and
+  `grammar.MoodToCaseScope`.
+- V_N-vs-V_H reading of a modular adjunct's slot 4. Driven by
+  stress + the presence of (Vn, Cn) pairs (§4.3). Single-site in
+  `inspect/segments.go`.
+- Modular adjunct Cn pattern (Mood vs CaseScope label). Driven by
+  the adjacent formative's `IsVerbal` via `tokenize.MarksMood`.
+- Prose meanings of slot codes (`grammar.Name`, `grammar.Meaning`,
+  `inspect.vhMeaning`, `inspect.prefixMeaning`). Pure lookup tables.
+
+Common visitors over the SlotVIII sum type live in `grammar/` as
+`SlotVIIIMoodScope` and `SlotVIIIVnLabel`. `inspect/` and `gloss/`
+use them instead of re-doing the five-case type switch.
