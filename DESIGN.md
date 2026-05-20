@@ -99,7 +99,7 @@ Layer D — string ↔ grammar value translation:
 
 `fullparse.ParseFormative` is `Parse` ∘ `ToGrammar`.
 `render.FormativeWithOpts` is `FromGrammar` ∘ `Render`.
-`inspect.Segments` consumes the Layout directly to emit the
+`view.Segments` consumes the Layout directly to emit the
 slot-by-slot phonetic breakdown.
 
 Round-trip tests in `layout/roundtrip_test.go` (surface↔Layout)
@@ -132,10 +132,10 @@ neighbor information already inferred by `tokenize/`.
   a modular adjunct.
 
 Common visitors over the SlotVIII sum type live in `grammar/` as
-`SlotVIIIMoodScope` and `SlotVIIIVnLabel`. `inspect/` and `gloss/`
+`SlotVIIIMoodScope` and `SlotVIIIVnLabel`. `view/` and `gloss/`
 use them instead of re-doing the five-case type switch.
 
-`inspect/` and `gloss/` are the consumers — they take parsed tokens,
-ask `semantics/` for the context-dependent labels, and render them
-into the per-slot trace, side-by-side diff, or hyphen-separated
-gloss strings.
+`view/` and `gloss/` are the presentation layer — they take parsed
+tokens, ask `semantics/` for the context-dependent labels, and render
+them into the per-token type tag, phonetic-segment breakdown, or the
+hyphen-separated gloss string.

@@ -38,7 +38,7 @@ Go packages at the repo root:
 - `referentials/` - Anaphoric references (11 referent categories x 3 effects, combinations).
 - `numbers/` - Centesimal/base-100 number system.
 - `compose/` - Builds formatives from grammatical specifications + lexicon search helpers.
-- `inspect/` - Compact per-slot string extractors used by analyze/diff visualizations.
+- `view/` - Presentation layer for parsed tokens: the per-token type tag (`view.Type`) plus the phonetic-segment + glossary breakdown (`view.Segments`, `view.Headword`, `view.Glossary`) consumed by the analyze CLI and MCP server.
 - `lexicon/` - Loads roots and affixes from JSON; `LoadDefault()` returns the embedded lexicon.
 
 Command-line entrypoints under `cmd/`:

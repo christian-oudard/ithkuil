@@ -10,7 +10,7 @@ import (
 	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/inspect"
+	"github.com/christian-oudard/ithkuil/view"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/render"
 	"github.com/christian-oudard/ithkuil/tokenize"
@@ -123,37 +123,37 @@ func (s *server) analyze(_ context.Context, _ *mcp.CallToolRequest, in analyzeIn
 	for i, t := range tokens {
 		w := analyzeWord{
 			Surface: t.Surface(),
-			Type:    inspect.Type(t),
+			Type:    view.Type(t),
 			Gloss:   glosser.Token(t),
 		}
 		switch tt := t.(type) {
 		case tokenize.FormativeWord:
-			head := inspect.Headword(tt.Formative, s.lex)
+			head := view.Headword(tt.Formative, s.lex)
 			if head.Code != "" {
 				w.Root = &rootHead{Code: head.Code, Meaning: head.Meaning}
 			}
-			segs := inspect.Segments(tt.Text, tt.Formative, s.lex)
+			segs := view.Segments(tt.Text, tt.Formative, s.lex)
 			for _, sg := range segs {
 				w.Segments = append(w.Segments, segmentOut{
 					Chunk: sg.Chunk, Raw: sg.Raw, Slot: sg.Slot,
 					Encodes: sg.Encodes, Default: sg.Defaults, Elided: sg.Elided,
 				})
 			}
-			for _, ge := range inspect.Glossary(tt.Text, tt.Formative, segs, s.lex) {
+			for _, ge := range view.Glossary(tt.Text, tt.Formative, segs, s.lex) {
 				w.Glossary = append(w.Glossary, glossaryRow{
 					Category: ge.Category, Code: ge.Code,
 					Name: ge.Name, Meaning: ge.Meaning,
 				})
 			}
 		case tokenize.ModularWord:
-			segs := inspect.SegmentsModular(tt.Text, tt.Modular, tt.MarksMood)
+			segs := view.SegmentsModular(tt.Text, tt.Modular, tt.MarksMood)
 			for _, sg := range segs {
 				w.Segments = append(w.Segments, segmentOut{
 					Chunk: sg.Chunk, Raw: sg.Raw, Slot: sg.Slot,
 					Encodes: sg.Encodes, Default: sg.Defaults, Elided: sg.Elided,
 				})
 			}
-			for _, ge := range inspect.GlossaryModular(segs) {
+			for _, ge := range view.GlossaryModular(segs) {
 				w.Glossary = append(w.Glossary, glossaryRow{
 					Category: ge.Category, Code: ge.Code,
 					Name: ge.Name, Meaning: ge.Meaning,
@@ -218,8 +218,8 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 	}
 	surface := render.Formative(f)
 	glosser := gloss.Glosser{Lex: s.lex}
-	segs := inspect.Segments(surface, f, s.lex)
-	head := inspect.Headword(f, s.lex)
+	segs := view.Segments(surface, f, s.lex)
+	head := view.Headword(f, s.lex)
 	out := composeOut{
 		Surface: surface,
 		Gloss:   glosser.Formative(f),
@@ -233,7 +233,7 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 			Encodes: sg.Encodes, Default: sg.Defaults, Elided: sg.Elided,
 		})
 	}
-	for _, ge := range inspect.Glossary(surface, f, segs, s.lex) {
+	for _, ge := range view.Glossary(surface, f, segs, s.lex) {
 		out.Glossary = append(out.Glossary, glossaryRow{
 			Category: ge.Category, Code: ge.Code,
 			Name: ge.Name, Meaning: ge.Meaning,

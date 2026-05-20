@@ -8,7 +8,7 @@ import (
 
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/inspect"
+	"github.com/christian-oudard/ithkuil/view"
 	"github.com/christian-oudard/ithkuil/tokenize"
 	"github.com/christian-oudard/ithkuil/validation"
 )
@@ -103,7 +103,7 @@ func cmdAnalyze(args []string, stdin io.Reader, stdout, stderr io.Writer, lexDir
 
 	if *short {
 		for _, t := range tokens {
-			fmt.Fprintf(stdout, "%s  %s  %s\n", t.Surface(), inspect.Type(t), glosser.Token(t))
+			fmt.Fprintf(stdout, "%s  %s  %s\n", t.Surface(), view.Type(t), glosser.Token(t))
 		}
 		return 0
 	}
@@ -145,7 +145,7 @@ func renderDetailed(w io.Writer, t tokenize.WordToken, lex interface{}, glosser 
 	case tokenize.ModularWord:
 		renderModular(w, tt)
 	default:
-		fmt.Fprintf(w, "%s  %s  %s\n", t.Surface(), inspect.Type(t), glosser.Token(t))
+		fmt.Fprintf(w, "%s  %s  %s\n", t.Surface(), view.Type(t), glosser.Token(t))
 	}
 }
 
@@ -153,8 +153,8 @@ func renderDetailed(w io.Writer, t tokenize.WordToken, lex interface{}, glosser 
 // adjunct. The surface word sits at column 0; the body is indented
 // two spaces so consecutive word blocks are visually separated.
 func renderModular(w io.Writer, mw tokenize.ModularWord) {
-	segs := inspect.SegmentsModular(mw.Text, mw.Modular, mw.MarksMood)
-	glossary := inspect.GlossaryModular(segs)
+	segs := view.SegmentsModular(mw.Text, mw.Modular, mw.MarksMood)
+	glossary := view.GlossaryModular(segs)
 
 	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(mw.Text)))
 	iw := indented(w, "  ")
@@ -168,9 +168,9 @@ func renderModular(w io.Writer, mw tokenize.ModularWord) {
 // and glossary for one formative. The surface word sits at column 0
 // and everything below is indented under it.
 func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss.Glosser) {
-	head := inspect.Headword(f, glosser.Lex)
-	segs := inspect.Segments(text, f, glosser.Lex)
-	glossary := inspect.Glossary(text, f, segs, glosser.Lex)
+	head := view.Headword(f, glosser.Lex)
+	segs := view.Segments(text, f, glosser.Lex)
+	glossary := view.Glossary(text, f, segs, glosser.Lex)
 
 	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(text)))
 	iw := indented(w, "  ")
@@ -211,7 +211,7 @@ func renderConcatenated(w io.Writer, cw tokenize.ConcatenatedFormativeWord, glos
 	}
 }
 
-func renderPhoneticTable(w io.Writer, segs []inspect.Segment) {
+func renderPhoneticTable(w io.Writer, segs []view.Segment) {
 	phW, slW := len("PHONETIC"), len("SLOT")
 	for _, s := range segs {
 		if n := runeWidth(s.Chunk); n > phW {
@@ -234,7 +234,7 @@ func renderPhoneticTable(w io.Writer, segs []inspect.Segment) {
 	}
 }
 
-func renderGlossaryTable(w io.Writer, entries []inspect.GlossaryEntry) {
+func renderGlossaryTable(w io.Writer, entries []view.GlossaryEntry) {
 	catW, codeW, nameW := len("CATEGORY"), len("CODE"), len("NAME")
 	for _, e := range entries {
 		if n := runeWidth(e.Category); n > catW {
