@@ -8,6 +8,7 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
+	"github.com/christian-oudard/ithkuil/surface"
 )
 
 // ElidedMark is the symbol shown for an elided slot.
@@ -321,8 +322,8 @@ func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segmen
 		// Otherwise slot 4 is V_N — another aspect/valence/etc.
 		// position with default Cn (which we render as a lone
 		// aspect at default FAC mood / CCN case-scope).
-		stress := parse.DetectStress(word)
-		isVH := stress == parse.Ultimate && len(ma.Pairs) > 0
+		_, stress := surface.Strip(word)
+		isVH := stress == surface.Ultimate && len(ma.Pairs) > 0
 		if isVH {
 			segs = append(segs, Segment{
 				Raw:     strings.ToLower(ma.Final),

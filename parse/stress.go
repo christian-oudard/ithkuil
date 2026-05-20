@@ -55,6 +55,10 @@ func containsStress(s string) bool {
 //
 // Syllables are the vowel conjuncts of the word as segmented by
 // SplitConjuncts.
+//
+// Deprecated: New code should call surface.Strip directly, which
+// returns the bare text alongside the stress position. This shim
+// remains for callers that only want the stress.
 func DetectStress(word string) Stress {
 	conjs := SplitConjuncts(word)
 	var syllables []string
