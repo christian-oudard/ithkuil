@@ -18,34 +18,6 @@ var type2Degrees = map[string]int{
 	"ou": 6, "oi": 7, "iu": 8, "ui": 9, "ea": 0,
 }
 
-// Type2DegreeToVowel returns the Series-2 vowel for a degree (0-9).
-// Inverse of type2Degrees.
-func Type2DegreeToVowel(degree int) string {
-	switch degree {
-	case 0:
-		return "ea"
-	case 1:
-		return "ai"
-	case 2:
-		return "au"
-	case 3:
-		return "ei"
-	case 4:
-		return "eu"
-	case 5:
-		return "ëu"
-	case 6:
-		return "ou"
-	case 7:
-		return "oi"
-	case 8:
-		return "iu"
-	case 9:
-		return "ui"
-	}
-	return ""
-}
-
 // type3Degrees maps Series-3 vowels to degree, including series-3
 // alternates (uä/uë/üä/üë/öë/öä/ië/iä) and the "üo" 0-degree special.
 var type3Degrees = map[string]int{
@@ -55,6 +27,34 @@ var type3Degrees = map[string]int{
 	"uö": 6, "öë": 6, "uo": 7, "öä": 7,
 	"ue": 8, "ië": 8, "ua": 9, "iä": 9,
 	"üo": 0,
+}
+
+var type1Vowels = [...]string{"ae", "a", "ä", "e", "i", "ëi", "ö", "o", "ü", "u"}
+var type2Vowels = [...]string{"ea", "ai", "au", "ei", "eu", "ëu", "ou", "oi", "iu", "ui"}
+var type3Vowels = [...]string{"üo", "ia", "ie", "io", "iö", "eë", "uö", "uo", "ue", "ua"}
+
+// AffixVowel returns the canonical surface vowel for an affix of the
+// given Type and Degree (0-9). For Type-3, the canonical (non-alternate)
+// form is returned. An out-of-range degree returns the empty string.
+func AffixVowel(t grammar.AffixType, degree int) string {
+	if degree < 0 || degree > 9 {
+		return ""
+	}
+	switch t {
+	case grammar.Type1Affix:
+		return type1Vowels[degree]
+	case grammar.Type2Affix:
+		return type2Vowels[degree]
+	case grammar.Type3Affix:
+		return type3Vowels[degree]
+	}
+	return ""
+}
+
+// Type2DegreeToVowel returns the Series-2 vowel for a degree (0-9).
+// Convenience wrapper around AffixVowel for Type-2 callers.
+func Type2DegreeToVowel(degree int) string {
+	return AffixVowel(grammar.Type2Affix, degree)
 }
 
 // ClassifyAffixVowel returns the AffixType and degree (0-9) of an affix
@@ -115,12 +115,12 @@ func pairConjunctAffixes(parts []string) []grammar.Affix {
 		a, b := parts[i], parts[i+1]
 		switch {
 		case IsVowelConjunct(a) && IsConsonantConjunct(b):
-			t, _ := ClassifyAffixVowel(a)
-			out = append(out, grammar.Affix{Vowel: a, Consonant: b, Type: t})
+			t, d := ClassifyAffixVowel(a)
+			out = append(out, grammar.Affix{Type: t, Degree: d, Consonant: b})
 			i += 2
 		case IsConsonantConjunct(a) && IsVowelConjunct(b):
-			t, _ := ClassifyAffixVowel(b)
-			out = append(out, grammar.Affix{Vowel: b, Consonant: a, Type: t})
+			t, d := ClassifyAffixVowel(b)
+			out = append(out, grammar.Affix{Type: t, Degree: d, Consonant: a})
 			i += 2
 		default:
 			// Two vowels or two consonants in a row — skip one and retry.

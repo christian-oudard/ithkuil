@@ -296,8 +296,8 @@ func parseSlotVAndCa(conjs []string, startIdx int) (g.SlotVI, []g.Affix, int, er
 		}
 		cs := conjs[i]
 		vx := conjs[i+1]
-		t, _ := parse.ClassifyAffixVowel(vx)
-		slotV = append(slotV, g.Affix{Consonant: cs, Vowel: vx, Type: t})
+		t, d := parse.ClassifyAffixVowel(vx)
+		slotV = append(slotV, g.Affix{Type: t, Degree: d, Consonant: cs})
 	}
 	return slotVIFromGem, slotV, geminatedAt + 1, nil
 }
@@ -447,8 +447,8 @@ func parseAfterCa(tail []string, stress g.Stress) ([]g.Affix, g.SlotVIII, g.Slot
 	// Remaining pairs are Slot VII affixes (VxCs ordering).
 	var slotVII []g.Affix
 	for _, p := range pairs {
-		t, _ := parse.ClassifyAffixVowel(p.v)
-		slotVII = append(slotVII, g.Affix{Vowel: p.v, Consonant: p.c, Type: t})
+		t, d := parse.ClassifyAffixVowel(p.v)
+		slotVII = append(slotVII, g.Affix{Type: t, Degree: d, Consonant: p.c})
 	}
 
 	return slotVII, slotVIII, slotIX, nil

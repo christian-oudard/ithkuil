@@ -207,7 +207,7 @@ func TestGlosser_AffixWithLexicon(t *testing.T) {
 	gl := &Glosser{Lex: lex}
 	f := g.MinimalFormative("m")
 	// Add a Slot VII affix with consonant "b" and vowel "a" (degree 1).
-	f.SlotVII = []g.Affix{{Vowel: "a", Consonant: "b", Type: g.Type1Affix}}
+	f.SlotVII = []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "b"}}
 	got := gl.Formative(f)
 	entry, ok := lex.Affixes["b"]
 	if !ok {

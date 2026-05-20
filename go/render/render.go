@@ -190,20 +190,22 @@ func SlotI(c *g.ConcatenationStatus) string {
 }
 
 // SlotV renders stem affixes in their Cs+Vx (reversed) surface order.
+// The Vx vowel is derived from the affix's (Type, Degree).
 func SlotV(affixes []g.Affix) string {
 	var b strings.Builder
 	for _, a := range affixes {
 		b.WriteString(a.Consonant)
-		b.WriteString(a.Vowel)
+		b.WriteString(parse.AffixVowel(a.Type, a.Degree))
 	}
 	return b.String()
 }
 
 // SlotVII renders Ca-scoped affixes in their Vx+Cs surface order.
+// The Vx vowel is derived from the affix's (Type, Degree).
 func SlotVII(affixes []g.Affix) string {
 	var b strings.Builder
 	for _, a := range affixes {
-		b.WriteString(a.Vowel)
+		b.WriteString(parse.AffixVowel(a.Type, a.Degree))
 		b.WriteString(a.Consonant)
 	}
 	return b.String()

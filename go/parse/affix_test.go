@@ -45,8 +45,8 @@ func TestClassifyAffixVowel(t *testing.T) {
 func TestParseAffixes_VxCs(t *testing.T) {
 	got := ParseAffixes("aval")
 	want := []grammar.Affix{
-		{Vowel: "a", Consonant: "v", Type: grammar.Type1Affix},
-		{Vowel: "a", Consonant: "l", Type: grammar.Type1Affix},
+		{Type: grammar.Type1Affix, Degree: 1, Consonant: "v"},
+		{Type: grammar.Type1Affix, Degree: 1, Consonant: "l"},
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("ParseAffixes(\"aval\") = %#v, want %#v", got, want)
@@ -58,7 +58,7 @@ func TestParseAffixes_CsVx(t *testing.T) {
 	// still "a"; only the surface ordering is swapped.
 	got := ParseAffixes("la")
 	want := []grammar.Affix{
-		{Vowel: "a", Consonant: "l", Type: grammar.Type1Affix},
+		{Type: grammar.Type1Affix, Degree: 1, Consonant: "l"},
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("ParseAffixes(\"la\") = %#v, want %#v", got, want)
@@ -70,8 +70,8 @@ func TestParseAffixes_MultipleTypes(t *testing.T) {
 	// First affix: Type 2 (ai = degree 1). Second: Type 1 (a = degree 1).
 	got := ParseAffixes("aival")
 	want := []grammar.Affix{
-		{Vowel: "ai", Consonant: "v", Type: grammar.Type2Affix},
-		{Vowel: "a", Consonant: "l", Type: grammar.Type1Affix},
+		{Type: grammar.Type2Affix, Degree: 1, Consonant: "v"},
+		{Type: grammar.Type1Affix, Degree: 1, Consonant: "l"},
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("ParseAffixes(\"aival\") = %#v, want %#v", got, want)
@@ -81,7 +81,7 @@ func TestParseAffixes_MultipleTypes(t *testing.T) {
 func TestParseAffixes_Type3(t *testing.T) {
 	got := ParseAffixes("iav")
 	want := []grammar.Affix{
-		{Vowel: "ia", Consonant: "v", Type: grammar.Type3Affix},
+		{Type: grammar.Type3Affix, Degree: 1, Consonant: "v"},
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("ParseAffixes(\"iav\") = %#v, want %#v", got, want)
@@ -112,8 +112,8 @@ func TestParseAffixes_ConsonantCluster(t *testing.T) {
 	// concern (lexicon + Ca-end detection) that lives in FullParse.
 	got := ParseAffixes("avalr")
 	want := []grammar.Affix{
-		{Vowel: "a", Consonant: "v", Type: grammar.Type1Affix},
-		{Vowel: "a", Consonant: "lr", Type: grammar.Type1Affix},
+		{Type: grammar.Type1Affix, Degree: 1, Consonant: "v"},
+		{Type: grammar.Type1Affix, Degree: 1, Consonant: "lr"},
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("ParseAffixes(\"avalr\") = %#v, want %#v", got, want)
@@ -124,8 +124,8 @@ func TestParseAffixes_OddTrailing(t *testing.T) {
 	// 3 conjuncts: the last unpaired conjunct is silently dropped.
 	got := ParseAffixes("aval")
 	want := []grammar.Affix{
-		{Vowel: "a", Consonant: "v", Type: grammar.Type1Affix},
-		{Vowel: "a", Consonant: "l", Type: grammar.Type1Affix},
+		{Type: grammar.Type1Affix, Degree: 1, Consonant: "v"},
+		{Type: grammar.Type1Affix, Degree: 1, Consonant: "l"},
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("ParseAffixes(\"aval\") = %#v, want %#v", got, want)

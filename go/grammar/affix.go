@@ -1,8 +1,8 @@
 package grammar
 
 // AffixType is the gradient class of an affix: Type 1, 2, or 3.
-// The class is encoded in the affix vowel (Vx): Series 1 = Type 1,
-// Series 2 = Type 2, Series 3 = Type 3.
+// The class is grammatical; the surface vowel that encodes it is a
+// rendering concern handled in the parse/render packages.
 type AffixType int
 
 const (
@@ -15,11 +15,12 @@ func (a AffixType) String() string {
 	return [...]string{"Type1Affix", "Type2Affix", "Type3Affix"}[a]
 }
 
-// Affix is a single Vx+Cs (or Cs+Vx in Slot V) affix.
-// Vowel encodes the degree (1-9, with 0 reserved for "ae"/"ea"/"üo").
-// Consonant is the affix identifier; the vowel's series determines Type.
+// Affix is a single grammar-level affix. Vx degree (0-9) and Type are
+// the grammatical content; Cs is the affix identifier. The surface
+// vowel (Vx) is derived from (Type, Degree) at render time and does
+// not appear here — keeping phonetic and grammatical data apart.
 type Affix struct {
-	Vowel     string
-	Consonant string
 	Type      AffixType
+	Degree    int
+	Consonant string
 }

@@ -69,7 +69,7 @@ func TestFormative_WithSlotVIII(t *testing.T) {
 func TestFormative_WithAffixes(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	// Slot VII affix: vowel=a, cons=r → "ar"
-	f.SlotVII = []g.Affix{{Vowel: "a", Consonant: "r", Type: g.Type1Affix}}
+	f.SlotVII = []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}}
 	got := Formative(f)
 	// Long: a-ml-a-l-ar-a. Both default Vv and THM Vc elide → "mlalar".
 	want := "mlalar"
@@ -221,8 +221,8 @@ func TestSlotVIII_AllVariants(t *testing.T) {
 func TestSlotV_AffixOrdering(t *testing.T) {
 	// Slot V uses Cs+Vx (reversed) ordering.
 	got := SlotV([]g.Affix{
-		{Vowel: "a", Consonant: "r", Type: g.Type1Affix},
-		{Vowel: "u", Consonant: "t", Type: g.Type1Affix},
+		{Type: g.Type1Affix, Degree: 1, Consonant: "r"},
+		{Type: g.Type1Affix, Degree: 9, Consonant: "t"},
 	})
 	if got != "ratu" {
 		t.Errorf("SlotV = %q, want \"ratu\"", got)

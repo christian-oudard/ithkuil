@@ -195,7 +195,7 @@ func TestRoundTrip_AllStress(t *testing.T) {
 		f.SlotIX = c.slotIX
 		// Add a Slot VII affix to give the body more syllables, ensuring
 		// every stress can land.
-		f.SlotVII = []g.Affix{{Vowel: "a", Consonant: "r", Type: g.Type1Affix}}
+		f.SlotVII = []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}}
 		t.Run(c.name, func(t *testing.T) {
 			assertRoundTrip(t, c.name, f)
 		})
@@ -208,11 +208,11 @@ func TestRoundTrip_SlotVII(t *testing.T) {
 		name    string
 		affixes []g.Affix
 	}{
-		{"single-type1", []g.Affix{{Vowel: "a", Consonant: "r", Type: g.Type1Affix}}},
-		{"single-type2", []g.Affix{{Vowel: "ai", Consonant: "t", Type: g.Type2Affix}}},
+		{"single-type1", []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}}},
+		{"single-type2", []g.Affix{{Type: g.Type2Affix, Degree: 1, Consonant: "t"}}},
 		{"two-affixes", []g.Affix{
-			{Vowel: "ëu", Consonant: "ţř", Type: g.Type2Affix},
-			{Vowel: "ai", Consonant: "t", Type: g.Type2Affix},
+			{Type: g.Type2Affix, Degree: 5, Consonant: "ţř"},
+			{Type: g.Type2Affix, Degree: 1, Consonant: "t"},
 		}},
 	}
 	for _, c := range cases {
@@ -490,16 +490,16 @@ func TestRoundTrip_SlotV(t *testing.T) {
 		slotVII []g.Affix
 	}{
 		{"one-affix", []g.Affix{
-			{Consonant: "r", Vowel: "a", Type: g.Type1Affix},
+			{Type: g.Type1Affix, Degree: 1, Consonant: "r"},
 		}, nil},
 		{"two-affixes", []g.Affix{
-			{Consonant: "r", Vowel: "a", Type: g.Type1Affix},
-			{Consonant: "t", Vowel: "a", Type: g.Type1Affix},
+			{Type: g.Type1Affix, Degree: 1, Consonant: "r"},
+			{Type: g.Type1Affix, Degree: 1, Consonant: "t"},
 		}, nil},
 		{"one-V-one-VII", []g.Affix{
-			{Consonant: "r", Vowel: "a", Type: g.Type1Affix},
+			{Type: g.Type1Affix, Degree: 1, Consonant: "r"},
 		}, []g.Affix{
-			{Consonant: "t", Vowel: "a", Type: g.Type1Affix},
+			{Type: g.Type1Affix, Degree: 1, Consonant: "t"},
 		}},
 	}
 	for _, c := range cases {

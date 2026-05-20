@@ -153,10 +153,10 @@ func TestParseFormative_MalëuţřaitCanonical(t *testing.T) {
 		t.Fatalf("Slot VII = %v, want 2 affixes", f.SlotVII)
 	}
 	// "ëu" is in type2Degrees (form 5 of series 2), so Type2Affix.
-	if f.SlotVII[0] != (g.Affix{Vowel: "ëu", Consonant: "ţř", Type: g.Type2Affix}) {
+	if f.SlotVII[0] != (g.Affix{Type: g.Type2Affix, Degree: 5, Consonant: "ţř"}) {
 		t.Errorf("Affix 1 = %v", f.SlotVII[0])
 	}
-	if f.SlotVII[1] != (g.Affix{Vowel: "ai", Consonant: "t", Type: g.Type2Affix}) {
+	if f.SlotVII[1] != (g.Affix{Type: g.Type2Affix, Degree: 1, Consonant: "t"}) {
 		t.Errorf("Affix 2 = %v", f.SlotVII[1])
 	}
 	if cs, ok := f.SlotIX.(g.CaseSlot); !ok || cs.Case != g.THM {
@@ -272,7 +272,7 @@ func TestParseFormative_ShortcutWithAffix(t *testing.T) {
 	if len(f.SlotVII) != 1 {
 		t.Fatalf("SlotVII = %v, want 1 affix", f.SlotVII)
 	}
-	if f.SlotVII[0] != (g.Affix{Vowel: "a", Consonant: "r", Type: g.Type1Affix}) {
+	if f.SlotVII[0] != (g.Affix{Type: g.Type1Affix, Degree: 1, Consonant: "r"}) {
 		t.Errorf("Affix = %v", f.SlotVII[0])
 	}
 	cs, ok := f.SlotIX.(g.CaseSlot)
@@ -416,7 +416,7 @@ func TestParseFormative_WithSlotVIIAffix(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"amlalara\") error: %v", err)
 	}
-	want := []g.Affix{{Vowel: "a", Consonant: "r", Type: g.Type1Affix}}
+	want := []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}}
 	if len(f.SlotVII) != 1 || f.SlotVII[0] != want[0] {
 		t.Errorf("SlotVII = %v, want %v", f.SlotVII, want)
 	}
@@ -482,7 +482,7 @@ func TestParseFormative_SlotVIIIVerbal(t *testing.T) {
 
 func TestRoundTrip_WithSlotVII(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	f.SlotVII = []g.Affix{{Vowel: "a", Consonant: "r", Type: g.Type1Affix}}
+	f.SlotVII = []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}}
 	surface := render.Formative(f)
 	parsed, err := ParseFormative(surface)
 	if err != nil {

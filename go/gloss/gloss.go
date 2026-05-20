@@ -15,7 +15,6 @@ import (
 
 	g "github.com/coudard/ithkuil/go/grammar"
 	"github.com/coudard/ithkuil/go/lexicon"
-	"github.com/coudard/ithkuil/go/parse"
 )
 
 // Glosser carries the optional lexicon used for enriching root and
@@ -197,15 +196,14 @@ func (gl *Glosser) affixes(as []g.Affix) string {
 }
 
 func (gl *Glosser) affix(a g.Affix) string {
-	_, deg := parse.ClassifyAffixVowel(a.Vowel)
 	if gl.Lex != nil {
 		if entry, ok := gl.Lex.Affixes[a.Consonant]; ok {
-			return fmt.Sprintf("%s/%d", entry.Abbrev, deg)
+			return fmt.Sprintf("%s/%d", entry.Abbrev, a.Degree)
 		}
 	}
 	// Without a lexicon entry, show "Cs/degree" — same shape the
 	// Haskell glosser uses at Short precision when no entry exists.
-	return fmt.Sprintf("%s/%d", a.Consonant, deg)
+	return fmt.Sprintf("%s/%d", a.Consonant, a.Degree)
 }
 
 func slotVIII(s g.SlotVIII) string {
