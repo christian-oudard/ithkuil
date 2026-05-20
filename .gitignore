@@ -21,3 +21,4 @@ discord_archive/data/
 # Built Go binaries at the module root after `go build ./cmd/...`.
 /ithkuil
 /ithkuil-mcp
+/bin/

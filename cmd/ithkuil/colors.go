@@ -18,6 +18,7 @@ const (
 	ansiCyan    = "\033[36m"
 	ansiYellow  = "\033[33m"
 	ansiMagenta = "\033[35m"
+	ansiGreen   = "\033[32m"
 )
 
 // colorsOn is initialised from the writer and environment. analyze

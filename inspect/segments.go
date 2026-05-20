@@ -315,21 +315,25 @@ func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segmen
 		})
 	}
 	if ma.Final != "" {
-		if len(ma.Pairs) == 0 {
-			// Lone vowel = aspect modular.
-			segs = append(segs, Segment{
-				Raw:     strings.ToLower(ma.Final),
-				Slot:    "Vn",
-				Encodes: []string{vnAsCode(ma.Final, "")},
-			})
-		} else {
-			// Vh — scope marker. Encode as a tag indicating reach
-			// (e.g. "→Case/Mood") instead of the bare letter,
-			// which would duplicate the PHONETIC column.
+		// Per §4.3, slot 4 of a modular adjunct is V_H (a scope
+		// marker) only when the adjunct has ultimate stress AND
+		// there are affixes in slots 2/3 for V_H to scope over.
+		// Otherwise slot 4 is V_N — another aspect/valence/etc.
+		// position with default Cn (which we render as a lone
+		// aspect at default FAC mood / CCN case-scope).
+		stress := parse.DetectStress(word)
+		isVH := stress == parse.Ultimate && len(ma.Pairs) > 0
+		if isVH {
 			segs = append(segs, Segment{
 				Raw:     strings.ToLower(ma.Final),
 				Slot:    "Vh",
 				Encodes: []string{vhCode(ma.Final)},
+			})
+		} else {
+			segs = append(segs, Segment{
+				Raw:     strings.ToLower(ma.Final),
+				Slot:    "Vn",
+				Encodes: []string{vnAsCode(ma.Final, "")},
 			})
 		}
 	}
@@ -349,7 +353,11 @@ func GlossaryModular(segs []Segment) []GlossaryEntry {
 				continue
 			}
 			seen[s.Slot+"|"+code] = true
-			cat := s.Slot
+			// Default: derive the category from the code itself
+			// (PRG → "aspect", SUB → "mood", etc.), not from the
+			// slot label (Vn₁/Cn₁ are slot positions, not
+			// categories).
+			cat := categoryForCode(code, s.Slot)
 			name := g.Name(code)
 			meaning := g.Meaning(code)
 			switch s.Slot {
@@ -363,6 +371,7 @@ func GlossaryModular(segs []Segment) []GlossaryEntry {
 				meaning = vhMeaning(s.Raw)
 			case "Cn₁", "Cn₂", "Cn₃":
 				if code == "CmAspect" || code == "CmOther" {
+					cat = "marker"
 					name = cmName(code)
 					meaning = cmMeaning(code)
 				}
@@ -388,9 +397,11 @@ func prefixCode(p string) string {
 }
 
 // vhCode returns a short tag for the Vh scope vowel indicating its
-// scope reach. Distinct from the bare letter shown in PHONETIC.
+// scope reach. Distinct from the bare letter shown in PHONETIC. The
+// vowel may carry an acute (ultimate stress mark) — strip it before
+// the lookup so "ó" matches "o".
 func vhCode(v string) string {
-	switch v {
+	switch parse.NormalizeAccents(v) {
 	case "a":
 		return "→Case/Mood/Val/Illoc"
 	case "e":
@@ -495,7 +506,7 @@ func cnAsCode(cn string, asMood bool) string {
 }
 
 func vhMeaning(v string) string {
-	switch v {
+	switch parse.NormalizeAccents(v) {
 	case "a":
 		return "scope over Case/Mood + Validation+Illocution"
 	case "e":

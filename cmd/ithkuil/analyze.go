@@ -153,12 +153,11 @@ func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss
 	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(text)))
 	iw := indented(w, "  ")
 	if head.Code != "" {
+		styledCode := styleHeadwordCode(head.Code)
 		if head.Meaning != "" {
-			fmt.Fprintf(iw, "%s — %s\n",
-				stylize(ansiCyan, head.Code),
-				stylize(ansiDim, head.Meaning))
+			fmt.Fprintf(iw, "%s — %s\n", styledCode, stylize(ansiDim, head.Meaning))
 		} else {
-			fmt.Fprintf(iw, "%s\n", stylize(ansiCyan, head.Code))
+			fmt.Fprintf(iw, "%s\n", styledCode)
 		}
 	}
 	fmt.Fprintln(iw)
@@ -234,9 +233,9 @@ func renderGlossaryTable(w io.Writer, entries []inspect.GlossaryEntry) {
 		stylize(ansiDim, "MEANING"))
 	for _, e := range entries {
 		fmt.Fprintf(w, "%s  %s  %s  %s\n",
-			stylize(ansiDim, padRunes(e.Category, catW)),
+			stylize(ansiGreen, padRunes(e.Category, catW)),
 			stylize(ansiMagenta, padRunes(e.Code, codeW)),
-			stylize(ansiBold, padRunes(e.Name, nameW)),
+			padRunes(e.Name, nameW),
 			stylize(ansiDim, e.Meaning))
 	}
 }
@@ -246,6 +245,23 @@ func renderGlossaryTable(w io.Writer, entries []inspect.GlossaryEntry) {
 // + subscripts.
 func runeWidth(s string) int {
 	return len([]rune(s))
+}
+
+// styleHeadwordCode colors the parts of a headword like
+// `"ḑx" / S2 / BSC` distinctly: the leading root identifier stays
+// cyan (it's a phonetic form), the grammatical codes after each
+// " / " separator switch to magenta to match every other code
+// rendering. The separators themselves go dim.
+func styleHeadwordCode(code string) string {
+	parts := strings.Split(code, " / ")
+	if len(parts) == 0 {
+		return code
+	}
+	out := stylize(ansiCyan, parts[0])
+	for _, p := range parts[1:] {
+		out += stylize(ansiDim, " / ") + stylize(ansiMagenta, p)
+	}
+	return out
 }
 
 // padRunes right-pads s with spaces to width w, measured in runes.
