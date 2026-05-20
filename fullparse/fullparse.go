@@ -299,11 +299,11 @@ func parseConsonantInitial(conjs []string, stress parse.Stress) (g.Formative, er
 	if !ok {
 		return g.Formative{}, fmt.Errorf("invalid Vr %q", conjs[1])
 	}
-	slotVI, ok := allomorph.ParseCa(conjs[2])
-	if !ok {
-		return g.Formative{}, fmt.Errorf("unrecognized Ca %q", conjs[2])
+	slotVI, slotV, afterCa, err := parseSlotVAndCa(conjs, 2)
+	if err != nil {
+		return g.Formative{}, err
 	}
-	slotVII, slotVIII, final, err := parseAfterCa(conjs[3:], stress)
+	slotVII, slotVIII, final, err := parseAfterCa(conjs[afterCa:], stress)
 	if err != nil {
 		return g.Formative{}, err
 	}
@@ -314,6 +314,7 @@ func parseConsonantInitial(conjs []string, stress parse.Stress) (g.Formative, er
 			Version: g.PRC,
 			SlotIV:  slotIV,
 		},
+		SlotV:    slotV,
 		SlotVI:   slotVI,
 		SlotVII:  slotVII,
 		SlotVIII: slotVIII,

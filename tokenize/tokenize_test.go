@@ -178,6 +178,7 @@ func TestClassifyWord_IthkuilGlossCorpus(t *testing.T) {
 		{"lála'a", formative},        // PRN + ANT (framed)
 		{"hnas", carrier},            // Naming carrier (cf. TestTokenize_CarrierForeign)
 		{"ţnaxeka", combref},         // [mi.BEN+2p] combination referential
+		{"ţnaxekka", formative},      // same shape but kk geminate → formative
 		{"amlala-hamlala", concatenated},
 	}
 	typeName := func(w WordToken) string {

@@ -315,6 +315,22 @@ func isCombinationSpec(c string) bool {
 	return false
 }
 
+// hasDoubledLetter reports whether s contains two consecutive identical
+// runes. Used to detect geminated Ca clusters — a signal that an
+// ambiguous word is a formative (with §3.6.1 gemination marking Slot V
+// boundary) rather than a combination referential (whose post-spec
+// affix Cs values never contain doubled letters).
+func hasDoubledLetter(s string) bool {
+	var prev rune
+	for i, r := range s {
+		if i > 0 && r == prev {
+			return true
+		}
+		prev = r
+	}
+	return false
+}
+
 // tryCombinationRef matches the combination-referential shape
 // [ë] C1 Vc Spec [VxCs...] [Vc2]. Returns ok=false if any constraint
 // fails. The Vc2 special form "üa" maps to THM and "a" alone means
@@ -341,6 +357,14 @@ func tryCombinationRef(text string, conjs []string) (CombinationRefWord, bool) {
 	}
 	// Pair up the rest as VxCs with optional trailing Vc2.
 	rest := conjs[3:]
+	// A geminated consonant anywhere in the tail (e.g. "kk" in ţnaxekka)
+	// signals this is actually a formative with a Slot V boundary,
+	// not a combination referential.
+	for _, c := range rest {
+		if surface.IsConsonantConjunct(c) && hasDoubledLetter(c) {
+			return CombinationRefWord{}, false
+		}
+	}
 	var affixes []g.AffixPair
 	var case2 *g.Case
 	for i := 0; i < len(rest); {
