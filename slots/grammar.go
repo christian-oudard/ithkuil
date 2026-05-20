@@ -1,4 +1,4 @@
-package layout
+package slots
 
 import (
 	"fmt"
@@ -224,10 +224,10 @@ func finalFromVc(vc string, stress surface.Stress) (g.Final, error) {
 // request a shortcut surface form when the formative permits it.
 func FromGrammar(f g.Formative, opts Options) Layout {
 	if f.Root == nil {
-		panic("layout: Formative.Root is nil")
+		panic("slots: Formative.Root is nil")
 	}
 	if f.Final == nil {
-		panic("layout: Formative.Final is nil")
+		panic("slots: Formative.Final is nil")
 	}
 	l := Layout{SentenceStarter: f.SentenceStarter}
 

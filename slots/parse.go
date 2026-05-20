@@ -1,4 +1,4 @@
-package layout
+package slots
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ import (
 // one pass, but does no grammar value decoding — see ToGrammar for that.
 func Parse(word string) (Layout, error) {
 	if word == "" {
-		return Layout{}, fmt.Errorf("layout: empty word")
+		return Layout{}, fmt.Errorf("slots: empty word")
 	}
 	bare, stress := surface.Strip(word)
 	if stress == surface.InvalidStress {

@@ -21,14 +21,14 @@ Grammar object        grammar.ModularAdjunct{Pairs:[…], Final:"o"}
 Semantic structure    {Pairs decoded, Slot 4 = V_H scope marker}
 ```
 
-## Package layout
+## Package map
 
 | Layer | Package                                | Status            |
 |-------|----------------------------------------|-------------------|
 | A     | `surface/` (stress.go)                 | ✅ extracted, round-trip tested |
 | B     | `surface/` (conjunct.go)               | ✅ extracted, round-trip tested |
-| C     | `layout/` (parse.go + render.go)       | ✅ extracted, round-trip tested |
-| D     | `layout/` (grammar.go) on top of `parse/` and `allomorph/` decoders | ✅ extracted, round-trip tested |
+| C     | `slots/` (parse.go + render.go)       | ✅ extracted, round-trip tested |
+| D     | `slots/` (grammar.go) on top of `parse/` and `allomorph/` decoders | ✅ extracted, round-trip tested |
 | E     | `semantics/`                           | ✅ extracted, unit-tested |
 
 ## What `surface/` owns
@@ -72,9 +72,9 @@ here anymore.
 - `Stress` is now a type alias for `surface.Stress`, kept so older
   signatures in `fullparse` still compile against the familiar name.
 
-## What `layout/` owns
+## What `slots/` owns
 
-The `layout.Layout` struct is the slot-labelled surface form of a
+The `slots.Layout` struct is the slot-labelled surface form of a
 formative. Every string field carries a raw conjunct (Cc, Vv, Cr,
 Vr, Ca, Vn, Cn, Vc) or a list of (Vx, Cs) affix pairs (Slot V,
 Slot VII). `Stress` is the surface stress observed (Layer A); a
@@ -82,18 +82,18 @@ Slot VII). `Stress` is the surface stress observed (Layer A); a
 
 Layer C — pattern recognition, no grammar decoding:
 
-- `layout.Parse(word) (Layout, error)` — runs Strip + SplitConjuncts
+- `slots.Parse(word) (Layout, error)` — runs Strip + SplitConjuncts
   internally, then assigns each conjunct to its slot based on shape
   (vowel-initial, consonant-initial, shortcut, special-Vv).
-- `layout.Render(Layout) string` — the inverse. Re-applies the
+- `slots.Render(Layout) string` — the inverse. Re-applies the
   §3.5.1 Vv glottal-stop and §3.6.1 Ca gemination based on Slot V
   presence, then Apply for the stress diacritic.
 
 Layer D — string ↔ grammar value translation:
 
-- `layout.ToGrammar(Layout) (Formative, error)` — looks up each
+- `slots.ToGrammar(Layout) (Formative, error)` — looks up each
   slot's string in the grammar tables.
-- `layout.FromGrammar(Formative) Layout` — the inverse. Picks
+- `slots.FromGrammar(Formative) Layout` — the inverse. Picks
   shortcut yes/no, applies default-value elisions, and emits a
   Layout ready for `Render`.
 
@@ -102,8 +102,8 @@ Layer D — string ↔ grammar value translation:
 `view.Segments` consumes the Layout directly to emit the
 slot-by-slot phonetic breakdown.
 
-Round-trip tests in `layout/roundtrip_test.go` (surface↔Layout)
-and `layout/grammar_test.go` (Layout↔Formative) exercise the
+Round-trip tests in `slots/roundtrip_test.go` (surface↔Layout)
+and `slots/grammar_test.go` (Layout↔Formative) exercise the
 inverses against the working corpus.
 
 ## What `semantics/` owns

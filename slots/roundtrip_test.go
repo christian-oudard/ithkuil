@@ -1,11 +1,11 @@
-package layout
+package slots
 
 import "testing"
 
 // Each line in formativeCorpus is a word that successfully parses to a
 // Formative via fullparse. Layer C's Parse/Render pair must round-trip
 // every one — Layer C does no grammar decoding, so any word that
-// fullparse accepts is a word that layout.Parse must accept too.
+// fullparse accepts is a word that slots.Parse must accept too.
 var formativeCorpus = []string{
 	// Canonical and minimal.
 	"malëuţřait",

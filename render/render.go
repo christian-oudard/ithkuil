@@ -1,13 +1,13 @@
 // Package render turns a grammar.Formative back into its surface text
 // representation. Internally it composes Layer D inverse (FromGrammar)
-// with Layer C inverse (Render) from the layout package, so all the
+// with Layer C inverse (Render) from the slots package, so all the
 // shape-detection and elision logic lives in one place. This file
 // keeps the legacy package-level entry points for callers.
 package render
 
 import (
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/layout"
+	"github.com/christian-oudard/ithkuil/slots"
 )
 
 // Options control orthographic choices that don't affect the grammar.
@@ -33,5 +33,5 @@ func Formative(f g.Formative) string {
 // not a valid input. Construct via grammar.MinimalFormative or set
 // Root and Final explicitly.
 func FormativeWithOpts(f g.Formative, opts Options) string {
-	return layout.Render(layout.FromGrammar(f, layout.Options{Shortcut: opts.Shortcut}))
+	return slots.Render(slots.FromGrammar(f, slots.Options{Shortcut: opts.Shortcut}))
 }

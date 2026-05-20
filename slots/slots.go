@@ -1,20 +1,20 @@
-// Package layout is Layer C of the parse/render pipeline. It pairs raw
+// Package slots is Layer C of the parse/render pipeline. It pairs raw
 // surface conjuncts with the slot positions they occupy, without
 // decoding any grammar values. Both parse and render lean on it:
 //
 //	surface text  ──(surface.Strip/SplitConjuncts)──▶  conjuncts + Stress
-//	conjuncts     ──(layout.Parse)──▶                  Layout
-//	Layout        ──(layout.ToGrammar)──▶              grammar.Formative
-//	Layout        ──(layout.FromGrammar)──◀            grammar.Formative
-//	Layout        ──(layout.Render)──▶                 conjuncts
+//	conjuncts     ──(slots.Parse)──▶                  Layout
+//	Layout        ──(slots.ToGrammar)──▶              grammar.Formative
+//	Layout        ──(slots.FromGrammar)──◀            grammar.Formative
+//	Layout        ──(slots.Render)──▶                 conjuncts
 //	conjuncts     ──(surface.Apply/JoinConjuncts)──▶   surface text
 //
 // Storing the slot-labelled surface form as its own value means the
 // shape-detection logic (consonant-initial vs vowel-initial, shortcut
 // vs not, special-Vv Cs-root vs reference-root) lives in exactly one
-// place. fullparse, render, and inspect all consume Layout instead of
+// place. fullparse, render, and view all consume Layout instead of
 // re-deriving the structure from the conjunct list.
-package layout
+package slots
 
 import (
 	"github.com/christian-oudard/ithkuil/surface"

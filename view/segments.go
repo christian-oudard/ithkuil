@@ -7,7 +7,7 @@ import (
 	"github.com/christian-oudard/ithkuil/allomorph"
 	"github.com/christian-oudard/ithkuil/compose"
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/layout"
+	"github.com/christian-oudard/ithkuil/slots"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/semantics"
@@ -99,7 +99,7 @@ func Headword(f g.Formative, lex *lexicon.Lexicon) RootHead {
 // hr/hn) are recognized when the conjuncts don't begin where the
 // parser says the root starts.
 func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
-	l, err := layout.Parse(word)
+	l, err := slots.Parse(word)
 	if err != nil {
 		return nil
 	}
@@ -109,7 +109,7 @@ func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
 // segmentsFromLayout walks the slot fields of a Layout and emits one
 // Segment per surface chunk. Layout already knows which conjunct is
 // which slot, so this function doesn't have to re-derive shape.
-func segmentsFromLayout(l layout.Layout, f g.Formative, lex *lexicon.Lexicon) []Segment {
+func segmentsFromLayout(l slots.Layout, f g.Formative, lex *lexicon.Lexicon) []Segment {
 	var segs []Segment
 
 	if l.Cc != "" {
@@ -198,7 +198,7 @@ func ccCodes(cc string) []string {
 // vvSegment emits the Slot II segment. For CrFormatives the Vv carries
 // (Stem, Version); for Cs- and Ref-roots it's the special-Vv marker
 // that selects the root kind and carries Version (and Function for Cs).
-func vvSegment(l layout.Layout, f g.Formative) Segment {
+func vvSegment(l slots.Layout, f g.Formative) Segment {
 	switch r := f.Root.(type) {
 	case g.CrRoot:
 		stemVer := []string{r.Stem.String(), r.Version.String()}
@@ -217,7 +217,7 @@ func vvSegment(l layout.Layout, f g.Formative) Segment {
 
 // displayVv returns the Vv as it appears on the surface, re-inserting
 // the §3.5.1 glottal-stop when Slot V has 2+ affixes.
-func displayVv(l layout.Layout) string {
+func displayVv(l slots.Layout) string {
 	if len(l.SlotV) < 2 || l.Vv == "" {
 		return l.Vv
 	}
@@ -233,7 +233,7 @@ func displayVv(l layout.Layout) string {
 
 // rootSegment emits the Slot III segment — Cr for CrFormative, Cs for
 // CsRootFormative, C1 for RefRootFormative.
-func rootSegment(l layout.Layout, f g.Formative) Segment {
+func rootSegment(l slots.Layout, f g.Formative) Segment {
 	cr := strings.ToLower(l.Cr)
 	switch r := f.Root.(type) {
 	case g.CrRoot:
@@ -249,7 +249,7 @@ func rootSegment(l layout.Layout, f g.Formative) Segment {
 // vrSegment emits the Slot IV segment when Vr is present. For shortcut
 // CrFormatives Vr is elided (Ca is encoded in Cc+Vv), so no segment is
 // emitted there.
-func vrSegment(l layout.Layout, f g.Formative) (Segment, bool) {
+func vrSegment(l slots.Layout, f g.Formative) (Segment, bool) {
 	if l.Vr == "" {
 		return Segment{}, false
 	}
@@ -281,7 +281,7 @@ func vrSegment(l layout.Layout, f g.Formative) (Segment, bool) {
 
 // caSegment emits the Slot VI segment. When Slot V has any affixes the
 // Ca is geminated on the surface, so we re-apply gemination for display.
-func caSegment(l layout.Layout, f g.Formative) Segment {
+func caSegment(l slots.Layout, f g.Formative) Segment {
 	raw := l.Ca
 	if len(l.SlotV) > 0 {
 		raw = allomorph.GeminateCa(raw)
@@ -294,7 +294,7 @@ func caSegment(l layout.Layout, f g.Formative) Segment {
 	}
 }
 
-func slotVCsSegment(a layout.AffixChunk, idx int, f g.Formative, lex *lexicon.Lexicon) Segment {
+func slotVCsSegment(a slots.AffixChunk, idx int, f g.Formative, lex *lexicon.Lexicon) Segment {
 	_, deg := parse.ClassifyAffixVowel(a.Vx)
 	abbrev := ""
 	if idx < len(f.SlotV) {
@@ -310,7 +310,7 @@ func slotVCsSegment(a layout.AffixChunk, idx int, f g.Formative, lex *lexicon.Le
 	}
 }
 
-func slotVVxSegment(a layout.AffixChunk, idx int, _ g.Formative) Segment {
+func slotVVxSegment(a slots.AffixChunk, idx int, _ g.Formative) Segment {
 	_, deg := parse.ClassifyAffixVowel(a.Vx)
 	return Segment{
 		Raw:     strings.ToLower(a.Vx),
@@ -320,7 +320,7 @@ func slotVVxSegment(a layout.AffixChunk, idx int, _ g.Formative) Segment {
 	}
 }
 
-func slotVIIVxSegment(a layout.AffixChunk, idx int, _ g.Formative) Segment {
+func slotVIIVxSegment(a slots.AffixChunk, idx int, _ g.Formative) Segment {
 	_, deg := parse.ClassifyAffixVowel(a.Vx)
 	return Segment{
 		Raw:     strings.ToLower(a.Vx),
@@ -330,7 +330,7 @@ func slotVIIVxSegment(a layout.AffixChunk, idx int, _ g.Formative) Segment {
 	}
 }
 
-func slotVIICsSegment(a layout.AffixChunk, idx int, f g.Formative, lex *lexicon.Lexicon) Segment {
+func slotVIICsSegment(a slots.AffixChunk, idx int, f g.Formative, lex *lexicon.Lexicon) Segment {
 	_, deg := parse.ClassifyAffixVowel(a.Vx)
 	abbrev := ""
 	if idx < len(f.SlotVII) {
