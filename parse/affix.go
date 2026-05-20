@@ -1,9 +1,8 @@
 package parse
 
 import (
-	"unicode/utf8"
-
 	"github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/surface"
 )
 
 // type1Degrees maps Series-1 vowels to degree (1-9, plus 0 for "ae").
@@ -75,24 +74,12 @@ func ClassifyAffixVowel(v string) (grammar.AffixType, int) {
 }
 
 // IsVowelConjunct reports whether a conjunct begins with a vowel.
-// Returns false for the empty string.
-func IsVowelConjunct(s string) bool {
-	if s == "" {
-		return false
-	}
-	r, _ := utf8.DecodeRuneInString(s)
-	return IsVowelChar(r)
-}
+// Re-exported from surface for backward compat.
+func IsVowelConjunct(s string) bool { return surface.IsVowelConjunct(s) }
 
 // IsConsonantConjunct reports whether a conjunct begins with a
-// consonant. Returns false for the empty string.
-func IsConsonantConjunct(s string) bool {
-	if s == "" {
-		return false
-	}
-	r, _ := utf8.DecodeRuneInString(s)
-	return !IsVowelChar(r)
-}
+// non-vowel. Re-exported from surface for backward compat.
+func IsConsonantConjunct(s string) bool { return surface.IsConsonantConjunct(s) }
 
 // ParseAffixes parses a sub-string of a formative into a list of affixes.
 // Both orderings work:

@@ -9,60 +9,17 @@ import (
 
 	"github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/phonology"
+	"github.com/christian-oudard/ithkuil/surface"
 )
 
-// vowelChars is the set of characters that count as vowels for the purposes
-// of conjunct segmentation. Includes the 9 base vowels, accented forms
-// (acute = stress, circumflex = umlauted + stress), and diaeresis variants
-// used as hiatus markers.
-var vowelChars = map[rune]bool{
-	'a': true, 'ä': true,
-	'e': true, 'ë': true,
-	'i': true, 'ï': true,
-	'o': true, 'ö': true,
-	'u': true, 'ü': true,
-	'á': true, 'é': true, 'í': true, 'ó': true, 'ú': true,
-	'à': true, 'è': true, 'ì': true, 'ò': true, 'ù': true,
-	'â': true, 'ê': true, 'î': true, 'ô': true, 'û': true,
-	'ǎ': true, 'ě': true, 'ǐ': true, 'ǒ': true, 'ǔ': true,
-}
+// IsVowelChar reports whether r is a vowel character. Re-exported
+// from the surface package; new code should call surface.IsVowel.
+func IsVowelChar(r rune) bool { return surface.IsVowel(r) }
 
-// IsVowelChar reports whether r is a vowel character.
-func IsVowelChar(r rune) bool {
-	return vowelChars[r]
-}
-
-// SplitConjuncts segments a word into alternating runs of consonant and
-// vowel characters. Empty input yields an empty slice.
-//
-//	"mala"  → ["m", "a", "l", "a"]
-//	"ţřai"  → ["ţř", "ai"]
-//	"emal"  → ["e", "m", "a", "l"]
-func SplitConjuncts(s string) []string {
-	if s == "" {
-		return nil
-	}
-	var out []string
-	var run []rune
-	var runIsVowel bool
-	for i, r := range s {
-		v := IsVowelChar(r)
-		if i == 0 {
-			run = []rune{r}
-			runIsVowel = v
-			continue
-		}
-		if v == runIsVowel {
-			run = append(run, r)
-		} else {
-			out = append(out, string(run))
-			run = []rune{r}
-			runIsVowel = v
-		}
-	}
-	out = append(out, string(run))
-	return out
-}
+// SplitConjuncts segments a word into alternating runs of consonant
+// and vowel characters. Re-exported from the surface package; new
+// code should call surface.SplitConjuncts.
+func SplitConjuncts(s string) []string { return surface.SplitConjuncts(s) }
 
 // MergeGlottalVowels collapses V-'-V triples back into a single conjunct
 // of the form "V'V". SplitConjuncts treats the glottal stop as a

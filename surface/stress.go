@@ -19,8 +19,6 @@ package surface
 import (
 	"strings"
 	"unicode/utf8"
-
-	"github.com/christian-oudard/ithkuil/parse"
 )
 
 // Stress is the orthographic stress position of a word. Equivalent to
@@ -75,7 +73,7 @@ func isStressMark(r rune) bool {
 //   - No mark, more vowel-conjuncts → Penultimate (the unmarked default).
 func Strip(word string) (string, Stress) {
 	vowelIdx := vowelConjunctIndices(word)
-	conjs := parse.SplitConjuncts(word)
+	conjs := SplitConjuncts(word)
 
 	// Find the first vowel-conjunct (counted in syllable position)
 	// that carries a stress mark.
@@ -136,7 +134,7 @@ func Apply(word string, stress Stress) string {
 		return word
 	}
 	vowelIdx := vowelConjunctIndices(word)
-	conjs := parse.SplitConjuncts(word)
+	conjs := SplitConjuncts(word)
 	n := len(vowelIdx)
 	var target int
 	switch stress {
@@ -158,17 +156,17 @@ func Apply(word string, stress Stress) string {
 }
 
 // vowelConjunctIndices returns the positions, within
-// parse.SplitConjuncts(word), of conjuncts that begin with a vowel
+// SplitConjuncts(word), of conjuncts that begin with a vowel
 // rune. Each entry corresponds to one syllable.
 func vowelConjunctIndices(word string) []int {
-	conjs := parse.SplitConjuncts(word)
+	conjs := SplitConjuncts(word)
 	var out []int
 	for i, c := range conjs {
 		if c == "" {
 			continue
 		}
 		r, _ := utf8.DecodeRuneInString(c)
-		if parse.IsVowelChar(r) {
+		if IsVowel(r) {
 			out = append(out, i)
 		}
 	}
