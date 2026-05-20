@@ -47,23 +47,38 @@ type RootHead struct {
 }
 
 // Headword returns the root identifier and its meaning for a parsed
-// formative. Stem and Specification are folded into Code; everything
-// else stays in the regular glossary returned by Glossary.
+// formative. Code combines the root, stem, and specification — the
+// three pieces that together identify the lexical content.
 func Headword(f g.Formative, lex *lexicon.Lexicon) RootHead {
-	root := strings.ToLower(string(f.SlotIII))
-	if root == "" {
-		return RootHead{}
-	}
-	stem := f.SlotII.Stem.String()
-	spec := f.SlotIV.Specification.String()
-	code := fmt.Sprintf("%q / %s / %s", root, stem, spec)
-	meaning := ""
-	if lex != nil {
-		if e, ok := lex.Roots[root]; ok {
-			meaning = stemMeaning(e, f.SlotII.Stem)
+	switch r := f.Root.(type) {
+	case g.CrRoot:
+		root := strings.ToLower(r.Cluster)
+		if root == "" {
+			return RootHead{}
 		}
+		code := fmt.Sprintf("%q / %s / %s", root, r.Stem, r.SlotIV.Specification)
+		meaning := ""
+		if lex != nil {
+			if e, ok := lex.Roots[root]; ok {
+				meaning = stemMeaning(e, r.Stem)
+			}
+		}
+		return RootHead{Code: code, Meaning: meaning}
+	case g.CsRoot:
+		cs := strings.ToLower(r.Cs)
+		code := fmt.Sprintf("(Cs)%q / DEG%d", cs, r.Degree)
+		meaning := ""
+		if lex != nil {
+			if e, ok := lex.Affixes[r.Cs]; ok && r.Degree >= 1 && r.Degree <= len(e.Degrees) {
+				meaning = fmt.Sprintf("%s (degree %d): %s", e.Description, r.Degree, e.Degrees[r.Degree-1])
+			}
+		}
+		return RootHead{Code: code, Meaning: meaning}
+	case g.RefRoot:
+		code := fmt.Sprintf("(Ref)%q / %s", strings.ToLower(r.C1), r.SlotIV.Specification)
+		return RootHead{Code: code, Meaning: "referential root"}
 	}
-	return RootHead{Code: code, Meaning: meaning}
+	return RootHead{}
 }
 
 // Segments walks the surface conjuncts in lock-step with the parsed
@@ -75,61 +90,88 @@ func Headword(f g.Formative, lex *lexicon.Lexicon) RootHead {
 // up (so Encodes carries "SYS" not the raw "ţř" cluster) and the
 // paired Vx segment fills in the degree.
 //
-// Only the canonical consonant-initial and vowel-initial shapes are
-// handled in detail. Slot I (Cc) shortcuts and ç-prefixed sentence
-// starters fall through to a coarser labeling.
+// CrRoot is handled in full detail; CsRoot and RefRoot fall through
+// to a placeholder rendering. Slot I shortcut prefixes (w/y/hl/hm/
+// hr/hn) are recognized when the conjuncts don't begin where the
+// parser says the root starts.
 func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
 	conjs := parse.SplitConjuncts(word)
 	if len(conjs) == 0 {
 		return nil
 	}
+	cr, ok := f.Root.(g.CrRoot)
+	if !ok {
+		// CsRoot / RefRoot fall through for now — emit a single
+		// chunk with the surface and stop.
+		return []Segment{{
+			Raw:     strings.ToLower(word),
+			Chunk:   strings.ToLower(word),
+			Slot:    "(root variant)",
+			Encodes: []string{Headword(f, lex).Code},
+		}}
+	}
 
 	var segs []Segment
 	i := 0
+	rootLower := strings.ToLower(cr.Cluster)
 
-	// Slot II (Vv) — present only when the word is vowel-initial.
-	vowelInitial := parse.IsVowelConjunct(conjs[0])
-	if vowelInitial {
+	// Detect a Slot I shortcut. When the first consonant conjunct
+	// isn't the parser's root cluster, the leading conjunct(s) form
+	// a Cc prefix (h-, hw-, w-, y-, hl-, hm-, hr-, hn-).
+	if parse.IsConsonantConjunct(conjs[0]) && strings.ToLower(conjs[0]) != rootLower {
 		segs = append(segs, Segment{
-			Raw:     strings.ToLower(conjs[i]),
-			Slot:    "Vv",
-			Encodes: slotIICodes(f.SlotII),
-			Defaults: f.SlotII == g.DefaultSlotII,
+			Raw:     strings.ToLower(conjs[0]),
+			Slot:    "Cc",
+			Encodes: []string{"shortcut"},
+		})
+		i++
+	}
+
+	// Slot II (Vv) — explicit when vowel-initial (at position i) or
+	// elided otherwise.
+	stemVer := []string{cr.Stem.String(), cr.Version.String()}
+	if i < len(conjs) && parse.IsVowelConjunct(conjs[i]) {
+		segs = append(segs, Segment{
+			Raw:      strings.ToLower(conjs[i]),
+			Slot:     "Vv",
+			Encodes:  stemVer,
+			Defaults: cr.Stem == g.S1 && cr.Version == g.PRC,
 		})
 		i++
 	} else {
 		segs = append(segs, Segment{
 			Raw:      ElidedMark,
 			Slot:     "Vv",
-			Encodes:  slotIICodes(f.SlotII),
-			Defaults: f.SlotII == g.DefaultSlotII,
+			Encodes:  stemVer,
+			Defaults: cr.Stem == g.S1 && cr.Version == g.PRC,
 			Elided:   true,
 		})
 	}
 
-	// Slot III (Cr) — root.
-	if i < len(conjs) {
-		root := strings.ToLower(string(f.SlotIII))
-		segs = append(segs, Segment{
-			Raw:     strings.ToLower(conjs[i]),
-			Slot:    "Cr",
-			Encodes: []string{fmt.Sprintf("Root %q", root)},
-		})
+	// Slot III (Cr) — root. Use the parser's authoritative cluster.
+	segs = append(segs, Segment{
+		Raw:     rootLower,
+		Slot:    "Cr",
+		Encodes: []string{fmt.Sprintf("Root %q", rootLower)},
+	})
+	// Skip the matching conjunct(s) if they exist, otherwise leave
+	// i alone (the root was elided into a shortcut).
+	if i < len(conjs) && strings.ToLower(conjs[i]) == rootLower {
 		i++
 	}
 
-	// Slot IV (Vr) — function · specification · context.
-	if i < len(conjs) {
+	// Slot IV (Vr).
+	if i < len(conjs) && parse.IsVowelConjunct(conjs[i]) {
 		segs = append(segs, Segment{
-			Raw:      conjs[i],
+			Raw:      strings.ToLower(conjs[i]),
 			Slot:     "Vr",
-			Encodes:  slotIVCodes(f.SlotIV),
-			Defaults: f.SlotIV == g.DefaultSlotIV,
+			Encodes:  []string{cr.SlotIV.Function.String(), cr.SlotIV.Specification.String(), cr.SlotIV.Context.String()},
+			Defaults: cr.SlotIV == g.DefaultSlotIV,
 		})
 		i++
 	}
 
-	// Slot V affixes (pre-Ca), CsVx reversed order: Cs first, then Vx.
+	// Slot V affixes (pre-Ca), CsVx reversed order.
 	for ax, a := range f.SlotV {
 		if i+1 >= len(conjs) {
 			break
@@ -157,7 +199,7 @@ func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
 	// Slot VI (Ca).
 	if i < len(conjs) {
 		segs = append(segs, Segment{
-			Raw:      conjs[i],
+			Raw:      strings.ToLower(conjs[i]),
 			Slot:     "Ca",
 			Encodes:  slotVICodes(f.SlotVI),
 			Defaults: f.SlotVI == g.DefaultSlotVI,
@@ -165,7 +207,7 @@ func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
 		i++
 	}
 
-	// Slot VII affixes (post-Ca), VxCs standard order: Vx first, then Cs.
+	// Slot VII affixes (post-Ca), VxCs standard order.
 	for ax, a := range f.SlotVII {
 		if i+1 >= len(conjs) {
 			break
@@ -192,8 +234,7 @@ func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
 
 	// Slot VIII (VnCn) — handled as a single pair if remaining
 	// conjuncts look like one.
-	if f.SlotVIII != nil && i+1 <= len(conjs) {
-		// Best effort: pull next V and C if available.
+	if f.SlotVIII != nil {
 		if i < len(conjs) && parse.IsVowelConjunct(conjs[i]) {
 			segs = append(segs, Segment{
 				Raw:     strings.ToLower(conjs[i]),
@@ -206,34 +247,32 @@ func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
 			segs = append(segs, Segment{
 				Raw:     strings.ToLower(conjs[i]),
 				Slot:    "Cn",
-				Encodes: []string{slotVIIICnCode(f.SlotVIII)},
+				Encodes: []string{slotVIIICnCode(f.SlotVIII, f.Final)},
 			})
 			i++
 		}
 	}
 
 	// Slot IX (Vc or Vk).
+	slot, codes, isDefault := slotIXLabelCodes(f.Final)
 	if i < len(conjs) && parse.IsVowelConjunct(conjs[i]) {
 		segs = append(segs, Segment{
-			Raw:      conjs[i],
-			Slot:     slotIXLabel(f),
-			Encodes:  slotIXCodes(f.SlotIX),
-			Defaults: slotIXIsDefault(f.SlotIX),
+			Raw:      strings.ToLower(conjs[i]),
+			Slot:     slot,
+			Encodes:  codes,
+			Defaults: isDefault,
 		})
 		i++
 	} else {
 		segs = append(segs, Segment{
 			Raw:      ElidedMark,
-			Slot:     slotIXLabel(f),
-			Encodes:  slotIXCodes(f.SlotIX),
-			Defaults: slotIXIsDefault(f.SlotIX),
+			Slot:     slot,
+			Encodes:  codes,
+			Defaults: isDefault,
 			Elided:   true,
 		})
 	}
 
-	// Decorate each non-elided Segment.Chunk with hyphens based on
-	// position. First non-elided gets trailing hyphen only; last gets
-	// leading only; middle gets both.
 	decorateHyphens(segs)
 	return segs
 }
@@ -278,16 +317,6 @@ func subscript(n int) string {
 	return string(digits[n])
 }
 
-// slotIICodes returns the codes encoded by Vv (stem, version).
-func slotIICodes(s g.SlotII) []string {
-	return []string{s.Stem.String(), s.Version.String()}
-}
-
-// slotIVCodes returns the codes encoded by Vr (function/spec/context).
-func slotIVCodes(s g.SlotIV) []string {
-	return []string{s.Function.String(), s.Specification.String(), s.Context.String()}
-}
-
 // slotVICodes returns the codes encoded by Ca (config/aff/persp/ext/ess).
 func slotVICodes(s g.SlotVI) []string {
 	return []string{
@@ -312,47 +341,54 @@ func slotVIIIVnCode(s g.SlotVIII) string {
 	return ""
 }
 
-func slotVIIICnCode(s g.SlotVIII) string {
+// slotVIIICnCode renders the Slot VIII Cn as either a Mood label
+// (for verbal formatives) or a CaseScope label (for nominal/framed
+// formatives). The underlying MoodScope field carries the Mood-typed
+// value either way.
+func slotVIIICnCode(s g.SlotVIII, fin g.Final) string {
+	var m g.Mood
 	switch v := s.(type) {
-	case g.VnCnAspect:
-		return moodOrScopeShort(v.MS)
 	case g.VnCnValence:
-		return moodOrScopeShort(v.MS)
+		m = v.MoodScope
 	case g.VnCnPhase:
-		return moodOrScopeShort(v.MS)
+		m = v.MoodScope
 	case g.VnCnEffect:
-		return moodOrScopeShort(v.MS)
+		m = v.MoodScope
 	case g.VnCnLevel:
-		return moodOrScopeShort(v.MS)
+		m = v.MoodScope
+	case g.VnCnAspect:
+		m = v.MoodScope
+	default:
+		return ""
 	}
-	return ""
+	if _, verbal := fin.(g.UnframedVerbal); verbal {
+		return m.String()
+	}
+	return moodToCaseScope(m).String()
 }
 
-func slotIXLabel(f g.Formative) string {
-	if _, ok := f.SlotIX.(g.IllocValSlot); ok {
-		return "Vk"
-	}
-	return "Vc"
+func moodToCaseScope(m g.Mood) g.CaseScope {
+	return [...]g.CaseScope{g.CCN, g.CCA, g.CCS, g.CCQ, g.CCP, g.CCV}[m]
 }
 
-func slotIXCodes(s g.SlotIX) []string {
-	switch v := s.(type) {
-	case g.CaseSlot:
-		return []string{v.Case.String()}
-	case g.IllocValSlot:
-		return []string{v.Illocution.String(), v.Validation.String()}
+// slotIXLabelCodes returns the slot label ("Vc" or "Vk"), the codes
+// it encodes, and whether they are at the grammatical default.
+func slotIXLabelCodes(fin g.Final) (slot string, codes []string, isDefault bool) {
+	switch v := fin.(type) {
+	case g.UnframedNominal:
+		return "Vc", []string{v.Case.String()}, v.Case == g.THM
+	case g.FramedVerbal:
+		return "Vc", []string{v.Case.String()}, v.Case == g.THM
+	case g.UnframedVerbal:
+		if asr, ok := v.Vk.(g.Assertive); ok {
+			if asr.Validation == g.OBS {
+				return "Vk", []string{"ASR"}, false
+			}
+			return "Vk", []string{"ASR", asr.Validation.String()}, false
+		}
+		return "Vk", []string{v.Vk.Tag()}, false
 	}
-	return nil
-}
-
-func slotIXIsDefault(s g.SlotIX) bool {
-	switch v := s.(type) {
-	case g.CaseSlot:
-		return v.Case == g.THM
-	case g.IllocValSlot:
-		return v.Validation == g.OBS
-	}
-	return true
+	return "Vc", nil, true
 }
 
 // Glossary returns one row per unique grammar code referenced by
@@ -375,9 +411,10 @@ func Glossary(word string, f g.Formative, segs []Segment, lex *lexicon.Lexicon) 
 
 	// Skip codes already represented by the Headword (stem,
 	// specification) so they don't appear twice.
-	skipCode := map[string]bool{
-		f.SlotII.Stem.String():          true,
-		f.SlotIV.Specification.String(): true,
+	skipCode := map[string]bool{}
+	if cr, ok := f.Root.(g.CrRoot); ok {
+		skipCode[cr.Stem.String()] = true
+		skipCode[cr.SlotIV.Specification.String()] = true
 	}
 
 	for _, s := range segs {

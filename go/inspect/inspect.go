@@ -275,14 +275,13 @@ func Type(t tokenize.WordToken) string {
 	return "?"
 }
 
-// SlotI returns "T1"/"T2" for concatenation-type formatives, Dot
-// otherwise.
+// SlotI returns "T1"/"T2" for concatenated formatives, Dot otherwise.
 func SlotI(t tokenize.WordToken) string {
 	f, ok := t.(tokenize.FormativeWord)
-	if !ok || f.Formative.SlotI == nil {
+	if !ok || f.Formative.Concat == nil {
 		return Dot
 	}
-	switch *f.Formative.SlotI {
+	switch *f.Formative.Concat {
 	case g.Type1:
 		return "T1"
 	case g.Type2:
@@ -291,25 +290,41 @@ func SlotI(t tokenize.WordToken) string {
 	return Dot
 }
 
-// SlotII returns "Stem/Version" for formatives, Dot otherwise.
+// SlotII returns "Stem/Version" for formatives, Dot otherwise. Stem
+// is implicit (S1) for CsRoot and RefRoot; we still show it.
 func SlotII(t tokenize.WordToken) string {
 	f, ok := t.(tokenize.FormativeWord)
 	if !ok {
 		return Dot
 	}
-	s := f.Formative.SlotII
-	return fmt.Sprintf("%s/%s", s.Stem, s.Version)
+	switch r := f.Formative.Root.(type) {
+	case g.CrRoot:
+		return fmt.Sprintf("%s/%s", r.Stem, r.Version)
+	case g.CsRoot:
+		return fmt.Sprintf("S1/%s", r.Version)
+	case g.RefRoot:
+		return fmt.Sprintf("S1/%s", r.Version)
+	}
+	return Dot
 }
 
-// SlotIII returns the root Cr for formatives or the joined referent
-// list for referentials. Dot otherwise.
+// SlotIII returns the root identifier (Cr cluster, Cs identifier, or
+// referential C1) for formatives, or the joined referent list for
+// referentials.
 func SlotIII(t tokenize.WordToken) string {
 	switch v := t.(type) {
 	case tokenize.FormativeWord:
-		if v.Formative.SlotIII == "" {
-			return Dot
+		switch r := v.Formative.Root.(type) {
+		case g.CrRoot:
+			if r.Cluster == "" {
+				return Dot
+			}
+			return r.Cluster
+		case g.CsRoot:
+			return r.Cs
+		case g.RefRoot:
+			return r.C1
 		}
-		return string(v.Formative.SlotIII)
 	case tokenize.ReferentialWord:
 		parts := make([]string, len(v.Refs))
 		for i, r := range v.Refs {
@@ -327,16 +342,28 @@ func SlotIV(t tokenize.WordToken) string {
 	if !ok {
 		return Dot
 	}
-	s := f.Formative.SlotIV
+	var fn g.Function
+	var sp g.Specification
+	var ctx g.Context
+	switch r := f.Formative.Root.(type) {
+	case g.CrRoot:
+		fn, sp, ctx = r.SlotIV.Function, r.SlotIV.Specification, r.SlotIV.Context
+	case g.CsRoot:
+		fn, sp, ctx = r.Function, g.BSC, r.Context
+	case g.RefRoot:
+		fn, sp, ctx = r.SlotIV.Function, r.SlotIV.Specification, r.SlotIV.Context
+	default:
+		return Dot
+	}
 	var parts []string
-	if s.Function != g.STA {
-		parts = append(parts, s.Function.String())
+	if fn != g.STA {
+		parts = append(parts, fn.String())
 	}
-	if s.Specification != g.BSC {
-		parts = append(parts, s.Specification.String())
+	if sp != g.BSC {
+		parts = append(parts, sp.String())
 	}
-	if s.Context != g.EXS {
-		parts = append(parts, s.Context.String())
+	if ctx != g.EXS {
+		parts = append(parts, ctx.String())
 	}
 	if len(parts) == 0 {
 		return Dot
@@ -387,69 +414,116 @@ func SlotVI(t tokenize.WordToken) string {
 	return strings.Join(parts, "/")
 }
 
-// SlotVIII returns the VnCn content rendered as "Vn.MoodOrScope",
-// or Dot when the slot is empty.
+// SlotVIII returns the VnCn content rendered as "Vn.MoodScope", or
+// Dot when the slot is empty. The MoodScope label is the verbal
+// Mood (FAC/SUB/…) when the formative is verbal, the nominal
+// CaseScope (CCN/CCA/…) otherwise.
 func SlotVIII(t tokenize.WordToken) string {
 	f, ok := t.(tokenize.FormativeWord)
 	if !ok || f.Formative.SlotVIII == nil {
 		return Dot
 	}
+	scope := moodOrScopeLabel(f.Formative)
 	switch v := f.Formative.SlotVIII.(type) {
 	case g.VnCnAspect:
-		return v.Aspect.String() + "." + moodOrScopeShort(v.MS)
+		return v.Aspect.String() + "." + scope
 	case g.VnCnValence:
-		return v.Valence.String() + "." + moodOrScopeShort(v.MS)
+		return v.Valence.String() + "." + scope
 	case g.VnCnPhase:
-		return v.Phase.String() + "." + moodOrScopeShort(v.MS)
+		return v.Phase.String() + "." + scope
 	case g.VnCnEffect:
-		return v.Effect.String() + "." + moodOrScopeShort(v.MS)
+		return v.Effect.String() + "." + scope
 	case g.VnCnLevel:
-		return v.Level.String() + "." + moodOrScopeShort(v.MS)
+		return v.Level.String() + "." + scope
 	}
 	return Dot
 }
 
-func moodOrScopeShort(ms g.MoodOrScope) string {
-	switch v := ms.(type) {
-	case g.MoodVal:
-		return v.Mood.String()
-	case g.CaseScopeVal:
-		return v.CaseScope.String()
+// moodOrScopeLabel renders the Slot VIII Mood field as either a Mood
+// label (when the formative is verbal) or its CaseScope twin (when
+// nominal/framed). The mapping mirrors the Mood / CaseScope ordinal
+// correspondence in the spec.
+func moodOrScopeLabel(f g.Formative) string {
+	mood := slotVIIIMoodScope(f.SlotVIII)
+	if isVerbal(f.Final) {
+		return mood.String()
 	}
-	return ""
+	return moodAsCaseScope(mood).String()
 }
 
-// SlotIX returns the case (Vc) or illocution/validation (Vk), with
-// THM and OBS suppressed as defaults.
+func slotVIIIMoodScope(s g.SlotVIII) g.Mood {
+	switch v := s.(type) {
+	case g.VnCnValence:
+		return v.MoodScope
+	case g.VnCnPhase:
+		return v.MoodScope
+	case g.VnCnEffect:
+		return v.MoodScope
+	case g.VnCnLevel:
+		return v.MoodScope
+	case g.VnCnAspect:
+		return v.MoodScope
+	}
+	return g.FAC
+}
+
+func isVerbal(fin g.Final) bool {
+	_, ok := fin.(g.UnframedVerbal)
+	return ok
+}
+
+// moodAsCaseScope maps the Mood ordinal to its case-scope twin
+// (FAC↔CCN, SUB↔CCA, ASM↔CCS, SPC↔CCQ, COU↔CCP, HYP↔CCV).
+func moodAsCaseScope(m g.Mood) g.CaseScope {
+	return [...]g.CaseScope{g.CCN, g.CCA, g.CCS, g.CCQ, g.CCP, g.CCV}[m]
+}
+
+// SlotIX returns the case (Vc) or illocution/validation (Vk) encoded
+// by the Final, with THM and bare ASR/OBS suppressed as defaults.
 func SlotIX(t tokenize.WordToken) string {
 	f, ok := t.(tokenize.FormativeWord)
 	if !ok {
 		return Dot
 	}
-	switch v := f.Formative.SlotIX.(type) {
-	case g.CaseSlot:
+	switch v := f.Formative.Final.(type) {
+	case g.UnframedNominal:
 		if v.Case == g.THM {
 			return Dot
 		}
 		return v.Case.String()
-	case g.IllocValSlot:
-		if v.Validation == g.OBS {
-			return v.Illocution.String()
+	case g.FramedVerbal:
+		if v.Case == g.THM {
+			return Dot
 		}
-		return v.Illocution.String() + "/" + v.Validation.String()
+		return v.Case.String()
+	case g.UnframedVerbal:
+		return vkLabel(v.Vk)
 	}
 	return Dot
 }
 
-// Stress returns the non-default stress label, or Dot for the
-// default penultimate stress.
+// vkLabel formats a Vk variant as "ILL" or "ILL/VAL" — non-default
+// Validation is shown only on Assertive (the only Vk that carries
+// one).
+func vkLabel(vk g.Vk) string {
+	if asr, ok := vk.(g.Assertive); ok {
+		if asr.Validation == g.OBS {
+			return "ASR"
+		}
+		return "ASR/" + asr.Validation.String()
+	}
+	return vk.Tag()
+}
+
+// Stress returns the Final tag (ANT for framed-verbal, ULT for
+// verbal, Dot for the nominal/penultimate default).
 func Stress(t tokenize.WordToken) string {
 	f, ok := t.(tokenize.FormativeWord)
 	if !ok {
 		return Dot
 	}
-	if f.Formative.Stress == g.Penultimate {
-		return Dot
+	if tag := f.Formative.Final.Tag(); tag != "" {
+		return tag
 	}
-	return f.Formative.Stress.String()
+	return Dot
 }

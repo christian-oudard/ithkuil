@@ -322,126 +322,209 @@ func SearchAffixes(query string, affixes map[string]lexicon.AffixEntry) []lexico
 func ApplyFlag(f *g.Formative, flag string) error {
 	flag = strings.ToUpper(flag)
 
+	// Stem (CrRoot only).
 	switch flag {
-	case "S0":
-		f.SlotII.Stem = g.S0
-		return nil
-	case "S1":
-		f.SlotII.Stem = g.S1
-		return nil
-	case "S2":
-		f.SlotII.Stem = g.S2
-		return nil
-	case "S3":
-		f.SlotII.Stem = g.S3
+	case "S0", "S1", "S2", "S3":
+		stem := map[string]g.Stem{"S0": g.S0, "S1": g.S1, "S2": g.S2, "S3": g.S3}[flag]
+		cr, ok := f.Root.(g.CrRoot)
+		if !ok {
+			return fmt.Errorf("stem %s only applies to CrRoot formatives", flag)
+		}
+		cr.Stem = stem
+		f.Root = cr
 		return nil
 	}
 
+	// Version (CrRoot / CsRoot / RefRoot).
 	switch flag {
-	case "PRC":
-		f.SlotII.Version = g.PRC
-		return nil
-	case "CPT":
-		f.SlotII.Version = g.CPT
+	case "PRC", "CPT":
+		v := g.PRC
+		if flag == "CPT" {
+			v = g.CPT
+		}
+		switch r := f.Root.(type) {
+		case g.CrRoot:
+			r.Version = v
+			f.Root = r
+		case g.CsRoot:
+			r.Version = v
+			f.Root = r
+		case g.RefRoot:
+			r.Version = v
+			f.Root = r
+		}
 		return nil
 	}
 
+	// Function.
 	switch flag {
-	case "STA":
-		f.SlotIV.Function = g.STA
-		return nil
-	case "DYN":
-		f.SlotIV.Function = g.DYN
-		return nil
-	}
-	switch flag {
-	case "BSC":
-		f.SlotIV.Specification = g.BSC
-		return nil
-	case "CTE":
-		f.SlotIV.Specification = g.CTE
-		return nil
-	case "CSV":
-		f.SlotIV.Specification = g.CSV
-		return nil
-	case "OBJ":
-		f.SlotIV.Specification = g.OBJ
-		return nil
-	}
-	switch flag {
-	case "EXS":
-		f.SlotIV.Context = g.EXS
-		return nil
-	case "FNC":
-		f.SlotIV.Context = g.FNC
-		return nil
-	case "RPS":
-		f.SlotIV.Context = g.RPS
-		return nil
-	case "AMG":
-		f.SlotIV.Context = g.AMG
+	case "STA", "DYN":
+		fn := g.STA
+		if flag == "DYN" {
+			fn = g.DYN
+		}
+		switch r := f.Root.(type) {
+		case g.CrRoot:
+			r.SlotIV.Function = fn
+			f.Root = r
+		case g.CsRoot:
+			r.Function = fn
+			f.Root = r
+		case g.RefRoot:
+			r.SlotIV.Function = fn
+			f.Root = r
+		}
 		return nil
 	}
 
+	// Specification (CrRoot / RefRoot — CsRoot is implicitly BSC).
 	switch flag {
-	case "MON":
-		f.Stress = g.Monosyllabic
+	case "BSC", "CTE", "CSV", "OBJ":
+		s := map[string]g.Specification{"BSC": g.BSC, "CTE": g.CTE, "CSV": g.CSV, "OBJ": g.OBJ}[flag]
+		switch r := f.Root.(type) {
+		case g.CrRoot:
+			r.SlotIV.Specification = s
+			f.Root = r
+		case g.RefRoot:
+			r.SlotIV.Specification = s
+			f.Root = r
+		default:
+			return fmt.Errorf("specification %s only applies to CrRoot/RefRoot", flag)
+		}
 		return nil
-	case "PEN":
-		f.Stress = g.Penultimate
+	}
+
+	// Context.
+	switch flag {
+	case "EXS", "FNC", "RPS", "AMG":
+		c := map[string]g.Context{"EXS": g.EXS, "FNC": g.FNC, "RPS": g.RPS, "AMG": g.AMG}[flag]
+		switch r := f.Root.(type) {
+		case g.CrRoot:
+			r.SlotIV.Context = c
+			f.Root = r
+		case g.CsRoot:
+			r.Context = c
+			f.Root = r
+		case g.RefRoot:
+			r.SlotIV.Context = c
+			f.Root = r
+		}
 		return nil
-	case "ULT":
-		f.Stress = g.Ultimate
+	}
+
+	// Stress is encoded in the Final variant. PEN/MON → nominal,
+	// ANT → framed verbal, ULT → verbal (default Assertive/OBS).
+	switch flag {
+	case "PEN", "MON":
+		f.Final = g.UnframedNominal{Case: currentCase(f.Final)}
 		return nil
 	case "ANT":
-		f.Stress = g.Antepenultimate
+		f.Final = g.FramedVerbal{Case: currentCase(f.Final)}
+		return nil
+	case "ULT":
+		if _, ok := f.Final.(g.UnframedVerbal); !ok {
+			f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
+		}
 		return nil
 	}
 
+	// Case (any of 68): nominal or framed-nominal Final.
 	for _, c := range g.AllCases {
 		if c.String() == flag {
-			f.SlotIX = g.CaseSlot{Case: c}
-			return nil
-		}
-	}
-
-	for _, a := range g.AllAspects {
-		if a.String() == flag {
-			f.SlotVIII = g.VnCnAspect{Aspect: a, MS: g.CaseScopeVal{CaseScope: g.CCN}}
-			return nil
-		}
-	}
-
-	for _, v := range g.AllValences {
-		if v.String() == flag {
-			f.SlotVIII = g.VnCnValence{Valence: v, MS: g.MoodVal{Mood: g.FAC}}
-			return nil
-		}
-	}
-
-	for _, m := range g.AllMoods {
-		if m.String() == flag {
-			switch s := f.SlotVIII.(type) {
-			case g.VnCnValence:
-				s.MS = g.MoodVal{Mood: m}
-				f.SlotVIII = s
-			case g.VnCnAspect:
-				s.MS = g.MoodVal{Mood: m}
-				f.SlotVIII = s
-			default:
-				f.SlotVIII = g.VnCnValence{Valence: g.MNO, MS: g.MoodVal{Mood: m}}
+			if _, framed := f.Final.(g.FramedVerbal); framed {
+				f.Final = g.FramedVerbal{Case: c}
+			} else {
+				f.Final = g.UnframedNominal{Case: c}
 			}
 			return nil
 		}
 	}
 
-	for _, i := range g.AllIllocutions {
-		if i.String() == flag {
-			f.SlotIX = g.IllocValSlot{Illocution: i, Validation: g.OBS}
-			f.Stress = g.Ultimate
+	// Aspect.
+	for _, a := range g.AllAspects {
+		if a.String() == flag {
+			f.SlotVIII = g.VnCnAspect{Aspect: a, MoodScope: g.FAC}
 			return nil
 		}
 	}
 
+	// Valence.
+	for _, v := range g.AllValences {
+		if v.String() == flag {
+			f.SlotVIII = g.VnCnValence{Valence: v, MoodScope: g.FAC}
+			return nil
+		}
+	}
+
+	// Mood: replaces MoodScope on whatever SlotVIII variant is there.
+	for _, m := range g.AllMoods {
+		if m.String() == flag {
+			switch s := f.SlotVIII.(type) {
+			case g.VnCnValence:
+				s.MoodScope = m
+				f.SlotVIII = s
+			case g.VnCnAspect:
+				s.MoodScope = m
+				f.SlotVIII = s
+			case g.VnCnPhase:
+				s.MoodScope = m
+				f.SlotVIII = s
+			case g.VnCnEffect:
+				s.MoodScope = m
+				f.SlotVIII = s
+			case g.VnCnLevel:
+				s.MoodScope = m
+				f.SlotVIII = s
+			default:
+				f.SlotVIII = g.VnCnValence{Valence: g.MNO, MoodScope: m}
+			}
+			return nil
+		}
+	}
+
+	// Illocution: forces UnframedVerbal Final.
+	if vk, ok := illocutionByName(flag); ok {
+		f.Final = g.UnframedVerbal{Vk: vk}
+		return nil
+	}
+
 	return fmt.Errorf("unknown grammar flag %q", flag)
+}
+
+// currentCase pulls the Case out of a nominal/framed-verbal Final, or
+// returns THM when the Final is verbal.
+func currentCase(fin g.Final) g.Case {
+	switch v := fin.(type) {
+	case g.UnframedNominal:
+		return v.Case
+	case g.FramedVerbal:
+		return v.Case
+	}
+	return g.THM
+}
+
+// illocutionByName returns the Vk variant for a 3-letter illocution
+// abbreviation.
+func illocutionByName(name string) (g.Vk, bool) {
+	switch name {
+	case "ASR":
+		return g.Assertive{Validation: g.OBS}, true
+	case "DIR":
+		return g.Directive{}, true
+	case "DEC":
+		return g.Declarative{}, true
+	case "IRG":
+		return g.Interrogative{}, true
+	case "VER":
+		return g.Verificative{}, true
+	case "ADM":
+		return g.Admonitive{}, true
+	case "POT":
+		return g.Potentiative{}, true
+	case "HOR":
+		return g.Hortative{}, true
+	case "CNJ":
+		return g.Conjectural{}, true
+	}
+	return nil, false
 }
