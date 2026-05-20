@@ -39,7 +39,7 @@ func Formative(f g.Formative) string {
 		ca = allomorph.GeminateCa(ca)
 	}
 	b.WriteString(ca)
-	b.WriteString(SlotVII(applyIVLWorkaround(f, f.SlotVII)))
+	b.WriteString(SlotVII(f.SlotVII))
 	b.WriteString(SlotVIII(f.SlotVIII))
 	b.WriteString(SlotIX(f.SlotIX))
 	body := padForANT(f, b.String())
@@ -232,39 +232,29 @@ func SlotVIII(s g.SlotVIII) string {
 }
 
 // SlotIX renders the final slot (Vc or Vk) based on the variant.
+// Assertive yields its Validation as a Series-1 vowel; the eight non-
+// ASR illocutions each yield their dedicated Series-2 diphthong.
 func SlotIX(s g.SlotIX) string {
 	switch v := s.(type) {
 	case g.CaseSlot:
 		return g.CaseToVc(v.Case)
-	case g.IllocValSlot:
-		return Vk(v.Illocution, v.Validation)
-	}
-	return ""
-}
-
-// Vk renders an Illocution+Validation pair as the surface Vk vowel.
-// ASR is encoded by the Validation vowel only (Series 1); other
-// illocutions have a dedicated Series 2 form and ignore Validation.
-func Vk(ill g.Illocution, val g.Validation) string {
-	if ill == g.ASR {
-		return Validation(val)
-	}
-	switch ill {
-	case g.DIR:
+	case g.Assertive:
+		return Validation(v.Validation)
+	case g.Directive:
 		return "ai"
-	case g.DEC:
+	case g.Declarative:
 		return "au"
-	case g.IRG:
+	case g.Interrogative:
 		return "ei"
-	case g.VER:
+	case g.Verificative:
 		return "eu"
-	case g.ADM:
+	case g.Admonitive:
 		return "ou"
-	case g.POT:
+	case g.Potentiative:
 		return "oi"
-	case g.HOR:
+	case g.Hortative:
 		return "iu"
-	case g.CNJ:
+	case g.Conjectural:
 		return "ui"
 	}
 	return ""

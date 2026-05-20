@@ -133,7 +133,7 @@ func ParseFormative(word string) (g.Formative, error) {
 		f.SlotI = slotI
 		f.SlotIShortcut = shortcut
 		f.SentenceStarter = hasSentencePrefix
-		return absorbIVLAffix(f), nil
+		return f, nil
 	}
 
 	if len(conjs) < 3 {
@@ -147,7 +147,7 @@ func ParseFormative(word string) (g.Formative, error) {
 		}
 		f.SlotI = slotI
 		f.SentenceStarter = hasSentencePrefix
-		return absorbIVLAffix(f), nil
+		return f, nil
 	}
 
 	// Consonant-initial: Vv elided to default S1/PRC.
@@ -159,41 +159,7 @@ func ParseFormative(word string) (g.Formative, error) {
 		return g.Formative{}, fmt.Errorf("%v (word %q)", err, word)
 	}
 	f.SentenceStarter = hasSentencePrefix
-	return absorbIVLAffix(f), nil
-}
-
-// absorbIVLAffix is the parser-side counterpart of the §3.9.3.2
-// Validation collapse workaround in render. If the formative is a
-// verbal (IllocValSlot) with a default OBS Validation and a trailing
-// IVL Type-2 affix in Slot VII, the affix is consumed and its degree
-// becomes the Validation on the IllocValSlot. This is the inverse of
-// render.applyIVLWorkaround so that non-ASR + non-OBS Validation
-// round-trips cleanly.
-func absorbIVLAffix(f g.Formative) g.Formative {
-	iv, ok := f.SlotIX.(g.IllocValSlot)
-	if !ok || iv.Validation != g.OBS {
-		return f
-	}
-	n := len(f.SlotVII)
-	if n == 0 {
-		return f
-	}
-	last := f.SlotVII[n-1]
-	if last.Consonant != "nļ" || last.Type != g.Type2Affix {
-		return f
-	}
-	_, degree := parse.ClassifyAffixVowel(last.Vowel)
-	if degree < 1 || degree > 9 {
-		return f
-	}
-	val := g.Validation(degree - 1)
-	iv.Validation = val
-	f.SlotIX = iv
-	f.SlotVII = f.SlotVII[:n-1]
-	if len(f.SlotVII) == 0 {
-		f.SlotVII = nil
-	}
-	return f
+	return f, nil
 }
 
 // parseShortcutFormative handles the Vv-Cr-… shape that follows a
@@ -493,11 +459,7 @@ func parseAfterCa(tail []string, stress g.Stress) ([]g.Affix, g.SlotVIII, g.Slot
 // everything else reads it as Vc.
 func parseSlotIX(v string, stress g.Stress) (g.SlotIX, bool) {
 	if stress == g.Ultimate {
-		ill, val, ok := parse.ParseVk(v)
-		if !ok {
-			return nil, false
-		}
-		return g.IllocValSlot{Illocution: ill, Validation: val}, true
+		return parse.ParseVk(v)
 	}
 	c, ok := parse.ParseCase(v)
 	if !ok {

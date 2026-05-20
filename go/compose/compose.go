@@ -94,8 +94,8 @@ func init() {
 	for _, cs := range g.AllCaseScopes {
 		Table = append(Table, Entry{Category: "CaseScope", Abbrev: cs.String()})
 	}
-	for _, i := range g.AllIllocutions {
-		Table = append(Table, Entry{Category: "Illocution", Abbrev: i.String()})
+	for _, v := range g.AllIllocutionVariants {
+		Table = append(Table, Entry{Category: "Illocution", Abbrev: v.Tag()})
 	}
 	for _, v := range g.AllValidations {
 		Table = append(Table, Entry{Category: "Validation", Abbrev: v.String()})

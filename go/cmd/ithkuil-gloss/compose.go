@@ -176,10 +176,12 @@ func applyComposeFlag(f *g.Formative, flag string) error {
 		}
 	}
 
-	// Illocution (forces ultimate stress).
-	for _, i := range g.AllIllocutions {
-		if i.String() == flag {
-			f.SlotIX = g.IllocValSlot{Illocution: i, Validation: g.OBS}
+	// Illocution (forces ultimate stress). Looks up by tag — Assertive
+	// matches "ASR" with default OBS Validation; the eight non-ASR
+	// illocutions each match their own tag.
+	for _, v := range g.AllIllocutionVariants {
+		if v.Tag() == flag {
+			f.SlotIX = v
 			f.Stress = g.Ultimate
 			return nil
 		}

@@ -48,9 +48,9 @@ func TestCsRoot_oërmölá(t *testing.T) {
 	if f.SlotIV != (g.SlotIV{Function: g.DYN, Specification: g.BSC, Context: g.EXS}) {
 		t.Errorf("SlotIV = %v, want (DYN, BSC, EXS)", f.SlotIV)
 	}
-	iv, ok := f.SlotIX.(g.IllocValSlot)
-	if !ok || iv.Illocution != g.ASR || iv.Validation != g.OBS {
-		t.Errorf("SlotIX = %v, want IllocValSlot{ASR, OBS}", f.SlotIX)
+	as, ok := f.SlotIX.(g.Assertive)
+	if !ok || as.Validation != g.OBS {
+		t.Errorf("SlotIX = %v, want Assertive{OBS}", f.SlotIX)
 	}
 }
 

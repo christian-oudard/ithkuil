@@ -23,49 +23,50 @@ func TestParseVk_Series1(t *testing.T) {
 		{"u", grammar.INF},
 	}
 	for _, c := range cases {
-		ill, val, ok := ParseVk(c.in)
-		if !ok || ill != grammar.ASR || val != c.val {
-			t.Errorf("ParseVk(%q) = (%v,%v,%v), want (ASR,%v,true)",
-				c.in, ill, val, ok, c.val)
+		s, ok := ParseVk(c.in)
+		as, isAs := s.(grammar.Assertive)
+		if !ok || !isAs || as.Validation != c.val {
+			t.Errorf("ParseVk(%q) = (%v,%v), want Assertive{%v}",
+				c.in, s, ok, c.val)
 		}
 	}
 }
 
 func TestParseVk_Series2(t *testing.T) {
 	cases := []struct {
-		in  string
-		ill grammar.Illocution
+		in   string
+		want grammar.SlotIX
 	}{
-		{"ai", grammar.DIR},
-		{"au", grammar.DEC},
-		{"ei", grammar.IRG},
-		{"eu", grammar.VER},
-		{"ou", grammar.ADM},
-		{"oi", grammar.POT},
-		{"iu", grammar.HOR},
-		{"ui", grammar.CNJ},
+		{"ai", grammar.Directive{}},
+		{"au", grammar.Declarative{}},
+		{"ei", grammar.Interrogative{}},
+		{"eu", grammar.Verificative{}},
+		{"ou", grammar.Admonitive{}},
+		{"oi", grammar.Potentiative{}},
+		{"iu", grammar.Hortative{}},
+		{"ui", grammar.Conjectural{}},
 	}
 	for _, c := range cases {
-		ill, val, ok := ParseVk(c.in)
-		if !ok || ill != c.ill || val != grammar.OBS {
-			t.Errorf("ParseVk(%q) = (%v,%v,%v), want (%v,OBS,true)",
-				c.in, ill, val, ok, c.ill)
+		s, ok := ParseVk(c.in)
+		if !ok || s != c.want {
+			t.Errorf("ParseVk(%q) = (%v,%v), want %v", c.in, s, ok, c.want)
 		}
 	}
 }
 
 func TestParseVk_AcceptsAccents(t *testing.T) {
 	// Stressed vowel should normalize before lookup.
-	ill, val, ok := ParseVk("á")
-	if !ok || ill != grammar.ASR || val != grammar.OBS {
-		t.Errorf("ParseVk(\"á\") = (%v,%v,%v), want (ASR,OBS,true)", ill, val, ok)
+	s, ok := ParseVk("á")
+	as, isAs := s.(grammar.Assertive)
+	if !ok || !isAs || as.Validation != grammar.OBS {
+		t.Errorf("ParseVk(\"á\") = (%v,%v), want Assertive{OBS}", s, ok)
 	}
 }
 
 func TestParseVk_Rejects(t *testing.T) {
 	for _, s := range []string{"", "x", "ia", "ao"} {
-		if ill, val, ok := ParseVk(s); ok {
-			t.Errorf("ParseVk(%q) = (%v,%v,true), want failure", s, ill, val)
+		if v, ok := ParseVk(s); ok {
+			t.Errorf("ParseVk(%q) = (%v,true), want failure", s, v)
 		}
 	}
 }

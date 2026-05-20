@@ -260,19 +260,21 @@ func joinDot(parts ...string) string {
 }
 
 func slotIX(s g.SlotIX) string {
+	if s == nil {
+		return ""
+	}
 	switch v := s.(type) {
 	case g.CaseSlot:
 		if v.Case == g.THM {
 			return ""
 		}
 		return v.Case.String()
-	case g.IllocValSlot:
-		// Validation suppressed when OBS (the default for non-ASR
-		// illocutions and the most common ASR pairing).
+	case g.Assertive:
+		// OBS is the default ASR Validation; suppress it.
 		if v.Validation == g.OBS {
-			return v.Illocution.String()
+			return "ASR"
 		}
-		return v.Illocution.String() + "/" + v.Validation.String()
+		return "ASR/" + v.Validation.String()
 	}
-	return ""
+	return s.Tag()
 }

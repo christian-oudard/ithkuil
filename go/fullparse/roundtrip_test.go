@@ -95,11 +95,11 @@ func TestRoundTrip_Stress(t *testing.T) {
 		},
 		{
 			"verbal-ultimate-asr-inf",
-			mkFormative(g.Ultimate, g.IllocValSlot{Illocution: g.ASR, Validation: g.INF}),
+			mkFormative(g.Ultimate, g.Assertive{Validation: g.INF}),
 		},
 		{
-			"verbal-ultimate-dir-obs",
-			mkFormative(g.Ultimate, g.IllocValSlot{Illocution: g.DIR, Validation: g.OBS}),
+			"verbal-ultimate-dir",
+			mkFormative(g.Ultimate, g.Directive{}),
 		},
 		{
 			"framed-antepenultimate",
@@ -147,7 +147,7 @@ func TestRoundTrip_Formative_Equality(t *testing.T) {
 		{"verbal-ultimate", func() g.Formative {
 			f := g.MinimalFormative("ml")
 			f.Stress = g.Ultimate
-			f.SlotIX = g.IllocValSlot{Illocution: g.ASR, Validation: g.INF}
+			f.SlotIX = g.Assertive{Validation: g.INF}
 			return f
 		}()},
 		{"framed-antepenult", func() g.Formative {
@@ -186,7 +186,7 @@ func TestRoundTrip_AllStress(t *testing.T) {
 		slotIX g.SlotIX
 	}{
 		{"penultimate", g.Penultimate, g.CaseSlot{Case: g.THM}},
-		{"ultimate", g.Ultimate, g.IllocValSlot{Illocution: g.ASR, Validation: g.OBS}},
+		{"ultimate", g.Ultimate, g.Assertive{Validation: g.OBS}},
 		{"antepenultimate", g.Antepenultimate, g.CaseSlot{Case: g.THM}},
 	}
 	for _, c := range cases {
@@ -268,7 +268,7 @@ func TestRoundTrip_SlotVIII_VerbalMood(t *testing.T) {
 	for _, c := range cases {
 		f := g.MinimalFormative("ml")
 		f.Stress = g.Ultimate
-		f.SlotIX = g.IllocValSlot{Illocution: g.ASR, Validation: g.OBS}
+		f.SlotIX = g.Assertive{Validation: g.OBS}
 		f.SlotVIII = c.s8
 		t.Run(c.name, func(t *testing.T) {
 			assertRoundTrip(t, c.name, f)
@@ -336,50 +336,26 @@ func TestRoundTrip_Grid_AllCases(t *testing.T) {
 	}
 }
 
-// TestRoundTrip_Grid_AllVk walks every Illocution × Validation pair
-// under ultimate stress. Vk natively encodes Validation only when
-// Illocution is ASR (§3.9.3.4); for non-ASR + non-OBS combinations,
-// the renderer attaches an IVL (-nļ) Type-2 affix per §3.9.3.3 to
-// carry the Validation, and the parser absorbs it back into the
-// SlotIX Validation field. The full 9 × 9 grid should round-trip.
+// TestRoundTrip_Grid_AllVk walks every Vk variant under ultimate
+// stress: 9 Assertive sub-cases (one per Validation) plus the 8
+// dedicated non-ASR illocutions, for 17 cells total. Non-ASR variants
+// have no Validation field per §3.9.3.2.
 func TestRoundTrip_Grid_AllVk(t *testing.T) {
-	for _, ill := range g.AllIllocutions {
-		for _, val := range g.AllValidations {
-			f := g.MinimalFormative("ml")
-			f.Stress = g.Ultimate
-			f.SlotIX = g.IllocValSlot{Illocution: ill, Validation: val}
-			name := ill.String() + "-" + val.String()
-			t.Run(name, func(t *testing.T) { assertRoundTrip(t, name, f) })
-		}
+	for _, val := range g.AllValidations {
+		f := g.MinimalFormative("ml")
+		f.Stress = g.Ultimate
+		f.SlotIX = g.Assertive{Validation: val}
+		name := "ASR-" + val.String()
+		t.Run(name, func(t *testing.T) { assertRoundTrip(t, name, f) })
 	}
-}
-
-// TestIVL_Workaround_VisibleInSurfaceForm pins the visible shape of
-// the workaround: a non-ASR + non-OBS Formative renders with an "-nļ"
-// suffix-bearing surface form whose Vx encodes the Validation's
-// degree.
-func TestIVL_Workaround_VisibleInSurfaceForm(t *testing.T) {
-	f := g.MinimalFormative("ml")
-	f.Stress = g.Ultimate
-	f.SlotIX = g.IllocValSlot{Illocution: g.POT, Validation: g.INF}
-	surface := render.Formative(f)
-	// POT Vk = "oi"; IVL Type-2 degree 9 (INF) = "ui". Both should
-	// appear in the surface form, with the IVL affix between Ca and Vk.
-	if !contains(surface, "nļ") {
-		t.Errorf("expected IVL carrier %q in surface form %q", "nļ", surface)
+	// Skip index 0 (Assertive); the rest are leaf illocutions.
+	for _, v := range g.AllIllocutionVariants[1:] {
+		f := g.MinimalFormative("ml")
+		f.Stress = g.Ultimate
+		f.SlotIX = v
+		name := v.Tag()
+		t.Run(name, func(t *testing.T) { assertRoundTrip(t, name, f) })
 	}
-	if !contains(surface, "ui") {
-		t.Errorf("expected Type-2 degree-9 vowel %q in surface form %q", "ui", surface)
-	}
-}
-
-func contains(s, sub string) bool {
-	for i := 0; i+len(sub) <= len(s); i++ {
-		if s[i:i+len(sub)] == sub {
-			return true
-		}
-	}
-	return false
 }
 
 // TestRoundTrip_Grid_MoodVerbal exhaustively walks every Mood × every
@@ -390,7 +366,7 @@ func TestRoundTrip_Grid_MoodVerbal(t *testing.T) {
 	mkVerb := func(s8 g.SlotVIII, mood g.Mood) g.Formative {
 		f := g.MinimalFormative("ml")
 		f.Stress = g.Ultimate
-		f.SlotIX = g.IllocValSlot{Illocution: g.ASR, Validation: g.OBS}
+		f.SlotIX = g.Assertive{Validation: g.OBS}
 		f.SlotVIII = withMood(s8, mood)
 		return f
 	}

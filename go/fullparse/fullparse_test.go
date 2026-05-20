@@ -62,9 +62,9 @@ func TestParseFormative_Verbal(t *testing.T) {
 	if f.Stress != g.Ultimate {
 		t.Errorf("Stress = %v, want Ultimate", f.Stress)
 	}
-	iv, ok := f.SlotIX.(g.IllocValSlot)
-	if !ok || iv.Illocution != g.ASR || iv.Validation != g.INF {
-		t.Errorf("SlotIX = %v, want IllocValSlot{ASR, INF}", f.SlotIX)
+	as, ok := f.SlotIX.(g.Assertive)
+	if !ok || as.Validation != g.INF {
+		t.Errorf("SlotIX = %v, want Assertive{INF}", f.SlotIX)
 	}
 }
 

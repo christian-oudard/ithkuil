@@ -1,30 +1,8 @@
 package grammar
 
-// Illocution is the speech-act type. Encoded together with Validation
-// in the Vk vowel when the formative is verbal (ultimate stress).
-type Illocution int
-
-const (
-	ASR Illocution = iota // Assertive
-	DIR                   // Directive
-	DEC                   // Declarative
-	IRG                   // Interrogative
-	VER                   // Verificative
-	ADM                   // Admonitive
-	POT                   // Potentiative
-	HOR                   // Hortative
-	CNJ                   // Conjectural
-)
-
-func (i Illocution) String() string {
-	return [...]string{"ASR", "DIR", "DEC", "IRG", "VER", "ADM", "POT", "HOR", "CNJ"}[i]
-}
-
-var AllIllocutions = []Illocution{ASR, DIR, DEC, IRG, VER, ADM, POT, HOR, CNJ}
-
 // Validation is evidentiality — how the speaker knows what they assert.
-// Pairs with Illocution in the Vk vowel; when Illocution is non-ASR,
-// Validation defaults to OBS.
+// Only meaningful with ASSERTIVE illocution (§3.9.3.2), so it appears
+// only as a field on Assertive (one of the SlotIX variants).
 type Validation int
 
 const (

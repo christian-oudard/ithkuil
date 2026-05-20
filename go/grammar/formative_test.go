@@ -46,9 +46,13 @@ func TestSlotIXVariants(t *testing.T) {
 	if cs, ok := s.(CaseSlot); !ok || cs.Case != ERG {
 		t.Errorf("CaseSlot mismatch: %v", s)
 	}
-	s = IllocValSlot{Illocution: DIR, Validation: OBS}
-	if iv, ok := s.(IllocValSlot); !ok || iv.Illocution != DIR || iv.Validation != OBS {
-		t.Errorf("IllocValSlot mismatch: %v", s)
+	s = Directive{}
+	if _, ok := s.(Directive); !ok {
+		t.Errorf("Directive mismatch: %v", s)
+	}
+	s = Assertive{Validation: INF}
+	if as, ok := s.(Assertive); !ok || as.Validation != INF {
+		t.Errorf("Assertive mismatch: %v", s)
 	}
 }
 

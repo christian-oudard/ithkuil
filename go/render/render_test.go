@@ -39,11 +39,11 @@ func TestFormative_NonDefaultSlots(t *testing.T) {
 }
 
 func TestFormative_Ultimate(t *testing.T) {
-	// Verbal formative: SlotIX is IllocValSlot, stress is Ultimate.
+	// Verbal formative: SlotIX is Assertive, stress is Ultimate.
 	// Ultimate marks the last vowel; default Vv elides → "mlalú".
 	f := g.MinimalFormative("ml")
 	f.Stress = g.Ultimate
-	f.SlotIX = g.IllocValSlot{Illocution: g.ASR, Validation: g.INF}
+	f.SlotIX = g.Assertive{Validation: g.INF}
 	got := Formative(f)
 	want := "mlalú"
 	if got != want {
@@ -97,25 +97,26 @@ func TestSlotIRenderings(t *testing.T) {
 }
 
 func TestVk(t *testing.T) {
-	// ASR uses validation vowel.
-	if got := Vk(g.ASR, g.OBS); got != "a" {
-		t.Errorf("Vk(ASR,OBS) = %q, want \"a\"", got)
+	// Assertive uses validation vowel.
+	if got := SlotIX(g.Assertive{Validation: g.OBS}); got != "a" {
+		t.Errorf("SlotIX(Assertive OBS) = %q, want \"a\"", got)
 	}
-	if got := Vk(g.ASR, g.INF); got != "u" {
-		t.Errorf("Vk(ASR,INF) = %q, want \"u\"", got)
+	if got := SlotIX(g.Assertive{Validation: g.INF}); got != "u" {
+		t.Errorf("SlotIX(Assertive INF) = %q, want \"u\"", got)
 	}
-	// Non-ASR uses illocution vowel.
+	// Each non-ASR illocution renders its dedicated diphthong.
 	cases := []struct {
-		ill  g.Illocution
-		want string
+		variant g.SlotIX
+		want    string
 	}{
-		{g.DIR, "ai"}, {g.DEC, "au"}, {g.IRG, "ei"}, {g.VER, "eu"},
-		{g.ADM, "ou"}, {g.POT, "oi"}, {g.HOR, "iu"}, {g.CNJ, "ui"},
+		{g.Directive{}, "ai"}, {g.Declarative{}, "au"},
+		{g.Interrogative{}, "ei"}, {g.Verificative{}, "eu"},
+		{g.Admonitive{}, "ou"}, {g.Potentiative{}, "oi"},
+		{g.Hortative{}, "iu"}, {g.Conjectural{}, "ui"},
 	}
 	for _, c := range cases {
-		// Validation ignored for non-ASR.
-		if got := Vk(c.ill, g.OBS); got != c.want {
-			t.Errorf("Vk(%v, OBS) = %q, want %q", c.ill, got, c.want)
+		if got := SlotIX(c.variant); got != c.want {
+			t.Errorf("SlotIX(%T) = %q, want %q", c.variant, got, c.want)
 		}
 	}
 }
@@ -264,7 +265,7 @@ func TestFormative_THMVcElision_NotForUltimate(t *testing.T) {
 	// apply, only Vv elides. The diacritic still lands on the last vowel.
 	f := g.MinimalFormative("ml")
 	f.Stress = g.Ultimate
-	f.SlotIX = g.IllocValSlot{Illocution: g.ASR, Validation: g.OBS}
+	f.SlotIX = g.Assertive{Validation: g.OBS}
 	got := Formative(f)
 	want := "mlalá"
 	if got != want {

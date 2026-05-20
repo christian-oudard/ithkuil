@@ -80,14 +80,14 @@ func TestFormative_ErgCase(t *testing.T) {
 func TestFormative_Verbal(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.Stress = g.Ultimate
-	f.SlotIX = g.IllocValSlot{Illocution: g.DIR, Validation: g.OBS}
+	f.SlotIX = g.Directive{}
 	got := Formative(f)
 	want := "-ml--DIR-ULT"
 	if got != want {
-		t.Errorf("Formative(DIR/OBS) = %q, want %q", got, want)
+		t.Errorf("Formative(DIR) = %q, want %q", got, want)
 	}
 	// Non-default validation should appear.
-	f.SlotIX = g.IllocValSlot{Illocution: g.ASR, Validation: g.INF}
+	f.SlotIX = g.Assertive{Validation: g.INF}
 	got = Formative(f)
 	want = "-ml--ASR/INF-ULT"
 	if got != want {

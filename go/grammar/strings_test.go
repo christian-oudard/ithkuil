@@ -27,7 +27,6 @@ func TestStringer_Uniqueness(t *testing.T) {
 		{"Aspect", aspectToStringers(AllAspects)},
 		{"Mood", moodToStringers(AllMoods)},
 		{"CaseScope", csToStringers(AllCaseScopes)},
-		{"Illocution", illToStringers(AllIllocutions)},
 		{"Validation", valToStringers(AllValidations)},
 		{"Case", caseToStringers(AllCases)},
 		{"Bias", biasToStringers(AllBiases)},
@@ -209,13 +208,6 @@ func moodToStringers(xs []Mood) []fmt.Stringer {
 	return out
 }
 func csToStringers(xs []CaseScope) []fmt.Stringer {
-	out := make([]fmt.Stringer, len(xs))
-	for i, x := range xs {
-		out[i] = x
-	}
-	return out
-}
-func illToStringers(xs []Illocution) []fmt.Stringer {
 	out := make([]fmt.Stringer, len(xs))
 	for i, x := range xs {
 		out[i] = x
