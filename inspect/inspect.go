@@ -265,6 +265,10 @@ func Type(t tokenize.WordToken) string {
 		return "Reg"
 	case tokenize.ModularWord:
 		return "Mod"
+	case tokenize.SingleAffixWord:
+		return "Affix"
+	case tokenize.MultipleAffixWord:
+		return "Affixes"
 	case tokenize.CarrierWord:
 		return "Carrier"
 	case tokenize.ForeignWord:

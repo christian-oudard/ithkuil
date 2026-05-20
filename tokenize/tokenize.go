@@ -96,6 +96,26 @@ type ModularWord struct {
 func (m ModularWord) Surface() string { return m.Text }
 func (ModularWord) word()             {}
 
+// SingleAffixWord is one V_x C_s affix on its own as an adjunct
+// (§4.1.1). Shape: V-C[-V].
+type SingleAffixWord struct {
+	Text  string
+	Affix g.SingleAffixAdjunct
+}
+
+func (s SingleAffixWord) Surface() string { return s.Text }
+func (SingleAffixWord) word()             {}
+
+// MultipleAffixWord is two-or-more affixes chained into one adjunct
+// (§4.1.2). Shape: [ë] C V Cz V C ... [V].
+type MultipleAffixWord struct {
+	Text    string
+	Affixes g.MultipleAffixAdjunct
+}
+
+func (m MultipleAffixWord) Surface() string { return m.Text }
+func (MultipleAffixWord) word()             {}
+
 // CarrierWord wraps a carrier adjunct (carrier/quotative/naming/phrasal).
 type CarrierWord struct {
 	Text    string
@@ -204,6 +224,25 @@ func ClassifyWord(word string) WordToken {
 	//    scope prefix.
 	if m, err := parse.ParseModular(word); err == nil {
 		return ModularWord{Text: word, Modular: m}
+	}
+
+	// 4a. Single-affix adjunct (§4.1.1): V-C[-V], starting with a
+	//     vowel other than "ë". Tried before referential/formative so
+	//     a leading vowel doesn't get re-read as Vv of an under-sized
+	//     formative.
+	if len(conjs) >= 2 && len(conjs) <= 3 &&
+		surface.IsVowelConjunct(conjs[0]) && conjs[0] != "ë" {
+		if a, err := parse.ParseSingleAffix(word); err == nil {
+			return SingleAffixWord{Text: word, Affix: a}
+		}
+	}
+
+	// 4b. Multi-affix adjunct (§4.1.2): [ë] C V Cz V C ... [V]. The Cz
+	//     consonant ('h, 'hl, 'hr, hw, 'hw or h) at the third post-ë
+	//     position is what distinguishes this shape from a same-length
+	//     consonant-initial formative.
+	if a, err := parse.ParseMultipleAffix(word); err == nil {
+		return MultipleAffixWord{Text: word, Affixes: a}
 	}
 
 	// 5. Two-conjunct referential: C1-cluster + Vc-vowel.

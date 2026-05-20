@@ -48,6 +48,10 @@ func (gl *Glosser) Token(t tokenize.WordToken) string {
 		return "CARR-" + v.Carrier.Type.String() + "(" + v.Carrier.Vc + ")"
 	case tokenize.ModularWord:
 		return modularLabel(v.Modular)
+	case tokenize.SingleAffixWord:
+		return singleAffixLabel(v.Affix)
+	case tokenize.MultipleAffixWord:
+		return multiAffixLabel(v.Affixes)
 	case tokenize.ReferentialWord:
 		return refLabel(v)
 	case tokenize.CombinationRefWord:
@@ -58,6 +62,36 @@ func (gl *Glosser) Token(t tokenize.WordToken) string {
 		return v.Text
 	}
 	return "?"
+}
+
+// singleAffixLabel formats a single-affix adjunct as "<Cs>/<deg><type>{<scope>}".
+func singleAffixLabel(a g.SingleAffixAdjunct) string {
+	t, d := parse.ClassifyAffixVowel(a.Vx)
+	return fmt.Sprintf("AFFIX[%s/%d%s]{%s}", a.Cs, d, affixTypeSubscript(t), a.Scope.String())
+}
+
+// multiAffixLabel formats a multiple-affix adjunct as a chain of affixes
+// with the first scope ({Cz}) and rest scope ({Vz}) attached.
+func multiAffixLabel(a g.MultipleAffixAdjunct) string {
+	parts := []string{fmt.Sprintf("%s/%s", a.First.Cs, a.First.Vx)}
+	for _, p := range a.Affixes {
+		parts = append(parts, fmt.Sprintf("%s/%s", p.Cs, p.Vx))
+	}
+	return fmt.Sprintf("AFFIXES[%s]{%s→%s}",
+		strings.Join(parts, ","),
+		a.FirstScope.String(), a.RestScope.String())
+}
+
+func affixTypeSubscript(t g.AffixType) string {
+	switch t {
+	case g.Type1Affix:
+		return "₁"
+	case g.Type2Affix:
+		return "₂"
+	case g.Type3Affix:
+		return "₃"
+	}
+	return ""
 }
 
 func biasLabel(b g.Bias) string {

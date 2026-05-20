@@ -140,9 +140,9 @@ func TestClassifyWord_Unknown(t *testing.T) {
 // least agree on what kind of word each input is.
 //
 // Known divergences (not asserted here): "adni'lö", "la'la", "layá",
-// "miyüs", "äst", "hrei", "ţnaxekka", and "çëhamala-lala" (sentence
-// prefix on a concat chain) each round-trip differently from Kotlin
-// and would each need spec/lexicon investigation.
+// "miyüs", "hrei", and "çëhamala-lala" (sentence prefix on a concat
+// chain) each round-trip differently from Kotlin and would each need
+// spec/lexicon investigation.
 func TestClassifyWord_IthkuilGlossCorpus(t *testing.T) {
 	type want int
 	const (
@@ -154,6 +154,8 @@ func TestClassifyWord_IthkuilGlossCorpus(t *testing.T) {
 		bias
 		registerStart
 		carrier
+		singleAffix
+		multiAffix
 	)
 	cases := []struct {
 		word string
@@ -179,6 +181,10 @@ func TestClassifyWord_IthkuilGlossCorpus(t *testing.T) {
 		{"hnas", carrier},            // Naming carrier (cf. TestTokenize_CarrierForeign)
 		{"ţnaxeka", combref},         // [mi.BEN+2p] combination referential
 		{"ţnaxekka", formative},      // same shape but kk geminate → formative
+		{"äst", singleAffix},         // affixual adjunct **st**/2₁
+		{"are", singleAffix},         // V-C-V with VIIDom scope
+		{"xaheitr", multiAffix},      // multi-affix with Cz=h
+		{"xa'heitr", multiAffix},     // multi-affix with Cz='h (VSub)
 		{"amlala-hamlala", concatenated},
 	}
 	typeName := func(w WordToken) string {
@@ -193,6 +199,10 @@ func TestClassifyWord_IthkuilGlossCorpus(t *testing.T) {
 			return "CombinationRefWord"
 		case ModularWord:
 			return "ModularWord"
+		case SingleAffixWord:
+			return "SingleAffixWord"
+		case MultipleAffixWord:
+			return "MultipleAffixWord"
 		case BiasWord:
 			return "BiasWord"
 		case RegisterStartWord:
@@ -224,6 +234,10 @@ func TestClassifyWord_IthkuilGlossCorpus(t *testing.T) {
 			_, matched = w.(RegisterStartWord)
 		case carrier:
 			_, matched = w.(CarrierWord)
+		case singleAffix:
+			_, matched = w.(SingleAffixWord)
+		case multiAffix:
+			_, matched = w.(MultipleAffixWord)
 		}
 		if !matched {
 			t.Errorf("ClassifyWord(%q) = %s, want kind %d", c.word, typeName(w), c.kind)
