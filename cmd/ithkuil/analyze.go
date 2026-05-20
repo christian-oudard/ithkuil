@@ -164,11 +164,8 @@ func renderModular(w io.Writer, mw tokenize.ModularWord) {
 
 	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(mw.Text)))
 	iw := indented(w, "  ")
-	fmt.Fprintln(iw, stylize(ansiDim, "(modular adjunct)"))
-	fmt.Fprintln(iw)
 	renderPhoneticTable(iw, segs)
 	if len(glossary) > 0 {
-		fmt.Fprintln(iw)
 		renderGlossaryTable(iw, glossary)
 	}
 }
@@ -183,7 +180,9 @@ func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss
 
 	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(text)))
 	iw := indented(w, "  ")
+	renderPhoneticTable(iw, segs)
 	if head.Code != "" {
+		fmt.Fprintln(iw, stylize(ansiDim, "ROOT"))
 		styledCode := styleHeadwordCode(head.Code)
 		if head.Meaning != "" {
 			fmt.Fprintf(iw, "%s — %s\n", styledCode, stylize(ansiDim, head.Meaning))
@@ -191,9 +190,6 @@ func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss
 			fmt.Fprintf(iw, "%s\n", styledCode)
 		}
 	}
-	fmt.Fprintln(iw)
-	renderPhoneticTable(iw, segs)
-	fmt.Fprintln(iw)
 	renderGlossaryTable(iw, glossary)
 }
 
