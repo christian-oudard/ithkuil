@@ -6,6 +6,13 @@ import (
 	g "github.com/coudard/ithkuil/go/grammar"
 )
 
+func cluster(f g.Formative) string {
+	if cr, ok := f.Root.(g.CrRoot); ok {
+		return cr.Cluster
+	}
+	return ""
+}
+
 func TestNewChain_HeadOnly(t *testing.T) {
 	c := New(g.MinimalFormative("ml"))
 	if c.Length() != 1 {
@@ -22,20 +29,19 @@ func TestAddType1(t *testing.T) {
 		t.Errorf("Length() = %d, want 2", c.Length())
 	}
 	deps := c.Type1Dependents()
-	if len(deps) != 1 || deps[0].SlotIII != "t" {
+	if len(deps) != 1 || cluster(deps[0]) != "t" {
 		t.Errorf("Type1Dependents() = %v, want one with Cr=t", deps)
 	}
-	// SlotI of the dependent should be set to Type1.
-	if deps[0].SlotI == nil || *deps[0].SlotI != g.Type1 {
-		t.Errorf("dependent SlotI = %v, want Type1", deps[0].SlotI)
+	if deps[0].Concat == nil || *deps[0].Concat != g.Type1 {
+		t.Errorf("dependent Concat = %v, want Type1", deps[0].Concat)
 	}
 }
 
 func TestAddType2(t *testing.T) {
 	c := New(g.MinimalFormative("ml")).AddType2(g.MinimalFormative("t"))
 	deps := c.Type2Dependents()
-	if len(deps) != 1 || deps[0].SlotI == nil || *deps[0].SlotI != g.Type2 {
-		t.Errorf("Type2 dependent didn't get SlotI=Type2: %v", deps)
+	if len(deps) != 1 || deps[0].Concat == nil || *deps[0].Concat != g.Type2 {
+		t.Errorf("Type2 dependent didn't get Concat=Type2: %v", deps)
 	}
 }
 
@@ -70,9 +76,9 @@ func TestFormatives_OrderAndCount(t *testing.T) {
 	if len(all) != 3 {
 		t.Fatalf("Formatives() = %d, want 3", len(all))
 	}
-	if all[0].SlotIII != "a" || all[1].SlotIII != "b" || all[2].SlotIII != "c" {
-		t.Errorf("Formatives order: %v %v %v",
-			all[0].SlotIII, all[1].SlotIII, all[2].SlotIII)
+	if cluster(all[0]) != "a" || cluster(all[1]) != "b" || cluster(all[2]) != "c" {
+		t.Errorf("Formatives order: %s %s %s",
+			cluster(all[0]), cluster(all[1]), cluster(all[2]))
 	}
 }
 

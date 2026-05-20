@@ -11,9 +11,9 @@ import "github.com/coudard/ithkuil/go/grammar"
 //	ShortcutY: UNI/M/PRX/NRM      UNI/M/RPV  UNI/A/DEL  UNI/M/PRX/RPV
 //
 // Unrecognized series fall back to the default Ca.
-func ShortcutCa(s grammar.CcShortcut, series int) grammar.SlotVI {
+func ShortcutCa(s ShortcutVariant, series int) grammar.SlotVI {
 	switch s {
-	case grammar.ShortcutW:
+	case ShortcutW:
 		switch series {
 		case 1:
 			return grammar.DefaultSlotVI
@@ -24,7 +24,7 @@ func ShortcutCa(s grammar.CcShortcut, series int) grammar.SlotVI {
 		case 4:
 			return grammar.SlotVI{Configuration: grammar.UNI, Affiliation: grammar.CSL, Perspective: grammar.G_, Extension: grammar.DEL, Essence: grammar.RPV}
 		}
-	case grammar.ShortcutY:
+	case ShortcutY:
 		switch series {
 		case 1:
 			return grammar.SlotVI{Configuration: grammar.UNI, Affiliation: grammar.CSL, Perspective: grammar.M_, Extension: grammar.PRX, Essence: grammar.NRM}

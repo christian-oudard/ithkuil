@@ -48,7 +48,7 @@ func New(head g.Formative) *Chain {
 // overwritten to Type1.
 func (c *Chain) AddType1(f g.Formative) *Chain {
 	t := g.Type1
-	f.SlotI = &t
+	f.Concat = &t
 	c.Tail = append(c.Tail, Link{Type: Type1Concat, Formative: f})
 	return c
 }
@@ -57,7 +57,7 @@ func (c *Chain) AddType1(f g.Formative) *Chain {
 // overwritten to Type2.
 func (c *Chain) AddType2(f g.Formative) *Chain {
 	t := g.Type2
-	f.SlotI = &t
+	f.Concat = &t
 	c.Tail = append(c.Tail, Link{Type: Type2Concat, Formative: f})
 	return c
 }

@@ -260,7 +260,10 @@ func isCarrierToken(tok WordToken) bool {
 	case CarrierWord:
 		return true
 	case FormativeWord:
-		return v.Formative.SlotIII == "s"
+		if cr, ok := v.Formative.Root.(g.CrRoot); ok {
+			return cr.Cluster == "s"
+		}
+		return false
 	}
 	return false
 }
@@ -356,19 +359,19 @@ func tryConcatenation(word string) (*concatenation.Chain, bool) {
 		}
 		formatives = append(formatives, f)
 	}
-	// Head must be plain (no Slot I).
-	if formatives[0].SlotI != nil {
+	// Head must be plain (no Concat).
+	if formatives[0].Concat != nil {
 		return nil, false
 	}
-	// Every dependent must carry Slot I.
+	// Every dependent must carry Concat.
 	for i := 1; i < len(formatives); i++ {
-		if formatives[i].SlotI == nil {
+		if formatives[i].Concat == nil {
 			return nil, false
 		}
 	}
 	chain := concatenation.New(formatives[0])
 	for i := 1; i < len(formatives); i++ {
-		switch *formatives[i].SlotI {
+		switch *formatives[i].Concat {
 		case g.Type1:
 			chain.Tail = append(chain.Tail, concatenation.Link{
 				Type:      concatenation.Type1Concat,

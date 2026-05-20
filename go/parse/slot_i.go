@@ -2,16 +2,26 @@ package parse
 
 import "github.com/coudard/ithkuil/go/grammar"
 
-// CcResult bundles the two pieces of Slot I that Cc can carry. Either,
-// both, or neither may be present:
+// ShortcutVariant is a parse-time observation of which Ca-shortcut
+// indicator the surface Cc cluster carried. The grammar itself does
+// not store this — it's a rendering choice — but the parser needs
+// to thread the info through so it can resolve Slot VI from the Vv
+// series.
+type ShortcutVariant int
+
+const (
+	ShortcutNone ShortcutVariant = iota
+	ShortcutW
+	ShortcutY
+)
+
+// CcResult bundles the two pieces of Slot I that Cc can carry.
 //   - Concat marks the formative as part of a Type 1 or Type 2 compound.
-//   - Shortcut lets the formative elide Slot VI Ca by carrying it
-//     compositionally in the Cc/Vv pair.
-//
-// Both pointers are nil if the corresponding feature is absent.
+//   - Shortcut tells the caller which Ca-shortcut indicator (if any)
+//     the surface Cc had; it does not appear in the grammar output.
 type CcResult struct {
 	Concat   *grammar.ConcatenationStatus
-	Shortcut *grammar.CcShortcut
+	Shortcut ShortcutVariant
 }
 
 // ParseCc decodes a Slot I Cc consonant cluster. Some Cc forms carry
@@ -24,33 +34,27 @@ func ParseCc(cc string) CcResult {
 		r.Concat = &t
 	case "hl":
 		t := grammar.Type1
-		s := grammar.ShortcutW
 		r.Concat = &t
-		r.Shortcut = &s
+		r.Shortcut = ShortcutW
 	case "hm":
 		t := grammar.Type1
-		s := grammar.ShortcutY
 		r.Concat = &t
-		r.Shortcut = &s
+		r.Shortcut = ShortcutY
 	case "hw":
 		t := grammar.Type2
 		r.Concat = &t
 	case "hr":
 		t := grammar.Type2
-		s := grammar.ShortcutW
 		r.Concat = &t
-		r.Shortcut = &s
+		r.Shortcut = ShortcutW
 	case "hn":
 		t := grammar.Type2
-		s := grammar.ShortcutY
 		r.Concat = &t
-		r.Shortcut = &s
+		r.Shortcut = ShortcutY
 	case "w":
-		s := grammar.ShortcutW
-		r.Shortcut = &s
+		r.Shortcut = ShortcutW
 	case "y":
-		s := grammar.ShortcutY
-		r.Shortcut = &s
+		r.Shortcut = ShortcutY
 	}
 	return r
 }

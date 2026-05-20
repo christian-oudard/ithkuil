@@ -9,8 +9,7 @@ import (
 )
 
 // assertRoundTrip renders f, parses the result, and asserts that the
-// parsed Formative matches f field-by-field (except SlotI/SlotIShortcut
-// pointers, which are compared by dereference).
+// parsed Formative matches f field-by-field.
 func assertRoundTrip(t *testing.T, name string, f g.Formative) {
 	t.Helper()
 	surface := render.Formative(f)
@@ -19,17 +18,14 @@ func assertRoundTrip(t *testing.T, name string, f g.Formative) {
 		t.Errorf("%s: ParseFormative(%q): %v", name, surface, err)
 		return
 	}
-	if parsed.SlotII != f.SlotII {
-		t.Errorf("%s: SlotII: got %v, want %v (surface %q)", name, parsed.SlotII, f.SlotII, surface)
-	}
-	if parsed.SlotIII != f.SlotIII {
-		t.Errorf("%s: SlotIII: got %q, want %q (surface %q)", name, parsed.SlotIII, f.SlotIII, surface)
-	}
-	if parsed.SlotIV != f.SlotIV {
-		t.Errorf("%s: SlotIV: got %v, want %v (surface %q)", name, parsed.SlotIV, f.SlotIV, surface)
+	if !reflect.DeepEqual(parsed.Root, f.Root) {
+		t.Errorf("%s: Root: got %v, want %v (surface %q)", name, parsed.Root, f.Root, surface)
 	}
 	if parsed.SlotVI != f.SlotVI {
 		t.Errorf("%s: SlotVI: got %v, want %v (surface %q)", name, parsed.SlotVI, f.SlotVI, surface)
+	}
+	if !reflect.DeepEqual(parsed.SlotV, f.SlotV) {
+		t.Errorf("%s: SlotV: got %v, want %v (surface %q)", name, parsed.SlotV, f.SlotV, surface)
 	}
 	if !reflect.DeepEqual(parsed.SlotVII, f.SlotVII) {
 		t.Errorf("%s: SlotVII: got %v, want %v (surface %q)", name, parsed.SlotVII, f.SlotVII, surface)
@@ -40,26 +36,14 @@ func assertRoundTrip(t *testing.T, name string, f g.Formative) {
 	if !reflect.DeepEqual(parsed.Final, f.Final) {
 		t.Errorf("%s: Final: got %v, want %v (surface %q)", name, parsed.Final, f.Final, surface)
 	}
-	gotCc := derefConcat(parsed.SlotI)
-	wantCc := derefConcat(f.SlotI)
+	gotCc := derefConcat(parsed.Concat)
+	wantCc := derefConcat(f.Concat)
 	if gotCc != wantCc {
-		t.Errorf("%s: SlotI: got %v, want %v (surface %q)", name, gotCc, wantCc, surface)
-	}
-	gotSc := derefShortcut(parsed.SlotIShortcut)
-	wantSc := derefShortcut(f.SlotIShortcut)
-	if gotSc != wantSc {
-		t.Errorf("%s: SlotIShortcut: got %v, want %v (surface %q)", name, gotSc, wantSc, surface)
+		t.Errorf("%s: Concat: got %v, want %v (surface %q)", name, gotCc, wantCc, surface)
 	}
 }
 
 func derefConcat(p *g.ConcatenationStatus) interface{} {
-	if p == nil {
-		return nil
-	}
-	return *p
-}
-
-func derefShortcut(p *g.CcShortcut) interface{} {
 	if p == nil {
 		return nil
 	}
@@ -126,12 +110,16 @@ func TestRoundTrip_Formative_Equality(t *testing.T) {
 		{"minimal", g.MinimalFormative("ml")},
 		{"non-default-Vv", func() g.Formative {
 			f := g.MinimalFormative("ml")
-			f.SlotII = g.SlotII{Stem: g.S2, Version: g.PRC}
+			cr := f.Root.(g.CrRoot)
+			cr.Stem = g.S2
+			f.Root = cr
 			return f
 		}()},
 		{"non-default-Vr", func() g.Formative {
 			f := g.MinimalFormative("ml")
-			f.SlotIV = g.SlotIV{Function: g.DYN, Specification: g.OBJ, Context: g.EXS}
+			cr := f.Root.(g.CrRoot)
+			cr.SlotIV = g.SlotIV{Function: g.DYN, Specification: g.OBJ, Context: g.EXS}
+			f.Root = cr
 			return f
 		}()},
 		{"erg-case", func() g.Formative {
@@ -162,7 +150,10 @@ func TestRoundTrip_AllSlotII(t *testing.T) {
 	for _, stem := range []g.Stem{g.S0, g.S1, g.S2, g.S3} {
 		for _, ver := range []g.Version{g.PRC, g.CPT} {
 			f := g.MinimalFormative("ml")
-			f.SlotII = g.SlotII{Stem: stem, Version: ver}
+			cr := f.Root.(g.CrRoot)
+			cr.Stem = stem
+			cr.Version = ver
+			f.Root = cr
 			name := stem.String() + "/" + ver.String()
 			t.Run(name, func(t *testing.T) {
 				assertRoundTrip(t, name, f)
@@ -267,9 +258,12 @@ func TestRoundTrip_SlotVIII_VerbalMood(t *testing.T) {
 	}
 }
 
-// TestRoundTrip_SlotIShortcuts exercises every Cc shortcut combination
-// (W/Y × no-concat/Type1/Type2 = 6 forms) with each of the 4 Vv series.
-func TestRoundTrip_SlotIShortcuts(t *testing.T) {
+// TestRoundTrip_ShortcutEncodableSlotVI walks every SlotVI value that
+// the renderer can encode via Cc-Vv shortcut form. Each combination
+// renders to a shortcut surface and parses back to the same SlotVI.
+// The shortcut/W vs shortcut/Y distinction is purely a rendering
+// choice — the grammar carries only the SlotVI.
+func TestRoundTrip_ShortcutEncodableSlotVI(t *testing.T) {
 	wDefault := g.DefaultSlotVI
 	wG := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}
 	wN := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.N_, Extension: g.DEL, Essence: g.NRM}
@@ -281,35 +275,40 @@ func TestRoundTrip_SlotIShortcuts(t *testing.T) {
 
 	t1 := g.Type1
 	t2 := g.Type2
-	sw := g.ShortcutW
-	sy := g.ShortcutY
 
 	cases := []struct {
 		name   string
-		slotI  *g.ConcatenationStatus
-		sc     *g.CcShortcut
+		concat *g.ConcatenationStatus
 		slotVI g.SlotVI
 	}{
-		{"w-series1", nil, &sw, wDefault},
-		{"w-series2", nil, &sw, wG},
-		{"w-series3", nil, &sw, wN},
-		{"w-series4", nil, &sw, wGR},
-		{"y-series1", nil, &sy, yPRX},
-		{"y-series2", nil, &sy, yRPV},
-		{"y-series3", nil, &sy, yA},
-		{"y-series4", nil, &sy, yBoth},
-		{"hl-type1+w", &t1, &sw, wDefault},
-		{"hm-type1+y", &t1, &sy, yPRX},
-		{"hr-type2+w", &t2, &sw, wDefault},
-		{"hn-type2+y", &t2, &sy, yPRX},
+		{"w-series1", nil, wDefault},
+		{"w-series2", nil, wG},
+		{"w-series3", nil, wN},
+		{"w-series4", nil, wGR},
+		{"y-series1", nil, yPRX},
+		{"y-series2", nil, yRPV},
+		{"y-series3", nil, yA},
+		{"y-series4", nil, yBoth},
+		{"hl-type1+w", &t1, wDefault},
+		{"hm-type1+y", &t1, yPRX},
+		{"hr-type2+w", &t2, wDefault},
+		{"hn-type2+y", &t2, yPRX},
 	}
 	for _, c := range cases {
 		f := g.MinimalFormative("ml")
-		f.SlotI = c.slotI
-		f.SlotIShortcut = c.sc
+		f.Concat = c.concat
 		f.SlotVI = c.slotVI
 		t.Run(c.name, func(t *testing.T) {
 			assertRoundTrip(t, c.name, f)
+			// Also exercise the shortcut surface form explicitly.
+			surface := render.FormativeWithOpts(f, render.Options{Shortcut: true})
+			parsed, err := ParseFormative(surface)
+			if err != nil {
+				t.Fatalf("ParseFormative(%q): %v", surface, err)
+			}
+			if parsed.SlotVI != c.slotVI {
+				t.Errorf("shortcut SlotVI: got %v, want %v (surface %q)", parsed.SlotVI, c.slotVI, surface)
+			}
 		})
 	}
 }
@@ -494,7 +493,7 @@ func TestRoundTrip_Concatenation(t *testing.T) {
 	}
 	for _, c := range cases {
 		f := g.MinimalFormative("ml")
-		f.SlotI = c.c
+		f.Concat = c.c
 		t.Run(c.name, func(t *testing.T) {
 			assertRoundTrip(t, c.name, f)
 		})

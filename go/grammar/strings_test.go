@@ -77,12 +77,9 @@ func TestStringer_AffixScope(t *testing.T) {
 	}
 }
 
-func TestStringer_ConcatenationAndShortcut(t *testing.T) {
+func TestStringer_Concatenation(t *testing.T) {
 	if Type1.String() == "" || Type2.String() == "" {
 		t.Error("ConcatenationStatus String() empty")
-	}
-	if ShortcutW.String() == "" || ShortcutY.String() == "" {
-		t.Error("CcShortcut String() empty")
 	}
 }
 

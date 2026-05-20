@@ -33,10 +33,10 @@ type Glosser struct {
 // roots.
 func (gl *Glosser) Formative(f g.Formative) string {
 	parts := []string{
-		slotI(f.SlotI),
-		slotII(f.SlotII),
-		gl.rootOrCsRoot(f),
-		slotIV(f.SlotIV),
+		slotI(f.Concat),
+		gl.rootPrefix(f.Root),
+		gl.rootBody(f.Root),
+		gl.rootSuffix(f.Root),
 		gl.affixes(f.SlotV),
 		slotVI(f.SlotVI),
 		gl.affixes(f.SlotVII),
@@ -51,21 +51,89 @@ func (gl *Glosser) Formative(f g.Formative) string {
 	return body
 }
 
-// rootOrCsRoot routes to either the regular root gloss or the Cs-root
-// variant. Cs-roots show the Cs identifier (looked up in the affix
-// lexicon if available) followed by the degree, e.g. "(NEG)/6".
-func (gl *Glosser) rootOrCsRoot(f g.Formative) string {
-	if f.CsRootDegree == nil {
-		return gl.root(f.SlotII.Stem, f.SlotIII)
+// rootPrefix returns the slot-II / version gloss for the root variant.
+// CrRoot shows non-default (Stem, Version); CsRoot and RefRoot show
+// version only since their Stem is implicit S1.
+func (gl *Glosser) rootPrefix(r g.Root) string {
+	switch x := r.(type) {
+	case g.CrRoot:
+		if (g.SlotII{Stem: x.Stem, Version: x.Version}) == g.DefaultSlotII {
+			return ""
+		}
+		return fmt.Sprintf("%s/%s", x.Stem, x.Version)
+	case g.CsRoot:
+		if x.Version == g.PRC {
+			return ""
+		}
+		return x.Version.String()
+	case g.RefRoot:
+		if x.Version == g.PRC {
+			return ""
+		}
+		return x.Version.String()
 	}
-	cs := string(f.SlotIII)
-	abbr := cs
+	return ""
+}
+
+// rootBody returns the root identifier itself — the lexical cluster
+// for CrRoot, "(Cs)/degree" for CsRoot, "(C1)" for RefRoot.
+func (gl *Glosser) rootBody(r g.Root) string {
+	switch x := r.(type) {
+	case g.CrRoot:
+		return gl.crRootLabel(x)
+	case g.CsRoot:
+		return gl.csRootLabel(x)
+	case g.RefRoot:
+		return "-(" + x.C1 + ")-"
+	}
+	return ""
+}
+
+// rootSuffix returns the slot-IV gloss for the root variant. CrRoot
+// and RefRoot suppress the default SlotIV; CsRoot suppresses default
+// Context (Function is shown only when DYN since STA is the default).
+func (gl *Glosser) rootSuffix(r g.Root) string {
+	switch x := r.(type) {
+	case g.CrRoot:
+		return slotIV(x.SlotIV)
+	case g.RefRoot:
+		return slotIV(x.SlotIV)
+	case g.CsRoot:
+		parts := []string{}
+		if x.Function != g.STA {
+			parts = append(parts, x.Function.String())
+		}
+		if x.Context != g.EXS {
+			parts = append(parts, x.Context.String())
+		}
+		return strings.Join(parts, "/")
+	}
+	return ""
+}
+
+func (gl *Glosser) crRootLabel(x g.CrRoot) string {
+	if x.Cluster == "" {
+		return ""
+	}
 	if gl.Lex != nil {
-		if entry, ok := gl.Lex.Affixes[cs]; ok {
+		if entry, ok := gl.Lex.Roots[x.Cluster]; ok {
+			meaning := entry.Stem(stemIndex(x.Stem))
+			if meaning != "" {
+				return "-" + x.Cluster + "- '" + meaning + "'"
+			}
+		}
+	}
+	return "-" + x.Cluster + "-"
+}
+
+func (gl *Glosser) csRootLabel(x g.CsRoot) string {
+	abbr := x.Cs
+	if gl.Lex != nil {
+		if entry, ok := gl.Lex.Affixes[x.Cs]; ok {
 			abbr = entry.Abbrev
 		}
 	}
-	return fmt.Sprintf("(%s)/%d", abbr, *f.CsRootDegree)
+	return fmt.Sprintf("(%s)/%d", abbr, x.Degree)
 }
 
 // isVerbalFinal reports whether a Final carries a verbal interpretation
@@ -122,25 +190,6 @@ func slotII(s g.SlotII) string {
 		return ""
 	}
 	return fmt.Sprintf("%s/%s", s.Stem, s.Version)
-}
-
-// root renders the root slot. With a lexicon, the cluster is followed
-// by the stem-selected meaning in single quotes. Without, just the
-// surface cluster between dashes ("-ml-").
-func (gl *Glosser) root(stem g.Stem, r g.Root) string {
-	cr := string(r)
-	if cr == "" {
-		return ""
-	}
-	if gl.Lex != nil {
-		if entry, ok := gl.Lex.Roots[cr]; ok {
-			meaning := entry.Stem(stemIndex(stem))
-			if meaning != "" {
-				return "-" + cr + "- '" + meaning + "'"
-			}
-		}
-	}
-	return "-" + cr + "-"
 }
 
 // stemIndex converts the grammar.Stem enum to the 0-3 index expected

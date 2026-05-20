@@ -54,68 +54,56 @@ func cmdCompose(args []string, stdout, stderr io.Writer, lexDir string) int {
 func applyComposeFlag(f *g.Formative, flag string) error {
 	flag = strings.ToUpper(flag)
 
-	// Stems.
+	// Stems (only meaningful on CrRoot).
 	switch flag {
 	case "S0":
-		f.SlotII.Stem = g.S0
-		return nil
+		return setStem(f, g.S0)
 	case "S1":
-		f.SlotII.Stem = g.S1
-		return nil
+		return setStem(f, g.S1)
 	case "S2":
-		f.SlotII.Stem = g.S2
-		return nil
+		return setStem(f, g.S2)
 	case "S3":
-		f.SlotII.Stem = g.S3
-		return nil
+		return setStem(f, g.S3)
 	}
 
 	// Version.
 	switch flag {
 	case "PRC":
-		f.SlotII.Version = g.PRC
-		return nil
+		return setVersion(f, g.PRC)
 	case "CPT":
-		f.SlotII.Version = g.CPT
-		return nil
+		return setVersion(f, g.CPT)
 	}
 
-	// Function / Specification / Context.
+	// Function.
 	switch flag {
 	case "STA":
-		f.SlotIV.Function = g.STA
-		return nil
+		return setFunction(f, g.STA)
 	case "DYN":
-		f.SlotIV.Function = g.DYN
-		return nil
+		return setFunction(f, g.DYN)
 	}
+
+	// Specification (only meaningful on CrRoot/RefRoot).
 	switch flag {
 	case "BSC":
-		f.SlotIV.Specification = g.BSC
-		return nil
+		return setSpecification(f, g.BSC)
 	case "CTE":
-		f.SlotIV.Specification = g.CTE
-		return nil
+		return setSpecification(f, g.CTE)
 	case "CSV":
-		f.SlotIV.Specification = g.CSV
-		return nil
+		return setSpecification(f, g.CSV)
 	case "OBJ":
-		f.SlotIV.Specification = g.OBJ
-		return nil
+		return setSpecification(f, g.OBJ)
 	}
+
+	// Context.
 	switch flag {
 	case "EXS":
-		f.SlotIV.Context = g.EXS
-		return nil
+		return setContext(f, g.EXS)
 	case "FNC":
-		f.SlotIV.Context = g.FNC
-		return nil
+		return setContext(f, g.FNC)
 	case "RPS":
-		f.SlotIV.Context = g.RPS
-		return nil
+		return setContext(f, g.RPS)
 	case "AMG":
-		f.SlotIV.Context = g.AMG
-		return nil
+		return setContext(f, g.AMG)
 	}
 
 	// Stress / grammatical category. MON and ULT both mean a verbal
@@ -203,4 +191,83 @@ func caseOf(f g.Final) g.Case {
 		return v.Case
 	}
 	return g.THM
+}
+
+// Root-field setters. Each rewrites the relevant field of whichever
+// Root variant is present; setters that don't apply to a variant
+// return an error so the user sees their flag was ignored.
+
+func setStem(f *g.Formative, s g.Stem) error {
+	cr, ok := f.Root.(g.CrRoot)
+	if !ok {
+		return fmt.Errorf("stem flag only applies to CrRoot")
+	}
+	cr.Stem = s
+	f.Root = cr
+	return nil
+}
+
+func setVersion(f *g.Formative, v g.Version) error {
+	switch r := f.Root.(type) {
+	case g.CrRoot:
+		r.Version = v
+		f.Root = r
+	case g.CsRoot:
+		r.Version = v
+		f.Root = r
+	case g.RefRoot:
+		r.Version = v
+		f.Root = r
+	default:
+		return fmt.Errorf("no root to set version on")
+	}
+	return nil
+}
+
+func setFunction(f *g.Formative, fn g.Function) error {
+	switch r := f.Root.(type) {
+	case g.CrRoot:
+		r.SlotIV.Function = fn
+		f.Root = r
+	case g.CsRoot:
+		r.Function = fn
+		f.Root = r
+	case g.RefRoot:
+		r.SlotIV.Function = fn
+		f.Root = r
+	default:
+		return fmt.Errorf("no root to set function on")
+	}
+	return nil
+}
+
+func setSpecification(f *g.Formative, sp g.Specification) error {
+	switch r := f.Root.(type) {
+	case g.CrRoot:
+		r.SlotIV.Specification = sp
+		f.Root = r
+	case g.RefRoot:
+		r.SlotIV.Specification = sp
+		f.Root = r
+	default:
+		return fmt.Errorf("specification only applies to CrRoot/RefRoot")
+	}
+	return nil
+}
+
+func setContext(f *g.Formative, ctx g.Context) error {
+	switch r := f.Root.(type) {
+	case g.CrRoot:
+		r.SlotIV.Context = ctx
+		f.Root = r
+	case g.CsRoot:
+		r.Context = ctx
+		f.Root = r
+	case g.RefRoot:
+		r.SlotIV.Context = ctx
+		f.Root = r
+	default:
+		return fmt.Errorf("no root to set context on")
+	}
+	return nil
 }

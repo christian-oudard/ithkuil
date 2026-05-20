@@ -1,13 +1,5 @@
 // Package fullparse turns a surface Ithkuil word into a grammar.Formative
 // by sequencing the per-slot parsers from package parse.
-//
-// Currently supported shapes:
-//   - Vowel-initial:                 Vv-Cr-Vr-Ca-(VxCs...)-(VnCn)-(Vc/Vk)
-//   - Slot I prefix ("h"/"hw"):      h-Vv-Cr-Vr-Ca-...
-//   - Consonant-initial (no Cc):     Cr-Vr-Ca-... (Vv elided to S1/PRC)
-//
-// Still to come: Slot I shortcut forms (w/y/hl/hm/hr/hn) and Slot V
-// (CsVx stem affixes, which require Vv-special-marker disambiguation).
 package fullparse
 
 import (
@@ -19,8 +11,7 @@ import (
 	"github.com/coudard/ithkuil/go/parse"
 )
 
-// stripSentencePrefix removes a leading ç marker if present. Three
-// cases follow the Haskell reference:
+// stripSentencePrefix removes a leading ç marker if present.
 //
 //	çë…   → strip both (çë acts as ç + default-Vv "ë")
 //	çç…   → strip ç, replace next ç with "y" (sentence prefix + y shortcut)
@@ -56,65 +47,21 @@ func ParseFormative(word string) (g.Formative, error) {
 	word, hasSentencePrefix := stripSentencePrefix(word)
 	conjs := parse.SplitConjuncts(word)
 	stress := parse.DetectStress(word)
-	// Merge glottalized case vowels (i'a, a'a, …) into single conjuncts
-	// so the case-vowel lookup table sees them whole.
 	conjs = parse.MergeGlottalVowels(conjs)
 
 	if len(conjs) < 3 {
 		return g.Formative{}, fmt.Errorf("word %q too short for formative (got %d conjuncts, need at least 3)", word, len(conjs))
 	}
 
-	// Slot I (Cc): the first conjunct can carry concatenation status,
-	// a Ca shortcut, or both. Six combinations recognized so far:
-	//   h  → Type1, no shortcut
-	//   hw → Type2, no shortcut
-	//   hl → Type1 + ShortcutW
-	//   hm → Type1 + ShortcutY
-	//   hr → Type2 + ShortcutW
-	//   hn → Type2 + ShortcutY
-	//   w  → ShortcutW alone
-	//   y  → ShortcutY alone
-	var slotI *g.ConcatenationStatus
-	var shortcut *g.CcShortcut
+	// Slot I: parse Cc consonant if present. Cc can carry concat
+	// status, a Ca shortcut indicator, or both.
+	var concat *g.ConcatenationStatus
+	shortcut := parse.ShortcutNone
 	if parse.IsConsonantConjunct(conjs[0]) {
-		stripped := true
-		switch conjs[0] {
-		case "h":
-			t := g.Type1
-			slotI = &t
-		case "hw":
-			t := g.Type2
-			slotI = &t
-		case "hl":
-			t := g.Type1
-			s := g.ShortcutW
-			slotI = &t
-			shortcut = &s
-		case "hm":
-			t := g.Type1
-			s := g.ShortcutY
-			slotI = &t
-			shortcut = &s
-		case "hr":
-			t := g.Type2
-			s := g.ShortcutW
-			slotI = &t
-			shortcut = &s
-		case "hn":
-			t := g.Type2
-			s := g.ShortcutY
-			slotI = &t
-			shortcut = &s
-		case "w":
-			s := g.ShortcutW
-			shortcut = &s
-		case "y":
-			s := g.ShortcutY
-			shortcut = &s
-		default:
-			stripped = false
-		}
-		if stripped {
+		r := parse.ParseCc(conjs[0])
+		if r.Concat != nil || r.Shortcut != parse.ShortcutNone {
+			concat = r.Concat
+			shortcut = r.Shortcut
 			conjs = conjs[1:]
 		}
 	}
@@ -123,15 +70,11 @@ func ParseFormative(word string) (g.Formative, error) {
 		return g.Formative{}, fmt.Errorf("word %q too short after Slot I (got %d conjuncts)", word, len(conjs))
 	}
 
-	if shortcut != nil {
-		// Shortcut path: Vv-Cr-(affixes/Vc). No Vr conjunct, no Ca
-		// conjunct — both are filled from the shortcut + Vv series.
-		f, err := parseShortcutFormative(conjs, *shortcut, stress)
+	if shortcut != parse.ShortcutNone {
+		f, err := parseShortcutFormative(conjs, shortcut, concat, stress)
 		if err != nil {
 			return g.Formative{}, fmt.Errorf("%v (word %q)", err, word)
 		}
-		f.SlotI = slotI
-		f.SlotIShortcut = shortcut
 		f.SentenceStarter = hasSentencePrefix
 		return f, nil
 	}
@@ -141,17 +84,15 @@ func ParseFormative(word string) (g.Formative, error) {
 	}
 
 	if parse.IsVowelConjunct(conjs[0]) {
-		f, err := parseVowelInitial(conjs, stress)
+		f, err := parseVowelInitial(conjs, concat, stress)
 		if err != nil {
 			return g.Formative{}, fmt.Errorf("%v (word %q)", err, word)
 		}
-		f.SlotI = slotI
 		f.SentenceStarter = hasSentencePrefix
 		return f, nil
 	}
 
-	// Consonant-initial: Vv elided to default S1/PRC.
-	if slotI != nil {
+	if concat != nil {
 		return g.Formative{}, fmt.Errorf("Slot I prefix with consonant-initial body not supported (word %q)", word)
 	}
 	f, err := parseConsonantInitial(conjs, stress)
@@ -162,10 +103,11 @@ func ParseFormative(word string) (g.Formative, error) {
 	return f, nil
 }
 
-// parseShortcutFormative handles the Vv-Cr-… shape that follows a
-// shortcut Cc. The shortcut elides Vr (defaults to STA/BSC/EXS) and
-// supplies SlotVI from a fixed table indexed by the Vv series.
-func parseShortcutFormative(conjs []string, sc g.CcShortcut, stress parse.Stress) (g.Formative, error) {
+// parseShortcutFormative handles the Vv-Cr-… shape after a Cc shortcut.
+// SlotVI is resolved from (variant, series); Slot IV defaults to
+// STA/BSC/EXS. The grammar output is a regular CrRoot — the shortcut
+// is just a surface encoding choice that the parser resolves away.
+func parseShortcutFormative(conjs []string, sc parse.ShortcutVariant, concat *g.ConcatenationStatus, stress parse.Stress) (g.Formative, error) {
 	if len(conjs) < 2 {
 		return g.Formative{}, fmt.Errorf("shortcut formative needs Vv+Cr, got %d conjuncts", len(conjs))
 	}
@@ -178,16 +120,19 @@ func parseShortcutFormative(conjs []string, sc g.CcShortcut, stress parse.Stress
 	}
 	series := parse.VvSeries(conjs[0])
 	slotVI := parse.ShortcutCa(sc, series)
-	root := g.Root(conjs[1])
 
 	slotVII, slotVIII, final, err := parseAfterCa(conjs[2:], stress)
 	if err != nil {
 		return g.Formative{}, err
 	}
 	return g.Formative{
-		SlotII:   slotII,
-		SlotIII:  root,
-		SlotIV:   g.DefaultSlotIV,
+		Concat: concat,
+		Root: g.CrRoot{
+			Cluster: conjs[1],
+			Stem:    slotII.Stem,
+			Version: slotII.Version,
+			SlotIV:  g.DefaultSlotIV,
+		},
 		SlotVI:   slotVI,
 		SlotVII:  slotVII,
 		SlotVIII: slotVIII,
@@ -196,20 +141,18 @@ func parseShortcutFormative(conjs []string, sc g.CcShortcut, stress parse.Stress
 }
 
 // parseVowelInitial handles the canonical Vv-Cr-Vr-Ca-... structure.
-// conjs must start with a vowel and have at least 4 entries.
-// Special Vv markers (ëi/eë/ëu/oë/ae/ea) route to parseSpecialVvFormative.
-func parseVowelInitial(conjs []string, stress parse.Stress) (g.Formative, error) {
+// Special Vv markers (ëi/eë/ëu/oë/ae/ea) route to a Cs- or RefRoot.
+func parseVowelInitial(conjs []string, concat *g.ConcatenationStatus, stress parse.Stress) (g.Formative, error) {
 	if len(conjs) < 4 {
 		return g.Formative{}, fmt.Errorf("vowel-initial formative needs at least 4 conjuncts, got %d", len(conjs))
 	}
 	if parse.IsSpecialVv(conjs[0]) {
-		return parseSpecialVvFormative(conjs, stress)
+		return parseSpecialVvFormative(conjs, concat, stress)
 	}
 	slotII, ok := parse.ParseSlotII(stripVvGlottal(conjs[0]))
 	if !ok {
 		return g.Formative{}, fmt.Errorf("invalid Vv %q", conjs[0])
 	}
-	root := g.Root(conjs[1])
 	slotIV, ok := parse.ParseSlotIV(conjs[2])
 	if !ok {
 		return g.Formative{}, fmt.Errorf("invalid Vr %q", conjs[2])
@@ -223,9 +166,13 @@ func parseVowelInitial(conjs []string, stress parse.Stress) (g.Formative, error)
 		return g.Formative{}, err
 	}
 	return g.Formative{
-		SlotII:   slotII,
-		SlotIII:  root,
-		SlotIV:   slotIV,
+		Concat: concat,
+		Root: g.CrRoot{
+			Cluster: conjs[1],
+			Stem:    slotII.Stem,
+			Version: slotII.Version,
+			SlotIV:  slotIV,
+		},
 		SlotV:    slotV,
 		SlotVI:   slotVI,
 		SlotVII:  slotVII,
@@ -234,10 +181,7 @@ func parseVowelInitial(conjs []string, stress parse.Stress) (g.Formative, error)
 	}, nil
 }
 
-// stripVvGlottal removes a §3.5.1 glottal-stop from Vv. For single
-// vowels the glottal is inserted between a reduplicated pair (V → V'V),
-// so we collapse back to one vowel. For diphthongs it sits between the
-// two members (V1V2 → V1'V2), so we just drop the glottal.
+// stripVvGlottal removes a §3.5.1 glottal-stop from Vv.
 func stripVvGlottal(v string) string {
 	rs := []rune(v)
 	for i, r := range rs {
@@ -257,13 +201,7 @@ func stripVvGlottal(v string) string {
 // parseSlotVAndCa decodes Slot V (if any) and Slot VI starting at
 // startIdx in conjs. Slot V's presence is signaled by the gemination
 // of the Slot VI Ca per §3.6.1.
-//
-// Returns the SlotVI, the Slot V affix list (nil if absent), and the
-// index just past the Ca conjunct so the caller can continue parsing.
 func parseSlotVAndCa(conjs []string, startIdx int) (g.SlotVI, []g.Affix, int, error) {
-	// Scan odd-offset positions (consonants) for the first cluster
-	// that matches a geminated Ca. Cs forms cannot contain geminates
-	// (§3.6.1 note), so the first geminated match identifies Slot VI.
 	geminatedAt := -1
 	var slotVIFromGem g.SlotVI
 	for i := startIdx; i < len(conjs); i += 2 {
@@ -277,16 +215,12 @@ func parseSlotVAndCa(conjs []string, startIdx int) (g.SlotVI, []g.Affix, int, er
 		}
 	}
 	if geminatedAt == -1 || geminatedAt == startIdx {
-		// No Slot V — conjs[startIdx] is the plain (un-geminated) Ca.
-		// (A geminated Ca at startIdx itself would mean Slot V is
-		// empty but Ca is geminated, which the spec doesn't allow.)
 		slotVI, ok := allomorph.ParseCa(conjs[startIdx])
 		if !ok {
 			return g.SlotVI{}, nil, 0, fmt.Errorf("unrecognized Ca %q", conjs[startIdx])
 		}
 		return slotVI, nil, startIdx + 1, nil
 	}
-	// Decode Slot V Cs-Vx pairs between Vr and the geminated Ca.
 	var slotV []g.Affix
 	for i := startIdx; i < geminatedAt; i += 2 {
 		if i+1 >= geminatedAt {
@@ -301,22 +235,12 @@ func parseSlotVAndCa(conjs []string, startIdx int) (g.SlotVI, []g.Affix, int, er
 }
 
 // parseSpecialVvFormative handles Vv markers that select an alternate
-// formative shape:
-//
-//   - Cs-root (ëi/eë/ëu/oë): Vv encodes (Version, Function); the Cr
-//     position holds an affix Cs; the Vr decodes as (degree, Context)
-//     via parse.ParseAffixVr; Specification defaults to BSC; the
-//     CsRootDegree field records the degree.
-//   - Reference-root (ae/ea): Vv encodes Version (Function unset);
-//     the Cr position holds a referential C1; Vr decodes normally.
-//
-// In both cases SlotII.Stem is S1.
-func parseSpecialVvFormative(conjs []string, stress parse.Stress) (g.Formative, error) {
+// formative shape (Cs-root or referential).
+func parseSpecialVvFormative(conjs []string, concat *g.ConcatenationStatus, stress parse.Stress) (g.Formative, error) {
 	sv, ok := parse.ParseSpecialVv(conjs[0])
 	if !ok {
 		return g.Formative{}, fmt.Errorf("invalid special Vv %q", conjs[0])
 	}
-	cr := g.Root(conjs[1])
 	slotVI, ok := allomorph.ParseCa(conjs[3])
 	if !ok {
 		return g.Formative{}, fmt.Errorf("unrecognized Ca %q", conjs[3])
@@ -326,45 +250,49 @@ func parseSpecialVvFormative(conjs []string, stress parse.Stress) (g.Formative, 
 		return g.Formative{}, err
 	}
 
-	f := g.Formative{
-		SlotII:   g.SlotII{Stem: g.S1, Version: sv.Version},
-		SlotIII:  cr,
-		SlotVI:   slotVI,
-		SlotVII:  slotVII,
-		SlotVIII: slotVIII,
-		Final:    final,
-	}
-
+	var root g.Root
 	if sv.Function != nil {
-		// Cs-root: Vr is (degree, Context); Specification = BSC.
+		// Cs-root: Vr is (degree, Context); Specification is implicitly BSC.
 		degree, ctx, ok := parse.ParseAffixVr(conjs[2])
 		if !ok {
 			return g.Formative{}, fmt.Errorf("invalid Cs-root Vr %q", conjs[2])
 		}
-		f.SlotIV = g.SlotIV{
-			Function:      *sv.Function,
-			Specification: g.BSC,
-			Context:       ctx,
+		root = g.CsRoot{
+			Cs:       conjs[1],
+			Degree:   degree,
+			Version:  sv.Version,
+			Function: *sv.Function,
+			Context:  ctx,
 		}
-		f.CsRootDegree = &degree
 	} else {
-		// Reference-root: Vr is normal Slot IV.
-		if slotIV, ok := parse.ParseSlotIV(conjs[2]); ok {
-			f.SlotIV = slotIV
-		} else {
-			f.SlotIV = g.DefaultSlotIV
+		// Reference-root: Vr is normal SlotIV; Function defaults to STA.
+		slotIV, ok := parse.ParseSlotIV(conjs[2])
+		if !ok {
+			slotIV = g.DefaultSlotIV
+		}
+		root = g.RefRoot{
+			C1:      conjs[1],
+			Version: sv.Version,
+			SlotIV:  slotIV,
 		}
 	}
-	return f, nil
+
+	return g.Formative{
+		Concat:   concat,
+		Root:     root,
+		SlotVI:   slotVI,
+		SlotVII:  slotVII,
+		SlotVIII: slotVIII,
+		Final:    final,
+	}, nil
 }
 
-// parseConsonantInitial handles Cr-Vr-Ca-... where Vv is elided. Slot II
-// defaults to (S1, PRC).
+// parseConsonantInitial handles Cr-Vr-Ca-... where Vv is elided. Slot
+// II defaults to (S1, PRC), Slot IV is parsed normally.
 func parseConsonantInitial(conjs []string, stress parse.Stress) (g.Formative, error) {
 	if len(conjs) < 3 {
 		return g.Formative{}, fmt.Errorf("consonant-initial formative needs at least 3 conjuncts, got %d", len(conjs))
 	}
-	root := g.Root(conjs[0])
 	slotIV, ok := parse.ParseSlotIV(conjs[1])
 	if !ok {
 		return g.Formative{}, fmt.Errorf("invalid Vr %q", conjs[1])
@@ -378,9 +306,12 @@ func parseConsonantInitial(conjs []string, stress parse.Stress) (g.Formative, er
 		return g.Formative{}, err
 	}
 	return g.Formative{
-		SlotII:   g.DefaultSlotII,
-		SlotIII:  root,
-		SlotIV:   slotIV,
+		Root: g.CrRoot{
+			Cluster: conjs[0],
+			Stem:    g.S1,
+			Version: g.PRC,
+			SlotIV:  slotIV,
+		},
 		SlotVI:   slotVI,
 		SlotVII:  slotVII,
 		SlotVIII: slotVIII,
@@ -388,17 +319,8 @@ func parseConsonantInitial(conjs []string, stress parse.Stress) (g.Formative, er
 	}, nil
 }
 
-// parseAfterCa decodes the conjuncts that follow Ca into Slot VII
-// affixes, optional Slot VIII (VnCn), and the Formative's Final
-// category. Conjuncts alternate V-C; a final unpaired V is the Vc/Vk
-// vowel that, together with the surface stress, determines Final.
-//
-// Detection rule for Slot VIII: if the LAST V-C pair has a consonant
-// that is a valid Cn (h/hl/hr/hm/hn/hň or w/y/hw/hrw/hmw/hnw/hňw),
-// that pair is VnCn rather than an affix. This matches the Kotlin
-// and Haskell reference implementations.
+// parseAfterCa decodes Slot VII, optional Slot VIII, and Final.
 func parseAfterCa(tail []string, stress parse.Stress) ([]g.Affix, g.SlotVIII, g.Final, error) {
-	// Pair leading (V, C) chunks. Anything left over is the trailing Vc.
 	type vcPair struct{ v, c string }
 	var pairs []vcPair
 	i := 0
@@ -415,7 +337,6 @@ func parseAfterCa(tail []string, stress parse.Stress) ([]g.Affix, g.SlotVIII, g.
 		return nil, nil, nil, fmt.Errorf("unexpected trailing conjuncts after Ca: %v", trailing)
 	}
 
-	// Slot IX: either the trailing vowel, or elided.
 	trailingV := ""
 	if len(trailing) == 1 {
 		if !parse.IsVowelConjunct(trailing[0]) {
@@ -428,10 +349,6 @@ func parseAfterCa(tail []string, stress parse.Stress) ([]g.Affix, g.SlotVIII, g.
 		return nil, nil, nil, fmt.Errorf("invalid Slot IX %q for stress %v", trailingV, stress)
 	}
 
-	// Slot VIII: if the last pair's consonant is a valid Cn, it is
-	// VnCn (and is removed from the affix list). The MoodScope value
-	// is stored as a Mood enum regardless of pattern; gloss layer
-	// chooses the Mood vs CaseScope label based on Final.
 	var slotVIII g.SlotVIII
 	if n := len(pairs); n > 0 && parse.IsValidCn(pairs[n-1].c) {
 		if s8, ok := parse.ParseVnCn(pairs[n-1].v, pairs[n-1].c); ok {
@@ -440,7 +357,6 @@ func parseAfterCa(tail []string, stress parse.Stress) ([]g.Affix, g.SlotVIII, g.
 		}
 	}
 
-	// Remaining pairs are Slot VII affixes (VxCs ordering).
 	var slotVII []g.Affix
 	for _, p := range pairs {
 		t, d := parse.ClassifyAffixVowel(p.v)
@@ -450,11 +366,7 @@ func parseAfterCa(tail []string, stress parse.Stress) ([]g.Affix, g.SlotVIII, g.
 	return slotVII, slotVIII, final, nil
 }
 
-// parseFinal builds the Formative.Final from the observed surface
-// stress and the trailing Vc/Vk vowel (or "" if elided). Stress drives
-// the variant choice; Ultimate/Monosyllabic produce UnframedVerbal,
-// Antepenultimate produces FramedVerbal, Penultimate produces
-// UnframedNominal.
+// parseFinal builds Final from observed stress + trailing vowel.
 func parseFinal(vowel string, stress parse.Stress) (g.Final, bool) {
 	switch stress {
 	case parse.Ultimate, parse.Monosyllabic:

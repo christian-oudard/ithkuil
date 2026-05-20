@@ -4,14 +4,18 @@ import "testing"
 
 func TestMinimalFormative(t *testing.T) {
 	f := MinimalFormative("ml")
-	if f.SlotIII != "ml" {
-		t.Errorf("SlotIII = %q, want %q", f.SlotIII, Root("ml"))
+	cr, ok := f.Root.(CrRoot)
+	if !ok {
+		t.Fatalf("Root = %v, want CrRoot", f.Root)
 	}
-	if f.SlotII != DefaultSlotII {
-		t.Errorf("SlotII = %v, want %v", f.SlotII, DefaultSlotII)
+	if cr.Cluster != "ml" {
+		t.Errorf("Cluster = %q, want %q", cr.Cluster, "ml")
 	}
-	if f.SlotIV != DefaultSlotIV {
-		t.Errorf("SlotIV = %v, want %v", f.SlotIV, DefaultSlotIV)
+	if cr.Stem != S1 || cr.Version != PRC {
+		t.Errorf("Stem/Version = %v/%v, want S1/PRC", cr.Stem, cr.Version)
+	}
+	if cr.SlotIV != DefaultSlotIV {
+		t.Errorf("SlotIV = %v, want %v", cr.SlotIV, DefaultSlotIV)
 	}
 	if f.SlotVI != DefaultSlotVI {
 		t.Errorf("SlotVI = %v, want %v", f.SlotVI, DefaultSlotVI)
@@ -20,11 +24,8 @@ func TestMinimalFormative(t *testing.T) {
 	if !ok || un.Case != THM {
 		t.Errorf("Final = %v, want UnframedNominal{THM}", f.Final)
 	}
-	if f.SlotI != nil {
-		t.Errorf("SlotI = %v, want nil", f.SlotI)
-	}
-	if f.SlotIShortcut != nil {
-		t.Errorf("SlotIShortcut = %v, want nil", f.SlotIShortcut)
+	if f.Concat != nil {
+		t.Errorf("Concat = %v, want nil", f.Concat)
 	}
 	if f.SlotV != nil {
 		t.Errorf("SlotV = %v, want nil", f.SlotV)
@@ -58,8 +59,18 @@ func TestFinalVariants(t *testing.T) {
 	}
 }
 
-func TestRootString(t *testing.T) {
-	if got := Root("ml").String(); got != "ml" {
-		t.Errorf("Root.String() = %q, want \"ml\"", got)
+func TestRootVariants(t *testing.T) {
+	// All three Root variants implement the Root interface.
+	var r Root = DefaultCrRoot("ml")
+	if cr, ok := r.(CrRoot); !ok || cr.Cluster != "ml" {
+		t.Errorf("CrRoot mismatch: %v", r)
+	}
+	r = CsRoot{Cs: "n", Degree: 4, Version: PRC, Function: STA, Context: EXS}
+	if cs, ok := r.(CsRoot); !ok || cs.Cs != "n" || cs.Degree != 4 {
+		t.Errorf("CsRoot mismatch: %v", r)
+	}
+	r = RefRoot{C1: "l", Version: PRC, SlotIV: DefaultSlotIV}
+	if rr, ok := r.(RefRoot); !ok || rr.C1 != "l" {
+		t.Errorf("RefRoot mismatch: %v", r)
 	}
 }

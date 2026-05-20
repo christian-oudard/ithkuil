@@ -35,7 +35,10 @@ func TestFormative_Minimal(t *testing.T) {
 
 func TestFormative_NonDefaultSlotII(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	f.SlotII = g.SlotII{Stem: g.S2, Version: g.CPT}
+	cr := f.Root.(g.CrRoot)
+	cr.Stem = g.S2
+	cr.Version = g.CPT
+	f.Root = cr
 	got := Formative(f)
 	want := "S2/CPT--ml-"
 	if got != want {
@@ -45,7 +48,9 @@ func TestFormative_NonDefaultSlotII(t *testing.T) {
 
 func TestFormative_NonDefaultSlotIV(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	f.SlotIV = g.SlotIV{Function: g.DYN, Specification: g.OBJ, Context: g.EXS}
+	cr := f.Root.(g.CrRoot)
+	cr.SlotIV = g.SlotIV{Function: g.DYN, Specification: g.OBJ, Context: g.EXS}
+	f.Root = cr
 	got := Formative(f)
 	want := "-ml--DYN/OBJ/EXS"
 	if got != want {
@@ -172,7 +177,7 @@ func TestFormative_FinalTag(t *testing.T) {
 func TestFormative_Concatenation(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	t1 := g.Type1
-	f.SlotI = &t1
+	f.Concat = &t1
 	got := Formative(f)
 	want := "T1--ml-"
 	if got != want {
@@ -202,7 +207,9 @@ func TestGlosser_RootDifferentStem(t *testing.T) {
 	lex := loadLex(t)
 	gl := &Glosser{Lex: lex}
 	f := g.MinimalFormative("m")
-	f.SlotII = g.SlotII{Stem: g.S3, Version: g.PRC}
+	cr := f.Root.(g.CrRoot)
+	cr.Stem = g.S3
+	f.Root = cr
 	got := gl.Formative(f)
 	entry := lex.Roots["m"]
 	want := "S3/PRC--m- '" + entry.Stem3 + "'"

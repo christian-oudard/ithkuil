@@ -189,10 +189,10 @@ func traceType(t tokenize.WordToken) string {
 
 func traceSlotI(t tokenize.WordToken) string {
 	f, ok := t.(tokenize.FormativeWord)
-	if !ok || f.Formative.SlotI == nil {
+	if !ok || f.Formative.Concat == nil {
 		return traceDot
 	}
-	switch *f.Formative.SlotI {
+	switch *f.Formative.Concat {
 	case g.Type1:
 		return "T1"
 	case g.Type2:
@@ -206,17 +206,32 @@ func traceSlotII(t tokenize.WordToken) string {
 	if !ok {
 		return traceDot
 	}
-	s := f.Formative.SlotII
-	return fmt.Sprintf("%s/%s", s.Stem, s.Version)
+	switch r := f.Formative.Root.(type) {
+	case g.CrRoot:
+		return fmt.Sprintf("%s/%s", r.Stem, r.Version)
+	case g.CsRoot:
+		return fmt.Sprintf("Cs/%s", r.Version)
+	case g.RefRoot:
+		return fmt.Sprintf("Ref/%s", r.Version)
+	}
+	return traceDot
 }
 
 func traceSlotIII(t tokenize.WordToken) string {
 	switch v := t.(type) {
 	case tokenize.FormativeWord:
-		if v.Formative.SlotIII == "" {
-			return traceDot
+		switch r := v.Formative.Root.(type) {
+		case g.CrRoot:
+			if r.Cluster == "" {
+				return traceDot
+			}
+			return r.Cluster
+		case g.CsRoot:
+			return r.Cs
+		case g.RefRoot:
+			return r.C1
 		}
-		return string(v.Formative.SlotIII)
+		return traceDot
 	case tokenize.ReferentialWord:
 		parts := make([]string, len(v.Refs))
 		for i, r := range v.Refs {
@@ -232,16 +247,36 @@ func traceSlotIV(t tokenize.WordToken) string {
 	if !ok {
 		return traceDot
 	}
-	s := f.Formative.SlotIV
 	var parts []string
-	if s.Function != g.STA {
-		parts = append(parts, s.Function.String())
-	}
-	if s.Specification != g.BSC {
-		parts = append(parts, s.Specification.String())
-	}
-	if s.Context != g.EXS {
-		parts = append(parts, s.Context.String())
+	switch r := f.Formative.Root.(type) {
+	case g.CrRoot:
+		if r.SlotIV.Function != g.STA {
+			parts = append(parts, r.SlotIV.Function.String())
+		}
+		if r.SlotIV.Specification != g.BSC {
+			parts = append(parts, r.SlotIV.Specification.String())
+		}
+		if r.SlotIV.Context != g.EXS {
+			parts = append(parts, r.SlotIV.Context.String())
+		}
+	case g.CsRoot:
+		parts = append(parts, fmt.Sprintf("D%d", r.Degree))
+		if r.Function != g.STA {
+			parts = append(parts, r.Function.String())
+		}
+		if r.Context != g.EXS {
+			parts = append(parts, r.Context.String())
+		}
+	case g.RefRoot:
+		if r.SlotIV.Function != g.STA {
+			parts = append(parts, r.SlotIV.Function.String())
+		}
+		if r.SlotIV.Specification != g.BSC {
+			parts = append(parts, r.SlotIV.Specification.String())
+		}
+		if r.SlotIV.Context != g.EXS {
+			parts = append(parts, r.SlotIV.Context.String())
+		}
 	}
 	if len(parts) == 0 {
 		return traceDot

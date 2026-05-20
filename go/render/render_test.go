@@ -22,11 +22,10 @@ func TestFormative_NonDefaultSlots(t *testing.T) {
 	// Build a formative with several non-default slots and confirm the
 	// rendering composes correctly.
 	f := g.MinimalFormative("ml")
-	f.SlotII = g.SlotII{Stem: g.S2, Version: g.PRC}     // Vv = "e"
-	f.SlotIV = g.SlotIV{                                // Vr = ?
-		Function:      g.DYN,
-		Specification: g.OBJ,
-		Context:       g.EXS,
+	f.Root = g.CrRoot{
+		Cluster: "ml",
+		Stem:    g.S2, Version: g.PRC,
+		SlotIV: g.SlotIV{Function: g.DYN, Specification: g.OBJ, Context: g.EXS},
 	}
 	f.Final = g.UnframedNominal{Case: g.ERG} // Vc = "o"
 
@@ -89,8 +88,8 @@ func TestSlotIRenderings(t *testing.T) {
 		{&t2, "hw"},
 	}
 	for _, c := range cases {
-		if got := SlotI(c.in); got != c.want {
-			t.Errorf("SlotI(%v) = %q, want %q", c.in, got, c.want)
+		if got := plainCc(c.in); got != c.want {
+			t.Errorf("plainCc(%v) = %q, want %q", c.in, got, c.want)
 		}
 	}
 }
@@ -265,9 +264,11 @@ func TestFormative_ShortForm_AntepenultKeepsLong(t *testing.T) {
 }
 
 func TestFormative_ShortForm_NonDefaultVvNoElision(t *testing.T) {
-	// Non-default Vv (S2/PRC = "e") never elides; the THM Vc still does.
+	// Non-default Stem (S2/PRC = "e") never elides; the THM Vc still does.
 	f := g.MinimalFormative("ml")
-	f.SlotII = g.SlotII{Stem: g.S2, Version: g.PRC}
+	cr := f.Root.(g.CrRoot)
+	cr.Stem = g.S2
+	f.Root = cr
 	got := Formative(f)
 	want := "emlal"
 	if got != want {
@@ -280,7 +281,7 @@ func TestFormative_ShortForm_WithSlotI_NoElision(t *testing.T) {
 	// still elides.
 	f := g.MinimalFormative("ml")
 	t1 := g.Type1
-	f.SlotI = &t1
+	f.Concat = &t1
 	got := Formative(f)
 	want := "hamlal"
 	if got != want {
@@ -294,11 +295,9 @@ func TestFormative_ANTPaddingNilSlotIX(t *testing.T) {
 	// says pad with default Slot IX → append "a", yielding "amala",
 	// then mark ANT → "ámala".
 	f := g.Formative{
-		SlotIII: g.Root("m"),
-		SlotII:  g.DefaultSlotII,
-		SlotIV:  g.DefaultSlotIV,
-		SlotVI:  g.DefaultSlotVI,
-		Final:   g.FramedVerbal{Case: g.THM},
+		Root:   g.DefaultCrRoot("m"),
+		SlotVI: g.DefaultSlotVI,
+		Final:  g.FramedVerbal{Case: g.THM},
 	}
 	got := Formative(f)
 	want := "ámala"
@@ -309,11 +308,7 @@ func TestFormative_ANTPaddingNilSlotIX(t *testing.T) {
 
 func TestFormative_ShortcutW_Series1(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	sw := g.ShortcutW
-	f.SlotIShortcut = &sw
-	// MinimalFormative sets SlotIX=THM, so body is "waml" + "a" = "wamla"
-	// (2 vowels). PEN needs 2; slack 0; no elision. Result "wamla".
-	got := Formative(f)
+	got := FormativeWithOpts(f, Options{Shortcut: true})
 	want := "wamla"
 	if got != want {
 		t.Errorf("Formative(W shortcut series 1) = %q, want %q", got, want)
@@ -322,13 +317,9 @@ func TestFormative_ShortcutW_Series1(t *testing.T) {
 
 func TestFormative_ShortcutW_Series2(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	sw := g.ShortcutW
-	f.SlotIShortcut = &sw
 	f.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL,
 		Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}
-	// W + G perspective → series 2, Vv "ai" for S1/PRC.
-	// Body: w + ai + ml + a = "waimla" (3 vowels: ai, a → 2 syllables).
-	got := Formative(f)
+	got := FormativeWithOpts(f, Options{Shortcut: true})
 	want := "waimla"
 	if got != want {
 		t.Errorf("Formative(W shortcut series 2) = %q, want %q", got, want)
@@ -337,12 +328,9 @@ func TestFormative_ShortcutW_Series2(t *testing.T) {
 
 func TestFormative_ShortcutY_Series1(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	sy := g.ShortcutY
-	f.SlotIShortcut = &sy
 	f.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL,
 		Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}
-	// Y + PRX → series 1, Vv "a" for S1/PRC.
-	got := Formative(f)
+	got := FormativeWithOpts(f, Options{Shortcut: true})
 	want := "yamla"
 	if got != want {
 		t.Errorf("Formative(Y shortcut series 1) = %q, want %q", got, want)
@@ -352,11 +340,8 @@ func TestFormative_ShortcutY_Series1(t *testing.T) {
 func TestFormative_ShortcutWithConcat(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	t1 := g.Type1
-	sw := g.ShortcutW
-	f.SlotI = &t1
-	f.SlotIShortcut = &sw
-	// hl- = Type1 + ShortcutW. Default Slot VI → series 1.
-	got := Formative(f)
+	f.Concat = &t1
+	got := FormativeWithOpts(f, Options{Shortcut: true})
 	want := "hlamla"
 	if got != want {
 		t.Errorf("Formative(T1+W shortcut) = %q, want %q", got, want)

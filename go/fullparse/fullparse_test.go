@@ -13,14 +13,18 @@ func TestParseFormative_Minimal(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"amlala\") error: %v", err)
 	}
-	if f.SlotII != g.DefaultSlotII {
-		t.Errorf("SlotII = %v, want %v", f.SlotII, g.DefaultSlotII)
+	cr, ok := f.Root.(g.CrRoot)
+	if !ok {
+		t.Fatalf("Root = %v, want CrRoot", f.Root)
 	}
-	if f.SlotIII != "ml" {
-		t.Errorf("SlotIII = %q, want %q", f.SlotIII, "ml")
+	if cr.Cluster != "ml" {
+		t.Errorf("Cluster = %q, want %q", cr.Cluster, "ml")
 	}
-	if f.SlotIV != g.DefaultSlotIV {
-		t.Errorf("SlotIV = %v, want %v", f.SlotIV, g.DefaultSlotIV)
+	if cr.Stem != g.S1 || cr.Version != g.PRC {
+		t.Errorf("Stem/Version = %v/%v, want S1/PRC", cr.Stem, cr.Version)
+	}
+	if cr.SlotIV != g.DefaultSlotIV {
+		t.Errorf("SlotIV = %v, want %v", cr.SlotIV, g.DefaultSlotIV)
 	}
 	if f.SlotVI != g.DefaultSlotVI {
 		t.Errorf("SlotVI = %v, want %v", f.SlotVI, g.DefaultSlotVI)
@@ -37,11 +41,15 @@ func TestParseFormative_NonDefault(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"emlölo\") error: %v", err)
 	}
-	if f.SlotII != (g.SlotII{Stem: g.S2, Version: g.PRC}) {
-		t.Errorf("SlotII = %v, want (S2, PRC)", f.SlotII)
+	cr, ok := f.Root.(g.CrRoot)
+	if !ok {
+		t.Fatalf("Root = %v, want CrRoot", f.Root)
 	}
-	if f.SlotIV != (g.SlotIV{Function: g.DYN, Specification: g.OBJ, Context: g.EXS}) {
-		t.Errorf("SlotIV = %v, want (DYN, OBJ, EXS)", f.SlotIV)
+	if cr.Stem != g.S2 || cr.Version != g.PRC {
+		t.Errorf("Stem/Version = %v/%v, want S2/PRC", cr.Stem, cr.Version)
+	}
+	if cr.SlotIV != (g.SlotIV{Function: g.DYN, Specification: g.OBJ, Context: g.EXS}) {
+		t.Errorf("SlotIV = %v, want (DYN, OBJ, EXS)", cr.SlotIV)
 	}
 	un, ok := f.Final.(g.UnframedNominal)
 	if !ok || un.Case != g.ERG {
@@ -85,10 +93,7 @@ func TestRoundTripMinimal(t *testing.T) {
 	if err != nil {
 		t.Fatalf("round trip error on %q: %v", surface, err)
 	}
-	if parsed.SlotII != original.SlotII ||
-		parsed.SlotIII != original.SlotIII ||
-		parsed.SlotIV != original.SlotIV ||
-		parsed.SlotVI != original.SlotVI {
+	if parsed.Root != original.Root || parsed.SlotVI != original.SlotVI {
 		t.Errorf("round trip mismatch:\noriginal: %+v\nparsed:   %+v", original, parsed)
 	}
 	if original.Final != parsed.Final {
@@ -111,14 +116,8 @@ func TestParseFormative_ConsonantInitial(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"malal\") error: %v", err)
 	}
-	if f.SlotII != g.DefaultSlotII {
-		t.Errorf("SlotII = %v, want default (S1, PRC)", f.SlotII)
-	}
-	if f.SlotIII != "m" {
-		t.Errorf("SlotIII = %q, want \"m\"", f.SlotIII)
-	}
-	if f.SlotIV != g.DefaultSlotIV {
-		t.Errorf("SlotIV = %v, want default", f.SlotIV)
+	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "m" {
+		t.Errorf("Root = %v, want CrRoot{Cluster: m}", f.Root)
 	}
 	if f.SlotVI != g.DefaultSlotVI {
 		t.Errorf("SlotVI = %v, want default", f.SlotVI)
@@ -136,11 +135,8 @@ func TestParseFormative_MalëuţřaitCanonical(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(canonical Maleuţřait) error: %v", err)
 	}
-	if f.SlotIII != "m" {
-		t.Errorf("Cr = %q, want \"m\"", f.SlotIII)
-	}
-	if f.SlotIV != g.DefaultSlotIV {
-		t.Errorf("Vr → %v, want default (STA, BSC, EXS)", f.SlotIV)
+	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "m" {
+		t.Errorf("Root = %v, want CrRoot{Cluster: m}", f.Root)
 	}
 	if f.SlotVI != g.DefaultSlotVI {
 		t.Errorf("Ca → %v, want default", f.SlotVI)
@@ -167,11 +163,11 @@ func TestParseFormative_SlotI_Type1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"hamlala\") error: %v", err)
 	}
-	if f.SlotI == nil || *f.SlotI != g.Type1 {
-		t.Errorf("SlotI = %v, want Type1", f.SlotI)
+	if f.Concat == nil || *f.Concat != g.Type1 {
+		t.Errorf("SlotI = %v, want Type1", f.Concat)
 	}
-	if f.SlotIII != "ml" {
-		t.Errorf("Cr = %q, want \"ml\"", f.SlotIII)
+	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "ml" {
+		t.Errorf("Root = %v, want CrRoot{Cluster: ml}", f.Root)
 	}
 }
 
@@ -181,8 +177,8 @@ func TestParseFormative_SlotI_Type2(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"hwamlala\") error: %v", err)
 	}
-	if f.SlotI == nil || *f.SlotI != g.Type2 {
-		t.Errorf("SlotI = %v, want Type2", f.SlotI)
+	if f.Concat == nil || *f.Concat != g.Type2 {
+		t.Errorf("SlotI = %v, want Type2", f.Concat)
 	}
 }
 
@@ -193,17 +189,8 @@ func TestParseFormative_ShortcutW_Series1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"waml\") error: %v", err)
 	}
-	if f.SlotIShortcut == nil || *f.SlotIShortcut != g.ShortcutW {
-		t.Errorf("SlotIShortcut = %v, want ShortcutW", f.SlotIShortcut)
-	}
-	if f.SlotII != g.DefaultSlotII {
-		t.Errorf("SlotII = %v, want default", f.SlotII)
-	}
-	if f.SlotIII != "ml" {
-		t.Errorf("Cr = %q, want \"ml\"", f.SlotIII)
-	}
-	if f.SlotIV != g.DefaultSlotIV {
-		t.Errorf("SlotIV = %v, want default (shortcuts elide Vr)", f.SlotIV)
+	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "ml" {
+		t.Errorf("Root = %v, want CrRoot{Cluster: ml}", f.Root)
 	}
 	if f.SlotVI != g.DefaultSlotVI {
 		t.Errorf("SlotVI = %v, want default (W series 1)", f.SlotVI)
@@ -217,9 +204,6 @@ func TestParseFormative_ShortcutY_Series3(t *testing.T) {
 	f, err := ParseFormative("yuml")
 	if err != nil {
 		t.Fatalf("ParseFormative(\"yuml\") error: %v", err)
-	}
-	if f.SlotIShortcut == nil || *f.SlotIShortcut != g.ShortcutY {
-		t.Errorf("SlotIShortcut = %v, want ShortcutY", f.SlotIShortcut)
 	}
 	want := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}
 	if f.SlotVI != want {
@@ -245,14 +229,11 @@ func TestParseFormative_ShortcutWithConcat(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"hlaml\") error: %v", err)
 	}
-	if f.SlotI == nil || *f.SlotI != g.Type1 {
-		t.Errorf("SlotI = %v, want Type1", f.SlotI)
+	if f.Concat == nil || *f.Concat != g.Type1 {
+		t.Errorf("SlotI = %v, want Type1", f.Concat)
 	}
-	if f.SlotIShortcut == nil || *f.SlotIShortcut != g.ShortcutW {
-		t.Errorf("SlotIShortcut = %v, want ShortcutW", f.SlotIShortcut)
-	}
-	if f.SlotIII != "ml" {
-		t.Errorf("Cr = %q, want \"ml\"", f.SlotIII)
+	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "ml" {
+		t.Errorf("Root = %v, want CrRoot{Cluster: ml}", f.Root)
 	}
 }
 
@@ -286,11 +267,12 @@ func TestParseFormative_Corpus_Ärmaläwia(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"ärmaläwi'a\") error: %v", err)
 	}
-	if f.SlotII != (g.SlotII{Stem: g.S1, Version: g.CPT}) {
-		t.Errorf("SlotII = %v, want (S1, CPT)", f.SlotII)
+	cr, ok := f.Root.(g.CrRoot)
+	if !ok || cr.Cluster != "rm" {
+		t.Errorf("Root = %v, want CrRoot{Cluster: rm}", f.Root)
 	}
-	if f.SlotIII != "rm" {
-		t.Errorf("Cr = %q, want \"rm\"", f.SlotIII)
+	if cr.Stem != g.S1 || cr.Version != g.CPT {
+		t.Errorf("Stem/Version = %v/%v, want S1/CPT", cr.Stem, cr.Version)
 	}
 	vc, ok := f.SlotVIII.(g.VnCnAspect)
 	if !ok {
@@ -313,8 +295,8 @@ func TestParseFormative_SentencePrefix_Plain(t *testing.T) {
 	if !f.SentenceStarter {
 		t.Error("SentenceStarter = false, want true")
 	}
-	if f.SlotIII != "ml" {
-		t.Errorf("Cr = %q, want \"ml\"", f.SlotIII)
+	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "ml" {
+		t.Errorf("Root = %v, want CrRoot{Cluster: ml}", f.Root)
 	}
 }
 
@@ -329,8 +311,8 @@ func TestParseFormative_SentencePrefix_çë(t *testing.T) {
 	if !f.SentenceStarter {
 		t.Error("SentenceStarter = false, want true")
 	}
-	if f.SlotIII != "ml" {
-		t.Errorf("Cr = %q, want \"ml\"", f.SlotIII)
+	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "ml" {
+		t.Errorf("Root = %v, want CrRoot{Cluster: ml}", f.Root)
 	}
 }
 
@@ -343,9 +325,6 @@ func TestParseFormative_SentencePrefix_çç(t *testing.T) {
 	}
 	if !f.SentenceStarter {
 		t.Error("SentenceStarter = false, want true")
-	}
-	if f.SlotIShortcut == nil || *f.SlotIShortcut != g.ShortcutY {
-		t.Errorf("SlotIShortcut = %v, want ShortcutY", f.SlotIShortcut)
 	}
 }
 
@@ -391,10 +370,7 @@ func TestRoundTrip_ConsonantInitial(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if reparsed.SlotII != parsed.SlotII ||
-		reparsed.SlotIII != parsed.SlotIII ||
-		reparsed.SlotIV != parsed.SlotIV ||
-		reparsed.SlotVI != parsed.SlotVI {
+	if reparsed.Root != parsed.Root || reparsed.SlotVI != parsed.SlotVI {
 		t.Errorf("re-parse differs from consonant-initial parse")
 	}
 }
@@ -505,13 +481,17 @@ func TestParseFormative_RoundTripVariants(t *testing.T) {
 	}{
 		{"S2/PRC, ERG", func() g.Formative {
 			f := g.MinimalFormative("ml")
-			f.SlotII = g.SlotII{Stem: g.S2, Version: g.PRC}
+			cr := f.Root.(g.CrRoot)
+			cr.Stem = g.S2
+			f.Root = cr
 			f.Final = g.UnframedNominal{Case: g.ERG}
 			return f
 		}()},
 		{"DYN/CTE/FNC, ABS", func() g.Formative {
 			f := g.MinimalFormative("t")
-			f.SlotIV = g.SlotIV{Function: g.DYN, Specification: g.CTE, Context: g.FNC}
+			cr := f.Root.(g.CrRoot)
+			cr.SlotIV = g.SlotIV{Function: g.DYN, Specification: g.CTE, Context: g.FNC}
+			f.Root = cr
 			f.Final = g.UnframedNominal{Case: g.ABS}
 			return f
 		}()},
@@ -523,11 +503,8 @@ func TestParseFormative_RoundTripVariants(t *testing.T) {
 			if err != nil {
 				t.Fatalf("round trip error on %q: %v", surface, err)
 			}
-			if parsed.SlotII != c.f.SlotII {
-				t.Errorf("SlotII: got %v, want %v", parsed.SlotII, c.f.SlotII)
-			}
-			if parsed.SlotIV != c.f.SlotIV {
-				t.Errorf("SlotIV: got %v, want %v", parsed.SlotIV, c.f.SlotIV)
+			if parsed.Root != c.f.Root {
+				t.Errorf("Root: got %v, want %v", parsed.Root, c.f.Root)
 			}
 			if parsed.Final != c.f.Final {
 				t.Errorf("Final: got %v, want %v", parsed.Final, c.f.Final)

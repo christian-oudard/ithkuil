@@ -68,8 +68,9 @@ func TestClassifyWord_Formative(t *testing.T) {
 	if !ok {
 		t.Fatalf("ClassifyWord(\"malëuţřait\") = %T, want FormativeWord", w)
 	}
-	if f.Formative.SlotIII != "m" {
-		t.Errorf("Cr = %q, want \"m\"", f.Formative.SlotIII)
+	cr, ok := f.Formative.Root.(g.CrRoot)
+	if !ok || cr.Cluster != "m" {
+		t.Errorf("Root = %v, want CrRoot{Cluster:m}", f.Formative.Root)
 	}
 }
 
