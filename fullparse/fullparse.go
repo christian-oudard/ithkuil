@@ -9,6 +9,7 @@ import (
 	"github.com/christian-oudard/ithkuil/allomorph"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
+	"github.com/christian-oudard/ithkuil/surface"
 )
 
 // stripSentencePrefix removes a leading ç marker if present.
@@ -46,7 +47,8 @@ func stripSentencePrefix(word string) (string, bool) {
 func ParseFormative(word string) (g.Formative, error) {
 	word, hasSentencePrefix := stripSentencePrefix(word)
 	conjs := parse.SplitConjuncts(word)
-	stress := parse.DetectStress(word)
+	_, surfStress := surface.Strip(word)
+	stress := parse.Stress(surfStress) // surface.Stress and parse.Stress share an iota layout
 	conjs = parse.MergeGlottalVowels(conjs)
 
 	if len(conjs) < 3 {
