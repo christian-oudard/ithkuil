@@ -341,7 +341,8 @@ var permissibleDiphthongs = map[string]bool{
 
 // validDisyllabicConjuncts is the set of two-vowel conjuncts that
 // appear in the Series 3/4 vowel-form tables plus reference-root
-// markers ae/ea.
+// markers ae/ea and the Type-3 zero-degree marker üo (also the §4.6.3
+// referential epenthesis prefix).
 var validDisyllabicConjuncts = map[string]bool{
 	// Series 3
 	"ia": true, "ie": true, "io": true, "iö": true,
@@ -354,6 +355,8 @@ var validDisyllabicConjuncts = map[string]bool{
 	"oë": true, "öe": true, "oe": true, "öa": true, "oa": true,
 	// Reference-root markers
 	"ae": true, "ea": true,
+	// Type-3 zero-degree / §4.6.3 epenthesis
+	"üo": true,
 }
 
 // ValidateVowelSequence checks a vowel sequence against rules 1.1-1.2.

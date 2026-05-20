@@ -100,9 +100,23 @@ func ValidateWord(word string) Result {
 		}
 	}
 
+	// Single-consonant-conjunct words are stand-alone Bias adjuncts;
+	// their cluster table is authoritative and may legitimately contain
+	// shapes the §2 root/affix rules disallow (e.g. "pļļ" CMD, "kçç"
+	// EXA). Skip cluster validation in that case.
+	conjs := surface.SplitConjuncts(word)
+	if len(conjs) == 1 {
+		firstRune, _ := utf8.DecodeRuneInString(conjs[0])
+		if !surface.IsVowel(firstRune) {
+			if len(errs) == 0 {
+				return Result{Valid: true}
+			}
+			return Result{Valid: false, Errors: errs}
+		}
+	}
+
 	// Walk conjuncts, classifying each as a consonant cluster or vowel
 	// sequence and tracking position.
-	conjs := surface.SplitConjuncts(word)
 	for i, c := range conjs {
 		if c == "" {
 			continue

@@ -22,8 +22,9 @@ import (
 	"github.com/christian-oudard/ithkuil/fullparse"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/referentials"
+	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // WordToken is the sealed sum type for classified words. Each variant
@@ -192,8 +193,18 @@ func (ForeignWord) word()             {}
 
 // ClassifyWord decides which WordToken variant a single surface word
 // belongs to. The order of attempts is the docstring of the package.
+//
+// Non-Ithkuil characters (chars not in the V4 alphabet) reject the
+// word up front. Stress-mark and per-slot phonotactic violations are
+// only enforced on words that match the formative recognizer; biases,
+// modulars and other adjunct shapes have their own phonotactic rules
+// that diverge from the formative-shaped ones (e.g. modulars permit a
+// word-final w, biases use the otherwise-prohibited geminates çç/ļļ).
 func ClassifyWord(word string) WordToken {
 	if word == "" {
+		return UnknownWord{Text: word}
+	}
+	if r := validation.ValidateChars(word); !r.Valid {
 		return UnknownWord{Text: word}
 	}
 	// Hyphenated input: try as a concatenation chain. A hyphen is only
