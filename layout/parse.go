@@ -2,6 +2,7 @@ package layout
 
 import (
 	"fmt"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/christian-oudard/ithkuil/allomorph"
@@ -61,28 +62,70 @@ func Parse(word string) (Layout, error) {
 	return l, nil
 }
 
-// stripSentencePrefix mirrors fullparse.stripSentencePrefix, returning
-// the body without the leading ç marker and whether one was present.
+// stripSentencePrefix recognises both sentence-juncture marker
+// families: §3.2 / §1.3.2's ç(ë)/çw/çç forms and §5.8.8's modern
+// cs(e)/csw/cscs forms. Returns the body with the prefix removed
+// (rewriting csw/csw as the implied w- shortcut, and çç/cscs as the
+// implied y- shortcut so the parser can carry on).
 func stripSentencePrefix(word string) (string, bool) {
 	if word == "" {
 		return word, false
 	}
+	// ç-family.
 	r, sz := utf8.DecodeRuneInString(word)
-	if r != 'ç' {
-		return word, false
+	if r == 'ç' {
+		rest := word[sz:]
+		if rest == "" {
+			return word, false
+		}
+		r2, sz2 := utf8.DecodeRuneInString(rest)
+		if r2 == 'ë' && rest[sz2:] != "" {
+			return rest[sz2:], true
+		}
+		if r2 == 'ç' {
+			return "y" + rest[sz2:], true
+		}
+		return rest, true
 	}
-	rest := word[sz:]
-	if rest == "" {
-		return word, false
+	// cs-family. "cs" must be a two-byte prefix; we also handle "cse",
+	// "csw" (cs + w-shortcut Cc), and "cscs" (cs + y-shortcut Cc).
+	if strings.HasPrefix(word, "cscs") {
+		// cs + y, with the y written as a doubled cs.
+		rest := word[len("cscs"):]
+		if rest == "" {
+			return word, false
+		}
+		return "y" + rest, true
 	}
-	r2, sz2 := utf8.DecodeRuneInString(rest)
-	if r2 == 'ë' && rest[sz2:] != "" {
-		return rest[sz2:], true
+	if strings.HasPrefix(word, "csw") {
+		rest := word[len("cs"):] // keep the w as a normal Cc
+		if rest == "" {
+			return word, false
+		}
+		return rest, true
 	}
-	if r2 == 'ç' {
-		return "y" + rest[sz2:], true
+	if strings.HasPrefix(word, "cse") {
+		rest := word[len("cse"):]
+		if rest == "" {
+			return word, false
+		}
+		return rest, true
 	}
-	return rest, true
+	if strings.HasPrefix(word, "cs") {
+		rest := word[len("cs"):]
+		if rest == "" {
+			return word, false
+		}
+		// Bare "cs-" only legal before a vowel; otherwise we shouldn't
+		// have matched (the "cse-" branch above handles the consonant
+		// case explicitly).
+		r2, _ := utf8.DecodeRuneInString(rest)
+		if !surface.IsVowel(r2) {
+			return word, false
+		}
+		return rest, true
+	}
+	return word, false
 }
 
 // parseVowelInitial handles Vv-Cr-… (with optional special-Vv) and the
