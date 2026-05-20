@@ -139,10 +139,17 @@ func TestClassifyWord_Unknown(t *testing.T) {
 // theirs so a literal port isn't useful, but the classifier should at
 // least agree on what kind of word each input is.
 //
-// Known divergences (not asserted here): "adni'lö", "la'la", "layá",
-// "miyüs", "hrei", and "çëhamala-lala" (sentence prefix on a concat
-// chain) each round-trip differently from Kotlin and would each need
-// spec/lexicon investigation.
+// Known divergences (not asserted here):
+//   - "adni'lö", "la'la" — both need the moved-glottal rule (§3.9.3.3
+//     SPECIAL NOTE) in our slot parser.
+//   - "layá", "miyüs" — our referential classifier rejects shapes
+//     longer than (C, Vc).
+//   - "çëhamala-lala" — sentence prefix on a concat-chain head; our
+//     concat detector parses the whole thing as one big formative.
+//   - "hrei" — was a standalone Mood/Case-Scope adjunct in earlier
+//     spec versions. **Eliminated in v1.3** (replaced by the MCS
+//     affix), so we're correct to reject it; Kotlin tracks v0.19.0
+//     and still accepts it.
 func TestClassifyWord_IthkuilGlossCorpus(t *testing.T) {
 	type want int
 	const (
