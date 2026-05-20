@@ -50,9 +50,9 @@ func (gl *Glosser) Token(t tokenize.WordToken) string {
 	case tokenize.ModularWord:
 		return modularLabel(v.Modular, v.MarksMood)
 	case tokenize.SingleAffixWord:
-		return singleAffixLabel(v.Affix)
+		return gl.singleAffixLabel(v.Affix)
 	case tokenize.MultipleAffixWord:
-		return multiAffixLabel(v.Affixes)
+		return gl.multiAffixLabel(v.Affixes)
 	case tokenize.ReferentialWord:
 		return refLabel(v)
 	case tokenize.CombinationRefWord:
@@ -65,22 +65,36 @@ func (gl *Glosser) Token(t tokenize.WordToken) string {
 	return "?"
 }
 
-// singleAffixLabel formats a single-affix adjunct as "<Cs>/<deg><type>{<scope>}".
-func singleAffixLabel(a g.SingleAffixAdjunct) string {
+// singleAffixLabel formats a single-affix adjunct as
+// "<abbrev>/<deg><type>{<scope>}" — uses the lexicon abbreviation when
+// available, otherwise the raw Cs cluster.
+func (gl *Glosser) singleAffixLabel(a g.SingleAffixAdjunct) string {
 	t, d := parse.ClassifyAffixVowel(a.Vx)
-	return fmt.Sprintf("AFFIX[%s/%d%s]{%s}", a.Cs, d, affixTypeSubscript(t), a.Scope.String())
+	return fmt.Sprintf("AFFIX[%s/%d%s]{%s}",
+		gl.affixLabel(a.Cs), d, affixTypeSubscript(t), a.Scope.String())
 }
 
-// multiAffixLabel formats a multiple-affix adjunct as a chain of affixes
-// with the first scope ({Cz}) and rest scope ({Vz}) attached.
-func multiAffixLabel(a g.MultipleAffixAdjunct) string {
-	parts := []string{fmt.Sprintf("%s/%s", a.First.Cs, a.First.Vx)}
+// multiAffixLabel formats a multi-affix adjunct as a chain of
+// abbreviation/Vx pairs with the first/rest scopes attached.
+func (gl *Glosser) multiAffixLabel(a g.MultipleAffixAdjunct) string {
+	parts := []string{fmt.Sprintf("%s/%s", gl.affixLabel(a.First.Cs), a.First.Vx)}
 	for _, p := range a.Affixes {
-		parts = append(parts, fmt.Sprintf("%s/%s", p.Cs, p.Vx))
+		parts = append(parts, fmt.Sprintf("%s/%s", gl.affixLabel(p.Cs), p.Vx))
 	}
 	return fmt.Sprintf("AFFIXES[%s]{%s→%s}",
 		strings.Join(parts, ","),
 		a.FirstScope.String(), a.RestScope.String())
+}
+
+// affixLabel returns the abbreviation for an affix Cs when the lexicon
+// is set and has an entry; otherwise the raw cluster.
+func (gl *Glosser) affixLabel(cs string) string {
+	if gl.Lex != nil {
+		if entry, ok := gl.Lex.Affixes[cs]; ok && entry.Abbrev != "" {
+			return entry.Abbrev
+		}
+	}
+	return cs
 }
 
 func affixTypeSubscript(t g.AffixType) string {
