@@ -319,33 +319,68 @@ func Decode(f g.Formative) (Number, bool) {
 // phrase (which may chain multiple magnitudes when its value is ≥100),
 // and any remainder appends as its own phrase.
 //
+// Case assignment per §8.3 (as observed in the spec examples):
+//   - magnitude words are always PARTITIVE
+//   - the first count of the phrase is THM
+//   - a final ones-block (no magnitude follows it) is THM
+//   - any other count — one between two magnitudes — is COMITATIVE
+//
 // Examples (showing semantic structure, not literal surface):
 //
-//	4229       → [42, of-100, 29]
-//	269,766    → [26, of-10000, 97, of-100, 66]
-//	21,000,000 → [21, of-100, of-10000]            (multi-magnitude chain)
+//	4229       → [42 THM, of-100 PAR, 29 THM]
+//	269,766    → [26 THM, of-10000 PAR, 97 COM, of-100 PAR, 66 THM]
+//	21,000,000 → [21 THM, of-100 PAR, of-10000 PAR]   (multi-magnitude chain)
 //
 // Returns ok=false for negative n.
 func Phrase(n int64, stem Stem, ver Version) ([]string, bool) {
 	if n < 0 {
 		return nil, false
 	}
-	return phraseRec(n, stem, ver)
-}
-
-// phraseRec is the recursive worker for Phrase. It finds the largest
-// power p ≤ n, expresses n/p as its own phrase (which may itself chain
-// magnitudes), tacks on the magnitude word, then appends the remainder
-// as another phrase.
-func phraseRec(n int64, stem Stem, ver Version) ([]string, bool) {
-	if n < 100 {
-		w, ok := Render(int(n), stem, ver, g.THM)
+	terms := phraseTerms(n)
+	// Walk terms, rendering each. Count case depends on neighbors:
+	// COM only when both neighbors are magnitudes.
+	words := make([]string, 0, len(terms))
+	for i, t := range terms {
+		if t.isMag {
+			w, ok := powerSurface(int(t.value), stem, ver)
+			if !ok {
+				return nil, false
+			}
+			words = append(words, w)
+			continue
+		}
+		c := g.THM
+		prevMag := i > 0 && terms[i-1].isMag
+		nextMag := i+1 < len(terms) && terms[i+1].isMag
+		if prevMag && nextMag {
+			c = g.COM
+		}
+		w, ok := Render(int(t.value), stem, ver, c)
 		if !ok {
 			return nil, false
 		}
-		return []string{w}, true
+		words = append(words, w)
 	}
-	// Find the largest power-of-100 root that fits in n.
+	return words, true
+}
+
+// phraseTerm is a single position in a number phrase — either a count
+// (value 0-99) or a magnitude (value = the powerValues index).
+type phraseTerm struct {
+	isMag bool
+	value int64
+}
+
+// phraseTerms decomposes n into the count/magnitude term sequence that
+// Phrase walks to assign case. The recursion mirrors Phrase's previous
+// shape: at each level the largest fitting magnitude is extracted, the
+// count n/p is expanded as its own term sequence (so multi-magnitude
+// chains like 21 × 100 × 10⁴ fall out naturally), then the magnitude
+// is appended, then the remainder's term sequence follows.
+func phraseTerms(n int64) []phraseTerm {
+	if n < 100 {
+		return []phraseTerm{{value: n}}
+	}
 	for i := len(powerValues) - 1; i >= 1; i-- {
 		p := powerValues[i]
 		if p > n {
@@ -353,26 +388,15 @@ func phraseRec(n int64, stem Stem, ver Version) ([]string, bool) {
 		}
 		count := n / p
 		remainder := n - count*p
-		countWords, ok := phraseRec(count, stem, ver)
-		if !ok {
-			return nil, false
-		}
-		magWord, ok := powerSurface(i, stem, ver)
-		if !ok {
-			return nil, false
-		}
-		result := append(countWords, magWord)
+		terms := phraseTerms(count)
+		terms = append(terms, phraseTerm{isMag: true, value: int64(i)})
 		if remainder > 0 {
-			tail, ok := phraseRec(remainder, stem, ver)
-			if !ok {
-				return nil, false
-			}
-			result = append(result, tail...)
+			terms = append(terms, phraseTerms(remainder)...)
 		}
-		return result, true
+		return terms
 	}
-	// Unreachable: n >= 100 must match at least powerValues[1] = 100.
-	return nil, false
+	// Unreachable: n ≥ 100 must match at least powerValues[1] = 100.
+	return nil
 }
 
 // powerSurface returns the surface form of the i-th power-of-100 root

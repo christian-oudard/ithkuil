@@ -196,6 +196,48 @@ func TestPhrase_RoundMagnitude(t *testing.T) {
 	}
 }
 
+func TestPhrase_IntermediateCountUsesCOM(t *testing.T) {
+	// 269,766 has an intermediate count (97) between pc and gz.
+	// That count should bear COMITATIVE case, not THM.
+	words, ok := Phrase(269_766, Cardinal, Concrete)
+	if !ok {
+		t.Fatal("Phrase(269766): ok=false")
+	}
+	if len(words) != 5 {
+		t.Fatalf("Phrase(269766) got %d words, want 5: %v", len(words), words)
+	}
+	mid := words[2] // 97
+	// Parse the middle word back and confirm the case is COM.
+	f, err := fullparse.ParseFormative(mid)
+	if err != nil {
+		t.Fatalf("parse %q: %v", mid, err)
+	}
+	un, ok := f.Final.(g.UnframedNominal)
+	if !ok || un.Case != g.COM {
+		t.Errorf("intermediate count Final = %+v, want UnframedNominal{COM}", f.Final)
+	}
+}
+
+func TestPhrase_FirstAndLastCountUseTHM(t *testing.T) {
+	// In 4229 = [42, of-100, 29], the count 29 is the trailing ones —
+	// it bears THM, not COM.
+	words, ok := Phrase(4229, Cardinal, Concrete)
+	if !ok {
+		t.Fatal("Phrase(4229): ok=false")
+	}
+	for _, idx := range []int{0, 2} {
+		f, err := fullparse.ParseFormative(words[idx])
+		if err != nil {
+			t.Errorf("parse %q: %v", words[idx], err)
+			continue
+		}
+		un, ok := f.Final.(g.UnframedNominal)
+		if !ok || un.Case != g.THM {
+			t.Errorf("word[%d] %q: Final = %+v, want THM", idx, words[idx], f.Final)
+		}
+	}
+}
+
 func TestPhrase_ChainsMagnitudes(t *testing.T) {
 	// 21,000,000 = 21 × 100 × 10000. The expected surface is a chain
 	// of three words: 21, gz-PAR, pc-PAR.
