@@ -182,6 +182,91 @@ func TestGlossary_FormativeWithLexicon(t *testing.T) {
 	}
 }
 
+func TestType_AllVariants(t *testing.T) {
+	// Exercise every WordToken kind once. Some need manual construction
+	// because they're created by recognizers that aren't normally
+	// triggered through ClassifyWord alone.
+	cases := []struct {
+		tok  tokenize.WordToken
+		want string
+	}{
+		{tokenize.FormativeWord{}, "Form"},
+		{tokenize.ConcatenatedFormativeWord{}, "Concat"},
+		{tokenize.ReferentialWord{}, "Ref"},
+		{tokenize.CombinationRefWord{}, "CombRef"},
+		{tokenize.BiasWord{}, "Bias"},
+		{tokenize.RegisterStartWord{}, "Reg"},
+		{tokenize.RegisterEndWord{}, "Reg"},
+		{tokenize.ModularWord{}, "Mod"},
+		{tokenize.SingleAffixWord{}, "Affix"},
+		{tokenize.MultipleAffixWord{}, "Affixes"},
+		{tokenize.CarrierWord{}, "Carrier"},
+		{tokenize.ForeignWord{}, "(fgn)"},
+		{tokenize.UnknownWord{}, "?"},
+	}
+	for _, c := range cases {
+		if got := Type(c.tok); got != c.want {
+			t.Errorf("Type(%T) = %q, want %q", c.tok, got, c.want)
+		}
+	}
+}
+
+func TestCategoryForSlot_AllSlots(t *testing.T) {
+	cases := []struct {
+		slot, want string
+	}{
+		{"Vv", "version"},
+		{"Cr", "root"},
+		{"Vr", "Vr"},
+		{"Ca", "Ca"},
+		{"Vx₁", "affix degree"},
+		{"Cs₂", "affix"},
+		{"Vn", "slot VIII"},
+		{"Cn", "mood/scope"},
+		{"Vc", "case"},
+		{"Vk", "illocution"},
+		{"foo", "foo"}, // fallthrough
+	}
+	for _, c := range cases {
+		if got := categoryForSlot(c.slot); got != c.want {
+			t.Errorf("categoryForSlot(%q) = %q, want %q", c.slot, got, c.want)
+		}
+	}
+}
+
+func TestStemMeaning_Fallback(t *testing.T) {
+	// All stems empty → empty result.
+	e := lexicon.RootEntry{}
+	if got := stemMeaning(e, g.S1); got != "" {
+		t.Errorf("empty entry stemMeaning = %q, want \"\"", got)
+	}
+	// S2 requested but only S1 populated → fallback annotated.
+	e = lexicon.RootEntry{Stem1: "primary"}
+	got := stemMeaning(e, g.S2)
+	if !strings.Contains(got, "fallback") {
+		t.Errorf("stemMeaning fallback = %q, expected 'fallback' note", got)
+	}
+	// Requested stem available → no fallback note.
+	e = lexicon.RootEntry{Stem1: "primary", Stem2: "secondary"}
+	got = stemMeaning(e, g.S2)
+	if strings.Contains(got, "fallback") {
+		t.Errorf("stemMeaning(S2) when present = %q, shouldn't say 'fallback'", got)
+	}
+}
+
+func TestStemNum(t *testing.T) {
+	for _, c := range []struct {
+		s    g.Stem
+		want int
+	}{
+		{g.S0, 0}, {g.S1, 1}, {g.S2, 2}, {g.S3, 3},
+	} {
+		if got := stemNum(c.s); got != c.want {
+			t.Errorf("stemNum(%v) = %d, want %d", c.s, got, c.want)
+		}
+	}
+}
+
 func TestSegmentsModular_VerbalVsNominal(t *testing.T) {
 	mw := tok(t, "ah").(tokenize.ModularWord)
 	verbal := true
