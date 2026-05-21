@@ -325,20 +325,29 @@ func Decode(f g.Formative) (Number, bool) {
 //   - a final ones-block (no magnitude follows it) is THM
 //   - any other count — one between two magnitudes — is COMITATIVE
 //
+// gzalui-omission (§8.3): a *gzalui* (the PARTITIVE of *gzal* = 100)
+// that sits between two count words is dropped, since two adjacent
+// counts implicitly multiply by 100. *gzalui* between a count and any
+// other magnitude is kept, because dropping it would change the value
+// (e.g. *wallärsa gzalui pcalui* = 21,000,000 vs. *wallärsa pcalui* =
+// 210,000).
+//
 // Examples (showing semantic structure, not literal surface):
 //
-//	4229       → [42 THM, of-100 PAR, 29 THM]
-//	269,766    → [26 THM, of-10000 PAR, 97 COM, of-100 PAR, 66 THM]
-//	21,000,000 → [21 THM, of-100 PAR, of-10000 PAR]   (multi-magnitude chain)
+//	4229       → [42 THM, 29 THM]                    (gzalui omitted)
+//	269,766    → [26 THM, of-10000 PAR, 97 COM, 66 THM]   (one gzalui omitted)
+//	21,000,000 → [21 THM, of-100 PAR, of-10000 PAR]  (gzalui kept; required)
 //
 // Returns ok=false for negative n.
 func Phrase(n int64, stem Stem, ver Version) ([]string, bool) {
 	if n < 0 {
 		return nil, false
 	}
-	terms := phraseTerms(n)
+	terms := omitRedundantGzalui(phraseTerms(n))
 	// Walk terms, rendering each. Count case depends on neighbors:
-	// COM only when both neighbors are magnitudes.
+	// COM only when both neighbors are magnitudes (in the unreduced
+	// term list — gzalui-omission doesn't promote a now-adjacent
+	// count to THM, because the implicit ×100 still sits between them).
 	words := make([]string, 0, len(terms))
 	for i, t := range terms {
 		if t.isMag {
@@ -352,7 +361,11 @@ func Phrase(n int64, stem Stem, ver Version) ([]string, bool) {
 		c := g.THM
 		prevMag := i > 0 && terms[i-1].isMag
 		nextMag := i+1 < len(terms) && terms[i+1].isMag
-		if prevMag && nextMag {
+		// A count is also intermediate when it sits between a previous
+		// magnitude and a following count (i.e. a *gzalui* that would
+		// have appeared after it was omitted).
+		nextCount := i+1 < len(terms) && !terms[i+1].isMag
+		if prevMag && (nextMag || nextCount) {
 			c = g.COM
 		}
 		w, ok := Render(int(t.value), stem, ver, c)
@@ -362,6 +375,24 @@ func Phrase(n int64, stem Stem, ver Version) ([]string, bool) {
 		words = append(words, w)
 	}
 	return words, true
+}
+
+// omitRedundantGzalui drops any gz-magnitude term that sits between
+// two count terms. The implicit ×100 between adjacent counts makes
+// the gzalui recoverable by the parser, so per §8.3 it is normally
+// omitted in speech.
+func omitRedundantGzalui(terms []phraseTerm) []phraseTerm {
+	out := make([]phraseTerm, 0, len(terms))
+	for i, t := range terms {
+		isGz := t.isMag && t.value == 1 // powerValues[1] = 100 = gz
+		prevCount := i > 0 && !terms[i-1].isMag
+		nextCount := i+1 < len(terms) && !terms[i+1].isMag
+		if isGz && prevCount && nextCount {
+			continue
+		}
+		out = append(out, t)
+	}
+	return out
 }
 
 // phraseTerm is a single position in a number phrase — either a count

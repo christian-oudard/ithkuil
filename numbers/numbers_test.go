@@ -1,7 +1,6 @@
 package numbers
 
 import (
-	"strings"
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
@@ -170,17 +169,14 @@ func TestPhrase_SingleFormative(t *testing.T) {
 }
 
 func TestPhrase_FourThousandPlus(t *testing.T) {
-	// 4229 = 42 × 100 + 29 — should produce [count, mag-PAR, ones].
+	// 4229 = 42 × 100 + 29. The gzalui (×100) sits between two counts
+	// and is omitted per §8.3, so the phrase is two words.
 	words, ok := Phrase(4229, Cardinal, Concrete)
 	if !ok {
 		t.Fatal("Phrase(4229): ok=false")
 	}
-	if len(words) != 3 {
-		t.Errorf("Phrase(4229) words = %v (count %d), want 3", words, len(words))
-	}
-	// The middle word should be a PAR-cased rendering of gz=100.
-	if !strings.Contains(words[1], "gz") {
-		t.Errorf("Phrase(4229)[1] = %q, expected gz magnitude word", words[1])
+	if len(words) != 2 {
+		t.Errorf("Phrase(4229) words = %v (count %d), want 2", words, len(words))
 	}
 }
 
@@ -197,17 +193,17 @@ func TestPhrase_RoundMagnitude(t *testing.T) {
 }
 
 func TestPhrase_IntermediateCountUsesCOM(t *testing.T) {
-	// 269,766 has an intermediate count (97) between pc and gz.
-	// That count should bear COMITATIVE case, not THM.
+	// 269,766 = 26 × 10⁴ + 97 × 100 + 66. After gzalui-omission the
+	// phrase is [26, pcalui, 97 COM, 66] — the 97 retains COM because
+	// the omitted gzalui still implicitly sits between it and the 66.
 	words, ok := Phrase(269_766, Cardinal, Concrete)
 	if !ok {
 		t.Fatal("Phrase(269766): ok=false")
 	}
-	if len(words) != 5 {
-		t.Fatalf("Phrase(269766) got %d words, want 5: %v", len(words), words)
+	if len(words) != 4 {
+		t.Fatalf("Phrase(269766) got %d words, want 4: %v", len(words), words)
 	}
 	mid := words[2] // 97
-	// Parse the middle word back and confirm the case is COM.
 	f, err := fullparse.ParseFormative(mid)
 	if err != nil {
 		t.Fatalf("parse %q: %v", mid, err)
@@ -219,13 +215,13 @@ func TestPhrase_IntermediateCountUsesCOM(t *testing.T) {
 }
 
 func TestPhrase_FirstAndLastCountUseTHM(t *testing.T) {
-	// In 4229 = [42, of-100, 29], the count 29 is the trailing ones —
-	// it bears THM, not COM.
+	// In 4229 the phrase reduces to [42, 29] after gzalui-omission.
+	// Both counts are THM (first and trailing).
 	words, ok := Phrase(4229, Cardinal, Concrete)
 	if !ok {
 		t.Fatal("Phrase(4229): ok=false")
 	}
-	for _, idx := range []int{0, 2} {
+	for idx := range words {
 		f, err := fullparse.ParseFormative(words[idx])
 		if err != nil {
 			t.Errorf("parse %q: %v", words[idx], err)
@@ -235,6 +231,26 @@ func TestPhrase_FirstAndLastCountUseTHM(t *testing.T) {
 		if !ok || un.Case != g.THM {
 			t.Errorf("word[%d] %q: Final = %+v, want THM", idx, words[idx], f.Final)
 		}
+	}
+}
+
+func TestPhrase_GzaluiOmission(t *testing.T) {
+	// 4229: a single gzalui between two counts is omitted.
+	words, _ := Phrase(4229, Cardinal, Concrete)
+	if len(words) != 2 {
+		t.Errorf("Phrase(4229) = %v, want 2 words (gzalui omitted)", words)
+	}
+	// 269,766: one gzalui (between 97 and 66) is omitted, but pcalui
+	// (a different magnitude) is kept.
+	words, _ = Phrase(269_766, Cardinal, Concrete)
+	if len(words) != 4 {
+		t.Errorf("Phrase(269766) = %v, want 4 words (one gzalui omitted)", words)
+	}
+	// 21,000,000: gzalui sits between a count and another magnitude,
+	// so it must be kept (omission would change the value to 210,000).
+	words, _ = Phrase(21_000_000, Cardinal, Concrete)
+	if len(words) != 3 {
+		t.Errorf("Phrase(21M) = %v, want 3 words (gzalui kept)", words)
 	}
 }
 
@@ -302,10 +318,11 @@ func TestPhrase_RoundTripsThroughFullparse(t *testing.T) {
 	// Render a phrase, parse each word back, decode each as a number,
 	// and verify the magnitude chain recovers the original value.
 	//
-	// Decode walks the words left-to-right. Counts (<100) start a new
-	// segment; consecutive magnitudes (≥100) multiply together; when
-	// the next count appears, the previous (count × accumulated_mag)
-	// is added to the total.
+	// Decode walks the words left-to-right. A count (<100) closes the
+	// previous segment (count × accumulated_mag) and starts a new one.
+	// Two adjacent counts (no magnitude between) imply an omitted
+	// *gzalui* — the first count is multiplied by 100. Consecutive
+	// magnitudes multiply onto the same count.
 	cases := []int64{100, 200, 4229, 10000, 9999, 269_766, 1_000_000, 21_000_000}
 	for _, n := range cases {
 		words, ok := Phrase(n, Cardinal, Concrete)
@@ -316,6 +333,7 @@ func TestPhrase_RoundTripsThroughFullparse(t *testing.T) {
 		var total int64
 		var count int64
 		var mag int64 = 1
+		prevWasCount := false
 		for _, w := range words {
 			f, err := fullparse.ParseFormative(w)
 			if err != nil {
@@ -328,11 +346,18 @@ func TestPhrase_RoundTripsThroughFullparse(t *testing.T) {
 				continue
 			}
 			if num.Value < 100 {
-				total += count * mag
+				if prevWasCount {
+					// Implicit ×100 between two adjacent counts.
+					total += count * 100
+				} else {
+					total += count * mag
+				}
 				count = num.Value
 				mag = 1
+				prevWasCount = true
 			} else {
 				mag *= num.Value
+				prevWasCount = false
 			}
 		}
 		total += count * mag
