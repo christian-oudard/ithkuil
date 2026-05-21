@@ -301,7 +301,7 @@ func TestRoundTrip_ShortcutEncodableSlotVI(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			assertRoundTrip(t, c.name, f)
 			// Also exercise the shortcut surface form explicitly.
-			surface := render.FormativeWithOpts(f, render.Options{Shortcut: true})
+			surface := render.Formative(f)
 			parsed, err := ParseFormative(surface)
 			if err != nil {
 				t.Fatalf("ParseFormative(%q): %v", surface, err)

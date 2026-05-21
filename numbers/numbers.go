@@ -535,7 +535,7 @@ func RenderSPT(n int, sptDegree int, stem Stem, ver Version) (string, bool) {
 	if !ok {
 		return "", false
 	}
-	return render.FormativeWithOpts(f, render.Options{Shortcut: true}), true
+	return render.Formative(f), true
 }
 
 // SPTDegreeLabel returns a human-readable label for an SPT degree, e.g.

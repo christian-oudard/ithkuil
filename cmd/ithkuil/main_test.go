@@ -147,8 +147,8 @@ func TestCompose_Expression(t *testing.T) {
 	if len(lines) != 2 {
 		t.Fatalf("compose output = %q, want 2 lines (surface + gloss)", out)
 	}
-	if lines[0] != "imlalo" {
-		t.Errorf("compose surface = %q, want \"imlalo\"", lines[0])
+	if lines[0] != "wimlo" {
+		t.Errorf("compose surface = %q, want canonical \"wimlo\" (Cc shortcut form)", lines[0])
 	}
 	if !strings.Contains(lines[1], "-ml-") || !strings.Contains(lines[1], "ERG") {
 		t.Errorf("compose gloss = %q, want it to mention -ml- and ERG", lines[1])

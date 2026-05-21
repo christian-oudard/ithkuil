@@ -28,7 +28,7 @@ func TestRoundTrip_Grid_AllVk(t *testing.T) {
 			name = "ASR/" + asr.Validation.String()
 		}
 		t.Run(name, func(t *testing.T) {
-			l := FromGrammar(f, Options{})
+			l := FromGrammar(f)
 			got, err := ToGrammar(l)
 			if err != nil {
 				t.Fatalf("ToGrammar: %v", err)
@@ -55,7 +55,7 @@ func TestRoundTrip_Grid_CsRoot(t *testing.T) {
 					}
 					name := fn.String() + "-" + ver.String() + "-" + ctx.String() + "-d" + string(rune('0'+deg))
 					t.Run(name, func(t *testing.T) {
-						l := FromGrammar(f, Options{})
+						l := FromGrammar(f)
 						got, err := ToGrammar(l)
 						if err != nil {
 							t.Fatalf("ToGrammar: %v", err)
@@ -83,7 +83,7 @@ func TestRoundTrip_Grid_RefRoot(t *testing.T) {
 				}
 				name := ver.String() + "-" + fn.String() + "-" + sp.String()
 				t.Run(name, func(t *testing.T) {
-					l := FromGrammar(f, Options{})
+					l := FromGrammar(f)
 					got, err := ToGrammar(l)
 					if err != nil {
 						t.Fatalf("ToGrammar: %v", err)
@@ -124,7 +124,7 @@ func TestRoundTrip_Grid_ConcatShortcut(t *testing.T) {
 			f.SlotVI = s
 			name := c.name + "-series" + string(rune('1'+i))
 			t.Run(name, func(t *testing.T) {
-				l := FromGrammar(f, Options{Shortcut: true})
+				l := FromGrammar(f)
 				got, err := ToGrammar(l)
 				if err != nil {
 					t.Fatalf("ToGrammar (shortcut): %v", err)
@@ -216,7 +216,7 @@ func TestParse_SlotV(t *testing.T) {
 		{Type: g.Type1Affix, Degree: 5, Consonant: "r"},
 		{Type: g.Type1Affix, Degree: 5, Consonant: "r"},
 	}
-	l := FromGrammar(f, Options{})
+	l := FromGrammar(f)
 	surface := Render(l)
 	got, err := Parse(surface)
 	if err != nil {
@@ -256,21 +256,21 @@ func TestMaybeMoveCnToCa_Conditions(t *testing.T) {
 	// Shortcut applies: Vn=MNO, Cn=Pattern-1 non-FAC, Ca=default-l.
 	f := base()
 	f.SlotVIII = g.VnCnValence{Valence: g.MNO, MoodScope: g.SUB}
-	l := FromGrammar(f, Options{})
+	l := FromGrammar(f)
 	if !l.CnInCa {
 		t.Error("MNO + SUB + default Ca: CnInCa should be true")
 	}
 	// Not applied: non-MNO Valence.
 	f = base()
 	f.SlotVIII = g.VnCnValence{Valence: g.PRL, MoodScope: g.SUB}
-	l = FromGrammar(f, Options{})
+	l = FromGrammar(f)
 	if l.CnInCa {
 		t.Error("PRL + SUB: CnInCa should be false")
 	}
 	// Not applied: FAC Mood (the Cn would elide instead).
 	f = base()
 	f.SlotVIII = g.VnCnValence{Valence: g.MNO, MoodScope: g.FAC}
-	l = FromGrammar(f, Options{})
+	l = FromGrammar(f)
 	if l.CnInCa {
 		t.Error("MNO + FAC: CnInCa should be false (Cn would elide)")
 	}
@@ -278,7 +278,7 @@ func TestMaybeMoveCnToCa_Conditions(t *testing.T) {
 	f = base()
 	f.SlotVIII = g.VnCnValence{Valence: g.MNO, MoodScope: g.SUB}
 	f.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.ASO, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}
-	l = FromGrammar(f, Options{})
+	l = FromGrammar(f)
 	if l.CnInCa {
 		t.Error("non-default Ca: CnInCa should be false")
 	}

@@ -49,7 +49,7 @@ func ToGrammar(l Layout) (g.Formative, error) {
 		return g.Formative{}, err
 	}
 
-	f := g.Formative{
+	return g.Formative{
 		Concat:   concat,
 		Root:     root,
 		SlotV:    slotV,
@@ -57,34 +57,7 @@ func ToGrammar(l Layout) (g.Formative, error) {
 		SlotVII:  slotVII,
 		SlotVIII: slotVIII,
 		Final:    final,
-	}
-	f.Surface = hintsFromLayout(l, f)
-	return f, nil
-}
-
-// hintsFromLayout derives the SurfaceHints recording the orthographic
-// choices the parsed Layout embodied. The returned struct is always
-// non-nil so a parsed Formative re-renders verbatim — that's the whole
-// point of lossless tracking. Programmatic callers who skip parse and
-// want canonical defaults leave Formative.Surface as nil.
-//
-// Each flag records the speaker's actual choice:
-//
-//   - CcShortcut: the §3.2 Cc shortcut (w/y/hl/hm/hr/hn) was used.
-//   - CnCaShortcut: the §3.8.1.2 Cn→Ca shortcut was applied.
-//   - MovedGlottal: the §3.9.1 V_C glottal was moved earlier.
-//   - KeepVv: the default Vv "a" was emitted instead of being elided.
-//     Only recorded when elision was actually available — otherwise
-//     every long-form word with Vv="a" would set it spuriously.
-//   - KeepVc: same gating for the trailing THM Vc "a".
-func hintsFromLayout(l Layout, f g.Formative) *g.SurfaceHints {
-	return &g.SurfaceHints{
-		CcShortcut:   isShortcutCc(l.Cc),
-		CnCaShortcut: l.CnInCa,
-		MovedGlottal: l.MovedGlottal,
-		KeepVv:       canElideLeadingVv(&l, f),
-		KeepVc:       canElideTrailingTHMVc(&l, f),
-	}
+	}, nil
 }
 
 // rootFromLayout decodes the Root and SlotVI together — they're
@@ -245,10 +218,13 @@ func finalFromVc(vc string, stress surface.Stress) (g.Final, error) {
 }
 
 // FromGrammar converts a grammar.Formative into a Layout — Layer D
-// inverse. Surface choices (shortcut yes/no, default-value elisions,
-// special-Vv selection) are made here. The opts argument lets callers
-// request a shortcut surface form when the formative permits it.
-func FromGrammar(f g.Formative, opts Options) Layout {
+// inverse. The surface form is always canonical: the §3.2 Cc shortcut
+// fires whenever the formative permits it, the §3.8.1.2 Cn→Ca shortcut
+// fires when its conditions match, the §3.9.1 moved-glottal applies
+// for cases 37-52, and default-value elisions run last. There is no
+// option to request the long form — non-canonical surfaces exist only
+// as input to the parser.
+func FromGrammar(f g.Formative) Layout {
 	if f.Root == nil {
 		panic("slots: Formative.Root is nil")
 	}
@@ -257,7 +233,7 @@ func FromGrammar(f g.Formative, opts Options) Layout {
 	}
 	l := Layout{}
 
-	useShortcut := (opts.Shortcut || (f.Surface != nil && f.Surface.CcShortcut)) && canUseShortcut(f)
+	useShortcut := canUseShortcut(f)
 	l.Cc = ccFromGrammar(f.Concat, useShortcut, f)
 
 	switch r := f.Root.(type) {
@@ -310,17 +286,8 @@ func FromGrammar(f g.Formative, opts Options) Layout {
 	// shortcut's freed-up syllable isn't claimed by elision first — that
 	// ordering let elision burn enough slack to keep the shortcut's
 	// minimum-syllables guard from firing, and the long form leaked out.
-	//
-	// Surface hints, when present, override the canonical auto-fire
-	// rules: a hint set false suppresses the shortcut even when its
-	// conditions match, so a long-form input round-trips back to the
-	// long form.
-	if f.Surface == nil || f.Surface.CnCaShortcut {
-		maybeMoveCnToCa(&l, f)
-	}
-	if f.Surface == nil || f.Surface.MovedGlottal {
-		maybeShortenVcGlottal(&l, f)
-	}
+	maybeMoveCnToCa(&l, f)
+	maybeShortenVcGlottal(&l, f)
 	applyDefaultElisions(&l, f)
 	return l
 }
@@ -395,12 +362,6 @@ func maybeMoveCnToCa(l *Layout, f g.Formative) {
 	l.CnInCa = true
 }
 
-// Options controls orthographic choices that don't affect the grammar.
-type Options struct {
-	// Shortcut requests the Cc-Vv shortcut form when permissible.
-	Shortcut bool
-}
-
 // canUseShortcut reports whether the formative's grammar permits a
 // Cc-shortcut surface form: a CrRoot with default SlotIV and a SlotVI
 // that the shortcut table can encode. Slot V is allowed per §3.6.2 —
@@ -413,7 +374,58 @@ func canUseShortcut(f g.Formative) bool {
 	if cr.SlotIV != g.DefaultSlotIV {
 		return false
 	}
-	return shortcutSeries(f.SlotVI) != 0
+	if shortcutSeries(f.SlotVI) == 0 {
+		return false
+	}
+	// Cc shortcut compresses Slot IV/VI into the Cc-Vv pair, giving a
+	// minimal body of Vv-Cr-Vc — two syllables. Final categories that
+	// need three (FramedVerbal's antepenultimate stress) can't fit
+	// the diacritic and must take the long form.
+	if _, framed := f.Final.(g.FramedVerbal); framed {
+		return false
+	}
+	// When the §3.8.1.2 Cn→Ca shortcut also applies (Pattern-1
+	// non-FAC Mood with default MNO valence and default Ca), prefer
+	// that — it folds Slot VIII into the Ca position, which Cc
+	// shortcut would leave in place. Picking one canonical form
+	// avoids fighting over which compression "wins".
+	if cnCaShortcutEligible(f) {
+		return false
+	}
+	return true
+}
+
+// cnCaShortcutEligible reports whether the §3.8.1.2 Cn→Ca shortcut
+// would apply to f, ignoring the syllable-budget check that
+// maybeMoveCnToCa makes at layout-build time. Used by canUseShortcut
+// to pick the canonical form when both shortcuts are eligible.
+func cnCaShortcutEligible(f g.Formative) bool {
+	if len(f.SlotV) > 0 || f.SlotVI != g.DefaultSlotVI {
+		return false
+	}
+	v, ok := f.SlotVIII.(g.VnCnValence)
+	if !ok || v.Valence != g.MNO {
+		return false
+	}
+	cn := vnCnPatternCn(v.MoodScope)
+	return isMovedCn(cn)
+}
+
+// vnCnPatternCn returns the Cn consonant for a Pattern-1 MoodScope.
+func vnCnPatternCn(m g.Mood) string {
+	switch m {
+	case g.SUB:
+		return "hl"
+	case g.ASM:
+		return "hr"
+	case g.SPC:
+		return "hm"
+	case g.COU:
+		return "hn"
+	case g.HYP:
+		return "hň"
+	}
+	return ""
 }
 
 // shortcutSeries returns the Vv series (1-4) used to encode the given
@@ -632,18 +644,6 @@ func applyDefaultElisions(l *Layout, f g.Formative) {
 
 	canVv := canElideLeadingVv(l, f)
 	canVc := canElideTrailingTHMVc(l, f) || canElideMonosyllabicVerbalVc(l, f)
-	// Surface hints from a parsed long-form input pin the leading Vv
-	// and/or trailing Vc in place. KeepVv / KeepVc only matter when the
-	// elision was available — without the gate every word would set
-	// them, which is the opposite of what they record.
-	if f.Surface != nil {
-		if f.Surface.KeepVv {
-			canVv = false
-		}
-		if f.Surface.KeepVc {
-			canVc = false
-		}
-	}
 	slack := vowelCount(l) - requiredSyllables(f.Final)
 	if slack < 0 {
 		slack = 0

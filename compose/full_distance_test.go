@@ -6,7 +6,6 @@ import (
 	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/gloss"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/render"
 	"github.com/christian-oudard/ithkuil/slots"
 )
 
@@ -35,14 +34,12 @@ func TestFullDistance_SlotsCorpus(t *testing.T) {
 			if err != nil {
 				t.Skipf("fullparse rejects %q: %v", w, err)
 			}
-			// Surface round-trip: now that #17 (Surface hints) covers
-			// every shortcut path, fullparse + render must reproduce
-			// the original surface exactly.
-			if got := render.Formative(f); got != w {
-				t.Errorf("render(fullparse(%q)) = %q", w, got)
-			}
 			// Gloss round-trip: assert compose is the inverse of gloss
-			// at the canonical level.
+			// at the canonical level. The surface round-trip is *not*
+			// asserted — render emits the canonical form, which for
+			// some input surfaces (e.g. consonant-initial vs Cc
+			// shortcut equivalents) differs from the input. That's
+			// by design; see TestCanonicalize in slots/.
 			s1 := gl.Formative(f)
 			f2, err := ParseString(s1, lex.Affixes)
 			if err != nil {

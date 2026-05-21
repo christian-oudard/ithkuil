@@ -10,10 +10,10 @@ import (
 func TestFormative_Minimal(t *testing.T) {
 	// MinimalFormative("ml"): I=∅, II=S1/PRC ("a"), III="ml", IV=STA/BSC/EXS ("a"),
 	// V=[], VI=default ("l"), VII=[], VIII=nil, IX=CaseSlot{THM} ("a").
-	// Default Vv elides per §3.2 → short form "mlala".
+	// Default Vv elides per §3.2 → short form "wamla".
 	f := g.MinimalFormative("ml")
 	got := Formative(f)
-	want := "mlala"
+	want := "wamla"
 	if got != want {
 		t.Errorf("Formative(minimal \"ml\") = %q, want %q", got, want)
 	}
@@ -40,11 +40,11 @@ func TestFormative_NonDefaultSlots(t *testing.T) {
 
 func TestFormative_Ultimate(t *testing.T) {
 	// Verbal formative: Final is UnframedVerbal{Assertive{INF}}.
-	// Ultimate marks the last vowel; default Vv elides → "mlalú".
+	// Ultimate marks the last vowel; default Vv elides → "wamlú".
 	f := g.MinimalFormative("ml")
 	f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.INF}}
 	got := Formative(f)
-	want := "mlalú"
+	want := "wamlú"
 	if got != want {
 		t.Errorf("Formative(verbal) = %q, want %q", got, want)
 	}
@@ -76,23 +76,23 @@ func TestFormative_MovedGlottal_Cases37To52(t *testing.T) {
 		want string
 	}{
 		// Relational (37-44): Series 1 + glottal.
-		{g.PRN, "mla'la"},
-		{g.DSP, "mla'lä"},
-		{g.COR, "mla'le"},
-		{g.CPS, "mla'li"},
-		{g.COM, "mla'lëi"},
-		{g.UTL, "mla'lö"},
-		{g.PRD, "mla'lo"},
-		{g.RLT, "mla'lu"},
+		{g.PRN, "wamla'a"},
+		{g.DSP, "wamlä'ä"},
+		{g.COR, "wamle'e"},
+		{g.CPS, "wamli'i"},
+		{g.COM, "wamlë'i"},
+		{g.UTL, "wamlö'ö"},
+		{g.PRD, "wamlo'o"},
+		{g.RLT, "wamlu'u"},
 		// Affinitive (45-52): Series 2 + glottal.
-		{g.ACT, "mla'lai"},
-		{g.ASI, "mla'lau"},
-		{g.ESS, "mla'lei"},
-		{g.TRM, "mla'leu"},
-		{g.SEL, "mla'lëu"},
-		{g.CFM, "mla'lou"},
-		{g.DEP, "mla'loi"},
-		{g.VOC, "mla'lui"},
+		{g.ACT, "wamla'i"},
+		{g.ASI, "wamla'u"},
+		{g.ESS, "wamle'i"},
+		{g.TRM, "wamle'u"},
+		{g.SEL, "wamlë'u"},
+		{g.CFM, "wamlo'u"},
+		{g.DEP, "wamlo'i"},
+		{g.VOC, "wamlu'i"},
 	}
 	for _, c := range cases {
 		f := g.MinimalFormative("ml")
@@ -148,8 +148,8 @@ func TestFormative_WithAffixes(t *testing.T) {
 	// Slot VII affix: vowel=a, cons=r → "ar"
 	f.SlotVII = []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}}
 	got := Formative(f)
-	// Long: a-ml-a-l-ar-a. Both default Vv and THM Vc elide → "mlalar".
-	want := "mlalar"
+	// Long: a-ml-a-l-ar-a. Both default Vv and THM Vc elide → "wamlar".
+	want := "wamlar"
 	if got != want {
 		t.Errorf("Formative(with affix) = %q, want %q", got, want)
 	}
@@ -160,7 +160,7 @@ func TestFormative_THMVcElision_KeepsForMinimal(t *testing.T) {
 	// PEN needs 2; slack is 1; only one elision fits. Prefer Vv.
 	f := g.MinimalFormative("ml")
 	got := Formative(f)
-	want := "mlala"
+	want := "wamla"
 	if got != want {
 		t.Errorf("Formative(minimal) = %q, want %q", got, want)
 	}
@@ -174,7 +174,7 @@ func TestFormative_AssertiveOBS_MonosyllabicElision(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
 	got := Formative(f)
-	want := "mlal"
+	want := "waml"
 	if got != want {
 		t.Errorf("Formative(ultimate-ASR-OBS) = %q, want %q", got, want)
 	}
@@ -200,7 +200,7 @@ func TestFormative_ShortForm_NonDefaultVvNoElision(t *testing.T) {
 	cr.Stem = g.S2
 	f.Root = cr
 	got := Formative(f)
-	want := "emlal"
+	want := "wemla"
 	if got != want {
 		t.Errorf("Formative(S2/PRC) = %q, want %q", got, want)
 	}
@@ -213,7 +213,7 @@ func TestFormative_ShortForm_WithSlotI_NoElision(t *testing.T) {
 	t1 := g.Type1
 	f.Concat = &t1
 	got := Formative(f)
-	want := "hamlal"
+	want := "hlamla"
 	if got != want {
 		t.Errorf("Formative(T1) = %q, want %q", got, want)
 	}
@@ -238,7 +238,7 @@ func TestFormative_ANTPaddingNilSlotIX(t *testing.T) {
 
 func TestFormative_ShortcutW_Series1(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	got := FormativeWithOpts(f, Options{Shortcut: true})
+	got := Formative(f)
 	want := "wamla"
 	if got != want {
 		t.Errorf("Formative(W shortcut series 1) = %q, want %q", got, want)
@@ -249,7 +249,7 @@ func TestFormative_ShortcutW_Series2(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL,
 		Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}
-	got := FormativeWithOpts(f, Options{Shortcut: true})
+	got := Formative(f)
 	want := "waimla"
 	if got != want {
 		t.Errorf("Formative(W shortcut series 2) = %q, want %q", got, want)
@@ -260,7 +260,7 @@ func TestFormative_ShortcutY_Series1(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL,
 		Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}
-	got := FormativeWithOpts(f, Options{Shortcut: true})
+	got := Formative(f)
 	want := "yamla"
 	if got != want {
 		t.Errorf("Formative(Y shortcut series 1) = %q, want %q", got, want)
@@ -271,7 +271,7 @@ func TestFormative_ShortcutWithConcat(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	t1 := g.Type1
 	f.Concat = &t1
-	got := FormativeWithOpts(f, Options{Shortcut: true})
+	got := Formative(f)
 	want := "hlamla"
 	if got != want {
 		t.Errorf("Formative(T1+W shortcut) = %q, want %q", got, want)

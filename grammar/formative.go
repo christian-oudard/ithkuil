@@ -23,6 +23,13 @@ package grammar
 // prosodic — the spec describes it as "normally never written" outside
 // of scripts for performance. The parser accepts and discards it; it
 // has no representation on Formative.
+//
+// Render always emits the canonical surface for a given Formative —
+// shortcut form when conditions match, default elisions applied. A
+// formative parsed from a long-form input and re-rendered comes back
+// as the canonical (often shorter) form, by design. The non-canonical
+// input is not lost in any meaningful sense — the gloss and grammar
+// are identical to those of the canonical equivalent.
 type Formative struct {
 	Concat   *ConcatenationStatus
 	Root     Root
@@ -31,12 +38,6 @@ type Formative struct {
 	SlotVII  []Affix
 	SlotVIII SlotVIII
 	Final    Final
-	// Surface, when non-nil, captures the orthographic choices the
-	// input surface made (§3.2 Cc shortcut, §3.8.1.2 Cn→Ca shortcut,
-	// §3.9.1 moved glottal, default elisions kept). Render honors
-	// these to reproduce the input verbatim. nil means "use canonical
-	// defaults". See grammar/surface_hints.go.
-	Surface *SurfaceHints
 }
 
 // MinimalFormative builds a formative whose only meaningful content is

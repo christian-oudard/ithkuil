@@ -13,7 +13,6 @@ import (
 // ToGrammar, which records the surface choices made by FromGrammar's
 // canonical defaults.
 func stripSurface(f g.Formative) g.Formative {
-	f.Surface = nil
 	return f
 }
 
@@ -95,7 +94,7 @@ func TestFromGrammar_ToGrammar_RoundTrip(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			l := FromGrammar(tc.f, Options{})
+			l := FromGrammar(tc.f)
 			got, err := ToGrammar(l)
 			if err != nil {
 				t.Fatalf("ToGrammar: %v", err)
@@ -114,7 +113,7 @@ func TestFromGrammar_ToGrammar_RoundTrip(t *testing.T) {
 func TestFromGrammar_Shortcut(t *testing.T) {
 	// Default formative is shortcut-eligible.
 	f := g.MinimalFormative("ml")
-	l := FromGrammar(f, Options{Shortcut: true})
+	l := FromGrammar(f)
 	if l.Cc == "" {
 		t.Error("Shortcut: expected non-empty Cc on minimal formative")
 	}
@@ -142,7 +141,7 @@ func TestFromGrammar_Slot8_EffectAndLevel(t *testing.T) {
 		{"slot8-level-min", withLevel},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			l := FromGrammar(tc.f, Options{})
+			l := FromGrammar(tc.f)
 			got, err := ToGrammar(l)
 			if err != nil {
 				t.Fatalf("ToGrammar: %v", err)

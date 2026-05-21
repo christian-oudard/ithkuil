@@ -76,7 +76,7 @@ func TestFromGrammar_NilPanics(t *testing.T) {
 			t.Error("FromGrammar(nil Root) did not panic")
 		}
 	}()
-	FromGrammar(g.Formative{Final: g.UnframedNominal{Case: g.THM}}, Options{})
+	FromGrammar(g.Formative{Final: g.UnframedNominal{Case: g.THM}})
 }
 
 func TestFromGrammar_NilFinalPanics(t *testing.T) {
@@ -85,7 +85,7 @@ func TestFromGrammar_NilFinalPanics(t *testing.T) {
 			t.Error("FromGrammar(nil Final) did not panic")
 		}
 	}()
-	FromGrammar(g.Formative{Root: g.CrRoot{Cluster: "m", Stem: g.S1, Version: g.PRC}}, Options{})
+	FromGrammar(g.Formative{Root: g.CrRoot{Cluster: "m", Stem: g.S1, Version: g.PRC}})
 }
 
 func TestToGrammar_ErrorPaths(t *testing.T) {
@@ -232,7 +232,7 @@ func TestMaybeMoveCnToCa_BodyTooShort(t *testing.T) {
 	// Don't pin Vv to non-default so it can elide. Leave SlotVIII as MNO+SUB
 	// but the body is already minimal.
 	f.SlotVIII = g.VnCnValence{Valence: g.MNO, MoodScope: g.SUB}
-	l := FromGrammar(f, Options{})
+	l := FromGrammar(f)
 	// l should not have CnInCa because there isn't a Vv left to drop.
 	if l.CnInCa && l.Vv == "" {
 		t.Log("maybe-cn-to-ca with elided Vv:", l)
@@ -245,7 +245,7 @@ func TestApplyDefaultElisions_FramedVerbalPad(t *testing.T) {
 	// A FramedVerbal with too few syllables gets a trailing "a" pad.
 	f := g.MinimalFormative("ml")
 	f.Final = g.FramedVerbal{Case: g.THM}
-	l := FromGrammar(f, Options{})
+	l := FromGrammar(f)
 	// FramedVerbal needs ≥ 3 syllables, so we should see a padding "a"
 	// somewhere even on the minimal body.
 	rendered := Render(l)
