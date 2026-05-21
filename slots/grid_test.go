@@ -172,11 +172,13 @@ func TestCanUseShortcut(t *testing.T) {
 	if canUseShortcut(f) {
 		t.Error("CsRoot: shouldn't be shortcut-eligible")
 	}
-	// Slot V populated → not eligible.
+	// Slot V populated → STILL eligible per §3.6.2. The renderer
+	// emits the Slot V affixes in Vx-Cs order with an end-marker
+	// glottal on the final Vx.
 	f = g.MinimalFormative("ml")
 	f.SlotV = []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}}
-	if canUseShortcut(f) {
-		t.Error("Slot V filled: shouldn't be shortcut-eligible")
+	if !canUseShortcut(f) {
+		t.Error("Slot V filled (§3.6.2): should be shortcut-eligible")
 	}
 }
 

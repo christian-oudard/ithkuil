@@ -31,6 +31,17 @@ func TestLossless_RoundTrip(t *testing.T) {
 		// Default Vv "a" kept (long) vs elided (short).
 		"amlala",
 		"mlala",
+		// §3.6.2 shortcut + Slot V with end-marker glottal.
+		"wamla'r",
+		"wamla're",
+		// Concat prefixes (h / hw, non-shortcut).
+		"hamlala",
+		"hwamlala",
+		// Cc shortcut forms paired with monosyllabic verbal default.
+		"waml",
+		"yuml",
+		"waiml",
+		"hlaml",
 		// Canonical Ithkuil test word.
 		"malëuţřait",
 		// Spec number examples.

@@ -166,15 +166,17 @@ func TestFormative_THMVcElision_KeepsForMinimal(t *testing.T) {
 	}
 }
 
-func TestFormative_THMVcElision_NotForUltimate(t *testing.T) {
-	// Ultimate stress carries Vk, not Vc — the trailing-a rule doesn't
-	// apply, only Vv elides. The diacritic still lands on the last vowel.
+func TestFormative_AssertiveOBS_MonosyllabicElision(t *testing.T) {
+	// §3.10: a monosyllabic body carries implicit ultimate stress with
+	// no diacritic. The Assertive/OBS Vk vowel "a" elides whenever the
+	// resulting body is monosyllabic — the parser round-trips it via
+	// finalFromVc's monosyllabic branch back to Assertive/OBS.
 	f := g.MinimalFormative("ml")
 	f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
 	got := Formative(f)
-	want := "mlalá"
+	want := "mlal"
 	if got != want {
-		t.Errorf("Formative(ultimate-ASR) = %q, want %q", got, want)
+		t.Errorf("Formative(ultimate-ASR-OBS) = %q, want %q", got, want)
 	}
 }
 

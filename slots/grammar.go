@@ -403,17 +403,15 @@ type Options struct {
 }
 
 // canUseShortcut reports whether the formative's grammar permits a
-// Cc-shortcut surface form: a CrRoot with default SlotIV, no Slot V,
-// and a SlotVI that the shortcut table can encode.
+// Cc-shortcut surface form: a CrRoot with default SlotIV and a SlotVI
+// that the shortcut table can encode. Slot V is allowed per §3.6.2 —
+// the renderer signals end-of-Slot-V with a glottal on the final Vx.
 func canUseShortcut(f g.Formative) bool {
 	cr, ok := f.Root.(g.CrRoot)
 	if !ok {
 		return false
 	}
 	if cr.SlotIV != g.DefaultSlotIV {
-		return false
-	}
-	if len(f.SlotV) > 0 {
 		return false
 	}
 	return shortcutSeries(f.SlotVI) != 0
@@ -634,7 +632,7 @@ func applyDefaultElisions(l *Layout, f g.Formative) {
 	}
 
 	canVv := canElideLeadingVv(l, f)
-	canVc := canElideTrailingTHMVc(l, f)
+	canVc := canElideTrailingTHMVc(l, f) || canElideMonosyllabicVerbalVc(l, f)
 	// Surface hints from a parsed long-form input pin the leading Vv
 	// and/or trailing Vc in place. KeepVv / KeepVc only matter when the
 	// elision was available — without the gate every word would set
@@ -660,6 +658,36 @@ func applyDefaultElisions(l *Layout, f g.Formative) {
 	case canVc && slack >= 1:
 		l.Vc = ""
 	}
+}
+
+// canElideMonosyllabicVerbalVc reports whether the trailing Vc "a" can
+// drop because the formative is UnframedVerbal{Assertive{OBS}} and the
+// resulting body would be exactly one syllable. Per §3.10 a
+// monosyllabic word carries implicit ultimate stress with no
+// diacritic, so eliding the Vk-vowel "a" round-trips faithfully via
+// finalFromVc's monosyllabic branch.
+//
+// Only the Assertive/OBS combination is eligible — its surface vowel
+// "a" happens to coincide with the THM-default that already elides
+// elsewhere, and dropping it produces a form that the parser will
+// reconstitute as Assertive/OBS via the monosyllabic-implicit-ultimate
+// rule. Any other Vk has a distinguishing vowel that the speaker
+// would actually write.
+func canElideMonosyllabicVerbalVc(l *Layout, f g.Formative) bool {
+	uv, ok := f.Final.(g.UnframedVerbal)
+	if !ok {
+		return false
+	}
+	asr, ok := uv.Vk.(g.Assertive)
+	if !ok || asr.Validation != g.OBS {
+		return false
+	}
+	if l.Vc != "a" {
+		return false
+	}
+	// Eliding Vc must leave at least one syllable so the body remains
+	// a pronounceable monosyllabic-equivalent.
+	return vowelCount(l)-1 >= 1
 }
 
 func canElideLeadingVv(l *Layout, f g.Formative) bool {
