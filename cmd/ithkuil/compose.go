@@ -3,18 +3,29 @@ package main
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/render"
 )
 
-// cmdCompose builds a formative from a root and named grammar flags.
-// Each option corresponds to one slot value (stem, version, case,
-// etc.). See compose.ApplyFlag for the recognized abbreviations.
+// cmdCompose builds a formative from a root and named grammar flags,
+// or from a single gloss-style expression. Each option corresponds to
+// one slot value (stem, version, case, etc.). See compose.ApplyFlag
+// for the recognized abbreviations and compose.ParseString for the
+// expression syntax.
 //
-// Usage: ithkuil compose [--stem S2] [--case ERG] ... ROOT
+// Usage:
+//
+//	ithkuil compose [--stem S2] [--case ERG] ... ROOT
+//	ithkuil compose 'S2/CPT-ROOT-DYN/OBJ-DEV/3-ERG'
+//
+// A positional argument containing "-" or "/" is parsed as a compose
+// expression and any flags are ignored. Otherwise the bare argument
+// is treated as a root cluster and flags supply each slot value.
 //
 // Flags must come before the positional ROOT (Go stdlib flag stops
 // parsing at the first positional argument).
@@ -48,18 +59,36 @@ func cmdCompose(args []string, stdout, stderr io.Writer, lexDir string) int {
 	}
 	root := rest[0]
 
-	f := g.MinimalFormative(root)
-	// Apply each non-empty flag via the shared compose.ApplyFlag.
-	for _, v := range []string{
-		*stem, *version, *function, *specification, *context,
-		*caseFlag, *aspect, *valence, *mood, *illocution, *stress,
-	} {
-		if v == "" {
-			continue
+	var f g.Formative
+	// A hyphen or slash in the positional argument means it's a
+	// compose-syntax expression, not a bare root cluster. Parse it
+	// whole; flags are ignored in this mode.
+	if strings.ContainsAny(root, "-/") {
+		lex := loadLex(lexDir, stderr)
+		var affixes map[string]lexicon.AffixEntry
+		if lex != nil {
+			affixes = lex.Affixes
 		}
-		if err := compose.ApplyFlag(&f, v); err != nil {
+		parsed, err := compose.ParseString(root, affixes)
+		if err != nil {
 			fmt.Fprintf(stderr, "compose: %v\n", err)
 			return 2
+		}
+		f = parsed
+	} else {
+		f = g.MinimalFormative(root)
+		// Apply each non-empty flag via the shared compose.ApplyFlag.
+		for _, v := range []string{
+			*stem, *version, *function, *specification, *context,
+			*caseFlag, *aspect, *valence, *mood, *illocution, *stress,
+		} {
+			if v == "" {
+				continue
+			}
+			if err := compose.ApplyFlag(&f, v); err != nil {
+				fmt.Fprintf(stderr, "compose: %v\n", err)
+				return 2
+			}
 		}
 	}
 
