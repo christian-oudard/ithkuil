@@ -407,25 +407,7 @@ func cnCaShortcutEligible(f g.Formative) bool {
 	if !ok || v.Valence != g.MNO {
 		return false
 	}
-	cn := vnCnPatternCn(v.MoodScope)
-	return isMovedCn(cn)
-}
-
-// vnCnPatternCn returns the Cn consonant for a Pattern-1 MoodScope.
-func vnCnPatternCn(m g.Mood) string {
-	switch m {
-	case g.SUB:
-		return "hl"
-	case g.ASM:
-		return "hr"
-	case g.SPC:
-		return "hm"
-	case g.COU:
-		return "hn"
-	case g.HYP:
-		return "hň"
-	}
-	return ""
+	return isMovedCn(moodCnP1(v.MoodScope))
 }
 
 // shortcutSeries returns the Vv series (1-4) used to encode the given

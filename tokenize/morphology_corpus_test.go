@@ -125,7 +125,8 @@ func TestMorphologyCorpus_Sec5_5_AttendantCase(t *testing.T) {
 			"Muliutma", "mu", "hlu", "hma", "azxip", "hlie",
 			"Wanzviha", "welei", "welie", "thie",
 		},
-		unknown: []string{"Wanzviha"},
+		// (Was unknown: [Wanzviha] — now classifies via case-normalization
+		// in slots.Parse, which lowercases the input.)
 	})
 }
 
@@ -180,7 +181,10 @@ func TestMorphologyCorpus_Sec5_8_CHC_Jump(t *testing.T) {
 			"ampalaicooe", "welecarzu",
 			"Yadcseuha", "Adcsuleuha", "Adcsularzeuha",
 		},
-		unknown: []string{"Yadcseuha", "ampalaicooe"},
+		// (Was unknown: [Yadcseuha, ampalaicooe]. Yadcseuha now classifies
+		// via case-normalization in slots.Parse; ampalaicooe still falls
+		// through pending separate parser work.)
+		unknown: []string{"ampalaicooe"},
 	})
 }
 
@@ -194,7 +198,8 @@ func TestMorphologyCorpus_Sec5_8_CHC_Sing(t *testing.T) {
 		},
 		// ellyahru and ellyuhru previously fell through; both classify
 		// now via the §3.8.1.2 Cn-in-Ca shortcut (hr in the Ca slot).
-		unknown: []string{"Yubskirfui"},
+		// (Was unknown: [Yubskirfui] — now classifies via case-
+		// normalization in slots.Parse.)
 	})
 }
 

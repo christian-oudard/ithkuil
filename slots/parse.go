@@ -17,6 +17,10 @@ func Parse(word string) (Layout, error) {
 	if word == "" {
 		return Layout{}, fmt.Errorf("slots: empty word")
 	}
+	// Ithkuil orthography is case-insensitive; capitalization at
+	// sentence start is purely visual. Normalize early so every
+	// slot- and shortcut-detection rule sees the canonical form.
+	word = strings.ToLower(word)
 	bare, stress := surface.Strip(word)
 	if stress == surface.InvalidStress {
 		return Layout{}, fmt.Errorf("word %q has more than one stress mark", word)

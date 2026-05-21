@@ -145,8 +145,10 @@ func (gl *Glosser) crRootLabel(x g.CrRoot, f g.Formative) string {
 	}
 	// Number roots are interpreted from the centesimal system table
 	// (§8.0), not from the lexicon. Decode reads Slot VII as well, so
-	// 11-99 fold the TNX tens-affix into the displayed value.
-	if numbers.IsNumberRoot(x.Cluster) {
+	// 11-99 fold the TNX tens-affix into the displayed value. Like
+	// lexicon meanings, the decoded integer is a display-only
+	// annotation — Canonical mode suppresses it.
+	if numbers.IsNumberRoot(x.Cluster) && !gl.Canonical {
 		if n, ok := numbers.Decode(f); ok {
 			// SPT affix in Slot VII upgrades the bare integer gloss to a
 			// date/time label per §6: "8th hour", "15th of month", etc.

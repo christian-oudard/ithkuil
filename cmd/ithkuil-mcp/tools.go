@@ -30,10 +30,13 @@ func (s *server) registerTools(srv *mcp.Server) {
 		Name: "compose",
 		Description: "Build a surface Ithkuil formative from a gloss-style expression. " +
 			"Slots are separated by '-', sub-fields by '/' (S2/CPT, DYN/OBJ) or '.' (Ca: " +
-			"MSS.G.RPV). The root is a lowercase consonant cluster; affixes write Cs/degree " +
-			"or ABBREV/degree, with an optional :2 or :3 type tag. Examples: " +
-			"expression=\"ml\" → \"mlala\"; \"S2/CPT-ml-ERG\" → \"imlalo\"; " +
-			"\"S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG\" → \"imlötřebo\".",
+			"MSS.G.RPV). The root is a lowercase consonant cluster (Cr), or (ABBREV)/degree " +
+			"for a CsRoot, or (1m+2p) for a RefRoot. Affixes write Cs/degree or ABBREV/degree, " +
+			"with an optional :2 or :3 type tag. The returned surface is canonical — shortcuts " +
+			"fire when applicable, so non-canonical input shapes (e.g. long form when a " +
+			"shortcut would apply) come back as the canonical equivalent. Examples: " +
+			"expression=\"ml\" → \"wamla\"; \"S2/CPT-ml-ERG\" → \"wimlo\"; " +
+			"\"S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG\" → \"imlötrebo\"; \"(CTR)/1\" → \"ëilal\".",
 	}, s.compose)
 
 	mcp.AddTool(srv, &mcp.Tool{

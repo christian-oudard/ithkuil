@@ -471,6 +471,30 @@ func ApplyFlag(f *g.Formative, flag string) error {
 		}
 	}
 
+	// Phase.
+	for _, p := range g.AllPhases {
+		if p.String() == flag {
+			f.SlotVIII = g.VnCnPhase{Phase: p, MoodScope: g.FAC}
+			return nil
+		}
+	}
+
+	// Effect.
+	for _, e := range g.AllEffects {
+		if e.String() == flag {
+			f.SlotVIII = g.VnCnEffect{Effect: e, MoodScope: g.FAC}
+			return nil
+		}
+	}
+
+	// Level.
+	for _, lv := range g.AllLevels {
+		if lv.String() == flag {
+			f.SlotVIII = g.VnCnLevel{Level: lv, MoodScope: g.FAC}
+			return nil
+		}
+	}
+
 	// CaseScope: same underlying field as Mood (Cn position encodes
 	// both). Map to the Mood counterpart via CaseScopeToMood.
 	for _, c := range g.AllCaseScopes {

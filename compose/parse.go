@@ -46,23 +46,44 @@ func ParseString(s string, affixes map[string]lexicon.AffixEntry) (g.Formative, 
 		return g.Formative{}, fmt.Errorf("no slot tokens")
 	}
 
-	// Identify the root: the first token that's a Cr cluster, a
-	// "(CTR)/1"-style CsRoot, or a "(1m+2p)"-style RefRoot.
+	// Identify the root. A bare Cr cluster (lowercase letters /
+	// Ithkuil chars) beats a parenthesised form when both are
+	// present: in "S3-tpl-(1m/BEN)/3" the `tpl` is the root and
+	// `(1m/BEN)/3` is a Type-3 referential affix in Slot VII.
 	rootIdx := -1
 	var root g.Root
 	for i, tok := range tokens {
-		r, ok, err := tryParseRoot(tok, affixes)
-		if err != nil {
-			return g.Formative{}, fmt.Errorf("root token %q: %w", tok, err)
-		}
+		cluster, ok := isClusterToken(tok)
 		if !ok {
 			continue
 		}
 		if rootIdx >= 0 {
-			return g.Formative{}, fmt.Errorf("multiple root candidates: token %q", tok)
+			return g.Formative{}, fmt.Errorf("multiple root candidates: %q and %q",
+				tokens[rootIdx], tok)
 		}
 		rootIdx = i
-		root = r
+		root = g.DefaultCrRoot(cluster)
+	}
+	// No bare cluster — try the parenthesised forms.
+	if rootIdx < 0 {
+		for i, tok := range tokens {
+			if !strings.HasPrefix(tok, "(") {
+				continue
+			}
+			r, ok, err := parseParensRoot(tok, affixes)
+			if err != nil {
+				return g.Formative{}, fmt.Errorf("root token %q: %w", tok, err)
+			}
+			if !ok {
+				continue
+			}
+			if rootIdx >= 0 {
+				return g.Formative{}, fmt.Errorf("multiple root candidates: %q and %q",
+					tokens[rootIdx], tok)
+			}
+			rootIdx = i
+			root = r
+		}
 	}
 	if rootIdx < 0 {
 		return g.Formative{}, fmt.Errorf("no root in %q", s)
@@ -187,13 +208,20 @@ func splitSlots(s string) []string {
 }
 
 // affixToken matches a Slot VII affix written as Cs/degree or
-// ABBREV/degree, with an optional ":2" or ":3" type tag.
-var affixToken = regexp.MustCompile(`^([^/]+)/([1-9])(?::([123]))?$`)
+// ABBREV/degree, with an optional ":2" or ":3" type tag. Degree
+// can be 0 (some affixes use it as a default/no-degree marker).
+var affixToken = regexp.MustCompile(`^([^/]+)/([0-9])(?::([123]))?$`)
 
 // applyToken dispatches one inter-slot token to ApplyFlag for plain
 // abbreviations, to the affix builder for "X/N" forms, or splits on
 // "/" and recurses for compound slot groups like "S2/CPT".
 func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntry) error {
+	// Type-3 referential affix: "(refs)/degree" where refs is a
+	// referent list like "1m" or "1m/BEN+2p/DET". The cluster is
+	// the concatenation of each ref's C1 form.
+	if strings.HasPrefix(tok, "(") {
+		return appendType3Affix(f, tok)
+	}
 	// Affix form takes precedence over the generic slash-split path:
 	// "DEV/3" must mean affix DEV degree 3, not flag DEV plus flag 3.
 	if m := affixToken.FindStringSubmatch(tok); m != nil {
@@ -219,6 +247,29 @@ func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntr
 	return ApplyFlag(f, tok)
 }
 
+// type3AffixToken matches "(refs)/degree" — Type-3 referential affix.
+var type3AffixToken = regexp.MustCompile(`^\(([^)]+)\)/([0-9])$`)
+
+func appendType3Affix(f *g.Formative, tok string) error {
+	m := type3AffixToken.FindStringSubmatch(tok)
+	if m == nil {
+		return fmt.Errorf("not a recognized Type-3 affix")
+	}
+	degree, _ := strconv.Atoi(m[2])
+	var c1 strings.Builder
+	for _, part := range strings.Split(m[1], "+") {
+		ref, eff, err := parseRefSpec(part)
+		if err != nil {
+			return err
+		}
+		c1.WriteString(referentials.RefC1(referentials.PersonalRef{Referent: ref, Effect: eff}))
+	}
+	f.SlotVII = append(f.SlotVII, g.Affix{
+		Type: g.Type3Affix, Degree: degree, Consonant: c1.String(),
+	})
+	return nil
+}
+
 func appendAffix(f *g.Formative, csOrAbbrev, degreeStr, typeStr string, affixes map[string]lexicon.AffixEntry) error {
 	degree, _ := strconv.Atoi(degreeStr)
 	atype := g.Type1Affix
@@ -239,26 +290,28 @@ func appendAffix(f *g.Formative, csOrAbbrev, degreeStr, typeStr string, affixes 
 }
 
 // resolveAffixCs returns the Cs cluster for a Slot VII affix
-// identifier. It accepts either the cluster itself (any token with a
-// lowercase/special character matched directly against affixes) or
-// the all-caps abbreviation (looked up in affixes by .Abbrev).
+// identifier. Accepts the cluster itself, the all-caps abbreviation
+// (looked up by .Abbrev), or any unknown lowercase cluster (returned
+// as-is — the lexicon is a named subset, not the authoritative list
+// of legal Cs clusters).
 func resolveAffixCs(id string, affixes map[string]lexicon.AffixEntry) string {
 	if affixes == nil {
-		// Without a lexicon we can only trust the literal form.
 		return id
 	}
-	// Direct cluster match.
 	if _, ok := affixes[id]; ok {
 		return id
 	}
-	// Abbreviation lookup.
-	upper := strings.ToUpper(id)
-	for cs, a := range affixes {
-		if a.Abbrev == upper {
-			return cs
+	// Abbreviation lookup only fires for all-uppercase identifiers.
+	if id == strings.ToUpper(id) {
+		for cs, a := range affixes {
+			if a.Abbrev == id {
+				return cs
+			}
 		}
+		return ""
 	}
-	return ""
+	// Lowercase/mixed cluster not in the lexicon — accept as-is.
+	return id
 }
 
 // isClusterToken returns (cluster, true) if tok looks like an Ithkuil

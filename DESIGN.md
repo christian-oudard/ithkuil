@@ -1,8 +1,16 @@
 # Parse/render layering
 
 The parse and render pipelines are organized as a stack of pure
-transformations. Each layer round-trips: parse and render are
-mirror-image functions on the same data.
+transformations. Each layer's parse/render functions are inverses
+when the input is already in canonical form; non-canonical inputs
+parse successfully but re-render as the canonical equivalent.
+
+A Formative has exactly one canonical surface. The renderer applies
+the spec's preferred forms deterministically — Cn→Ca shortcut when
+applicable, else Cc shortcut when the slot grammar allows, else
+§3.9.1 moved-glottal for cases 37-52, else default elisions. There
+are no orthographic options to flip. Multiple-input-one-output is a
+design property, not a bug: see `fullparse/canonicalize_test.go`.
 
 ```
 Surface text          "öhwoňó"
@@ -93,14 +101,29 @@ Layer D — string ↔ grammar value translation:
 
 - `slots.ToGrammar(Layout) (Formative, error)` — looks up each
   slot's string in the grammar tables.
-- `slots.FromGrammar(Formative) Layout` — the inverse. Picks
-  shortcut yes/no, applies default-value elisions, and emits a
-  Layout ready for `Render`.
+- `slots.FromGrammar(Formative) Layout` — the inverse. Picks the
+  canonical shortcut form (Cn→Ca takes precedence over Cc when
+  both eligible; neither fires for FramedVerbal), applies §3.9.1
+  moved-glottal for cases 37-52, then default-value elisions.
+  Deterministic given the Formative — no options.
 
 `fullparse.ParseFormative` is `Parse` ∘ `ToGrammar`.
-`render.FormativeWithOpts` is `FromGrammar` ∘ `Render`.
+`render.Formative` is `FromGrammar` ∘ `Render`.
 `view.Segments` consumes the Layout directly to emit the
 slot-by-slot phonetic breakdown.
+
+The reverse-author path goes through `compose/`:
+
+- `compose.ParseString(gloss-expr, affixes) (Formative, error)` —
+  parses the canonical gloss output (with `Glosser.Canonical=true`)
+  back into a Formative. Same syntax as the gloss output: slots
+  separated by `-`, sub-fields by `/` or `.` (for Ca).
+  `(CTR)/1` for CsRoot, `(1m+2p)` for RefRoot.
+
+This closes the loop: every Formative produces a unique canonical
+surface AND a unique canonical gloss, and either is round-trippable
+through its inverse. `compose/full_distance_test.go` and
+`compose/gloss_roundtrip_test.go` exercise the full chain.
 
 Round-trip tests in `slots/roundtrip_test.go` (surface↔Layout)
 and `slots/grammar_test.go` (Layout↔Formative) exercise the
