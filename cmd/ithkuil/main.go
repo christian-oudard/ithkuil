@@ -65,10 +65,10 @@ const usage = `usage: ithkuil [--lex DIR] <subcommand> [args...]
 Subcommands:
   analyze TEXT...    Tokenize, parse, and gloss each word (detailed).
                        --short / -s        one-line surface/type/gloss
-  compose ROOT ...   Build a surface formative from grammar choices.
-                       --stem --version --function --specification
-                       --context --case --aspect --valence --mood
-                       --illocution --stress
+  compose EXPR       Build a surface formative from a gloss-style
+                     expression. Slots separated by "-"; sub-fields
+                     by "/" or "." (for Ca). Examples: "ml",
+                     "S2/CPT-ml-ERG", "S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG".
   grammar [Q]        Look up grammar inventory.
                        --category / -c CAT
                        --exact    / -e

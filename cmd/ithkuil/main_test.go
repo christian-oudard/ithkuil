@@ -138,30 +138,48 @@ func TestAnalyze_Stdin(t *testing.T) {
 
 // ---- compose ----
 
-func TestCompose_NamedFlags(t *testing.T) {
-	out, _, code := runCLI("compose", "--stem", "S2", "--version", "CPT", "--case", "ERG", "ml")
+func TestCompose_Expression(t *testing.T) {
+	out, _, code := runCLI("-lex", dataDir(), "compose", "S2/CPT-ml-ERG")
 	if code != 0 {
 		t.Fatalf("compose exit %d", code)
 	}
-	if got := strings.TrimSpace(out); got != "imlalo" {
-		t.Errorf("compose = %q, want \"imlalo\"", got)
+	lines := strings.Split(strings.TrimSpace(out), "\n")
+	if len(lines) != 2 {
+		t.Fatalf("compose output = %q, want 2 lines (surface + gloss)", out)
+	}
+	if lines[0] != "imlalo" {
+		t.Errorf("compose surface = %q, want \"imlalo\"", lines[0])
+	}
+	if !strings.Contains(lines[1], "-ml-") || !strings.Contains(lines[1], "ERG") {
+		t.Errorf("compose gloss = %q, want it to mention -ml- and ERG", lines[1])
+	}
+}
+
+func TestCompose_BareRoot(t *testing.T) {
+	out, _, code := runCLI("-lex", dataDir(), "compose", "ml")
+	if code != 0 {
+		t.Fatalf("compose exit %d", code)
+	}
+	lines := strings.Split(strings.TrimSpace(out), "\n")
+	if len(lines) != 2 {
+		t.Fatalf("compose output = %q, want 2 lines", out)
 	}
 }
 
 func TestCompose_BadValue(t *testing.T) {
-	_, errOut, code := runCLI("compose", "--case", "XYZZY", "ml")
+	_, errOut, code := runCLI("compose", "ml-XYZZY")
 	if code == 0 {
-		t.Error("expected non-zero exit on bad case value")
+		t.Error("expected non-zero exit on unknown abbreviation")
 	}
 	if !strings.Contains(errOut, "unknown") {
 		t.Errorf("expected 'unknown' in stderr; got %q", errOut)
 	}
 }
 
-func TestCompose_NoRoot(t *testing.T) {
+func TestCompose_NoArg(t *testing.T) {
 	_, errOut, code := runCLI("compose")
 	if code != 2 {
-		t.Errorf("expected exit 2 with no root, got %d", code)
+		t.Errorf("expected exit 2 with no expression, got %d", code)
 	}
 	if !strings.Contains(errOut, "usage") {
 		t.Errorf("expected usage in stderr; got %q", errOut)

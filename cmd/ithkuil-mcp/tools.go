@@ -9,12 +9,11 @@ import (
 
 	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/gloss"
-	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/view"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/render"
 	"github.com/christian-oudard/ithkuil/tokenize"
 	"github.com/christian-oudard/ithkuil/validation"
+	"github.com/christian-oudard/ithkuil/view"
 )
 
 // registerTools wires every tool to its handler.
@@ -29,11 +28,12 @@ func (s *server) registerTools(srv *mcp.Server) {
 
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "compose",
-		Description: "Build a surface Ithkuil formative from a root and structured grammar " +
-			"choices. Every field except root is optional; omitted slots take grammatical " +
-			"defaults (S1 stem, PRC version, STA function, BSC spec, EXS context, THM case, " +
-			"PEN stress). Use any of the standard 3-letter abbreviations for values. " +
-			"Example: root=\"ml\", stem=\"S2\", version=\"CPT\", case=\"ERG\" → \"imlalo\".",
+		Description: "Build a surface Ithkuil formative from a gloss-style expression. " +
+			"Slots are separated by '-', sub-fields by '/' (S2/CPT, DYN/OBJ) or '.' (Ca: " +
+			"MSS.G.RPV). The root is a lowercase consonant cluster; affixes write Cs/degree " +
+			"or ABBREV/degree, with an optional :2 or :3 type tag. Examples: " +
+			"expression=\"ml\" → \"mlala\"; \"S2/CPT-ml-ERG\" → \"imlalo\"; " +
+			"\"S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG\" → \"imlötřebo\".",
 	}, s.compose)
 
 	mcp.AddTool(srv, &mcp.Tool{
@@ -177,18 +177,7 @@ func (s *server) analyze(_ context.Context, _ *mcp.CallToolRequest, in analyzeIn
 // --------------------------------------------------------------------
 
 type composeIn struct {
-	Root          string `json:"root" jsonschema:"the root consonant cluster (Cr)"`
-	Stem          string `json:"stem,omitempty" jsonschema:"S0|S1|S2|S3 (default S1)"`
-	Version       string `json:"version,omitempty" jsonschema:"PRC|CPT (default PRC)"`
-	Function      string `json:"function,omitempty" jsonschema:"STA|DYN (default STA)"`
-	Specification string `json:"specification,omitempty" jsonschema:"BSC|CTE|CSV|OBJ (default BSC)"`
-	Context       string `json:"context,omitempty" jsonschema:"EXS|FNC|RPS|AMG (default EXS)"`
-	Case          string `json:"case,omitempty" jsonschema:"any of the 68 cases (default THM)"`
-	Aspect        string `json:"aspect,omitempty" jsonschema:"Slot VIII aspect"`
-	Valence       string `json:"valence,omitempty" jsonschema:"Slot VIII valence"`
-	Mood          string `json:"mood,omitempty" jsonschema:"Slot VIII mood"`
-	Illocution    string `json:"illocution,omitempty" jsonschema:"Slot IX illocution (forces ULT stress)"`
-	Stress        string `json:"stress,omitempty" jsonschema:"MON|PEN|ULT|ANT (default PEN)"`
+	Expression string `json:"expression" jsonschema:"gloss-style compose expression; slots separated by '-', sub-fields by '/' or '.'; bare cluster like 'ml' or full 'S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG'"`
 }
 
 type composeOut struct {
@@ -200,21 +189,17 @@ type composeOut struct {
 }
 
 func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn) (*mcp.CallToolResult, composeOut, error) {
-	root := strings.TrimSpace(in.Root)
-	if root == "" {
-		return nil, composeOut{}, fmt.Errorf("root is required")
+	expr := strings.TrimSpace(in.Expression)
+	if expr == "" {
+		return nil, composeOut{}, fmt.Errorf("expression is required")
 	}
-	f := g.MinimalFormative(root)
-	for _, v := range []string{
-		in.Stem, in.Version, in.Function, in.Specification, in.Context,
-		in.Case, in.Aspect, in.Valence, in.Mood, in.Illocution, in.Stress,
-	} {
-		if v == "" {
-			continue
-		}
-		if err := compose.ApplyFlag(&f, v); err != nil {
-			return nil, composeOut{}, err
-		}
+	var affixes map[string]lexicon.AffixEntry
+	if s.lex != nil {
+		affixes = s.lex.Affixes
+	}
+	f, err := compose.ParseString(expr, affixes)
+	if err != nil {
+		return nil, composeOut{}, err
 	}
 	surface := render.Formative(f)
 	glosser := gloss.Glosser{Lex: s.lex}
