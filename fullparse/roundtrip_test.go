@@ -36,18 +36,9 @@ func assertRoundTrip(t *testing.T, name string, f g.Formative) {
 	if !reflect.DeepEqual(parsed.Final, f.Final) {
 		t.Errorf("%s: Final: got %v, want %v (surface %q)", name, parsed.Final, f.Final, surface)
 	}
-	gotCc := derefConcat(parsed.Concat)
-	wantCc := derefConcat(f.Concat)
-	if gotCc != wantCc {
-		t.Errorf("%s: Concat: got %v, want %v (surface %q)", name, gotCc, wantCc, surface)
+	if parsed.Concat != f.Concat {
+		t.Errorf("%s: Concat: got %v, want %v (surface %q)", name, parsed.Concat, f.Concat, surface)
 	}
-}
-
-func derefConcat(p *g.ConcatenationStatus) interface{} {
-	if p == nil {
-		return nil
-	}
-	return *p
 }
 
 // TestRoundTrip_Final asserts parse(render(F)).Final == F.Final for
@@ -273,26 +264,23 @@ func TestRoundTrip_ShortcutEncodableSlotVI(t *testing.T) {
 	yA := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.A_, Extension: g.DEL, Essence: g.NRM}
 	yBoth := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.RPV}
 
-	t1 := g.Type1
-	t2 := g.Type2
-
 	cases := []struct {
 		name   string
-		concat *g.ConcatenationStatus
+		concat g.ConcatenationStatus
 		slotVI g.SlotVI
 	}{
-		{"w-series1", nil, wDefault},
-		{"w-series2", nil, wG},
-		{"w-series3", nil, wN},
-		{"w-series4", nil, wGR},
-		{"y-series1", nil, yPRX},
-		{"y-series2", nil, yRPV},
-		{"y-series3", nil, yA},
-		{"y-series4", nil, yBoth},
-		{"hl-type1+w", &t1, wDefault},
-		{"hm-type1+y", &t1, yPRX},
-		{"hr-type2+w", &t2, wDefault},
-		{"hn-type2+y", &t2, yPRX},
+		{"w-series1", g.ConcatNone, wDefault},
+		{"w-series2", g.ConcatNone, wG},
+		{"w-series3", g.ConcatNone, wN},
+		{"w-series4", g.ConcatNone, wGR},
+		{"y-series1", g.ConcatNone, yPRX},
+		{"y-series2", g.ConcatNone, yRPV},
+		{"y-series3", g.ConcatNone, yA},
+		{"y-series4", g.ConcatNone, yBoth},
+		{"hl-type1+w", g.Type1, wDefault},
+		{"hm-type1+y", g.Type1, yPRX},
+		{"hr-type2+w", g.Type2, wDefault},
+		{"hn-type2+y", g.Type2, yPRX},
 	}
 	for _, c := range cases {
 		f := g.MinimalFormative("ml")
@@ -513,14 +501,12 @@ func TestRoundTrip_SlotV(t *testing.T) {
 
 // TestRoundTrip_Concatenation covers Slot I Type1/Type2 without shortcut.
 func TestRoundTrip_Concatenation(t *testing.T) {
-	t1 := g.Type1
-	t2 := g.Type2
 	cases := []struct {
 		name string
-		c    *g.ConcatenationStatus
+		c    g.ConcatenationStatus
 	}{
-		{"type1", &t1},
-		{"type2", &t2},
+		{"type1", g.Type1},
+		{"type2", g.Type2},
 	}
 	for _, c := range cases {
 		f := g.MinimalFormative("ml")

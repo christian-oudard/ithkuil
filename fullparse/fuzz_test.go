@@ -166,5 +166,5 @@ func formativesEquivalent(got, want g.Formative) bool {
 	if !reflect.DeepEqual(got.Final, want.Final) {
 		return false
 	}
-	return derefConcat(got.Concat) == derefConcat(want.Concat)
+	return got.Concat == want.Concat
 }

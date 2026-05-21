@@ -177,13 +177,11 @@ func segmentsFromLayout(l slots.Layout, f g.Formative, lex *lexicon.Lexicon) []S
 func ccCodes(cc string) []string {
 	r := parse.ParseCc(cc)
 	var codes []string
-	if r.Concat != nil {
-		switch *r.Concat {
-		case g.Type1:
-			codes = append(codes, "Type1 concat")
-		case g.Type2:
-			codes = append(codes, "Type2 concat")
-		}
+	switch r.Concat {
+	case g.Type1:
+		codes = append(codes, "Type1 concat")
+	case g.Type2:
+		codes = append(codes, "Type2 concat")
 	}
 	if r.Shortcut != parse.ShortcutNone {
 		codes = append(codes, "Slot I shortcut")

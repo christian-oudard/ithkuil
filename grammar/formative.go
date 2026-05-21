@@ -11,8 +11,9 @@ package grammar
 // (Formative{}) is not a valid formative — use MinimalFormative as a
 // starting point. render and gloss panic on nil Root or nil Final.
 //
-// Concat is the optional concatenation status — nil for a standalone
-// formative; Type1 or Type2 for the corresponding chain position.
+// Concat is the formative's concatenation status (§3.1.7): ConcatNone
+// for a standalone formative or the parent of a chain; Type1 or Type2
+// for a dependent.
 //
 // Root consolidates the lexical identity (Slot II + Slot III + Slot
 // IV) into one sum-type value; see root.go for the three variants.
@@ -31,7 +32,7 @@ package grammar
 // input is not lost in any meaningful sense — the gloss and grammar
 // are identical to those of the canonical equivalent.
 type Formative struct {
-	Concat   *ConcatenationStatus
+	Concat   ConcatenationStatus
 	Root     Root
 	SlotV    []Affix
 	SlotVI   SlotVI

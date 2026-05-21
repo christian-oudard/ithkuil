@@ -16,11 +16,11 @@ const (
 )
 
 // CcResult bundles the two pieces of Slot I that Cc can carry.
-//   - Concat marks the formative as part of a Type 1 or Type 2 compound.
+//   - Concat marks the formative's role in a concatenation chain.
 //   - Shortcut tells the caller which Ca-shortcut indicator (if any)
 //     the surface Cc had; it does not appear in the grammar output.
 type CcResult struct {
-	Concat   *grammar.ConcatenationStatus
+	Concat   grammar.ConcatenationStatus
 	Shortcut ShortcutVariant
 }
 
@@ -30,26 +30,20 @@ func ParseCc(cc string) CcResult {
 	var r CcResult
 	switch cc {
 	case "h":
-		t := grammar.Type1
-		r.Concat = &t
+		r.Concat = grammar.Type1
 	case "hl":
-		t := grammar.Type1
-		r.Concat = &t
+		r.Concat = grammar.Type1
 		r.Shortcut = ShortcutW
 	case "hm":
-		t := grammar.Type1
-		r.Concat = &t
+		r.Concat = grammar.Type1
 		r.Shortcut = ShortcutY
 	case "hw":
-		t := grammar.Type2
-		r.Concat = &t
+		r.Concat = grammar.Type2
 	case "hr":
-		t := grammar.Type2
-		r.Concat = &t
+		r.Concat = grammar.Type2
 		r.Shortcut = ShortcutW
 	case "hn":
-		t := grammar.Type2
-		r.Concat = &t
+		r.Concat = grammar.Type2
 		r.Shortcut = ShortcutY
 	case "w":
 		r.Shortcut = ShortcutW

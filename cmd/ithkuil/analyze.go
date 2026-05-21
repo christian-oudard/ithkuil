@@ -199,7 +199,7 @@ func renderConcatenated(w io.Writer, cw tokenize.ConcatenatedFormativeWord, glos
 	for i, f := range cw.Chain.Formatives() {
 		fmt.Fprintln(iw)
 		label := "[head]"
-		if i > 0 && f.Concat != nil {
+		if i > 0 && f.Concat != g.ConcatNone {
 			label = fmt.Sprintf("[%s dependent]", f.Concat.String())
 		}
 		fmt.Fprintln(iw, label)

@@ -211,7 +211,7 @@ func TestFormative_ShortForm_WithSlotI_NoElision(t *testing.T) {
 	// still elides.
 	f := g.MinimalFormative("ml")
 	t1 := g.Type1
-	f.Concat = &t1
+	f.Concat = t1
 	got := Formative(f)
 	want := "hlamla"
 	if got != want {
@@ -270,7 +270,7 @@ func TestFormative_ShortcutY_Series1(t *testing.T) {
 func TestFormative_ShortcutWithConcat(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	t1 := g.Type1
-	f.Concat = &t1
+	f.Concat = t1
 	got := Formative(f)
 	want := "hlamla"
 	if got != want {

@@ -270,11 +270,8 @@ func nonEmpty(parts []string) []string {
 	return out
 }
 
-func slotI(c *g.ConcatenationStatus) string {
-	if c == nil {
-		return ""
-	}
-	switch *c {
+func slotI(c g.ConcatenationStatus) string {
+	switch c {
 	case g.Type1:
 		return "T1"
 	case g.Type2:

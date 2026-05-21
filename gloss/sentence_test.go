@@ -351,9 +351,8 @@ func TestFormative_AllFinalTags(t *testing.T) {
 }
 
 func TestFormative_TypeAndType2Concat(t *testing.T) {
-	t2 := g.Type2
 	f := g.MinimalFormative("ml")
-	f.Concat = &t2
+	f.Concat = g.Type2
 	got := (&Glosser{}).Formative(f)
 	if !strings.Contains(got, "T2") {
 		t.Errorf("Type2 concat gloss = %q, want T2", got)
@@ -536,10 +535,8 @@ func TestFinalTag_NilFinal(t *testing.T) {
 }
 
 func TestSlotI_UnknownConcat(t *testing.T) {
-	// A non-Type1/Type2 concat status returns empty. We can't construct
-	// one via the public enum, but we can pass an invalid pointer value.
-	bad := g.ConcatenationStatus(99)
-	if got := slotI(&bad); got != "" {
+	// Out-of-range enum values return empty.
+	if got := slotI(g.ConcatenationStatus(99)); got != "" {
 		t.Errorf("slotI(unknown) = %q, want empty", got)
 	}
 }

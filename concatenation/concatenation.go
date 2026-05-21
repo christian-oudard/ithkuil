@@ -27,8 +27,7 @@ func New(head g.Formative) *Chain {
 // AddType1 appends a Type-1 dependent. The dependent's SlotI is
 // overwritten to Type1.
 func (c *Chain) AddType1(f g.Formative) *Chain {
-	t := g.Type1
-	f.Concat = &t
+	f.Concat = g.Type1
 	c.Tail = append(c.Tail, f)
 	return c
 }
@@ -36,8 +35,7 @@ func (c *Chain) AddType1(f g.Formative) *Chain {
 // AddType2 appends a Type-2 dependent. The dependent's SlotI is
 // overwritten to Type2.
 func (c *Chain) AddType2(f g.Formative) *Chain {
-	t := g.Type2
-	f.Concat = &t
+	f.Concat = g.Type2
 	c.Tail = append(c.Tail, f)
 	return c
 }
@@ -55,13 +53,9 @@ func (c *Chain) Formatives() []g.Formative {
 func (c *Chain) Length() int { return 1 + len(c.Tail) }
 
 // ConcatMarker returns the surface Slot I consonant for a
-// ConcatenationStatus pointer, or "" if the formative isn't part of a
-// chain. Mirrors the Haskell helper of the same name.
-func ConcatMarker(s *g.ConcatenationStatus) string {
-	if s == nil {
-		return ""
-	}
-	switch *s {
+// ConcatenationStatus, or "" for the None state.
+func ConcatMarker(s g.ConcatenationStatus) string {
+	switch s {
 	case g.Type1:
 		return "h"
 	case g.Type2:

@@ -101,14 +101,13 @@ func TestRoundTrip_Grid_RefRoot(t *testing.T) {
 // combination on shortcut-eligible formatives, hitting ccFromGrammar's
 // hl/hm/hr/hn branches that the existing tests miss.
 func TestRoundTrip_Grid_ConcatShortcut(t *testing.T) {
-	t1, t2 := g.Type1, g.Type2
 	concats := []struct {
 		name   string
-		concat *g.ConcatenationStatus
+		concat g.ConcatenationStatus
 	}{
-		{"plain", nil},
-		{"type1", &t1},
-		{"type2", &t2},
+		{"plain", g.ConcatNone},
+		{"type1", g.Type1},
+		{"type2", g.Type2},
 	}
 	// Pick a SlotVI value for each shortcut series.
 	series := []g.SlotVI{

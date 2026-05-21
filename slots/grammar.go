@@ -440,10 +440,10 @@ func shortcutVariant(s g.SlotVI) parse.ShortcutVariant {
 }
 
 // ccFromGrammar picks the Cc consonant for a (Concat, Shortcut) pair.
-func ccFromGrammar(concat *g.ConcatenationStatus, useShortcut bool, f g.Formative) string {
+func ccFromGrammar(concat g.ConcatenationStatus, useShortcut bool, f g.Formative) string {
 	if useShortcut {
 		variant := shortcutVariant(f.SlotVI)
-		if concat == nil {
+		if concat == g.ConcatNone {
 			switch variant {
 			case parse.ShortcutW:
 				return "w"
@@ -451,7 +451,7 @@ func ccFromGrammar(concat *g.ConcatenationStatus, useShortcut bool, f g.Formativ
 				return "y"
 			}
 		}
-		switch *concat {
+		switch concat {
 		case g.Type1:
 			switch variant {
 			case parse.ShortcutW:
@@ -469,10 +469,7 @@ func ccFromGrammar(concat *g.ConcatenationStatus, useShortcut bool, f g.Formativ
 		}
 		return ""
 	}
-	if concat == nil {
-		return ""
-	}
-	switch *concat {
+	switch concat {
 	case g.Type1:
 		return "h"
 	case g.Type2:
@@ -688,7 +685,7 @@ func canElideMonosyllabicVerbalVc(l *Layout, f g.Formative) bool {
 }
 
 func canElideLeadingVv(l *Layout, f g.Formative) bool {
-	if f.Concat != nil {
+	if f.Concat != g.ConcatNone {
 		return false
 	}
 	if l.Kind != CrFormative {

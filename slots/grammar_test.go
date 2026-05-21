@@ -41,7 +41,7 @@ func TestFromGrammar_ToGrammar_RoundTrip(t *testing.T) {
 
 	withConcat := g.MinimalFormative("ml")
 	t1 := g.Type1
-	withConcat.Concat = &t1
+	withConcat.Concat = t1
 
 	csRoot := g.MinimalFormative("ml")
 	csRoot.Root = g.CsRoot{Cs: "r", Degree: 5, Version: g.PRC, Function: g.STA, Context: g.EXS}
@@ -66,7 +66,7 @@ func TestFromGrammar_ToGrammar_RoundTrip(t *testing.T) {
 
 	t2 := g.Type2
 	withConcatT2 := g.MinimalFormative("ml")
-	withConcatT2.Concat = &t2
+	withConcatT2.Concat = t2
 
 	nonDefaultCa := g.MinimalFormative("ml")
 	nonDefaultCa.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}

@@ -183,7 +183,7 @@ func TestFormative_FinalTag(t *testing.T) {
 func TestFormative_Concatenation(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	t1 := g.Type1
-	f.Concat = &t1
+	f.Concat = t1
 	got := Formative(f)
 	want := "T1--ml-"
 	if got != want {

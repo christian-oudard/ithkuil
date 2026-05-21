@@ -6,6 +6,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/christian-oudard/ithkuil/allomorph"
+	"github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/surface"
 )
@@ -38,7 +39,7 @@ func Parse(word string) (Layout, error) {
 	// Slot I: optional Cc consonant carrying concat status and/or
 	// shortcut indicator.
 	if surface.IsConsonantConjunct(conjs[0]) {
-		if r := parse.ParseCc(conjs[0]); r.Concat != nil || r.Shortcut != parse.ShortcutNone {
+		if r := parse.ParseCc(conjs[0]); r.Concat != grammar.ConcatNone || r.Shortcut != parse.ShortcutNone {
 			l.Cc = conjs[0]
 			i++
 		}

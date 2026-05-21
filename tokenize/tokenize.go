@@ -639,18 +639,18 @@ func tryConcatenation(word string) (*concatenation.Chain, bool) {
 	}
 	last := len(formatives) - 1
 	// Parent (last) must be plain.
-	if formatives[last].Concat != nil {
+	if formatives[last].Concat != g.ConcatNone {
 		return nil, false
 	}
 	// Every leading dependent must carry a Cc.
 	for i := 0; i < last; i++ {
-		if formatives[i].Concat == nil {
+		if formatives[i].Concat == g.ConcatNone {
 			return nil, false
 		}
 	}
 	chain := concatenation.New(formatives[last])
 	for i := 0; i < last; i++ {
-		switch *formatives[i].Concat {
+		switch formatives[i].Concat {
 		case g.Type1:
 			chain.AddType1(formatives[i])
 		case g.Type2:

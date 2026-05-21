@@ -332,8 +332,7 @@ func ApplyFlag(f *g.Formative, flag string) error {
 
 	// Concatenation status.
 	if c, ok := concatPrefix[flag]; ok {
-		cc := c
-		f.Concat = &cc
+		f.Concat = c
 		return nil
 	}
 

@@ -8,14 +8,14 @@ import (
 
 func TestParseCc_TypeOnly(t *testing.T) {
 	r := ParseCc("h")
-	if r.Concat == nil || *r.Concat != grammar.Type1 {
+	if r.Concat == grammar.ConcatNone || r.Concat != grammar.Type1 {
 		t.Errorf("ParseCc(\"h\") concat = %v, want Type1", r.Concat)
 	}
 	if r.Shortcut != ShortcutNone {
 		t.Errorf("ParseCc(\"h\") shortcut = %v, want ShortcutNone", r.Shortcut)
 	}
 	r = ParseCc("hw")
-	if r.Concat == nil || *r.Concat != grammar.Type2 {
+	if r.Concat == grammar.ConcatNone || r.Concat != grammar.Type2 {
 		t.Errorf("ParseCc(\"hw\") concat = %v, want Type2", r.Concat)
 	}
 	if r.Shortcut != ShortcutNone {
@@ -37,7 +37,7 @@ func TestParseCc_Combined(t *testing.T) {
 	}
 	for _, c := range cases {
 		r := ParseCc(c.in)
-		if r.Concat == nil || *r.Concat != c.c {
+		if r.Concat == grammar.ConcatNone || r.Concat != c.c {
 			t.Errorf("ParseCc(%q) concat = %v, want %v (%s)", c.in, r.Concat, c.c, c.want)
 		}
 		if r.Shortcut != c.s {
@@ -48,8 +48,8 @@ func TestParseCc_Combined(t *testing.T) {
 
 func TestParseCc_ShortcutOnly(t *testing.T) {
 	r := ParseCc("w")
-	if r.Concat != nil {
-		t.Errorf("ParseCc(\"w\") concat = %v, want nil", *r.Concat)
+	if r.Concat != grammar.ConcatNone {
+		t.Errorf("ParseCc(\"w\") concat = %v, want nil", r.Concat)
 	}
 	if r.Shortcut != ShortcutW {
 		t.Errorf("ParseCc(\"w\") shortcut = %v, want ShortcutW", r.Shortcut)
@@ -63,7 +63,7 @@ func TestParseCc_ShortcutOnly(t *testing.T) {
 func TestParseCc_Unrecognized(t *testing.T) {
 	for _, s := range []string{"", "x", "h?", "no"} {
 		r := ParseCc(s)
-		if r.Concat != nil || r.Shortcut != ShortcutNone {
+		if r.Concat != grammar.ConcatNone || r.Shortcut != ShortcutNone {
 			t.Errorf("ParseCc(%q) = %+v, want empty", s, r)
 		}
 	}

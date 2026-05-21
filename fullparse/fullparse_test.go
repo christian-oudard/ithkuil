@@ -163,7 +163,7 @@ func TestParseFormative_SlotI_Type1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"hamlala\") error: %v", err)
 	}
-	if f.Concat == nil || *f.Concat != g.Type1 {
+	if f.Concat == g.ConcatNone || f.Concat != g.Type1 {
 		t.Errorf("SlotI = %v, want Type1", f.Concat)
 	}
 	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "ml" {
@@ -177,7 +177,7 @@ func TestParseFormative_SlotI_Type2(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"hwamlala\") error: %v", err)
 	}
-	if f.Concat == nil || *f.Concat != g.Type2 {
+	if f.Concat == g.ConcatNone || f.Concat != g.Type2 {
 		t.Errorf("SlotI = %v, want Type2", f.Concat)
 	}
 }
@@ -229,7 +229,7 @@ func TestParseFormative_ShortcutWithConcat(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseFormative(\"hlaml\") error: %v", err)
 	}
-	if f.Concat == nil || *f.Concat != g.Type1 {
+	if f.Concat == g.ConcatNone || f.Concat != g.Type1 {
 		t.Errorf("SlotI = %v, want Type1", f.Concat)
 	}
 	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "ml" {

@@ -24,8 +24,8 @@ func TestMinimalFormative(t *testing.T) {
 	if !ok || un.Case != THM {
 		t.Errorf("Final = %v, want UnframedNominal{THM}", f.Final)
 	}
-	if f.Concat != nil {
-		t.Errorf("Concat = %v, want nil", f.Concat)
+	if f.Concat != ConcatNone {
+		t.Errorf("Concat = %v, want None", f.Concat)
 	}
 	if f.SlotV != nil {
 		t.Errorf("SlotV = %v, want nil", f.SlotV)

@@ -266,12 +266,7 @@ func UnmarshalSentence(buf []byte) ([]tokenize.WordToken, error) {
 // ----- formative -----
 
 func writeFormative(buf *bytes.Buffer, f g.Formative) error {
-	// Concat: 0=standalone, 1=Type1, 2=Type2.
-	concatByte := byte(0)
-	if f.Concat != nil {
-		concatByte = byte(*f.Concat) + 1
-	}
-	buf.WriteByte(concatByte)
+	buf.WriteByte(byte(f.Concat))
 	// Root variant tag + payload.
 	switch r := f.Root.(type) {
 	case g.CrRoot:
@@ -363,13 +358,8 @@ func readFormative(buf []byte) (g.Formative, int, error) {
 		return g.Formative{}, 0, fmt.Errorf("formative: short read at header")
 	}
 	cur := 0
-	concatByte := buf[cur]
+	concat := g.ConcatenationStatus(buf[cur])
 	cur++
-	var concat *g.ConcatenationStatus
-	if concatByte > 0 {
-		c := g.ConcatenationStatus(concatByte - 1)
-		concat = &c
-	}
 	rootTag := buf[cur]
 	cur++
 	var root g.Root

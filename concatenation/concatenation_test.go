@@ -29,7 +29,7 @@ func TestAddType1_SetsConcat(t *testing.T) {
 	if cluster(dep) != "t" {
 		t.Errorf("dependent Cr = %q, want %q", cluster(dep), "t")
 	}
-	if dep.Concat == nil || *dep.Concat != g.Type1 {
+	if dep.Concat == g.ConcatNone || dep.Concat != g.Type1 {
 		t.Errorf("dependent Concat = %v, want Type1", dep.Concat)
 	}
 }
@@ -37,7 +37,7 @@ func TestAddType1_SetsConcat(t *testing.T) {
 func TestAddType2_SetsConcat(t *testing.T) {
 	c := New(g.MinimalFormative("ml")).AddType2(g.MinimalFormative("t"))
 	dep := c.Tail[0]
-	if dep.Concat == nil || *dep.Concat != g.Type2 {
+	if dep.Concat == g.ConcatNone || dep.Concat != g.Type2 {
 		t.Errorf("Type2 dependent Concat = %v, want Type2", dep.Concat)
 	}
 }
@@ -60,15 +60,13 @@ func TestFormatives_OrderAndCount(t *testing.T) {
 }
 
 func TestConcatMarker(t *testing.T) {
-	t1 := g.Type1
-	t2 := g.Type2
 	cases := []struct {
-		in   *g.ConcatenationStatus
+		in   g.ConcatenationStatus
 		want string
 	}{
-		{nil, ""},
-		{&t1, "h"},
-		{&t2, "hw"},
+		{g.ConcatNone, ""},
+		{g.Type1, "h"},
+		{g.Type2, "hw"},
 	}
 	for _, c := range cases {
 		if got := ConcatMarker(c.in); got != c.want {

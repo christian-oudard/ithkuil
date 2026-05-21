@@ -113,7 +113,7 @@ func TestSegments_WithSlotV_AndConcat(t *testing.T) {
 	// Concat formative: ccCodes gets the T1 prefix.
 	t1 := g.Type1
 	f2 := g.MinimalFormative("ml")
-	f2.Concat = &t1
+	f2.Concat = t1
 	surface = render.Formative(f2)
 	segs = Segments(surface, f2, nil)
 	if len(segs) == 0 {
