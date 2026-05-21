@@ -147,3 +147,62 @@ func TestRoot_FinalMarkers_Compile(t *testing.T) {
 	f = UnframedVerbal{Vk: Assertive{Validation: OBS}}
 	_ = f.Tag()
 }
+
+func TestSlotVIIIMoodScope_AllVariants(t *testing.T) {
+	cases := []SlotVIII{
+		VnCnValence{Valence: MNO, MoodScope: SUB},
+		VnCnPhase{Phase: PCT, MoodScope: ASM},
+		VnCnEffect{Effect: BEN1, MoodScope: SPC},
+		VnCnLevel{Level: MIN, MoodScope: COU},
+		VnCnAspect{Aspect: RTR, MoodScope: HYP},
+	}
+	wants := []Mood{SUB, ASM, SPC, COU, HYP}
+	for i, c := range cases {
+		if got := SlotVIIIMoodScope(c); got != wants[i] {
+			t.Errorf("SlotVIIIMoodScope(%T) = %v, want %v", c, got, wants[i])
+		}
+	}
+	if got := SlotVIIIMoodScope(nil); got != FAC {
+		t.Errorf("SlotVIIIMoodScope(nil) = %v, want FAC", got)
+	}
+}
+
+func TestSlotVIIIVnLabel_AllVariants(t *testing.T) {
+	cases := []SlotVIII{
+		VnCnValence{Valence: MNO},
+		VnCnPhase{Phase: PCT},
+		VnCnEffect{Effect: BEN1},
+		VnCnLevel{Level: MIN},
+		VnCnAspect{Aspect: RTR},
+	}
+	for _, c := range cases {
+		if got := SlotVIIIVnLabel(c); got == "" {
+			t.Errorf("SlotVIIIVnLabel(%T) empty", c)
+		}
+	}
+	if got := SlotVIIIVnLabel(nil); got != "" {
+		t.Errorf("SlotVIIIVnLabel(nil) = %q, want \"\"", got)
+	}
+}
+
+func TestVk_AllTags(t *testing.T) {
+	// Every Vk implementation has a Tag() method that should return its
+	// 3-letter abbreviation. Walking AllVk covers them all.
+	for _, v := range AllVk {
+		if v.Tag() == "" {
+			t.Errorf("Vk(%T).Tag() empty", v)
+		}
+	}
+}
+
+func TestCaseGroup_String(t *testing.T) {
+	cases := []CaseGroup{
+		Transrelative, Appositive, Associative, Adverbial,
+		Relational, Affinitive, SpatioTemporal1, SpatioTemporal2,
+	}
+	for _, g := range cases {
+		if g.String() == "" {
+			t.Errorf("CaseGroup(%d).String() empty", g)
+		}
+	}
+}
