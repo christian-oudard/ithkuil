@@ -342,10 +342,18 @@ func (gl *Glosser) combinationRefLabel(c tokenize.CombinationRefWord) string {
 //
 // Canonical (zsnout-aligned): bare "<refs>" or "[a+b]" head; case
 // suffixed with "-"; RpvEssence trails as "-RPV".
+//
+// Carrier-headed referentials emit a leading "*" in canonical mode
+// (§4.6.3 epenthesis disambiguator): "*[CAR]-CASE" reads as "carrier
+// used as a referential head" — distinct from the bare CarrierWord
+// gloss "[CAR]-CASE".
 func (gl *Glosser) refLabel(r tokenize.ReferentialWord) string {
 	head := gl.refHead(r.Carrier, r.Refs, r.Category)
 	var label string
 	if gl.Canonical {
+		if r.Carrier != nil {
+			head = "*" + head
+		}
 		label = head
 		if r.Case != nil {
 			label += "-" + r.Case.String()

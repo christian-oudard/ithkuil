@@ -44,6 +44,13 @@ func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
 		}
 	}
 
+	// "*[TYPE]-CASE..." is the explicit carrier-headed referential
+	// (§4.6.3 epenthesis disambiguator). Force the referential path
+	// regardless of how many tail fields are present.
+	if strings.HasPrefix(s, "*[") {
+		return parseCarrierHeadedReferential(s[1:])
+	}
+
 	// Carrier: "[TYPE]" or "[TYPE]-CASE"
 	if strings.HasPrefix(s, "[") {
 		if w, ok, err := parseCarrierOrReferential(s); ok || err != nil {
@@ -170,6 +177,29 @@ func parseCarrierOrReferential(s string) (tokenize.WordToken, bool, error) {
 	}
 	w, err := buildRefFromTail(s, nil, refs, caseChunk, restTail)
 	return w, true, err
+}
+
+// parseCarrierHeadedReferential decodes the "[TYPE]-CASE..." form
+// stripped of its leading "*" sigil. The "*" was the explicit marker
+// that we're looking at a referential (not a bare CarrierWord), so
+// this path always builds a ReferentialWord/CombinationRefWord even
+// when the tail has only a case slot.
+func parseCarrierHeadedReferential(s string) (tokenize.WordToken, error) {
+	close := strings.Index(s, "]")
+	if close < 1 {
+		return nil, fmt.Errorf("carrier-headed ref %q: missing closing bracket", s)
+	}
+	inner := s[1:close]
+	tail := s[close+1:]
+	ct, ok := parseCarrierTypeAbbrev(inner)
+	if !ok {
+		return nil, fmt.Errorf("carrier-headed ref %q: unknown carrier type %q", s, inner)
+	}
+	caseChunk, restTail := splitFirstHyphenChunk(tail)
+	if caseChunk == "" {
+		return nil, fmt.Errorf("carrier-headed ref %q: missing case", s)
+	}
+	return buildRefFromTail(s, &ct, nil, caseChunk, restTail)
 }
 
 // splitFirstHyphenChunk takes a "-CASE-rest..." tail and returns
