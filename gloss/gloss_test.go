@@ -2,6 +2,7 @@ package gloss
 
 import (
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/fullparse"
@@ -248,6 +249,34 @@ func TestGlosser_AffixWithLexicon(t *testing.T) {
 	want := "-m- '" + mEntry.Stem1 + "'-" + entry.Abbrev + "/1"
 	if got != want {
 		t.Errorf("Formative(m + b:a) = %q, want %q", got, want)
+	}
+}
+
+func TestGlosser_CategoryValuedAffix(t *testing.T) {
+	lex := loadLex(t)
+	gl := &Glosser{Lex: lex}
+	cases := []struct {
+		cs       string
+		atype    g.AffixType
+		degree   int
+		want     string
+	}{
+		{"bẓ", g.Type1Affix, 3, "MCS:SPC"},
+		{"bž", g.Type1Affix, 1, "PHS:PCT"},
+		{"mc", g.Type1Affix, 1, "AP1:RTR"},
+		{"nļ", g.Type1Affix, 1, "IVL:ASR"},
+		{"nļ", g.Type2Affix, 1, "IVL:OBS"}, // bracketed type-2 alternate
+		{"ẓk", g.Type1Affix, 1, "VAL:MNO"},
+		// Non-category-valued affix still shows degree
+		{"b", g.Type1Affix, 1, "DEV/1"},
+	}
+	for _, c := range cases {
+		f := g.MinimalFormative("m")
+		f.SlotVII = []g.Affix{{Type: c.atype, Degree: c.degree, Consonant: c.cs}}
+		got := gl.Formative(f)
+		if !strings.HasSuffix(got, "-"+c.want) {
+			t.Errorf("affix %s type%d/%d: gloss %q does not end with -%s", c.cs, int(c.atype)+1, c.degree, got, c.want)
+		}
 	}
 }
 

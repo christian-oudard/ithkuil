@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 
 	"github.com/christian-oudard/ithkuil/data"
 )
@@ -107,6 +108,40 @@ func Load(rootsPath, affixesPath string) (*Lexicon, error) {
 		return nil, err
 	}
 	return &Lexicon{Roots: roots, Affixes: affixes}, nil
+}
+
+// Category-valued affixes (MCS, PHS, AP1-4, IVL, LVL, VAL) write their
+// degree descriptions as "(CODE) Full Name", where CODE is the 2-4
+// char canonical abbreviation the gloss should surface instead of the
+// degree number. IVL is the one affix where type 1 and type 2 carry
+// different category values per degree, written as
+// "(ASR) Assertive [(OBS) Observational₂]" — the bracketed alternate
+// is the type-2 reading.
+var (
+	categoryPrefix = regexp.MustCompile(`^\(([A-Z0-9]{2,4})\)`)
+	categoryType2  = regexp.MustCompile(`\[\(([A-Z0-9]{2,4})\)[^]]*\]`)
+)
+
+// CategoryValue returns the canonical category code for the given
+// degree (1-9) and affix type (1, 2, or 3). Returns "" when the affix
+// is not category-valued, the degree is out of range, or the requested
+// type has no alternate reading.
+func (a AffixEntry) CategoryValue(degree int, affixType int) string {
+	if degree < 1 || degree > len(a.Degrees) {
+		return ""
+	}
+	text := a.Degrees[degree-1]
+	switch affixType {
+	case 1:
+		if m := categoryPrefix.FindStringSubmatch(text); m != nil {
+			return m[1]
+		}
+	case 2:
+		if m := categoryType2.FindStringSubmatch(text); m != nil {
+			return m[1]
+		}
+	}
+	return ""
 }
 
 // Stem selects the meaning string for a given stem index (0-3).

@@ -150,6 +150,42 @@ func TestRootEntry_RichFields(t *testing.T) {
 	}
 }
 
+func TestAffixEntry_CategoryValue(t *testing.T) {
+	lex, err := LoadDefault()
+	if err != nil {
+		t.Fatalf("LoadDefault: %v", err)
+	}
+	cases := []struct {
+		cs       string
+		degree   int
+		typeCode int
+		want     string
+	}{
+		{"bẓ", 1, 1, "SUB"}, // MCS: (SUB) Subjunctive
+		{"bẓ", 5, 1, "HYP"}, // MCS: (HYP) Hypothetical
+		{"bž", 1, 1, "PCT"}, // PHS
+		{"nļ", 1, 1, "ASR"}, // IVL type 1
+		{"nļ", 1, 2, "OBS"}, // IVL type 2 (bracketed alt)
+		{"nļ", 9, 2, "INF"}, // IVL type 2 deepest degree
+		{"b", 1, 1, ""},     // DEV: no category prefix
+		{"bẓ", 0, 1, ""},    // degree out of range (low)
+		{"bẓ", 10, 1, ""},   // degree out of range (high)
+		{"bẓ", 3, 3, ""},    // type 3 has no category alternate
+	}
+	for _, c := range cases {
+		entry, ok := lex.Affixes[c.cs]
+		if !ok {
+			t.Errorf("affix %q missing from lexicon", c.cs)
+			continue
+		}
+		got := entry.CategoryValue(c.degree, c.typeCode)
+		if got != c.want {
+			t.Errorf("%s.CategoryValue(%d, type=%d) = %q, want %q",
+				c.cs, c.degree, c.typeCode, got, c.want)
+		}
+	}
+}
+
 func TestLoadDefault(t *testing.T) {
 	// LoadDefault reads from the embedded JSON, which is always
 	// available. Sanity-check a few well-known entries are present.

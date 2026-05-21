@@ -293,11 +293,15 @@ func (gl *Glosser) affixes(as []g.Affix) string {
 func (gl *Glosser) affix(a g.Affix) string {
 	if gl.Lex != nil {
 		if entry, ok := gl.Lex.Affixes[a.Consonant]; ok {
+			// Category-valued affixes (MCS, PHS, AP1-4, IVL, LVL,
+			// VAL) carry the category code in the degree text. Show
+			// that code instead of the bare degree number.
+			if cat := entry.CategoryValue(a.Degree, int(a.Type)+1); cat != "" {
+				return fmt.Sprintf("%s:%s", entry.Abbrev, cat)
+			}
 			return fmt.Sprintf("%s/%d", entry.Abbrev, a.Degree)
 		}
 	}
-	// Without a lexicon entry, show "Cs/degree" — same shape the
-	// Haskell glosser uses at Short precision when no entry exists.
 	return fmt.Sprintf("%s/%d", a.Consonant, a.Degree)
 }
 
