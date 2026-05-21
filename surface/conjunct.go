@@ -11,18 +11,17 @@ import (
 // callers usually strip first (via Strip) or apply normalization
 // downstream.
 
-// vowelChars is the set of vowel runes recognized by the Ithkuil
-// orthography: plain, umlauted, accented, and hiatus-marked forms.
+// vowelChars is the set of vowel runes recognized by the Ithkuil V4
+// orthography: 9 base vowels plus the 9 stressed forms (acute and
+// circumflex). "i" has no umlaut so it has no circumflex form.
 var vowelChars = map[rune]bool{
 	'a': true, 'ä': true,
 	'e': true, 'ë': true,
-	'i': true, 'ï': true,
+	'i': true,
 	'o': true, 'ö': true,
 	'u': true, 'ü': true,
 	'á': true, 'é': true, 'í': true, 'ó': true, 'ú': true,
-	'à': true, 'è': true, 'ì': true, 'ò': true, 'ù': true,
-	'â': true, 'ê': true, 'î': true, 'ô': true, 'û': true,
-	'ǎ': true, 'ě': true, 'ǐ': true, 'ǒ': true, 'ǔ': true,
+	'â': true, 'ê': true, 'ô': true, 'û': true,
 }
 
 // IsVowel reports whether r is a vowel character.

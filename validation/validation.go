@@ -542,7 +542,7 @@ func sameVoicing(a, b rune) bool {
 
 func isVowel(r rune) bool {
 	switch r {
-	case 'a', 'ä', 'e', 'ë', 'i', 'ï', 'o', 'ö', 'u', 'ü':
+	case 'a', 'ä', 'e', 'ë', 'i', 'o', 'ö', 'u', 'ü':
 		return true
 	}
 	return false

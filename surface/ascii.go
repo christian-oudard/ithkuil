@@ -1,16 +1,20 @@
 package surface
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 // The ASCII input method maps two-character ASCII digraphs to the
-// Unicode diacritics used by the Ithkuil orthography. FromASCII and
-// ToASCII are inverses on bare (no-stress) orthographic text.
+// Unicode diacritics used by the Ithkuil orthography, plus a postfix
+// `/` that stresses the preceding vowel. FromASCII and ToASCII are
+// inverses on full orthographic text including stress.
 //
 //	FromASCII(ToASCII(w)) == w
 //	ToASCII(FromASCII(a)) == a   (on the digraph-free output of FromASCII)
 //
-// Stress diacritics (á/â/é/...) are out of scope — strip them with
-// Strip before calling ToASCII.
+// The glottal stop `'` is not part of any digraph; it passes through
+// both directions verbatim.
 //
 // For an interactive TUI, InputState exposes the same state machine
 // in streaming form with separate views of committed and pending
@@ -26,15 +30,26 @@ var asciiDigraphs = map[string]string{
 	"dz": "ẓ",
 }
 
-// asciiInverse is the unicode → digraph reverse table.
-var asciiInverse = invertAsciiDigraphs()
+// asciiInverse is the unicode → digraph reverse table. Plain umlaut
+// and consonant digraphs come from asciiDigraphs; stressed forms
+// append `/` to the plain/umlaut spelling.
+var asciiInverse = buildAsciiInverse()
 
-func invertAsciiDigraphs() map[rune]string {
-	out := make(map[rune]string, len(asciiDigraphs))
+func buildAsciiInverse() map[rune]string {
+	out := make(map[rune]string, len(asciiDigraphs)+9)
 	for k, v := range asciiDigraphs {
 		r := []rune(v)[0]
 		out[r] = k
 	}
+	out['á'] = "a/"
+	out['é'] = "e/"
+	out['í'] = "i/"
+	out['ó'] = "o/"
+	out['ú'] = "u/"
+	out['â'] = "aa/"
+	out['ê'] = "ee/"
+	out['ô'] = "oo/"
+	out['û'] = "uu/"
 	return out
 }
 
@@ -87,16 +102,19 @@ func FromASCII(ascii string) string {
 }
 
 // ToASCII produces the keystroke sequence that, fed through
-// FromASCII, reproduces s. Characters with no digraph mapping pass
-// through unchanged.
+// FromASCII, reproduces s. ASCII runes pass through unchanged.
+// Any non-ASCII rune that has no digraph mapping is a programmer
+// error — ToASCII panics rather than silently emit non-ASCII output.
 func ToASCII(s string) string {
 	var b strings.Builder
 	b.Grow(len(s))
 	for _, r := range s {
 		if rep, ok := asciiInverse[r]; ok {
 			b.WriteString(rep)
-		} else {
+		} else if r < 128 {
 			b.WriteRune(r)
+		} else {
+			panic(fmt.Sprintf("ToASCII: no mapping for %q in %q", r, s))
 		}
 	}
 	return b.String()
@@ -114,6 +132,10 @@ type InputState struct {
 
 // Feed processes one keystroke.
 func (s *InputState) Feed(r rune) {
+	if r == '/' {
+		s.applyStress()
+		return
+	}
 	if len(s.pending) == 0 {
 		s.start(r)
 		return
@@ -135,6 +157,24 @@ func (s *InputState) Feed(r rune) {
 	}
 	s.commitPending()
 	s.start(r)
+}
+
+// applyStress closes the pending buffer and promotes the last committed
+// vowel to its stressed form. If no vowel precedes, the `/` is emitted
+// verbatim.
+func (s *InputState) applyStress() {
+	s.commitPending()
+	if len(s.committed) == 0 {
+		s.committed = append(s.committed, '/')
+		return
+	}
+	last := s.committed[len(s.committed)-1]
+	stressed, ok := applyMap[last]
+	if !ok {
+		s.committed = append(s.committed, '/')
+		return
+	}
+	s.committed[len(s.committed)-1] = stressed
 }
 
 func (s *InputState) start(r rune) {

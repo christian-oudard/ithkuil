@@ -57,9 +57,7 @@ var applyMap = map[rune]rune{
 	'ä': 'â', 'ë': 'ê', 'ö': 'ô', 'ü': 'û',
 }
 
-// isStressMark reports whether r is an acute or circumflex form (as
-// opposed to a hiatus marker like "ï" which is orthographic content,
-// not stress).
+// isStressMark reports whether r is an acute or circumflex form.
 func isStressMark(r rune) bool {
 	_, ok := stripMap[r]
 	return ok
@@ -135,9 +133,9 @@ func Strip(word string) (string, Stress) {
 // with too few vowel-conjuncts to satisfy the requested position are
 // returned unchanged.
 //
-// Within a multi-vowel conjunct (diphthong or hiatus pair) the mark
-// goes on the first vowel — the prominent member of a falling
-// diphthong.
+// Within a multi-vowel conjunct (diphthong or disyllabic pair) the
+// mark goes on the first vowel — the prominent member of a falling
+// diphthong, and the first syllable of a disyllabic pair.
 func Apply(word string, stress Stress) string {
 	if stress == Penultimate || stress == Monosyllabic {
 		return word

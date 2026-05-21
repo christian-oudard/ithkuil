@@ -12,13 +12,11 @@ import (
 )
 
 
-// accentMap strips stress and hiatus marks for parsing. Acute accents map
-// to the plain vowel (á→a); circumflex maps to the umlauted variant
-// (â→ä); diaeresis on i is the hiatus marker and maps to plain i.
+// accentMap strips stress marks for parsing. Acute accents map to the
+// plain vowel (á→a); circumflex maps to the umlauted variant (â→ä).
 var accentMap = map[rune]rune{
 	'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
 	'â': 'ä', 'ê': 'ë', 'ô': 'ö', 'û': 'ü',
-	'ï': 'i',
 }
 
 // NormalizeAccents removes stress marks from a vowel sequence so the

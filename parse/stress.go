@@ -18,8 +18,8 @@ const (
 
 // stressedVowels are the acute (á é í ó ú) and circumflex (â ê ô û)
 // forms — these mark the stressed syllable. The set is asymmetric
-// because circumflex doubles as the umlaut form and "î" isn't used:
-// "i" pairs with the diaeresis hiatus marker "ï" instead.
+// because circumflex doubles as the stressed-umlaut form (â=stressed ä,
+// etc.); "i" has no umlaut, so it has no circumflex form either.
 var stressedVowels = map[rune]bool{
 	'á': true, 'é': true, 'í': true, 'ó': true, 'ú': true,
 	'â': true, 'ê': true, 'ô': true, 'û': true,

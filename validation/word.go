@@ -9,27 +9,21 @@ import (
 )
 
 // ithkuilRunes is the set of characters that may appear in well-formed
-// Ithkuil V4 surface text — the 31 consonants, the 9 base vowels and
-// their diacritic variants (dieresis, acute, circumflex, grave), the
-// glottal stop, and the concatenation hyphen.
+// Ithkuil V4 surface text — the 31 consonants, the 9 base vowels, the
+// 9 stressed forms (acute and circumflex; "i" has no umlaut so no î),
+// the glottal stop, and the concatenation hyphen.
 var ithkuilRunes = func() map[rune]bool {
 	m := make(map[rune]bool)
 	for _, r := range "pbtdkgfvţḑszšžçxhļcẓčjmnňrlwyř" {
 		m[r] = true
 	}
-	for _, r := range "aäeëiïoöuü" {
+	for _, r := range "aäeëioöuü" {
 		m[r] = true
 	}
 	for _, r := range "áéíóú" {
 		m[r] = true
 	}
-	for _, r := range "âêîôû" {
-		m[r] = true
-	}
-	for _, r := range "àèìòù" {
-		m[r] = true
-	}
-	for _, r := range "ǎěǐǒǔ" {
+	for _, r := range "âêôû" {
 		m[r] = true
 	}
 	m['\''] = true

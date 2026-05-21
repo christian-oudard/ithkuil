@@ -57,22 +57,6 @@ func TestStrip_Monosyllabic(t *testing.T) {
 	}
 }
 
-func TestStrip_HiatusNotStress(t *testing.T) {
-	// "ï" is a hiatus marker (separates syllables), not a stress
-	// mark. Strip must leave it alone.
-	//
-	// Note: parse.SplitConjuncts currently groups consecutive
-	// vowels into one conjunct regardless of the hiatus marker, so
-	// "aïa" counts as one syllable for our purposes here. The
-	// hiatus-aware syllable count is a known limitation to address
-	// at Layer B (conjunct splitting). For Layer A all we verify is
-	// that the ï rune is preserved through Strip.
-	bare, _ := Strip("aïa")
-	if bare != "aïa" {
-		t.Errorf("Strip(aïa) bare = %q, want aïa (ï preserved)", bare)
-	}
-}
-
 func TestApply_PenultimateUnmarked(t *testing.T) {
 	// Penultimate is the orthographic default — Apply returns the
 	// word unchanged.

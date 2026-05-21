@@ -36,7 +36,6 @@ func TestNormalizeAccents(t *testing.T) {
 		{"é", "e"},
 		{"â", "ä"},
 		{"ô", "ö"},
-		{"ï", "i"},
 		{"Malëuţřait", "Malëuţřait"},
 		{"Maléuţřait", "Maleuţřait"},
 	}
@@ -112,7 +111,7 @@ func TestParseSlotIV(t *testing.T) {
 }
 
 func TestIsVowelChar(t *testing.T) {
-	for _, r := range "aäeëiïoöuü" {
+	for _, r := range "aäeëioöuü" {
 		if !surface.IsVowel(r) {
 			t.Errorf("surface.IsVowel(%q) = false, want true", r)
 		}

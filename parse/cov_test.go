@@ -266,8 +266,9 @@ func TestParseSlotIV_AllCases(t *testing.T) {
 }
 
 func TestIsStressedVowel(t *testing.T) {
-	// Note: "î" isn't in the stressed-vowel set (it's reserved as the
-	// diaeresis hiatus marker "ï" pair); circumflex covers ê/ô/û only.
+	// Note: "î" isn't in the stressed-vowel set because "i" has no
+	// umlaut form (the 9-vowel inventory is a ä e ë i o ö u ü);
+	// circumflex covers ê/ô/û only.
 	for _, r := range []rune{'á', 'é', 'í', 'ó', 'ú', 'â', 'ê', 'ô', 'û'} {
 		if !IsStressedVowel(r) {
 			t.Errorf("IsStressedVowel(%c) = false, want true", r)
