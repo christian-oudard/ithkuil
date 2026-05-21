@@ -25,6 +25,15 @@ func Render(l Layout) string {
 	b.WriteString(applyVvGlottal(l.Vv, len(l.SlotV)))
 	b.WriteString(l.Cr)
 	b.WriteString(l.Vr)
+	// §3.9.1 SPECIAL NOTE: when the Vc glottal-stop has been moved
+	// off the case vowel onto an earlier conjunct, the canonical place
+	// for it is the first consonant conjunct after Vr — Slot V's first
+	// Cs, the Ca cluster, or (in §3.8.1.2 shortcut, which we excluded)
+	// the Cn. Emitting a bare "'" here pre-attaches it to whatever
+	// consonant comes next in the SplitConjuncts grouping.
+	if l.MovedGlottal {
+		b.WriteString("'")
+	}
 	// Slot V surface order: §3.5 reverses to Cs-Vx when Ca is present
 	// (the geminated Ca handles the boundary). In shortcut form (Ca
 	// elided), §3.5's NOTE keeps the standard Vx-Cs order and §3.6.2

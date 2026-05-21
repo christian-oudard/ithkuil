@@ -1,6 +1,7 @@
 package render
 
 import (
+	"strings"
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
@@ -63,6 +64,59 @@ func TestFormative_WithSlotVIII(t *testing.T) {
 	want := "mlahla"
 	if got != want {
 		t.Errorf("Formative(with VIII) = %q, want %q", got, want)
+	}
+}
+
+func TestFormative_MovedGlottal_Cases37To52(t *testing.T) {
+	// §3.9.1 SPECIAL NOTE shifts the Vc glottal-stop for cases 37-52
+	// onto an earlier vocalic form. The canonical landing spot is just
+	// after Vr, producing "mla'l<Vc>" for a MinimalFormative("ml").
+	cases := []struct {
+		c    g.Case
+		want string
+	}{
+		// Relational (37-44): Series 1 + glottal.
+		{g.PRN, "mla'la"},
+		{g.DSP, "mla'lä"},
+		{g.COR, "mla'le"},
+		{g.CPS, "mla'li"},
+		{g.COM, "mla'lëi"},
+		{g.UTL, "mla'lö"},
+		{g.PRD, "mla'lo"},
+		{g.RLT, "mla'lu"},
+		// Affinitive (45-52): Series 2 + glottal.
+		{g.ACT, "mla'lai"},
+		{g.ASI, "mla'lau"},
+		{g.ESS, "mla'lei"},
+		{g.TRM, "mla'leu"},
+		{g.SEL, "mla'lëu"},
+		{g.CFM, "mla'lou"},
+		{g.DEP, "mla'loi"},
+		{g.VOC, "mla'lui"},
+	}
+	for _, c := range cases {
+		f := g.MinimalFormative("ml")
+		f.Final = g.UnframedNominal{Case: c.c}
+		got := Formative(f)
+		if got != c.want {
+			t.Errorf("Formative(%v) = %q, want %q", c.c, got, c.want)
+		}
+	}
+}
+
+func TestFormative_NoMovedGlottal_OtherCases(t *testing.T) {
+	// Cases 1-36 and 53-68 must NOT have the glottal moved. (53-68 are
+	// Spatio-Temporal; their canonical Vc keeps the glottal in place.)
+	for _, c := range []g.Case{g.THM, g.INS, g.ABS, g.STM, g.ERG, g.SIT, g.LOC, g.PER} {
+		f := g.MinimalFormative("ml")
+		f.Final = g.UnframedNominal{Case: c}
+		got := Formative(f)
+		// We don't assert the exact form, just that there is no
+		// leading "'" on a Cs/Ca position (the visible signature of
+		// the moved-glottal short form).
+		if strings.Contains(got, "a'l") {
+			t.Errorf("Formative(%v) = %q has moved-glottal pattern", c, got)
+		}
 	}
 }
 

@@ -285,8 +285,51 @@ func FromGrammar(f g.Formative, opts Options) Layout {
 	// ordering let elision burn enough slack to keep the shortcut's
 	// minimum-syllables guard from firing, and the long form leaked out.
 	maybeMoveCnToCa(&l, f)
+	maybeShortenVcGlottal(&l, f)
 	applyDefaultElisions(&l, f)
 	return l
+}
+
+// maybeShortenVcGlottal applies the §3.9.1 SPECIAL NOTE shortening for
+// Relational and Affinitive cases (37-52): the Vc glottal-stop, which
+// would otherwise sit on the trailing case vowel, is moved earlier in
+// the word and rides into the first conjunct after Vr at render time.
+//
+// The spec disallows the shift in two contexts:
+//
+//   - When a Slot IV/VI a+Ca shortcut is in play. In that surface the
+//     Vr has been elided into the Cc-Vv pair, so there is no Vr to
+//     carry the glottal.
+//   - When the §3.8.1.2 Cn→Ca shortcut has been applied. The §3.6.2
+//     footnote and §3.9.1 itself make the two mutually exclusive.
+//
+// On parse, stripMovedGlottal lifts the glottal off whichever conjunct
+// carried it; restoreMovedGlottal then reassembles the canonical Vc.
+// Here we do the inverse on the way out so re-rendered output matches
+// what a speaker would naturally write.
+func maybeShortenVcGlottal(l *Layout, f g.Formative) {
+	var c g.Case
+	switch v := f.Final.(type) {
+	case g.UnframedNominal:
+		c = v.Case
+	case g.FramedVerbal:
+		c = v.Case
+	default:
+		return
+	}
+	grp := c.Group()
+	if grp != g.Relational && grp != g.Affinitive {
+		return
+	}
+	if l.Vr == "" || l.CnInCa {
+		return
+	}
+	stripped := stripVvGlottal(l.Vc)
+	if stripped == l.Vc {
+		return
+	}
+	l.Vc = stripped
+	l.MovedGlottal = true
 }
 
 // maybeMoveCnToCa applies the §3.8.1.2 shortening: when Slot VIII has
