@@ -470,6 +470,100 @@ var DayOfWeekAffixes = [...]string{
 	"mčk", // 7
 }
 
+// SPT degree constants name the nine §6 calendar/time positions. Use
+// these with SPTFormative to compose date and time-of-day formatives.
+const (
+	SPTSecond      = 1 // seconds of the minute
+	SPTMinute      = 2 // minutes of the hour
+	SPTHour        = 3 // hour of the day (time of day)
+	SPTDayOfWeek   = 4 // day of the week (1 = Monday)
+	SPTDayOfMonth  = 5 // day of the month
+	SPTWeekOfMonth = 6 // week of the month
+	SPTMonth       = 7 // month of the year
+	SPTYear        = 8 // year
+	SPTCentury     = 9 // century
+)
+
+// SptCs is the affix consonant for the SPT (Specified Points in
+// Calendrical Time) affix per §6. The spec gives two surface forms
+// (-rw- / -ry-); -rw- is the canonical pre-vowel form.
+const SptCs = "rw"
+
+// SPTFormative builds a date/time formative for value n at the given
+// SPT degree (1-9, names above) with the requested Stem and Version.
+// The spec recommends Cardinal/Abstract (Vv "u") for typical use.
+// Returns ok=false for n outside 0-99 or sptDegree outside 1-9.
+//
+// The case is fixed to THM; callers needing a different case (e.g.
+// SIT for "in the situation of the Nth ...") should override f.Final
+// on the returned formative.
+func SPTFormative(n int, sptDegree int, stem Stem, ver Version) (g.Formative, bool) {
+	if sptDegree < 1 || sptDegree > 9 {
+		return g.Formative{}, false
+	}
+	f, ok := Formative(n, stem, ver, g.THM)
+	if !ok {
+		return g.Formative{}, false
+	}
+	f.SlotVII = append(f.SlotVII, g.Affix{
+		Type:      g.Type1Affix,
+		Degree:    sptDegree,
+		Consonant: SptCs,
+	})
+	return f, true
+}
+
+// SPTDegree inspects a Formative and, if its Slot VII carries an SPT
+// affix, returns (degree, true) where degree names which calendar/time
+// position the formative denotes. Returns (0, false) when no SPT affix
+// is present.
+func SPTDegree(f g.Formative) (int, bool) {
+	for _, a := range f.SlotVII {
+		if a.Consonant == SptCs {
+			return a.Degree, true
+		}
+	}
+	return 0, false
+}
+
+// RenderSPT builds and renders the SPT formative for n at the given
+// SPT degree. Uses the canonical w-shortcut surface form (Cc=w,
+// Vr/Ca elided) so the output matches spec convention for date and
+// time-of-day expressions. Returns ok=false for out-of-range inputs.
+func RenderSPT(n int, sptDegree int, stem Stem, ver Version) (string, bool) {
+	f, ok := SPTFormative(n, sptDegree, stem, ver)
+	if !ok {
+		return "", false
+	}
+	return render.FormativeWithOpts(f, render.Options{Shortcut: true}), true
+}
+
+// SPTDegreeLabel returns a human-readable label for an SPT degree, e.g.
+// "hour" for SPTHour. Returns "" for out-of-range degrees.
+func SPTDegreeLabel(d int) string {
+	switch d {
+	case SPTSecond:
+		return "second"
+	case SPTMinute:
+		return "minute"
+	case SPTHour:
+		return "hour"
+	case SPTDayOfWeek:
+		return "weekday"
+	case SPTDayOfMonth:
+		return "day"
+	case SPTWeekOfMonth:
+		return "week"
+	case SPTMonth:
+		return "month"
+	case SPTYear:
+		return "year"
+	case SPTCentury:
+		return "century"
+	}
+	return ""
+}
+
 // MonthAffix returns the Cs cluster encoding month m (1-12). Returns
 // ok=false for out-of-range m. The affix is intended to attach to the
 // SPT formative; the caller chooses degree and type.

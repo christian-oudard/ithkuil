@@ -367,6 +367,123 @@ func TestPhrase_RoundTripsThroughFullparse(t *testing.T) {
 	}
 }
 
+func TestSPTFormative_RoundTrip(t *testing.T) {
+	cases := []struct {
+		n   int
+		deg int
+	}{
+		{8, SPTHour},
+		{6, SPTDayOfWeek},
+		{15, SPTDayOfMonth},
+		{3, SPTMonth},
+		{99, SPTYear},
+		{21, SPTCentury},
+	}
+	for _, c := range cases {
+		f, ok := SPTFormative(c.n, c.deg, Cardinal, Abstract)
+		if !ok {
+			t.Errorf("SPTFormative(%d, %d): ok=false", c.n, c.deg)
+			continue
+		}
+		got, ok := Decode(f)
+		if !ok {
+			t.Errorf("Decode(SPTFormative(%d, %d)) failed", c.n, c.deg)
+			continue
+		}
+		if got.Value != int64(c.n) {
+			t.Errorf("SPTFormative(%d, %d) value=%d, want %d", c.n, c.deg, got.Value, c.n)
+		}
+		deg, hasSPT := SPTDegree(f)
+		if !hasSPT || deg != c.deg {
+			t.Errorf("SPTDegree(SPTFormative(%d, %d)) = %d/%v, want %d/true",
+				c.n, c.deg, deg, hasSPT, c.deg)
+		}
+	}
+}
+
+func TestSPTFormative_RejectsBadInputs(t *testing.T) {
+	if _, ok := SPTFormative(0, 0, Cardinal, Abstract); ok {
+		t.Error("SPTFormative with degree 0 should fail")
+	}
+	if _, ok := SPTFormative(0, 10, Cardinal, Abstract); ok {
+		t.Error("SPTFormative with degree 10 should fail")
+	}
+	if _, ok := SPTFormative(100, SPTHour, Cardinal, Abstract); ok {
+		t.Error("SPTFormative with n=100 should fail (out of 0-99 range)")
+	}
+}
+
+func TestRenderSPT_ShortcutForm(t *testing.T) {
+	got, ok := RenderSPT(8, SPTHour, Cardinal, Abstract)
+	if !ok {
+		t.Fatalf("RenderSPT(8, SPTHour): ok=false")
+	}
+	// "wučkerw": w + u + čk(8) + e(T1D3) + rw(SPT) + a(THM, elided).
+	want := "wučkerw"
+	if got != want {
+		t.Errorf("RenderSPT(8, SPTHour) = %q, want %q", got, want)
+	}
+}
+
+func TestRenderSPT_ParsesBack(t *testing.T) {
+	// Every (n, degree) combination renders to a surface form that
+	// parses back to the same value and SPT degree.
+	for n := 0; n <= 12; n++ {
+		for deg := SPTSecond; deg <= SPTCentury; deg++ {
+			surf, ok := RenderSPT(n, deg, Cardinal, Abstract)
+			if !ok {
+				t.Errorf("RenderSPT(%d, %d) ok=false", n, deg)
+				continue
+			}
+			parsed, err := fullparse.ParseFormative(surf)
+			if err != nil {
+				t.Errorf("RenderSPT(%d, %d) = %q parse-err: %v", n, deg, surf, err)
+				continue
+			}
+			num, ok := Decode(parsed)
+			if !ok || num.Value != int64(n) {
+				t.Errorf("RenderSPT(%d, %d) = %q decodes to %d", n, deg, surf, num.Value)
+			}
+			d, hasSPT := SPTDegree(parsed)
+			if !hasSPT || d != deg {
+				t.Errorf("RenderSPT(%d, %d) = %q SPTDegree=%d/%v", n, deg, surf, d, hasSPT)
+			}
+		}
+	}
+}
+
+func TestSPTDegreeLabel(t *testing.T) {
+	cases := map[int]string{
+		SPTSecond:      "second",
+		SPTMinute:      "minute",
+		SPTHour:        "hour",
+		SPTDayOfWeek:   "weekday",
+		SPTDayOfMonth:  "day",
+		SPTWeekOfMonth: "week",
+		SPTMonth:       "month",
+		SPTYear:        "year",
+		SPTCentury:     "century",
+	}
+	for d, want := range cases {
+		if got := SPTDegreeLabel(d); got != want {
+			t.Errorf("SPTDegreeLabel(%d) = %q, want %q", d, got, want)
+		}
+	}
+	if got := SPTDegreeLabel(0); got != "" {
+		t.Errorf("SPTDegreeLabel(0) = %q, want \"\"", got)
+	}
+	if got := SPTDegreeLabel(10); got != "" {
+		t.Errorf("SPTDegreeLabel(10) = %q, want \"\"", got)
+	}
+}
+
+func TestSPTDegree_NoAffix(t *testing.T) {
+	f, _ := Formative(8, Cardinal, Abstract, g.THM)
+	if d, ok := SPTDegree(f); ok {
+		t.Errorf("SPTDegree(plain number) = %d/true, want 0/false", d)
+	}
+}
+
 func TestStemAndVersion_StringerSanity(t *testing.T) {
 	// Just ensure non-empty strings — defends against table drift.
 	for _, s := range []Stem{Cardinal, Ordinal, Partitive, Collective} {

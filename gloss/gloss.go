@@ -146,6 +146,13 @@ func (gl *Glosser) crRootLabel(x g.CrRoot, f g.Formative) string {
 	// 11-99 fold the TNX tens-affix into the displayed value.
 	if numbers.IsNumberRoot(x.Cluster) {
 		if n, ok := numbers.Decode(f); ok {
+			// SPT affix in Slot VII upgrades the bare integer gloss to a
+			// date/time label per §6: "8th hour", "15th of month", etc.
+			if d, hasSPT := numbers.SPTDegree(f); hasSPT {
+				if lbl := numbers.SPTDegreeLabel(d); lbl != "" {
+					return fmt.Sprintf("-%s- '%dth %s'", x.Cluster, n.Value, lbl)
+				}
+			}
 			return fmt.Sprintf("-%s- '%d'", x.Cluster, n.Value)
 		}
 	}

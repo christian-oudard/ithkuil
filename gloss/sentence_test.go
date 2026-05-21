@@ -189,6 +189,32 @@ func TestFormative_NumberRoot(t *testing.T) {
 	}
 }
 
+func TestFormative_NumberWithSPT(t *testing.T) {
+	// A number formative carrying the SPT (Specified Points in
+	// Calendrical Time, §6) affix should gloss with both the integer
+	// value and the SPT degree's calendar label.
+	cases := []struct {
+		word    string
+		wantVal string
+	}{
+		{"wučkerw", "'8th hour'"},   // 8 + SPT/3 → "8th hour"
+		{"wucpirw", "'6th weekday'"}, // 6 + SPT/4 → "6th weekday"
+		{"wustarsëirw", "'15th day'"}, // 5 + TNX/1 + SPT/5 → "15th day"
+		{"wuzorw", "'3th month'"},    // 3 + SPT/7 → "3th month"
+	}
+	for _, c := range cases {
+		tok, ok := tokenize.ClassifyWord(c.word).(tokenize.FormativeWord)
+		if !ok {
+			t.Errorf("ClassifyWord(%q) is not a FormativeWord: %T", c.word, tokenize.ClassifyWord(c.word))
+			continue
+		}
+		got := (&Glosser{}).Formative(tok.Formative)
+		if !strings.Contains(got, c.wantVal) {
+			t.Errorf("gloss(%q) = %q, want substring %q", c.word, got, c.wantVal)
+		}
+	}
+}
+
 func TestFormative_CsRoot(t *testing.T) {
 	tok := tokenize.ClassifyWord("oërmölá").(tokenize.FormativeWord)
 	got := (&Glosser{}).Formative(tok.Formative)
