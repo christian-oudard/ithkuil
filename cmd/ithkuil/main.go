@@ -115,10 +115,7 @@ func loadLex(dir string, stderr io.Writer) *lexicon.Lexicon {
 	if dir == "" {
 		lex, err = lexicon.LoadDefault()
 	} else {
-		lex, err = lexicon.Load(
-			filepath.Join(dir, "roots.json"),
-			filepath.Join(dir, "affixes.json"),
-		)
+		lex, err = lexicon.Load(filepath.Join(dir, "lexicon.json"))
 	}
 	if err != nil {
 		fmt.Fprintf(stderr, "warning: lexicon load failed (%v); continuing without lexicon\n", err)

@@ -43,10 +43,7 @@ func main() {
 	if *lexDir == "" {
 		lex, err = lexicon.LoadDefault()
 	} else {
-		lex, err = lexicon.Load(
-			filepath.Join(*lexDir, "roots.json"),
-			filepath.Join(*lexDir, "affixes.json"),
-		)
+		lex, err = lexicon.Load(filepath.Join(*lexDir, "lexicon.json"))
 	}
 	if err != nil {
 		log.Printf("warning: lexicon load failed (%v); roots/affixes lookups will return empty", err)

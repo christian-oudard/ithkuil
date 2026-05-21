@@ -19,6 +19,7 @@ import (
 var (
 	affixCsToIndex map[string]uint16
 	affixIndexToCs []string
+	lexiconVersion string
 )
 
 // AffixIndexUnknown signals "this affix's Cs is not in the lexicon —
@@ -34,6 +35,7 @@ func init() {
 		// because the embedded lexicon is always present.
 		return
 	}
+	lexiconVersion = lex.Version
 	cs := make([]string, 0, len(lex.Affixes))
 	for c := range lex.Affixes {
 		cs = append(cs, c)

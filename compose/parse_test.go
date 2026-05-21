@@ -12,10 +12,7 @@ import (
 
 func mustLex(t *testing.T) *lexicon.Lexicon {
 	t.Helper()
-	lex, err := lexicon.Load(
-		filepath.Join("..", "data", "roots.json"),
-		filepath.Join("..", "data", "affixes.json"),
-	)
+	lex, err := lexicon.Load(filepath.Join("..", "data", "lexicon.json"))
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}

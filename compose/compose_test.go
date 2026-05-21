@@ -73,12 +73,12 @@ func TestLookupForm(t *testing.T) {
 }
 
 func TestSearchRoots(t *testing.T) {
-	roots, err := lexicon.LoadRoots(filepath.Join("..", "data", "roots.json"))
+	lex, err := lexicon.Load(filepath.Join("..", "data", "lexicon.json"))
 	if err != nil {
-		t.Fatalf("load roots: %v", err)
+		t.Fatalf("load lexicon: %v", err)
 	}
 	// "yellow" should find the root "ml".
-	hits := SearchRoots("yellow", roots)
+	hits := SearchRoots("yellow", lex.Roots)
 	if len(hits) == 0 {
 		t.Fatal("SearchRoots(yellow): no hits")
 	}
@@ -94,11 +94,11 @@ func TestSearchRoots(t *testing.T) {
 }
 
 func TestSearchRoots_DirectCr(t *testing.T) {
-	roots, err := lexicon.LoadRoots(filepath.Join("..", "data", "roots.json"))
+	lex, err := lexicon.Load(filepath.Join("..", "data", "lexicon.json"))
 	if err != nil {
-		t.Fatalf("load roots: %v", err)
+		t.Fatalf("load lexicon: %v", err)
 	}
-	hits := SearchRoots("ml", roots)
+	hits := SearchRoots("ml", lex.Roots)
 	if len(hits) == 0 || hits[0].Cr != "ml" || hits[0].Score != 0 {
 		t.Errorf("SearchRoots(ml): direct hit should rank first with score 0; got %v",
 			hits[:min(3, len(hits))])
@@ -106,12 +106,12 @@ func TestSearchRoots_DirectCr(t *testing.T) {
 }
 
 func TestSearchAffixes(t *testing.T) {
-	affixes, err := lexicon.LoadAffixes(filepath.Join("..", "data", "affixes.json"))
+	lex, err := lexicon.Load(filepath.Join("..", "data", "lexicon.json"))
 	if err != nil {
-		t.Fatalf("load affixes: %v", err)
+		t.Fatalf("load lexicon: %v", err)
 	}
 	// "r" affix is NEG (Negation degrees).
-	hits := SearchAffixes("r", affixes)
+	hits := SearchAffixes("r", lex.Affixes)
 	if len(hits) == 0 {
 		t.Fatal("SearchAffixes(r): no hits")
 	}

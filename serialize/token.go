@@ -218,15 +218,27 @@ const FormatVersion byte = 1
 
 // MarshalSentence encodes a sequence of tokens. Layout:
 //
-//	[version byte] [uvarint token count] [token bytes...]
+//	[format version byte]              FormatVersion (1)
+//	[uvarint length][lexicon version]  16-char short hash of the lexicon used
+//	[uvarint token count]
+//	[token bytes...]
 //
-// Each token self-delimits via its leading type tag, so the stream
-// decodes without needing per-token length prefixes.
+// Each token self-delimits via its leading type tag. The lexicon
+// version pins the affix-index mapping (serialize/affix_index.go) to a
+// specific lexicon content hash, so a decoder reading bytes produced
+// against a different lexicon fails loudly rather than silently
+// returning the wrong affixes.
 func MarshalSentence(tokens []tokenize.WordToken) ([]byte, error) {
 	var buf bytes.Buffer
 	buf.WriteByte(FormatVersion)
+	// Lexicon version (length-prefixed string).
+	lexVer := []byte(lexiconVersion)
 	var hdr [binary.MaxVarintLen64]byte
-	n := binary.PutUvarint(hdr[:], uint64(len(tokens)))
+	n := binary.PutUvarint(hdr[:], uint64(len(lexVer)))
+	buf.Write(hdr[:n])
+	buf.Write(lexVer)
+	// Token count.
+	n = binary.PutUvarint(hdr[:], uint64(len(tokens)))
 	buf.Write(hdr[:n])
 	for _, t := range tokens {
 		b, err := MarshalWord(t)
@@ -246,11 +258,27 @@ func UnmarshalSentence(buf []byte) ([]tokenize.WordToken, error) {
 	if buf[0] != FormatVersion {
 		return nil, fmt.Errorf("sentence: unknown format version %d (this decoder supports %d)", buf[0], FormatVersion)
 	}
-	count, n := binary.Uvarint(buf[1:])
+	cur := 1
+	// Lexicon version string.
+	lexLen, n := binary.Uvarint(buf[cur:])
+	if n <= 0 {
+		return nil, fmt.Errorf("sentence: bad lexicon-version length varint")
+	}
+	cur += n
+	if uint64(len(buf)-cur) < lexLen {
+		return nil, fmt.Errorf("sentence: lexicon version truncated")
+	}
+	gotLexVer := string(buf[cur : cur+int(lexLen)])
+	if gotLexVer != lexiconVersion {
+		return nil, fmt.Errorf("sentence: lexicon version mismatch — bytes were produced against %q but this decoder has %q", gotLexVer, lexiconVersion)
+	}
+	cur += int(lexLen)
+	// Token count.
+	count, n := binary.Uvarint(buf[cur:])
 	if n <= 0 {
 		return nil, fmt.Errorf("sentence: bad token-count varint")
 	}
-	cur := 1 + n
+	cur += n
 	out := make([]tokenize.WordToken, 0, count)
 	for i := uint64(0); i < count; i++ {
 		t, consumed, err := UnmarshalWord(buf[cur:])

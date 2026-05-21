@@ -59,8 +59,11 @@ type AffixEntry struct {
 }
 
 // Lexicon bundles the root and affix maps so callers can pass a single
-// value through their pipelines.
+// value through their pipelines. Version is a content-derived short
+// hash that lets downstream consumers (notably the binary serialize
+// format) detect when the lexicon has changed.
 type Lexicon struct {
+	Version string
 	Roots   map[string]RootEntry
 	Affixes map[string]AffixEntry
 }
@@ -68,46 +71,17 @@ type Lexicon struct {
 // LoadDefault returns the lexicon bundled with the binary via
 // //go:embed. Use Load to override with a different on-disk copy.
 func LoadDefault() (*Lexicon, error) {
-	roots, err := parseRoots(data.Roots)
-	if err != nil {
-		return nil, fmt.Errorf("embedded roots: %w", err)
-	}
-	affixes, err := parseAffixes(data.Affixes)
-	if err != nil {
-		return nil, fmt.Errorf("embedded affixes: %w", err)
-	}
-	return &Lexicon{Roots: roots, Affixes: affixes}, nil
+	return parseLexicon(data.Lexicon)
 }
 
-// LoadRoots reads and parses a roots.json file.
-func LoadRoots(path string) (map[string]RootEntry, error) {
+// Load reads a combined lexicon.json file (with version, roots, and
+// affixes fields) from disk.
+func Load(path string) (*Lexicon, error) {
 	bytes, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("load roots: %w", err)
+		return nil, fmt.Errorf("load lexicon: %w", err)
 	}
-	return parseRoots(bytes)
-}
-
-// LoadAffixes reads and parses an affixes.json file.
-func LoadAffixes(path string) (map[string]AffixEntry, error) {
-	bytes, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("load affixes: %w", err)
-	}
-	return parseAffixes(bytes)
-}
-
-// Load reads both lexicon files from the given paths.
-func Load(rootsPath, affixesPath string) (*Lexicon, error) {
-	roots, err := LoadRoots(rootsPath)
-	if err != nil {
-		return nil, err
-	}
-	affixes, err := LoadAffixes(affixesPath)
-	if err != nil {
-		return nil, err
-	}
-	return &Lexicon{Roots: roots, Affixes: affixes}, nil
+	return parseLexicon(bytes)
 }
 
 // Category-valued affixes (MCS, PHS, AP1-4, IVL, LVL, VAL) write their
@@ -159,26 +133,26 @@ func (r RootEntry) Stem(i int) string {
 	}
 }
 
-func parseRoots(bytes []byte) (map[string]RootEntry, error) {
-	var entries []RootEntry
-	if err := json.Unmarshal(bytes, &entries); err != nil {
-		return nil, err
+// parseLexicon decodes the combined lexicon.json shape.
+func parseLexicon(buf []byte) (*Lexicon, error) {
+	var raw struct {
+		Version string       `json:"version"`
+		Roots   []RootEntry  `json:"roots"`
+		Affixes []AffixEntry `json:"affixes"`
 	}
-	m := make(map[string]RootEntry, len(entries))
-	for _, e := range entries {
-		m[e.Cr] = e
+	if err := json.Unmarshal(buf, &raw); err != nil {
+		return nil, fmt.Errorf("lexicon: %w", err)
 	}
-	return m, nil
-}
-
-func parseAffixes(bytes []byte) (map[string]AffixEntry, error) {
-	var entries []AffixEntry
-	if err := json.Unmarshal(bytes, &entries); err != nil {
-		return nil, err
+	if raw.Version == "" {
+		return nil, fmt.Errorf("lexicon: missing version field")
 	}
-	m := make(map[string]AffixEntry, len(entries))
-	for _, e := range entries {
-		m[e.Cs] = e
+	roots := make(map[string]RootEntry, len(raw.Roots))
+	for _, e := range raw.Roots {
+		roots[e.Cr] = e
 	}
-	return m, nil
+	affixes := make(map[string]AffixEntry, len(raw.Affixes))
+	for _, e := range raw.Affixes {
+		affixes[e.Cs] = e
+	}
+	return &Lexicon{Version: raw.Version, Roots: roots, Affixes: affixes}, nil
 }

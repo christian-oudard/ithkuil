@@ -184,8 +184,44 @@ def write_json(data: list[dict], path: Path) -> None:
         f.write("\n")
 
 
+def merge_affixes_from_lexicon(parsed: list[dict], lexicon_path: Path) -> list[dict]:
+    """Like merge_affixes but reads affixes out of the combined lexicon.json."""
+    if not lexicon_path.exists():
+        return parsed
+    with open(lexicon_path, encoding="utf-8") as f:
+        data = json.load(f)
+    return merge_affix_entries(parsed, data.get("affixes", []))
+
+
+def merge_affix_entries(parsed: list[dict], existing: list[dict]) -> list[dict]:
+    by_cs = {a["cs"]: a for a in existing}
+    out = []
+    for a in parsed:
+        if cur := by_cs.get(a["cs"]):
+            if not a.get("description") and cur.get("description"):
+                a["description"] = cur["description"]
+            if not a.get("type") and cur.get("type"):
+                a["type"] = cur["type"]
+        out.append(a)
+    return out
+
+
+def write_lexicon(roots: list[dict], affixes: list[dict], path: Path) -> str:
+    """Write the combined lexicon.json with a content-derived version
+    field. Returns the version string."""
+    import hashlib
+    payload = json.dumps({"roots": roots, "affixes": affixes}, sort_keys=True, ensure_ascii=False)
+    version = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+    combined = {"version": version, "roots": roots, "affixes": affixes}
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(combined, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+    return version
+
+
 def main() -> int:
     data_dir = Path(__file__).parent
+    lexicon_path = data_dir / "lexicon.json"
 
     print("Fetching roots from upstream sheet...")
     roots = parse_roots(fetch(ROOTS_URL))
@@ -193,14 +229,13 @@ def main() -> int:
 
     print("Fetching affixes from upstream sheet...")
     affixes = parse_affixes(fetch(AFFIXES_URL))
-    affixes = merge_affixes(affixes, data_dir / "affixes.json")
+    affixes = merge_affixes_from_lexicon(affixes, lexicon_path)
     print(f"  {len(affixes)} affix entries")
 
     write_roots_tsv(roots, data_dir / "roots.tsv")
     write_affixes_tsv(affixes, data_dir / "affixes.tsv")
-    write_json(roots, data_dir / "roots.json")
-    write_json(affixes, data_dir / "affixes.json")
-    print("Wrote roots.tsv, affixes.tsv, roots.json, affixes.json")
+    version = write_lexicon(roots, affixes, lexicon_path)
+    print(f"Wrote roots.tsv, affixes.tsv, lexicon.json (version {version})")
     return 0
 
 
