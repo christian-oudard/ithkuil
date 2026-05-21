@@ -23,13 +23,11 @@ func Parse(word string) (Layout, error) {
 	}
 	body, sentenceStarter := stripSentencePrefix(bare)
 	conjs := surface.MergeGlottalVowels(surface.SplitConjuncts(body))
-	conjs, movedGlottal := stripMovedGlottal(conjs)
 	if len(conjs) < 3 {
 		return Layout{}, fmt.Errorf("word %q too short (got %d conjuncts, need at least 3)", word, len(conjs))
 	}
 	l := Layout{
 		SentenceStarter: sentenceStarter,
-		MovedGlottal:    movedGlottal,
 		Stress:          stress,
 	}
 	i := 0
@@ -41,6 +39,16 @@ func Parse(word string) (Layout, error) {
 			l.Cc = conjs[0]
 			i++
 		}
+	}
+
+	// §3.9.1 moved-glottal stripping runs only outside the shortcut
+	// form. In shortcut form the same "'C" surface pattern is the
+	// §3.6.2 Slot V end-of-slot marker, not a moved Vc glottal — the
+	// §3.6.2 footnote makes the two mutually exclusive.
+	if !isShortcutCc(l.Cc) {
+		var movedGlottal bool
+		conjs, movedGlottal = stripMovedGlottal(conjs)
+		l.MovedGlottal = movedGlottal
 	}
 
 	// Identify the shape by what's at position i.
@@ -182,12 +190,16 @@ func parseVowelInitial(l *Layout, conjs []string, i int) error {
 	l.Cr = conjs[i]
 	i++
 
-	// Shortcut form: no Vr, no Ca, jump to Slot VII/VIII/IX.
+	// Shortcut form: no Vr, no Ca. Slot V may still appear per §3.6.2,
+	// in which case the final Slot V Vx carries a glottal-stop end-of-
+	// slot marker. After Slot V (or immediately, if absent), continue
+	// with Slot VII / VIII / IX.
 	if isShortcutCc(l.Cc) {
-		if hadGlottalVv {
-			return fmt.Errorf("shortcut form cannot carry a Slot V glottal-stop in Vv")
+		newConjs, newI := parseShortcutSlotV(l, conjs, i)
+		if hadGlottalVv && len(l.SlotV) < 2 {
+			return fmt.Errorf("shortcut form: Vv glottal-stop requires ≥2 Slot V affixes (got %d)", len(l.SlotV))
 		}
-		return parseAfterCa(l, conjs, i)
+		return parseAfterCa(l, newConjs, newI)
 	}
 
 	// Regular long form: Vr next.
@@ -274,6 +286,42 @@ func parseFromCa(l *Layout, conjs []string, i int, allowSlotV bool) error {
 	}
 	l.Ca = conjs[i]
 	return parseAfterCa(l, conjs, i+1)
+}
+
+// parseShortcutSlotV walks (Vx, Cs) pairs starting at i, looking for
+// the §3.6.2 end-of-Slot-V glottal-stop. In shortcut form Slot V is
+// surface-ordered Vx-Cs (unlike the normal form, where it is reversed
+// to Cs-Vx because the geminated Ca handles the boundary). The end of
+// Slot V is signalled by a glottal infixed into the final Vx; that
+// glottal surfaces as a leading "'" on the next consonant conjunct
+// (since SplitConjuncts groups "'" with the consonant that follows).
+//
+// Returns the (possibly-modified) conjunct slice and the new index to
+// resume parsing from. If no glottal-marked Cs is found within a
+// contiguous run of (Vx, Cs) pairs, no Slot V is recorded and the
+// caller picks up at the original position — the shortcut form
+// simply had no Slot V.
+func parseShortcutSlotV(l *Layout, conjs []string, i int) ([]string, int) {
+	var collected []AffixChunk
+	j := i
+	for j+1 < len(conjs) {
+		vx, cs := conjs[j], conjs[j+1]
+		if !surface.IsVowelConjunct(vx) || !surface.IsConsonantConjunct(cs) {
+			break
+		}
+		if strings.HasPrefix(cs, "'") {
+			collected = append(collected, AffixChunk{Vx: vx, Cs: cs[1:]})
+			l.SlotV = append(l.SlotV, collected...)
+			out := make([]string, 0, len(conjs))
+			out = append(out, conjs[:j]...)
+			out = append(out, conjs[j+2:]...)
+			return out, j
+		}
+		collected = append(collected, AffixChunk{Vx: vx, Cs: cs})
+		j += 2
+	}
+	// No glottal-marked Cs found → not a Slot V context after all.
+	return conjs, i
 }
 
 // isMovedCn reports whether c is a Pattern-1 Cn consonant cluster

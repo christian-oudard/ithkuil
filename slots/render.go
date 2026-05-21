@@ -25,9 +25,26 @@ func Render(l Layout) string {
 	b.WriteString(applyVvGlottal(l.Vv, len(l.SlotV)))
 	b.WriteString(l.Cr)
 	b.WriteString(l.Vr)
-	for _, a := range l.SlotV {
-		b.WriteString(a.Cs)
-		b.WriteString(a.Vx)
+	// Slot V surface order: §3.5 reverses to Cs-Vx when Ca is present
+	// (the geminated Ca handles the boundary). In shortcut form (Ca
+	// elided), §3.5's NOTE keeps the standard Vx-Cs order and §3.6.2
+	// adds a glottal-stop end marker on the final Vx.
+	shortcutSlotV := l.Ca == "" && len(l.SlotV) > 0
+	for k, a := range l.SlotV {
+		isLast := k == len(l.SlotV)-1
+		if shortcutSlotV {
+			// End-marker glottal goes between the final Vx and its Cs.
+			// The Cs prevents the glottal from landing word-final, so
+			// no §1.7 rule 3 epenthesis is needed.
+			b.WriteString(a.Vx)
+			if isLast {
+				b.WriteString("'")
+			}
+			b.WriteString(a.Cs)
+		} else {
+			b.WriteString(a.Cs)
+			b.WriteString(a.Vx)
+		}
 	}
 	ca := l.Ca
 	if len(l.SlotV) > 0 {

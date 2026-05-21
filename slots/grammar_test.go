@@ -144,6 +144,44 @@ func TestFromGrammar_Slot8_EffectAndLevel(t *testing.T) {
 	}
 }
 
+// TestParse_ShortcutSlotV exercises the §3.6.2 path: a shortcut Cc
+// formative with a Slot V affix whose final Vx carries the end-of-
+// slot glottal-stop. The parser must recognise the (Vx, Cs) order
+// (not the reversed (Cs, Vx) used when Ca is present) and split the
+// "'C" surface conjunct so the leading glottal is stripped from the
+// Cs, leaving the affix's true consonant.
+func TestParse_ShortcutSlotV(t *testing.T) {
+	cases := []struct {
+		in     string
+		slotV  []AffixChunk
+		vc     string
+		movedG bool
+	}{
+		{"wamla'r", []AffixChunk{{Vx: "a", Cs: "r"}}, "", false},
+		{"wamla're", []AffixChunk{{Vx: "a", Cs: "r"}}, "e", false},
+	}
+	for _, c := range cases {
+		t.Run(c.in, func(t *testing.T) {
+			l, err := Parse(c.in)
+			if err != nil {
+				t.Fatalf("Parse(%q): %v", c.in, err)
+			}
+			if !reflect.DeepEqual(l.SlotV, c.slotV) {
+				t.Errorf("SlotV = %+v, want %+v", l.SlotV, c.slotV)
+			}
+			if l.Vc != c.vc {
+				t.Errorf("Vc = %q, want %q", l.Vc, c.vc)
+			}
+			if l.MovedGlottal != c.movedG {
+				t.Errorf("MovedGlottal = %v, want %v", l.MovedGlottal, c.movedG)
+			}
+			if l.Ca != "" {
+				t.Errorf("Ca = %q, want \"\" (shortcut form)", l.Ca)
+			}
+		})
+	}
+}
+
 // TestParse_MovedGlottalRoundTrip exercises Layout.MovedGlottal and
 // restoreMovedGlottal: a §3.9.1 moved-glottal Vc form survives a
 // parse-then-render round-trip (case 37+ gets the glottal back).

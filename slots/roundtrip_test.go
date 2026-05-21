@@ -43,6 +43,10 @@ var formativeCorpus = []string{
 	"amlahma",
 	"amlahna",
 	"amlahňa",
+	// §3.6.2 shortcut-form Slot V: a single affix between Cr and Vc,
+	// with a glottal-stop end-of-Slot-V marker on the final Vx.
+	"wamla'r",
+	"wamla're",
 	// Sentence-start prefixes. The çç-form normalizes to çëy-,
 	// so it's not round-trippable — only canonical forms are.
 	"çamlala",
