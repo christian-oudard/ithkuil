@@ -207,15 +207,23 @@ def merge_affix_entries(parsed: list[dict], existing: list[dict]) -> list[dict]:
 
 
 def write_lexicon(roots: list[dict], affixes: list[dict], path: Path) -> str:
-    """Write the combined lexicon.json with a content-derived version
-    field. Returns the version string."""
+    """Write the combined lexicon.json plus its gzip-compressed embed
+    sibling. Returns the content-derived version string."""
+    import gzip
     import hashlib
+
     payload = json.dumps({"roots": roots, "affixes": affixes}, sort_keys=True, ensure_ascii=False)
     version = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
     combined = {"version": version, "roots": roots, "affixes": affixes}
     with open(path, "w", encoding="utf-8") as f:
         json.dump(combined, f, ensure_ascii=False, indent=2)
         f.write("\n")
+    # Re-encode without indentation for the gzip blob; decompression
+    # ends up at the same parsed JSON either way.
+    plain = json.dumps(combined, ensure_ascii=False).encode("utf-8")
+    gz_path = path.with_suffix(path.suffix + ".gz")
+    with gzip.open(gz_path, "wb", compresslevel=9, mtime=0) as gz:
+        gz.write(plain)
     return version
 
 

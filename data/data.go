@@ -15,9 +15,14 @@
 // or affixes (via sync_lexicon.py) bumps the version automatically.
 // The binary serialization format includes this version in its
 // sentence header so the decoder can detect mismatches.
+//
+// We embed the gzip-compressed form (~380 KB vs ~1.8 MiB) to keep the
+// binary small. lexicon.LoadDefault transparently decompresses at
+// load time. The plain lexicon.json file remains in the repo as the
+// diffable source-of-truth for commits.
 package data
 
 import _ "embed"
 
-//go:embed lexicon.json
+//go:embed lexicon.json.gz
 var Lexicon []byte

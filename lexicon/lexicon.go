@@ -6,8 +6,11 @@
 package lexicon
 
 import (
+	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"regexp"
 
@@ -69,9 +72,20 @@ type Lexicon struct {
 }
 
 // LoadDefault returns the lexicon bundled with the binary via
-// //go:embed. Use Load to override with a different on-disk copy.
+// //go:embed. The embedded data is gzip-compressed (~380 KB vs ~1.8
+// MiB plain) and decompressed at load time. Use Load to override
+// with a different on-disk copy.
 func LoadDefault() (*Lexicon, error) {
-	return parseLexicon(data.Lexicon)
+	gz, err := gzip.NewReader(bytes.NewReader(data.Lexicon))
+	if err != nil {
+		return nil, fmt.Errorf("embedded lexicon gzip header: %w", err)
+	}
+	defer gz.Close()
+	buf, err := io.ReadAll(gz)
+	if err != nil {
+		return nil, fmt.Errorf("embedded lexicon decompress: %w", err)
+	}
+	return parseLexicon(buf)
 }
 
 // Load reads a combined lexicon.json file (with version, roots, and
