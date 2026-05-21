@@ -102,6 +102,25 @@ func TestLoad_BadPaths(t *testing.T) {
 	}
 }
 
+func TestParseRoots_BadJSON(t *testing.T) {
+	if _, err := parseRoots([]byte("not json")); err == nil {
+		t.Error("parseRoots(bad json) succeeded, want error")
+	}
+}
+
+func TestParseAffixes_BadJSON(t *testing.T) {
+	if _, err := parseAffixes([]byte("not json")); err == nil {
+		t.Error("parseAffixes(bad json) succeeded, want error")
+	}
+}
+
+func TestLoad_BadAffixesPath(t *testing.T) {
+	// Cover Load's second-error branch: roots load OK, affixes fail.
+	if _, err := Load(dataPath("roots.json"), "/nonexistent/path.json"); err == nil {
+		t.Error("Load with bad affixes path succeeded, want error")
+	}
+}
+
 func TestLoadDefault(t *testing.T) {
 	// LoadDefault reads from the embedded JSON, which is always
 	// available. Sanity-check a few well-known entries are present.

@@ -388,3 +388,151 @@ func TestValidateVowelSequence(t *testing.T) {
 		}
 	}
 }
+
+func TestError_String(t *testing.T) {
+	e := Error{Rule: "1.2", Cluster: "xy", Reason: "test reason"}
+	if got := e.String(); got != "1.2: test reason (cluster xy)" {
+		t.Errorf("Error.String() = %q, want with cluster", got)
+	}
+	e = Error{Rule: "1.2", Reason: "test reason"}
+	if got := e.String(); got != "1.2: test reason" {
+		t.Errorf("Error.String() = %q, want without cluster", got)
+	}
+}
+
+func TestMaxClusterLength_AllPositions(t *testing.T) {
+	cases := []struct {
+		p    Position
+		want int
+	}{
+		{Initial, 4},
+		{Medial, 6},
+		{Final, 4},
+		{Position(99), 0},
+	}
+	for _, c := range cases {
+		if got := MaxClusterLength(c.p); got != c.want {
+			t.Errorf("MaxClusterLength(%v) = %d, want %d", c.p, got, c.want)
+		}
+	}
+}
+
+func TestPosition_String(t *testing.T) {
+	if Initial.String() != "initial" || Medial.String() != "medial" || Final.String() != "final" {
+		t.Error("Position.String() mismatched")
+	}
+}
+
+func TestIsVoicedStop(t *testing.T) {
+	for _, r := range []rune{'b', 'd', 'g'} {
+		if !IsVoicedStop(r) {
+			t.Errorf("IsVoicedStop(%c) = false, want true", r)
+		}
+	}
+	for _, r := range []rune{'p', 't', 'k', 'a'} {
+		if IsVoicedStop(r) {
+			t.Errorf("IsVoicedStop(%c) = true, want false", r)
+		}
+	}
+}
+
+func TestVoicedOf_AllPairs(t *testing.T) {
+	cases := []struct {
+		in, want rune
+	}{
+		{'p', 'b'}, {'b', 'b'},
+		{'t', 'd'}, {'d', 'd'},
+		{'k', 'g'}, {'g', 'g'},
+		{'f', 'v'}, {'v', 'v'},
+		{'ţ', 'ḑ'}, {'ḑ', 'ḑ'},
+		{'s', 'z'}, {'z', 'z'},
+		{'š', 'ž'}, {'ž', 'ž'},
+		{'c', 'ẓ'}, {'ẓ', 'ẓ'},
+		{'č', 'j'}, {'j', 'j'},
+	}
+	for _, c := range cases {
+		if got := voicedOf(c.in); got != c.want {
+			t.Errorf("voicedOf(%c) = %c, want %c", c.in, got, c.want)
+		}
+	}
+	if got := voicedOf('m'); got != 0 {
+		t.Errorf("voicedOf(m) = %c, want 0", got)
+	}
+}
+
+func TestValidateClusterAt_InitialGlottal(t *testing.T) {
+	// 1.5: glottal stop word-initial within a multi-rune cluster.
+	r := ValidateClusterAt(Initial, "'l")
+	if r.Valid {
+		t.Error("ValidateClusterAt(initial, 'l): expected invalid")
+	}
+}
+
+func TestValidateClusterAt_MTripleIndistinct(t *testing.T) {
+	for _, c := range []string{"mpf", "mpţ", "mbv", "mbḑ", "mbd"} {
+		r := ValidateClusterAt(Medial, c)
+		if r.Valid {
+			t.Errorf("ValidateClusterAt(medial, %q): expected invalid", c)
+		}
+	}
+}
+
+func TestValidateClusterAt_NgḑProhibited(t *testing.T) {
+	r := ValidateClusterAt(Medial, "ngḑ")
+	if r.Valid {
+		t.Error("ValidateClusterAt(medial, ngḑ): expected invalid")
+	}
+}
+
+func TestValidateClusterAt_FinalGlottalAndYW(t *testing.T) {
+	if ValidateClusterAt(Final, "ly").Valid {
+		t.Error("ValidateClusterAt(final, ly): expected invalid")
+	}
+	if ValidateClusterAt(Final, "l'").Valid {
+		t.Error("ValidateClusterAt(final, l'): expected invalid")
+	}
+}
+
+func TestCheckProhibitedPair_RemainingRules(t *testing.T) {
+	cases := []struct {
+		a, b rune
+		rule string
+	}{
+		{'š', 'c', "2.6"},
+		{'c', 's', "2.9"},
+		{'s', 'c', "2.9"},
+		{'ç', 's', "2.10"},
+		{'s', 'ç', "2.10"},
+		{'c', 'ç', "2.10"},
+		{'ļ', 'ç', "2.10"},
+		{'ň', 'k', "2.16"},
+		{'x', 's', "2.17"},
+		{'x', 'g', "2.17"},
+		{'ļ', 'b', "2.18"},
+		{'h', 'ļ', "2.18"},
+		{'ļ', 's', "2.18"},
+		{'ļ', 'h', "2.19"},
+		{'r', 'ř', "2.20"},
+		{'h', 'ř', "2.20"},
+		{'ř', 'r', "2.21"},
+		{'w', 'p', "2.22"},
+		{'ḑ', 's', "2.23"},
+		{'n', 'ň', "2.23"},
+		{'ç', 'ç', "2.24"},
+		{'ļ', 'ļ', "2.24"},
+	}
+	for _, c := range cases {
+		rule, reason := CheckProhibitedPair(c.a, c.b)
+		if rule != c.rule {
+			t.Errorf("CheckProhibitedPair(%c,%c) rule = %q, want %q (reason=%q)",
+				c.a, c.b, rule, c.rule, reason)
+		}
+	}
+}
+
+func TestValidateClusterAt_ProhibitedGeminate(t *testing.T) {
+	r := ValidateClusterAt(Medial, "''")
+	if r.Valid {
+		t.Error("ValidateClusterAt(medial, ''): expected invalid")
+	}
+}

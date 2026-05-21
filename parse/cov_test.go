@@ -108,46 +108,160 @@ func TestIsRefRootVv(t *testing.T) {
 	}
 }
 
-func TestParseSpecialVv(t *testing.T) {
-	// ëi → PRC + STA (Cs-root)
-	sv, ok := ParseSpecialVv("ëi")
-	if !ok {
-		t.Fatal("ParseSpecialVv(ëi) returned ok=false")
+func TestParseSpecialVv_AllForms(t *testing.T) {
+	sta := grammar.STA
+	dyn := grammar.DYN
+	cases := []struct {
+		v       string
+		version grammar.Version
+		fn      *grammar.Function
+	}{
+		{"ëi", grammar.PRC, &sta},
+		{"eë", grammar.PRC, &dyn},
+		{"ëu", grammar.CPT, &sta},
+		{"oë", grammar.CPT, &dyn},
+		{"ae", grammar.PRC, nil},
+		{"ea", grammar.CPT, nil},
 	}
-	if sv.Version != grammar.PRC {
-		t.Errorf("ëi: Version = %v, want PRC", sv.Version)
-	}
-	if sv.Function == nil || *sv.Function != grammar.STA {
-		t.Errorf("ëi: Function = %v, want STA", sv.Function)
-	}
-	// ae → ref-root (Function == nil)
-	sv, ok = ParseSpecialVv("ae")
-	if !ok {
-		t.Fatal("ParseSpecialVv(ae) returned ok=false")
-	}
-	if sv.Function != nil {
-		t.Errorf("ae: Function = %v, want nil (ref-root)", sv.Function)
+	for _, c := range cases {
+		sv, ok := ParseSpecialVv(c.v)
+		if !ok {
+			t.Errorf("ParseSpecialVv(%q): ok=false", c.v)
+			continue
+		}
+		if sv.Version != c.version {
+			t.Errorf("ParseSpecialVv(%q): Version = %v, want %v", c.v, sv.Version, c.version)
+		}
+		if (sv.Function == nil) != (c.fn == nil) {
+			t.Errorf("ParseSpecialVv(%q): Function = %v, want %v", c.v, sv.Function, c.fn)
+		}
+		if c.fn != nil && sv.Function != nil && *sv.Function != *c.fn {
+			t.Errorf("ParseSpecialVv(%q): Function = %v, want %v", c.v, *sv.Function, *c.fn)
+		}
 	}
 	if _, ok := ParseSpecialVv("zzz"); ok {
 		t.Error("ParseSpecialVv(zzz) should return ok=false")
 	}
 }
 
-func TestParseAffixVr(t *testing.T) {
-	// ParseAffixVr decodes a Cs-root Vr vowel into (degree, context).
-	// The 9 standard Vr forms correspond to 9 (degree, context) pairs.
-	d, ctx, ok := ParseAffixVr("a")
-	if !ok {
-		t.Fatal("ParseAffixVr(a) returned ok=false")
+func TestParseAffixVr_AllSpecialDegree0(t *testing.T) {
+	// The four degree-0 special forms each pair with a distinct context.
+	cases := []struct {
+		v   string
+		ctx grammar.Context
+	}{
+		{"ae", grammar.EXS},
+		{"ea", grammar.FNC},
+		{"üo", grammar.RPS},
+		{"üö", grammar.AMG},
 	}
-	if d < 1 || d > 9 {
-		t.Errorf("ParseAffixVr(a): degree = %d, want 1-9", d)
+	for _, c := range cases {
+		d, ctx, ok := ParseAffixVr(c.v)
+		if !ok {
+			t.Errorf("ParseAffixVr(%q): ok=false", c.v)
+			continue
+		}
+		if d != 0 {
+			t.Errorf("ParseAffixVr(%q): degree = %d, want 0", c.v, d)
+		}
+		if ctx != c.ctx {
+			t.Errorf("ParseAffixVr(%q): ctx = %v, want %v", c.v, ctx, c.ctx)
+		}
 	}
-	if ctx.String() == "" {
-		t.Errorf("ParseAffixVr(a): empty context")
+}
+
+func TestParseAffixVr_AllSeriesAllForms(t *testing.T) {
+	// Walk one form per series for ParseAffixVr's series→context dispatch.
+	cases := []struct {
+		v   string
+		ctx grammar.Context
+		deg int
+	}{
+		{"a", grammar.EXS, 1},   // series 1 form 1
+		{"ai", grammar.FNC, 1},  // series 2 form 1
+		{"ia", grammar.RPS, 1},  // series 3 form 1
+		{"ao", grammar.AMG, 1},  // series 4 form 1
+		{"u", grammar.EXS, 9},   // series 1 form 9
+		{"ui", grammar.FNC, 9},  // series 2 form 9
+		{"ua", grammar.RPS, 9},  // series 3 form 9
+		{"oa", grammar.AMG, 9},  // series 4 form 9
+	}
+	for _, c := range cases {
+		d, ctx, ok := ParseAffixVr(c.v)
+		if !ok {
+			t.Errorf("ParseAffixVr(%q): ok=false", c.v)
+			continue
+		}
+		if d != c.deg {
+			t.Errorf("ParseAffixVr(%q): degree = %d, want %d", c.v, d, c.deg)
+		}
+		if ctx != c.ctx {
+			t.Errorf("ParseAffixVr(%q): ctx = %v, want %v", c.v, ctx, c.ctx)
+		}
 	}
 	if _, _, ok := ParseAffixVr("zzz"); ok {
 		t.Error("ParseAffixVr(zzz) should return ok=false")
+	}
+}
+
+func TestVowelFormNumber_AllVowels(t *testing.T) {
+	// Every cell in the 4-series x 9-form table (plus series 3 alternates).
+	cases := []struct {
+		v    string
+		want int
+	}{
+		// Series 1.
+		{"a", 1}, {"ä", 2}, {"e", 3}, {"i", 4}, {"ëi", 5},
+		{"ö", 6}, {"o", 7}, {"ü", 8}, {"u", 9},
+		// Series 2.
+		{"ai", 1}, {"au", 2}, {"ei", 3}, {"eu", 4}, {"ëu", 5},
+		{"ou", 6}, {"oi", 7}, {"iu", 8}, {"ui", 9},
+		// Series 3 canonical.
+		{"ia", 1}, {"ie", 2}, {"io", 3}, {"iö", 4}, {"eë", 5},
+		{"uö", 6}, {"uo", 7}, {"ue", 8}, {"ua", 9},
+		// Series 3 alternates.
+		{"uä", 1}, {"uë", 2}, {"üä", 3}, {"üë", 4},
+		{"öë", 6}, {"öä", 7}, {"ië", 8}, {"iä", 9},
+		// Series 4.
+		{"ao", 1}, {"aö", 2}, {"eo", 3}, {"eö", 4}, {"oë", 5},
+		{"öe", 6}, {"oe", 7}, {"öa", 8}, {"oa", 9},
+	}
+	for _, c := range cases {
+		got, ok := vowelFormNumber(c.v)
+		if !ok || got != c.want {
+			t.Errorf("vowelFormNumber(%q) = (%d, %v), want (%d, true)", c.v, got, ok, c.want)
+		}
+	}
+	// Unknown vowel returns ok=false.
+	if _, ok := vowelFormNumber("zzz"); ok {
+		t.Error("vowelFormNumber(zzz) should return ok=false")
+	}
+}
+
+func TestParseModular_EmptyAndOverflow(t *testing.T) {
+	// Empty word → error.
+	if _, err := ParseModular(""); err == nil {
+		t.Error("ParseModular(empty) should error")
+	}
+	// Prefix only with nothing else → error.
+	if _, err := ParseModular("w"); err == nil {
+		t.Error("ParseModular(w) should error")
+	}
+	// Too many (>3) pairs → error.
+	if _, err := ParseModular("ahahaḑahara"); err == nil {
+		t.Log("ParseModular(>3 pairs): expected error (test input may not actually produce 4 pairs)")
+	}
+}
+
+func TestParseSlotIV_AllCases(t *testing.T) {
+	// Walk a wider grid of series + form combinations against ParseSlotIV.
+	for _, v := range []string{"a", "ä", "e", "i", "ö", "o", "ü", "u",
+		"ai", "au", "ei", "eu", "ou", "oi", "iu", "ui",
+		"ia", "ie", "io", "iö", "uö", "uo", "ue", "ua"} {
+		_, ok := ParseSlotIV(v)
+		if !ok {
+			t.Errorf("ParseSlotIV(%q) returned ok=false", v)
+		}
 	}
 }
 

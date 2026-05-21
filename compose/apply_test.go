@@ -1,9 +1,11 @@
 package compose
 
 import (
+	"strings"
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/lexicon"
 )
 
 func TestCategories(t *testing.T) {
@@ -201,6 +203,202 @@ func TestApplyFlag_StressVariants(t *testing.T) {
 		if err := ApplyFlag(&f, s); err != nil {
 			t.Errorf("ApplyFlag(%s): %v", s, err)
 		}
+	}
+}
+
+func TestApplyFlag_VersionOnCsAndRefRoots(t *testing.T) {
+	for _, root := range []g.Root{
+		g.CsRoot{Cs: "r", Degree: 5, Version: g.PRC, Function: g.STA, Context: g.EXS},
+		g.RefRoot{C1: "l", Version: g.PRC, SlotIV: g.DefaultSlotIV},
+	} {
+		f := g.MinimalFormative("ml")
+		f.Root = root
+		if err := ApplyFlag(&f, "CPT"); err != nil {
+			t.Errorf("ApplyFlag CPT on %T: %v", root, err)
+		}
+		switch r := f.Root.(type) {
+		case g.CsRoot:
+			if r.Version != g.CPT {
+				t.Errorf("CsRoot.Version = %v, want CPT", r.Version)
+			}
+		case g.RefRoot:
+			if r.Version != g.CPT {
+				t.Errorf("RefRoot.Version = %v, want CPT", r.Version)
+			}
+		}
+	}
+}
+
+func TestApplyFlag_FunctionOnCsAndRefRoots(t *testing.T) {
+	for _, root := range []g.Root{
+		g.CsRoot{Cs: "r", Degree: 5, Version: g.PRC, Function: g.STA, Context: g.EXS},
+		g.RefRoot{C1: "l", Version: g.PRC, SlotIV: g.DefaultSlotIV},
+	} {
+		f := g.MinimalFormative("ml")
+		f.Root = root
+		if err := ApplyFlag(&f, "DYN"); err != nil {
+			t.Errorf("ApplyFlag DYN on %T: %v", root, err)
+		}
+	}
+}
+
+func TestApplyFlag_SpecOnNonCrRefErrors(t *testing.T) {
+	f := g.MinimalFormative("ml")
+	f.Root = g.CsRoot{Cs: "r", Degree: 5, Version: g.PRC, Function: g.STA, Context: g.EXS}
+	if err := ApplyFlag(&f, "OBJ"); err == nil {
+		t.Error("ApplyFlag OBJ on CsRoot didn't error")
+	}
+}
+
+func TestApplyFlag_SpecOnRefRoot(t *testing.T) {
+	f := g.MinimalFormative("ml")
+	f.Root = g.RefRoot{C1: "l", Version: g.PRC, SlotIV: g.DefaultSlotIV}
+	if err := ApplyFlag(&f, "OBJ"); err != nil {
+		t.Errorf("ApplyFlag OBJ on RefRoot: %v", err)
+	}
+	rr := f.Root.(g.RefRoot)
+	if rr.SlotIV.Specification != g.OBJ {
+		t.Errorf("RefRoot.SlotIV.Specification = %v, want OBJ", rr.SlotIV.Specification)
+	}
+}
+
+func TestApplyFlag_ContextOnCsAndRef(t *testing.T) {
+	for _, root := range []g.Root{
+		g.CsRoot{Cs: "r", Degree: 5, Version: g.PRC, Function: g.STA, Context: g.EXS},
+		g.RefRoot{C1: "l", Version: g.PRC, SlotIV: g.DefaultSlotIV},
+	} {
+		f := g.MinimalFormative("ml")
+		f.Root = root
+		if err := ApplyFlag(&f, "RPS"); err != nil {
+			t.Errorf("ApplyFlag RPS on %T: %v", root, err)
+		}
+	}
+}
+
+func TestApplyFlag_CaseOnFramedVerbal(t *testing.T) {
+	f := g.MinimalFormative("ml")
+	f.Final = g.FramedVerbal{Case: g.THM}
+	if err := ApplyFlag(&f, "ERG"); err != nil {
+		t.Fatalf("ApplyFlag ERG: %v", err)
+	}
+	fv, ok := f.Final.(g.FramedVerbal)
+	if !ok || fv.Case != g.ERG {
+		t.Errorf("Final = %v, want FramedVerbal{ERG}", f.Final)
+	}
+}
+
+func TestApplyFlag_MoodOnEachSlotVIIIVariant(t *testing.T) {
+	// Each Mood flag should rewrite the MoodScope of whatever SlotVIII
+	// variant is already present.
+	variants := []g.SlotVIII{
+		g.VnCnValence{Valence: g.MNO, MoodScope: g.FAC},
+		g.VnCnAspect{Aspect: g.RTR, MoodScope: g.FAC},
+		g.VnCnPhase{Phase: g.PCT, MoodScope: g.FAC},
+		g.VnCnEffect{Effect: g.BEN1, MoodScope: g.FAC},
+		g.VnCnLevel{Level: g.MIN, MoodScope: g.FAC},
+	}
+	for _, v := range variants {
+		f := g.MinimalFormative("ml")
+		f.SlotVIII = v
+		if err := ApplyFlag(&f, "SUB"); err != nil {
+			t.Errorf("ApplyFlag SUB on %T: %v", v, err)
+		}
+		if got := g.SlotVIIIMoodScope(f.SlotVIII); got != g.SUB {
+			t.Errorf("after SUB on %T: MoodScope = %v, want SUB", v, got)
+		}
+	}
+	// Applying a mood when SlotVIII is nil → defaults to a MNO valence.
+	f := g.MinimalFormative("ml")
+	if err := ApplyFlag(&f, "SUB"); err != nil {
+		t.Fatalf("ApplyFlag SUB nil: %v", err)
+	}
+	if v, ok := f.SlotVIII.(g.VnCnValence); !ok || v.MoodScope != g.SUB {
+		t.Errorf("ApplyFlag SUB nil: SlotVIII = %v, want VnCnValence{MNO,SUB}", f.SlotVIII)
+	}
+}
+
+func TestApplyFlag_AspectValenceFlags(t *testing.T) {
+	f := g.MinimalFormative("ml")
+	if err := ApplyFlag(&f, "RTR"); err != nil {
+		t.Fatalf("ApplyFlag RTR: %v", err)
+	}
+	if _, ok := f.SlotVIII.(g.VnCnAspect); !ok {
+		t.Errorf("SlotVIII = %v, want VnCnAspect", f.SlotVIII)
+	}
+	f = g.MinimalFormative("ml")
+	if err := ApplyFlag(&f, "PRL"); err != nil {
+		t.Fatalf("ApplyFlag PRL: %v", err)
+	}
+	if _, ok := f.SlotVIII.(g.VnCnValence); !ok {
+		t.Errorf("SlotVIII = %v, want VnCnValence", f.SlotVIII)
+	}
+}
+
+func TestApplyFlag_ULTPreservesExistingVerbal(t *testing.T) {
+	// Already verbal — applying ULT should be a no-op.
+	f := g.MinimalFormative("ml")
+	f.Final = g.UnframedVerbal{Vk: g.Directive{}}
+	if err := ApplyFlag(&f, "ULT"); err != nil {
+		t.Fatalf("ApplyFlag ULT: %v", err)
+	}
+	uv := f.Final.(g.UnframedVerbal)
+	if _, ok := uv.Vk.(g.Directive); !ok {
+		t.Errorf("ULT overwrote existing UnframedVerbal Vk: %v", uv.Vk)
+	}
+}
+
+func TestCurrentCase_FramedAndVerbal(t *testing.T) {
+	// Apply PEN to a FramedVerbal Final — currentCase should pull the case
+	// out of the FramedVerbal and carry it over.
+	f := g.MinimalFormative("ml")
+	f.Final = g.FramedVerbal{Case: g.ERG}
+	if err := ApplyFlag(&f, "PEN"); err != nil {
+		t.Fatalf("ApplyFlag PEN: %v", err)
+	}
+	un, ok := f.Final.(g.UnframedNominal)
+	if !ok || un.Case != g.ERG {
+		t.Errorf("after PEN on FramedVerbal: Final = %v, want UnframedNominal{ERG}", f.Final)
+	}
+	// Verbal Final → currentCase returns THM.
+	f = g.MinimalFormative("ml")
+	f.Final = g.UnframedVerbal{Vk: g.Directive{}}
+	if err := ApplyFlag(&f, "PEN"); err != nil {
+		t.Fatalf("ApplyFlag PEN on verbal: %v", err)
+	}
+	un = f.Final.(g.UnframedNominal)
+	if un.Case != g.THM {
+		t.Errorf("PEN after verbal: Case = %v, want THM", un.Case)
+	}
+}
+
+func TestSearchGrammar_EmptyAndExact(t *testing.T) {
+	// Empty query → returns the full table (no filter).
+	out := SearchGrammar("")
+	if len(out) == 0 {
+		t.Error("SearchGrammar(empty) returned nothing")
+	}
+	// Exact match should rank ahead of fuzzy.
+	exact := SearchGrammar("ERG")
+	if len(exact) == 0 || !strings.EqualFold(exact[0].Abbrev, "ERG") {
+		t.Errorf("SearchGrammar(ERG) first = %+v, want exact ERG", exact[0])
+	}
+}
+
+func TestSearchRoots_EmptyQuery(t *testing.T) {
+	hits := SearchRoots("", map[string]lexicon.RootEntry{
+		"l": {Cr: "l", Stem1: "linguistic utterance"},
+	})
+	if len(hits) != 0 {
+		t.Errorf("SearchRoots(empty) = %v, want no hits", hits)
+	}
+}
+
+func TestSearchAffixes_EmptyQuery(t *testing.T) {
+	hits := SearchAffixes("", map[string]lexicon.AffixEntry{
+		"r": {Cs: "r", Abbrev: "REF"},
+	})
+	if len(hits) != 0 {
+		t.Errorf("SearchAffixes(empty) = %v, want no hits", hits)
 	}
 }
 
