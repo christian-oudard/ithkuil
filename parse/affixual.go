@@ -13,15 +13,15 @@ import (
 // older affix-pair form.
 func ParseSingleAffix(word string) (grammar.SingleAffixAdjunct, error) {
 	conjs := surface.SplitConjuncts(word)
-	var a grammar.SingleAffixAdjunct
+	var vx, cs, vs string
 	switch len(conjs) {
 	case 2:
 		x, y := conjs[0], conjs[1]
 		switch {
 		case surface.IsVowelConjunct(x) && surface.IsConsonantConjunct(y):
-			a = grammar.SingleAffixAdjunct{Vx: x, Cs: y}
+			vx, cs = x, y
 		case surface.IsConsonantConjunct(x) && surface.IsVowelConjunct(y):
-			a = grammar.SingleAffixAdjunct{Vx: y, Cs: x}
+			vx, cs = y, x
 		default:
 			return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: %q + %q is not a vowel/consonant pair", x, y)
 		}
@@ -31,16 +31,19 @@ func ParseSingleAffix(word string) (grammar.SingleAffixAdjunct, error) {
 		if !(surface.IsVowelConjunct(x) && surface.IsConsonantConjunct(y) && surface.IsVowelConjunct(z)) {
 			return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: %q+%q+%q doesn't match Vx-Cs-Vs", x, y, z)
 		}
-		a = grammar.SingleAffixAdjunct{Vx: x, Cs: y, Vs: z}
+		vx, cs, vs = x, y, z
 	default:
 		return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: expected 2 or 3 conjuncts, got %d", len(conjs))
 	}
-	scope, ok := grammar.VsScope(a.Vs)
+	scope, ok := grammar.VsScope(vs)
 	if !ok {
-		return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: %q is not a valid Vs scope vowel", a.Vs)
+		return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: %q is not a valid Vs scope vowel", vs)
 	}
-	a.Scope = scope
-	return a, nil
+	t, d := ClassifyAffixVowel(vx)
+	return grammar.SingleAffixAdjunct{
+		Affix: grammar.Affix{Type: t, Degree: d, Consonant: cs},
+		Scope: scope,
+	}, nil
 }
 
 // isCzConsonant reports whether c is a valid Cz scope consonant used
@@ -81,13 +84,14 @@ func ParseMultipleAffix(word string) (grammar.MultipleAffixAdjunct, error) {
 
 	// Remaining conjuncts: alternating (Vx Cs)* with an optional trailing Vz.
 	rest := conjs[3:]
-	var more []grammar.AffixPair
+	var more []grammar.Affix
 	var vz string
 	for i := 0; i < len(rest); {
 		if i+1 < len(rest) &&
 			surface.IsVowelConjunct(rest[i]) &&
 			surface.IsConsonantConjunct(rest[i+1]) {
-			more = append(more, grammar.AffixPair{Vx: rest[i], Cs: rest[i+1]})
+			t, d := ClassifyAffixVowel(rest[i])
+			more = append(more, grammar.Affix{Type: t, Degree: d, Consonant: rest[i+1]})
 			i += 2
 			continue
 		}
@@ -115,11 +119,10 @@ func ParseMultipleAffix(word string) (grammar.MultipleAffixAdjunct, error) {
 		}
 		restScope = s
 	}
+	firstT, firstD := ClassifyAffixVowel(vx)
 	return grammar.MultipleAffixAdjunct{
-		First:      grammar.AffixPair{Vx: vx, Cs: cs},
-		Cz:         cz,
-		Affixes:    more,
-		Vz:         vz,
+		First:      grammar.Affix{Type: firstT, Degree: firstD, Consonant: cs},
+		Rest:       more,
 		FirstScope: firstScope,
 		RestScope:  restScope,
 	}, nil

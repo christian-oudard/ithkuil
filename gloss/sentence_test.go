@@ -273,12 +273,22 @@ func TestToken_AllStems(t *testing.T) {
 func TestAffix_TypeSubscripts(t *testing.T) {
 	// Build single-affix-adjunct tokens with each affix Type so
 	// affixTypeSubscript runs all branches.
-	for _, vx := range []string{"a", "ai", "ia"} {
-		// "a"=Type1, "ai"=Type2, "ia"=Type3.
-		a := g.SingleAffixAdjunct{Vx: vx, Cs: "r", Vs: "", Scope: g.ScopeVDom}
-		got := (&Glosser{}).Token(tokenize.SingleAffixWord{Text: vx + "r", Affix: a})
+	cases := []struct {
+		name string
+		t    g.AffixType
+	}{
+		{"a", g.Type1Affix},
+		{"ai", g.Type2Affix},
+		{"ia", g.Type3Affix},
+	}
+	for _, c := range cases {
+		a := g.SingleAffixAdjunct{
+			Affix: g.Affix{Type: c.t, Degree: 1, Consonant: "r"},
+			Scope: g.ScopeVDom,
+		}
+		got := (&Glosser{}).Token(tokenize.SingleAffixWord{Text: c.name + "r", Affix: a})
 		if got == "" {
-			t.Errorf("SingleAffix Vx=%q: empty gloss", vx)
+			t.Errorf("SingleAffix Type=%s: empty gloss", c.t)
 		}
 	}
 }
@@ -446,7 +456,7 @@ func TestBiasLabel_EmptyExpression(t *testing.T) {
 	// A bias variant whose expression-table lookup returns "" should
 	// fall through to plain b.String(). Use a zero-value Bias which
 	// has no surface expression.
-	out := biasLabel(g.Bias(0))
+	out := (&Glosser{}).biasLabel(g.Bias(0))
 	if out == "" {
 		t.Error("biasLabel(zero) returned empty")
 	}
@@ -456,7 +466,7 @@ func TestModularLabel_InvalidVnCn(t *testing.T) {
 	// Build a modular adjunct whose Vn+Cn fails ParseVnCn; modularLabel
 	// should fall back to the raw "MOD(Vn+Cn)" form.
 	m := g.ModularAdjunct{Vn: "zzz", Cn: "qqq"}
-	got := modularLabel(m, nil)
+	got := (&Glosser{}).modularLabel(m, nil)
 	if !strings.HasPrefix(got, "MOD(zzz+qqq") {
 		t.Errorf("modularLabel(invalid) = %q, want raw fallback", got)
 	}
@@ -477,7 +487,7 @@ func TestRefLabel_FullShape(t *testing.T) {
 		RefB:       []referentials.PersonalRef{{Referent: referentials.R2m, Effect: referentials.NEU}},
 		RpvEssence: true,
 	}
-	out := refLabel(r)
+	out := (&Glosser{}).refLabel(r)
 	if !strings.Contains(out, "ERG") || !strings.Contains(out, "RPV") {
 		t.Errorf("refLabel full shape = %q, missing ERG or RPV", out)
 	}
@@ -491,12 +501,12 @@ func TestCombinationRefLabel_WithAffixes(t *testing.T) {
 		},
 		Case:    thm,
 		Spec:    "BSC",
-		Affixes: []g.AffixPair{{Cs: "r", Vx: "a"}},
+		Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}},
 		Case2:   &thm,
 	}
-	out := combinationRefLabel(c)
-	if !strings.Contains(out, "r:a") {
-		t.Errorf("combinationRefLabel = %q, want affix \"r:a\"", out)
+	out := (&Glosser{}).combinationRefLabel(c)
+	if !strings.Contains(out, "r/1") {
+		t.Errorf("combinationRefLabel = %q, want affix \"r/1\"", out)
 	}
 }
 

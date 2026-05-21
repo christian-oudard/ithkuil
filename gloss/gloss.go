@@ -18,6 +18,7 @@ import (
 	"github.com/christian-oudard/ithkuil/numbers"
 	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/semantics"
+	"github.com/christian-oudard/ithkuil/surface"
 )
 
 // Glosser carries the optional lexicon used for enriching root and
@@ -101,6 +102,10 @@ func (gl *Glosser) rootBody(f g.Formative) string {
 	case g.CsRoot:
 		return gl.csRootLabel(x)
 	case g.RefRoot:
+		open, close := "-(", ")-"
+		if gl.Canonical {
+			open, close = "(", ")"
+		}
 		if refs, ok := referentials.DecomposeRefCluster(x.C1); ok && len(refs) > 0 {
 			parts := make([]string, len(refs))
 			for i, pr := range refs {
@@ -110,9 +115,9 @@ func (gl *Glosser) rootBody(f g.Formative) string {
 				}
 				parts[i] = s
 			}
-			return "-(" + strings.Join(parts, "+") + ")-"
+			return open + strings.Join(parts, "+") + close
 		}
-		return "-(" + x.C1 + ")-"
+		return open + x.C1 + close
 	}
 	return ""
 }
@@ -143,31 +148,37 @@ func (gl *Glosser) crRootLabel(x g.CrRoot, f g.Formative) string {
 	if x.Cluster == "" {
 		return ""
 	}
+	cluster := x.Cluster
+	if gl.Canonical {
+		// Canonical mode emits the bare cluster: the parser identifies
+		// it by shape (no slashes, no parens) and the surrounding "-"
+		// from the slot join is enough. Display mode wraps with "-X-"
+		// to make the root visually prominent in human-read output.
+		return surface.ToASCII(cluster)
+	}
 	// Number roots are interpreted from the centesimal system table
 	// (§8.0), not from the lexicon. Decode reads Slot VII as well, so
-	// 11-99 fold the TNX tens-affix into the displayed value. Like
-	// lexicon meanings, the decoded integer is a display-only
-	// annotation — Canonical mode suppresses it.
-	if numbers.IsNumberRoot(x.Cluster) && !gl.Canonical {
+	// 11-99 fold the TNX tens-affix into the displayed value.
+	if numbers.IsNumberRoot(x.Cluster) {
 		if n, ok := numbers.Decode(f); ok {
 			// SPT affix in Slot VII upgrades the bare integer gloss to a
 			// date/time label per §6: "8th hour", "15th of month", etc.
 			if d, hasSPT := numbers.SPTDegree(f); hasSPT {
 				if lbl := numbers.SPTDegreeLabel(d); lbl != "" {
-					return fmt.Sprintf("-%s- '%dth %s'", x.Cluster, n.Value, lbl)
+					return fmt.Sprintf("-%s-'%dth %s'", cluster, n.Value, lbl)
 				}
 			}
-			return fmt.Sprintf("-%s- '%d'", x.Cluster, n.Value)
+			return fmt.Sprintf("-%s-'%d'", cluster, n.Value)
 		}
 	}
-	if gl.Lex != nil && !gl.Canonical {
+	if gl.Lex != nil {
 		if entry, ok := gl.Lex.Roots[x.Cluster]; ok {
 			if meaning := rootMeaning(entry, x); meaning != "" {
-				return "-" + x.Cluster + "- '" + meaning + "'"
+				return "-" + cluster + "-'" + meaning + "'"
 			}
 		}
 	}
-	return "-" + x.Cluster + "-"
+	return "-" + cluster + "-"
 }
 
 // rootMeaning picks the best gloss string for a CrRoot, consulting
@@ -357,10 +368,10 @@ func (gl *Glosser) affix(a g.Affix) string {
 			if cat := entry.CategoryValue(a.Degree, int(a.Type)+1); cat != "" {
 				return fmt.Sprintf("%s:%s", entry.Abbrev, cat)
 			}
-			return fmt.Sprintf("%s/%d", entry.Abbrev, a.Degree)
+			return fmt.Sprintf("%s/%d%s", entry.Abbrev, a.Degree, gl.affixTypeSuffix(a.Type))
 		}
 	}
-	return fmt.Sprintf("%s/%d", a.Consonant, a.Degree)
+	return fmt.Sprintf("%s/%d%s", a.Consonant, a.Degree, gl.affixTypeSuffix(a.Type))
 }
 
 func slotVIII(s g.SlotVIII, isVerbal bool) string {

@@ -437,9 +437,9 @@ func TestSegmentsModular_FullShape(t *testing.T) {
 	// non-Vh final case. We construct ModularAdjunct values directly
 	// to bypass parser-driven shape constraints.
 	ma := g.ModularAdjunct{
-		Prefix: "w",
-		Pairs:  []g.VnCnPair{{Vn: "a", Cn: "h"}},
-		Final:  "i", // any vowel
+		Scope: g.ModularScopeParent,
+		Pairs: []g.VnCnPair{{Vn: "a", Cn: "h"}},
+		Final: "i", // any vowel
 	}
 	verbal := true
 	// Pass an unstressed surface so IsVH=false → Vn branch on final.

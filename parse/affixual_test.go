@@ -11,8 +11,8 @@ func TestParseSingleAffix_VxCs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseSingleAffix(\"ar\") error: %v", err)
 	}
-	if a.Vx != "a" || a.Cs != "r" {
-		t.Errorf("ParseSingleAffix(\"ar\") = %v, want {Vx=a, Cs=r}", a)
+	if a.Affix.Consonant != "r" || a.Affix.Type != grammar.Type1Affix || a.Affix.Degree != 1 {
+		t.Errorf("ParseSingleAffix(\"ar\") = %+v, want Affix{Type1, deg 1, r}", a.Affix)
 	}
 }
 
@@ -21,8 +21,8 @@ func TestParseSingleAffix_CsVx(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseSingleAffix(\"ra\") error: %v", err)
 	}
-	if a.Vx != "a" || a.Cs != "r" {
-		t.Errorf("ParseSingleAffix(\"ra\") = %v, want {Vx=a, Cs=r}", a)
+	if a.Affix.Consonant != "r" || a.Affix.Type != grammar.Type1Affix || a.Affix.Degree != 1 {
+		t.Errorf("ParseSingleAffix(\"ra\") = %+v, want Affix{Type1, deg 1, r}", a.Affix)
 	}
 }
 
@@ -31,8 +31,11 @@ func TestParseSingleAffix_WithVs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseSingleAffix(\"are\") error: %v", err)
 	}
-	if a.Vx != "a" || a.Cs != "r" || a.Vs != "e" {
-		t.Errorf("got %+v, want {Vx=a, Cs=r, Vs=e}", a)
+	if a.Affix.Consonant != "r" || a.Affix.Type != grammar.Type1Affix || a.Affix.Degree != 1 {
+		t.Errorf("ParseSingleAffix(\"are\") = %+v, want Affix{Type1, deg 1, r}", a.Affix)
+	}
+	if a.Scope != grammar.ScopeVIIDom {
+		t.Errorf("ParseSingleAffix(\"are\").Scope = %v, want VIIDom", a.Scope)
 	}
 }
 
@@ -71,22 +74,19 @@ func TestParseSingleAffix_Rejects(t *testing.T) {
 }
 
 func TestParseMultipleAffix_Basic(t *testing.T) {
-	// "xaheitr" → first=(x, a), Cz=h, more=[(ei, tr)], Vz="".
+	// "xaheitr" → first=(x, a)→{Type1, deg 1, x}, Cz=h, more=[(ei, tr)]→{Type2, deg 3, tr}, Vz="".
 	ma, err := ParseMultipleAffix("xaheitr")
 	if err != nil {
 		t.Fatalf("ParseMultipleAffix(\"xaheitr\") error: %v", err)
 	}
-	if ma.First.Cs != "x" || ma.First.Vx != "a" {
-		t.Errorf("first = %v, want {Cs=x, Vx=a}", ma.First)
+	if ma.First.Consonant != "x" || ma.First.Type != grammar.Type1Affix || ma.First.Degree != 1 {
+		t.Errorf("first = %+v, want {Type1, deg 1, x}", ma.First)
 	}
-	if ma.Cz != "h" {
-		t.Errorf("Cz = %q, want \"h\"", ma.Cz)
+	if ma.FirstScope != grammar.ScopeVDom {
+		t.Errorf("FirstScope = %v, want VDom (Cz=h)", ma.FirstScope)
 	}
-	if len(ma.Affixes) != 1 || ma.Affixes[0] != (grammar.AffixPair{Vx: "ei", Cs: "tr"}) {
-		t.Errorf("Affixes = %v, want [{ei, tr}]", ma.Affixes)
-	}
-	if ma.Vz != "" {
-		t.Errorf("Vz = %q, want empty", ma.Vz)
+	if len(ma.Rest) != 1 || ma.Rest[0].Consonant != "tr" || ma.Rest[0].Type != grammar.Type2Affix {
+		t.Errorf("Rest = %+v, want one Affix{Type2, _, tr}", ma.Rest)
 	}
 }
 
@@ -95,8 +95,8 @@ func TestParseMultipleAffix_WithVz(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseMultipleAffix(\"xaheitre\") error: %v", err)
 	}
-	if ma.Vz != "e" {
-		t.Errorf("Vz = %q, want \"e\"", ma.Vz)
+	if ma.RestScope != grammar.ScopeVIIDom {
+		t.Errorf("RestScope = %v, want VIIDom (Vz=e)", ma.RestScope)
 	}
 }
 
@@ -105,8 +105,8 @@ func TestParseMultipleAffix_GlottalCz(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseMultipleAffix(\"xa'heitr\") error: %v", err)
 	}
-	if ma.Cz != "'h" {
-		t.Errorf("Cz = %q, want \"'h\"", ma.Cz)
+	if ma.FirstScope != grammar.ScopeVSub {
+		t.Errorf("FirstScope = %v, want VSub (Cz='h)", ma.FirstScope)
 	}
 }
 
@@ -115,8 +115,8 @@ func TestParseMultipleAffix_LeadingEPrefix(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseMultipleAffix(\"ëxaheitr\") error: %v", err)
 	}
-	if ma.First.Cs != "x" {
-		t.Errorf("after ë prefix: First.Cs = %q, want x", ma.First.Cs)
+	if ma.First.Consonant != "x" {
+		t.Errorf("after ë prefix: First.Consonant = %q, want x", ma.First.Consonant)
 	}
 }
 

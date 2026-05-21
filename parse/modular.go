@@ -37,9 +37,13 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 	}
 
 	// Optional w/y scope prefix.
-	prefix := ""
-	if conjs[0] == "w" || conjs[0] == "y" {
-		prefix = conjs[0]
+	scope := grammar.ModularScopeDefault
+	switch conjs[0] {
+	case "w":
+		scope = grammar.ModularScopeParent
+		conjs = conjs[1:]
+	case "y":
+		scope = grammar.ModularScopeConcat
 		conjs = conjs[1:]
 	}
 
@@ -75,15 +79,42 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 	}
 
 	ma := grammar.ModularAdjunct{
-		Prefix: prefix,
-		Pairs:  pairs,
-		Final:  final,
+		Scope: scope,
+		Pairs: pairs,
+		Final: final,
+	}
+	// V_H scope reach: §4.3 Slot 4 — when ultimate stress is present
+	// and there's at least one (Vn, Cn) pair, the trailing vowel is a
+	// scope marker rather than another Vn. Decode it into Reach and
+	// clear Final so callers don't double-count the vowel.
+	_, stress := surface.Strip(word)
+	if stress == surface.Ultimate && len(pairs) > 0 && final != "" {
+		if reach, ok := decodeVH(final); ok {
+			ma.Reach = reach
+			ma.Final = ""
+		}
 	}
 	// Backwards compatibility: when there's exactly one pair, set the
 	// flat Vn/Cn fields so older callers still work.
-	if len(pairs) == 1 && final == "" && prefix == "" {
+	if len(pairs) == 1 && ma.Final == "" && scope == grammar.ModularScopeDefault {
 		ma.Vn = pairs[0].Vn
 		ma.Cn = pairs[0].Cn
 	}
 	return ma, nil
+}
+
+// decodeVH maps a V_H vowel from §4.3 Slot 4 to a ModularReach value.
+// "i" and "u" both encode the formative-only reach.
+func decodeVH(v string) (grammar.ModularReach, bool) {
+	switch NormalizeAccents(v) {
+	case "a":
+		return grammar.ModularReachCaseMoodIll, true
+	case "e":
+		return grammar.ModularReachCaseMood, true
+	case "i", "u":
+		return grammar.ModularReachFormative, true
+	case "o":
+		return grammar.ModularReachAdjacent, true
+	}
+	return 0, false
 }

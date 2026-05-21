@@ -203,7 +203,7 @@ func TestGlosser_RootWithLexicon(t *testing.T) {
 	if !ok {
 		t.Fatal("lexicon missing root \"m\"")
 	}
-	want := "-m- '" + entry.Stem1 + "'"
+	want := "-m-'" + entry.Stem1 + "'"
 	if got != want {
 		t.Errorf("Formative(m, with lex) = %q, want %q", got, want)
 	}
@@ -218,7 +218,7 @@ func TestGlosser_RootDifferentStem(t *testing.T) {
 	f.Root = cr
 	got := gl.Formative(f)
 	entry := lex.Roots["m"]
-	want := "S3/PRC--m- '" + entry.Stem3 + "'"
+	want := "S3/PRC--m-'" + entry.Stem3 + "'"
 	if got != want {
 		t.Errorf("Formative(m, S3) = %q, want %q", got, want)
 	}
@@ -237,7 +237,7 @@ func TestGlosser_AffixWithLexicon(t *testing.T) {
 	}
 	// "m" root has a meaning, affix shows ABBREV/degree.
 	mEntry := lex.Roots["m"]
-	want := "-m- '" + mEntry.Stem1 + "'-" + entry.Abbrev + "/1"
+	want := "-m-'" + mEntry.Stem1 + "'-" + entry.Abbrev + "/1"
 	if got != want {
 		t.Errorf("Formative(m + b:a) = %q, want %q", got, want)
 	}
@@ -336,9 +336,10 @@ func TestFormative_Maleuţřait(t *testing.T) {
 		t.Fatalf("parse error: %v", err)
 	}
 	got := Formative(parsed)
-	// Cr=m, two Slot VII affixes: ëu→type2 degree 5 + ţř, ai→type2
-	// degree 1 + t. Without a lexicon the affix shows as Cs/degree.
-	want := "-m--ţř/5-t/1"
+	// Cr=m, two Slot VII affixes: ëu→Type2 degree 5 + ţř, ai→Type2
+	// degree 1 + t. Type 2 emits a "₂" subscript in display mode (silent
+	// in canonical mode); Type 1 stays silent in both modes.
+	want := "-m--ţř/5₂-t/1₂"
 	if got != want {
 		t.Errorf("Formative(Malëuţřait) = %q, want %q", got, want)
 	}

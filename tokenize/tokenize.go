@@ -163,7 +163,7 @@ type CombinationRefWord struct {
 	Refs    []referentials.PersonalRef
 	Case    g.Case
 	Spec    string
-	Affixes []g.AffixPair
+	Affixes []g.Affix
 	Case2   *g.Case // optional second case
 }
 
@@ -569,13 +569,14 @@ func tryCombinationRef(text string, conjs []string) (CombinationRefWord, bool) {
 			return CombinationRefWord{}, false
 		}
 	}
-	var affixes []g.AffixPair
+	var affixes []g.Affix
 	var case2 *g.Case
 	for i := 0; i < len(rest); {
 		if i+1 < len(rest) &&
 			surface.IsVowelConjunct(rest[i]) &&
 			surface.IsConsonantConjunct(rest[i+1]) {
-			affixes = append(affixes, g.AffixPair{Vx: rest[i], Cs: rest[i+1]})
+			t, d := parse.ClassifyAffixVowel(rest[i])
+			affixes = append(affixes, g.Affix{Type: t, Degree: d, Consonant: rest[i+1]})
 			i += 2
 			continue
 		}

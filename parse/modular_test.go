@@ -47,7 +47,7 @@ func TestParseModular_SingleVowel(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseModular(%q): %v", "a", err)
 	}
-	if ma.Final != "a" || ma.Prefix != "" || len(ma.Pairs) != 0 {
+	if ma.Final != "a" || ma.Scope != grammar.ModularScopeDefault || len(ma.Pairs) != 0 {
 		t.Errorf("ParseModular(\"a\") = %+v, want lone final \"a\"", ma)
 	}
 }

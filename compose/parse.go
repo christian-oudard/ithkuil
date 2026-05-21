@@ -208,9 +208,10 @@ func splitSlots(s string) []string {
 }
 
 // affixToken matches a Slot VII affix written as Cs/degree or
-// ABBREV/degree, with an optional ":2" or ":3" type tag. Degree
-// can be 0 (some affixes use it as a default/no-degree marker).
-var affixToken = regexp.MustCompile(`^([^/]+)/([0-9])(?::([123]))?$`)
+// ABBREV/degree, with an optional "_2" or "_3" Type suffix (Type 1
+// silent — the unmarked default). Degree can be 0 (some affixes use
+// it as a default/no-degree marker).
+var affixToken = regexp.MustCompile(`^([^/_]+)/([0-9])(?:_([23]))?$`)
 
 // applyToken dispatches one inter-slot token to ApplyFlag for plain
 // abbreviations, to the affix builder for "X/N" forms, or splits on

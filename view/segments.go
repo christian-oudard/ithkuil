@@ -352,16 +352,28 @@ func slotVIICsSegment(a slots.AffixChunk, idx int, f g.Formative, lex *lexicon.L
 // makes each pair's slot inside the adjunct visible.
 //
 // marksMood disambiguates the Cn surface form (which is shared between
+// modularScopePrefix returns the surface w/y consonant for the
+// decoded ModularScope, or "" for the default scope.
+func modularScopePrefix(s g.ModularScope) string {
+	switch s {
+	case g.ModularScopeParent:
+		return "w"
+	case g.ModularScopeConcat:
+		return "y"
+	}
+	return ""
+}
+
 // Mood and Case-Scope). When nil, no adjacent formative was found and
 // Cn defaults to Mood — matching the spec's verbal-formative reading.
 func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segment {
 	asMood := marksMood == nil || *marksMood
 	var segs []Segment
-	if ma.Prefix != "" {
+	if raw := modularScopePrefix(ma.Scope); raw != "" {
 		segs = append(segs, Segment{
-			Raw:     strings.ToLower(ma.Prefix),
+			Raw:     raw,
 			Slot:    "scope",
-			Encodes: []string{semantics.PrefixCode(ma.Prefix)},
+			Encodes: []string{semantics.PrefixCode(raw)},
 		})
 	}
 	for i, p := range ma.Pairs {

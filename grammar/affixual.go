@@ -86,32 +86,21 @@ func VzScope(vz string) (AffixScope, bool) {
 	return 0, false
 }
 
-// SingleAffixAdjunct carries a single Vx+Cs affix as its own word,
-// scoping it onto the next formative via Scope. Vs is the optional
-// scope vowel; Scope is its decoded value (default ScopeVDom).
+// SingleAffixAdjunct carries one affix as its own word, scoping it
+// onto the next formative via Scope. The affix's surface Vx vowel is
+// decoded into (Type, Degree) at parse time; surface fields don't
+// appear here.
 type SingleAffixAdjunct struct {
-	Vx    string
-	Cs    string
-	Vs    string // empty if absent
+	Affix Affix
 	Scope AffixScope
 }
 
-// MultipleAffixAdjunct chains several Vx+Cs pairs into one adjunct word
-// with the structure [ë] Cs Vx Cz (VxCs)+ [Vz]. The first affix's scope
-// is derived from Cz; the trailing affixes' scope is derived from Vz
-// (or matches FirstScope when Vz is absent or "ai").
+// MultipleAffixAdjunct chains two or more affixes into one adjunct
+// word. The first affix takes FirstScope; the rest take RestScope.
+// Both scopes are decoded from the surface Cz/Vz vowels at parse time.
 type MultipleAffixAdjunct struct {
-	First      AffixPair   // first Cs Vx (consonant before vowel on the surface)
-	Cz         string      // scope consonant: h, 'h, 'hl, 'hr, hw, 'hw
-	Affixes    []AffixPair // subsequent VxCs pairs
-	Vz         string      // optional final scope vowel ("a"/"u"/"e"/"i"/"o"/"ö"/"ai" or "")
-	FirstScope AffixScope  // scope of First (derived from Cz)
-	RestScope  AffixScope  // scope of Affixes (derived from Vz; matches FirstScope when Vz is "" or "ai")
-}
-
-// AffixPair is the vowel+consonant content of one affix slot within a
-// multiple-affix adjunct.
-type AffixPair struct {
-	Vx string
-	Cs string
+	First      Affix
+	Rest       []Affix
+	FirstScope AffixScope
+	RestScope  AffixScope
 }

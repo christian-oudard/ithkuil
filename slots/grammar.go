@@ -527,6 +527,14 @@ func csRootVr(degree int, ctx g.Context) string {
 }
 
 // vnCnFromSlotVIII decomposes a Slot VIII value into its (Vn, Cn) pair.
+// VnCnFromSlotVIII returns the surface Vn vowel and Cn consonant for a
+// SlotVIII variant. Exposes the inverse of parse.ParseVnCn so callers
+// outside this package can encode typed SlotVIII values into the raw
+// pair stored on grammar.ModularAdjunct.
+func VnCnFromSlotVIII(s g.SlotVIII) (string, string) {
+	return vnCnFromSlotVIII(s)
+}
+
 func vnCnFromSlotVIII(s g.SlotVIII) (string, string) {
 	switch v := s.(type) {
 	case g.VnCnValence:

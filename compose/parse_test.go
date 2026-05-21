@@ -122,7 +122,7 @@ func TestParseString_AffixViaAbbrev(t *testing.T) {
 
 func TestParseString_AffixTypeTag(t *testing.T) {
 	lex := mustLex(t)
-	f, err := ParseString("ml-nļ/1:2", lex.Affixes) // IVL type-2 degree 1
+	f, err := ParseString("ml-nļ/1_2", lex.Affixes) // IVL type-2 degree 1
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
