@@ -4,7 +4,31 @@ import (
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/surface"
 )
+
+func TestClassifyWord_ParsingAdjunct(t *testing.T) {
+	cases := []struct {
+		in   string
+		want surface.Stress
+	}{
+		{"'a'", surface.Monosyllabic},
+		{"'e'", surface.Ultimate},
+		{"'o'", surface.Penultimate},
+		{"'u'", surface.Antepenultimate},
+	}
+	for _, c := range cases {
+		w := ClassifyWord(c.in)
+		p, ok := w.(ParsingAdjunctWord)
+		if !ok {
+			t.Errorf("ClassifyWord(%q) = %T, want ParsingAdjunctWord", c.in, w)
+			continue
+		}
+		if p.Adjunct.Stress != c.want {
+			t.Errorf("ClassifyWord(%q).Stress = %v, want %v", c.in, p.Adjunct.Stress, c.want)
+		}
+	}
+}
 
 func TestClassifyWord_Bias(t *testing.T) {
 	w := ClassifyWord("řřx")

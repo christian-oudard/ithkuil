@@ -173,6 +173,18 @@ func (CombinationRefWord) word()             {}
 func (r ReferentialWord) Surface() string { return r.Text }
 func (ReferentialWord) word()             {}
 
+// ParsingAdjunctWord wraps a §4.8 parsing adjunct ('V'). The adjunct
+// itself has no grammatical content; it signals the stress of the
+// immediately-following word as a written cue when prosody can't be
+// relied on.
+type ParsingAdjunctWord struct {
+	Text    string
+	Adjunct g.ParsingAdjunct
+}
+
+func (p ParsingAdjunctWord) Surface() string { return p.Text }
+func (ParsingAdjunctWord) word()             {}
+
 // UnknownWord is the fallback when no parser claims the word.
 type UnknownWord struct {
 	Text string
@@ -206,6 +218,12 @@ func ClassifyWord(word string) WordToken {
 	}
 	if r := validation.ValidateChars(word); !r.Valid {
 		return UnknownWord{Text: word}
+	}
+	// §4.8 parsing adjunct: 'V' is a fixed three-character word; check
+	// before anything else so a leading glottal doesn't get reinterpreted
+	// downstream.
+	if pa, err := parse.ParseParsingAdjunct(word); err == nil {
+		return ParsingAdjunctWord{Text: word, Adjunct: pa}
 	}
 	// Hyphenated input: try as a concatenation chain. A hyphen is only
 	// meaningful as a concat-pair separator, so if the chain doesn't

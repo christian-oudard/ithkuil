@@ -36,6 +36,13 @@ var formativeCorpus = []string{
 	"amlalara",
 	"amlali'a",
 	"ärmaläwi'a",
+	// §3.8.1.2 Cn→Ca shortcut: a Pattern-1 Cn (hl/hr/hm/hn/hň) in the
+	// Ca slot, eliding default -l- Ca and default -a- Vn.
+	"amlahla",
+	"amlahra",
+	"amlahma",
+	"amlahna",
+	"amlahňa",
 	// Sentence-start prefixes. The çç-form normalizes to çëy-,
 	// so it's not round-trippable — only canonical forms are.
 	"çamlala",
