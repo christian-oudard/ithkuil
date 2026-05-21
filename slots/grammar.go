@@ -280,8 +280,12 @@ func FromGrammar(f g.Formative, opts Options) Layout {
 
 	l.Vc, l.Stress = slotIXFromFinal(f.Final)
 
-	applyDefaultElisions(&l, f)
+	// §3.8.1.2 shortcut is decided before default-value elision so the
+	// shortcut's freed-up syllable isn't claimed by elision first — that
+	// ordering let elision burn enough slack to keep the shortcut's
+	// minimum-syllables guard from firing, and the long form leaked out.
 	maybeMoveCnToCa(&l, f)
+	applyDefaultElisions(&l, f)
 	return l
 }
 
@@ -620,7 +624,9 @@ func requiredSyllables(f g.Final) int {
 
 // vowelCount counts the number of vowel-conjuncts the Layout will emit
 // when rendered. Used by elision logic to confirm the body has enough
-// syllables for the diacritic to land.
+// syllables for the diacritic to land. The §3.8.1.2 Cn→Ca shortcut
+// elides Vn at render time even though l.Vn is still set, so CnInCa
+// subtracts one.
 func vowelCount(l *Layout) int {
 	n := 0
 	if l.Vv != "" {
@@ -639,7 +645,7 @@ func vowelCount(l *Layout) int {
 			n++
 		}
 	}
-	if l.Vn != "" {
+	if l.Vn != "" && !l.CnInCa {
 		n++
 	}
 	if l.Vc != "" {

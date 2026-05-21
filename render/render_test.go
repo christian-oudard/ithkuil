@@ -56,11 +56,36 @@ func TestFormative_WithSlotVIII(t *testing.T) {
 		MoodScope: g.SUB,
 	}
 	got := Formative(f)
-	// Long: a-ml-a-l-ahl-a. 4 vowels, PEN needs 2, slack 2 → both the
-	// default Vv and the THM Vc elide → "mlalahl".
-	want := "mlalahl"
+	// §3.8.1.2 Cn→Ca shortcut: default Ca and MNO+non-FAC Pattern-1 Cn
+	// collapse the Vn and substitute the Cn for Ca. After the shortcut
+	// the body is a-ml-a-hl-a (3 vowels), PEN needs 2, slack 1 → only
+	// the default Vv elides, leaving "mlahla".
+	want := "mlahla"
 	if got != want {
 		t.Errorf("Formative(with VIII) = %q, want %q", got, want)
+	}
+}
+
+func TestFormative_CnCaShortcut_AllVariants(t *testing.T) {
+	// All five Pattern-1 non-FAC Cn variants produce the canonical
+	// short-form surface when paired with default Ca and MNO Valence.
+	cases := []struct {
+		mood g.Mood
+		want string
+	}{
+		{g.SUB, "mlahla"},
+		{g.ASM, "mlahra"},
+		{g.SPC, "mlahma"},
+		{g.COU, "mlahna"},
+		{g.HYP, "mlahňa"},
+	}
+	for _, c := range cases {
+		f := g.MinimalFormative("ml")
+		f.SlotVIII = g.VnCnValence{Valence: g.MNO, MoodScope: c.mood}
+		got := Formative(f)
+		if got != c.want {
+			t.Errorf("Formative(MNO/%v) = %q, want %q", c.mood, got, c.want)
+		}
 	}
 }
 
