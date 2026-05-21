@@ -5,7 +5,6 @@ import (
 
 	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/gloss"
-	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/render"
 	"github.com/christian-oudard/ithkuil/slots"
@@ -35,13 +34,6 @@ func TestFullDistance_SlotsCorpus(t *testing.T) {
 			f, err := fullparse.ParseFormative(w)
 			if err != nil {
 				t.Skipf("fullparse rejects %q: %v", w, err)
-			}
-			// CsRoot and RefRoot use parenthesised gloss notation
-			// ("(CTR)/1", "(1m+2p)") that compose Phase 3 will need
-			// to handle. Skip until then.
-			switch f.Root.(type) {
-			case g.CsRoot, g.RefRoot:
-				t.Skipf("compose Phase 3 needed: %T not yet supported", f.Root)
 			}
 			// Surface round-trip: now that #17 (Surface hints) covers
 			// every shortcut path, fullparse + render must reproduce

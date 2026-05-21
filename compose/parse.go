@@ -8,6 +8,7 @@ import (
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/surface"
 )
 
@@ -45,23 +46,33 @@ func ParseString(s string, affixes map[string]lexicon.AffixEntry) (g.Formative, 
 		return g.Formative{}, fmt.Errorf("no slot tokens")
 	}
 
-	// Identify the root: the first token that looks like a Cr cluster.
+	// Identify the root: the first token that's a Cr cluster, a
+	// "(CTR)/1"-style CsRoot, or a "(1m+2p)"-style RefRoot.
 	rootIdx := -1
-	var rootCluster string
+	var root g.Root
 	for i, tok := range tokens {
-		if cluster, ok := isClusterToken(tok); ok {
-			if rootIdx >= 0 {
-				return g.Formative{}, fmt.Errorf("multiple root candidates: %q and %q", rootCluster, tok)
-			}
-			rootIdx = i
-			rootCluster = cluster
+		r, ok, err := tryParseRoot(tok, affixes)
+		if err != nil {
+			return g.Formative{}, fmt.Errorf("root token %q: %w", tok, err)
 		}
+		if !ok {
+			continue
+		}
+		if rootIdx >= 0 {
+			return g.Formative{}, fmt.Errorf("multiple root candidates: token %q", tok)
+		}
+		rootIdx = i
+		root = r
 	}
 	if rootIdx < 0 {
-		return g.Formative{}, fmt.Errorf("no root cluster in %q", s)
+		return g.Formative{}, fmt.Errorf("no root in %q", s)
 	}
 
-	f := g.MinimalFormative(rootCluster)
+	f := g.Formative{
+		Root:   root,
+		SlotVI: g.DefaultSlotVI,
+		Final:  g.UnframedNominal{Case: g.THM},
+	}
 	for i, tok := range tokens {
 		if i == rootIdx {
 			continue
@@ -71,6 +82,94 @@ func ParseString(s string, affixes map[string]lexicon.AffixEntry) (g.Formative, 
 		}
 	}
 	return f, nil
+}
+
+// tryParseRoot inspects a single token and returns a parsed Root if it
+// looks like one. Returns (nil, false, nil) when the token is clearly
+// not a root candidate. An error means the token *looked* like a root
+// but couldn't be decoded — that's a real parse failure.
+func tryParseRoot(tok string, affixes map[string]lexicon.AffixEntry) (g.Root, bool, error) {
+	if tok == "" {
+		return nil, false, nil
+	}
+	// Parens-wrapped: CsRoot "(ABBREV)/degree" or RefRoot "(refs)".
+	if strings.HasPrefix(tok, "(") {
+		return parseParensRoot(tok, affixes)
+	}
+	// Bare cluster: CrRoot.
+	if cluster, ok := isClusterToken(tok); ok {
+		return g.DefaultCrRoot(cluster), true, nil
+	}
+	return nil, false, nil
+}
+
+// csRootToken matches "(ABBREV)/degree" where ABBREV is the
+// uppercase affix abbreviation or the Cs cluster itself.
+var csRootToken = regexp.MustCompile(`^\(([^)]+)\)/([0-9])$`)
+
+func parseParensRoot(tok string, affixes map[string]lexicon.AffixEntry) (g.Root, bool, error) {
+	// CsRoot first: "(X)/digit". If the slash form doesn't match, fall
+	// through to RefRoot.
+	if m := csRootToken.FindStringSubmatch(tok); m != nil {
+		degree, _ := strconv.Atoi(m[2])
+		cs := resolveAffixCs(m[1], affixes)
+		if cs == "" {
+			return nil, true, fmt.Errorf("unknown Cs-root affix %q", m[1])
+		}
+		return g.CsRoot{Cs: cs, Degree: degree, Version: g.PRC, Function: g.STA, Context: g.EXS}, true, nil
+	}
+	// RefRoot: "(refs)" where refs is "1m" or "1m+2p" or
+	// "1m/BEN+2p/DET" — referent abbreviations joined by "+", with
+	// an optional "/EFFECT" suffix per referent.
+	if !strings.HasSuffix(tok, ")") {
+		return nil, false, nil
+	}
+	inner := tok[1 : len(tok)-1]
+	if inner == "" {
+		return nil, true, fmt.Errorf("empty referential")
+	}
+	parts := strings.Split(inner, "+")
+	var c1 strings.Builder
+	for _, part := range parts {
+		ref, eff, err := parseRefSpec(part)
+		if err != nil {
+			return nil, true, err
+		}
+		c1.WriteString(referentials.RefC1(referentials.PersonalRef{Referent: ref, Effect: eff}))
+	}
+	return g.RefRoot{C1: c1.String(), Version: g.PRC, SlotIV: g.DefaultSlotIV}, true, nil
+}
+
+// parseRefSpec decodes "1m" or "1m/BEN" into a Referent + Effect.
+func parseRefSpec(s string) (referentials.Referent, referentials.Effect, error) {
+	refName, effName, _ := strings.Cut(s, "/")
+	var ref referentials.Referent
+	matched := false
+	for _, r := range referentials.AllReferents {
+		if r.String() == refName {
+			ref = r
+			matched = true
+			break
+		}
+	}
+	if !matched {
+		return 0, 0, fmt.Errorf("unknown referent %q", refName)
+	}
+	eff := referentials.NEU
+	if effName != "" {
+		matched = false
+		for _, e := range referentials.AllEffects {
+			if e.String() == effName {
+				eff = e
+				matched = true
+				break
+			}
+		}
+		if !matched {
+			return 0, 0, fmt.Errorf("unknown effect %q", effName)
+		}
+	}
+	return ref, eff, nil
 }
 
 // splitSlots splits the input on "-" while skipping empty slots that
