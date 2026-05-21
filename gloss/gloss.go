@@ -25,11 +25,13 @@ import (
 // package-level Formative function.
 type Glosser struct {
 	Lex *lexicon.Lexicon
-	// OmitMeaning suppresses the quoted lexicon meaning that normally
-	// appears after the root cluster ("-ml- 'gold (color)'"). The
-	// resulting gloss is the canonical form accepted by compose.ParseString,
-	// so OmitMeaning=true is what you want for round-tripping.
-	OmitMeaning bool
+	// Canonical suppresses the display-only annotations that aren't
+	// part of the compose authoring syntax: the quoted lexicon
+	// meaning after a root ("-ml- 'gold (color)'") and the leading
+	// "§ " marker for sentence-starter formatives. The resulting
+	// gloss is exactly what compose.ParseString accepts, so set
+	// Canonical=true for round-tripping.
+	Canonical bool
 }
 
 // Formative renders a one-line gloss of f. Components at their default
@@ -59,7 +61,7 @@ func (gl *Glosser) Formative(f g.Formative) string {
 		finalTag(f.Final),
 	}
 	body := strings.Join(nonEmpty(parts), "-")
-	if f.SentenceStarter {
+	if f.SentenceStarter && !gl.Canonical {
 		return "§ " + body
 	}
 	return body
@@ -161,7 +163,7 @@ func (gl *Glosser) crRootLabel(x g.CrRoot, f g.Formative) string {
 			return fmt.Sprintf("-%s- '%d'", x.Cluster, n.Value)
 		}
 	}
-	if gl.Lex != nil && !gl.OmitMeaning {
+	if gl.Lex != nil && !gl.Canonical {
 		if entry, ok := gl.Lex.Roots[x.Cluster]; ok {
 			if meaning := rootMeaning(entry, x); meaning != "" {
 				return "-" + x.Cluster + "- '" + meaning + "'"

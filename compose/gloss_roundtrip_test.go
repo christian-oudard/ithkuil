@@ -13,12 +13,12 @@ import (
 // identity at the canonical (meaning-suppressed) gloss level:
 //
 //	random Formative
-//	  → gloss (OmitMeaning: true)
+//	  → gloss (Canonical: true)
 //	  → compose.ParseString
-//	  → re-gloss (OmitMeaning: true)
+//	  → re-gloss (Canonical: true)
 //	must equal the first gloss.
 //
-// The OmitMeaning flag strips the quoted ' meaning' that the default
+// The Canonical flag strips the quoted ' meaning' that the default
 // gloss adds for the root cluster; the quoted form is informational
 // only and would otherwise need re-stripping before compose can
 // re-ingest. Everything else in the gloss output is already compose-
@@ -34,7 +34,7 @@ func TestFuzz_GlossComposeRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}
-	gl := &gloss.Glosser{Lex: lex, OmitMeaning: true}
+	gl := &gloss.Glosser{Lex: lex, Canonical: true}
 
 	const iterations = 1000
 	rng := rand.New(rand.NewSource(2026_05_21))

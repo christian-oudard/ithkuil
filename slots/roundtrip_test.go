@@ -2,59 +2,13 @@ package slots
 
 import "testing"
 
-// Each line in formativeCorpus is a word that successfully parses to a
-// Formative via fullparse. Layer C's Parse/Render pair must round-trip
-// every one — Layer C does no grammar decoding, so any word that
-// fullparse accepts is a word that slots.Parse must accept too.
-var formativeCorpus = []string{
-	// Canonical and minimal.
-	"malëuţřait",
-	"amlal",
-	"amlala",
-	"amlalú",
-	"emlölo",
-	"malal",
-	// Concat prefixes.
-	"hamlala",
-	"hwamlala",
-	// Shortcut forms.
-	"waml",
-	"yuml",
-	"waiml",
-	"wamlar",
-	"hlaml",
-	// Cs-root and reference-root.
-	"ëilal",
-	"ëilael",
-	"oërmölá",
-	"oërmoulá",
-	"ealali",
-	"aelali",
-	// Slot V (multiple affixes between Vv and Ca).
-	"amlalahla",
-	"amlalahlá",
-	"amlalara",
-	"amlali'a",
-	"ärmaläwi'a",
-	// §3.8.1.2 Cn→Ca shortcut: a Pattern-1 Cn (hl/hr/hm/hn/hň) in the
-	// Ca slot, eliding default -l- Ca and default -a- Vn.
-	"amlahla",
-	"amlahra",
-	"amlahma",
-	"amlahna",
-	"amlahňa",
-	// §3.6.2 shortcut-form Slot V: a single affix between Cr and Vc,
-	// with a glottal-stop end-of-Slot-V marker on the final Vx.
-	"wamla'r",
-	"wamla're",
-	// Sentence-start prefixes. The çç-form normalizes to çëy-,
-	// so it's not round-trippable — only canonical forms are.
-	"çamlala",
-	"çëmlala",
-}
+// FormativeCorpus is defined in corpus.go so the same test set can
+// be consumed by higher-layer tests (fullparse, compose) that need
+// to exercise their round-trip invariants on the same well-known
+// words.
 
 func TestLayout_RoundTrip(t *testing.T) {
-	for _, w := range formativeCorpus {
+	for _, w := range FormativeCorpus {
 		l, err := Parse(w)
 		if err != nil {
 			t.Errorf("Parse(%q): %v", w, err)

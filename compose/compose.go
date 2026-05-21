@@ -302,6 +302,14 @@ func SearchAffixes(query string, affixes map[string]lexicon.AffixEntry) []lexico
 	return hits
 }
 
+// concatPrefix matches the gloss-format concatenation marker: "T1"
+// or "T2". Slot I in the gloss writes a Type-1 chain dependent as
+// "T1-" and a Type-2 as "T2-".
+var concatPrefix = map[string]g.ConcatenationStatus{
+	"T1": g.Type1,
+	"T2": g.Type2,
+}
+
 // ApplyFlag mutates f according to one grammar-abbreviation flag like
 // "S2", "DYN", "OBJ", "ERG", "RTR", "PEN". Case-insensitive. Returns
 // an error for unrecognized flags.
@@ -321,6 +329,13 @@ func SearchAffixes(query string, affixes map[string]lexicon.AffixEntry) []lexico
 //	<Illocution>          Slot IX illocution (forces ultimate stress)
 func ApplyFlag(f *g.Formative, flag string) error {
 	flag = strings.ToUpper(flag)
+
+	// Concatenation status.
+	if c, ok := concatPrefix[flag]; ok {
+		cc := c
+		f.Concat = &cc
+		return nil
+	}
 
 	// Stem (CrRoot only).
 	switch flag {
@@ -475,6 +490,16 @@ func ApplyFlag(f *g.Formative, flag string) error {
 	if vk, ok := illocutionByName(flag); ok {
 		f.Final = g.UnframedVerbal{Vk: vk}
 		return nil
+	}
+
+	// Validation: only meaningful on Assertive illocution. Replace
+	// the Vk if the current Final is already Assertive; otherwise
+	// promote to UnframedVerbal{Assertive{Validation: v}}.
+	for _, v := range g.AllValidations {
+		if v.String() == flag {
+			f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: v}}
+			return nil
+		}
 	}
 
 	// Ca components (Affiliation / Configuration / Extension /
