@@ -15,6 +15,7 @@ import (
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/numbers"
 	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/semantics"
 )
@@ -43,7 +44,7 @@ func (gl *Glosser) Formative(f g.Formative) string {
 	parts := []string{
 		slotI(f.Concat),
 		gl.rootPrefix(f.Root),
-		gl.rootBody(f.Root),
+		gl.rootBody(f),
 		gl.rootSuffix(f.Root),
 		gl.affixes(f.SlotV),
 		slotVI(f.SlotVI),
@@ -88,10 +89,13 @@ func (gl *Glosser) rootPrefix(r g.Root) string {
 // RefRoot label decomposes its C1 into the underlying personal-
 // reference chain (§4.6.4); when decomposition fails we fall back to
 // the raw cluster so the gloss still names what it parsed.
-func (gl *Glosser) rootBody(r g.Root) string {
-	switch x := r.(type) {
+//
+// The full Formative is taken so number-root CrRoots can also read
+// Slot VII to fold the TNX tens-affix into the gloss value.
+func (gl *Glosser) rootBody(f g.Formative) string {
+	switch x := f.Root.(type) {
 	case g.CrRoot:
-		return gl.crRootLabel(x)
+		return gl.crRootLabel(x, f)
 	case g.CsRoot:
 		return gl.csRootLabel(x)
 	case g.RefRoot:
@@ -133,9 +137,17 @@ func (gl *Glosser) rootSuffix(r g.Root) string {
 	return ""
 }
 
-func (gl *Glosser) crRootLabel(x g.CrRoot) string {
+func (gl *Glosser) crRootLabel(x g.CrRoot, f g.Formative) string {
 	if x.Cluster == "" {
 		return ""
+	}
+	// Number roots are interpreted from the centesimal system table
+	// (§8.0), not from the lexicon. Decode reads Slot VII as well, so
+	// 11-99 fold the TNX tens-affix into the displayed value.
+	if numbers.IsNumberRoot(x.Cluster) {
+		if n, ok := numbers.Decode(f); ok {
+			return fmt.Sprintf("-%s- '%d'", x.Cluster, n.Value)
+		}
 	}
 	if gl.Lex != nil {
 		if entry, ok := gl.Lex.Roots[x.Cluster]; ok {

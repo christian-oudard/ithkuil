@@ -168,6 +168,27 @@ func TestToken_Concatenated(t *testing.T) {
 	}
 }
 
+func TestFormative_NumberRoot(t *testing.T) {
+	// Number formatives should gloss with their decoded integer value
+	// rather than a lexicon meaning.
+	cases := []struct {
+		word    string
+		wantVal string
+	}{
+		{"ksalirsa", "'42'"},     // 2 + TNX/4 = 42
+		{"cpalörs", "'66'"},      // 6 + TNX/6 = 66
+		{"gzalui", "'100'"},      // power root for 100
+		{"wapcui", "'10000'"},    // W-shortcut power root for 10000
+	}
+	for _, c := range cases {
+		tok := tokenize.ClassifyWord(c.word).(tokenize.FormativeWord)
+		got := (&Glosser{}).Formative(tok.Formative)
+		if !strings.Contains(got, c.wantVal) {
+			t.Errorf("gloss(%q) = %q, want substring %q", c.word, got, c.wantVal)
+		}
+	}
+}
+
 func TestFormative_CsRoot(t *testing.T) {
 	tok := tokenize.ClassifyWord("oërmölá").(tokenize.FormativeWord)
 	got := (&Glosser{}).Formative(tok.Formative)
