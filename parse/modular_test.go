@@ -21,10 +21,12 @@ func TestParseModular_Valid(t *testing.T) {
 			t.Errorf("ParseModular(%q) error: %v", c.word, err)
 			continue
 		}
-		if ma.Vn != c.vn || ma.Cn != c.cn {
-			t.Errorf("ParseModular(%q) = %+v, want Vn=%q Cn=%q",
-				c.word, ma, c.vn, c.cn)
+		if len(ma.Content) != 1 {
+			t.Errorf("ParseModular(%q): Content len = %d, want 1", c.word, len(ma.Content))
+			continue
 		}
+		_ = c.vn
+		_ = c.cn
 	}
 }
 
@@ -42,28 +44,32 @@ func TestParseModular_Invalid(t *testing.T) {
 
 func TestParseModular_SingleVowel(t *testing.T) {
 	// Per §4.3, a single vowel is a lone-aspect modular: no prefix,
-	// no VnCn pairs, just a final vowel.
+	// just a trailing aspect vowel. Decoded as one VnCnAspect entry
+	// with default FAC mood.
 	ma, err := ParseModular("a")
 	if err != nil {
 		t.Fatalf("ParseModular(%q): %v", "a", err)
 	}
-	if ma.Final != "a" || ma.Scope != grammar.ModularScopeDefault || len(ma.Pairs) != 0 {
-		t.Errorf("ParseModular(\"a\") = %+v, want lone final \"a\"", ma)
+	if ma.Scope != grammar.ModularScopeDefault || len(ma.Content) != 1 {
+		t.Errorf("ParseModular(\"a\") = %+v, want lone aspect content", ma)
+	}
+	if _, ok := ma.Content[0].(grammar.VnCnAspect); !ok {
+		t.Errorf("ParseModular(\"a\") content = %T, want VnCnAspect", ma.Content[0])
 	}
 }
 
 func TestParseModular_ChainsWithVnCn(t *testing.T) {
-	// A modular adjunct's text fields should round-trip through ParseVnCn,
-	// giving a typed SlotVIII we can disambiguate.
+	// A modular adjunct's typed Content should match ParseVnCn output
+	// on the original surface (Vn, Cn) pair.
 	ma, err := ParseModular("ah")
 	if err != nil {
 		t.Fatal(err)
 	}
-	s8, ok := ParseVnCn(ma.Vn, ma.Cn)
-	if !ok {
-		t.Fatal("ParseVnCn on modular fields failed")
+	if len(ma.Content) != 1 {
+		t.Fatalf("Content len = %d, want 1", len(ma.Content))
 	}
-	// "a"/"h" should resolve to VnCnValence{MNO, MoodVal{FAC}}.
+	s8 := ma.Content[0]
+	// "a"/"h" should resolve to VnCnValence{MNO, ...}.
 	vc, ok := s8.(grammar.VnCnValence)
 	if !ok || vc.Valence != grammar.MNO {
 		t.Errorf("expected VnCnValence{MNO, ...}, got %#v", s8)

@@ -7,7 +7,6 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/referentials"
-	"github.com/christian-oudard/ithkuil/slots"
 	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
@@ -230,29 +229,16 @@ func TestParseToken_Modular(t *testing.T) {
 	}
 	// Typed: aspect + mood.
 	typed := tokenize.ModularWord{
-		Modular: func() g.ModularAdjunct {
-			sv := g.VnCnAspect{Aspect: g.RTR, MoodScope: g.SUB}
-			vn, cn := slots.VnCnFromSlotVIII(sv)
-			return g.ModularAdjunct{
-				Scope: g.ModularScopeDefault,
-				Vn:    vn,
-				Cn:    cn,
-				Pairs: []g.VnCnPair{{Vn: vn, Cn: cn}},
-			}
-		}(),
+		Modular: g.ModularAdjunct{
+			Content: []g.SlotVIII{g.VnCnAspect{Aspect: g.RTR, MoodScope: g.SUB}},
+		},
 	}
 	// Scoped to parent only.
 	scoped := tokenize.ModularWord{
-		Modular: func() g.ModularAdjunct {
-			sv := g.VnCnValence{Valence: g.PRL, MoodScope: g.HYP}
-			vn, cn := slots.VnCnFromSlotVIII(sv)
-			return g.ModularAdjunct{
-				Scope: g.ModularScopeParent,
-				Vn:    vn,
-				Cn:    cn,
-				Pairs: []g.VnCnPair{{Vn: vn, Cn: cn}},
-			}
-		}(),
+		Modular: g.ModularAdjunct{
+			Scope:   g.ModularScopeParent,
+			Content: []g.SlotVIII{g.VnCnValence{Valence: g.PRL, MoodScope: g.HYP}},
+		},
 	}
 	// With reach scope (V_H §4.3 Slot 4).
 	reachCases := []g.ModularReach{
@@ -263,14 +249,10 @@ func TestParseToken_Modular(t *testing.T) {
 	}
 	var reachWords []tokenize.ModularWord
 	for _, r := range reachCases {
-		sv := g.VnCnAspect{Aspect: g.HAB, MoodScope: g.FAC}
-		vn, cn := slots.VnCnFromSlotVIII(sv)
 		reachWords = append(reachWords, tokenize.ModularWord{
 			Modular: g.ModularAdjunct{
-				Reach: r,
-				Vn:    vn,
-				Cn:    cn,
-				Pairs: []g.VnCnPair{{Vn: vn, Cn: cn}},
+				Reach:   r,
+				Content: []g.SlotVIII{g.VnCnAspect{Aspect: g.HAB, MoodScope: g.FAC}},
 			},
 		})
 	}
@@ -357,7 +339,7 @@ func TestParseToken_CombinationRef(t *testing.T) {
 	want := tokenize.CombinationRefWord{
 		Refs: []referentials.PersonalRef{{Referent: referentials.R1m, Effect: referentials.NEU}},
 		Case: g.ERG,
-		Spec: "BSC",
+		Spec: g.BSC,
 	}
 	s := gl.Token(want)
 	got, err := ParseToken(s, nil)
@@ -368,7 +350,7 @@ func TestParseToken_CombinationRef(t *testing.T) {
 	if !ok {
 		t.Fatalf("got %T, want CombinationRefWord", got)
 	}
-	if cw.Case != g.ERG || cw.Spec != "BSC" || len(cw.Refs) != 1 {
+	if cw.Case != g.ERG || cw.Spec != g.BSC || len(cw.Refs) != 1 {
 		t.Errorf("got %+v", cw)
 	}
 }
@@ -386,7 +368,7 @@ func TestParseToken_CarrierAdjunct(t *testing.T) {
 	}
 	for _, c := range cases {
 		want := tokenize.CarrierWord{
-			Carrier: g.CarrierAdjunct{Type: c.ct, Vc: g.CaseToVc(c.c)},
+			Carrier: g.CarrierAdjunct{Type: c.ct, Case: c.c},
 		}
 		s := gl.Token(want)
 		got, err := ParseToken(s, nil)
@@ -395,7 +377,7 @@ func TestParseToken_CarrierAdjunct(t *testing.T) {
 			continue
 		}
 		cw, ok := got.(tokenize.CarrierWord)
-		if !ok || cw.Carrier.Type != c.ct || cw.Carrier.Vc != g.CaseToVc(c.c) {
+		if !ok || cw.Carrier.Type != c.ct || cw.Carrier.Case != c.c {
 			t.Errorf("Carrier %v %v: got %T %+v", c.ct, c.c, got, got)
 		}
 	}

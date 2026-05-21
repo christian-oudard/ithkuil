@@ -69,8 +69,8 @@ func TestClassifyWord_Carrier(t *testing.T) {
 	if !ok {
 		t.Fatalf("ClassifyWord(\"hla\") = %T, want CarrierWord", w)
 	}
-	if c.Carrier.Type != g.Carrier || c.Carrier.Vc != "a" {
-		t.Errorf("Carrier = %v, want {Carrier, a}", c.Carrier)
+	if c.Carrier.Type != g.Carrier || c.Carrier.Case != g.THM {
+		t.Errorf("Carrier = %v, want {Carrier, THM}", c.Carrier)
 	}
 }
 
@@ -81,8 +81,11 @@ func TestClassifyWord_Modular(t *testing.T) {
 	if !ok {
 		t.Fatalf("ClassifyWord(\"ah\") = %T, want ModularWord", w)
 	}
-	if m.Modular.Vn != "a" || m.Modular.Cn != "h" {
-		t.Errorf("Modular = %v, want {a, h}", m.Modular)
+	if len(m.Modular.Content) != 1 {
+		t.Fatalf("Modular.Content = %v, want one entry", m.Modular.Content)
+	}
+	if _, ok := m.Modular.Content[0].(g.VnCnValence); !ok {
+		t.Errorf("Modular.Content[0] = %T, want VnCnValence", m.Modular.Content[0])
 	}
 }
 

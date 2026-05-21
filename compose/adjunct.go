@@ -8,7 +8,6 @@ import (
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/referentials"
-	"github.com/christian-oudard/ithkuil/slots"
 	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
@@ -142,13 +141,13 @@ func parseCarrierOrReferential(s string) (tokenize.WordToken, bool, error) {
 		// grammar that CarrierWord can't hold.
 		caseChunk, restTail := splitFirstHyphenChunk(tail)
 		if restTail == "" {
-			vc, err := caseToVc(tail)
+			cv, err := caseFromCanonicalTail(tail)
 			if err != nil {
 				return nil, true, fmt.Errorf("carrier %q: %w", s, err)
 			}
 			return tokenize.CarrierWord{
 				Text:    s,
-				Carrier: g.CarrierAdjunct{Type: ct, Vc: vc},
+				Carrier: g.CarrierAdjunct{Type: ct, Case: cv},
 			}, true, nil
 		}
 		// Extra fields present — build a Referential/CombinationRef.
@@ -198,14 +197,16 @@ func buildRefFromTail(
 	}
 	// Combination referential? Detect Specification name as next slot.
 	parts := strings.Split(restTail, "-")
-	if restTail != "" && isSpecName(parts[0]) {
-		return tokenize.CombinationRefWord{
-			Text:    text,
-			Carrier: carrier,
-			Refs:    refs,
-			Case:    c,
-			Spec:    parts[0],
-		}, nil
+	if restTail != "" {
+		if spec, ok := parseSpecName(parts[0]); ok {
+			return tokenize.CombinationRefWord{
+				Text:    text,
+				Carrier: carrier,
+				Refs:    refs,
+				Case:    c,
+				Spec:    spec,
+			}, nil
+		}
 	}
 	var case2 *g.Case
 	var refB []referentials.PersonalRef
@@ -258,22 +259,22 @@ func parseCarrierTypeAbbrev(s string) (g.CarrierType, bool) {
 	return 0, false
 }
 
-// caseToVc returns the surface Vc vowel for a "-CASE" tail, or "a"
-// (THM canonical default) when the tail is empty.
-func caseToVc(tail string) (string, error) {
+// caseFromCanonicalTail decodes a "-CASE" tail into a typed Case,
+// defaulting to THM when the tail is empty.
+func caseFromCanonicalTail(tail string) (g.Case, error) {
 	if tail == "" {
-		return "a", nil // THM default
+		return g.THM, nil
 	}
 	if !strings.HasPrefix(tail, "-") {
-		return "", fmt.Errorf("expected leading '-' before case, got %q", tail)
+		return 0, fmt.Errorf("expected leading '-' before case, got %q", tail)
 	}
 	caseName := tail[1:]
 	for _, c := range g.AllCases {
 		if c.String() == caseName {
-			return g.CaseToVc(c), nil
+			return c, nil
 		}
 	}
-	return "", fmt.Errorf("unknown case %q", caseName)
+	return 0, fmt.Errorf("unknown case %q", caseName)
 }
 
 // isBareUppercase reports whether s is composed entirely of uppercase
@@ -587,15 +588,17 @@ func parseReferentialToken(s string) (tokenize.WordToken, error) {
 	}
 	rest := parts[2:]
 	// Combination referential? Detect Specification name in next slot.
-	if len(rest) > 0 && isSpecName(rest[0]) {
-		return tokenize.CombinationRefWord{
-			Text: s,
-			Refs: []referentials.PersonalRef{{Referent: ref, Effect: eff}},
-			Case: c,
-			Spec: rest[0],
-			// Trailing affixes / Case2 parsing deferred — common simple
-			// cases just have Spec.
-		}, nil
+	if len(rest) > 0 {
+		if spec, ok := parseSpecName(rest[0]); ok {
+			return tokenize.CombinationRefWord{
+				Text: s,
+				Refs: []referentials.PersonalRef{{Referent: ref, Effect: eff}},
+				Case: c,
+				Spec: spec,
+				// Trailing affixes / Case2 parsing deferred — common
+				// simple cases just have Spec.
+			}, nil
+		}
 	}
 	// Plain referential. Parse optional Case2, [refB], and RPV trail.
 	var case2 *g.Case
@@ -653,14 +656,20 @@ func parseCaseName(s string) (g.Case, bool) {
 	return 0, false
 }
 
-// isSpecName reports whether s names one of the four Specification
-// values: BSC, CTE, CSV, OBJ.
-func isSpecName(s string) bool {
+// parseSpecName decodes a Specification abbreviation (BSC/CTE/CSV/OBJ)
+// into the typed enum value.
+func parseSpecName(s string) (g.Specification, bool) {
 	switch s {
-	case "BSC", "CTE", "CSV", "OBJ":
-		return true
+	case "BSC":
+		return g.BSC, true
+	case "CTE":
+		return g.CTE, true
+	case "CSV":
+		return g.CSV, true
+	case "OBJ":
+		return g.OBJ, true
 	}
-	return false
+	return 0, false
 }
 
 // parseModularToken decodes the canonical form of a modular adjunct:
@@ -712,23 +721,22 @@ func parseModularToken(s string) (tokenize.WordToken, error) {
 	}
 	ma := g.ModularAdjunct{Scope: scope, Reach: reach}
 	if body != "MOD" {
-		// "VN.CN" — parse each side and round-trip through SlotVIII.
-		dot := strings.Index(body, ".")
-		var vnName, cnName string
-		if dot < 0 {
-			// Vn-only: no CN tail, FAC/CCN default.
-			vnName = body
-		} else {
-			vnName, cnName = body[:dot], body[dot+1:]
+		// One or more Vn.Cn entries joined by "-" in display, or just
+		// "VN.CN" / "VN" alone for canonical single-pair.
+		for _, entry := range strings.Split(body, "-") {
+			dot := strings.Index(entry, ".")
+			var vnName, cnName string
+			if dot < 0 {
+				vnName = entry
+			} else {
+				vnName, cnName = entry[:dot], entry[dot+1:]
+			}
+			sv, err := slotVIIIFromNames(vnName, cnName)
+			if err != nil {
+				return nil, fmt.Errorf("modular %q: %w", s, err)
+			}
+			ma.Content = append(ma.Content, sv)
 		}
-		sv, err := slotVIIIFromNames(vnName, cnName)
-		if err != nil {
-			return nil, fmt.Errorf("modular %q: %w", s, err)
-		}
-		vn, cn := slots.VnCnFromSlotVIII(sv)
-		ma.Pairs = []g.VnCnPair{{Vn: vn, Cn: cn}}
-		ma.Vn = vn
-		ma.Cn = cn
 	}
 	return tokenize.ModularWord{Text: s, Modular: ma}, nil
 }

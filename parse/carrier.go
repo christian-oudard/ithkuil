@@ -26,11 +26,9 @@ func ParseCarrierType(s string) (grammar.CarrierType, bool) {
 }
 
 // ParseCarrier reads a carrier adjunct word: a CarrierType cluster
-// (hl/hm/hn/hň) followed by at least one trailing conjunct. The
-// trailing content is joined and stored in Vc — it's often a single
-// case vowel ("hla" → {Carrier, "a"}) but the Haskell reference
-// accepts longer trailing matter ("hnas" → {Naming, "as"}) so this
-// parser does too.
+// (hl/hm/hn/hň) followed by a case vowel. The case vowel is decoded
+// at parse time so the in-memory model carries the typed Case rather
+// than the raw surface vowel.
 func ParseCarrier(word string) (grammar.CarrierAdjunct, error) {
 	conjs := surface.SplitConjuncts(word)
 	if len(conjs) < 2 {
@@ -41,6 +39,13 @@ func ParseCarrier(word string) (grammar.CarrierAdjunct, error) {
 	if !ok {
 		return grammar.CarrierAdjunct{}, fmt.Errorf("carrier adjunct: %q is not a carrier consonant", cs)
 	}
-	content := strings.Join(conjs[1:], "")
-	return grammar.CarrierAdjunct{Type: ct, Vc: content}, nil
+	vc := strings.Join(conjs[1:], "")
+	// Most carriers have a single case vowel as the trailing payload;
+	// naming carriers (§4.5.3) may follow with a name-as-text payload
+	// that won't parse as a Case. In the latter case we fall back to
+	// THM — the canonical gloss can't round-trip the payload anyway.
+	if c, ok := ParseCase(vc); ok {
+		return grammar.CarrierAdjunct{Type: ct, Case: c}, nil
+	}
+	return grammar.CarrierAdjunct{Type: ct, Case: grammar.THM}, nil
 }

@@ -63,15 +63,14 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 		// Parsing adjunct.
 		tokenize.ParsingAdjunctWord{Adjunct: g.ParsingAdjunct{Stress: surface.Ultimate}},
 		// Carrier.
-		tokenize.CarrierWord{Carrier: g.CarrierAdjunct{Type: g.Carrier, Vc: g.CaseToVc(g.ERG)}},
+		tokenize.CarrierWord{Carrier: g.CarrierAdjunct{Type: g.Carrier, Case: g.ERG}},
 		// Modular — default.
 		tokenize.ModularWord{Modular: g.ModularAdjunct{}},
 		// Modular — with content + scope + reach.
 		tokenize.ModularWord{Modular: g.ModularAdjunct{
-			Scope: g.ModularScopeParent,
-			Reach: g.ModularReachFormative,
-			Pairs: []g.VnCnPair{{Vn: "a", Cn: "h"}},
-			Vn:    "a", Cn: "h",
+			Scope:   g.ModularScopeParent,
+			Reach:   g.ModularReachFormative,
+			Content: []g.SlotVIII{g.VnCnValence{Valence: g.MNO, MoodScope: g.FAC}},
 		}},
 		// Single affix.
 		tokenize.SingleAffixWord{Affix: g.SingleAffixAdjunct{
@@ -101,13 +100,13 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 		tokenize.CombinationRefWord{
 			Refs: []referentials.PersonalRef{{Referent: referentials.R2m, Effect: referentials.BEN}},
 			Case: g.ERG,
-			Spec: "BSC",
+			Spec: g.BSC,
 		},
 		// Combination ref with affixes + case2.
 		tokenize.CombinationRefWord{
 			Refs:    []referentials.PersonalRef{{Referent: referentials.R1m, Effect: referentials.NEU}},
 			Case:    g.ERG,
-			Spec:    "OBJ",
+			Spec:    g.OBJ,
 			Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}},
 			Case2:   &dat,
 		},

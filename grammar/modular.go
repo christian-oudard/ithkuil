@@ -34,32 +34,17 @@ func (r ModularReach) String() string {
 	return [...]string{"none", "case/mood", "case/mood/ill", "form.", "adj."}[r]
 }
 
-// ModularAdjunct carries one or more SlotVIII-shaped Vn+Cn pairs as a
-// stand-alone adjunct, scoping mood/aspect/etc. across an adjacent
-// formative instead of being embedded in it.
+// ModularAdjunct carries one or more SlotVIII-shaped content slots as
+// a stand-alone adjunct, scoping mood/aspect/etc. across an adjacent
+// formative instead of being embedded in it. Surface encoding details
+// (the w-/y- Slot-1 prefix, the Cn pattern alternation, the V_H Slot-4
+// vowel) live in the Scope and Reach enums; Content holds the typed
+// (Vn, Cn) pairs as SlotVIII values.
 //
-// Structure: [w/y] (Vn Cn){0-3} V(final).
-//
-//	Scope:   decoded application scope from the optional w-/y- prefix.
-//	Pairs:   zero or more (Vn, Cn) pairs (up to 3).
-//	Final:   trailing vowel — aspect when Pairs is empty, otherwise a
-//	         scope vowel.
-//
-// Vn and Cn are surface text so callers can run them through ParseVnCn
-// + DisambiguateSlotVIII as needed.
+// Scope, Reach, and Content together carry the full grammatical
+// content of §4.3 — no raw surface vowels remain in this struct.
 type ModularAdjunct struct {
-	Scope ModularScope
-	Reach ModularReach // decoded V_H reach scope (when ultimate stress)
-	Pairs []VnCnPair   // 0-3 pairs
-	Final string       // trailing vowel (raw — non-empty when not a V_H)
-	// Vn and Cn are also exposed as a convenience for the common
-	// single-pair case (Pairs has exactly one element).
-	Vn string
-	Cn string
-}
-
-// VnCnPair is a single (Vn, Cn) pair inside a modular adjunct.
-type VnCnPair struct {
-	Vn string
-	Cn string
+	Scope   ModularScope
+	Reach   ModularReach
+	Content []SlotVIII // 0-3 typed (Vn, Cn) pairs; lone-aspect modular = [VnCnAspect{...}]
 }

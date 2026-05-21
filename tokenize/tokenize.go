@@ -162,7 +162,7 @@ type CombinationRefWord struct {
 	Carrier *g.CarrierType
 	Refs    []referentials.PersonalRef
 	Case    g.Case
-	Spec    string
+	Spec    g.Specification
 	Affixes []g.Affix
 	Case2   *g.Case // optional second case
 }
@@ -395,14 +395,20 @@ func isCarrierToken(tok WordToken) bool {
 	return false
 }
 
-// isCombinationSpec reports whether c is one of the Specification
-// consonant markers used in combination referentials.
-func isCombinationSpec(c string) bool {
+// parseCombinationSpec decodes a Specification consonant marker
+// (x/xt/xp/xx — §4.6.2) into the typed Specification enum.
+func parseCombinationSpec(c string) (g.Specification, bool) {
 	switch c {
-	case "x", "xt", "xp", "xx":
-		return true
+	case "x":
+		return g.BSC, true
+	case "xt":
+		return g.CTE, true
+	case "xp":
+		return g.CSV, true
+	case "xx":
+		return g.OBJ, true
 	}
-	return false
+	return 0, false
 }
 
 // hasDoubledLetter reports whether s contains two consecutive identical
@@ -539,8 +545,12 @@ func tryCombinationRef(text string, conjs []string) (CombinationRefWord, bool) {
 	if len(conjs) < 3 {
 		return CombinationRefWord{}, false
 	}
-	c1, vc, spec := conjs[0], conjs[1], conjs[2]
-	if !surface.IsConsonantConjunct(c1) || !surface.IsVowelConjunct(vc) || !isCombinationSpec(spec) {
+	c1, vc, specSurface := conjs[0], conjs[1], conjs[2]
+	if !surface.IsConsonantConjunct(c1) || !surface.IsVowelConjunct(vc) {
+		return CombinationRefWord{}, false
+	}
+	spec, specOK := parseCombinationSpec(specSurface)
+	if !specOK {
 		return CombinationRefWord{}, false
 	}
 	var refs []referentials.PersonalRef

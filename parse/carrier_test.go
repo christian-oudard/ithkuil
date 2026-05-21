@@ -38,16 +38,16 @@ func TestParseCarrier(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseCarrier(\"hla\") error: %v", err)
 	}
-	if c.Type != grammar.Carrier || c.Vc != "a" {
-		t.Errorf("ParseCarrier(\"hla\") = %v, want {Carrier, a}", c)
+	if c.Type != grammar.Carrier || c.Case != grammar.THM {
+		t.Errorf("ParseCarrier(\"hla\") = %v, want {Carrier, THM}", c)
 	}
 
 	c, err = ParseCarrier("hňui")
 	if err != nil {
 		t.Fatalf("ParseCarrier(\"hňui\") error: %v", err)
 	}
-	if c.Type != grammar.Phrasal || c.Vc != "ui" {
-		t.Errorf("ParseCarrier(\"hňui\") = %v, want {Phrasal, ui}", c)
+	if c.Type != grammar.Phrasal || c.Case != grammar.PAR {
+		t.Errorf("ParseCarrier(\"hňui\") = %v, want {Phrasal, PAR}", c)
 	}
 }
 

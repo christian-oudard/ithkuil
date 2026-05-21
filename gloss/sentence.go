@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/semantics"
 	"github.com/christian-oudard/ithkuil/surface"
@@ -210,13 +209,12 @@ func (gl *Glosser) registerEndLabel(r g.Register) string {
 func (gl *Glosser) carrierLabel(c g.CarrierAdjunct) string {
 	if gl.Canonical {
 		head := "[" + carrierTypeAbbrev(c.Type) + "]"
-		caseTag := ""
-		if cv, ok := parse.ParseCase(c.Vc); ok && cv != g.THM {
-			caseTag = "-" + cv.String()
+		if c.Case == g.THM {
+			return head
 		}
-		return head + caseTag
+		return head + "-" + c.Case.String()
 	}
-	return "CARR-" + c.Type.String() + "(" + c.Vc + ")"
+	return "CARR-" + c.Type.String() + "(" + g.CaseToVc(c.Case) + ")"
 }
 
 // carrierTypeAbbrev returns the 3-letter canonical abbreviation for a
@@ -238,26 +236,27 @@ func carrierTypeAbbrev(t g.CarrierType) string {
 
 // modularLabel formats a parsed modular adjunct.
 //
-// Display: "MOD(<vn>.<cn>)" with "MOD" alone when both default;
-// raw "MOD(Vn+Cn)" if the surface Vn/Cn don't parse.
+// Display: "MOD(<vn>.<cn>)" with "MOD" alone when both default.
 //
 // Canonical: the Vn.Cn content bare ("RTR.SUB"), or "MOD" if both
-// are at their defaults. Unparseable surface falls back to the
-// display fallback so the input round-trip can still mark it.
+// are at their defaults.
 //
 // marksMood comes from the tokenizer's cross-formative scan: when the
 // next formative is verbal it's *true (Cn → Mood); when it's nominal
 // or framed-verbal it's *false (Cn → CaseScope); when no neighbor was
 // found it's nil and we fall back to the Vn-pattern heuristic.
 func (gl *Glosser) modularLabel(m g.ModularAdjunct, marksMood *bool) string {
-	s, ok := parse.ParseVnCn(m.Vn, m.Cn)
-	if !ok {
-		if gl.Canonical {
-			return "MOD" + modularScopeSuffix(m.Scope) + modularReachSuffix(m.Reach)
+	var inner string
+	if len(m.Content) > 0 {
+		// Single-pair case (the common shape): emit Vn.Cn content.
+		// Multi-pair modulars (§4.3) join their slot-VIII labels with
+		// "-" for display, comma for canonical compactness.
+		parts := make([]string, len(m.Content))
+		for i, s := range m.Content {
+			parts[i] = slotVIII(s, semantics.ModularIsVerbal(s, marksMood))
 		}
-		return "MOD(" + m.Vn + "+" + m.Cn + ")"
+		inner = strings.Join(parts, "-")
 	}
-	inner := slotVIII(s, semantics.ModularIsVerbal(s, marksMood))
 	if gl.Canonical {
 		if inner == "" {
 			return "MOD" + modularScopeSuffix(m.Scope) + modularReachSuffix(m.Reach)
@@ -311,7 +310,7 @@ func modularReachSuffix(r g.ModularReach) string {
 func (gl *Glosser) combinationRefLabel(c tokenize.CombinationRefWord) string {
 	head := gl.refHead(c.Carrier, c.Refs, nil)
 	if gl.Canonical {
-		out := head + "-" + c.Case.String() + "-" + c.Spec
+		out := head + "-" + c.Case.String() + "-" + c.Spec.String()
 		for _, a := range c.Affixes {
 			out += "-" + gl.affixPart(a)
 		}
@@ -320,7 +319,7 @@ func (gl *Glosser) combinationRefLabel(c tokenize.CombinationRefWord) string {
 		}
 		return out
 	}
-	out := head + "-" + c.Case.String() + "." + c.Spec
+	out := head + "-" + c.Case.String() + "." + c.Spec.String()
 	for _, a := range c.Affixes {
 		out += "-" + gl.affixPart(a)
 	}

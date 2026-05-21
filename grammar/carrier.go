@@ -30,8 +30,9 @@ func CarrierTypeForm(c CarrierType) string { return carrierForms[c] }
 var AllCarrierTypes = []CarrierType{Carrier, Quotative, Naming, Phrasal}
 
 // CarrierAdjunct is a carrier word marked by a CarrierType consonant
-// cluster and a Vc case vowel that scopes the embedded content.
+// cluster and a Case that scopes the embedded content. The surface
+// Vc vowel is derivable via CaseToVc(adjunct.Case).
 type CarrierAdjunct struct {
 	Type CarrierType
-	Vc   string // Case vowel
+	Case Case
 }

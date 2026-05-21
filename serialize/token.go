@@ -53,14 +53,7 @@ func MarshalWord(t tokenize.WordToken) ([]byte, error) {
 	case tokenize.CarrierWord:
 		buf.WriteByte(TokenCarrier)
 		buf.WriteByte(byte(v.Carrier.Type))
-		// Vc surface vowel encoded as the corresponding Case index
-		// (1-byte). When deserialising we re-derive Vc via
-		// grammar.CaseToVc(case).
-		c, err := vcToCase(v.Carrier.Vc)
-		if err != nil {
-			return nil, err
-		}
-		buf.WriteByte(byte(c))
+		buf.WriteByte(byte(v.Carrier.Case))
 	case tokenize.ModularWord:
 		buf.WriteByte(TokenModular)
 		if err := writeModular(&buf, v.Modular); err != nil {
@@ -147,7 +140,7 @@ func UnmarshalWord(buf []byte) (tokenize.WordToken, int, error) {
 		return tokenize.CarrierWord{
 			Carrier: g.CarrierAdjunct{
 				Type: g.CarrierType(rest[0]),
-				Vc:   g.CaseToVc(g.Case(rest[1])),
+				Case: g.Case(rest[1]),
 			},
 		}, consumed + 2, nil
 	case TokenModular:
@@ -218,12 +211,20 @@ func UnmarshalWord(buf []byte) (tokenize.WordToken, int, error) {
 	return nil, 0, fmt.Errorf("UnmarshalWord: unknown tag %d", tag)
 }
 
-// MarshalSentence encodes a sequence of tokens as length-prefixed
-// concatenation: first a uvarint count, then each token's marshalled
-// bytes back-to-back (each token's tag carries enough framing to
-// know its own length on decode).
+// FormatVersion is the current binary format version. A sentence
+// begins with this byte; decoders reject unknown versions so any
+// future incompatible layout change is detected at the boundary.
+const FormatVersion byte = 1
+
+// MarshalSentence encodes a sequence of tokens. Layout:
+//
+//	[version byte] [uvarint token count] [token bytes...]
+//
+// Each token self-delimits via its leading type tag, so the stream
+// decodes without needing per-token length prefixes.
 func MarshalSentence(tokens []tokenize.WordToken) ([]byte, error) {
 	var buf bytes.Buffer
+	buf.WriteByte(FormatVersion)
 	var hdr [binary.MaxVarintLen64]byte
 	n := binary.PutUvarint(hdr[:], uint64(len(tokens)))
 	buf.Write(hdr[:n])
@@ -239,11 +240,17 @@ func MarshalSentence(tokens []tokenize.WordToken) ([]byte, error) {
 
 // UnmarshalSentence is the inverse of MarshalSentence.
 func UnmarshalSentence(buf []byte) ([]tokenize.WordToken, error) {
-	count, n := binary.Uvarint(buf)
+	if len(buf) < 1 {
+		return nil, fmt.Errorf("sentence: empty input")
+	}
+	if buf[0] != FormatVersion {
+		return nil, fmt.Errorf("sentence: unknown format version %d (this decoder supports %d)", buf[0], FormatVersion)
+	}
+	count, n := binary.Uvarint(buf[1:])
 	if n <= 0 {
 		return nil, fmt.Errorf("sentence: bad token-count varint")
 	}
-	cur := n
+	cur := 1 + n
 	out := make([]tokenize.WordToken, 0, count)
 	for i := uint64(0); i < count; i++ {
 		t, consumed, err := UnmarshalWord(buf[cur:])
@@ -325,36 +332,12 @@ func writeFormative(buf *bytes.Buffer, f g.Formative) error {
 		}
 	}
 	// SlotVIII: 0=absent, 1=Valence, 2=Phase, 3=Effect, 4=Level, 5=Aspect.
-	switch s := f.SlotVIII.(type) {
-	case nil:
+	if f.SlotVIII == nil {
 		buf.WriteByte(0)
-	case g.VnCnValence:
-		buf.WriteByte(1)
-		buf.WriteByte(byte(s.Valence))
-		buf.WriteByte(byte(s.MoodScope))
-	case g.VnCnPhase:
-		buf.WriteByte(2)
-		buf.WriteByte(byte(s.Phase))
-		buf.WriteByte(byte(s.MoodScope))
-	case g.VnCnEffect:
-		buf.WriteByte(3)
-		buf.WriteByte(byte(s.Effect))
-		buf.WriteByte(byte(s.MoodScope))
-	case g.VnCnLevel:
-		buf.WriteByte(4)
-		buf.WriteByte(byte(s.Level))
-		buf.WriteByte(byte(s.MoodScope))
-		if s.Absolute {
-			buf.WriteByte(1)
-		} else {
-			buf.WriteByte(0)
+	} else {
+		if err := writeSlotVIII(buf, f.SlotVIII); err != nil {
+			return err
 		}
-	case g.VnCnAspect:
-		buf.WriteByte(5)
-		buf.WriteByte(byte(s.Aspect))
-		buf.WriteByte(byte(s.MoodScope))
-	default:
-		return fmt.Errorf("unknown SlotVIII type %T", s)
 	}
 	// Final: 0=UnframedNominal, 1=FramedVerbal, 2=UnframedVerbal.
 	switch fin := f.Final.(type) {
@@ -490,47 +473,16 @@ func readFormative(buf []byte) (g.Formative, int, error) {
 	if len(buf) < cur+1 {
 		return g.Formative{}, 0, fmt.Errorf("SlotVIII tag: short read")
 	}
-	v8Tag := buf[cur]
-	cur++
 	var v8 g.SlotVIII
-	switch v8Tag {
-	case 0:
-		// absent
-	case 1:
-		if len(buf) < cur+2 {
-			return g.Formative{}, 0, fmt.Errorf("VnCnValence: short read")
+	if buf[cur] == 0 {
+		cur++
+	} else {
+		s, n, err := readSlotVIII(buf[cur:])
+		if err != nil {
+			return g.Formative{}, 0, err
 		}
-		v8 = g.VnCnValence{Valence: g.Valence(buf[cur]), MoodScope: g.Mood(buf[cur+1])}
-		cur += 2
-	case 2:
-		if len(buf) < cur+2 {
-			return g.Formative{}, 0, fmt.Errorf("VnCnPhase: short read")
-		}
-		v8 = g.VnCnPhase{Phase: g.Phase(buf[cur]), MoodScope: g.Mood(buf[cur+1])}
-		cur += 2
-	case 3:
-		if len(buf) < cur+2 {
-			return g.Formative{}, 0, fmt.Errorf("VnCnEffect: short read")
-		}
-		v8 = g.VnCnEffect{Effect: g.Effect(buf[cur]), MoodScope: g.Mood(buf[cur+1])}
-		cur += 2
-	case 4:
-		if len(buf) < cur+3 {
-			return g.Formative{}, 0, fmt.Errorf("VnCnLevel: short read")
-		}
-		v8 = g.VnCnLevel{
-			Level: g.Level(buf[cur]), MoodScope: g.Mood(buf[cur+1]),
-			Absolute: buf[cur+2] != 0,
-		}
-		cur += 3
-	case 5:
-		if len(buf) < cur+2 {
-			return g.Formative{}, 0, fmt.Errorf("VnCnAspect: short read")
-		}
-		v8 = g.VnCnAspect{Aspect: g.Aspect(buf[cur]), MoodScope: g.Mood(buf[cur+1])}
-		cur += 2
-	default:
-		return g.Formative{}, 0, fmt.Errorf("unknown SlotVIII tag %d", v8Tag)
+		cur += n
+		v8 = s
 	}
 	// Final.
 	if len(buf) < cur+1 {
@@ -573,30 +525,120 @@ func readFormative(buf []byte) (g.Formative, int, error) {
 	}, cur, nil
 }
 
+// ----- SlotVIII (variant tag + payload, no nil case) -----
+
+func writeSlotVIII(buf *bytes.Buffer, s g.SlotVIII) error {
+	switch v := s.(type) {
+	case g.VnCnValence:
+		buf.WriteByte(1)
+		buf.WriteByte(byte(v.Valence))
+		buf.WriteByte(byte(v.MoodScope))
+	case g.VnCnPhase:
+		buf.WriteByte(2)
+		buf.WriteByte(byte(v.Phase))
+		buf.WriteByte(byte(v.MoodScope))
+	case g.VnCnEffect:
+		buf.WriteByte(3)
+		buf.WriteByte(byte(v.Effect))
+		buf.WriteByte(byte(v.MoodScope))
+	case g.VnCnLevel:
+		buf.WriteByte(4)
+		buf.WriteByte(byte(v.Level))
+		buf.WriteByte(byte(v.MoodScope))
+		if v.Absolute {
+			buf.WriteByte(1)
+		} else {
+			buf.WriteByte(0)
+		}
+	case g.VnCnAspect:
+		buf.WriteByte(5)
+		buf.WriteByte(byte(v.Aspect))
+		buf.WriteByte(byte(v.MoodScope))
+	default:
+		return fmt.Errorf("unknown SlotVIII type %T", s)
+	}
+	return nil
+}
+
+func readSlotVIII(buf []byte) (g.SlotVIII, int, error) {
+	if len(buf) < 1 {
+		return nil, 0, fmt.Errorf("SlotVIII: short tag")
+	}
+	switch buf[0] {
+	case 1:
+		if len(buf) < 3 {
+			return nil, 0, fmt.Errorf("VnCnValence: short read")
+		}
+		return g.VnCnValence{Valence: g.Valence(buf[1]), MoodScope: g.Mood(buf[2])}, 3, nil
+	case 2:
+		if len(buf) < 3 {
+			return nil, 0, fmt.Errorf("VnCnPhase: short read")
+		}
+		return g.VnCnPhase{Phase: g.Phase(buf[1]), MoodScope: g.Mood(buf[2])}, 3, nil
+	case 3:
+		if len(buf) < 3 {
+			return nil, 0, fmt.Errorf("VnCnEffect: short read")
+		}
+		return g.VnCnEffect{Effect: g.Effect(buf[1]), MoodScope: g.Mood(buf[2])}, 3, nil
+	case 4:
+		if len(buf) < 4 {
+			return nil, 0, fmt.Errorf("VnCnLevel: short read")
+		}
+		return g.VnCnLevel{
+			Level: g.Level(buf[1]), MoodScope: g.Mood(buf[2]),
+			Absolute: buf[3] != 0,
+		}, 4, nil
+	case 5:
+		if len(buf) < 3 {
+			return nil, 0, fmt.Errorf("VnCnAspect: short read")
+		}
+		return g.VnCnAspect{Aspect: g.Aspect(buf[1]), MoodScope: g.Mood(buf[2])}, 3, nil
+	}
+	return nil, 0, fmt.Errorf("unknown SlotVIII tag %d", buf[0])
+}
+
 // ----- affix -----
 
+// writeAffix encodes an affix as [type byte][degree byte][2-byte index]
+// when the Cs is in the default lexicon, or [type][degree][0xFFFF][cluster]
+// (1-byte length + N phoneme bytes) when the Cs is not in the lexicon.
 func writeAffix(buf *bytes.Buffer, a g.Affix) error {
 	buf.WriteByte(byte(a.Type))
 	buf.WriteByte(byte(a.Degree))
+	if idx, ok := EncodeAffixIndex(a.Consonant); ok {
+		buf.WriteByte(byte(idx >> 8))
+		buf.WriteByte(byte(idx))
+		return nil
+	}
+	buf.WriteByte(byte(AffixIndexUnknown >> 8))
+	buf.WriteByte(byte(AffixIndexUnknown & 0xFF))
 	c, err := EncodeCluster(a.Consonant)
 	if err != nil {
-		return fmt.Errorf("affix cluster: %w", err)
+		return fmt.Errorf("affix cluster fallback: %w", err)
 	}
 	buf.Write(c)
 	return nil
 }
 
 func readAffix(buf []byte) (g.Affix, int, error) {
-	if len(buf) < 2 {
+	if len(buf) < 4 {
 		return g.Affix{}, 0, fmt.Errorf("affix: short header")
 	}
 	atype := g.AffixType(buf[0])
 	degree := int(buf[1])
-	cs, n, err := DecodeCluster(buf[2:])
-	if err != nil {
-		return g.Affix{}, 0, fmt.Errorf("affix cluster: %w", err)
+	idx := uint16(buf[2])<<8 | uint16(buf[3])
+	if idx == AffixIndexUnknown {
+		cs, n, err := DecodeCluster(buf[4:])
+		if err != nil {
+			return g.Affix{}, 0, fmt.Errorf("affix cluster fallback: %w", err)
+		}
+		return g.Affix{Type: atype, Degree: degree, Consonant: cs}, 4 + n, nil
 	}
-	return g.Affix{Type: atype, Degree: degree, Consonant: cs}, 2 + n, nil
+	cs, err := DecodeAffixIndex(idx)
+	if err != nil {
+		return g.Affix{}, 0, fmt.Errorf("affix index: %w", err)
+	}
+	return g.Affix{Type: atype, Degree: degree, Consonant: cs}, 4, nil
 }
 
 // ----- Vk -----
@@ -664,26 +706,12 @@ func readVk(buf []byte) (g.Vk, int, error) {
 func writeModular(buf *bytes.Buffer, m g.ModularAdjunct) error {
 	buf.WriteByte(byte(m.Scope))
 	buf.WriteByte(byte(m.Reach))
-	buf.WriteByte(byte(len(m.Pairs)))
-	for _, p := range m.Pairs {
-		c1, err := EncodeCluster(p.Vn)
-		if err != nil {
-			return fmt.Errorf("modular Vn: %w", err)
+	buf.WriteByte(byte(len(m.Content)))
+	for _, s := range m.Content {
+		if err := writeSlotVIII(buf, s); err != nil {
+			return fmt.Errorf("modular content: %w", err)
 		}
-		buf.Write(c1)
-		c2, err := EncodeCluster(p.Cn)
-		if err != nil {
-			return fmt.Errorf("modular Cn: %w", err)
-		}
-		buf.Write(c2)
 	}
-	// Final vowel: empty when Reach != None or no trailing vowel; non-
-	// empty otherwise.
-	c, err := EncodeCluster(m.Final)
-	if err != nil {
-		return fmt.Errorf("modular Final: %w", err)
-	}
-	buf.Write(c)
 	return nil
 }
 
@@ -693,33 +721,18 @@ func readModular(buf []byte) (g.ModularAdjunct, int, error) {
 	}
 	scope := g.ModularScope(buf[0])
 	reach := g.ModularReach(buf[1])
-	pairCount := int(buf[2])
+	count := int(buf[2])
 	cur := 3
-	var pairs []g.VnCnPair
-	for i := 0; i < pairCount; i++ {
-		vn, n, err := DecodeCluster(buf[cur:])
+	var content []g.SlotVIII
+	for i := 0; i < count; i++ {
+		s, n, err := readSlotVIII(buf[cur:])
 		if err != nil {
-			return g.ModularAdjunct{}, 0, fmt.Errorf("modular Vn[%d]: %w", i, err)
+			return g.ModularAdjunct{}, 0, fmt.Errorf("modular content[%d]: %w", i, err)
 		}
 		cur += n
-		cn, n, err := DecodeCluster(buf[cur:])
-		if err != nil {
-			return g.ModularAdjunct{}, 0, fmt.Errorf("modular Cn[%d]: %w", i, err)
-		}
-		cur += n
-		pairs = append(pairs, g.VnCnPair{Vn: vn, Cn: cn})
+		content = append(content, s)
 	}
-	final, n, err := DecodeCluster(buf[cur:])
-	if err != nil {
-		return g.ModularAdjunct{}, 0, fmt.Errorf("modular Final: %w", err)
-	}
-	cur += n
-	ma := g.ModularAdjunct{Scope: scope, Reach: reach, Pairs: pairs, Final: final}
-	if len(pairs) == 1 {
-		ma.Vn = pairs[0].Vn
-		ma.Cn = pairs[0].Cn
-	}
-	return ma, cur, nil
+	return g.ModularAdjunct{Scope: scope, Reach: reach, Content: content}, cur, nil
 }
 
 // ----- referential -----
@@ -849,7 +862,7 @@ func writeCombinationRef(buf *bytes.Buffer, c tokenize.CombinationRefWord) error
 	}
 	writeRefList(buf, c.Refs)
 	buf.WriteByte(byte(c.Case))
-	buf.WriteByte(specByte(c.Spec))
+	buf.WriteByte(byte(c.Spec))
 	buf.WriteByte(byte(len(c.Affixes)))
 	for _, a := range c.Affixes {
 		if err := writeAffix(buf, a); err != nil {
@@ -884,7 +897,7 @@ func readCombinationRef(buf []byte) (tokenize.CombinationRefWord, int, error) {
 	}
 	caseV := g.Case(buf[cur])
 	cur++
-	spec := specFromByte(buf[cur])
+	spec := g.Specification(buf[cur])
 	cur++
 	affCount := int(buf[cur])
 	cur++
@@ -941,43 +954,6 @@ func readRefList(buf []byte) ([]referentials.PersonalRef, int, error) {
 	return out, 1 + 2*n, nil
 }
 
-func vcToCase(vc string) (g.Case, error) {
-	for _, c := range g.AllCases {
-		if g.CaseToVc(c) == vc {
-			return c, nil
-		}
-	}
-	return 0, fmt.Errorf("Vc %q does not map to any Case", vc)
-}
-
 func stressFromByte(b byte) surface.Stress {
 	return surface.Stress(b)
-}
-
-func specByte(s string) byte {
-	switch s {
-	case "BSC":
-		return 0
-	case "CTE":
-		return 1
-	case "CSV":
-		return 2
-	case "OBJ":
-		return 3
-	}
-	return 0
-}
-
-func specFromByte(b byte) string {
-	switch b {
-	case 0:
-		return "BSC"
-	case 1:
-		return "CTE"
-	case 2:
-		return "CSV"
-	case 3:
-		return "OBJ"
-	}
-	return "BSC"
 }

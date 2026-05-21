@@ -11,7 +11,6 @@ import (
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/semantics"
-	"github.com/christian-oudard/ithkuil/surface"
 )
 
 // ElidedMark is the symbol shown for an elided slot.
@@ -364,6 +363,29 @@ func modularScopePrefix(s g.ModularScope) string {
 	return ""
 }
 
+// vnCnSurface re-encodes a typed SlotVIII as the (Vn, Cn) pair the
+// surface form uses. Inverse of parse.ParseVnCn.
+func vnCnSurface(s g.SlotVIII) (string, string) {
+	return slots.VnCnFromSlotVIII(s)
+}
+
+// reachVH returns the canonical surface V_H vowel for a non-None reach
+// scope. "i" represents the formative reach by convention (could also
+// be "u").
+func reachVH(r g.ModularReach) string {
+	switch r {
+	case g.ModularReachCaseMoodIll:
+		return "a"
+	case g.ModularReachCaseMood:
+		return "e"
+	case g.ModularReachFormative:
+		return "i"
+	case g.ModularReachAdjacent:
+		return "o"
+	}
+	return ""
+}
+
 // Mood and Case-Scope). When nil, no adjacent formative was found and
 // Cn defaults to Mood — matching the spec's verbal-formative reading.
 func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segment {
@@ -376,34 +398,31 @@ func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segmen
 			Encodes: []string{semantics.PrefixCode(raw)},
 		})
 	}
-	for i, p := range ma.Pairs {
+	// Re-derive surface (Vn, Cn) per typed Content entry. The
+	// surface-level view still wants per-segment bytes, so we use
+	// the slots-package encoder as the inverse of ParseVnCn.
+	for i, s := range ma.Content {
 		idx := subscript(i + 1)
+		vn, cn := vnCnSurface(s)
 		segs = append(segs, Segment{
-			Raw:     strings.ToLower(p.Vn),
+			Raw:     strings.ToLower(vn),
 			Slot:    fmt.Sprintf("Vn%s", idx),
-			Encodes: []string{semantics.VnCategory(p.Vn, p.Cn)},
+			Encodes: []string{semantics.VnCategory(vn, cn)},
 		})
-		segs = append(segs, Segment{
-			Raw:     strings.ToLower(p.Cn),
-			Slot:    fmt.Sprintf("Cn%s", idx),
-			Encodes: []string{semantics.CnLabel(p.Cn, asMood)},
-		})
-	}
-	if ma.Final != "" {
-		_, stress := surface.Strip(word)
-		if semantics.IsVH(stress, len(ma.Pairs)) {
+		if cn != "" {
 			segs = append(segs, Segment{
-				Raw:     strings.ToLower(ma.Final),
-				Slot:    "Vh",
-				Encodes: []string{semantics.VhCode(ma.Final)},
-			})
-		} else {
-			segs = append(segs, Segment{
-				Raw:     strings.ToLower(ma.Final),
-				Slot:    "Vn",
-				Encodes: []string{semantics.VnCategory(ma.Final, "")},
+				Raw:     strings.ToLower(cn),
+				Slot:    fmt.Sprintf("Cn%s", idx),
+				Encodes: []string{semantics.CnLabel(cn, asMood)},
 			})
 		}
+	}
+	if ma.Reach != g.ModularReachNone {
+		segs = append(segs, Segment{
+			Raw:     reachVH(ma.Reach),
+			Slot:    "Vh",
+			Encodes: []string{ma.Reach.String()},
+		})
 	}
 	decorateHyphens(segs)
 	return segs

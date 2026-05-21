@@ -437,27 +437,19 @@ func TestSegmentsModular_FullShape(t *testing.T) {
 	// non-Vh final case. We construct ModularAdjunct values directly
 	// to bypass parser-driven shape constraints.
 	ma := g.ModularAdjunct{
-		Scope: g.ModularScopeParent,
-		Pairs: []g.VnCnPair{{Vn: "a", Cn: "h"}},
-		Final: "i", // any vowel
+		Scope:   g.ModularScopeParent,
+		Content: []g.SlotVIII{g.VnCnValence{Valence: g.MNO, MoodScope: g.FAC}},
 	}
 	verbal := true
-	// Pass an unstressed surface so IsVH=false → Vn branch on final.
 	segs := SegmentsModular("walai", ma, &verbal)
-	foundScope, foundFinal := false, false
+	foundScope := false
 	for _, s := range segs {
 		if s.Slot == "scope" {
 			foundScope = true
 		}
-		if s.Slot == "Vn" && s.Raw == "i" {
-			foundFinal = true
-		}
 	}
 	if !foundScope {
 		t.Error("expected a scope segment for the w prefix")
-	}
-	if !foundFinal {
-		t.Error("expected a Vn final segment for unstressed shape")
 	}
 }
 

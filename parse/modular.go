@@ -54,13 +54,14 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 	// Walk Vn Cn pairs; whatever vowel comes alone at the end is the
 	// final aspect/scope vowel. The first pair uses Cn (h-prefixed
 	// or w/y); subsequent pairs may use Cm (n/ň) per §4.3 Slot 3.
-	var pairs []grammar.VnCnPair
+	type rawPair struct{ vn, cn string }
+	var pairs []rawPair
 	var final string
 	for i := 0; i < len(conjs); {
 		if i+1 < len(conjs) &&
 			surface.IsVowelConjunct(conjs[i]) &&
 			isValidModularConsonant(conjs[i+1]) {
-			pairs = append(pairs, grammar.VnCnPair{Vn: conjs[i], Cn: conjs[i+1]})
+			pairs = append(pairs, rawPair{vn: conjs[i], cn: conjs[i+1]})
 			i += 2
 			continue
 		}
@@ -78,29 +79,43 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 		return grammar.ModularAdjunct{}, fmt.Errorf("modular adjunct: no VnCn pair or final vowel")
 	}
 
-	ma := grammar.ModularAdjunct{
-		Scope: scope,
-		Pairs: pairs,
-		Final: final,
-	}
-	// V_H scope reach: §4.3 Slot 4 — when ultimate stress is present
+	// V_H reach scope: §4.3 Slot 4 — when ultimate stress is present
 	// and there's at least one (Vn, Cn) pair, the trailing vowel is a
-	// scope marker rather than another Vn. Decode it into Reach and
-	// clear Final so callers don't double-count the vowel.
+	// scope marker rather than another Vn. Decode it into Reach; the
+	// vowel is consumed by Reach and doesn't enter Content.
+	reach := grammar.ModularReachNone
 	_, stress := surface.Strip(word)
 	if stress == surface.Ultimate && len(pairs) > 0 && final != "" {
-		if reach, ok := decodeVH(final); ok {
-			ma.Reach = reach
-			ma.Final = ""
+		if r, ok := decodeVH(final); ok {
+			reach = r
+			final = ""
 		}
 	}
-	// Backwards compatibility: when there's exactly one pair, set the
-	// flat Vn/Cn fields so older callers still work.
-	if len(pairs) == 1 && ma.Final == "" && scope == grammar.ModularScopeDefault {
-		ma.Vn = pairs[0].Vn
-		ma.Cn = pairs[0].Cn
+
+	// Build typed Content from the surface pairs (and the trailing
+	// aspect vowel when present without a Cn — lone-aspect modular).
+	var content []grammar.SlotVIII
+	for _, p := range pairs {
+		s, ok := ParseVnCn(p.vn, p.cn)
+		if !ok {
+			return grammar.ModularAdjunct{}, fmt.Errorf("modular adjunct: cannot decode (Vn=%q, Cn=%q)", p.vn, p.cn)
+		}
+		content = append(content, s)
 	}
-	return ma, nil
+	if final != "" {
+		// Lone-aspect modular: just the aspect vowel, default FAC mood.
+		asp, ok := ParseVnAspect(final)
+		if !ok {
+			return grammar.ModularAdjunct{}, fmt.Errorf("modular adjunct: trailing vowel %q is not an aspect", final)
+		}
+		content = append(content, grammar.VnCnAspect{Aspect: asp, MoodScope: grammar.FAC})
+	}
+
+	return grammar.ModularAdjunct{
+		Scope:   scope,
+		Reach:   reach,
+		Content: content,
+	}, nil
 }
 
 // decodeVH maps a V_H vowel from §4.3 Slot 4 to a ModularReach value.

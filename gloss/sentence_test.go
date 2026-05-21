@@ -131,8 +131,8 @@ func TestToken_MultipleAffixWord(t *testing.T) {
 func TestToken_CombinationRef(t *testing.T) {
 	tok := tokenize.ClassifyWord("ţnaxeka")
 	got := (&Glosser{}).Token(tok)
-	if !strings.Contains(got, "REF[") || !strings.Contains(got, ".x") {
-		t.Errorf("Token(ţnaxeka) = %q, want REF[...]-...x", got)
+	if !strings.Contains(got, "REF[") || !strings.Contains(got, ".BSC") {
+		t.Errorf("Token(ţnaxeka) = %q, want REF[...].BSC", got)
 	}
 }
 
@@ -462,13 +462,13 @@ func TestBiasLabel_EmptyExpression(t *testing.T) {
 	}
 }
 
-func TestModularLabel_InvalidVnCn(t *testing.T) {
-	// Build a modular adjunct whose Vn+Cn fails ParseVnCn; modularLabel
-	// should fall back to the raw "MOD(Vn+Cn)" form.
-	m := g.ModularAdjunct{Vn: "zzz", Cn: "qqq"}
+func TestModularLabel_AllDefault(t *testing.T) {
+	// An all-default modular adjunct (no Content, default scope/reach)
+	// glosses as bare "MOD".
+	m := g.ModularAdjunct{}
 	got := (&Glosser{}).modularLabel(m, nil)
-	if !strings.HasPrefix(got, "MOD(zzz+qqq") {
-		t.Errorf("modularLabel(invalid) = %q, want raw fallback", got)
+	if got != "MOD" {
+		t.Errorf("modularLabel(default) = %q, want %q", got, "MOD")
 	}
 }
 
@@ -500,7 +500,7 @@ func TestCombinationRefLabel_WithAffixes(t *testing.T) {
 			{Referent: referentials.R1m, Effect: referentials.BEN},
 		},
 		Case:    thm,
-		Spec:    "BSC",
+		Spec:    g.BSC,
 		Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}},
 		Case2:   &thm,
 	}
