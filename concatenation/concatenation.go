@@ -8,38 +8,16 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 )
 
-// Type marks how a dependent formative attaches to its parent.
-type Type int
-
-const (
-	Type1Concat Type = iota // shares case with parent (compound concept)
-	Type2Concat             // independent case frame (coordination)
-)
-
-func (t Type) String() string {
-	return [...]string{"Type1Concat", "Type2Concat"}[t]
-}
-
-// Link pairs a dependent formative with its concatenation type.
-type Link struct {
-	Type      Type
-	Formative g.Formative
-}
-
 // Chain is a list of concatenated dependents followed by the parent
 // formative (§3.1.7). On the surface the parent comes LAST: the spec
 // terms the leading formative(s) "concatenated" — each carries a Cc
 // marker in Slot I — and the trailing one "parent" — which has no Cc.
 // Head holds the parent; Tail holds the dependents in surface order.
+// Each dependent's own Concat field tells Type-1 from Type-2 apart.
 type Chain struct {
-	Head Formative
-	Tail []Link
+	Head g.Formative
+	Tail []g.Formative
 }
-
-// Formative is exported as an alias so callers can spell types out of
-// this package without dragging in grammar. The underlying type is the
-// same.
-type Formative = g.Formative
 
 // New starts a chain with the given head formative.
 func New(head g.Formative) *Chain {
@@ -51,7 +29,7 @@ func New(head g.Formative) *Chain {
 func (c *Chain) AddType1(f g.Formative) *Chain {
 	t := g.Type1
 	f.Concat = &t
-	c.Tail = append(c.Tail, Link{Type: Type1Concat, Formative: f})
+	c.Tail = append(c.Tail, f)
 	return c
 }
 
@@ -60,7 +38,7 @@ func (c *Chain) AddType1(f g.Formative) *Chain {
 func (c *Chain) AddType2(f g.Formative) *Chain {
 	t := g.Type2
 	f.Concat = &t
-	c.Tail = append(c.Tail, Link{Type: Type2Concat, Formative: f})
+	c.Tail = append(c.Tail, f)
 	return c
 }
 
@@ -68,77 +46,13 @@ func (c *Chain) AddType2(f g.Formative) *Chain {
 // the leading concatenated dependents first, then the parent.
 func (c *Chain) Formatives() []g.Formative {
 	out := make([]g.Formative, 0, 1+len(c.Tail))
-	for _, l := range c.Tail {
-		out = append(out, l.Formative)
-	}
+	out = append(out, c.Tail...)
 	out = append(out, c.Head)
 	return out
 }
 
 // Length returns the total number of formatives in the chain.
 func (c *Chain) Length() int { return 1 + len(c.Tail) }
-
-// Type1Dependents returns just the Type-1 attached formatives.
-func (c *Chain) Type1Dependents() []g.Formative {
-	var out []g.Formative
-	for _, l := range c.Tail {
-		if l.Type == Type1Concat {
-			out = append(out, l.Formative)
-		}
-	}
-	return out
-}
-
-// Type2Dependents returns just the Type-2 attached formatives.
-func (c *Chain) Type2Dependents() []g.Formative {
-	var out []g.Formative
-	for _, l := range c.Tail {
-		if l.Type == Type2Concat {
-			out = append(out, l.Formative)
-		}
-	}
-	return out
-}
-
-// Semantics classifies the chain into one of three high-level shapes:
-//   - Compound: head alone, or every dependent is Type 1 (single
-//     compound concept).
-//   - Coordinated: every dependent is Type 2 (coordinated concepts).
-//   - Mixed: a mix of Type 1 and Type 2 dependents.
-type Semantics int
-
-const (
-	Compound Semantics = iota
-	Coordinated
-	Mixed
-)
-
-func (s Semantics) String() string {
-	return [...]string{"Compound", "Coordinated", "Mixed"}[s]
-}
-
-// Semantics returns the chain's classification.
-func (c *Chain) Semantics() Semantics {
-	if len(c.Tail) == 0 {
-		return Compound
-	}
-	hasT1, hasT2 := false, false
-	for _, l := range c.Tail {
-		if l.Type == Type1Concat {
-			hasT1 = true
-		} else {
-			hasT2 = true
-		}
-	}
-	switch {
-	case hasT1 && !hasT2:
-		return Compound
-	case hasT2 && !hasT1:
-		return Coordinated
-	default:
-		return Mixed
-	}
-}
 
 // ConcatMarker returns the surface Slot I consonant for a
 // ConcatenationStatus pointer, or "" if the formative isn't part of a

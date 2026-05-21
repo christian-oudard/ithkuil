@@ -37,17 +37,13 @@ func TestGeminateCa_SpecExamples(t *testing.T) {
 }
 
 // TestGeminateCa_AllCaForms verifies that every one of the 3840 Ca
-// clusters has a defined geminated form and that the reverse lookup
-// table covers them.
+// clusters has a non-empty geminated form distinct from the plain
+// cluster.
 func TestGeminateCa_AllCaForms(t *testing.T) {
 	for slot, plain := range CaForward {
-		gem, ok := CaGeminated[plain]
-		if !ok {
-			t.Errorf("no geminated form for Ca %q (%v)", plain, slot)
-			continue
-		}
+		gem := GeminateCa(plain)
 		if gem == "" {
-			t.Errorf("empty geminated form for Ca %q", plain)
+			t.Errorf("empty geminated form for Ca %q (%v)", plain, slot)
 		}
 		if gem == plain {
 			t.Errorf("gemination is a no-op for Ca %q (%v)", plain, slot)

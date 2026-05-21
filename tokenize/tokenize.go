@@ -623,15 +623,9 @@ func tryConcatenation(word string) (*concatenation.Chain, bool) {
 	for i := 0; i < last; i++ {
 		switch *formatives[i].Concat {
 		case g.Type1:
-			chain.Tail = append(chain.Tail, concatenation.Link{
-				Type:      concatenation.Type1Concat,
-				Formative: formatives[i],
-			})
+			chain.AddType1(formatives[i])
 		case g.Type2:
-			chain.Tail = append(chain.Tail, concatenation.Link{
-				Type:      concatenation.Type2Concat,
-				Formative: formatives[i],
-			})
+			chain.AddType2(formatives[i])
 		}
 	}
 	return chain, true

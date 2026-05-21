@@ -1,7 +1,5 @@
 package allomorph
 
-import g "github.com/christian-oudard/ithkuil/grammar"
-
 // GeminateCa applies the §3.6.1 gemination rules to a Ca cluster.
 // Gemination is required whenever Slot V has any affixes; it marks
 // where Slot V ends and Slot VI begins.
@@ -155,20 +153,3 @@ func isLiquidOrApproximant(r rune) bool {
 	return r == 'w' || r == 'y'
 }
 
-// CaGeminated maps each plain Ca cluster to its geminated form.
-// Populated by lookup.go's init alongside CaForward/CaReverse so the
-// build order is well-defined regardless of file-name init ordering.
-var CaGeminated map[string]string
-
-// CaGeminatedReverse maps each geminated Ca cluster back to its SlotVI.
-// This is the parser-side lookup that turns the gemination signal into
-// "Slot V is present, Slot VI = X".
-var CaGeminatedReverse map[string]g.SlotVI
-
-// ParseGeminatedCa decodes a geminated Ca cluster (the signal that Slot
-// V is present) back to its SlotVI. Returns false for clusters that
-// aren't a geminated form of any valid Ca.
-func ParseGeminatedCa(cluster string) (g.SlotVI, bool) {
-	s, ok := CaGeminatedReverse[cluster]
-	return s, ok
-}
