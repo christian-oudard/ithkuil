@@ -50,14 +50,13 @@ func ToGrammar(l Layout) (g.Formative, error) {
 	}
 
 	f := g.Formative{
-		Concat:          concat,
-		Root:            root,
-		SlotV:           slotV,
-		SlotVI:          slotVI,
-		SlotVII:         slotVII,
-		SlotVIII:        slotVIII,
-		Final:           final,
-		SentenceStarter: l.SentenceStarter,
+		Concat:   concat,
+		Root:     root,
+		SlotV:    slotV,
+		SlotVI:   slotVI,
+		SlotVII:  slotVII,
+		SlotVIII: slotVIII,
+		Final:    final,
 	}
 	f.Surface = hintsFromLayout(l, f)
 	return f, nil
@@ -256,7 +255,7 @@ func FromGrammar(f g.Formative, opts Options) Layout {
 	if f.Final == nil {
 		panic("slots: Formative.Final is nil")
 	}
-	l := Layout{SentenceStarter: f.SentenceStarter}
+	l := Layout{}
 
 	useShortcut := (opts.Shortcut || (f.Surface != nil && f.Surface.CcShortcut)) && canUseShortcut(f)
 	l.Cc = ccFromGrammar(f.Concat, useShortcut, f)

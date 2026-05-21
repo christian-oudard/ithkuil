@@ -21,14 +21,13 @@ func Parse(word string) (Layout, error) {
 	if stress == surface.InvalidStress {
 		return Layout{}, fmt.Errorf("word %q has more than one stress mark", word)
 	}
-	body, sentenceStarter := stripSentencePrefix(bare)
+	body := stripSentencePrefix(bare)
 	conjs := surface.MergeGlottalVowels(surface.SplitConjuncts(body))
 	if len(conjs) < 3 {
 		return Layout{}, fmt.Errorf("word %q too short (got %d conjuncts, need at least 3)", word, len(conjs))
 	}
 	l := Layout{
-		SentenceStarter: sentenceStarter,
-		Stress:          stress,
+		Stress: stress,
 	}
 	i := 0
 
@@ -70,30 +69,31 @@ func Parse(word string) (Layout, error) {
 	return l, nil
 }
 
-// stripSentencePrefix recognises both sentence-juncture marker
-// families: §3.2 / §1.3.2's ç(ë)/çw/çç forms and §5.8.8's modern
-// cs(e)/csw/cscs forms. Returns the body with the prefix removed
-// (rewriting csw/csw as the implied w- shortcut, and çç/cscs as the
-// implied y- shortcut so the parser can carry on).
-func stripSentencePrefix(word string) (string, bool) {
+// stripSentencePrefix discards the optional sentence-juncture marker
+// at the start of a word. Per §1.3.2, the ç(ë)- prefix (and its
+// §5.8.8 cs-/cse-/csw-/cscs- equivalents) is purely prosodic and
+// "normally never written"; when present in input it carries no
+// grammatical information, so we just drop it. csw / cscs rewrite
+// to w / y so the shortcut Cc remains visible to downstream parsing.
+func stripSentencePrefix(word string) string {
 	if word == "" {
-		return word, false
+		return word
 	}
 	// ç-family.
 	r, sz := utf8.DecodeRuneInString(word)
 	if r == 'ç' {
 		rest := word[sz:]
 		if rest == "" {
-			return word, false
+			return word
 		}
 		r2, sz2 := utf8.DecodeRuneInString(rest)
 		if r2 == 'ë' && rest[sz2:] != "" {
-			return rest[sz2:], true
+			return rest[sz2:]
 		}
 		if r2 == 'ç' {
-			return "y" + rest[sz2:], true
+			return "y" + rest[sz2:]
 		}
-		return rest, true
+		return rest
 	}
 	// cs-family. "cs" must be a two-byte prefix; we also handle "cse",
 	// "csw" (cs + w-shortcut Cc), and "cscs" (cs + y-shortcut Cc).
@@ -101,39 +101,39 @@ func stripSentencePrefix(word string) (string, bool) {
 		// cs + y, with the y written as a doubled cs.
 		rest := word[len("cscs"):]
 		if rest == "" {
-			return word, false
+			return word
 		}
-		return "y" + rest, true
+		return "y" + rest
 	}
 	if strings.HasPrefix(word, "csw") {
 		rest := word[len("cs"):] // keep the w as a normal Cc
 		if rest == "" {
-			return word, false
+			return word
 		}
-		return rest, true
+		return rest
 	}
 	if strings.HasPrefix(word, "cse") {
 		rest := word[len("cse"):]
 		if rest == "" {
-			return word, false
+			return word
 		}
-		return rest, true
+		return rest
 	}
 	if strings.HasPrefix(word, "cs") {
 		rest := word[len("cs"):]
 		if rest == "" {
-			return word, false
+			return word
 		}
 		// Bare "cs-" only legal before a vowel; otherwise we shouldn't
 		// have matched (the "cse-" branch above handles the consonant
 		// case explicitly).
 		r2, _ := utf8.DecodeRuneInString(rest)
 		if !surface.IsVowel(r2) {
-			return word, false
+			return word
 		}
-		return rest, true
+		return rest
 	}
-	return word, false
+	return word
 }
 
 // parseVowelInitial handles Vv-Cr-… (with optional special-Vv) and the

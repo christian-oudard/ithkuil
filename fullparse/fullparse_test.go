@@ -286,55 +286,38 @@ func TestParseFormative_Corpus_Ärmaläwia(t *testing.T) {
 	}
 }
 
-func TestParseFormative_SentencePrefix_Plain(t *testing.T) {
-	// "çamlala" = ç + amlala (sentence prefix + plain formative).
-	f, err := ParseFormative("çamlala")
-	if err != nil {
-		t.Fatalf("ParseFormative(\"çamlala\") error: %v", err)
+// The ç(ë)/çç sentence-juncture prefix is purely prosodic per §1.3.2
+// ("normally never written"). Parser accepts it and produces the same
+// formative as the bare body — no grammatical residue.
+func TestParseFormative_SentencePrefix_StrippedSilently(t *testing.T) {
+	cases := []struct {
+		in, equiv string
+	}{
+		{"çamlala", "amlala"},
+		{"çëmlala", "mlala"},
+		{"ççaml", "yaml"},
 	}
-	if !f.SentenceStarter {
-		t.Error("SentenceStarter = false, want true")
-	}
-	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "ml" {
-		t.Errorf("Root = %v, want CrRoot{Cluster: ml}", f.Root)
-	}
-}
-
-func TestParseFormative_SentencePrefix_çë(t *testing.T) {
-	// "çëmlala" = ç + ë (default Vv) + mlala; strip both, parse as "mlala".
-	// mlala has 4 conjuncts ["ml", "a", "l", "a"]: consonant-initial,
-	// Cr=ml, Vr=a, Ca=l, Vc=a.
-	f, err := ParseFormative("çëmlala")
-	if err != nil {
-		t.Fatalf("ParseFormative(\"çëmlala\") error: %v", err)
-	}
-	if !f.SentenceStarter {
-		t.Error("SentenceStarter = false, want true")
-	}
-	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "ml" {
-		t.Errorf("Root = %v, want CrRoot{Cluster: ml}", f.Root)
-	}
-}
-
-func TestParseFormative_SentencePrefix_çç(t *testing.T) {
-	// "ççaml" = ç + ç + aml; the inner ç becomes y. Result is "yaml":
-	// shortcut Y + Vv "a" + Cr "ml".
-	f, err := ParseFormative("ççaml")
-	if err != nil {
-		t.Fatalf("ParseFormative(\"ççaml\") error: %v", err)
-	}
-	if !f.SentenceStarter {
-		t.Error("SentenceStarter = false, want true")
-	}
-}
-
-func TestParseFormative_NoSentencePrefix(t *testing.T) {
-	f, err := ParseFormative("amlala")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if f.SentenceStarter {
-		t.Error("SentenceStarter = true, want false")
+	for _, c := range cases {
+		t.Run(c.in, func(t *testing.T) {
+			f1, err := ParseFormative(c.in)
+			if err != nil {
+				t.Fatalf("ParseFormative(%q): %v", c.in, err)
+			}
+			f2, err := ParseFormative(c.equiv)
+			if err != nil {
+				t.Fatalf("ParseFormative(%q): %v", c.equiv, err)
+			}
+			// Root identity must match — the only test we need: the
+			// prefix produced nothing visible in the grammar.
+			if cr1, ok := f1.Root.(g.CrRoot); ok {
+				if cr2, ok2 := f2.Root.(g.CrRoot); ok2 {
+					if cr1.Cluster != cr2.Cluster {
+						t.Errorf("Cluster mismatch: %q (from %q) vs %q (from %q)",
+							cr1.Cluster, c.in, cr2.Cluster, c.equiv)
+					}
+				}
+			}
+		})
 	}
 }
 

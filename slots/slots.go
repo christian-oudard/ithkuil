@@ -53,9 +53,6 @@ type AffixChunk struct {
 // (those live in Stress), and §3.5.1 Vv-glottal-stops / §3.6.1
 // Ca-geminations are removed (they're implied by len(SlotV)).
 type Layout struct {
-	// SentenceStarter is true when the surface form had a leading ç.
-	SentenceStarter bool
-
 	// Kind picks the formative shape (Cr / Cs-root / ref-root).
 	Kind RootKind
 

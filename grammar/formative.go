@@ -19,18 +19,18 @@ package grammar
 //
 // SlotVIII is nil when the slot is absent.
 //
-// SentenceStarter is true when the surface form carried a leading ç
-// marker. The prefix has no grammatical content beyond signalling
-// sentence start.
+// The ç(ë)- "sentence-juncture" prefix from §1.3.2/§5.8.8 is purely
+// prosodic — the spec describes it as "normally never written" outside
+// of scripts for performance. The parser accepts and discards it; it
+// has no representation on Formative.
 type Formative struct {
-	Concat          *ConcatenationStatus
-	Root            Root
-	SlotV           []Affix
-	SlotVI          SlotVI
-	SlotVII         []Affix
-	SlotVIII        SlotVIII
-	Final           Final
-	SentenceStarter bool
+	Concat   *ConcatenationStatus
+	Root     Root
+	SlotV    []Affix
+	SlotVI   SlotVI
+	SlotVII  []Affix
+	SlotVIII SlotVIII
+	Final    Final
 	// Surface, when non-nil, captures the orthographic choices the
 	// input surface made (§3.2 Cc shortcut, §3.8.1.2 Cn→Ca shortcut,
 	// §3.9.1 moved glottal, default elisions kept). Render honors

@@ -2,7 +2,6 @@ package slots
 
 import (
 	"strings"
-	"unicode/utf8"
 
 	"github.com/christian-oudard/ithkuil/allomorph"
 	"github.com/christian-oudard/ithkuil/surface"
@@ -77,11 +76,7 @@ func Render(l Layout) string {
 	}
 	b.WriteString(l.Vc)
 
-	body := surface.Apply(b.String(), l.Stress)
-	if l.SentenceStarter {
-		return sentencePrefix(body)
-	}
-	return body
+	return surface.Apply(b.String(), l.Stress)
 }
 
 // applyVvGlottal re-inserts the §3.5.1 glottal-stop into Vv when the
@@ -100,14 +95,3 @@ func applyVvGlottal(vv string, slotVLen int) string {
 	return vv + "'"
 }
 
-// sentencePrefix prepends the §3.13 sentence-start marker.
-func sentencePrefix(body string) string {
-	if body == "" {
-		return body
-	}
-	first, _ := utf8.DecodeRuneInString(body)
-	if surface.IsVowel(first) {
-		return "ç" + body
-	}
-	return "çë" + body
-}

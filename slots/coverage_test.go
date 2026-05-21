@@ -46,41 +46,26 @@ func TestStripVvGlottal_Shapes(t *testing.T) {
 	}
 }
 
-func TestSentencePrefix_Shapes(t *testing.T) {
-	if got := sentencePrefix(""); got != "" {
-		t.Errorf("sentencePrefix(empty) = %q, want empty", got)
-	}
-	if got := sentencePrefix("alaba"); got != "çalaba" {
-		t.Errorf("sentencePrefix(vowel-initial) = %q, want çalaba", got)
-	}
-	if got := sentencePrefix("malëuţřait"); got != "çëmalëuţřait" {
-		t.Errorf("sentencePrefix(consonant-initial) = %q, want çëmalëuţřait", got)
-	}
-}
-
 func TestStripSentencePrefix_Variants(t *testing.T) {
 	cases := []struct {
-		in       string
-		body     string
-		hasMark  bool
+		in   string
+		body string
 	}{
-		{"", "", false},                     // empty input
-		{"ç", "ç", false},                   // bare ç with no rest
-		{"çëalaba", "alaba", true},          // çë body
-		{"ççalaba", "yalaba", true},         // çç → y + body
-		{"çalaba", "alaba", true},           // ç + vowel body
-		{"cscsalaba", "yalaba", true},       // cscs → y + body
-		{"cswalaba", "walaba", true},        // csw → w-shortcut Cc + rest
-		{"csealaba", "alaba", true},         // cse → drop both
-		{"csalaba", "alaba", true},          // cs + vowel
-		{"csmlat", "csmlat", false},         // cs + consonant (not a prefix)
-		{"alaba", "alaba", false},           // no prefix at all
+		{"", ""},                  // empty input
+		{"ç", "ç"},                // bare ç with no rest
+		{"çëalaba", "alaba"},      // çë body
+		{"ççalaba", "yalaba"},     // çç → y + body
+		{"çalaba", "alaba"},       // ç + vowel body
+		{"cscsalaba", "yalaba"},   // cscs → y + body
+		{"cswalaba", "walaba"},    // csw → w-shortcut Cc + rest
+		{"csealaba", "alaba"},     // cse → drop both
+		{"csalaba", "alaba"},      // cs + vowel
+		{"csmlat", "csmlat"},      // cs + consonant (not a prefix)
+		{"alaba", "alaba"},        // no prefix at all
 	}
 	for _, c := range cases {
-		body, has := stripSentencePrefix(c.in)
-		if body != c.body || has != c.hasMark {
-			t.Errorf("stripSentencePrefix(%q) = (%q,%v), want (%q,%v)",
-				c.in, body, has, c.body, c.hasMark)
+		if body := stripSentencePrefix(c.in); body != c.body {
+			t.Errorf("stripSentencePrefix(%q) = %q, want %q", c.in, body, c.body)
 		}
 	}
 }

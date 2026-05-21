@@ -160,15 +160,6 @@ func TestFormative_FramedVerbal_SlotVIIIAsCaseScope(t *testing.T) {
 	}
 }
 
-func TestFormative_SentenceStarter(t *testing.T) {
-	f := g.MinimalFormative("ml")
-	f.SentenceStarter = true
-	got := Formative(f)
-	if got != "§ -ml-" {
-		t.Errorf("Formative(sentence-starter) = %q, want \"§ -ml-\"", got)
-	}
-}
-
 func TestFormative_FinalTag(t *testing.T) {
 	cases := []struct {
 		name  string

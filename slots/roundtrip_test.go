@@ -22,34 +22,28 @@ func TestLayout_RoundTrip(t *testing.T) {
 }
 
 // TestLayout_SentencePrefix_csFamily covers §5.8.8: the modern cs-
-// family of sentence-juncture prefixes (cs-/cse-/csw-/cscs-) parses
-// to the same SentenceStarter flag as the ç(ë)-family from §3.2 / §1.3.2.
-// Render only emits the ç-family on output; round-trip on the cs-
-// inputs goes to the canonical ç-form.
+// family of sentence-juncture prefixes (cs-/cse-/csw-/cscs-) is
+// stripped silently by the parser the same as §3.2 ç(ë)-/çç-, since
+// both are purely prosodic. csw/cscs rewrite to w/y so any shortcut
+// Cc the prefix obscured remains visible to downstream parsing.
 func TestLayout_SentencePrefix_csFamily(t *testing.T) {
 	cases := []struct {
 		in       string
-		wantBody string // body after the prefix strips (re-encoded if needed)
+		wantBody string
 	}{
-		{"csalal", "alal"},          // cs- before vowel
-		{"cseamlala", "amlala"},     // cse- before consonant body
-		{"cswamlala", "wamlala"},    // csw- = cs- + w-Cc shortcut
-		{"cscsalal", "yalal"},       // cscs- = cs- + y-Cc shortcut
+		{"csalal", "alal"},        // cs- before vowel
+		{"cseamlala", "amlala"},   // cse- before consonant body
+		{"cswamlala", "wamlala"},  // csw- = cs- + w-Cc shortcut
+		{"cscsalal", "yalal"},     // cscs- = cs- + y-Cc shortcut
 	}
 	for _, c := range cases {
-		body, starter := stripSentencePrefix(c.in)
-		if !starter {
-			t.Errorf("stripSentencePrefix(%q): SentenceStarter = false, want true", c.in)
-		}
-		if body != c.wantBody {
-			t.Errorf("stripSentencePrefix(%q) body = %q, want %q", c.in, body, c.wantBody)
+		if body := stripSentencePrefix(c.in); body != c.wantBody {
+			t.Errorf("stripSentencePrefix(%q) = %q, want %q", c.in, body, c.wantBody)
 		}
 	}
 	// Bare cs- before a consonant other than w must NOT be treated as
 	// a sentence prefix per §5.8.8 (cse- is required there).
-	body, starter := stripSentencePrefix("csmalal")
-	if starter || body != "csmalal" {
-		t.Errorf("stripSentencePrefix(%q) = (%q, %v), want unchanged",
-			"csmalal", body, starter)
+	if body := stripSentencePrefix("csmalal"); body != "csmalal" {
+		t.Errorf("stripSentencePrefix(%q) = %q, want unchanged", "csmalal", body)
 	}
 }

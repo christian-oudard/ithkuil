@@ -25,12 +25,11 @@ import (
 // package-level Formative function.
 type Glosser struct {
 	Lex *lexicon.Lexicon
-	// Canonical suppresses the display-only annotations that aren't
-	// part of the compose authoring syntax: the quoted lexicon
-	// meaning after a root ("-ml- 'gold (color)'") and the leading
-	// "§ " marker for sentence-starter formatives. The resulting
-	// gloss is exactly what compose.ParseString accepts, so set
-	// Canonical=true for round-tripping.
+	// Canonical suppresses display-only annotations that aren't part
+	// of the compose authoring syntax — currently just the quoted
+	// lexicon meaning after the root ("-ml- 'gold (color)'"). The
+	// resulting gloss is exactly what compose.ParseString accepts,
+	// so set Canonical=true for round-tripping.
 	Canonical bool
 }
 
@@ -60,11 +59,7 @@ func (gl *Glosser) Formative(f g.Formative) string {
 		finalSlotIX(f.Final),
 		finalTag(f.Final),
 	}
-	body := strings.Join(nonEmpty(parts), "-")
-	if f.SentenceStarter && !gl.Canonical {
-		return "§ " + body
-	}
-	return body
+	return strings.Join(nonEmpty(parts), "-")
 }
 
 // rootPrefix returns the slot-II / version gloss for the root variant.
