@@ -151,13 +151,60 @@ func (gl *Glosser) crRootLabel(x g.CrRoot, f g.Formative) string {
 	}
 	if gl.Lex != nil {
 		if entry, ok := gl.Lex.Roots[x.Cluster]; ok {
-			meaning := entry.Stem(stemIndex(x.Stem))
-			if meaning != "" {
+			if meaning := rootMeaning(entry, x); meaning != "" {
 				return "-" + x.Cluster + "- '" + meaning + "'"
 			}
 		}
 	}
 	return "-" + x.Cluster + "-"
+}
+
+// rootMeaning picks the best gloss string for a CrRoot, consulting
+// the entry's specialization variants in order of specificity:
+//
+//	spec=OBJ → Objective[stem-1]    (per-stem alternate)
+//	spec=CTE → Contential           (stem-independent)
+//	spec=CSV → Constitutive         (stem-independent)
+//	fn=DYN   → Dynamic              (stem-independent)
+//	ver=CPT  → Completive[stem-1]   (per-stem alternate)
+//	default  → Stem(stem)
+//
+// Spec variants override completion-based ones because the spec
+// reshapes what the root denotes; completion just marks completeness.
+// Each branch falls through to the next when the relevant variant is
+// empty, so unannotated roots still get a sensible default.
+func rootMeaning(entry lexicon.RootEntry, x g.CrRoot) string {
+	stem := stemIndex(x.Stem)
+	switch x.SlotIV.Specification {
+	case g.OBJ:
+		if v := stemTriple(entry.Objective, stem); v != "" {
+			return v
+		}
+	case g.CTE:
+		if entry.Contential != "" {
+			return entry.Contential
+		}
+	case g.CSV:
+		if entry.Constitutive != "" {
+			return entry.Constitutive
+		}
+	}
+	if x.SlotIV.Function == g.DYN && entry.Dynamic != "" {
+		return entry.Dynamic
+	}
+	if x.Version == g.CPT {
+		if v := stemTriple(entry.Completive, stem); v != "" {
+			return v
+		}
+	}
+	return entry.Stem(stem)
+}
+
+func stemTriple(ss []string, stem int) string {
+	if stem < 1 || stem > 3 || len(ss) < stem {
+		return ""
+	}
+	return ss[stem-1]
 }
 
 func (gl *Glosser) csRootLabel(x g.CsRoot) string {

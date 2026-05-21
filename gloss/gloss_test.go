@@ -280,6 +280,46 @@ func TestGlosser_CategoryValuedAffix(t *testing.T) {
 	}
 }
 
+func TestGlosser_VariantAwareRootMeaning(t *testing.T) {
+	lex := loadLex(t)
+	gl := &Glosser{Lex: lex}
+	tEntry := lex.Roots["t"]
+	// Confirm fixture: "t" carries Objective alternates.
+	if len(tEntry.Objective) != 3 || tEntry.Objective[0] == "" {
+		t.Skipf("fixture root \"t\" lacks Objective variants: %+v", tEntry)
+	}
+	// Default spec (BSC) uses Stem(n).
+	f := g.MinimalFormative("t")
+	cr := f.Root.(g.CrRoot)
+	cr.Stem = g.S1
+	f.Root = cr
+	got := gl.Formative(f)
+	if !strings.Contains(got, "'"+tEntry.Stem1+"'") {
+		t.Errorf("BSC gloss = %q, expected Stem1=%q", got, tEntry.Stem1)
+	}
+	// Spec=OBJ should pick the Objective alternate for the stem.
+	cr.SlotIV.Specification = g.OBJ
+	f.Root = cr
+	got = gl.Formative(f)
+	if !strings.Contains(got, "'"+tEntry.Objective[0]+"'") {
+		t.Errorf("OBJ gloss = %q, expected Objective[0]=%q", got, tEntry.Objective[0])
+	}
+	// A root without the alternate should still fall back to Stem.
+	mlEntry := lex.Roots["ml"]
+	if len(mlEntry.Objective) > 0 {
+		t.Skip("ml unexpectedly has Objective variants")
+	}
+	f2 := g.MinimalFormative("ml")
+	cr2 := f2.Root.(g.CrRoot)
+	cr2.Stem = g.S1
+	cr2.SlotIV.Specification = g.OBJ
+	f2.Root = cr2
+	got2 := gl.Formative(f2)
+	if !strings.Contains(got2, "'"+mlEntry.Stem1+"'") {
+		t.Errorf("OBJ fallback gloss = %q, expected Stem1=%q", got2, mlEntry.Stem1)
+	}
+}
+
 func TestGlosser_UnknownClusterFallsBack(t *testing.T) {
 	lex := loadLex(t)
 	gl := &Glosser{Lex: lex}
