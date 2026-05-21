@@ -25,6 +25,11 @@ import (
 // package-level Formative function.
 type Glosser struct {
 	Lex *lexicon.Lexicon
+	// OmitMeaning suppresses the quoted lexicon meaning that normally
+	// appears after the root cluster ("-ml- 'gold (color)'"). The
+	// resulting gloss is the canonical form accepted by compose.ParseString,
+	// so OmitMeaning=true is what you want for round-tripping.
+	OmitMeaning bool
 }
 
 // Formative renders a one-line gloss of f. Components at their default
@@ -156,7 +161,7 @@ func (gl *Glosser) crRootLabel(x g.CrRoot, f g.Formative) string {
 			return fmt.Sprintf("-%s- '%d'", x.Cluster, n.Value)
 		}
 	}
-	if gl.Lex != nil {
+	if gl.Lex != nil && !gl.OmitMeaning {
 		if entry, ok := gl.Lex.Roots[x.Cluster]; ok {
 			if meaning := rootMeaning(entry, x); meaning != "" {
 				return "-" + x.Cluster + "- '" + meaning + "'"

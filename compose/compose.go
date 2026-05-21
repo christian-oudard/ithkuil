@@ -456,29 +456,18 @@ func ApplyFlag(f *g.Formative, flag string) error {
 		}
 	}
 
+	// CaseScope: same underlying field as Mood (Cn position encodes
+	// both). Map to the Mood counterpart via CaseScopeToMood.
+	for _, c := range g.AllCaseScopes {
+		if c.String() == flag {
+			return applyMoodScope(f, g.CaseScopeToMood(c))
+		}
+	}
+
 	// Mood: replaces MoodScope on whatever SlotVIII variant is there.
 	for _, m := range g.AllMoods {
 		if m.String() == flag {
-			switch s := f.SlotVIII.(type) {
-			case g.VnCnValence:
-				s.MoodScope = m
-				f.SlotVIII = s
-			case g.VnCnAspect:
-				s.MoodScope = m
-				f.SlotVIII = s
-			case g.VnCnPhase:
-				s.MoodScope = m
-				f.SlotVIII = s
-			case g.VnCnEffect:
-				s.MoodScope = m
-				f.SlotVIII = s
-			case g.VnCnLevel:
-				s.MoodScope = m
-				f.SlotVIII = s
-			default:
-				f.SlotVIII = g.VnCnValence{Valence: g.MNO, MoodScope: m}
-			}
-			return nil
+			return applyMoodScope(f, m)
 		}
 	}
 
@@ -496,6 +485,31 @@ func ApplyFlag(f *g.Formative, flag string) error {
 	}
 
 	return fmt.Errorf("unknown grammar flag %q", flag)
+}
+
+// applyMoodScope sets the MoodScope on the existing SlotVIII variant,
+// or creates a Valence-MNO SlotVIII to carry it when absent.
+func applyMoodScope(f *g.Formative, m g.Mood) error {
+	switch s := f.SlotVIII.(type) {
+	case g.VnCnValence:
+		s.MoodScope = m
+		f.SlotVIII = s
+	case g.VnCnAspect:
+		s.MoodScope = m
+		f.SlotVIII = s
+	case g.VnCnPhase:
+		s.MoodScope = m
+		f.SlotVIII = s
+	case g.VnCnEffect:
+		s.MoodScope = m
+		f.SlotVIII = s
+	case g.VnCnLevel:
+		s.MoodScope = m
+		f.SlotVIII = s
+	default:
+		f.SlotVIII = g.VnCnValence{Valence: g.MNO, MoodScope: m}
+	}
+	return nil
 }
 
 // applyCaFlag tries to interpret flag as one of the five Ca-complex
