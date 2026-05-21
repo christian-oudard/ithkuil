@@ -1,0 +1,57 @@
+package fullparse_test
+
+import (
+	"strings"
+	"testing"
+
+	"github.com/christian-oudard/ithkuil/fullparse"
+	"github.com/christian-oudard/ithkuil/validation"
+)
+
+// TestMalformed_GlottalPatterns asserts that inputs the parser
+// shouldn't be able to make sense of produce a loud failure (parse
+// error or phonotactic violation) rather than silently picking one
+// interpretation.
+//
+// The user's "double-glottal-stop" concern surfaces here. Adjacent
+// "''" is rejected by the phonotactic validator (rules 1.7/2.1).
+// Structurally impossible combinations (two distinct §3.9.1 moved-
+// glottal patterns in one body, etc.) hit parse errors at slot
+// decode time. The remaining cases with two glottals in canonical
+// positions (Vv §3.5.1, Vx DEG0, Vc cases 37-52, §3.6.2 end-marker)
+// are legal; the parser accepts them and the renderer emits the
+// canonical equivalent.
+func TestMalformed_GlottalPatterns(t *testing.T) {
+	cases := []struct {
+		in       string
+		expectErr string // substring expected somewhere in the failure
+	}{
+		// Adjacent doubled glottal-stop — phonotactic rule 1.7/2.1.
+		{"mla''la", "geminate"},
+		// Two-distinct-move pattern: glottal lands on two separate
+		// inter-vowel positions, second can't be parsed as anything.
+		{"mla'la'a", "invalid"},
+	}
+	for _, c := range cases {
+		t.Run(c.in, func(t *testing.T) {
+			// Either fullparse returns an error, or the phonotactic
+			// validator reports a violation.
+			_, parseErr := fullparse.ParseFormative(c.in)
+			res := validation.ValidateWord(c.in)
+			if parseErr == nil && res.Valid {
+				t.Errorf("%q: expected parse error or phonotactic violation, got both clean", c.in)
+				return
+			}
+			combined := ""
+			if parseErr != nil {
+				combined += parseErr.Error()
+			}
+			for _, e := range res.Errors {
+				combined += " " + e.Reason
+			}
+			if !strings.Contains(combined, c.expectErr) {
+				t.Errorf("%q: failure %q did not mention %q", c.in, combined, c.expectErr)
+			}
+		})
+	}
+}
