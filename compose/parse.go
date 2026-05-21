@@ -100,8 +100,14 @@ func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntr
 	if m := affixToken.FindStringSubmatch(tok); m != nil {
 		return appendAffix(f, m[1], m[2], m[3], affixes)
 	}
-	if strings.Contains(tok, "/") {
-		for _, part := range strings.Split(tok, "/") {
+	if strings.ContainsAny(tok, "/.") {
+		// "/" groups sub-fields like S2/CPT or DYN/OBJ; "." separates
+		// Ca-complex components like MSS.G.RPV. Both flatten to a list
+		// of independent flags.
+		fields := strings.FieldsFunc(tok, func(r rune) bool {
+			return r == '/' || r == '.'
+		})
+		for _, part := range fields {
 			if part == "" {
 				continue
 			}

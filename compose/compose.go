@@ -488,7 +488,51 @@ func ApplyFlag(f *g.Formative, flag string) error {
 		return nil
 	}
 
+	// Ca components (Affiliation / Configuration / Extension /
+	// Perspective / Essence). Each enum is disjoint so dispatch by
+	// matching the abbreviation against every enum's String().
+	if applyCaFlag(f, flag) {
+		return nil
+	}
+
 	return fmt.Errorf("unknown grammar flag %q", flag)
+}
+
+// applyCaFlag tries to interpret flag as one of the five Ca-complex
+// abbreviations and mutate f.SlotVI accordingly. Returns true if the
+// flag matched a Ca component.
+func applyCaFlag(f *g.Formative, flag string) bool {
+	for _, c := range g.AllConfigurations {
+		if c.String() == flag {
+			f.SlotVI.Configuration = c
+			return true
+		}
+	}
+	for _, a := range g.AllAffiliations {
+		if a.String() == flag {
+			f.SlotVI.Affiliation = a
+			return true
+		}
+	}
+	for _, e := range g.AllExtensions {
+		if e.String() == flag {
+			f.SlotVI.Extension = e
+			return true
+		}
+	}
+	for _, p := range g.AllPerspectives {
+		if p.String() == flag {
+			f.SlotVI.Perspective = p
+			return true
+		}
+	}
+	for _, e := range g.AllEssences {
+		if e.String() == flag {
+			f.SlotVI.Essence = e
+			return true
+		}
+	}
+	return false
 }
 
 // currentCase pulls the Case out of a nominal/framed-verbal Final, or

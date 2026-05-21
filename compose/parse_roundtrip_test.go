@@ -29,6 +29,12 @@ func TestParseString_FullRoundTrip(t *testing.T) {
 		"ml-MCS/3",
 		"ml-PRG",
 		"ml-DIR",
+		// Ca-complex components.
+		"ml-MSS",
+		"ml-MSS.G",
+		"ml-MSS.G.RPV",
+		"ml-G",      // perspective alone
+		"ml-RPV",    // essence alone
 	}
 	for _, in := range inputs {
 		t.Run(in, func(t *testing.T) {
