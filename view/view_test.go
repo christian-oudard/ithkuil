@@ -7,6 +7,7 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/slots"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -289,5 +290,234 @@ func TestSegmentsModular_VerbalVsNominal(t *testing.T) {
 	}
 	if v == n {
 		t.Errorf("Cn gloss didn't change with marksMood: verbal=%q nominal=%q", v, n)
+	}
+}
+
+func TestHeadword_CsRoot(t *testing.T) {
+	// Without lexicon — CsRoot branch with empty meaning.
+	f := g.MinimalFormative("ml")
+	f.Root = g.CsRoot{Cs: "r", Degree: 5, Version: g.PRC, Function: g.STA, Context: g.EXS}
+	h := Headword(f, nil)
+	if h.Code == "" {
+		t.Error("CsRoot Headword without lex: Code empty")
+	}
+	if h.Meaning != "" {
+		t.Errorf("CsRoot Headword without lex: Meaning = %q, want empty", h.Meaning)
+	}
+	// With lexicon — exercises the affix-lookup branch.
+	lex, err := lexicon.LoadDefault()
+	if err != nil {
+		t.Fatalf("LoadDefault: %v", err)
+	}
+	h = Headword(f, lex)
+	if h.Code == "" {
+		t.Error("CsRoot Headword with lex: Code empty")
+	}
+}
+
+func TestHeadword_RefRoot(t *testing.T) {
+	f := g.MinimalFormative("ml")
+	f.Root = g.RefRoot{C1: "l", Version: g.PRC, SlotIV: g.DefaultSlotIV}
+	h := Headword(f, nil)
+	if h.Code == "" {
+		t.Error("RefRoot Headword: Code empty")
+	}
+	if h.Meaning == "" {
+		t.Error("RefRoot Headword: Meaning empty")
+	}
+}
+
+func TestHeadword_EmptyCluster(t *testing.T) {
+	f := g.MinimalFormative("ml")
+	cr := f.Root.(g.CrRoot)
+	cr.Cluster = ""
+	f.Root = cr
+	h := Headword(f, nil)
+	if h.Code != "" || h.Meaning != "" {
+		t.Errorf("empty cluster Headword: %+v, want zero RootHead", h)
+	}
+}
+
+func TestSegments_ParseError(t *testing.T) {
+	// Invalid word that won't parse via slots.Parse — Segments should
+	// return nil rather than panic.
+	f := g.MinimalFormative("ml")
+	if segs := Segments("", f, nil); segs != nil {
+		t.Errorf("Segments(empty) = %v, want nil", segs)
+	}
+}
+
+func TestCcCodes_AllBranches(t *testing.T) {
+	cases := []struct {
+		cc      string
+		want    []string // substrings expected in result
+	}{
+		{"h", []string{"Type1 concat"}},
+		{"hw", []string{"Type2 concat"}},
+		{"hl", []string{"Type1 concat", "Slot I shortcut"}},
+		{"hr", []string{"Type2 concat", "Slot I shortcut"}},
+		{"w", []string{"Slot I shortcut"}},
+		{"y", []string{"Slot I shortcut"}},
+	}
+	for _, c := range cases {
+		got := ccCodes(c.cc)
+		joined := strings.Join(got, ",")
+		for _, want := range c.want {
+			if !strings.Contains(joined, want) {
+				t.Errorf("ccCodes(%q) = %v, want substring %q", c.cc, got, want)
+			}
+		}
+	}
+	// Unknown cc falls through to the raw label.
+	got := ccCodes("zzz")
+	if len(got) == 0 || got[0] != "zzz" {
+		t.Errorf("ccCodes(unknown) = %v, want passthrough", got)
+	}
+}
+
+func TestDisplayVv_AllShapes(t *testing.T) {
+	// 1-rune Vv with 2+ Slot V affixes → reduplicate around glottal.
+	l := slots.Layout{
+		Vv: "a",
+		SlotV: []slots.AffixChunk{
+			{Cs: "r", Vx: "a"}, {Cs: "r", Vx: "a"},
+		},
+	}
+	if got := displayVv(l); got != "a'a" {
+		t.Errorf("displayVv 1-rune = %q, want a'a", got)
+	}
+	// 2-rune Vv → glottal between.
+	l.Vv = "au"
+	if got := displayVv(l); got != "a'u" {
+		t.Errorf("displayVv 2-rune = %q, want a'u", got)
+	}
+	// >2-rune Vv → append trailing glottal.
+	l.Vv = "aiu"
+	if got := displayVv(l); got != "aiu'" {
+		t.Errorf("displayVv >2-rune = %q, want aiu'", got)
+	}
+	// No Slot V → passthrough.
+	l.SlotV = nil
+	l.Vv = "a"
+	if got := displayVv(l); got != "a" {
+		t.Errorf("displayVv passthrough = %q, want a", got)
+	}
+}
+
+func TestSlotIXLabelCodes_AllBranches(t *testing.T) {
+	cases := []struct {
+		f       g.Final
+		slot    string
+		wantOne string
+	}{
+		{g.UnframedNominal{Case: g.THM}, "Vc", "THM"},
+		{g.FramedVerbal{Case: g.ERG}, "Vc", "ERG"},
+		{g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}, "Vk", "ASR"},
+		{g.UnframedVerbal{Vk: g.Assertive{Validation: g.REC}}, "Vk", "ASR"},
+		{g.UnframedVerbal{Vk: g.Directive{}}, "Vk", "DIR"},
+	}
+	for _, c := range cases {
+		slot, codes, _ := slotIXLabelCodes(c.f)
+		if slot != c.slot {
+			t.Errorf("slotIXLabelCodes(%T) slot = %q, want %q", c.f, slot, c.slot)
+		}
+		if len(codes) == 0 || codes[0] != c.wantOne {
+			t.Errorf("slotIXLabelCodes(%T) codes = %v, want first %q", c.f, codes, c.wantOne)
+		}
+	}
+	// nil Final returns the empty default.
+	slot, codes, isDefault := slotIXLabelCodes(nil)
+	if slot != "Vc" || codes != nil || !isDefault {
+		t.Errorf("slotIXLabelCodes(nil) = (%q,%v,%v), want (Vc,nil,true)", slot, codes, isDefault)
+	}
+}
+
+func TestSegmentsModular_FullShape(t *testing.T) {
+	// Build a modular adjunct with prefix + pairs + Vh final, plus a
+	// non-Vh final case. We construct ModularAdjunct values directly
+	// to bypass parser-driven shape constraints.
+	ma := g.ModularAdjunct{
+		Prefix: "w",
+		Pairs:  []g.VnCnPair{{Vn: "a", Cn: "h"}},
+		Final:  "i", // any vowel
+	}
+	verbal := true
+	// Pass an unstressed surface so IsVH=false → Vn branch on final.
+	segs := SegmentsModular("walai", ma, &verbal)
+	foundScope, foundFinal := false, false
+	for _, s := range segs {
+		if s.Slot == "scope" {
+			foundScope = true
+		}
+		if s.Slot == "Vn" && s.Raw == "i" {
+			foundFinal = true
+		}
+	}
+	if !foundScope {
+		t.Error("expected a scope segment for the w prefix")
+	}
+	if !foundFinal {
+		t.Error("expected a Vn final segment for unstressed shape")
+	}
+}
+
+func TestGlossaryModular_AllBranches(t *testing.T) {
+	// Hand-craft segments hitting scope, Vh, and Cm sub-branches.
+	segs := []Segment{
+		{Raw: "w", Slot: "scope", Encodes: []string{"FOC"}},
+		{Raw: "a", Slot: "Vh", Encodes: []string{"VH"}},
+		{Raw: "n", Slot: "Cn₁", Encodes: []string{"CmAspect"}},
+		{Raw: "ň", Slot: "Cn₂", Encodes: []string{"CmOther"}},
+	}
+	out := GlossaryModular(segs)
+	if len(out) != 4 {
+		t.Fatalf("GlossaryModular: got %d entries, want 4", len(out))
+	}
+	cats := map[string]bool{}
+	for _, e := range out {
+		cats[e.Category] = true
+	}
+	if !cats["scope"] {
+		t.Error("missing scope category")
+	}
+	if !cats["marker"] {
+		t.Error("missing marker category for Cm rows")
+	}
+	// Dedup: same slot+code shouldn't appear twice.
+	dup := append(segs, segs[0])
+	out2 := GlossaryModular(dup)
+	if len(out2) != len(out) {
+		t.Errorf("GlossaryModular didn't dedupe: %d vs %d", len(out2), len(out))
+	}
+}
+
+func TestAffixDegreeGloss_Edge(t *testing.T) {
+	if name, meaning := affixDegreeGloss("r", 5, nil); name != "" || meaning != "" {
+		t.Errorf("affixDegreeGloss(nil lex) = (%q,%q), want empty", name, meaning)
+	}
+	lex, err := lexicon.LoadDefault()
+	if err != nil {
+		t.Fatalf("LoadDefault: %v", err)
+	}
+	if name, meaning := affixDegreeGloss("zzznonexistent", 5, lex); name != "" || meaning != "" {
+		t.Errorf("affixDegreeGloss(unknown cs) = (%q,%q), want empty", name, meaning)
+	}
+}
+
+func TestSubscript_OutOfRange(t *testing.T) {
+	if got := subscript(-1); got != "-1" {
+		t.Errorf("subscript(-1) = %q, want \"-1\"", got)
+	}
+	if got := subscript(10); got != "10" {
+		t.Errorf("subscript(10) = %q, want \"10\"", got)
+	}
+}
+
+func TestCategoryForCode_Fallback(t *testing.T) {
+	// A code that compose.LookupGrammar won't find triggers the
+	// categoryForSlot fallback.
+	got := categoryForCode("ZZZ-not-a-code", "Vc")
+	if got != "case" {
+		t.Errorf("categoryForCode unknown code = %q, want case (slot fallback)", got)
 	}
 }

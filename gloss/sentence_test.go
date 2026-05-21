@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -343,5 +344,145 @@ func TestToken_Unknown(t *testing.T) {
 	got := (&Glosser{}).Token(tok)
 	if got != "?qpqp" {
 		t.Errorf("Token(\"qpqp\") = %q, want \"?qpqp\"", got)
+	}
+}
+
+func TestFormative_NilRootPanics(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("Formative(nil Root) did not panic")
+		}
+	}()
+	(&Glosser{}).Formative(g.Formative{Final: g.UnframedNominal{Case: g.THM}})
+}
+
+func TestFormative_NilFinalPanics(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("Formative(nil Final) did not panic")
+		}
+	}()
+	(&Glosser{}).Formative(g.Formative{Root: g.CrRoot{Cluster: "m"}})
+}
+
+func TestRootPrefix_RefRootNonDefaultVersion(t *testing.T) {
+	f := g.MinimalFormative("ml")
+	f.Root = g.RefRoot{C1: "l", Version: g.CPT, SlotIV: g.DefaultSlotIV}
+	got := (&Glosser{}).Formative(f)
+	if !strings.Contains(got, "CPT") {
+		t.Errorf("RefRoot CPT gloss = %q, want CPT prefix", got)
+	}
+}
+
+func TestRootSuffix_CsRootNonDefaultContext(t *testing.T) {
+	f := g.MinimalFormative("ml")
+	f.Root = g.CsRoot{Cs: "r", Degree: 5, Version: g.PRC, Function: g.STA, Context: g.FNC}
+	got := (&Glosser{}).Formative(f)
+	if !strings.Contains(got, "FNC") {
+		t.Errorf("CsRoot FNC gloss = %q, want FNC", got)
+	}
+}
+
+func TestCrRootLabel_EmptyCluster(t *testing.T) {
+	// CrRoot with empty cluster — exercises the empty-cluster early
+	// return inside crRootLabel.
+	f := g.MinimalFormative("ml")
+	cr := f.Root.(g.CrRoot)
+	cr.Cluster = ""
+	f.Root = cr
+	got := (&Glosser{}).Formative(f)
+	// Just exercise the path; don't assert specific output.
+	_ = got
+}
+
+func TestBiasLabel_EmptyExpression(t *testing.T) {
+	// A bias variant whose expression-table lookup returns "" should
+	// fall through to plain b.String(). Use a zero-value Bias which
+	// has no surface expression.
+	out := biasLabel(g.Bias(0))
+	if out == "" {
+		t.Error("biasLabel(zero) returned empty")
+	}
+}
+
+func TestModularLabel_InvalidVnCn(t *testing.T) {
+	// Build a modular adjunct whose Vn+Cn fails ParseVnCn; modularLabel
+	// should fall back to the raw "MOD(Vn+Cn)" form.
+	m := g.ModularAdjunct{Vn: "zzz", Cn: "qqq"}
+	got := modularLabel(m, nil)
+	if !strings.HasPrefix(got, "MOD(zzz+qqq") {
+		t.Errorf("modularLabel(invalid) = %q, want raw fallback", got)
+	}
+}
+
+func TestRefLabel_FullShape(t *testing.T) {
+	// Build a ReferentialWord covering Case2, Category, RefB, RpvEssence.
+	thm := g.THM
+	erg := g.ERG
+	cat := referentials.Nomic
+	r := tokenize.ReferentialWord{
+		Refs: []referentials.PersonalRef{
+			{Referent: referentials.R1m, Effect: referentials.BEN},
+		},
+		Category:   &cat,
+		Case:       &thm,
+		Case2:      &erg,
+		RefB:       []referentials.PersonalRef{{Referent: referentials.R2m, Effect: referentials.NEU}},
+		RpvEssence: true,
+	}
+	out := refLabel(r)
+	if !strings.Contains(out, "ERG") || !strings.Contains(out, "RPV") {
+		t.Errorf("refLabel full shape = %q, missing ERG or RPV", out)
+	}
+}
+
+func TestCombinationRefLabel_WithAffixes(t *testing.T) {
+	thm := g.THM
+	c := tokenize.CombinationRefWord{
+		Refs: []referentials.PersonalRef{
+			{Referent: referentials.R1m, Effect: referentials.BEN},
+		},
+		Case:    thm,
+		Spec:    "BSC",
+		Affixes: []g.AffixPair{{Cs: "r", Vx: "a"}},
+		Case2:   &thm,
+	}
+	out := combinationRefLabel(c)
+	if !strings.Contains(out, "r:a") {
+		t.Errorf("combinationRefLabel = %q, want affix \"r:a\"", out)
+	}
+}
+
+func TestAffixLabel_WithLexicon(t *testing.T) {
+	lex := loadLex(t)
+	gl := &Glosser{Lex: lex}
+	// A known affix should resolve to its abbreviation.
+	if got := gl.affixLabel("r"); got == "r" {
+		t.Errorf("affixLabel(r) with lex = %q, expected abbreviation", got)
+	}
+	// An unknown affix should pass through.
+	if got := gl.affixLabel("zzznonexistent"); got != "zzznonexistent" {
+		t.Errorf("affixLabel(unknown) = %q, want passthrough", got)
+	}
+}
+
+func TestFinalSlotIX_NilFinal(t *testing.T) {
+	if got := finalSlotIX(nil); got != "" {
+		t.Errorf("finalSlotIX(nil) = %q, want empty", got)
+	}
+}
+
+func TestFinalTag_NilFinal(t *testing.T) {
+	if got := finalTag(nil); got != "" {
+		t.Errorf("finalTag(nil) = %q, want empty", got)
+	}
+}
+
+func TestSlotI_UnknownConcat(t *testing.T) {
+	// A non-Type1/Type2 concat status returns empty. We can't construct
+	// one via the public enum, but we can pass an invalid pointer value.
+	bad := g.ConcatenationStatus(99)
+	if got := slotI(&bad); got != "" {
+		t.Errorf("slotI(unknown) = %q, want empty", got)
 	}
 }
