@@ -25,6 +25,11 @@ func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
 		return nil, fmt.Errorf("empty token")
 	}
 
+	// Foreign word: double-quoted text.
+	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
+		return tokenize.ForeignWord{Text: s[1 : len(s)-1]}, nil
+	}
+
 	// Parsing adjunct: "mono:" / "ulti:" / "penu:" / "ante:"
 	if strings.HasSuffix(s, ":") {
 		if pa, ok := parseParsingAdjunct(s); ok {

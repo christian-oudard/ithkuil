@@ -208,7 +208,7 @@ func TestClassifyWord_IthkuilGlossCorpus(t *testing.T) {
 		{"oërmölá", formative},       // Cs-root CPT.DYN
 		{"oërmoulá", formative},      // Cs-root CPT.DYN.FNC
 		{"lála'a", formative},        // PRN + ANT (framed)
-		{"hnas", carrier},            // Naming carrier (cf. TestTokenize_CarrierForeign)
+		{"hna", carrier},             // Naming carrier (cf. TestTokenize_CarrierForeign)
 		{"ţnaxeka", combref},         // [mi.BEN+2p] combination referential
 		{"ţnaxekka", formative},      // same shape but kk geminate → formative
 		{"äst", singleAffix},         // affixual adjunct **st**/2₁
@@ -281,9 +281,9 @@ func TestClassifyWord_IthkuilGlossCorpus(t *testing.T) {
 }
 
 func TestTokenize_CarrierForeign(t *testing.T) {
-	// "hnas John malá" — "hnas" is a Naming carrier, so "John" is
-	// foreign text. "malá" should still gloss normally.
-	tokens := Tokenize("hnas John malá")
+	// "hna John malá" — "hna" is a Naming carrier (NAM + THM), so "John"
+	// is foreign text. "malá" continues the sentence as a regular formative.
+	tokens := Tokenize("hna John malá")
 	if len(tokens) != 3 {
 		t.Fatalf("got %d tokens, want 3", len(tokens))
 	}

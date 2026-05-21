@@ -355,6 +355,23 @@ func TestParseToken_CombinationRef(t *testing.T) {
 	}
 }
 
+func TestParseToken_ForeignWord(t *testing.T) {
+	gl := canonicalGlosser(t)
+	for _, name := range []string{"John", "Emily", "Beethoven", "naïve"} {
+		want := tokenize.ForeignWord{Text: name}
+		s := gl.Token(want)
+		got, err := ParseToken(s, nil)
+		if err != nil {
+			t.Errorf("ForeignWord %q: ParseToken(%q) err: %v", name, s, err)
+			continue
+		}
+		fw, ok := got.(tokenize.ForeignWord)
+		if !ok || fw.Text != name {
+			t.Errorf("ForeignWord %q: got %T %+v", name, got, got)
+		}
+	}
+}
+
 func TestParseToken_CarrierAdjunct(t *testing.T) {
 	gl := canonicalGlosser(t)
 	cases := []struct {

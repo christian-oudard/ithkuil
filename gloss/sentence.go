@@ -66,6 +66,12 @@ func (gl *Glosser) Token(t tokenize.WordToken) string {
 	case tokenize.UnknownWord:
 		return "?" + v.Text
 	case tokenize.ForeignWord:
+		// Canonical: wrap in double quotes so the parser can recognize
+		// foreign text without confusing it for an Ithkuil token.
+		// Display: bare text matches existing display-side expectations.
+		if gl.Canonical {
+			return `"` + v.Text + `"`
+		}
 		return v.Text
 	}
 	return "?"

@@ -40,12 +40,9 @@ func ParseCarrier(word string) (grammar.CarrierAdjunct, error) {
 		return grammar.CarrierAdjunct{}, fmt.Errorf("carrier adjunct: %q is not a carrier consonant", cs)
 	}
 	vc := strings.Join(conjs[1:], "")
-	// Most carriers have a single case vowel as the trailing payload;
-	// naming carriers (§4.5.3) may follow with a name-as-text payload
-	// that won't parse as a Case. In the latter case we fall back to
-	// THM — the canonical gloss can't round-trip the payload anyway.
-	if c, ok := ParseCase(vc); ok {
-		return grammar.CarrierAdjunct{Type: ct, Case: c}, nil
+	c, ok := ParseCase(vc)
+	if !ok {
+		return grammar.CarrierAdjunct{}, fmt.Errorf("carrier adjunct: %q is not a recognized case vowel", vc)
 	}
-	return grammar.CarrierAdjunct{Type: ct, Case: grammar.THM}, nil
+	return grammar.CarrierAdjunct{Type: ct, Case: c}, nil
 }

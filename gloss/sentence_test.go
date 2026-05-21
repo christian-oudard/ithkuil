@@ -102,8 +102,9 @@ func TestToken_ReferentialWithCase(t *testing.T) {
 }
 
 func TestSentence_CarrierForeign(t *testing.T) {
-	// "hnas John malá" — John passes through; carrier glosses; malá glosses.
-	out := Sentence("hnas John malá")
+	// "hna John malá" — naming carrier (hn + a = NAM+THM) then John as
+	// the actual name (foreign word per §4.5.3), then malá continues.
+	out := Sentence("hna John malá")
 	if len(out) != 3 {
 		t.Fatalf("got %d, want 3", len(out))
 	}
