@@ -7,6 +7,16 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 )
 
+// stripSurface returns a copy of f with the Surface hint cleared. Used
+// in round-trip tests that build a Formative programmatically (Surface
+// = nil) and want to compare against the result of FromGrammar +
+// ToGrammar, which records the surface choices made by FromGrammar's
+// canonical defaults.
+func stripSurface(f g.Formative) g.Formative {
+	f.Surface = nil
+	return f
+}
+
 // TestFromGrammar_ToGrammar_RoundTrip drives Layer D inverse-then-
 // forward and checks the original Formative is recovered. The corpus
 // is a hand-picked set spanning shapes (Cr/Cs/Ref) and Final variants
@@ -90,7 +100,7 @@ func TestFromGrammar_ToGrammar_RoundTrip(t *testing.T) {
 			if err != nil {
 				t.Fatalf("ToGrammar: %v", err)
 			}
-			if !reflect.DeepEqual(got, tc.f) {
+			if !reflect.DeepEqual(stripSurface(got), tc.f) {
 				t.Errorf("round-trip drift:\n  got  %+v\n  want %+v", got, tc.f)
 			}
 		})
@@ -112,7 +122,7 @@ func TestFromGrammar_Shortcut(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ToGrammar after shortcut: %v", err)
 	}
-	if !reflect.DeepEqual(got, f) {
+	if !reflect.DeepEqual(stripSurface(got), f) {
 		t.Errorf("shortcut round-trip drift:\n  got  %+v\n  want %+v", got, f)
 	}
 }
@@ -137,7 +147,7 @@ func TestFromGrammar_Slot8_EffectAndLevel(t *testing.T) {
 			if err != nil {
 				t.Fatalf("ToGrammar: %v", err)
 			}
-			if !reflect.DeepEqual(got, tc.f) {
+			if !reflect.DeepEqual(stripSurface(got), tc.f) {
 				t.Errorf("round-trip drift:\n  got  %+v\n  want %+v", got, tc.f)
 			}
 		})

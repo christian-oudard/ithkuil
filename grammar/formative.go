@@ -31,6 +31,12 @@ type Formative struct {
 	SlotVIII        SlotVIII
 	Final           Final
 	SentenceStarter bool
+	// Surface, when non-nil, captures the orthographic choices the
+	// input surface made (§3.2 Cc shortcut, §3.8.1.2 Cn→Ca shortcut,
+	// §3.9.1 moved glottal, default elisions kept). Render honors
+	// these to reproduce the input verbatim. nil means "use canonical
+	// defaults". See grammar/surface_hints.go.
+	Surface *SurfaceHints
 }
 
 // MinimalFormative builds a formative whose only meaningful content is

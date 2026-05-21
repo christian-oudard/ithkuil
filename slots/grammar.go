@@ -49,7 +49,7 @@ func ToGrammar(l Layout) (g.Formative, error) {
 		return g.Formative{}, err
 	}
 
-	return g.Formative{
+	f := g.Formative{
 		Concat:          concat,
 		Root:            root,
 		SlotV:           slotV,
@@ -58,7 +58,34 @@ func ToGrammar(l Layout) (g.Formative, error) {
 		SlotVIII:        slotVIII,
 		Final:           final,
 		SentenceStarter: l.SentenceStarter,
-	}, nil
+	}
+	f.Surface = hintsFromLayout(l, f)
+	return f, nil
+}
+
+// hintsFromLayout derives the SurfaceHints recording the orthographic
+// choices the parsed Layout embodied. The returned struct is always
+// non-nil so a parsed Formative re-renders verbatim — that's the whole
+// point of lossless tracking. Programmatic callers who skip parse and
+// want canonical defaults leave Formative.Surface as nil.
+//
+// Each flag records the speaker's actual choice:
+//
+//   - CcShortcut: the §3.2 Cc shortcut (w/y/hl/hm/hr/hn) was used.
+//   - CnCaShortcut: the §3.8.1.2 Cn→Ca shortcut was applied.
+//   - MovedGlottal: the §3.9.1 V_C glottal was moved earlier.
+//   - KeepVv: the default Vv "a" was emitted instead of being elided.
+//     Only recorded when elision was actually available — otherwise
+//     every long-form word with Vv="a" would set it spuriously.
+//   - KeepVc: same gating for the trailing THM Vc "a".
+func hintsFromLayout(l Layout, f g.Formative) *g.SurfaceHints {
+	return &g.SurfaceHints{
+		CcShortcut:   isShortcutCc(l.Cc),
+		CnCaShortcut: l.CnInCa,
+		MovedGlottal: l.MovedGlottal,
+		KeepVv:       canElideLeadingVv(&l, f),
+		KeepVc:       canElideTrailingTHMVc(&l, f),
+	}
 }
 
 // rootFromLayout decodes the Root and SlotVI together — they're
@@ -231,7 +258,7 @@ func FromGrammar(f g.Formative, opts Options) Layout {
 	}
 	l := Layout{SentenceStarter: f.SentenceStarter}
 
-	useShortcut := opts.Shortcut && canUseShortcut(f)
+	useShortcut := (opts.Shortcut || (f.Surface != nil && f.Surface.CcShortcut)) && canUseShortcut(f)
 	l.Cc = ccFromGrammar(f.Concat, useShortcut, f)
 
 	switch r := f.Root.(type) {
@@ -284,8 +311,17 @@ func FromGrammar(f g.Formative, opts Options) Layout {
 	// shortcut's freed-up syllable isn't claimed by elision first — that
 	// ordering let elision burn enough slack to keep the shortcut's
 	// minimum-syllables guard from firing, and the long form leaked out.
-	maybeMoveCnToCa(&l, f)
-	maybeShortenVcGlottal(&l, f)
+	//
+	// Surface hints, when present, override the canonical auto-fire
+	// rules: a hint set false suppresses the shortcut even when its
+	// conditions match, so a long-form input round-trips back to the
+	// long form.
+	if f.Surface == nil || f.Surface.CnCaShortcut {
+		maybeMoveCnToCa(&l, f)
+	}
+	if f.Surface == nil || f.Surface.MovedGlottal {
+		maybeShortenVcGlottal(&l, f)
+	}
 	applyDefaultElisions(&l, f)
 	return l
 }
@@ -599,6 +635,18 @@ func applyDefaultElisions(l *Layout, f g.Formative) {
 
 	canVv := canElideLeadingVv(l, f)
 	canVc := canElideTrailingTHMVc(l, f)
+	// Surface hints from a parsed long-form input pin the leading Vv
+	// and/or trailing Vc in place. KeepVv / KeepVc only matter when the
+	// elision was available — without the gate every word would set
+	// them, which is the opposite of what they record.
+	if f.Surface != nil {
+		if f.Surface.KeepVv {
+			canVv = false
+		}
+		if f.Surface.KeepVc {
+			canVc = false
+		}
+	}
 	slack := vowelCount(l) - requiredSyllables(f.Final)
 	if slack < 0 {
 		slack = 0

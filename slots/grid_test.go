@@ -129,7 +129,7 @@ func TestRoundTrip_Grid_ConcatShortcut(t *testing.T) {
 				if err != nil {
 					t.Fatalf("ToGrammar (shortcut): %v", err)
 				}
-				if !reflect.DeepEqual(got, f) {
+				if !reflect.DeepEqual(stripSurface(got), f) {
 					t.Errorf("shortcut+concat drift:\n  got  %+v\n  want %+v", got, f)
 				}
 			})
