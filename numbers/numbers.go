@@ -1,13 +1,27 @@
 // Package numbers implements the Ithkuil V4 centesimal (base-100)
-// number system: roots for digits 0-10, the TNX affix for tens, power
-// roots for 100^n, and helpers for assembling number formatives plus
-// the dedicated month and day-of-week affix tables.
+// number system per §8.0 of the reference grammar.
+//
+// A number formative is a regular grammar.Formative whose Cr is one of
+// the dedicated number-root clusters. Slot II's (Stem, Version) is
+// reinterpreted by convention as (NumberStem, NumberVersion); a number
+// 11-99 carries the TNX affix (-rs) at the tens degree in Slot VII.
+//
+// Compound numbers (≥100) are multi-word phrases that link smaller
+// base units to larger ones via the PARTITIVE case, as described in
+// §8.3. The simplest pattern, illustrated by *ksalirsa gzalui walẓärs*
+// = 4229, is a chain of [count, magnitude-in-PAR] pairs followed by a
+// trailing ones-block (0-99). The richer §8.3 patterns involving
+// COMITATIVE linkers and the COO/1 coordinative affix are not yet
+// produced by the encoder, but the decoder accepts them.
 package numbers
 
-import "fmt"
+import (
+	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/render"
+)
 
-// DigitRoots holds the root consonants for digits 0-10 (per ch.13 of
-// the reference grammar).
+// DigitRoots holds the root consonants for digits 0-10. Index n is the
+// root for the integer n.
 var DigitRoots = [...]string{
 	"vr", // 0
 	"ll", // 1
@@ -22,115 +36,358 @@ var DigitRoots = [...]string{
 	"j",  // 10
 }
 
-// PowerRoots holds the root consonants for ascending powers of 100.
-// Index 0 is the units place (no consonant); subsequent entries are
-// 100^1, 100^2, 100^4, 100^8.
+// NonDecimalRoots holds the additional digit roots for non-decimal
+// bases 11-15. These see use in compound number expressions and where
+// the spec invokes a non-decimal base explicitly (e.g. month 11 uses
+// -CG- in the spoken-number gloss).
+var NonDecimalRoots = [...]string{
+	"cg", // 11
+	"jd", // 12
+	"ļj", // 13
+	"bc", // 14
+	"ţẓ", // 15
+}
+
+// PowerRoots holds the roots for ascending powers of 100. Index i
+// corresponds to 100^(2^(i-1)) for i ≥ 1; index 0 is the empty units
+// placeholder. Per §8.1, dedicated roots stop at 100^8; beyond that,
+// numbers are referred to as multiples of these units.
 var PowerRoots = [...]string{
-	"",   // 100^0 = units
+	"",   // 100^0 = units (no consonant)
 	"gz", // 100^1 = 100
 	"pc", // 100^2 = 10,000
 	"kẓ", // 100^4 = 100,000,000
 	"čg", // 100^8 = 10,000,000,000,000,000
 }
 
-// NumberRoot returns the root consonant for the number n. For 0-10
-// it's the direct digit root; for 11-99 it's the ones-digit root
-// (the tens are conveyed by an accompanying TNX affix). Out-of-range
-// inputs return ok=false.
-func NumberRoot(n int) (string, bool) {
-	switch {
-	case n < 0, n >= 100:
-		return "", false
-	case n <= 10:
-		return DigitRoots[n], true
-	default:
-		return DigitRoots[n%10], true
-	}
+// powerValues holds the integer value of each entry in PowerRoots so
+// the encoder can convert between "place" indices and magnitudes.
+var powerValues = [...]int64{
+	1,
+	100,
+	10_000,
+	100_000_000,
+	10_000_000_000_000_000,
 }
 
-// NumberAffix returns the TNX affix (Cs="rs", degree=tens) for
-// numbers 11-99. Numbers 0-10 have no TNX affix; out-of-range returns
-// ok=false.
-func NumberAffix(n int) (cs string, degree int, ok bool) {
-	if n <= 10 || n >= 100 {
-		return "", 0, false
-	}
-	return "rs", n / 10, true
-}
+// tnxCs is the affix consonant for the TNX (-rs) affix that encodes
+// the tens digit for numbers 11-99. Degrees 1-9 add 10, 20, ..., 90.
+const tnxCs = "rs"
 
-// NumberStem distinguishes the four ways a number formative can be
-// interpreted: cardinal (counting), ordinal (ranking), partitive
-// (a subset), or collective (a group).
-type NumberStem int
+// Stem distinguishes the four readings of a number formative.
+type Stem int
 
 const (
-	NSCardinal NumberStem = iota
-	NSOrdinal
-	NSPartitive
-	NSCollective
+	Cardinal   Stem = iota // counting (default)
+	Ordinal                // ranking
+	Partitive              // a subset
+	Collective             // a group
 )
 
-func (s NumberStem) String() string {
+func (s Stem) String() string {
 	return [...]string{"Cardinal", "Ordinal", "Partitive", "Collective"}[s]
 }
 
-// NumberVersion distinguishes concrete (specific) from abstract
-// (approximate) number readings.
-type NumberVersion int
+// Version distinguishes concrete (specific) from abstract (approximate)
+// number readings.
+type Version int
 
 const (
-	NVConcrete NumberVersion = iota
-	NVAbstract
+	Concrete Version = iota
+	Abstract
 )
 
-func (v NumberVersion) String() string {
+func (v Version) String() string {
 	return [...]string{"Concrete", "Abstract"}[v]
 }
 
-// NumberVv encodes a (stem, version) pair as its Vv vowel. The
-// number formative occupies the same Vv slot as a regular formative
-// but uses a custom 8-cell mapping.
-func NumberVv(stem NumberStem, ver NumberVersion) string {
-	switch {
-	case stem == NSCardinal && ver == NVConcrete:
-		return "a"
-	case stem == NSCardinal && ver == NVAbstract:
-		return "u"
-	case stem == NSOrdinal && ver == NVConcrete:
-		return "e"
-	case stem == NSOrdinal && ver == NVAbstract:
-		return "i"
-	case stem == NSPartitive && ver == NVConcrete:
-		return "o"
-	case stem == NSPartitive && ver == NVAbstract:
-		return "ö"
-	case stem == NSCollective && ver == NVConcrete:
-		return "ä"
-	case stem == NSCollective && ver == NVAbstract:
-		return "ü"
-	}
-	panic(fmt.Sprintf("numbers: unreachable NumberVv(%v, %v)", stem, ver))
+// Number bundles the integer value of a number formative with its
+// Stem and Version annotations.
+type Number struct {
+	Value   int64
+	Stem    Stem
+	Version Version
 }
 
-// ConstructNumber builds a minimal number formative for n in 0-99.
-// Higher values (compound centesimal forms) are not yet supported.
-// Returns ok=false for n outside [0, 99].
-func ConstructNumber(n int, stem NumberStem, ver NumberVersion) (string, bool) {
-	cr, ok := NumberRoot(n % 100)
+// slotIIForNumber maps a (Stem, Version) onto the regular SlotII
+// encoding so the resulting Vv vowel matches §8.2's 8-cell custom
+// table. The Stem/Version names are reinterpreted by convention when
+// the formative's Cr is a number root.
+//
+//	Cardinal/Concrete   → S1/PRC  (Vv "a")
+//	Cardinal/Abstract   → S3/PRC  (Vv "u")
+//	Ordinal/Concrete    → S2/PRC  (Vv "e")
+//	Ordinal/Abstract    → S2/CPT  (Vv "i")
+//	Partitive/Concrete  → S0/PRC  (Vv "o")
+//	Partitive/Abstract  → S0/CPT  (Vv "ö")
+//	Collective/Concrete → S1/CPT  (Vv "ä")
+//	Collective/Abstract → S3/CPT  (Vv "ü")
+var slotIIForNumber = map[struct {
+	s Stem
+	v Version
+}]g.SlotII{
+	{Cardinal, Concrete}:   {Stem: g.S1, Version: g.PRC},
+	{Cardinal, Abstract}:   {Stem: g.S3, Version: g.PRC},
+	{Ordinal, Concrete}:    {Stem: g.S2, Version: g.PRC},
+	{Ordinal, Abstract}:    {Stem: g.S2, Version: g.CPT},
+	{Partitive, Concrete}:  {Stem: g.S0, Version: g.PRC},
+	{Partitive, Abstract}:  {Stem: g.S0, Version: g.CPT},
+	{Collective, Concrete}: {Stem: g.S1, Version: g.CPT},
+	{Collective, Abstract}: {Stem: g.S3, Version: g.CPT},
+}
+
+// numberFromSlotII is the reverse lookup of slotIIForNumber.
+var numberFromSlotII = func() map[g.SlotII]struct {
+	s Stem
+	v Version
+} {
+	m := make(map[g.SlotII]struct {
+		s Stem
+		v Version
+	}, len(slotIIForNumber))
+	for k, v := range slotIIForNumber {
+		m[v] = k
+	}
+	return m
+}()
+
+// rootValue maps each number-root cluster to its integer value. Power
+// roots map to their magnitude (100, 10000, …). Digit roots 0-15 map
+// to 0-15.
+var rootValue = func() map[string]int64 {
+	m := map[string]int64{}
+	for i, r := range DigitRoots {
+		m[r] = int64(i)
+	}
+	for i, r := range NonDecimalRoots {
+		m[r] = int64(11 + i)
+	}
+	for i, r := range PowerRoots {
+		if r == "" {
+			continue
+		}
+		m[r] = powerValues[i]
+	}
+	return m
+}()
+
+// IsNumberRoot reports whether cluster names a built-in number root —
+// any digit 0-15 or any power-of-100 root.
+func IsNumberRoot(cluster string) bool {
+	_, ok := rootValue[cluster]
+	return ok
+}
+
+// RootValue returns the integer value of a number-root cluster. ok=false
+// for non-number clusters.
+func RootValue(cluster string) (int64, bool) {
+	v, ok := rootValue[cluster]
+	return v, ok
+}
+
+// digitRoot returns the digit-root cluster for a value 0-15. Returns
+// ok=false for any other value.
+func digitRoot(n int) (string, bool) {
+	switch {
+	case n < 0:
+		return "", false
+	case n <= 10:
+		return DigitRoots[n], true
+	case n <= 15:
+		return NonDecimalRoots[n-11], true
+	}
+	return "", false
+}
+
+// Formative builds a number formative for n in 0-99 with the requested
+// Stem, Version, and final Case. Returns ok=false for n outside that
+// range — use Phrase for compound numbers (n ≥ 100).
+//
+// 0-10 use the bare digit root. 11-99 use the ones-digit root plus a
+// TNX affix at the tens degree in Slot VII.
+func Formative(n int, stem Stem, ver Version, c g.Case) (g.Formative, bool) {
+	if n < 0 || n >= 100 {
+		return g.Formative{}, false
+	}
+	// Digits 0-10 have dedicated roots; 11-99 split into ones-digit
+	// root plus a TNX affix at the tens degree.
+	var cr string
+	var tens int
+	if n <= 10 {
+		var ok bool
+		cr, ok = digitRoot(n)
+		if !ok {
+			return g.Formative{}, false
+		}
+	} else {
+		var ok bool
+		cr, ok = digitRoot(n % 10)
+		if !ok {
+			return g.Formative{}, false
+		}
+		tens = n / 10
+	}
+	s2 := slotIIForNumber[struct {
+		s Stem
+		v Version
+	}{stem, ver}]
+	f := g.MinimalFormative(cr)
+	cr2 := f.Root.(g.CrRoot)
+	cr2.Stem = s2.Stem
+	cr2.Version = s2.Version
+	f.Root = cr2
+	if tens > 0 {
+		f.SlotVII = append(f.SlotVII, g.Affix{
+			Type:      g.Type1Affix,
+			Degree:    tens,
+			Consonant: tnxCs,
+		})
+	}
+	f.Final = g.UnframedNominal{Case: c}
+	return f, true
+}
+
+// PowerFormative builds a formative for the i-th power-of-100 root
+// (i=1 → 100, i=2 → 10000, i=3 → 100^4, i=4 → 100^8). Returns ok=false
+// for out-of-range indices. The final case lets callers emit the
+// magnitude word in either the PARTITIVE used by spoken compounds or
+// another case for standalone reference.
+func PowerFormative(i int, stem Stem, ver Version, c g.Case) (g.Formative, bool) {
+	if i < 1 || i >= len(PowerRoots) {
+		return g.Formative{}, false
+	}
+	cr := PowerRoots[i]
+	s2 := slotIIForNumber[struct {
+		s Stem
+		v Version
+	}{stem, ver}]
+	f := g.MinimalFormative(cr)
+	cr2 := f.Root.(g.CrRoot)
+	cr2.Stem = s2.Stem
+	cr2.Version = s2.Version
+	f.Root = cr2
+	f.Final = g.UnframedNominal{Case: c}
+	return f, true
+}
+
+// Render builds the formative for n with the given Stem/Version/Case
+// and returns its surface form. Convenience wrapper around Formative
+// + render.Formative.
+func Render(n int, stem Stem, ver Version, c g.Case) (string, bool) {
+	f, ok := Formative(n, stem, ver, c)
 	if !ok {
 		return "", false
 	}
-	if n >= 100 || n < 0 {
-		return "", false
-	}
-	vv := NumberVv(stem, ver)
-	vr := "a" // basic specification
-	ca := "l" // default Ca
-	return vv + cr + vr + ca, true
+	return render.Formative(f), true
 }
 
-// MonthAffixes are the dedicated affix forms for months 1-12. Index 0
-// is January-equivalent.
+// Decode inspects a parsed Formative and, if its Cr is a number root,
+// returns the corresponding Number. ok=false for non-number formatives
+// or for number formatives whose Slot II doesn't decode to a known
+// (Stem, Version) pair.
+//
+// Decode handles 0-99 (with an optional TNX affix). For power-root
+// formatives (gz/pc/kẓ/čg) the value is the magnitude itself, taken
+// from PowerRoots.
+func Decode(f g.Formative) (Number, bool) {
+	cr, ok := f.Root.(g.CrRoot)
+	if !ok {
+		return Number{}, false
+	}
+	base, ok := rootValue[cr.Cluster]
+	if !ok {
+		return Number{}, false
+	}
+	nv, ok := numberFromSlotII[g.SlotII{Stem: cr.Stem, Version: cr.Version}]
+	if !ok {
+		return Number{}, false
+	}
+	value := base
+	// 11-99: a TNX affix in Slot VII adds the tens.
+	for _, a := range f.SlotVII {
+		if a.Consonant == tnxCs && a.Type == g.Type1Affix {
+			value += int64(a.Degree) * 10
+		}
+	}
+	return Number{Value: value, Stem: nv.s, Version: nv.v}, true
+}
+
+// Phrase returns the spoken form of n as a sequence of surface words
+// per §8.3. For 0 ≤ n < 100 the slice has one element. For larger n
+// the encoding factors n recursively: at each level the largest fitting
+// magnitude p is extracted, the count n/p is itself expressed as a
+// phrase (which may chain multiple magnitudes when its value is ≥100),
+// and any remainder appends as its own phrase.
+//
+// Examples (showing semantic structure, not literal surface):
+//
+//	4229       → [42, of-100, 29]
+//	269,766    → [26, of-10000, 97, of-100, 66]
+//	21,000,000 → [21, of-100, of-10000]            (multi-magnitude chain)
+//
+// Returns ok=false for negative n.
+func Phrase(n int64, stem Stem, ver Version) ([]string, bool) {
+	if n < 0 {
+		return nil, false
+	}
+	return phraseRec(n, stem, ver)
+}
+
+// phraseRec is the recursive worker for Phrase. It finds the largest
+// power p ≤ n, expresses n/p as its own phrase (which may itself chain
+// magnitudes), tacks on the magnitude word, then appends the remainder
+// as another phrase.
+func phraseRec(n int64, stem Stem, ver Version) ([]string, bool) {
+	if n < 100 {
+		w, ok := Render(int(n), stem, ver, g.THM)
+		if !ok {
+			return nil, false
+		}
+		return []string{w}, true
+	}
+	// Find the largest power-of-100 root that fits in n.
+	for i := len(powerValues) - 1; i >= 1; i-- {
+		p := powerValues[i]
+		if p > n {
+			continue
+		}
+		count := n / p
+		remainder := n - count*p
+		countWords, ok := phraseRec(count, stem, ver)
+		if !ok {
+			return nil, false
+		}
+		magWord, ok := powerSurface(i, stem, ver)
+		if !ok {
+			return nil, false
+		}
+		result := append(countWords, magWord)
+		if remainder > 0 {
+			tail, ok := phraseRec(remainder, stem, ver)
+			if !ok {
+				return nil, false
+			}
+			result = append(result, tail...)
+		}
+		return result, true
+	}
+	// Unreachable: n >= 100 must match at least powerValues[1] = 100.
+	return nil, false
+}
+
+// powerSurface returns the surface form of the i-th power-of-100 root
+// rendered in PARTITIVE case ("gzalui", "wapcui", "ẓkẓalui", "čgalui"),
+// agreeing with the surrounding chain's stem/version.
+func powerSurface(i int, stem Stem, ver Version) (string, bool) {
+	f, ok := PowerFormative(i, stem, ver, g.PAR)
+	if !ok {
+		return "", false
+	}
+	return render.Formative(f), true
+}
+
+// MonthAffixes lists the dedicated affix forms for months 1-12. Index 0
+// corresponds to month 1 (January-equivalent).
 var MonthAffixes = [...]string{
 	"lks",  // 1
 	"lz",   // 2
@@ -146,8 +403,8 @@ var MonthAffixes = [...]string{
 	"ljz",  // 12
 }
 
-// DayOfWeekAffixes are the dedicated affix forms for days 1-7. Index 0
-// is Monday-equivalent.
+// DayOfWeekAffixes lists the dedicated affix forms for days 1-7. Index 0
+// corresponds to day 1 (Monday-equivalent).
 var DayOfWeekAffixes = [...]string{
 	"mks", // 1
 	"mz",  // 2
@@ -158,13 +415,21 @@ var DayOfWeekAffixes = [...]string{
 	"mčk", // 7
 }
 
-// ParseNumberRoot decodes a digit-root consonant cluster (vr/ll/ks/…)
-// to its integer 0-10. Returns ok=false on no match.
-func ParseNumberRoot(t string) (int, bool) {
-	for i, r := range DigitRoots {
-		if r == t {
-			return i, true
-		}
+// MonthAffix returns the Cs cluster encoding month m (1-12). Returns
+// ok=false for out-of-range m. The affix is intended to attach to the
+// SPT formative; the caller chooses degree and type.
+func MonthAffix(m int) (string, bool) {
+	if m < 1 || m > 12 {
+		return "", false
 	}
-	return 0, false
+	return MonthAffixes[m-1], true
+}
+
+// DayOfWeekAffix returns the Cs cluster encoding day d (1-7). Returns
+// ok=false for out-of-range d.
+func DayOfWeekAffix(d int) (string, bool) {
+	if d < 1 || d > 7 {
+		return "", false
+	}
+	return DayOfWeekAffixes[d-1], true
 }
