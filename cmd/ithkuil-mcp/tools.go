@@ -320,12 +320,18 @@ type lexiconIn struct {
 }
 
 type rootHitOut struct {
-	Cr    string `json:"cr"`
-	Score int    `json:"score"`
-	Stem0 string `json:"stem0,omitempty"`
-	Stem1 string `json:"stem1,omitempty"`
-	Stem2 string `json:"stem2,omitempty"`
-	Stem3 string `json:"stem3,omitempty"`
+	Cr           string   `json:"cr"`
+	Score        int      `json:"score"`
+	Stem0        string   `json:"stem0,omitempty"`
+	Stem1        string   `json:"stem1,omitempty"`
+	Stem2        string   `json:"stem2,omitempty"`
+	Stem3        string   `json:"stem3,omitempty"`
+	Contential   string   `json:"contential,omitempty"`
+	Constitutive string   `json:"constitutive,omitempty"`
+	Objective    []string `json:"objective,omitempty"`
+	Completive   []string `json:"completive,omitempty"`
+	Dynamic      string   `json:"dynamic,omitempty"`
+	Wikidata     []string `json:"wikidata,omitempty"`
 }
 
 type affixHitOut struct {
@@ -365,6 +371,12 @@ func (s *server) lexicon(_ context.Context, _ *mcp.CallToolRequest, in lexiconIn
 				Cr: h.Cr, Score: h.Score,
 				Stem0: h.Entry.Stem0, Stem1: h.Entry.Stem1,
 				Stem2: h.Entry.Stem2, Stem3: h.Entry.Stem3,
+				Contential:   h.Entry.Contential,
+				Constitutive: h.Entry.Constitutive,
+				Objective:    h.Entry.Objective,
+				Completive:   h.Entry.Completive,
+				Dynamic:      h.Entry.Dynamic,
+				Wikidata:     h.Entry.Wikidata,
 			})
 		}
 	}

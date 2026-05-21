@@ -48,6 +48,12 @@ func cmdLexicon(args []string, stdout, stderr io.Writer, lexDir string) int {
 			printStem(stdout, "S1", h.Entry.Stem1)
 			printStem(stdout, "S2", h.Entry.Stem2)
 			printStem(stdout, "S3", h.Entry.Stem3)
+			printStem(stdout, "CTE", h.Entry.Contential)
+			printStem(stdout, "CSV", h.Entry.Constitutive)
+			printTrio(stdout, "OBJ", h.Entry.Objective)
+			printTrio(stdout, "CPT", h.Entry.Completive)
+			printStem(stdout, "DYN", h.Entry.Dynamic)
+			printTrio(stdout, "Wikidata", h.Entry.Wikidata)
 		}
 	}
 
@@ -81,4 +87,13 @@ func printStem(w io.Writer, label, s string) {
 		return
 	}
 	fmt.Fprintf(w, "    %s: %s\n", label, s)
+}
+
+func printTrio(w io.Writer, label string, ss []string) {
+	for i, s := range ss {
+		if s == "" {
+			continue
+		}
+		fmt.Fprintf(w, "    %s S%d: %s\n", label, i+1, s)
+	}
 }

@@ -11,7 +11,12 @@
     "stem0": "[demonstrative root]",
     "stem1": "this one",
     "stem2": "that one",
-    "stem3": "that one yonder"
+    "stem3": "that one yonder",
+    "objective": [
+      "this (non-epistemological)",
+      "that (non-epistemological)",
+      "that one yonder (non-epistemological)"
+    ]
   },
   {
     "cr": "č",
@@ -340,14 +345,24 @@
     "stem0": "study/learn/knowledge source",
     "stem1": "studying",
     "stem2": "practice",
-    "stem3": "source of knowledge"
+    "stem3": "source of knowledge",
+    "completive": [
+      "learning",
+      "proficiency",
+      ""
+    ]
   },
   {
     "cr": "lţt",
     "stem0": "vocation/career/area of expertise",
     "stem1": "pursuing a vocation",
     "stem2": "pursuing a career",
-    "stem3": "pursuing proficiency"
+    "stem3": "pursuing proficiency",
+    "completive": [
+      "having a vocation",
+      "having a career",
+      "having expertise"
+    ]
   },
   {
     "cr": "řţt",
@@ -361,14 +376,24 @@
     "stem0": "test/evaluation/vetting/experiment",
     "stem1": "testing/examination [PRC=end in itself]",
     "stem2": "vetting/evaluation [PRC=end in itself]",
-    "stem3": "experimenting/testing out [PRC=end in itself]"
+    "stem3": "experimenting/testing out [PRC=end in itself]",
+    "completive": [
+      "testing/examination",
+      "vetting/evaluation",
+      "experimenting/testing out"
+    ]
   },
   {
     "cr": "mţt",
     "stem0": "demonstration/proof",
     "stem1": "demonstrating factuality [CPT=verifying]",
     "stem2": "presenting evidence/proving as an end in itself",
-    "stem3": "establishing/meeting standard of proof as an end in itself"
+    "stem3": "establishing/meeting standard of proof as an end in itself",
+    "completive": [
+      "verifying",
+      "presenting evidence/proving",
+      "establishing/meeting standard of proof"
+    ]
   },
   {
     "cr": "nţt",
@@ -417,7 +442,12 @@
     "stem0": "termination/finish/end/finality/completion",
     "stem1": "ending",
     "stem2": "finalizing",
-    "stem3": "completing"
+    "stem3": "completing",
+    "completive": [
+      "ended/finished",
+      "final/finalized",
+      "complete(d)"
+    ]
   },
   {
     "cr": "ny",
@@ -459,7 +489,12 @@
     "stem0": "exploration/pursuit/hunting",
     "stem1": "exploration",
     "stem2": "pursuit",
-    "stem3": "hunting"
+    "stem3": "hunting",
+    "completive": [
+      "discovering",
+      "tracking down",
+      "hunting down"
+    ]
   },
   {
     "cr": "gš",
@@ -536,7 +571,12 @@
     "stem0": "solve/figure out",
     "stem1": "trying to solve a puzzle",
     "stem2": "reasoning in puzzle/problem-solving",
-    "stem3": "insight in puzzle/problem-solving"
+    "stem3": "insight in puzzle/problem-solving",
+    "completive": [
+      "solving a puzzle",
+      "",
+      ""
+    ]
   },
   {
     "cr": "llt",
@@ -606,7 +646,12 @@
     "stem0": "provision/supplying/furnishing/equipping",
     "stem1": "providing [PRC=offering provision]",
     "stem2": "offering to supply/replenish/furnish",
-    "stem3": "offering to equip/provide resources"
+    "stem3": "offering to equip/provide resources",
+    "completive": [
+      "providing",
+      "supplying/replenishing/furnishing",
+      "equipping/providing resources"
+    ]
   },
   {
     "cr": "cph",
@@ -1075,28 +1120,55 @@
     "stem0": "accuracy/suitability/legitimacy",
     "stem1": "correctness/accuracy",
     "stem2": "suitability/fitness",
-    "stem3": "legitimacy/orthodoxy"
+    "stem3": "legitimacy/orthodoxy",
+    "contential": "state of ~",
+    "objective": [
+      "something w/a ° of correctness/accuracy",
+      "something w/a ° of suitability/fitness",
+      "something w/a ° of legitimacy/orthodoxy"
+    ]
   },
   {
     "cr": "řḑ",
     "stem0": "exactitude",
     "stem1": "exactitude to an expectation",
     "stem2": "accuracy",
-    "stem3": "functional/substitutive comparability"
+    "stem3": "functional/substitutive comparability",
+    "contential": "(appraisal of) the ° of ~",
+    "constitutive": "(applying/establishing) a standard of ~",
+    "objective": [
+      "entity appraised/compared to expectation of exactitude",
+      "entity appraised/compared to standard of accuracy",
+      "entity appraised/compared to standard of functional/substitutive comparability"
+    ]
   },
   {
     "cr": "rx",
     "stem0": "similarity/resemblance",
     "stem1": "similarity/resemblance to concrete entity",
     "stem2": "similarity/resemblance to oneself on another occasion",
-    "stem3": "similarity/resemblance to abstract situation"
+    "stem3": "similarity/resemblance to abstract situation",
+    "contential": "° to which an entity meets an expectation of ~",
+    "constitutive": "expectation of ~",
+    "objective": [
+      "entity being appraised/compared to the expectation of similarity/resemblance to a concrete entity",
+      "entity being appraised/compared to the expectation of similarity/resemblance to oneself on another occasion",
+      "entity being appraised/compared to the expectation of similarity/resemblance to an abstract situation"
+    ]
   },
   {
     "cr": "rk",
     "stem0": "degree/range/extent/intensity",
     "stem1": "a degree/extent of effect/impact/capacity",
     "stem2": "a range/limit of effect/impact",
-    "stem3": "an intensity of effect/impact"
+    "stem3": "an intensity of effect/impact",
+    "contential": "something with ~",
+    "constitutive": "~",
+    "objective": [
+      "entity affected/impacted by the degree/extent of something",
+      "entity affected/impacted by the range/limit of something",
+      "entity affected/impacted by the intensity of something"
+    ]
   },
   {
     "cr": "rt",
@@ -1180,7 +1252,12 @@
     "stem0": "development/maturation/decline",
     "stem1": "developmental stage",
     "stem2": "maturation/growth",
-    "stem3": "decline/age"
+    "stem3": "decline/age",
+    "completive": [
+      "",
+      "ripening",
+      "dying"
+    ]
   },
   {
     "cr": "ph",
@@ -1789,7 +1866,12 @@
     "stem0": "surface application/overlay/paint",
     "stem1": "applying a liquid/viscous substance/material to a surface",
     "stem2": "applying a gel-like substance/material to a surface",
-    "stem3": "painting a surface"
+    "stem3": "painting a surface",
+    "completive": [
+      "",
+      "foaming up/frothing",
+      ""
+    ]
   },
   {
     "cr": "ňvw",
@@ -1950,7 +2032,12 @@
     "stem0": "soak/diffusion/permeation/osmosis",
     "stem1": "soaking/sousing",
     "stem2": "diffusion/suffusion",
-    "stem3": "osmosis"
+    "stem3": "osmosis",
+    "completive": [
+      "saturation",
+      "permeation",
+      ""
+    ]
   },
   {
     "cr": "zw",
@@ -1971,7 +2058,12 @@
     "stem0": "wiping/mopping/cleaning via absorption",
     "stem1": "wiping with cloth",
     "stem2": "mopping",
-    "stem3": "removing liquid via absoptive material"
+    "stem3": "removing liquid via absoptive material",
+    "completive": [
+      "wiping up",
+      "mopping up",
+      ""
+    ]
   },
   {
     "cr": "šmw",
@@ -2013,7 +2105,12 @@
     "stem0": "damage/undermine/lessen",
     "stem1": "damaging physically",
     "stem2": "corruption/subversion/undermining",
-    "stem3": "reduction/lessening"
+    "stem3": "reduction/lessening",
+    "completive": [
+      "wrecking/destroying",
+      "ruin/devastation",
+      "eradication/elimination/annihilation"
+    ]
   },
   {
     "cr": "bn",
@@ -4470,7 +4567,12 @@
     "stem0": "deduction/inference/insight",
     "stem1": "deductive thinking",
     "stem2": "inference",
-    "stem3": "deductive insight"
+    "stem3": "deductive insight",
+    "completive": [
+      "deduction",
+      "",
+      ""
+    ]
   },
   {
     "cr": "ltç",
@@ -5086,7 +5188,8 @@
     "stem0": "promise/oath/vow/pledge",
     "stem1": "promise",
     "stem2": "vow/pledge",
-    "stem3": "oath"
+    "stem3": "oath",
+    "dynamic": "making a(n) ~"
   },
   {
     "cr": "mfm",
@@ -5590,7 +5693,12 @@
     "stem0": "purpose/judgement/resolution",
     "stem1": "having purpose",
     "stem2": "judging",
-    "stem3": "resolving"
+    "stem3": "resolving",
+    "completive": [
+      "",
+      "rendering judgement",
+      "coming to a resolution"
+    ]
   },
   {
     "cr": "tb",
@@ -5814,7 +5922,12 @@
     "stem0": "success/competition/winning/achievement",
     "stem1": "striving toward",
     "stem2": "competing",
-    "stem3": "working toward"
+    "stem3": "working toward",
+    "completive": [
+      "success",
+      "win/victory",
+      "achievement"
+    ]
   },
   {
     "cr": "pg",
@@ -5891,7 +6004,12 @@
     "stem0": "condonation/placating/appeasement/propitiation/conciliation",
     "stem1": "condoning/forbearance",
     "stem2": "attempting to placate/appease",
-    "stem3": "propitiating/conciliating (trying to gain another’s good will/grace)"
+    "stem3": "propitiating/conciliating (trying to gain another’s good will/grace)",
+    "completive": [
+      "",
+      "placating/appeasing",
+      "gaining one’s favor"
+    ]
   },
   {
     "cr": "řš",
@@ -8306,7 +8424,12 @@
     "stem0": "autonomic respiratory reactions",
     "stem1": "feeling need to yawn",
     "stem2": "feeling need to cough",
-    "stem3": "feeling need to sneeze"
+    "stem3": "feeling need to sneeze",
+    "completive": [
+      "yawn",
+      "cough",
+      "sneeze"
+    ]
   },
   {
     "cr": "khw",
@@ -8320,14 +8443,24 @@
     "stem0": "gastro-intestinal paroxysm 1",
     "stem1": "feel need to burp",
     "stem2": "experience a hiccup",
-    "stem3": "experience gagging"
+    "stem3": "experience gagging",
+    "completive": [
+      "burp",
+      "",
+      ""
+    ]
   },
   {
     "cr": "řxm",
     "stem0": "gastro-intestinal paroxysm 2",
     "stem1": "feeling the need to vomit",
     "stem2": "feeling the need to fart",
-    "stem3": "feeling a stomach/intestinal cramp"
+    "stem3": "feeling a stomach/intestinal cramp",
+    "completive": [
+      "vomiting",
+      "farting",
+      ""
+    ]
   },
   {
     "cr": "psř",
@@ -8362,7 +8495,12 @@
     "stem0": "bodily waste elimination",
     "stem1": "feel need to piss/pee",
     "stem2": "feel need to shit/poop",
-    "stem3": "feel need to spit"
+    "stem3": "feel need to spit",
+    "completive": [
+      "urination",
+      "defecation",
+      "spitting"
+    ]
   },
   {
     "cr": "tfř",
@@ -8495,7 +8633,12 @@
     "stem0": "queasiness/nausea/vomiting",
     "stem1": "having no appetite",
     "stem2": "feeling queasy",
-    "stem3": "feeling nauseous/as if one is going to vomit"
+    "stem3": "feeling nauseous/as if one is going to vomit",
+    "completive": [
+      "",
+      "",
+      "vomiting from nausea"
+    ]
   },
   {
     "cr": "ḑč",
@@ -8642,7 +8785,12 @@
     "stem0": "affective sexual response",
     "stem1": "sexual arousal response",
     "stem2": "approaching orgasm",
-    "stem3": "ejaculation"
+    "stem3": "ejaculation",
+    "completive": [
+      "",
+      "orgasm",
+      ""
+    ]
   },
   {
     "cr": "tkř",
@@ -9223,7 +9371,12 @@
     "stem0": "emotional stress/pressure",
     "stem1": "emotional stress/pressure",
     "stem2": "being at emotional breaking-point",
-    "stem3": "being on the verge of lost of control of one's composure"
+    "stem3": "being on the verge of lost of control of one's composure",
+    "completive": [
+      "",
+      "",
+      "loss of emotional control"
+    ]
   },
   {
     "cr": "šštļ",
@@ -12366,7 +12519,12 @@
     "stem0": "nebula",
     "stem1": "gas-based emission-type nebula/volume of nebulosity",
     "stem2": "reflection nebula/dark nebula",
-    "stem3": "planetary nebula"
+    "stem3": "planetary nebula",
+    "completive": [
+      "",
+      "",
+      "supernova remnant nebula"
+    ]
   },
   {
     "cr": "mtw",
@@ -12429,7 +12587,8 @@
     "stem0": "fermion",
     "stem1": "fermion",
     "stem2": "quark",
-    "stem3": "lepton"
+    "stem3": "lepton",
+    "contential": "string vibration"
   },
   {
     "cr": "lţkř",
@@ -12751,7 +12910,12 @@
     "stem0": "water-based weather phenomenon",
     "stem1": "rain",
     "stem2": "snow",
-    "stem3": "hail"
+    "stem3": "hail",
+    "completive": [
+      "fallen rain/puddle",
+      "fallen snow",
+      "fallen hail"
+    ]
   },
   {
     "cr": "fph",
@@ -12968,7 +13132,12 @@
     "stem0": "variable/coefficient/constant",
     "stem1": "variable",
     "stem2": "coefficient",
-    "stem3": "mathematical constant"
+    "stem3": "mathematical constant",
+    "objective": [
+      "function",
+      "",
+      ""
+    ]
   },
   {
     "cr": "ňzx",
@@ -13724,224 +13893,384 @@
     "stem0": "chemical element",
     "stem1": "chemical element",
     "stem2": "positive ion of a chemical element",
-    "stem3": "negative ion of a chemical element"
+    "stem3": "negative ion of a chemical element",
+    "completive": [
+      "chemical element",
+      "oxidized chemical element",
+      "reduced chemical element"
+    ]
   },
   {
     "cr": "pçk",
     "stem0": "hydrogen",
     "stem1": "hydrogen",
     "stem2": "hydron",
-    "stem3": "hydride"
+    "stem3": "hydride",
+    "completive": [
+      "H in 0 oxidation state",
+      "oxidized H",
+      "reduced H"
+    ]
   },
   {
     "cr": "pçkw",
     "stem0": "lithium",
     "stem1": "lithium",
     "stem2": "Li cation",
-    "stem3": "Li anion"
+    "stem3": "Li anion",
+    "completive": [
+      "Li in 0 oxidation state",
+      "oxidized Li",
+      "reduced Li"
+    ]
   },
   {
     "cr": "pçky",
     "stem0": "sodium",
     "stem1": "sodium",
     "stem2": "Na cation",
-    "stem3": "Na anion"
+    "stem3": "Na anion",
+    "completive": [
+      "Na in 0 oxidation state",
+      "oxidized Na",
+      "reduced Na"
+    ]
   },
   {
     "cr": "pçkl",
     "stem0": "potassium",
     "stem1": "potassium",
     "stem2": "K cation",
-    "stem3": "K anion"
+    "stem3": "K anion",
+    "completive": [
+      "K in 0 oxidation state",
+      "oxidized K",
+      "reduced K"
+    ]
   },
   {
     "cr": "pçkr",
     "stem0": "rubidium",
     "stem1": "rubidium",
     "stem2": "Rb cation",
-    "stem3": "Rb anion"
+    "stem3": "Rb anion",
+    "completive": [
+      "Rb in 0 oxidation state",
+      "oxidized Rb",
+      "reduced Rb"
+    ]
   },
   {
     "cr": "pçkř",
     "stem0": "caesium",
     "stem1": "caesium",
     "stem2": "Cs cation",
-    "stem3": "Cs anion"
+    "stem3": "Cs anion",
+    "completive": [
+      "Cs in 0 oxidation state",
+      "oxidized Cs",
+      "reduced Cs"
+    ]
   },
   {
     "cr": "pçkf",
     "stem0": "francium",
     "stem1": "francium",
     "stem2": "Fr cation",
-    "stem3": "Fr anion"
+    "stem3": "Fr anion",
+    "completive": [
+      "Fr in 0 oxidation state",
+      "oxidized Fr",
+      "reduced Fr"
+    ]
   },
   {
     "cr": "lvg",
     "stem0": "beryllium",
     "stem1": "beryllium",
     "stem2": "Be cation",
-    "stem3": "Be anion"
+    "stem3": "Be anion",
+    "completive": [
+      "Be in 0 oxidation state",
+      "oxidized Be",
+      "reduced Be"
+    ]
   },
   {
     "cr": "lvgw",
     "stem0": "magnesium",
     "stem1": "magnesium",
     "stem2": "Mg cation",
-    "stem3": "Mg anion"
+    "stem3": "Mg anion",
+    "completive": [
+      "Mg in 0 oxidation state",
+      "oxidized Mg",
+      "reduced Mg"
+    ]
   },
   {
     "cr": "lvgy",
     "stem0": "calcium",
     "stem1": "calcium",
     "stem2": "Ca cation",
-    "stem3": "Ca anion"
+    "stem3": "Ca anion",
+    "completive": [
+      "Ca in 0 oxidation state",
+      "oxidized Ca",
+      "reduced Ca"
+    ]
   },
   {
     "cr": "lvgl",
     "stem0": "strontium",
     "stem1": "strontium",
     "stem2": "Sr cation",
-    "stem3": "Sr anion"
+    "stem3": "Sr anion",
+    "completive": [
+      "Sr in 0 oxidation state",
+      "oxidized Sr",
+      "reduced Sr"
+    ]
   },
   {
     "cr": "lvgr",
     "stem0": "barium",
     "stem1": "barium",
     "stem2": "Ba cation",
-    "stem3": "Ba anion"
+    "stem3": "Ba anion",
+    "completive": [
+      "Ba in 0 oxidation state",
+      "oxidized Ba",
+      "reduced Ba"
+    ]
   },
   {
     "cr": "lvgř",
     "stem0": "radium",
     "stem1": "radium",
     "stem2": "Ra cation",
-    "stem3": "Ra anion"
+    "stem3": "Ra anion",
+    "completive": [
+      "Ra in 0 oxidation state",
+      "oxidized Ra",
+      "reduced Ra"
+    ]
   },
   {
     "cr": "lvgv",
     "stem0": "scandium",
     "stem1": "scandium",
     "stem2": "Sc cation",
-    "stem3": "Sc anion"
+    "stem3": "Sc anion",
+    "completive": [
+      "Sc in 0 oxidation state",
+      "oxidized Sc",
+      "reduced Sc"
+    ]
   },
   {
     "cr": "lvgz",
     "stem0": "yttrium",
     "stem1": "yttrium",
     "stem2": "Y cation",
-    "stem3": "Y anion"
+    "stem3": "Y anion",
+    "completive": [
+      "Y in 0 oxidation state",
+      "oxidized Y",
+      "reduced Y"
+    ]
   },
   {
     "cr": "pļw",
     "stem0": "titanium",
     "stem1": "titanium",
     "stem2": "Ti cation",
-    "stem3": "Ti anion"
+    "stem3": "Ti anion",
+    "completive": [
+      "Ti in 0 oxidation state",
+      "oxidized Ti",
+      "reduced Ti"
+    ]
   },
   {
     "cr": "pļm",
     "stem0": "zirconium",
     "stem1": "zirconium",
     "stem2": "Zr cation",
-    "stem3": "Zr anion"
+    "stem3": "Zr anion",
+    "completive": [
+      "Zr in 0 oxidation state",
+      "oxidized Zr",
+      "reduced Zr"
+    ]
   },
   {
     "cr": "pļn",
     "stem0": "hafnium",
     "stem1": "hafnium",
     "stem2": "Hf cation",
-    "stem3": "Hf anion"
+    "stem3": "Hf anion",
+    "completive": [
+      "Hf in 0 oxidation state",
+      "oxidized Hf",
+      "reduced Hf"
+    ]
   },
   {
     "cr": "pļň",
     "stem0": "rutherfordium",
     "stem1": "rutherfordium",
     "stem2": "Rf cation",
-    "stem3": "Rf anion"
+    "stem3": "Rf anion",
+    "completive": [
+      "Rf in 0 oxidation state",
+      "oxidized Rf",
+      "reduced Rf"
+    ]
   },
   {
     "cr": "rtň",
     "stem0": "vanadium",
     "stem1": "vanadium",
     "stem2": "V cation",
-    "stem3": "V anion"
+    "stem3": "V anion",
+    "completive": [
+      "V in 0 oxidation state",
+      "oxidized V",
+      "reduced V"
+    ]
   },
   {
     "cr": "rtňw",
     "stem0": "niobium",
     "stem1": "niobium",
     "stem2": "Nb cation",
-    "stem3": "Nb anion"
+    "stem3": "Nb anion",
+    "completive": [
+      "Nb in 0 oxidation state",
+      "oxidized Nb",
+      "reduced Nb"
+    ]
   },
   {
     "cr": "rsň",
     "stem0": "tantalum",
     "stem1": "tantalum",
     "stem2": "Ta cation",
-    "stem3": "Ta anion"
+    "stem3": "Ta anion",
+    "completive": [
+      "Ta in 0 oxidation state",
+      "oxidized Ta",
+      "reduced Ta"
+    ]
   },
   {
     "cr": "rsňw",
     "stem0": "dubnium",
     "stem1": "dubnium",
     "stem2": "Db cation",
-    "stem3": "Db anion"
+    "stem3": "Db anion",
+    "completive": [
+      "Db in 0 oxidation state",
+      "oxidized Db",
+      "reduced Db"
+    ]
   },
   {
     "cr": "škr",
     "stem0": "chromium",
     "stem1": "chromium",
     "stem2": "Cr cation",
-    "stem3": "Cr anion"
+    "stem3": "Cr anion",
+    "completive": [
+      "Cr in 0 oxidation state",
+      "oxidized Cr",
+      "reduced Cr"
+    ]
   },
   {
     "cr": "škw",
     "stem0": "molybdenum",
     "stem1": "molybdenum",
     "stem2": "Mo cation",
-    "stem3": "Mo anion"
+    "stem3": "Mo anion",
+    "completive": [
+      "Mo in 0 oxidation state",
+      "oxidized Mo",
+      "reduced Mo"
+    ]
   },
   {
     "cr": "šky",
     "stem0": "tungsten",
     "stem1": "tungsten",
     "stem2": "W cation",
-    "stem3": "W anion"
+    "stem3": "W anion",
+    "completive": [
+      "W in 0 oxidation state",
+      "oxidized W",
+      "reduced W"
+    ]
   },
   {
     "cr": "škř",
     "stem0": "seaborgium",
     "stem1": "seaborgium",
     "stem2": "Sg cation",
-    "stem3": "Sg anion"
+    "stem3": "Sg anion",
+    "completive": [
+      "Sg in 0 oxidation state",
+      "oxidized Sg",
+      "reduced Sg"
+    ]
   },
   {
     "cr": "tļn",
     "stem0": "manganese",
     "stem1": "manganese",
     "stem2": "Mn cation",
-    "stem3": "Mn anion"
+    "stem3": "Mn anion",
+    "completive": [
+      "Mn in 0 oxidation state",
+      "oxidized Mn",
+      "reduced Mn"
+    ]
   },
   {
     "cr": "tļnw",
     "stem0": "technetium",
     "stem1": "technetium",
     "stem2": "Tc cation",
-    "stem3": "Tc anion"
+    "stem3": "Tc anion",
+    "completive": [
+      "Tc in 0 oxidation state",
+      "oxidized Tc",
+      "reduced Tc"
+    ]
   },
   {
     "cr": "tļň",
     "stem0": "rhenium",
     "stem1": "rhenium",
     "stem2": "Re cation",
-    "stem3": "Re anion"
+    "stem3": "Re anion",
+    "completive": [
+      "Re in 0 oxidation state",
+      "oxidized Re",
+      "reduced Re"
+    ]
   },
   {
     "cr": "tļňw",
     "stem0": "bohrium",
     "stem1": "bohrium",
     "stem2": "Bh cation",
-    "stem3": "Bh anion"
+    "stem3": "Bh anion",
+    "completive": [
+      "Bh in 0 oxidation state",
+      "oxidized Bh",
+      "reduced Bh"
+    ]
   },
   {
     "cr": "sgl",
@@ -16951,14 +17280,24 @@
     "stem0": "eat/drink/nutritional consumption",
     "stem1": "consuming",
     "stem2": "eating food",
-    "stem3": "drinking liquid"
+    "stem3": "drinking liquid",
+    "completive": [
+      "consumping up",
+      "eating up",
+      "drinking down"
+    ]
   },
   {
     "cr": "ntx",
     "stem0": "mastication/swallowing/biting",
     "stem1": "chewing/mastication",
     "stem2": "swallowing",
-    "stem3": "biting"
+    "stem3": "biting",
+    "completive": [
+      "",
+      "",
+      "biting off"
+    ]
   },
   {
     "cr": "sdr",
@@ -25064,7 +25403,12 @@
     "stem0": "caprimulgiform (nightjar/nighthawk) 2",
     "stem1": "frogmouth (genera Podgarus, Batrachostomus, Rigidipenna)",
     "stem2": "potoo (genus Nyctibius)",
-    "stem3": "oilbird (genus Steatornis)"
+    "stem3": "oilbird (genus Steatornis)",
+    "completive": [
+      "n",
+      "",
+      ""
+    ]
   },
   {
     "cr": "nsgv",
@@ -26023,49 +26367,84 @@
     "stem0": "hagfish/lancelet",
     "stem1": "hagfish (genera Rubicundus, Eptatretus, Myxine, Nemamyxine, Neomyxine, Notomyxine)",
     "stem2": "lancelet (Ampioxiform)",
-    "stem3": "n/a"
+    "stem3": "n/a",
+    "wikidata": [
+      "75713",
+      "1156226",
+      ""
+    ]
   },
   {
     "cr": "psgy",
     "stem0": "tunicate",
     "stem1": "sea squirt (Phlebobranchian, Aplousobranchian)",
     "stem2": "salp, pyrosome, doliolid tunicate (Thaliacean)",
-    "stem3": "unusual tunicate (Stolidobranchian, Larvacean)"
+    "stem3": "unusual tunicate (Stolidobranchian, Larvacean)",
+    "wikidata": [
+      "",
+      "610887",
+      ""
+    ]
   },
   {
     "cr": "psgl",
     "stem0": "lamprey",
     "stem1": "pouched lamprey (genus Geotria)",
     "stem2": "Southern topeyed lamprey (genus Mordacia)",
-    "stem3": "Northern lamprey (Petromyzontidae)"
+    "stem3": "Northern lamprey (Petromyzontidae)",
+    "wikidata": [
+      "2255569",
+      "140496",
+      "839661"
+    ]
   },
   {
     "cr": "psgr",
     "stem0": "skate (fish)",
     "stem1": "skate (Rajidae, Gurgesiellidae)",
     "stem2": "smooth skate/leg skate (Anacanthobatidae)",
-    "stem3": "softnose skate (Arhynchobatidae)"
+    "stem3": "softnose skate (Arhynchobatidae)",
+    "wikidata": [
+      "",
+      "201072",
+      "2568546"
+    ]
   },
   {
     "cr": "psgř",
     "stem0": "sawfish",
     "stem1": "largetooth, common, wide, freshwater, river, or northern sawfish/carpenter shark (Pristis pristis)",
     "stem2": "knifetooth, pointed, Queensland, green, longcomb, narrowsnout, or olive sawfish (Indo-Pacific species; Anoxypristis cuspidata, Pristis clavata, Pristis zijsron)",
-    "stem3": "smalltooth sawfish (Atlantic species; Pristis pectinata)"
+    "stem3": "smalltooth sawfish (Atlantic species; Pristis pectinata)",
+    "wikidata": [
+      "1094698",
+      "",
+      "311651"
+    ]
   },
   {
     "cr": "psgḑ",
     "stem0": "electric ray",
     "stem1": "electric ray (genera Torpedo, Tetronarce)",
     "stem2": "numbfish, coffin ray (Narcinidae, Hypnidae)",
-    "stem3": "sleeper ray (Narkinae)"
+    "stem3": "sleeper ray (Narkinae)",
+    "wikidata": [
+      "",
+      "",
+      "2245189"
+    ]
   },
   {
     "cr": "psgv",
     "stem0": "sting ray",
     "stem1": "stingray; cownose, eagle, manta, devil, butterfly, river, whiptail, deepwater, or sixgill ray (Myliobatoidae)",
     "stem2": "panray (genus Zanobatis)",
-    "stem3": "thornback (genera Platyrhina, Platyrhinoidis)"
+    "stem3": "thornback (genera Platyrhina, Platyrhinoidis)",
+    "wikidata": [
+      "5328202",
+      "",
+      ""
+    ]
   },
   {
     "cr": "psdw",
@@ -26352,7 +26731,12 @@
     "stem0": "characid fish 2",
     "stem1": "pike-characin (genera Boulengerella, Ctenolucius)",
     "stem2": "pencil fish, including valadora (Lebiasinidae)",
-    "stem3": "dorado (genus Salminus)"
+    "stem3": "dorado (genus Salminus)",
+    "wikidata": [
+      "",
+      "",
+      "2214804"
+    ]
   },
   {
     "cr": "psl",

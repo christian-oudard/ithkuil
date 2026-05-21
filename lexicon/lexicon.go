@@ -13,15 +13,38 @@ import (
 	"github.com/christian-oudard/ithkuil/data"
 )
 
-// RootEntry pairs a root consonant cluster with its four-stem meaning.
-// Stem 0 is the basic/generic meaning; stems 1-3 are specializations
-// selected by the formative's Vv slot.
+// RootEntry pairs a root consonant cluster with its four-stem meaning
+// plus optional specialization variants. Stem 0 is the basic/generic
+// meaning; stems 1-3 are specializations selected by the formative's
+// Vv slot.
+//
+// The optional fields capture cross-slot alternates from the upstream
+// spreadsheet:
+//
+//   - Contential, Constitutive: alternate stem-0 meanings for spec=CTE
+//     and spec=CSV. Stem0 itself is the BSC (basic) reading.
+//   - Objective: per-stem (S1..S3) alternates for spec=OBJ. Three-slot
+//     slice when present.
+//   - Completive: per-stem alternates for completion=CPT. PRC reads
+//     Stem(n) as usual.
+//   - Dynamic: alternate reading when function=DYN.
+//   - Wikidata: external Q-IDs per stem (S1..S3).
+//
+// Most roots only fill Stem0..Stem3. The variants are populated for
+// well-defined word families (~1-4% of entries) and are omitted when
+// blank to keep the JSON compact.
 type RootEntry struct {
-	Cr    string `json:"cr"`
-	Stem0 string `json:"stem0"`
-	Stem1 string `json:"stem1"`
-	Stem2 string `json:"stem2"`
-	Stem3 string `json:"stem3"`
+	Cr           string   `json:"cr"`
+	Stem0        string   `json:"stem0"`
+	Stem1        string   `json:"stem1"`
+	Stem2        string   `json:"stem2"`
+	Stem3        string   `json:"stem3"`
+	Contential   string   `json:"contential,omitempty"`
+	Constitutive string   `json:"constitutive,omitempty"`
+	Objective    []string `json:"objective,omitempty"`
+	Completive   []string `json:"completive,omitempty"`
+	Dynamic      string   `json:"dynamic,omitempty"`
+	Wikidata     []string `json:"wikidata,omitempty"`
 }
 
 // AffixEntry holds an affix identifier, its three-letter abbreviation,

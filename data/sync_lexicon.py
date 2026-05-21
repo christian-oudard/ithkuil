@@ -63,13 +63,37 @@ def parse_roots(csv_text: str) -> list[dict]:
         cr = normalize(row.get("Root", ""))
         if not cr:
             continue
-        out.append({
+        entry = {
             "cr": cr,
             "stem0": normalize(row.get("Stem 0 / Basic", "")),
             "stem1": normalize(row.get("Stem 1", "")),
             "stem2": normalize(row.get("Stem 2", "")),
             "stem3": normalize(row.get("Stem 3", "")),
-        })
+        }
+        contential = normalize(row.get("Contential", ""))
+        if contential:
+            entry["contential"] = contential
+        constitutive = normalize(row.get("Constitutive", ""))
+        if constitutive:
+            entry["constitutive"] = constitutive
+        dynamic = normalize(row.get("Dynamic", ""))
+        if dynamic:
+            entry["dynamic"] = dynamic
+
+        def trio(col_prefix: str) -> list[str] | None:
+            vals = [normalize(row.get(f"S{i} {col_prefix}", "")) for i in (1, 2, 3)]
+            return vals if any(vals) else None
+
+        objective = trio("Objective")
+        if objective:
+            entry["objective"] = objective
+        completive = trio("Completive")
+        if completive:
+            entry["completive"] = completive
+        wikidata = trio("Wikidata")
+        if wikidata:
+            entry["wikidata"] = wikidata
+        out.append(entry)
     return out
 
 
@@ -113,11 +137,31 @@ def merge_affixes(upstream: list[dict], existing_path: Path) -> list[dict]:
 
 
 def write_roots_tsv(roots: list[dict], path: Path) -> None:
+    cols = [
+        "Root",
+        "Stem 0 / Basic", "Stem 1", "Stem 2", "Stem 3",
+        "Contential", "Constitutive",
+        "S1 Objective", "S2 Objective", "S3 Objective",
+        "S1 Completive", "S2 Completive", "S3 Completive",
+        "Dynamic",
+        "S1 Wikidata", "S2 Wikidata", "S3 Wikidata",
+    ]
     with open(path, "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f, delimiter="\t", lineterminator="\n")
-        w.writerow(["Root", "Stem 0 / Basic", "Stem 1", "Stem 2", "Stem 3"])
+        w.writerow(cols)
         for r in roots:
-            w.writerow([r["cr"], r["stem0"], r["stem1"], r["stem2"], r["stem3"]])
+            obj = r.get("objective", ["", "", ""])
+            cpt = r.get("completive", ["", "", ""])
+            wik = r.get("wikidata", ["", "", ""])
+            w.writerow([
+                r["cr"],
+                r["stem0"], r["stem1"], r["stem2"], r["stem3"],
+                r.get("contential", ""), r.get("constitutive", ""),
+                obj[0], obj[1], obj[2],
+                cpt[0], cpt[1], cpt[2],
+                r.get("dynamic", ""),
+                wik[0], wik[1], wik[2],
+            ])
 
 
 def write_affixes_tsv(affixes: list[dict], path: Path) -> None:

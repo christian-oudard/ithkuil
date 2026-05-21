@@ -121,6 +121,35 @@ func TestLoad_BadAffixesPath(t *testing.T) {
 	}
 }
 
+func TestRootEntry_RichFields(t *testing.T) {
+	roots, err := LoadRoots(dataPath("roots.json"))
+	if err != nil {
+		t.Fatalf("LoadRoots: %v", err)
+	}
+	// "t" (demonstrative) has Objective alternates per stem in upstream.
+	tr, ok := roots["t"]
+	if !ok {
+		t.Fatalf("root \"t\" missing")
+	}
+	if len(tr.Objective) != 3 {
+		t.Fatalf("root \"t\".Objective = %v, want 3 entries", tr.Objective)
+	}
+	for i, s := range tr.Objective {
+		if s == "" {
+			t.Errorf("root \"t\".Objective[%d] empty", i)
+		}
+	}
+	// Plain entry with no rich fields should not allocate any.
+	mb, ok := roots["mb"]
+	if !ok {
+		t.Fatalf("root \"mb\" missing")
+	}
+	if mb.Objective != nil || mb.Completive != nil || mb.Wikidata != nil ||
+		mb.Contential != "" || mb.Constitutive != "" || mb.Dynamic != "" {
+		t.Errorf("root \"mb\" should have no rich fields, got %+v", mb)
+	}
+}
+
 func TestLoadDefault(t *testing.T) {
 	// LoadDefault reads from the embedded JSON, which is always
 	// available. Sanity-check a few well-known entries are present.
