@@ -202,13 +202,6 @@ func slotI(c *g.ConcatenationStatus) string {
 	return ""
 }
 
-func slotII(s g.SlotII) string {
-	if s == g.DefaultSlotII {
-		return ""
-	}
-	return fmt.Sprintf("%s/%s", s.Stem, s.Version)
-}
-
 // stemIndex converts the grammar.Stem enum to the 0-3 index expected
 // by RootEntry.Stem. The Haskell convention is S0→0, S1→1, S2→2, S3→3.
 func stemIndex(s g.Stem) int {

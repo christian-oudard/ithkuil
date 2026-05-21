@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -188,6 +189,150 @@ func TestFormative_RefRoot(t *testing.T) {
 	// RefRoot gloss has the "-(refs)-" shape from §4.6.4 decomposition.
 	if !strings.Contains(got, "(1m)") {
 		t.Errorf("RefRoot gloss = %q, want \"(1m)\" segment", got)
+	}
+}
+
+func TestToken_FramedVerbalCase(t *testing.T) {
+	// Construct a FramedVerbal with a non-THM case so finalSlotIX
+	// renders the case (not the default-elided form).
+	f := g.MinimalFormative("ml")
+	f.Final = g.FramedVerbal{Case: g.ERG}
+	got := (&Glosser{}).Formative(f)
+	if !strings.Contains(got, "ERG") {
+		t.Errorf("Framed verbal ERG gloss = %q, want ERG", got)
+	}
+	if !strings.Contains(got, "ANT") {
+		t.Errorf("Framed verbal gloss = %q, want ANT tag", got)
+	}
+}
+
+func TestToken_AllStems(t *testing.T) {
+	// Drive stemIndex through every variant. Use lexicon-backed
+	// glossing to actually consult the stem index.
+	lex := loadLex(t)
+	for _, stem := range []g.Stem{g.S0, g.S1, g.S2, g.S3} {
+		f := g.MinimalFormative("ml")
+		cr := f.Root.(g.CrRoot)
+		cr.Stem = stem
+		f.Root = cr
+		got := (&Glosser{Lex: lex}).Formative(f)
+		if got == "" {
+			t.Errorf("stem %v: empty gloss", stem)
+		}
+	}
+}
+
+func TestAffix_TypeSubscripts(t *testing.T) {
+	// Build single-affix-adjunct tokens with each affix Type so
+	// affixTypeSubscript runs all branches.
+	for _, vx := range []string{"a", "ai", "ia"} {
+		// "a"=Type1, "ai"=Type2, "ia"=Type3.
+		a := g.SingleAffixAdjunct{Vx: vx, Cs: "r", Vs: "", Scope: g.ScopeVDom}
+		got := (&Glosser{}).Token(tokenize.SingleAffixWord{Text: vx + "r", Affix: a})
+		if got == "" {
+			t.Errorf("SingleAffix Vx=%q: empty gloss", vx)
+		}
+	}
+}
+
+func TestVkTag_AllVariants(t *testing.T) {
+	for _, val := range g.AllValidations {
+		f := g.MinimalFormative("ml")
+		f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: val}}
+		got := (&Glosser{}).Formative(f)
+		want := "ASR"
+		if val != g.OBS {
+			want = "ASR/" + val.String()
+		}
+		if !strings.Contains(got, want) {
+			t.Errorf("ASR/%s gloss = %q, want substring %q", val, got, want)
+		}
+	}
+	for _, vk := range g.AllVk[1:] {
+		f := g.MinimalFormative("ml")
+		f.Final = g.UnframedVerbal{Vk: vk}
+		got := (&Glosser{}).Formative(f)
+		if !strings.Contains(got, vk.Tag()) {
+			t.Errorf("Vk=%T (%s) gloss = %q, want substring %q", vk, vk.Tag(), got, vk.Tag())
+		}
+	}
+}
+
+func TestFormative_SlotVI_AllNonDefaults(t *testing.T) {
+	// Walk each Slot VI sub-field non-default so slotVI's per-field
+	// emit branches all fire.
+	for _, mod := range []func(*g.SlotVI){
+		func(s *g.SlotVI) { s.Configuration = g.DPX },
+		func(s *g.SlotVI) { s.Affiliation = g.ASO },
+		func(s *g.SlotVI) { s.Perspective = g.G_ },
+		func(s *g.SlotVI) { s.Extension = g.PRX },
+		func(s *g.SlotVI) { s.Essence = g.RPV },
+	} {
+		f := g.MinimalFormative("ml")
+		s := g.DefaultSlotVI
+		mod(&s)
+		f.SlotVI = s
+		got := (&Glosser{}).Formative(f)
+		if got == "" {
+			t.Errorf("non-default Ca %+v: empty gloss", s)
+		}
+	}
+}
+
+func TestFormative_AllFinalTags(t *testing.T) {
+	// Cover finalTag's three branches.
+	for _, fin := range []g.Final{
+		g.UnframedNominal{Case: g.THM},
+		g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}},
+		g.FramedVerbal{Case: g.THM},
+	} {
+		f := g.MinimalFormative("ml")
+		f.Final = fin
+		_ = (&Glosser{}).Formative(f)
+	}
+}
+
+func TestFormative_TypeAndType2Concat(t *testing.T) {
+	t2 := g.Type2
+	f := g.MinimalFormative("ml")
+	f.Concat = &t2
+	got := (&Glosser{}).Formative(f)
+	if !strings.Contains(got, "T2") {
+		t.Errorf("Type2 concat gloss = %q, want T2", got)
+	}
+}
+
+func TestAffixes_Type3RefShortcut(t *testing.T) {
+	// §4.6.5: lone Type-3 affix with referential Cs renders as (refs)/deg.
+	f := g.MinimalFormative("ml")
+	f.SlotVII = []g.Affix{{Type: g.Type3Affix, Degree: 5, Consonant: "l"}}
+	got := (&Glosser{}).Formative(f)
+	if !strings.Contains(got, "(1m)/5") {
+		t.Errorf("Type-3 ref shortcut gloss = %q, want (1m)/5", got)
+	}
+}
+
+func TestAffixes_MultipleType1(t *testing.T) {
+	// Two regular Slot VII affixes: hyphenated list, not the §4.6.5 path.
+	f := g.MinimalFormative("ml")
+	f.SlotVII = []g.Affix{
+		{Type: g.Type1Affix, Degree: 1, Consonant: "r"},
+		{Type: g.Type1Affix, Degree: 2, Consonant: "n"},
+	}
+	got := (&Glosser{}).Formative(f)
+	// Should contain both affix labels with "-" separator.
+	if !strings.Contains(got, "-") {
+		t.Errorf("two affixes gloss = %q, want hyphen separator", got)
+	}
+}
+
+func TestCsRootLabel_WithLex(t *testing.T) {
+	lex := loadLex(t)
+	f := g.MinimalFormative("ml")
+	f.Root = g.CsRoot{Cs: "r", Degree: 5, Version: g.PRC, Function: g.STA, Context: g.EXS}
+	got := (&Glosser{Lex: lex}).Formative(f)
+	if !strings.Contains(got, "/5") {
+		t.Errorf("Cs-root gloss = %q, want degree /5", got)
 	}
 }
 
