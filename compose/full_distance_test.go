@@ -32,14 +32,6 @@ func TestFullDistance_SlotsCorpus(t *testing.T) {
 
 	for _, w := range slots.FormativeCorpus {
 		t.Run(w, func(t *testing.T) {
-			// Known render regression: ultimate-stress verbal formative
-			// with a non-default Slot VIII Mood whose Cn matches a
-			// shortcut consonant (hl) — render fires the Cn→Ca shortcut
-			// path even though the surface form was canonical, dropping
-			// trailing structure. Owned by agent-5's slot work.
-			if w == "amlalahlá" {
-				t.Skip("known: Cn→Ca shortcut vs ultimate-stress interaction")
-			}
 			f, err := fullparse.ParseFormative(w)
 			if err != nil {
 				t.Skipf("fullparse rejects %q: %v", w, err)

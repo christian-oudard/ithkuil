@@ -684,9 +684,17 @@ func canElideMonosyllabicVerbalVc(l *Layout, f g.Formative) bool {
 	if l.Vc != "a" {
 		return false
 	}
-	// Eliding Vc must leave at least one syllable so the body remains
-	// a pronounceable monosyllabic-equivalent.
-	return vowelCount(l)-1 >= 1
+	// §3.10 grants implicit ultimate stress only to *monosyllabic*
+	// words. Predict the post-elision vowel count: Vc elision drops
+	// one, and a co-firing leading-Vv elision drops another. The
+	// result must be exactly one vowel for §3.10 to apply. A
+	// multi-syllabic body that dropped Vc would resolve as
+	// penultimate stress, not assertive/OBS.
+	target := vowelCount(l) - 1
+	if canElideLeadingVv(l, f) {
+		target--
+	}
+	return target == 1
 }
 
 func canElideLeadingVv(l *Layout, f g.Formative) bool {
