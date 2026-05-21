@@ -1278,7 +1278,7 @@
     "cs": "dg",
     "abbrev": "ANG",
     "description": "Angular Measurement",
-    "type": "0*",
+    "type": "0* 1 arc-seconds 2 arc-minutes 3 mils 4 grads 5 degrees 6 points 7 hour angles 8 radians 9 sextants",
     "degrees": [
       "(in) points",
       "(in) hour angles",
@@ -8250,6 +8250,23 @@
     "description": "Metonymic Categories",
     "type": "0",
     "degrees": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "cs": "ẓḑ",
+    "abbrev": "GPJ",
+    "description": "Functional Group J",
+    "type": "0",
+    "degrees": [
       "part for whole",
       "producer for product",
       "object used or owned for user/owner",
@@ -8262,9 +8279,9 @@
     ]
   },
   {
-    "cs": "ẓḑ",
-    "abbrev": "GPJ",
-    "description": "Functional Group J",
+    "cs": "zf",
+    "abbrev": "ENS",
+    "description": "Environmental Niche",
     "type": "0",
     "degrees": [
       "thiocyanate, thocyanato-, -thiocyanate",
@@ -8276,23 +8293,6 @@
       "thionoester, O-alkyl-alkane-thioate",
       "carbodithioic acid, dithiocarboxy-, -dithioic acid",
       "dithiocarboxylic acid ester, -dithioate"
-    ]
-  },
-  {
-    "cs": "zf",
-    "abbrev": "ENS",
-    "description": "Environmental Niche",
-    "type": "0",
-    "degrees": [
-      "active at twilight/crepuscular",
-      "active at night/nocturnal",
-      "active around dawn",
-      "active during the morning",
-      "active during the day/diurnal",
-      "sessile, not motile -- adhering to a substrate by direct attachment (not via a stalk/stipe/pedicel/connecting medium)",
-      "attached to a substrate via a stalk/stipe/pedicel/connecting medium",
-      "motile in reaction to heat",
-      "motile in reaction to light"
     ]
   },
   {
