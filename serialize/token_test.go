@@ -131,9 +131,9 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 	}
 }
 
-func TestMarshalSentence_RoundTrip(t *testing.T) {
+func TestMarshalTokens_RoundTrip(t *testing.T) {
 	thm := g.THM
-	sentence := []tokenize.WordToken{
+	tokens := []tokenize.WordToken{
 		tokenize.BiasWord{Bias: g.DOL},
 		tokenize.FormativeWord{Formative: g.MinimalFormative("m")},
 		tokenize.ReferentialWord{
@@ -141,20 +141,20 @@ func TestMarshalSentence_RoundTrip(t *testing.T) {
 			Case: &thm,
 		},
 	}
-	b, err := MarshalSentence(sentence)
+	b, err := MarshalTokens(tokens)
 	if err != nil {
-		t.Fatalf("MarshalSentence: %v", err)
+		t.Fatalf("MarshalTokens: %v", err)
 	}
-	got, err := UnmarshalSentence(b)
+	got, err := UnmarshalTokens(b)
 	if err != nil {
-		t.Fatalf("UnmarshalSentence: %v", err)
+		t.Fatalf("UnmarshalTokens: %v", err)
 	}
-	if len(got) != len(sentence) {
-		t.Fatalf("sentence len: got %d, want %d", len(got), len(sentence))
+	if len(got) != len(tokens) {
+		t.Fatalf("token-stream len: got %d, want %d", len(got), len(tokens))
 	}
-	for i := range sentence {
-		if !equalTokens(sentence[i], got[i]) {
-			t.Errorf("sentence token %d mismatch\n  want: %+v\n  got:  %+v", i, sentence[i], got[i])
+	for i := range tokens {
+		if !equalTokens(tokens[i], got[i]) {
+			t.Errorf("token %d mismatch\n  want: %+v\n  got:  %+v", i, tokens[i], got[i])
 		}
 	}
 }

@@ -19,7 +19,7 @@ import (
 var (
 	affixCsToIndex map[string]uint16
 	affixIndexToCs []string
-	lexiconVersion string
+	lexiconVersion uint16
 )
 
 // AffixIndexUnknown signals "this affix's Cs is not in the lexicon —

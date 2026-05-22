@@ -16,9 +16,10 @@ func TestLoad(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Load error: %v", err)
 	}
-	if lex.Version == "" {
-		t.Error("Load: Version empty")
+	if lex.Version == 0 {
+		t.Error("Load: Version zero")
 	}
+	_ = lex.Version // version is a uint16; non-zero check above
 	if len(lex.Roots) < 4000 {
 		t.Errorf("expected several thousand root entries, got %d", len(lex.Roots))
 	}
@@ -156,8 +157,8 @@ func TestLoadDefault(t *testing.T) {
 	if err != nil {
 		t.Fatalf("LoadDefault: %v", err)
 	}
-	if lex.Version == "" {
-		t.Error("LoadDefault: Version empty")
+	if lex.Version == 0 {
+		t.Error("LoadDefault: Version zero")
 	}
 	if len(lex.Roots) == 0 {
 		t.Error("LoadDefault: Roots empty")

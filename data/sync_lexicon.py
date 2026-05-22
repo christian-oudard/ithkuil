@@ -206,24 +206,49 @@ def merge_affix_entries(parsed: list[dict], existing: list[dict]) -> list[dict]:
     return out
 
 
-def write_lexicon(roots: list[dict], affixes: list[dict], path: Path) -> str:
+def write_lexicon(roots: list[dict], affixes: list[dict], path: Path) -> int:
     """Write the combined lexicon.json plus its gzip-compressed embed
-    sibling. Returns the content-derived version string."""
-    import gzip
-    import hashlib
+    sibling. Returns the version integer.
 
-    payload = json.dumps({"roots": roots, "affixes": affixes}, sort_keys=True, ensure_ascii=False)
-    version = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+    Versioning policy: a monotonically increasing uint16 owned by this
+    script. We compare the new content against the existing file's
+    content (if any); same content → keep version, different → bump.
+    """
+    import gzip
+
+    new_content = {"roots": roots, "affixes": affixes}
+    new_payload = json.dumps(new_content, sort_keys=True, ensure_ascii=False)
+
+    # Read existing version + content for comparison.
+    prev_version = 0
+    prev_payload = None
+    if path.exists():
+        with open(path, encoding="utf-8") as f:
+            prev = json.load(f)
+        prev_version = int(prev.get("version", 0))
+        prev_payload = json.dumps(
+            {"roots": prev.get("roots", []), "affixes": prev.get("affixes", [])},
+            sort_keys=True, ensure_ascii=False,
+        )
+
+    if prev_payload == new_payload:
+        version = prev_version
+    else:
+        version = prev_version + 1
+        if version > 0xFFFF:
+            raise ValueError(f"lexicon version overflow: {version} doesn't fit in uint16")
+
     combined = {"version": version, "roots": roots, "affixes": affixes}
     with open(path, "w", encoding="utf-8") as f:
         json.dump(combined, f, ensure_ascii=False, indent=2)
         f.write("\n")
-    # Re-encode without indentation for the gzip blob; decompression
-    # ends up at the same parsed JSON either way.
+    # Compact (un-indented) JSON for the gzip embed. mtime=0 keeps the
+    # gzip header reproducible (no timestamp baked in).
     plain = json.dumps(combined, ensure_ascii=False).encode("utf-8")
     gz_path = path.with_suffix(path.suffix + ".gz")
-    with gzip.open(gz_path, "wb", compresslevel=9, mtime=0) as gz:
-        gz.write(plain)
+    with open(gz_path, "wb") as raw:
+        with gzip.GzipFile(fileobj=raw, mode="wb", compresslevel=9, mtime=0) as gz:
+            gz.write(plain)
     return version
 
 
@@ -243,7 +268,7 @@ def main() -> int:
     write_roots_tsv(roots, data_dir / "roots.tsv")
     write_affixes_tsv(affixes, data_dir / "affixes.tsv")
     version = write_lexicon(roots, affixes, lexicon_path)
-    print(f"Wrote roots.tsv, affixes.tsv, lexicon.json (version {version})")
+    print(f"Wrote roots.tsv, affixes.tsv, lexicon.json (version v{version})")
     return 0
 
 

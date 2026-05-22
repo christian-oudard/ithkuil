@@ -216,29 +216,33 @@ func UnmarshalWord(buf []byte) (tokenize.WordToken, int, error) {
 // future incompatible layout change is detected at the boundary.
 const FormatVersion byte = 1
 
-// MarshalSentence encodes a sequence of tokens. Layout:
+// MarshalTokens encodes a stream of tokens. Layout:
 //
-//	[format version byte]              FormatVersion (1)
-//	[uvarint length][lexicon version]  16-char short hash of the lexicon used
+//	[format version byte]    FormatVersion (1)
+//	[lexicon version: 2 bytes big-endian uint16]
 //	[uvarint token count]
 //	[token bytes...]
 //
 // Each token self-delimits via its leading type tag. The lexicon
 // version pins the affix-index mapping (serialize/affix_index.go) to a
-// specific lexicon content hash, so a decoder reading bytes produced
-// against a different lexicon fails loudly rather than silently
-// returning the wrong affixes.
-func MarshalSentence(tokens []tokenize.WordToken) ([]byte, error) {
+// specific lexicon revision — sync_lexicon.py bumps it on every
+// content change — so a decoder reading bytes produced against a
+// different lexicon fails loudly rather than silently returning the
+// wrong affixes.
+//
+// Ithkuil's grammar has no sentence or paragraph structure — sentence
+// boundaries are prosodic (§5.8 ¶8) and not encoded in the romanized
+// text. The wire format mirrors that: one stream of tokens, no higher
+// framing.
+func MarshalTokens(tokens []tokenize.WordToken) ([]byte, error) {
 	var buf bytes.Buffer
 	buf.WriteByte(FormatVersion)
-	// Lexicon version (length-prefixed string).
-	lexVer := []byte(lexiconVersion)
-	var hdr [binary.MaxVarintLen64]byte
-	n := binary.PutUvarint(hdr[:], uint64(len(lexVer)))
-	buf.Write(hdr[:n])
-	buf.Write(lexVer)
+	// Lexicon version (2 bytes big-endian).
+	buf.WriteByte(byte(lexiconVersion >> 8))
+	buf.WriteByte(byte(lexiconVersion))
 	// Token count.
-	n = binary.PutUvarint(hdr[:], uint64(len(tokens)))
+	var hdr [binary.MaxVarintLen64]byte
+	n := binary.PutUvarint(hdr[:], uint64(len(tokens)))
 	buf.Write(hdr[:n])
 	for _, t := range tokens {
 		b, err := MarshalWord(t)
@@ -250,40 +254,29 @@ func MarshalSentence(tokens []tokenize.WordToken) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// UnmarshalSentence is the inverse of MarshalSentence.
-func UnmarshalSentence(buf []byte) ([]tokenize.WordToken, error) {
-	if len(buf) < 1 {
-		return nil, fmt.Errorf("sentence: empty input")
+// UnmarshalTokens is the inverse of MarshalTokens.
+func UnmarshalTokens(buf []byte) ([]tokenize.WordToken, error) {
+	if len(buf) < 4 {
+		return nil, fmt.Errorf("tokens: short input (need ≥4 bytes of header)")
 	}
 	if buf[0] != FormatVersion {
-		return nil, fmt.Errorf("sentence: unknown format version %d (this decoder supports %d)", buf[0], FormatVersion)
+		return nil, fmt.Errorf("tokens: unknown format version %d (this decoder supports %d)", buf[0], FormatVersion)
 	}
-	cur := 1
-	// Lexicon version string.
-	lexLen, n := binary.Uvarint(buf[cur:])
-	if n <= 0 {
-		return nil, fmt.Errorf("sentence: bad lexicon-version length varint")
-	}
-	cur += n
-	if uint64(len(buf)-cur) < lexLen {
-		return nil, fmt.Errorf("sentence: lexicon version truncated")
-	}
-	gotLexVer := string(buf[cur : cur+int(lexLen)])
+	gotLexVer := uint16(buf[1])<<8 | uint16(buf[2])
 	if gotLexVer != lexiconVersion {
-		return nil, fmt.Errorf("sentence: lexicon version mismatch — bytes were produced against %q but this decoder has %q", gotLexVer, lexiconVersion)
+		return nil, fmt.Errorf("tokens: lexicon version mismatch — bytes were produced against v%d but this decoder has v%d", gotLexVer, lexiconVersion)
 	}
-	cur += int(lexLen)
-	// Token count.
+	cur := 3
 	count, n := binary.Uvarint(buf[cur:])
 	if n <= 0 {
-		return nil, fmt.Errorf("sentence: bad token-count varint")
+		return nil, fmt.Errorf("tokens: bad token-count varint")
 	}
 	cur += n
 	out := make([]tokenize.WordToken, 0, count)
 	for i := uint64(0); i < count; i++ {
 		t, consumed, err := UnmarshalWord(buf[cur:])
 		if err != nil {
-			return nil, fmt.Errorf("sentence token %d: %w", i, err)
+			return nil, fmt.Errorf("tokens token %d: %w", i, err)
 		}
 		cur += consumed
 		out = append(out, t)

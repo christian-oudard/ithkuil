@@ -62,11 +62,12 @@ type AffixEntry struct {
 }
 
 // Lexicon bundles the root and affix maps so callers can pass a single
-// value through their pipelines. Version is a content-derived short
-// hash that lets downstream consumers (notably the binary serialize
-// format) detect when the lexicon has changed.
+// value through their pipelines. Version is a monotonically increasing
+// uint16 owned by data/sync_lexicon.py — bumped whenever the lexicon
+// content changes — that lets downstream consumers (notably the binary
+// serialize format) detect when the lexicon has shifted under them.
 type Lexicon struct {
-	Version string
+	Version uint16
 	Roots   map[string]RootEntry
 	Affixes map[string]AffixEntry
 }
@@ -150,15 +151,15 @@ func (r RootEntry) Stem(i int) string {
 // parseLexicon decodes the combined lexicon.json shape.
 func parseLexicon(buf []byte) (*Lexicon, error) {
 	var raw struct {
-		Version string       `json:"version"`
+		Version uint16       `json:"version"`
 		Roots   []RootEntry  `json:"roots"`
 		Affixes []AffixEntry `json:"affixes"`
 	}
 	if err := json.Unmarshal(buf, &raw); err != nil {
 		return nil, fmt.Errorf("lexicon: %w", err)
 	}
-	if raw.Version == "" {
-		return nil, fmt.Errorf("lexicon: missing version field")
+	if raw.Version == 0 {
+		return nil, fmt.Errorf("lexicon: missing or zero version field")
 	}
 	roots := make(map[string]RootEntry, len(raw.Roots))
 	for _, e := range raw.Roots {
