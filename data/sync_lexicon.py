@@ -184,11 +184,11 @@ def write_json(data: list[dict], path: Path) -> None:
         f.write("\n")
 
 
-def merge_affixes_from_lexicon(parsed: list[dict], lexicon_path: Path) -> list[dict]:
-    """Like merge_affixes but reads affixes out of the combined lexicon.json."""
-    if not lexicon_path.exists():
+def merge_affixes_from_data(parsed: list[dict], data_path: Path) -> list[dict]:
+    """Preserve local description/type from data.json when upstream is blank."""
+    if not data_path.exists():
         return parsed
-    with open(lexicon_path, encoding="utf-8") as f:
+    with open(data_path, encoding="utf-8") as f:
         data = json.load(f)
     return merge_affix_entries(parsed, data.get("affixes", []))
 
@@ -206,55 +206,42 @@ def merge_affix_entries(parsed: list[dict], existing: list[dict]) -> list[dict]:
     return out
 
 
-def write_lexicon(roots: list[dict], affixes: list[dict], path: Path) -> int:
-    """Write the combined lexicon.json plus its gzip-compressed embed
-    sibling. Returns the version integer.
+def write_data(roots: list[dict], affixes: list[dict], path: Path) -> int:
+    """Write roots and affixes into data.json, preserving the grammar section.
 
-    Versioning policy: a monotonically increasing uint16 owned by this
-    script. We compare the new content against the existing file's
-    content (if any); same content → keep version, different → bump.
+    Versioning: monotonically increasing uint16. Version bumps only when
+    roots or affixes content changes; grammar changes don't affect it.
     """
-    import gzip
-
     new_content = {"roots": roots, "affixes": affixes}
     new_payload = json.dumps(new_content, sort_keys=True, ensure_ascii=False)
 
-    # Read existing version + content for comparison.
     prev_version = 0
     prev_payload = None
+    prev_grammar: list[dict] = []
     if path.exists():
         with open(path, encoding="utf-8") as f:
             prev = json.load(f)
         prev_version = int(prev.get("version", 0))
+        prev_grammar = prev.get("grammar", [])
         prev_payload = json.dumps(
             {"roots": prev.get("roots", []), "affixes": prev.get("affixes", [])},
             sort_keys=True, ensure_ascii=False,
         )
 
-    if prev_payload == new_payload:
-        version = prev_version
-    else:
-        version = prev_version + 1
-        if version > 0xFFFF:
-            raise ValueError(f"lexicon version overflow: {version} doesn't fit in uint16")
+    version = prev_version if prev_payload == new_payload else prev_version + 1
+    if version > 0xFFFF:
+        raise ValueError(f"version overflow: {version}")
 
-    combined = {"version": version, "roots": roots, "affixes": affixes}
+    combined = {"version": version, "grammar": prev_grammar, "roots": roots, "affixes": affixes}
     with open(path, "w", encoding="utf-8") as f:
         json.dump(combined, f, ensure_ascii=False, indent=2)
         f.write("\n")
-    # Compact (un-indented) JSON for the gzip embed. mtime=0 keeps the
-    # gzip header reproducible (no timestamp baked in).
-    plain = json.dumps(combined, ensure_ascii=False).encode("utf-8")
-    gz_path = path.with_suffix(path.suffix + ".gz")
-    with open(gz_path, "wb") as raw:
-        with gzip.GzipFile(fileobj=raw, mode="wb", compresslevel=9, mtime=0) as gz:
-            gz.write(plain)
     return version
 
 
 def main() -> int:
     data_dir = Path(__file__).parent
-    lexicon_path = data_dir / "lexicon.json"
+    data_path = data_dir / "data.json"
 
     print("Fetching roots from upstream sheet...")
     roots = parse_roots(fetch(ROOTS_URL))
@@ -262,13 +249,13 @@ def main() -> int:
 
     print("Fetching affixes from upstream sheet...")
     affixes = parse_affixes(fetch(AFFIXES_URL))
-    affixes = merge_affixes_from_lexicon(affixes, lexicon_path)
+    affixes = merge_affixes_from_data(affixes, data_path)
     print(f"  {len(affixes)} affix entries")
 
     write_roots_tsv(roots, data_dir / "roots.tsv")
     write_affixes_tsv(affixes, data_dir / "affixes.tsv")
-    version = write_lexicon(roots, affixes, lexicon_path)
-    print(f"Wrote roots.tsv, affixes.tsv, lexicon.json (version v{version})")
+    version = write_data(roots, affixes, data_path)
+    print(f"Wrote roots.tsv, affixes.tsv, data.json (version v{version})")
     return 0
 
 

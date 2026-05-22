@@ -22,3 +22,6 @@ discord_archive/data/
 /ithkuil
 /ithkuil-mcp
 /bin/
+
+# Generated SQLite database (built from data/data.json via data/build_db.py).
+data/data.db

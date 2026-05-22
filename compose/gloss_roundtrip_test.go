@@ -2,6 +2,7 @@ package compose
 
 import (
 	"math/rand"
+	"path/filepath"
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/gloss"
@@ -30,7 +31,7 @@ import (
 // against alternate but-equivalent encodings (e.g. shortcut vs long
 // form). Comparing glosses normalizes those away.
 func TestFuzz_GlossComposeRoundTrip(t *testing.T) {
-	lex, err := lexicon.LoadDefault()
+	lex, err := lexicon.Load(filepath.Join("..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}

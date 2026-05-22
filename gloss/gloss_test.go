@@ -16,7 +16,7 @@ func dataPath(name string) string {
 
 func loadLex(t *testing.T) *lexicon.Lexicon {
 	t.Helper()
-	lex, err := lexicon.Load(dataPath("lexicon.json"))
+	lex, err := lexicon.Load(dataPath("data.json"))
 	if err != nil {
 		t.Fatalf("lexicon load: %v", err)
 	}

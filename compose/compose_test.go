@@ -73,7 +73,7 @@ func TestLookupForm(t *testing.T) {
 }
 
 func TestSearchRoots(t *testing.T) {
-	lex, err := lexicon.Load(filepath.Join("..", "data", "lexicon.json"))
+	lex, err := lexicon.Load(filepath.Join("..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("load lexicon: %v", err)
 	}
@@ -94,7 +94,7 @@ func TestSearchRoots(t *testing.T) {
 }
 
 func TestSearchRoots_DirectCr(t *testing.T) {
-	lex, err := lexicon.Load(filepath.Join("..", "data", "lexicon.json"))
+	lex, err := lexicon.Load(filepath.Join("..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("load lexicon: %v", err)
 	}
@@ -106,7 +106,7 @@ func TestSearchRoots_DirectCr(t *testing.T) {
 }
 
 func TestSearchAffixes(t *testing.T) {
-	lex, err := lexicon.Load(filepath.Join("..", "data", "lexicon.json"))
+	lex, err := lexicon.Load(filepath.Join("..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("load lexicon: %v", err)
 	}

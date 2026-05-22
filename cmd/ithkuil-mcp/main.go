@@ -2,11 +2,9 @@
 // the Ithkuil V4 grammar tooling as MCP tools and resources over
 // stdio.
 //
-// Usage: ithkuil-mcp [-lex DIR] [-grammar DIR]
+// Usage: ithkuil-mcp [-data FILE] [-grammar DIR]
 //
-//	-lex DIR       Override the embedded lexicon with one read from DIR
-//	               (expects roots.json and affixes.json). Loaded once at
-//	               startup.
+//	-data FILE     Path to data.db (default: data/data.db).
 //	-grammar DIR   Directory holding grammar reference markdown
 //	               (default ./grammar_reference). Files are served as
 //	               MCP resources.
@@ -20,37 +18,42 @@ import (
 	"flag"
 	"log"
 	"os"
-	"path/filepath"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/store"
 )
 
 // server bundles the per-process state every tool handler needs.
 type server struct {
 	lex        *lexicon.Lexicon
+	st         *store.Store
 	grammarDir string
 }
 
 func main() {
-	lexDir := flag.String("lex", "", "override the embedded lexicon with one read from DIR")
+	dataFile := flag.String("data", "data/data.db", "path to data.db")
 	grammarDir := flag.String("grammar", "./grammar_reference", "directory with grammar reference markdown")
 	flag.Parse()
 
-	var lex *lexicon.Lexicon
-	var err error
-	if *lexDir == "" {
-		lex, err = lexicon.LoadDefault()
-	} else {
-		lex, err = lexicon.Load(filepath.Join(*lexDir, "lexicon.json"))
-	}
+	st, err := store.Open(*dataFile)
 	if err != nil {
-		log.Printf("warning: lexicon load failed (%v); roots/affixes lookups will return empty", err)
+		log.Printf("warning: cannot open data store %s (%v); roots/affixes lookups will return empty", *dataFile, err)
+	}
+
+	var lex *lexicon.Lexicon
+	if st != nil {
+		lex, err = lexicon.LoadFromStore(st)
+		if err != nil {
+			log.Printf("warning: lexicon load failed (%v); roots/affixes lookups will return empty", err)
+			lex = &lexicon.Lexicon{}
+		}
+	} else {
 		lex = &lexicon.Lexicon{}
 	}
 
-	s := &server{lex: lex, grammarDir: *grammarDir}
+	s := &server{lex: lex, st: st, grammarDir: *grammarDir}
 
 	mcpServer := mcp.NewServer(
 		&mcp.Implementation{Name: "ithkuil", Version: "v0.1.0"},
@@ -60,10 +63,12 @@ func main() {
 	s.registerResources(mcpServer)
 
 	if err := mcpServer.Run(context.Background(), &mcp.StdioTransport{}); err != nil {
-		// stdio EOF means the client disconnected. Other errors are real.
 		if err != context.Canceled {
 			log.Fatalf("mcp server: %v", err)
 		}
+	}
+	if st != nil {
+		st.Close()
 	}
 	_ = os.Stdout.Sync()
 }

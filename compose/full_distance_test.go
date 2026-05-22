@@ -1,6 +1,7 @@
 package compose
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/fullparse"
@@ -22,7 +23,7 @@ import (
 // path through the slot grammar (minimal, concat prefixes, all
 // shortcut variants, Cs/Ref roots, Slot V stacks, sentence starters).
 func TestFullDistance_SlotsCorpus(t *testing.T) {
-	lex, err := lexicon.LoadDefault()
+	lex, err := lexicon.Load(filepath.Join("..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}

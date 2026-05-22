@@ -3,14 +3,12 @@ package main
 import (
 	"fmt"
 	"io"
-
-	"github.com/christian-oudard/ithkuil/compose"
 )
 
-// cmdLexicon substring-searches the root and/or affix lexicons.
+// cmdLexicon searches the root and/or affix lexicons via FTS5.
 //
 // Usage: ithkuil lexicon QUERY [--kind=root|affix|both] [--limit=N]
-func cmdLexicon(args []string, stdout, stderr io.Writer, lexDir string) int {
+func cmdLexicon(args []string, stdout, stderr io.Writer, dataFile string) int {
 	fs := newFlagSet("lexicon", stderr)
 	fs.describe("Substring search the root and/or affix lexicons.", "QUERY")
 	kind := fs.String("kind", "k", "both", "KIND", "root | affix | both (default both)")
@@ -25,42 +23,45 @@ func cmdLexicon(args []string, stdout, stderr io.Writer, lexDir string) int {
 	}
 	query := rest[0]
 
-	lex := loadLex(lexDir, stderr)
-	if lex == nil {
+	s := openStore(dataFile, stderr)
+	if s == nil {
 		return 1
 	}
+	defer s.Close()
 
 	doRoot := *kind == "root" || *kind == "both"
 	doAffix := *kind == "affix" || *kind == "both"
 
 	if doRoot {
-		hits := compose.SearchRoots(query, lex.Roots)
-		if len(hits) > *limit {
-			hits = hits[:*limit]
+		hits, err := s.SearchRoots(query, *limit)
+		if err != nil {
+			fmt.Fprintf(stderr, "lexicon: root search: %v\n", err)
+			return 1
 		}
 		fmt.Fprintln(stdout, "Roots:")
 		if len(hits) == 0 {
 			fmt.Fprintln(stdout, "  (none)")
 		}
 		for _, h := range hits {
-			fmt.Fprintf(stdout, "  -%s- (score %d)\n", h.Cr, h.Score)
-			printStem(stdout, "S0", h.Entry.Stem0)
-			printStem(stdout, "S1", h.Entry.Stem1)
-			printStem(stdout, "S2", h.Entry.Stem2)
-			printStem(stdout, "S3", h.Entry.Stem3)
-			printStem(stdout, "CTE", h.Entry.Contential)
-			printStem(stdout, "CSV", h.Entry.Constitutive)
-			printTrio(stdout, "OBJ", h.Entry.Objective)
-			printTrio(stdout, "CPT", h.Entry.Completive)
-			printStem(stdout, "DYN", h.Entry.Dynamic)
-			printTrio(stdout, "Wikidata", h.Entry.Wikidata)
+			fmt.Fprintf(stdout, "  -%s-\n", h.Cr)
+			printStem(stdout, "S0", h.Stem0)
+			printStem(stdout, "S1", h.Stem1)
+			printStem(stdout, "S2", h.Stem2)
+			printStem(stdout, "S3", h.Stem3)
+			printStem(stdout, "CTE", h.Contential)
+			printStem(stdout, "CSV", h.Constitutive)
+			printTrio(stdout, "OBJ", h.Objective)
+			printTrio(stdout, "CPT", h.Completive)
+			printStem(stdout, "DYN", h.Dynamic)
+			printTrio(stdout, "Wikidata", h.Wikidata)
 		}
 	}
 
 	if doAffix {
-		hits := compose.SearchAffixes(query, lex.Affixes)
-		if len(hits) > *limit {
-			hits = hits[:*limit]
+		hits, err := s.SearchAffixes(query, *limit)
+		if err != nil {
+			fmt.Fprintf(stderr, "lexicon: affix search: %v\n", err)
+			return 1
 		}
 		if doRoot {
 			fmt.Fprintln(stdout)

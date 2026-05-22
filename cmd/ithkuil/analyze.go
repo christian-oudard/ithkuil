@@ -57,7 +57,7 @@ func (iw *indentedWriter) Write(p []byte) (int, error) {
 // breakdown of each formative: phonetic segmentation paired with a
 // glossary that expands every code. --short collapses each word to a
 // single surface/type/gloss line.
-func cmdAnalyze(args []string, stdin io.Reader, stdout, stderr io.Writer, lexDir string) int {
+func cmdAnalyze(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile string) int {
 	fs := newFlagSet("analyze", stderr)
 	fs.describe("Tokenize, parse, and gloss each word (detailed by default).", "TEXT...")
 	short := fs.Bool("short", "s", false, "one-line surface · type · gloss view")
@@ -98,7 +98,7 @@ func cmdAnalyze(args []string, stdin io.Reader, stdout, stderr io.Writer, lexDir
 	if len(tokens) == 0 && len(invalid) == 0 {
 		return 0
 	}
-	lex := loadLex(lexDir, stderr)
+	lex := loadLex(dataFile, stderr)
 	glosser := gloss.Glosser{Lex: lex}
 
 	if *short {

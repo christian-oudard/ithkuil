@@ -2,7 +2,7 @@
 // Ithkuil V4 language: parse text, compose words, look up the grammar
 // inventory, search the lexicon, validate phonotactics.
 //
-// Usage: ithkuil [-lex DIR] <subcommand> [args...]
+// Usage: ithkuil [-data FILE] <subcommand> [args...]
 //
 // Subcommands (mirror the ithkuil-mcp tools one-for-one):
 //
@@ -21,10 +21,10 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/store"
 	"github.com/christian-oudard/ithkuil/surface"
 )
 
@@ -34,7 +34,7 @@ func main() {
 
 // run is the testable entry point.
 func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
-	lexDir, args := extractLexFlag(args)
+	dataFile, args := extractDataFlag(args)
 	if len(args) == 0 {
 		fmt.Fprint(stderr, usage)
 		return 2
@@ -45,13 +45,13 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		fmt.Fprint(stdout, usage)
 		return 0
 	case "analyze":
-		return cmdAnalyze(rest, stdin, stdout, stderr, lexDir)
+		return cmdAnalyze(rest, stdin, stdout, stderr, dataFile)
 	case "compose":
-		return cmdCompose(rest, stdout, stderr, lexDir)
+		return cmdCompose(rest, stdout, stderr, dataFile)
 	case "grammar":
 		return cmdGrammar(rest, stdout, stderr)
 	case "lexicon":
-		return cmdLexicon(rest, stdout, stderr, lexDir)
+		return cmdLexicon(rest, stdout, stderr, dataFile)
 	case "validate":
 		return cmdValidate(rest, stdout, stderr)
 	default:
@@ -60,7 +60,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	}
 }
 
-const usage = `usage: ithkuil [--lex DIR] <subcommand> [args...]
+const usage = `usage: ithkuil [--data FILE] <subcommand> [args...]
 
 Subcommands:
   analyze TEXT...    Tokenize, parse, and gloss each word (detailed).
@@ -80,21 +80,19 @@ Subcommands:
   help               Show this help.
 
 Global flags:
-  --lex / -l DIR     Override the embedded lexicon with one read from DIR
-                     (expects roots.json and affixes.json).
+  --data / -d FILE   Path to data.db (default: data/data.db).
 `
 
-// extractLexFlag walks args for `--lex DIR` (or `-lex` or short `-l`)
-// and returns the value plus the args with the flag removed. An empty
-// string means "use the embedded lexicon".
-func extractLexFlag(args []string) (string, []string) {
-	dir := ""
+// extractDataFlag walks args for `--data FILE` (or `-data` or short `-d`)
+// and returns the value plus the args with the flag removed.
+func extractDataFlag(args []string) (string, []string) {
+	file := ""
 	out := make([]string, 0, len(args))
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
-		case "-l", "-lex", "--lex":
+		case "-d", "-data", "--data":
 			if i+1 < len(args) {
-				dir = args[i+1]
+				file = args[i+1]
 				i++
 				continue
 			}
@@ -102,21 +100,33 @@ func extractLexFlag(args []string) (string, []string) {
 			out = append(out, args[i])
 		}
 	}
-	return dir, out
+	if file == "" {
+		file = "data/data.db"
+	}
+	return file, out
 }
 
-// loadLex returns the lexicon: the embedded copy when dir is empty,
-// otherwise read from dir/roots.json and dir/affixes.json. Nil on
-// failure (with a warning to stderr); most subcommands tolerate a nil
-// lexicon and degrade their output accordingly.
-func loadLex(dir string, stderr io.Writer) *lexicon.Lexicon {
-	var lex *lexicon.Lexicon
-	var err error
-	if dir == "" {
-		lex, err = lexicon.LoadDefault()
-	} else {
-		lex, err = lexicon.Load(filepath.Join(dir, "lexicon.json"))
+// openStore opens the SQLite database at file. Returns nil on error
+// (with a warning to stderr).
+func openStore(file string, stderr io.Writer) *store.Store {
+	s, err := store.Open(file)
+	if err != nil {
+		fmt.Fprintf(stderr, "warning: cannot open data store %s (%v)\n", file, err)
+		return nil
 	}
+	return s
+}
+
+// loadLex opens the store and reads all roots/affixes into memory.
+// Returns nil on error (with a warning to stderr). Most subcommands
+// tolerate a nil lexicon and degrade their output accordingly.
+func loadLex(dataFile string, stderr io.Writer) *lexicon.Lexicon {
+	s := openStore(dataFile, stderr)
+	if s == nil {
+		return nil
+	}
+	defer s.Close()
+	lex, err := lexicon.LoadFromStore(s)
 	if err != nil {
 		fmt.Fprintf(stderr, "warning: lexicon load failed (%v); continuing without lexicon\n", err)
 		return nil

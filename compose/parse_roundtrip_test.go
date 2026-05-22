@@ -1,6 +1,7 @@
 package compose
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/fullparse"
@@ -15,7 +16,7 @@ import (
 // This is the strongest invariant: compose ∘ render ∘ fullparse ∘
 // gloss == gloss ∘ compose.
 func TestFormative_FullRoundTrip(t *testing.T) {
-	lex, err := lexicon.LoadDefault()
+	lex, err := lexicon.Load(filepath.Join("..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}

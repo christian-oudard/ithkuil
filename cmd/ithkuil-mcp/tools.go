@@ -390,14 +390,17 @@ func (s *server) lexicon(_ context.Context, _ *mcp.CallToolRequest, in lexiconIn
 	if kind == "" {
 		kind = "both"
 	}
+	if s.st == nil {
+		return nil, lexiconOut{}, fmt.Errorf("data store not available")
+	}
 	seenRoot := make(map[string]struct{})
 	seenAffix := make(map[string]struct{})
 	out := lexiconOut{}
 	for _, q := range queries {
 		if kind == "root" || kind == "both" {
-			hits := compose.SearchRoots(q, s.lex.Roots)
-			if len(hits) > limit {
-				hits = hits[:limit]
+			hits, err := s.st.SearchRoots(q, limit)
+			if err != nil {
+				return nil, lexiconOut{}, fmt.Errorf("root search: %w", err)
 			}
 			for _, h := range hits {
 				if _, seen := seenRoot[h.Cr]; seen {
@@ -405,40 +408,41 @@ func (s *server) lexicon(_ context.Context, _ *mcp.CallToolRequest, in lexiconIn
 				}
 				seenRoot[h.Cr] = struct{}{}
 				out.Roots = append(out.Roots, rootHitOut{
-					Cr: h.Cr, Score: h.Score,
-					Stem0: h.Entry.Stem0, Stem1: h.Entry.Stem1,
-					Stem2: h.Entry.Stem2, Stem3: h.Entry.Stem3,
-					Contential:   h.Entry.Contential,
-					Constitutive: h.Entry.Constitutive,
-					Objective:    h.Entry.Objective,
-					Completive:   h.Entry.Completive,
-					Dynamic:      h.Entry.Dynamic,
-					Wikidata:     h.Entry.Wikidata,
+					Cr:           h.Cr,
+					Stem0:        h.Stem0,
+					Stem1:        h.Stem1,
+					Stem2:        h.Stem2,
+					Stem3:        h.Stem3,
+					Contential:   h.Contential,
+					Constitutive: h.Constitutive,
+					Objective:    h.Objective,
+					Completive:   h.Completive,
+					Dynamic:      h.Dynamic,
+					Wikidata:     h.Wikidata,
 				})
 			}
 		}
 		if kind == "affix" || kind == "both" {
-			hits := compose.SearchAffixes(q, s.lex.Affixes)
-			if len(hits) > limit {
-				hits = hits[:limit]
+			hits, err := s.st.SearchAffixes(q, limit)
+			if err != nil {
+				return nil, lexiconOut{}, fmt.Errorf("affix search: %w", err)
 			}
 			for _, a := range hits {
 				if _, seen := seenAffix[a.Cs]; seen {
 					continue
 				}
 				seenAffix[a.Cs] = struct{}{}
-				out.Affixes = append(out.Affixes, toAffixHit(a))
+				out.Affixes = append(out.Affixes, affixHitOut{
+					Cs:          a.Cs,
+					Abbrev:      a.Abbrev,
+					Description: a.Description,
+					Type:        a.Type,
+					Degrees:     a.Degrees,
+				})
 			}
 		}
 	}
 	return nil, out, nil
-}
-
-func toAffixHit(a lexicon.AffixEntry) affixHitOut {
-	return affixHitOut{
-		Cs: a.Cs, Abbrev: a.Abbrev, Description: a.Description,
-		Type: a.Type, Degrees: a.Degrees,
-	}
 }
 
 // --------------------------------------------------------------------

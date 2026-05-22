@@ -7,8 +7,8 @@ import (
 	"testing"
 )
 
-func dataDir() string {
-	return filepath.Join("..", "..", "data")
+func dataFile() string {
+	return filepath.Join("..", "..", "data", "data.db")
 }
 
 // runCLI invokes the CLI in-process with the given args.
@@ -55,7 +55,7 @@ func TestRun_Help(t *testing.T) {
 // ---- analyze ----
 
 func TestAnalyze_Detailed(t *testing.T) {
-	out, _, code := runCLI("-lex", dataDir(), "analyze", "malëuţřait")
+	out, _, code := runCLI("-data", dataFile(), "analyze", "malëuţřait")
 	if code != 0 {
 		t.Fatalf("analyze exit %d", code)
 	}
@@ -76,7 +76,7 @@ func TestAnalyze_ASCIIInput(t *testing.T) {
 	// ASCII typing convention: "maleeut,rqait" must normalize to
 	// "malëuţřait" before parsing, so the slot breakdown shows the
 	// right affixes (ţř → SYS at degree 5, not literal "t,rq").
-	out, _, code := runCLI("-lex", dataDir(), "analyze", "maleeut,rqait")
+	out, _, code := runCLI("-data", dataFile(), "analyze", "maleeut,rqait")
 	if code != 0 {
 		t.Fatalf("analyze exit %d", code)
 	}
@@ -139,7 +139,7 @@ func TestAnalyze_Stdin(t *testing.T) {
 // ---- compose ----
 
 func TestCompose_Expression(t *testing.T) {
-	out, _, code := runCLI("-lex", dataDir(), "compose", "S2/CPT-ml-ERG")
+	out, _, code := runCLI("-data", dataFile(), "compose", "S2/CPT-ml-ERG")
 	if code != 0 {
 		t.Fatalf("compose exit %d", code)
 	}
@@ -156,7 +156,7 @@ func TestCompose_Expression(t *testing.T) {
 }
 
 func TestCompose_BareRoot(t *testing.T) {
-	out, _, code := runCLI("-lex", dataDir(), "compose", "ml")
+	out, _, code := runCLI("-data", dataFile(), "compose", "ml")
 	if code != 0 {
 		t.Fatalf("compose exit %d", code)
 	}
@@ -245,7 +245,7 @@ func TestGrammar_CategoryQuery(t *testing.T) {
 // ---- lexicon ----
 
 func TestLexicon_Root(t *testing.T) {
-	out, _, code := runCLI("-lex", dataDir(), "lexicon", "yellow", "--kind", "root")
+	out, _, code := runCLI("-data", dataFile(), "lexicon", "yellow", "--kind", "root")
 	if code != 0 {
 		t.Fatalf("lexicon exit %d", code)
 	}
@@ -255,7 +255,7 @@ func TestLexicon_Root(t *testing.T) {
 }
 
 func TestLexicon_Affix(t *testing.T) {
-	out, _, code := runCLI("-lex", dataDir(), "lexicon", "negation", "--kind", "affix")
+	out, _, code := runCLI("-data", dataFile(), "lexicon", "negation", "--kind", "affix")
 	if code != 0 {
 		t.Fatalf("lexicon --kind=affix exit %d", code)
 	}
@@ -265,7 +265,7 @@ func TestLexicon_Affix(t *testing.T) {
 }
 
 func TestLexicon_Both(t *testing.T) {
-	out, _, code := runCLI("-lex", dataDir(), "lexicon", "yellow")
+	out, _, code := runCLI("-data", dataFile(), "lexicon", "yellow")
 	if code != 0 {
 		t.Fatalf("lexicon both exit %d", code)
 	}

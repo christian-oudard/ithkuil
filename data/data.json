@@ -1,5 +1,1901 @@
 {
   "version": 1,
+  "grammar": [
+    {
+      "abbrev": "THM",
+      "name": "Thematic",
+      "category": "Case/Transrelative",
+      "form": "a",
+      "description": "inactive participant (CONTENT role)"
+    },
+    {
+      "abbrev": "INS",
+      "name": "Instrumental",
+      "category": "Case/Transrelative",
+      "form": "ä",
+      "description": "INSTRUMENT used by an agent"
+    },
+    {
+      "abbrev": "ABS",
+      "name": "Absolutive",
+      "category": "Case/Transrelative",
+      "form": "e",
+      "description": "PATIENT undergoing the act"
+    },
+    {
+      "abbrev": "AFF",
+      "name": "Affective",
+      "category": "Case/Transrelative",
+      "form": "i",
+      "description": "EXPERIENCER of unwilled experience"
+    },
+    {
+      "abbrev": "STM",
+      "name": "Stimulative",
+      "category": "Case/Transrelative",
+      "form": "ëi",
+      "description": "STIMULUS triggering an affective response"
+    },
+    {
+      "abbrev": "EFF",
+      "name": "Effectuative",
+      "category": "Case/Transrelative",
+      "form": "ö",
+      "description": "ENABLER initiating a causal chain"
+    },
+    {
+      "abbrev": "ERG",
+      "name": "Ergative",
+      "category": "Case/Transrelative",
+      "form": "o",
+      "description": "AGENT or FORCE that causes the act"
+    },
+    {
+      "abbrev": "DAT",
+      "name": "Dative",
+      "category": "Case/Transrelative",
+      "form": "ü",
+      "description": "RECIPIENT of transference/communication"
+    },
+    {
+      "abbrev": "IND",
+      "name": "Inducive",
+      "category": "Case/Transrelative",
+      "form": "u",
+      "description": "self-acting AGENT+PATIENT"
+    },
+    {
+      "abbrev": "POS",
+      "name": "Possessive",
+      "category": "Case/Appositive",
+      "form": "ai",
+      "description": "alienable possessor (circumstantial)"
+    },
+    {
+      "abbrev": "PRP",
+      "name": "Proprietive",
+      "category": "Case/Appositive",
+      "form": "au",
+      "description": "owner (long-term possessor)"
+    },
+    {
+      "abbrev": "GEN",
+      "name": "Genitive",
+      "category": "Case/Appositive",
+      "form": "ei",
+      "description": "inalienable possessor / intrinsic attribute"
+    },
+    {
+      "abbrev": "ATT",
+      "name": "Attributive",
+      "category": "Case/Appositive",
+      "form": "eu",
+      "description": "attribute or characteristic of"
+    },
+    {
+      "abbrev": "PDC",
+      "name": "Productive",
+      "category": "Case/Appositive",
+      "form": "ëu",
+      "description": "creator / author / originator"
+    },
+    {
+      "abbrev": "ITP",
+      "name": "Interpretive",
+      "category": "Case/Appositive",
+      "form": "ou",
+      "description": "subjective viewpoint through which X is interpreted"
+    },
+    {
+      "abbrev": "OGN",
+      "name": "Originative",
+      "category": "Case/Appositive",
+      "form": "oi",
+      "description": "original source or native location"
+    },
+    {
+      "abbrev": "IDP",
+      "name": "Interdependent",
+      "category": "Case/Appositive",
+      "form": "iu",
+      "description": "complementary / mutually dependent counterpart"
+    },
+    {
+      "abbrev": "PAR",
+      "name": "Partitive",
+      "category": "Case/Appositive",
+      "form": "ui",
+      "description": "quantitative content — \"a cup of X\""
+    },
+    {
+      "abbrev": "APL",
+      "name": "Applicative",
+      "category": "Case/Associative",
+      "form": "ia",
+      "description": "circumstantial use or function of X"
+    },
+    {
+      "abbrev": "PUR",
+      "name": "Purposive",
+      "category": "Case/Associative",
+      "form": "ie",
+      "description": "inherent purpose — \"for the purpose of\""
+    },
+    {
+      "abbrev": "TRA",
+      "name": "Transmissive",
+      "category": "Case/Associative",
+      "form": "io",
+      "description": "beneficiary or recipient of harm"
+    },
+    {
+      "abbrev": "DFR",
+      "name": "Deferential",
+      "category": "Case/Associative",
+      "form": "iö",
+      "description": "for X's sake / out of deference to X"
+    },
+    {
+      "abbrev": "CRS",
+      "name": "Contrastive",
+      "category": "Case/Associative",
+      "form": "eë",
+      "description": "instead of / in place of X"
+    },
+    {
+      "abbrev": "TSP",
+      "name": "Transpositive",
+      "category": "Case/Associative",
+      "form": "uö",
+      "description": "on behalf of X"
+    },
+    {
+      "abbrev": "CMM",
+      "name": "Commutative",
+      "category": "Case/Associative",
+      "form": "uo",
+      "description": "in exchange for X"
+    },
+    {
+      "abbrev": "CMP",
+      "name": "Comparative",
+      "category": "Case/Associative",
+      "form": "ue",
+      "description": "as compared to / versus / whereas"
+    },
+    {
+      "abbrev": "CSD",
+      "name": "Considerative",
+      "category": "Case/Associative",
+      "form": "ua",
+      "description": "according to / as per X"
+    },
+    {
+      "abbrev": "FUN",
+      "name": "Functive",
+      "category": "Case/Adverbial",
+      "form": "ao",
+      "description": "the manner in which X is/occurs"
+    },
+    {
+      "abbrev": "TFM",
+      "name": "Transformative",
+      "category": "Case/Adverbial",
+      "form": "aö",
+      "description": "into — the final state of a transformation"
+    },
+    {
+      "abbrev": "CLA",
+      "name": "Classificative",
+      "category": "Case/Adverbial",
+      "form": "eo",
+      "description": "basis for arranging / sorting / counting"
+    },
+    {
+      "abbrev": "RSL",
+      "name": "Resultative",
+      "category": "Case/Adverbial",
+      "form": "eö",
+      "description": "result or consequence of X"
+    },
+    {
+      "abbrev": "CSM",
+      "name": "Consumptive",
+      "category": "Case/Adverbial",
+      "form": "oë",
+      "description": "resource consumed in the process"
+    },
+    {
+      "abbrev": "CON",
+      "name": "Concessive",
+      "category": "Case/Adverbial",
+      "form": "öe",
+      "description": "despite / in spite of / although"
+    },
+    {
+      "abbrev": "AVR",
+      "name": "Aversive",
+      "category": "Case/Adverbial",
+      "form": "oe",
+      "description": "for fear of / in order to avoid"
+    },
+    {
+      "abbrev": "CVS",
+      "name": "Conversive",
+      "category": "Case/Adverbial",
+      "form": "öa",
+      "description": "except for / unless / but for"
+    },
+    {
+      "abbrev": "SIT",
+      "name": "Situative",
+      "category": "Case/Adverbial",
+      "form": "oa",
+      "description": "given / because of / in view of"
+    },
+    {
+      "abbrev": "PRN",
+      "name": "Pertinential",
+      "category": "Case/Relational",
+      "form": "a'a",
+      "description": "about / regarding / concerning"
+    },
+    {
+      "abbrev": "DSP",
+      "name": "Descriptive",
+      "category": "Case/Relational",
+      "form": "ä'ä",
+      "description": "describing — like X qualitatively"
+    },
+    {
+      "abbrev": "COR",
+      "name": "Correlative",
+      "category": "Case/Relational",
+      "form": "e'e",
+      "description": "in relation to / in association with"
+    },
+    {
+      "abbrev": "CPS",
+      "name": "Compositive",
+      "category": "Case/Relational",
+      "form": "i'i",
+      "description": "made of / composed of X"
+    },
+    {
+      "abbrev": "COM",
+      "name": "Comitative",
+      "category": "Case/Relational",
+      "form": "ë'i",
+      "description": "along with / accompanied by"
+    },
+    {
+      "abbrev": "UTL",
+      "name": "Utilitative",
+      "category": "Case/Relational",
+      "form": "ö'ö",
+      "description": "while using or wielding X"
+    },
+    {
+      "abbrev": "PRD",
+      "name": "Predicative",
+      "category": "Case/Relational",
+      "form": "o'o",
+      "description": "based on / dependent on X"
+    },
+    {
+      "abbrev": "RLT",
+      "name": "Relative",
+      "category": "Case/Relational",
+      "form": "u'u",
+      "description": "marks a relative clause"
+    },
+    {
+      "abbrev": "ACT",
+      "name": "Activative",
+      "category": "Case/Affinitive",
+      "form": "a'i",
+      "description": "experiencer of a modal state (want, need, ability)"
+    },
+    {
+      "abbrev": "ASI",
+      "name": "Assimilative",
+      "category": "Case/Affinitive",
+      "form": "a'u",
+      "description": "as if it were X (analogy / metaphor)"
+    },
+    {
+      "abbrev": "ESS",
+      "name": "Essive",
+      "category": "Case/Affinitive",
+      "form": "e'i",
+      "description": "as X (functional identity or role)"
+    },
+    {
+      "abbrev": "TRM",
+      "name": "Terminative",
+      "category": "Case/Affinitive",
+      "form": "e'u",
+      "description": "goal of an act — toward / for"
+    },
+    {
+      "abbrev": "SEL",
+      "name": "Selective",
+      "category": "Case/Affinitive",
+      "form": "ë'u",
+      "description": "every X / on Xs (recurring entity or period)"
+    },
+    {
+      "abbrev": "CFM",
+      "name": "Conformative",
+      "category": "Case/Affinitive",
+      "form": "o'u",
+      "description": "pursuant to / in conformance with X"
+    },
+    {
+      "abbrev": "DEP",
+      "name": "Dependent",
+      "category": "Case/Affinitive",
+      "form": "o'i",
+      "description": "contingent on X (if circumstances allow)"
+    },
+    {
+      "abbrev": "VOC",
+      "name": "Vocative",
+      "category": "Case/Affinitive",
+      "form": "u'i",
+      "description": "noun used in direct address"
+    },
+    {
+      "abbrev": "LOC",
+      "name": "Locative",
+      "category": "Case/SpatioTemporal1",
+      "form": "i'a",
+      "description": "location at / in / on / by"
+    },
+    {
+      "abbrev": "ATD",
+      "name": "Attendant",
+      "category": "Case/SpatioTemporal1",
+      "form": "i'e",
+      "description": "in the presence of X (witness, peripheral party)"
+    },
+    {
+      "abbrev": "ALL",
+      "name": "Allative",
+      "category": "Case/SpatioTemporal1",
+      "form": "i'o",
+      "description": "moving toward"
+    },
+    {
+      "abbrev": "ABL",
+      "name": "Ablative",
+      "category": "Case/SpatioTemporal1",
+      "form": "i'ö",
+      "description": "moving away from"
+    },
+    {
+      "abbrev": "ORI",
+      "name": "Orientative",
+      "category": "Case/SpatioTemporal1",
+      "form": "e'ë",
+      "description": "X's face / front / forward axis"
+    },
+    {
+      "abbrev": "IRL",
+      "name": "Interrelative",
+      "category": "Case/SpatioTemporal1",
+      "form": "u'ö",
+      "description": "relative to X (directional or temporal position)"
+    },
+    {
+      "abbrev": "INV",
+      "name": "Intrative",
+      "category": "Case/SpatioTemporal1",
+      "form": "u'o",
+      "description": "since / until / from X (boundary of a span)"
+    },
+    {
+      "abbrev": "NAV",
+      "name": "Navigative",
+      "category": "Case/SpatioTemporal1",
+      "form": "u'a",
+      "description": "along X (X's axis as direction)"
+    },
+    {
+      "abbrev": "CNR",
+      "name": "Concursive",
+      "category": "Case/SpatioTemporal2",
+      "form": "a'o",
+      "description": "at or during the time of X (temporal locative)"
+    },
+    {
+      "abbrev": "ASS",
+      "name": "Assessive",
+      "category": "Case/SpatioTemporal2",
+      "form": "a'ö",
+      "description": "per X (increment for a ratio)"
+    },
+    {
+      "abbrev": "PER",
+      "name": "Periodic",
+      "category": "Case/SpatioTemporal2",
+      "form": "e'o",
+      "description": "within / over X (time span for repetitions)"
+    },
+    {
+      "abbrev": "PRO",
+      "name": "Prolapsive",
+      "category": "Case/SpatioTemporal2",
+      "form": "e'ö",
+      "description": "for X (duration of an act)"
+    },
+    {
+      "abbrev": "PCV",
+      "name": "Precursive",
+      "category": "Case/SpatioTemporal2",
+      "form": "o'ë",
+      "description": "before X (point in time prior)"
+    },
+    {
+      "abbrev": "PCR",
+      "name": "Postcursive",
+      "category": "Case/SpatioTemporal2",
+      "form": "ö'e",
+      "description": "after X (point in time subsequent)"
+    },
+    {
+      "abbrev": "ELP",
+      "name": "Elapsive",
+      "category": "Case/SpatioTemporal2",
+      "form": "o'e",
+      "description": "X ago / X from now"
+    },
+    {
+      "abbrev": "PLM",
+      "name": "Prolimitive",
+      "category": "Case/SpatioTemporal2",
+      "form": "ö'a",
+      "description": "by X / within X (deadline)"
+    },
+    {
+      "abbrev": "S1",
+      "name": "Stem 1",
+      "category": "Stem",
+      "description": "first specialization"
+    },
+    {
+      "abbrev": "S2",
+      "name": "Stem 2",
+      "category": "Stem",
+      "description": "second specialization"
+    },
+    {
+      "abbrev": "S3",
+      "name": "Stem 3",
+      "category": "Stem",
+      "description": "third specialization"
+    },
+    {
+      "abbrev": "S0",
+      "name": "Stem 0",
+      "category": "Stem",
+      "description": "basic / generic stem"
+    },
+    {
+      "abbrev": "PRC",
+      "name": "Processual",
+      "category": "Version",
+      "description": "the act/state as a process"
+    },
+    {
+      "abbrev": "CPT",
+      "name": "Completive",
+      "category": "Version",
+      "description": "the completed act/state"
+    },
+    {
+      "abbrev": "STA",
+      "name": "Static",
+      "category": "Function",
+      "description": "entity as a state, condition, or quality"
+    },
+    {
+      "abbrev": "DYN",
+      "name": "Dynamic",
+      "category": "Function",
+      "description": "entity as a dynamic event or action"
+    },
+    {
+      "abbrev": "BSC",
+      "name": "Basic",
+      "category": "Specification",
+      "description": "holistic instantiation, prior to other specifications"
+    },
+    {
+      "abbrev": "CTE",
+      "name": "Contential",
+      "category": "Specification",
+      "description": "content/essence/function vs. mere form"
+    },
+    {
+      "abbrev": "CSV",
+      "name": "Constitutive",
+      "category": "Specification",
+      "description": "form/shape vs. functional content"
+    },
+    {
+      "abbrev": "OBJ",
+      "name": "Objective",
+      "category": "Specification",
+      "description": "tangible tool/object/patient associated with the act/state"
+    },
+    {
+      "abbrev": "EXS",
+      "name": "Existential",
+      "category": "Context",
+      "description": "pure existence (default ontology)"
+    },
+    {
+      "abbrev": "FNC",
+      "name": "Functional",
+      "category": "Context",
+      "description": "functional context (purpose, role)"
+    },
+    {
+      "abbrev": "RPS",
+      "name": "Representational",
+      "category": "Context",
+      "description": "representational context (model, symbol)"
+    },
+    {
+      "abbrev": "AMG",
+      "name": "Amalgamative",
+      "category": "Context",
+      "description": "amalgamative context (blended/composite)"
+    },
+    {
+      "abbrev": "UNI",
+      "name": "Uniplex",
+      "category": "Configuration",
+      "description": "a single instance"
+    },
+    {
+      "abbrev": "DPX",
+      "name": "Duplex",
+      "category": "Configuration",
+      "description": "two instances forming one entity"
+    },
+    {
+      "abbrev": "DSS",
+      "name": "Duplex Similar Separate",
+      "category": "Configuration",
+      "description": "two similar instances, separate"
+    },
+    {
+      "abbrev": "DSC",
+      "name": "Duplex Similar Connected",
+      "category": "Configuration",
+      "description": "two similar instances, connected"
+    },
+    {
+      "abbrev": "DSF",
+      "name": "Duplex Similar Fused",
+      "category": "Configuration",
+      "description": "two similar instances, fused"
+    },
+    {
+      "abbrev": "DDS",
+      "name": "Duplex Dissimilar Separate",
+      "category": "Configuration",
+      "description": "two dissimilar instances, separate"
+    },
+    {
+      "abbrev": "DDC",
+      "name": "Duplex Dissimilar Connected",
+      "category": "Configuration",
+      "description": "two dissimilar instances, connected"
+    },
+    {
+      "abbrev": "DDF",
+      "name": "Duplex Dissimilar Fused",
+      "category": "Configuration",
+      "description": "two dissimilar instances, fused"
+    },
+    {
+      "abbrev": "DFS",
+      "name": "Duplex Fuzzy Separate",
+      "category": "Configuration",
+      "description": "two instances of indeterminate similarity, separate"
+    },
+    {
+      "abbrev": "DFC",
+      "name": "Duplex Fuzzy Connected",
+      "category": "Configuration",
+      "description": "two instances of indeterminate similarity, connected"
+    },
+    {
+      "abbrev": "DFF",
+      "name": "Duplex Fuzzy Fused",
+      "category": "Configuration",
+      "description": "two instances of indeterminate similarity, fused"
+    },
+    {
+      "abbrev": "MSS",
+      "name": "Multiplex Similar Separate",
+      "category": "Configuration",
+      "description": "three or more similar instances, separate"
+    },
+    {
+      "abbrev": "MSC",
+      "name": "Multiplex Similar Connected",
+      "category": "Configuration",
+      "description": "three or more similar instances, connected"
+    },
+    {
+      "abbrev": "MSF",
+      "name": "Multiplex Similar Fused",
+      "category": "Configuration",
+      "description": "three or more similar instances, fused"
+    },
+    {
+      "abbrev": "MDS",
+      "name": "Multiplex Dissimilar Separate",
+      "category": "Configuration",
+      "description": "three or more dissimilar instances, separate"
+    },
+    {
+      "abbrev": "MDC",
+      "name": "Multiplex Dissimilar Connected",
+      "category": "Configuration",
+      "description": "three or more dissimilar instances, connected"
+    },
+    {
+      "abbrev": "MDF",
+      "name": "Multiplex Dissimilar Fused",
+      "category": "Configuration",
+      "description": "three or more dissimilar instances, fused"
+    },
+    {
+      "abbrev": "MFS",
+      "name": "Multiplex Fuzzy Separate",
+      "category": "Configuration",
+      "description": "three or more instances of indeterminate similarity, separate"
+    },
+    {
+      "abbrev": "MFC",
+      "name": "Multiplex Fuzzy Connected",
+      "category": "Configuration",
+      "description": "three or more instances of indeterminate similarity, connected"
+    },
+    {
+      "abbrev": "MFF",
+      "name": "Multiplex Fuzzy Fused",
+      "category": "Configuration",
+      "description": "three or more instances of indeterminate similarity, fused"
+    },
+    {
+      "abbrev": "CSL",
+      "name": "Consolidative",
+      "category": "Affiliation",
+      "description": "no specific affiliation among members"
+    },
+    {
+      "abbrev": "ASO",
+      "name": "Associative",
+      "category": "Affiliation",
+      "description": "members share a common purpose"
+    },
+    {
+      "abbrev": "COA",
+      "name": "Coalescent",
+      "category": "Affiliation",
+      "description": "members combine into a single function"
+    },
+    {
+      "abbrev": "VAR",
+      "name": "Variative",
+      "category": "Affiliation",
+      "description": "members serve diverse, contrasting roles"
+    },
+    {
+      "abbrev": "M",
+      "name": "Monadic",
+      "category": "Perspective",
+      "description": "single instance/individual"
+    },
+    {
+      "abbrev": "G",
+      "name": "Agglomerative",
+      "category": "Perspective",
+      "description": "fuzzy number (one or more)"
+    },
+    {
+      "abbrev": "N",
+      "name": "Nomic",
+      "category": "Perspective",
+      "description": "generic / archetypal class"
+    },
+    {
+      "abbrev": "A",
+      "name": "Abstract",
+      "category": "Perspective",
+      "description": "abstract concept / idea"
+    },
+    {
+      "abbrev": "DEL",
+      "name": "Delimitive",
+      "category": "Extension",
+      "description": "default — bounded, demarcated"
+    },
+    {
+      "abbrev": "PRX",
+      "name": "Proximal",
+      "category": "Extension",
+      "description": "current / ongoing instance"
+    },
+    {
+      "abbrev": "ICP",
+      "name": "Inceptive",
+      "category": "Extension",
+      "description": "the beginning / inception"
+    },
+    {
+      "abbrev": "ATV",
+      "name": "Attenuative",
+      "category": "Extension",
+      "description": "the conclusion / wind-down"
+    },
+    {
+      "abbrev": "GRA",
+      "name": "Graduative",
+      "category": "Extension",
+      "description": "gradual transition into being"
+    },
+    {
+      "abbrev": "DPL",
+      "name": "Depletive",
+      "category": "Extension",
+      "description": "gradual transition out of being"
+    },
+    {
+      "abbrev": "NRM",
+      "name": "Normal",
+      "category": "Essence",
+      "description": "the entity as it actually exists"
+    },
+    {
+      "abbrev": "RPV",
+      "name": "Representative",
+      "category": "Essence",
+      "description": "the entity as imagined/representative"
+    },
+    {
+      "abbrev": "MNO",
+      "name": "Monoactive",
+      "category": "Valence",
+      "description": "one participant; no co-actor (default)"
+    },
+    {
+      "abbrev": "PRL",
+      "name": "Parallel",
+      "category": "Valence",
+      "description": "two or more parallel co-actors doing the same action"
+    },
+    {
+      "abbrev": "CRO",
+      "name": "Corollary",
+      "category": "Valence",
+      "description": "one party's action is a corollary of another's"
+    },
+    {
+      "abbrev": "RCP",
+      "name": "Reciprocal",
+      "category": "Valence",
+      "description": "mutual / reciprocal action between parties"
+    },
+    {
+      "abbrev": "CPL",
+      "name": "Complementary",
+      "category": "Valence",
+      "description": "complementary actions, each completing the other"
+    },
+    {
+      "abbrev": "DUP",
+      "name": "Duplicative",
+      "category": "Valence",
+      "description": "duplicative — same action repeated in parallel"
+    },
+    {
+      "abbrev": "DEM",
+      "name": "Demonstrative",
+      "category": "Valence",
+      "description": "demonstrative — one party shows another how"
+    },
+    {
+      "abbrev": "CNG",
+      "name": "Contingent",
+      "category": "Valence",
+      "description": "contingent — one action depends on another"
+    },
+    {
+      "abbrev": "PTI",
+      "name": "Participative",
+      "category": "Valence",
+      "description": "participative — taking part in a wider group action"
+    },
+    {
+      "abbrev": "PCT",
+      "name": "Punctual",
+      "category": "Phase",
+      "description": "punctual / momentary"
+    },
+    {
+      "abbrev": "ITR",
+      "name": "Iterative",
+      "category": "Phase",
+      "description": "iterative — happens again and again"
+    },
+    {
+      "abbrev": "REP",
+      "name": "Repetitive",
+      "category": "Phase",
+      "description": "repetitive — same identical instances"
+    },
+    {
+      "abbrev": "ITM",
+      "name": "Intermittent",
+      "category": "Phase",
+      "description": "intermittent — on and off"
+    },
+    {
+      "abbrev": "RCT",
+      "name": "Recurrent",
+      "category": "Phase",
+      "description": "recurrent — returns periodically"
+    },
+    {
+      "abbrev": "FRE",
+      "name": "Frequentative",
+      "category": "Phase",
+      "description": "frequentative — happens often"
+    },
+    {
+      "abbrev": "FRG",
+      "name": "Fragmentative",
+      "category": "Phase",
+      "description": "fragmentative — broken into pieces"
+    },
+    {
+      "abbrev": "VAC",
+      "name": "Vacillative",
+      "category": "Phase",
+      "description": "vacillative — alternating, wavering"
+    },
+    {
+      "abbrev": "FLC",
+      "name": "Fluctuative",
+      "category": "Phase",
+      "description": "fluctuative — irregularly varying"
+    },
+    {
+      "abbrev": "BEN1",
+      "name": "Beneficial to speaker",
+      "category": "Effect",
+      "description": "beneficial to the speaker"
+    },
+    {
+      "abbrev": "BEN2",
+      "name": "Beneficial to addressee",
+      "category": "Effect",
+      "description": "beneficial to the addressee"
+    },
+    {
+      "abbrev": "BEN3",
+      "name": "Beneficial to 3rd party",
+      "category": "Effect",
+      "description": "beneficial to an unspecified third party"
+    },
+    {
+      "abbrev": "BSLF",
+      "name": "Beneficial to self",
+      "category": "Effect",
+      "description": "beneficial to the subject itself"
+    },
+    {
+      "abbrev": "UNK",
+      "name": "Unknown",
+      "category": "Effect",
+      "description": "neutral / unknown effect"
+    },
+    {
+      "abbrev": "DSLF",
+      "name": "Detrimental to self",
+      "category": "Effect",
+      "description": "detrimental to the subject itself"
+    },
+    {
+      "abbrev": "DET3",
+      "name": "Detrimental to 3rd party",
+      "category": "Effect",
+      "description": "detrimental to an unspecified third party"
+    },
+    {
+      "abbrev": "DET2",
+      "name": "Detrimental to addressee",
+      "category": "Effect",
+      "description": "detrimental to the addressee"
+    },
+    {
+      "abbrev": "DET1",
+      "name": "Detrimental to speaker",
+      "category": "Effect",
+      "description": "detrimental to the speaker"
+    },
+    {
+      "abbrev": "MIN",
+      "name": "Minimal",
+      "category": "Level",
+      "description": "the minimum / least"
+    },
+    {
+      "abbrev": "SBE",
+      "name": "Subequative",
+      "category": "Level",
+      "description": "below the reference"
+    },
+    {
+      "abbrev": "IFR",
+      "name": "Inferior",
+      "category": "Level",
+      "description": "inferior to the reference"
+    },
+    {
+      "abbrev": "DFT",
+      "name": "Deficient",
+      "category": "Level",
+      "description": "deficient — falling short"
+    },
+    {
+      "abbrev": "EQU",
+      "name": "Equative",
+      "category": "Level",
+      "description": "equal to the reference"
+    },
+    {
+      "abbrev": "SUR",
+      "name": "Surpassive",
+      "category": "Level",
+      "description": "surpassing the reference"
+    },
+    {
+      "abbrev": "SPL",
+      "name": "Superlative",
+      "category": "Level",
+      "description": "superlative — the most"
+    },
+    {
+      "abbrev": "SPQ",
+      "name": "Superequative",
+      "category": "Level",
+      "description": "superequative — far exceeding"
+    },
+    {
+      "abbrev": "MAX",
+      "name": "Maximal",
+      "category": "Level",
+      "description": "the maximum / greatest"
+    },
+    {
+      "abbrev": "RTR",
+      "name": "Retrospective",
+      "category": "Aspect",
+      "description": "has been / has done"
+    },
+    {
+      "abbrev": "PRS",
+      "name": "Prospective",
+      "category": "Aspect",
+      "description": "is going to / about to"
+    },
+    {
+      "abbrev": "HAB",
+      "name": "Habitual",
+      "category": "Aspect",
+      "description": "habitually"
+    },
+    {
+      "abbrev": "PRG",
+      "name": "Progressive",
+      "category": "Aspect",
+      "description": "in progress / currently"
+    },
+    {
+      "abbrev": "IMM",
+      "name": "Imminent",
+      "category": "Aspect",
+      "description": "imminent — about to start"
+    },
+    {
+      "abbrev": "PCS",
+      "name": "Precessive",
+      "category": "Aspect",
+      "description": "just finished / just before"
+    },
+    {
+      "abbrev": "REG",
+      "name": "Regulative",
+      "category": "Aspect",
+      "description": "happens at regular intervals"
+    },
+    {
+      "abbrev": "SMM",
+      "name": "Summative",
+      "category": "Aspect",
+      "description": "have already done"
+    },
+    {
+      "abbrev": "ATP",
+      "name": "Anticipatory",
+      "category": "Aspect",
+      "description": "have yet to — not yet"
+    },
+    {
+      "abbrev": "RSM",
+      "name": "Resumptive",
+      "category": "Aspect",
+      "description": "resumed after a pause"
+    },
+    {
+      "abbrev": "CSS",
+      "name": "Cessative",
+      "category": "Aspect",
+      "description": "ceased / stopped"
+    },
+    {
+      "abbrev": "PAU",
+      "name": "Pausal",
+      "category": "Aspect",
+      "description": "paused, waiting to continue"
+    },
+    {
+      "abbrev": "RGR",
+      "name": "Regressive",
+      "category": "Aspect",
+      "description": "going backward / undoing"
+    },
+    {
+      "abbrev": "PCL",
+      "name": "Preclusive",
+      "category": "Aspect",
+      "description": "precluded from happening"
+    },
+    {
+      "abbrev": "CNT",
+      "name": "Continuative",
+      "category": "Aspect",
+      "description": "continuing"
+    },
+    {
+      "abbrev": "ICS",
+      "name": "Incessative",
+      "category": "Aspect",
+      "description": "happens ceaselessly"
+    },
+    {
+      "abbrev": "EXP",
+      "name": "Experiential",
+      "category": "Aspect",
+      "description": "experiential — has experienced"
+    },
+    {
+      "abbrev": "IRP",
+      "name": "Interruptive",
+      "category": "Aspect",
+      "description": "interrupted partway"
+    },
+    {
+      "abbrev": "PMP",
+      "name": "Preemptive",
+      "category": "Aspect",
+      "description": "preemptive — before another can"
+    },
+    {
+      "abbrev": "CLM",
+      "name": "Climactic",
+      "category": "Aspect",
+      "description": "climactic — peak moment"
+    },
+    {
+      "abbrev": "DLT",
+      "name": "Dilatory",
+      "category": "Aspect",
+      "description": "long-delayed"
+    },
+    {
+      "abbrev": "TMP",
+      "name": "Temporary",
+      "category": "Aspect",
+      "description": "temporary"
+    },
+    {
+      "abbrev": "XPD",
+      "name": "Expenditive",
+      "category": "Aspect",
+      "description": "expended / used up"
+    },
+    {
+      "abbrev": "LIM",
+      "name": "Limitative",
+      "category": "Aspect",
+      "description": "limitative — just in time"
+    },
+    {
+      "abbrev": "EPD",
+      "name": "Expeditive",
+      "category": "Aspect",
+      "description": "expeditive — promptly"
+    },
+    {
+      "abbrev": "PTC",
+      "name": "Protractive",
+      "category": "Aspect",
+      "description": "protractive — taking one's time"
+    },
+    {
+      "abbrev": "PPR",
+      "name": "Preparatory",
+      "category": "Aspect",
+      "description": "preparatory — in preparation"
+    },
+    {
+      "abbrev": "DCL",
+      "name": "Disclusive",
+      "category": "Aspect",
+      "description": "disclusive — without doing"
+    },
+    {
+      "abbrev": "CCL",
+      "name": "Conclusive",
+      "category": "Aspect",
+      "description": "conclusive — finally"
+    },
+    {
+      "abbrev": "CUL",
+      "name": "Culminative",
+      "category": "Aspect",
+      "description": "culminative — having reached completion"
+    },
+    {
+      "abbrev": "IMD",
+      "name": "Intermediative",
+      "category": "Aspect",
+      "description": "intermediative — in between"
+    },
+    {
+      "abbrev": "TRD",
+      "name": "Tardative",
+      "category": "Aspect",
+      "description": "tardative — late, delayed"
+    },
+    {
+      "abbrev": "TNS",
+      "name": "Transitional",
+      "category": "Aspect",
+      "description": "transitional"
+    },
+    {
+      "abbrev": "ITC",
+      "name": "Intercommutative",
+      "category": "Aspect",
+      "description": "intercommutative — back and forth"
+    },
+    {
+      "abbrev": "MTV",
+      "name": "Motive",
+      "category": "Aspect",
+      "description": "motive — out of habit/inclination"
+    },
+    {
+      "abbrev": "SQN",
+      "name": "Sequential",
+      "category": "Aspect",
+      "description": "sequential — one after another"
+    },
+    {
+      "abbrev": "FAC",
+      "name": "Factual",
+      "category": "Mood",
+      "description": "factual — actually the case"
+    },
+    {
+      "abbrev": "SUB",
+      "name": "Subjunctive",
+      "category": "Mood",
+      "description": "subjunctive — possibly the case"
+    },
+    {
+      "abbrev": "ASM",
+      "name": "Assumptive",
+      "category": "Mood",
+      "description": "assumptive — assumed/presumed"
+    },
+    {
+      "abbrev": "SPC",
+      "name": "Speculative",
+      "category": "Mood",
+      "description": "speculative — guessed"
+    },
+    {
+      "abbrev": "COU",
+      "name": "Counterfactive",
+      "category": "Mood",
+      "description": "counterfactive — would have been"
+    },
+    {
+      "abbrev": "HYP",
+      "name": "Hypothetical",
+      "category": "Mood",
+      "description": "hypothetical — imagined"
+    },
+    {
+      "abbrev": "CCN",
+      "name": "Natural case-scope",
+      "category": "CaseScope",
+      "description": "default — case follows clause head or main verb"
+    },
+    {
+      "abbrev": "CCA",
+      "name": "Antecedent case-scope",
+      "category": "CaseScope",
+      "description": "head — governs case of clause's unmarked nouns"
+    },
+    {
+      "abbrev": "CCS",
+      "name": "Subaltern case-scope",
+      "category": "CaseScope",
+      "description": "head — paired with CCQ qualifier(s)"
+    },
+    {
+      "abbrev": "CCQ",
+      "name": "Qualifier case-scope",
+      "category": "CaseScope",
+      "description": "qualifier — modifies a CCS head"
+    },
+    {
+      "abbrev": "CCP",
+      "name": "Precedent case-scope",
+      "category": "CaseScope",
+      "description": "scope over next formative only"
+    },
+    {
+      "abbrev": "CCV",
+      "name": "Successive case-scope",
+      "category": "CaseScope",
+      "description": "scope over previous formative only"
+    },
+    {
+      "abbrev": "ASR",
+      "name": "Assertive",
+      "category": "Illocution",
+      "description": "I assert / state"
+    },
+    {
+      "abbrev": "DIR",
+      "name": "Directive",
+      "category": "Illocution",
+      "description": "I direct / command"
+    },
+    {
+      "abbrev": "DEC",
+      "name": "Declarative",
+      "category": "Illocution",
+      "description": "I declare (performative)"
+    },
+    {
+      "abbrev": "IRG",
+      "name": "Interrogative",
+      "category": "Illocution",
+      "description": "I ask"
+    },
+    {
+      "abbrev": "VER",
+      "name": "Verificative",
+      "category": "Illocution",
+      "description": "I ask for confirmation (yes/no question)"
+    },
+    {
+      "abbrev": "ADM",
+      "name": "Admonitive",
+      "category": "Illocution",
+      "description": "I warn / advise against"
+    },
+    {
+      "abbrev": "POT",
+      "name": "Potentiative",
+      "category": "Illocution",
+      "description": "I wish / hope (unrealized)"
+    },
+    {
+      "abbrev": "HOR",
+      "name": "Hortative",
+      "category": "Illocution",
+      "description": "I wish it were so (counterfactual)"
+    },
+    {
+      "abbrev": "CNJ",
+      "name": "Conjectural",
+      "category": "Illocution",
+      "description": "I conjecture"
+    },
+    {
+      "abbrev": "OBS",
+      "name": "Observational",
+      "category": "Validation",
+      "description": "present sensory knowledge — I perceive / I know"
+    },
+    {
+      "abbrev": "REC",
+      "name": "Recollective",
+      "category": "Validation",
+      "description": "past sensory memory — I remember"
+    },
+    {
+      "abbrev": "PUP",
+      "name": "Purportive",
+      "category": "Validation",
+      "description": "from a verifiable source — I've read / an expert says"
+    },
+    {
+      "abbrev": "RPR",
+      "name": "Reportive",
+      "category": "Validation",
+      "description": "hearsay — I heard / someone says"
+    },
+    {
+      "abbrev": "USP",
+      "name": "Unspecified",
+      "category": "Validation",
+      "description": "validation deliberately unspecified"
+    },
+    {
+      "abbrev": "IMA",
+      "name": "Imaginary",
+      "category": "Validation",
+      "description": "unreal — imagination, dream, fantasy"
+    },
+    {
+      "abbrev": "CVN",
+      "name": "Conventional",
+      "category": "Validation",
+      "description": "shared cultural knowledge — they say / it is said"
+    },
+    {
+      "abbrev": "ITU",
+      "name": "Intuitive",
+      "category": "Validation",
+      "description": "intuition / hunch — I feel / something tells me"
+    },
+    {
+      "abbrev": "INF",
+      "name": "Inferential",
+      "category": "Validation",
+      "description": "inferred from evidence — I infer / I reason"
+    },
+    {
+      "abbrev": "DOL",
+      "name": "Dolorous",
+      "category": "Bias",
+      "form": "řřx",
+      "description": "ow! / ouch!"
+    },
+    {
+      "abbrev": "DIS",
+      "name": "Dismissive",
+      "category": "Bias",
+      "form": "kff",
+      "description": "is that it? / big deal / so what?"
+    },
+    {
+      "abbrev": "DRS",
+      "name": "Derisive",
+      "category": "Bias",
+      "form": "pfc",
+      "description": "how foolish / silly / ridiculous!"
+    },
+    {
+      "abbrev": "PES",
+      "name": "Pessimistic",
+      "category": "Bias",
+      "form": "ksp",
+      "description": "yeah, like it really matters / pfft"
+    },
+    {
+      "abbrev": "DUB",
+      "name": "Dubitative",
+      "category": "Bias",
+      "form": "mmf",
+      "description": "hmm, not likely / I doubt it"
+    },
+    {
+      "abbrev": "SKP",
+      "name": "Skeptical",
+      "category": "Bias",
+      "form": "rnž",
+      "description": "yeah, right! / like anyone'd believe that!"
+    },
+    {
+      "abbrev": "TRP",
+      "name": "Trepidative",
+      "category": "Bias",
+      "form": "llč",
+      "description": "oh God / oh no / oh dear (fear)"
+    },
+    {
+      "abbrev": "APH",
+      "name": "Apprehensive",
+      "category": "Bias",
+      "form": "vvz",
+      "description": "I'm worried / I've got a bad feeling"
+    },
+    {
+      "abbrev": "IPT",
+      "name": "Impatient",
+      "category": "Bias",
+      "form": "žžv",
+      "description": "c'mon! / what're you waiting for?"
+    },
+    {
+      "abbrev": "ANP",
+      "name": "Anticipative",
+      "category": "Bias",
+      "form": "lst",
+      "description": "I'm looking forward to this!"
+    },
+    {
+      "abbrev": "DPB",
+      "name": "Disapprobative",
+      "category": "Bias",
+      "form": "ffx",
+      "description": "I don't like... / unacceptable!"
+    },
+    {
+      "abbrev": "CTP",
+      "name": "Contemptive",
+      "category": "Bias",
+      "form": "kšš",
+      "description": "what nonsense! / what bullshit!"
+    },
+    {
+      "abbrev": "IDG",
+      "name": "Indignative",
+      "category": "Bias",
+      "form": "pšš",
+      "description": "the nerve! / how dare...!"
+    },
+    {
+      "abbrev": "EXA",
+      "name": "Exasperative",
+      "category": "Bias",
+      "form": "kçç",
+      "description": "dammit! / don't you get it?"
+    },
+    {
+      "abbrev": "RPU",
+      "name": "Repulsive",
+      "category": "Bias",
+      "form": "šštļ",
+      "description": "yuck! / ew! / how gross!"
+    },
+    {
+      "abbrev": "IVD",
+      "name": "Invidious",
+      "category": "Bias",
+      "form": "řřn",
+      "description": "why does X get to and I don't?! / how unfair!"
+    },
+    {
+      "abbrev": "VEX",
+      "name": "Vexative",
+      "category": "Bias",
+      "form": "ksk",
+      "description": "how annoying! / what a pain!"
+    },
+    {
+      "abbrev": "STU",
+      "name": "Stupefactive",
+      "category": "Bias",
+      "form": "ļļč",
+      "description": "woah! / what the...! / holy...!"
+    },
+    {
+      "abbrev": "PPX",
+      "name": "Perplexive",
+      "category": "Bias",
+      "form": "llh",
+      "description": "huh?! / WTF? / you gotta be kidding!"
+    },
+    {
+      "abbrev": "DCC",
+      "name": "Disconcertive",
+      "category": "Bias",
+      "form": "gzj",
+      "description": "I'm not sure about this / out of my element"
+    },
+    {
+      "abbrev": "RVL",
+      "name": "Revelative",
+      "category": "Bias",
+      "form": "mmļ",
+      "description": "no wonder! / so that's why! / a-ha!"
+    },
+    {
+      "abbrev": "FSC",
+      "name": "Fascinative",
+      "category": "Bias",
+      "form": "žžj",
+      "description": "cool! / wow! / awesome!"
+    },
+    {
+      "abbrev": "EUH",
+      "name": "Euphoric",
+      "category": "Bias",
+      "form": "gzz",
+      "description": "(sigh) what bliss!"
+    },
+    {
+      "abbrev": "GRT",
+      "name": "Gratificative",
+      "category": "Bias",
+      "form": "mmh",
+      "description": "ah, what bliss! (physical pleasure)"
+    },
+    {
+      "abbrev": "SAT",
+      "name": "Satiative",
+      "category": "Bias",
+      "form": "ļţ",
+      "description": "how satisfying! / at last! (emotional pleasure)"
+    },
+    {
+      "abbrev": "DLC",
+      "name": "Delectative",
+      "category": "Bias",
+      "form": "ẓmm",
+      "description": "whee!"
+    },
+    {
+      "abbrev": "IFT",
+      "name": "Infatuative",
+      "category": "Bias",
+      "form": "vvr",
+      "description": "praise be! / thank God for...!"
+    },
+    {
+      "abbrev": "SOL",
+      "name": "Solicitative",
+      "category": "Bias",
+      "form": "ňňs",
+      "description": "please"
+    },
+    {
+      "abbrev": "RAC",
+      "name": "Reactive",
+      "category": "Bias",
+      "form": "kll",
+      "description": "my goodness! / wow! / amazing!"
+    },
+    {
+      "abbrev": "MAN",
+      "name": "Mandatory",
+      "category": "Bias",
+      "form": "msk",
+      "description": "take it or leave it / this is your last chance"
+    },
+    {
+      "abbrev": "EXG",
+      "name": "Exigent",
+      "category": "Bias",
+      "form": "rrs",
+      "description": "it's now or never!"
+    },
+    {
+      "abbrev": "ATE",
+      "name": "Attentive",
+      "category": "Bias",
+      "form": "ňj",
+      "description": "well, whaddya know / look at that"
+    },
+    {
+      "abbrev": "APB",
+      "name": "Approbative",
+      "category": "Bias",
+      "form": "řs",
+      "description": "that's OK / fine / sure"
+    },
+    {
+      "abbrev": "OPT",
+      "name": "Optimal",
+      "category": "Bias",
+      "form": "ččk",
+      "description": "\"so\" / \"totally\" — emphatic intensifier"
+    },
+    {
+      "abbrev": "CNV",
+      "name": "Contensive",
+      "category": "Bias",
+      "form": "rrj",
+      "description": "I told you so / you see?!"
+    },
+    {
+      "abbrev": "ACC",
+      "name": "Accidental",
+      "category": "Bias",
+      "form": "lf",
+      "description": "as luck would have it / what luck!"
+    },
+    {
+      "abbrev": "ACH",
+      "name": "Archetypal",
+      "category": "Bias",
+      "form": "mçt",
+      "description": "what a...! / boy, did X ever...!"
+    },
+    {
+      "abbrev": "IRO",
+      "name": "Ironic",
+      "category": "Bias",
+      "form": "mmž",
+      "description": "oh, nice! / just great! (sarcastic)"
+    },
+    {
+      "abbrev": "PSM",
+      "name": "Presumptive",
+      "category": "Bias",
+      "form": "nnţ",
+      "description": "it can only mean one thing / and that's that!"
+    },
+    {
+      "abbrev": "CRR",
+      "name": "Corrective",
+      "category": "Bias",
+      "form": "ňţ",
+      "description": "that is to say... / what I mean is..."
+    },
+    {
+      "abbrev": "EUP",
+      "name": "Euphemistic",
+      "category": "Bias",
+      "form": "vvt",
+      "description": "let's just say... / let me put it this way..."
+    },
+    {
+      "abbrev": "PSC",
+      "name": "Prosaic",
+      "category": "Bias",
+      "form": "žžt",
+      "description": "meh (disappointed) / how ordinary!"
+    },
+    {
+      "abbrev": "CMD",
+      "name": "Comedic",
+      "category": "Bias",
+      "form": "pļļ",
+      "description": "funny! / LOL"
+    },
+    {
+      "abbrev": "PPV",
+      "name": "Propositive",
+      "category": "Bias",
+      "form": "sl",
+      "description": "what if... / consider this / posit that..."
+    },
+    {
+      "abbrev": "SGS",
+      "name": "Suggestive",
+      "category": "Bias",
+      "form": "ltç",
+      "description": "how about... / we could... / might I suggest..."
+    },
+    {
+      "abbrev": "DFD",
+      "name": "Diffident",
+      "category": "Bias",
+      "form": "cč",
+      "description": "sorry, but... / it's nothing, just..."
+    },
+    {
+      "abbrev": "RFL",
+      "name": "Reflective",
+      "category": "Bias",
+      "form": "llm",
+      "description": "as I see it / in my opinion"
+    },
+    {
+      "abbrev": "DES",
+      "name": "Desperative",
+      "category": "Bias",
+      "form": "mřř",
+      "description": "I'm afraid... / I don't know how to say this"
+    },
+    {
+      "abbrev": "COI",
+      "name": "Coincidental",
+      "category": "Bias",
+      "form": "ššč",
+      "description": "what a coincidence!"
+    },
+    {
+      "abbrev": "FOR",
+      "name": "Fortuitous",
+      "category": "Bias",
+      "form": "lzp",
+      "description": "it's just as well / all's well that ends well"
+    },
+    {
+      "abbrev": "ANN",
+      "name": "Annunciative",
+      "category": "Bias",
+      "form": "drr",
+      "description": "guess what! / wait till you hear this!"
+    },
+    {
+      "abbrev": "RSG",
+      "name": "Resignative",
+      "category": "Bias",
+      "form": "msf",
+      "description": "so much for...! / there goes...!"
+    },
+    {
+      "abbrev": "ISP",
+      "name": "Insipid",
+      "category": "Bias",
+      "form": "lçp",
+      "description": "meh (uninterested) / how boring!"
+    },
+    {
+      "abbrev": "IPL",
+      "name": "Implicative",
+      "category": "Bias",
+      "form": "vll",
+      "description": "of course / after all / needless to say"
+    },
+    {
+      "abbrev": "MNF",
+      "name": "Manifestive",
+      "category": "Bias",
+      "form": "pss",
+      "description": "ah! / well, now! / so!"
+    },
+    {
+      "abbrev": "ARB",
+      "name": "Arbitrary",
+      "category": "Bias",
+      "form": "xtļ",
+      "description": "whatever / ah, what the hell"
+    },
+    {
+      "abbrev": "PPT",
+      "name": "Propitious",
+      "category": "Bias",
+      "form": "mll",
+      "description": "it's a wonder that..."
+    },
+    {
+      "abbrev": "CTV",
+      "name": "Contemplative",
+      "category": "Bias",
+      "form": "gvv",
+      "description": "I wonder... / hmm..."
+    },
+    {
+      "abbrev": "CRP",
+      "name": "Corruptive",
+      "category": "Bias",
+      "form": "gžž",
+      "description": "how corrupt! / what corruption!"
+    },
+    {
+      "abbrev": "DEJ",
+      "name": "Dejective",
+      "category": "Bias",
+      "form": "žžg",
+      "description": "(sigh) — dejection / disillusionment"
+    },
+    {
+      "abbrev": "ADS",
+      "name": "Admissive",
+      "category": "Bias",
+      "form": "lļ",
+      "description": "mm-hm / uh-huh (acknowledged without assent)"
+    },
+    {
+      "abbrev": "NRR",
+      "name": "Narrative",
+      "category": "Register",
+      "description": "narration (default)"
+    },
+    {
+      "abbrev": "DSV",
+      "name": "Discursive",
+      "category": "Register",
+      "form": "ha",
+      "description": "direct speech (quotation)"
+    },
+    {
+      "abbrev": "PNT",
+      "name": "Parenthetical",
+      "category": "Register",
+      "form": "he",
+      "description": "aside / parenthetical"
+    },
+    {
+      "abbrev": "SPF",
+      "name": "Specificative",
+      "category": "Register",
+      "form": "hi",
+      "description": "proper name"
+    },
+    {
+      "abbrev": "EXM",
+      "name": "Exemplificative",
+      "category": "Register",
+      "form": "ho",
+      "description": "giving an example"
+    },
+    {
+      "abbrev": "CGT",
+      "name": "Cogitant",
+      "category": "Register",
+      "form": "hu",
+      "description": "internal thought"
+    },
+    {
+      "abbrev": "END",
+      "name": "End of register",
+      "category": "Register",
+      "description": "ends the open register"
+    },
+    {
+      "abbrev": "Carrier",
+      "category": "CarrierType",
+      "form": "hl"
+    },
+    {
+      "abbrev": "Quotative",
+      "category": "CarrierType",
+      "form": "hm"
+    },
+    {
+      "abbrev": "Naming",
+      "category": "CarrierType",
+      "form": "hn"
+    },
+    {
+      "abbrev": "Phrasal",
+      "category": "CarrierType",
+      "form": "hň"
+    }
+  ],
   "roots": [
     {
       "cr": "s",

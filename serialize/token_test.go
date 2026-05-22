@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/tokenize"
@@ -163,11 +162,6 @@ func TestMarshalTokens_RoundTrip(t *testing.T) {
 // that Marshal followed by Unmarshal preserves byte equality on
 // re-marshal — the strongest invariant for a binary codec.
 func TestFuzz_BinaryRoundTrip(t *testing.T) {
-	lex, err := lexicon.LoadDefault()
-	if err != nil {
-		t.Fatalf("load lex: %v", err)
-	}
-	_ = lex
 	rng := rand.New(rand.NewSource(2026_05_21))
 	const iterations = 500
 	for i := 0; i < iterations; i++ {

@@ -21,7 +21,7 @@ import (
 //	ml
 //	S2/CPT-ml-ERG
 //	S2/CPT-ml-DYN/OBJ-MSS.G.RPV-DEV/3-ERG
-func cmdCompose(args []string, stdout, stderr io.Writer, lexDir string) int {
+func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 	fs := newFlagSet("compose", stderr)
 	fs.describe("Build a surface formative from a gloss-style expression.", "EXPR")
 	if err := fs.Parse(args); err != nil {
@@ -36,7 +36,7 @@ func cmdCompose(args []string, stdout, stderr io.Writer, lexDir string) int {
 		fmt.Fprintf(stderr, "compose: unexpected extra args %q\n", rest[1:])
 		return 2
 	}
-	lex := loadLex(lexDir, stderr)
+	lex := loadLex(dataFile, stderr)
 	var affixes map[string]lexicon.AffixEntry
 	if lex != nil {
 		affixes = lex.Affixes

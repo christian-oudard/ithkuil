@@ -3,6 +3,8 @@ package lexicon
 import (
 	"path/filepath"
 	"testing"
+
+	"github.com/christian-oudard/ithkuil/store"
 )
 
 // dataPath returns the path to a file under the repo's data/ directory,
@@ -12,21 +14,19 @@ func dataPath(name string) string {
 }
 
 func TestLoad(t *testing.T) {
-	lex, err := Load(dataPath("lexicon.json"))
+	lex, err := Load(dataPath("data.json"))
 	if err != nil {
 		t.Fatalf("Load error: %v", err)
 	}
 	if lex.Version == 0 {
 		t.Error("Load: Version zero")
 	}
-	_ = lex.Version // version is a uint16; non-zero check above
 	if len(lex.Roots) < 4000 {
 		t.Errorf("expected several thousand root entries, got %d", len(lex.Roots))
 	}
 	if len(lex.Affixes) < 400 {
 		t.Errorf("expected several hundred affix entries, got %d", len(lex.Affixes))
 	}
-	// Spot check: the root "b" exists and has stems populated.
 	b, ok := lex.Roots["b"]
 	if !ok {
 		t.Fatalf("root \"b\" not found")
@@ -34,7 +34,6 @@ func TestLoad(t *testing.T) {
 	if b.Stem0 == "" || b.Stem1 == "" || b.Stem2 == "" || b.Stem3 == "" {
 		t.Errorf("root \"b\" has empty stems: %+v", b)
 	}
-	// Spot check: "b" affix exists with 9 degrees.
 	ba, ok := lex.Affixes["b"]
 	if !ok {
 		t.Fatalf("affix \"b\" not found")
@@ -44,6 +43,30 @@ func TestLoad(t *testing.T) {
 	}
 	if len(ba.Degrees) != 9 {
 		t.Errorf("affix \"b\" degrees = %d, want 9", len(ba.Degrees))
+	}
+}
+
+func TestLoadFromStore(t *testing.T) {
+	s, err := store.Open(dataPath("data.db"))
+	if err != nil {
+		t.Skipf("data.db not available: %v", err)
+	}
+	defer s.Close()
+	lex, err := LoadFromStore(s)
+	if err != nil {
+		t.Fatalf("LoadFromStore: %v", err)
+	}
+	if len(lex.Roots) < 4000 {
+		t.Errorf("expected several thousand root entries, got %d", len(lex.Roots))
+	}
+	if len(lex.Affixes) < 400 {
+		t.Errorf("expected several hundred affix entries, got %d", len(lex.Affixes))
+	}
+	if _, ok := lex.Roots["ml"]; !ok {
+		t.Error("root \"ml\" missing")
+	}
+	if _, ok := lex.Affixes["rf"]; !ok {
+		t.Error("affix \"rf\" missing")
 	}
 }
 
@@ -60,7 +83,7 @@ func TestRootStem(t *testing.T) {
 		want string
 	}{
 		{0, "zero"}, {1, "one"}, {2, "two"}, {3, "three"},
-		{-1, "zero"}, {99, "zero"}, // out of range falls to Stem0
+		{-1, "zero"}, {99, "zero"},
 	}
 	for _, c := range cases {
 		if got := r.Stem(c.i); got != c.want {
@@ -81,18 +104,11 @@ func TestParseLexicon_BadJSON(t *testing.T) {
 	}
 }
 
-func TestParseLexicon_NoVersion(t *testing.T) {
-	if _, err := parseLexicon([]byte(`{"roots": [], "affixes": []}`)); err == nil {
-		t.Error("parseLexicon without version succeeded, want error")
-	}
-}
-
 func TestRootEntry_RichFields(t *testing.T) {
-	lex, err := LoadDefault()
+	lex, err := Load(dataPath("data.json"))
 	if err != nil {
-		t.Fatalf("LoadDefault: %v", err)
+		t.Fatalf("Load: %v", err)
 	}
-	// "t" (demonstrative) has Objective alternates per stem in upstream.
 	tr, ok := lex.Roots["t"]
 	if !ok {
 		t.Fatalf("root \"t\" missing")
@@ -105,7 +121,6 @@ func TestRootEntry_RichFields(t *testing.T) {
 			t.Errorf("root \"t\".Objective[%d] empty", i)
 		}
 	}
-	// Plain entry with no rich fields should not allocate any.
 	mb, ok := lex.Roots["mb"]
 	if !ok {
 		t.Fatalf("root \"mb\" missing")
@@ -117,9 +132,9 @@ func TestRootEntry_RichFields(t *testing.T) {
 }
 
 func TestAffixEntry_CategoryValue(t *testing.T) {
-	lex, err := LoadDefault()
+	lex, err := Load(dataPath("data.json"))
 	if err != nil {
-		t.Fatalf("LoadDefault: %v", err)
+		t.Fatalf("Load: %v", err)
 	}
 	cases := []struct {
 		cs       string
@@ -127,16 +142,16 @@ func TestAffixEntry_CategoryValue(t *testing.T) {
 		typeCode int
 		want     string
 	}{
-		{"bẓ", 1, 1, "SUB"}, // MCS: (SUB) Subjunctive
-		{"bẓ", 5, 1, "HYP"}, // MCS: (HYP) Hypothetical
-		{"bž", 1, 1, "PCT"}, // PHS
-		{"nļ", 1, 1, "ASR"}, // IVL type 1
-		{"nļ", 1, 2, "OBS"}, // IVL type 2 (bracketed alt)
-		{"nļ", 9, 2, "INF"}, // IVL type 2 deepest degree
-		{"b", 1, 1, ""},     // DEV: no category prefix
-		{"bẓ", 0, 1, ""},    // degree out of range (low)
-		{"bẓ", 10, 1, ""},   // degree out of range (high)
-		{"bẓ", 3, 3, ""},    // type 3 has no category alternate
+		{"bẓ", 1, 1, "SUB"},
+		{"bẓ", 5, 1, "HYP"},
+		{"bž", 1, 1, "PCT"},
+		{"nļ", 1, 1, "ASR"},
+		{"nļ", 1, 2, "OBS"},
+		{"nļ", 9, 2, "INF"},
+		{"b", 1, 1, ""},
+		{"bẓ", 0, 1, ""},
+		{"bẓ", 10, 1, ""},
+		{"bẓ", 3, 3, ""},
 	}
 	for _, c := range cases {
 		entry, ok := lex.Affixes[c.cs]
@@ -149,27 +164,5 @@ func TestAffixEntry_CategoryValue(t *testing.T) {
 			t.Errorf("%s.CategoryValue(%d, type=%d) = %q, want %q",
 				c.cs, c.degree, c.typeCode, got, c.want)
 		}
-	}
-}
-
-func TestLoadDefault(t *testing.T) {
-	lex, err := LoadDefault()
-	if err != nil {
-		t.Fatalf("LoadDefault: %v", err)
-	}
-	if lex.Version == 0 {
-		t.Error("LoadDefault: Version zero")
-	}
-	if len(lex.Roots) == 0 {
-		t.Error("LoadDefault: Roots empty")
-	}
-	if len(lex.Affixes) == 0 {
-		t.Error("LoadDefault: Affixes empty")
-	}
-	if _, ok := lex.Roots["ml"]; !ok {
-		t.Error("LoadDefault: root \"ml\" missing")
-	}
-	if _, ok := lex.Affixes["rf"]; !ok {
-		t.Error("LoadDefault: affix \"rf\" missing")
 	}
 }

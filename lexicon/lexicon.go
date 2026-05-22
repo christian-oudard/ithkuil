@@ -1,20 +1,16 @@
-// Package lexicon loads Ithkuil V4 roots and affixes from JSON and
-// exposes lookup by consonant form. The canonical data files live
-// under data/ at the repo root and are also embedded into binaries
-// via the github.com/christian-oudard/ithkuil/data package — use
-// LoadDefault for the embedded copy or Load to read from disk.
+// Package lexicon loads Ithkuil V4 roots and affixes and exposes
+// lookup by consonant form. Use Load to read from a JSON data file
+// (data/data.json), or LoadFromStore to populate from an open SQLite
+// store (data/data.db).
 package lexicon
 
 import (
-	"bytes"
-	"compress/gzip"
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 	"regexp"
 
-	"github.com/christian-oudard/ithkuil/data"
+	"github.com/christian-oudard/ithkuil/store"
 )
 
 // RootEntry pairs a root consonant cluster with its four-stem meaning
@@ -64,39 +60,55 @@ type AffixEntry struct {
 // Lexicon bundles the root and affix maps so callers can pass a single
 // value through their pipelines. Version is a monotonically increasing
 // uint16 owned by data/sync_lexicon.py — bumped whenever the lexicon
-// content changes — that lets downstream consumers (notably the binary
-// serialize format) detect when the lexicon has shifted under them.
+// content changes.
 type Lexicon struct {
 	Version uint16
 	Roots   map[string]RootEntry
 	Affixes map[string]AffixEntry
 }
 
-// LoadDefault returns the lexicon bundled with the binary via
-// //go:embed. The embedded data is gzip-compressed (~380 KB vs ~1.8
-// MiB plain) and decompressed at load time. Use Load to override
-// with a different on-disk copy.
-func LoadDefault() (*Lexicon, error) {
-	gz, err := gzip.NewReader(bytes.NewReader(data.Lexicon))
-	if err != nil {
-		return nil, fmt.Errorf("embedded lexicon gzip header: %w", err)
-	}
-	defer gz.Close()
-	buf, err := io.ReadAll(gz)
-	if err != nil {
-		return nil, fmt.Errorf("embedded lexicon decompress: %w", err)
-	}
-	return parseLexicon(buf)
-}
-
-// Load reads a combined lexicon.json file (with version, roots, and
-// affixes fields) from disk.
+// Load reads a data.json (or compatible lexicon JSON) file from disk.
+// The file must contain "roots" and "affixes" arrays; the "grammar"
+// key is ignored. Version may be zero when loading test fixtures.
 func Load(path string) (*Lexicon, error) {
-	bytes, err := os.ReadFile(path)
+	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("load lexicon: %w", err)
 	}
-	return parseLexicon(bytes)
+	return parseLexicon(b)
+}
+
+// LoadFromStore reads all roots and affixes from an open store into
+// an in-memory Lexicon. Use this when you need map-based access across
+// many lookups (e.g. analysis of a full document). Version is left
+// zero since the store does not record a version.
+func LoadFromStore(s *store.Store) (*Lexicon, error) {
+	sr, err := s.AllRoots()
+	if err != nil {
+		return nil, fmt.Errorf("load roots from store: %w", err)
+	}
+	sa, err := s.AllAffixes()
+	if err != nil {
+		return nil, fmt.Errorf("load affixes from store: %w", err)
+	}
+	roots := make(map[string]RootEntry, len(sr))
+	for _, r := range sr {
+		roots[r.Cr] = RootEntry{
+			Cr: r.Cr, Stem0: r.Stem0, Stem1: r.Stem1,
+			Stem2: r.Stem2, Stem3: r.Stem3,
+			Contential: r.Contential, Constitutive: r.Constitutive,
+			Objective: r.Objective, Completive: r.Completive,
+			Dynamic: r.Dynamic, Wikidata: r.Wikidata,
+		}
+	}
+	affixes := make(map[string]AffixEntry, len(sa))
+	for _, a := range sa {
+		affixes[a.Cs] = AffixEntry{
+			Cs: a.Cs, Abbrev: a.Abbrev, Description: a.Description,
+			Type: a.Type, Degrees: a.Degrees,
+		}
+	}
+	return &Lexicon{Roots: roots, Affixes: affixes}, nil
 }
 
 // Category-valued affixes (MCS, PHS, AP1-4, IVL, LVL, VAL) write their
@@ -148,7 +160,7 @@ func (r RootEntry) Stem(i int) string {
 	}
 }
 
-// parseLexicon decodes the combined lexicon.json shape.
+// parseLexicon decodes the data.json/lexicon.json shape.
 func parseLexicon(buf []byte) (*Lexicon, error) {
 	var raw struct {
 		Version uint16       `json:"version"`
@@ -157,9 +169,6 @@ func parseLexicon(buf []byte) (*Lexicon, error) {
 	}
 	if err := json.Unmarshal(buf, &raw); err != nil {
 		return nil, fmt.Errorf("lexicon: %w", err)
-	}
-	if raw.Version == 0 {
-		return nil, fmt.Errorf("lexicon: missing or zero version field")
 	}
 	roots := make(map[string]RootEntry, len(raw.Roots))
 	for _, e := range raw.Roots {
