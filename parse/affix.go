@@ -57,9 +57,8 @@ func Type2DegreeToVowel(degree int) string {
 }
 
 // ClassifyAffixVowel returns the AffixType and degree (0-9) of an affix
-// vowel Vx. Unrecognized vowels default to (Type1Affix, 0) — matching
-// the Haskell reference, which uses this only when a richer parser has
-// already validated the input.
+// vowel Vx. Unrecognized vowels default to (Type1Affix, 0); this path
+// is only reached when a richer parser has already validated the input.
 func ClassifyAffixVowel(v string) (grammar.AffixType, int) {
 	if d, ok := type1Degrees[v]; ok {
 		return grammar.Type1Affix, d

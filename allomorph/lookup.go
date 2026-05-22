@@ -12,8 +12,7 @@ var CaForward map[g.SlotVI]string
 // CaReverse maps each surface Ca cluster to a SlotVI. When multiple
 // SlotVI values produce the same cluster, the first one encountered
 // in (Configuration, Affiliation, Perspective, Extension, Essence)
-// declaration order wins — matching the Kotlin glosser and the
-// Haskell reference implementation's reverse+fromList behavior.
+// declaration order wins.
 var CaReverse map[string]g.SlotVI
 
 // CaUngeminate maps each geminated Ca cluster back to its bare form.

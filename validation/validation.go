@@ -1,11 +1,10 @@
 // Package validation implements phonotactic constraint checking for
 // Ithkuil V4. The rules follow "Phonotactic Rules for New Ithkuil,
-// v.1.0" (the same source the Haskell reference uses).
+// v.1.0".
 //
-// This port covers the most commonly violated rules from Section 2
-// (Prohibited Consonantal Conjuncts) plus the triple-consonant check.
-// Full coverage of the cluster-level rules and stress validation can
-// be layered on later.
+// Covers the most commonly violated rules from Section 2 (Prohibited
+// Consonantal Conjuncts) plus the triple-consonant check. Full coverage
+// of the cluster-level rules and stress validation can be layered on later.
 package validation
 
 import (

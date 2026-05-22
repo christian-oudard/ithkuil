@@ -7,16 +7,13 @@ import (
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
-// Corpus tests ported from agent-4's commit d2c1cb3 (test/Main.hs
-// "Corpus: translation drafts (alpha)"). Each test parses a candidate
+// Corpus tests for translation draft forms. Each test parses a candidate
 // translation form and asserts the gloss contains the intended
-// morphological features. Verifies the Go pipeline (tokenize → gloss
-// with lexicon) matches the Haskell reference's expectations.
+// morphological features.
 
 // glossOne deliberately runs without a lexicon so affixes show as
-// "Cs/degree" (matching the Haskell corpus tests' mempty/mempty calls).
-// This keeps the assertions structural rather than tied to specific
-// lexicon entries.
+// "Cs/degree". This keeps the assertions structural rather than tied to
+// specific lexicon entries.
 func glossOne(_ *testing.T, word string) string {
 	gl := &Glosser{}
 	return gl.Token(tokenize.ClassifyWord(word))

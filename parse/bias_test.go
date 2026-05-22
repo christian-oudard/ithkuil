@@ -7,7 +7,7 @@ import (
 )
 
 func TestParseBias_Known(t *testing.T) {
-	// Match the Haskell hspec assertions.
+	// Known bias consonant clusters.
 	cases := []struct {
 		in   string
 		want grammar.Bias

@@ -281,7 +281,7 @@ func slotI(c g.ConcatenationStatus) string {
 }
 
 // stemIndex converts the grammar.Stem enum to the 0-3 index expected
-// by RootEntry.Stem. The Haskell convention is S0→0, S1→1, S2→2, S3→3.
+// by RootEntry.Stem: S0→0, S1→1, S2→2, S3→3.
 func stemIndex(s g.Stem) int {
 	switch s {
 	case g.S1:
@@ -376,8 +376,7 @@ func slotVIII(s g.SlotVIII, isVerbal bool) string {
 		return ""
 	}
 	vn := g.SlotVIIIVnLabel(s)
-	// MNO is the unmarked default valence and is suppressed in gloss
-	// output, matching the Haskell convention.
+	// MNO is the unmarked default valence and is suppressed in gloss output.
 	if v, ok := s.(g.VnCnValence); ok && v.Valence == g.MNO {
 		vn = ""
 	}

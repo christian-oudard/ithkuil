@@ -2,11 +2,6 @@
 // inventory. Given an abbreviation ("THM") or a surface form ("a") or
 // a meaning keyword ("agent"), find the grammar entries or roots that
 // match.
-//
-// The Go port omits the hand-curated descriptions and glosses that
-// live in the Haskell Compose module (200+ entries of free-text data
-// entry); the lookup APIs work fine without them. If you need rich
-// descriptions, layer them on top of the entries returned here.
 package compose
 
 import (

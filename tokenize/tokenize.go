@@ -380,8 +380,7 @@ func nextFormativeIsVerbal(toks []WordToken, i int) (verbal, found bool) {
 
 // isCarrierToken reports whether tok semantically scopes a foreign word
 // that follows it. Plain CarrierWords always do; FormativeWords whose
-// root is the carrier root "s" also do (matching Haskell's
-// isCarrierParsed which is true for either shape).
+// root is the carrier root "s" also do.
 func isCarrierToken(tok WordToken) bool {
 	switch v := tok.(type) {
 	case CarrierWord:

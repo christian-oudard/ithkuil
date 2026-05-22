@@ -3,7 +3,7 @@ package grammar
 import "testing"
 
 func TestBiasCount(t *testing.T) {
-	// The Haskell enum has 61 Bias values; we match that count.
+	// 61 Bias values per the grammar spec.
 	if n := len(AllBiases); n != 61 {
 		t.Errorf("AllBiases has %d entries, want 61", n)
 	}
