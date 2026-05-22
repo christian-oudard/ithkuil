@@ -8,6 +8,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
 	"github.com/christian-oudard/ithkuil/compose"
+	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/gloss"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/render"
@@ -55,7 +56,9 @@ func (s *server) registerTools(srv *mcp.Server) {
 		Name: "lexicon",
 		Description: "Substring search the root and/or affix lexicons. Pass kind=\"root\", " +
 			"\"affix\", or \"both\" (default both). Returns ranked hits with surface " +
-			"clusters and meaning text. Example: query=\"speak\", kind=\"root\".",
+			"clusters and meaning text. Use queries=[...] to search multiple terms in one " +
+			"call, deduplicating results by cluster. " +
+			"Example: query=\"speak\"; queries=[\"ml\",\"ţř\"], kind=\"root\".",
 	}, s.lexicon)
 
 	mcp.AddTool(srv, &mcp.Tool{
@@ -265,7 +268,8 @@ type grammarEntryOut struct {
 	Abbrev      string `json:"abbrev"`
 	Name        string `json:"name,omitempty"`
 	Form        string `json:"form,omitempty"`
-	Description string `json:"description,omitempty"`
+	Meaning     string `json:"meaning,omitempty"`
+	Description string `json:"description,omitempty"` // Bias expression text only
 }
 
 type grammarOut struct {
@@ -309,6 +313,7 @@ func toGrammarEntries(hits []compose.Entry) []grammarEntryOut {
 			Abbrev:      e.Abbrev,
 			Name:        e.Name,
 			Form:        e.Form,
+			Meaning:     g.Meaning(e.Abbrev),
 			Description: e.Description,
 		}
 	}
@@ -335,9 +340,10 @@ func filterEntriesByCategory(in []compose.Entry, cat string) []compose.Entry {
 // --------------------------------------------------------------------
 
 type lexiconIn struct {
-	Query string `json:"query" jsonschema:"substring across surface clusters and meaning text"`
-	Kind  string `json:"kind,omitempty" jsonschema:"root|affix|both (default both)"`
-	Limit int    `json:"limit,omitempty" jsonschema:"maximum hits per kind (default 20)"`
+	Query   string   `json:"query,omitempty" jsonschema:"substring across surface clusters and meaning text"`
+	Queries []string `json:"queries,omitempty" jsonschema:"batch: list of substrings; results deduplicated by cluster"`
+	Kind    string   `json:"kind,omitempty" jsonschema:"root|affix|both (default both)"`
+	Limit   int      `json:"limit,omitempty" jsonschema:"maximum hits per kind per query (default 20)"`
 }
 
 type rootHitOut struct {
@@ -369,9 +375,12 @@ type lexiconOut struct {
 }
 
 func (s *server) lexicon(_ context.Context, _ *mcp.CallToolRequest, in lexiconIn) (*mcp.CallToolResult, lexiconOut, error) {
-	q := strings.TrimSpace(in.Query)
-	if q == "" {
-		return nil, lexiconOut{}, fmt.Errorf("query is required")
+	queries := in.Queries
+	if q := strings.TrimSpace(in.Query); q != "" {
+		queries = append(queries, q)
+	}
+	if len(queries) == 0 {
+		return nil, lexiconOut{}, fmt.Errorf("query or queries is required")
 	}
 	limit := in.Limit
 	if limit <= 0 {
@@ -381,33 +390,45 @@ func (s *server) lexicon(_ context.Context, _ *mcp.CallToolRequest, in lexiconIn
 	if kind == "" {
 		kind = "both"
 	}
+	seenRoot := make(map[string]struct{})
+	seenAffix := make(map[string]struct{})
 	out := lexiconOut{}
-	if kind == "root" || kind == "both" {
-		hits := compose.SearchRoots(q, s.lex.Roots)
-		if len(hits) > limit {
-			hits = hits[:limit]
+	for _, q := range queries {
+		if kind == "root" || kind == "both" {
+			hits := compose.SearchRoots(q, s.lex.Roots)
+			if len(hits) > limit {
+				hits = hits[:limit]
+			}
+			for _, h := range hits {
+				if _, seen := seenRoot[h.Cr]; seen {
+					continue
+				}
+				seenRoot[h.Cr] = struct{}{}
+				out.Roots = append(out.Roots, rootHitOut{
+					Cr: h.Cr, Score: h.Score,
+					Stem0: h.Entry.Stem0, Stem1: h.Entry.Stem1,
+					Stem2: h.Entry.Stem2, Stem3: h.Entry.Stem3,
+					Contential:   h.Entry.Contential,
+					Constitutive: h.Entry.Constitutive,
+					Objective:    h.Entry.Objective,
+					Completive:   h.Entry.Completive,
+					Dynamic:      h.Entry.Dynamic,
+					Wikidata:     h.Entry.Wikidata,
+				})
+			}
 		}
-		for _, h := range hits {
-			out.Roots = append(out.Roots, rootHitOut{
-				Cr: h.Cr, Score: h.Score,
-				Stem0: h.Entry.Stem0, Stem1: h.Entry.Stem1,
-				Stem2: h.Entry.Stem2, Stem3: h.Entry.Stem3,
-				Contential:   h.Entry.Contential,
-				Constitutive: h.Entry.Constitutive,
-				Objective:    h.Entry.Objective,
-				Completive:   h.Entry.Completive,
-				Dynamic:      h.Entry.Dynamic,
-				Wikidata:     h.Entry.Wikidata,
-			})
-		}
-	}
-	if kind == "affix" || kind == "both" {
-		hits := compose.SearchAffixes(q, s.lex.Affixes)
-		if len(hits) > limit {
-			hits = hits[:limit]
-		}
-		for _, a := range hits {
-			out.Affixes = append(out.Affixes, toAffixHit(a))
+		if kind == "affix" || kind == "both" {
+			hits := compose.SearchAffixes(q, s.lex.Affixes)
+			if len(hits) > limit {
+				hits = hits[:limit]
+			}
+			for _, a := range hits {
+				if _, seen := seenAffix[a.Cs]; seen {
+					continue
+				}
+				seenAffix[a.Cs] = struct{}{}
+				out.Affixes = append(out.Affixes, toAffixHit(a))
+			}
 		}
 	}
 	return nil, out, nil
