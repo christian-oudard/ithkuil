@@ -21,9 +21,11 @@ func (s *server) registerTools(srv *mcp.Server) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "analyze",
 		Description: "Tokenize, parse, and gloss every word in the given Ithkuil text. " +
-			"For each word returns surface, type (Form/Ref/Bias/...), one-line gloss, " +
-			"a slot map (only non-default slots), and per-word phonotactic validation. " +
-			"The canonical \"what does this mean\" call. Example: text=\"Malëuţřait\".",
+			"Returns surface, type (Form/Ref/Bias/...), one-line gloss, slot segments, " +
+			"and per-word phonotactic validation. By default (verbose=false) descriptions " +
+			"are omitted; use grammar/lexicon tools for separate lookups. Set verbose=true " +
+			"to include inline category names, meanings, and root definition. " +
+			"Example: text=\"Malëuţřait\".",
 	}, s.analyze)
 
 	mcp.AddTool(srv, &mcp.Tool{
@@ -32,21 +34,21 @@ func (s *server) registerTools(srv *mcp.Server) {
 			"Slots are separated by '-', sub-fields by '/' (S2/CPT, DYN/OBJ) or '.' (Ca: " +
 			"MSS.G.RPV). The root is a lowercase consonant cluster (Cr), or (ABBREV)/degree " +
 			"for a CsRoot, or (1m+2p) for a RefRoot. Affixes write Cs/degree or ABBREV/degree, " +
-			"with an optional :2 or :3 type tag. The returned surface is canonical — shortcuts " +
-			"fire when applicable, so non-canonical input shapes (e.g. long form when a " +
-			"shortcut would apply) come back as the canonical equivalent. Examples: " +
-			"expression=\"ml\" → \"wamla\"; \"S2/CPT-ml-ERG\" → \"wimlo\"; " +
+			"with an optional :2 or :3 type tag. The returned surface is canonical. By default " +
+			"(verbose=false) descriptions are omitted. Set verbose=true for inline names and " +
+			"meanings. Examples: expression=\"ml\" → \"wamla\"; \"S2/CPT-ml-ERG\" → \"wimlo\"; " +
 			"\"S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG\" → \"imlötrebo\"; \"(CTR)/1\" → \"ëilal\".",
 	}, s.compose)
 
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "grammar",
 		Description: "Look up the grammar inventory. With no args, lists every category " +
-			"name. With category, lists all entries in that category (Case, Aspect, Bias, " +
-			"Mood, ...). With query, substring matches against abbreviation / category / " +
-			"surface form / description. With exact=true, exact abbrev match. With " +
-			"form=true, treats query as a surface form (vowel or consonant). Both " +
-			"category and query may be combined. Example: category=\"Bias\", query=\"please\".",
+			"name. With abbrevs, batch-resolves a list of abbreviations in one call " +
+			"(e.g. abbrevs=[\"THM\",\"STA\",\"BSC\"]). With category, lists all entries " +
+			"in that category (Case, Aspect, Bias, Mood, ...). With query, substring " +
+			"matches against abbreviation / category / surface form / description. With " +
+			"exact=true, exact abbrev match. With form=true, treats query as a surface " +
+			"form (vowel or consonant). Example: category=\"Case\"; abbrevs=[\"ERG\",\"ABS\"].",
 	}, s.grammar)
 
 	mcp.AddTool(srv, &mcp.Tool{
@@ -69,7 +71,8 @@ func (s *server) registerTools(srv *mcp.Server) {
 // --------------------------------------------------------------------
 
 type analyzeIn struct {
-	Text string `json:"text" jsonschema:"one or more Ithkuil words"`
+	Text    string `json:"text" jsonschema:"one or more Ithkuil words"`
+	Verbose bool   `json:"verbose,omitempty" jsonschema:"include category names, meanings, and root definition (default false)"`
 }
 
 type segmentOut struct {
@@ -133,7 +136,11 @@ func (s *server) analyze(_ context.Context, _ *mcp.CallToolRequest, in analyzeIn
 		case tokenize.FormativeWord:
 			head := view.Headword(tt.Formative, s.lex)
 			if head.Code != "" {
-				w.Root = &rootHead{Code: head.Code, Meaning: head.Meaning}
+				r := &rootHead{Code: head.Code}
+				if in.Verbose {
+					r.Meaning = head.Meaning
+				}
+				w.Root = r
 			}
 			segs := view.Segments(tt.Text, tt.Formative, s.lex)
 			for _, sg := range segs {
@@ -142,11 +149,13 @@ func (s *server) analyze(_ context.Context, _ *mcp.CallToolRequest, in analyzeIn
 					Encodes: sg.Encodes, Default: sg.Defaults, Elided: sg.Elided,
 				})
 			}
-			for _, ge := range view.Glossary(tt.Text, tt.Formative, segs, s.lex) {
-				w.Glossary = append(w.Glossary, glossaryRow{
-					Category: ge.Category, Code: ge.Code,
-					Name: ge.Name, Meaning: ge.Meaning,
-				})
+			if in.Verbose {
+				for _, ge := range view.Glossary(tt.Text, tt.Formative, segs, s.lex) {
+					w.Glossary = append(w.Glossary, glossaryRow{
+						Category: ge.Category, Code: ge.Code,
+						Name: ge.Name, Meaning: ge.Meaning,
+					})
+				}
 			}
 		case tokenize.ModularWord:
 			segs := view.SegmentsModular(tt.Text, tt.Modular, tt.MarksMood)
@@ -156,11 +165,13 @@ func (s *server) analyze(_ context.Context, _ *mcp.CallToolRequest, in analyzeIn
 					Encodes: sg.Encodes, Default: sg.Defaults, Elided: sg.Elided,
 				})
 			}
-			for _, ge := range view.GlossaryModular(segs) {
-				w.Glossary = append(w.Glossary, glossaryRow{
-					Category: ge.Category, Code: ge.Code,
-					Name: ge.Name, Meaning: ge.Meaning,
-				})
+			if in.Verbose {
+				for _, ge := range view.GlossaryModular(segs) {
+					w.Glossary = append(w.Glossary, glossaryRow{
+						Category: ge.Category, Code: ge.Code,
+						Name: ge.Name, Meaning: ge.Meaning,
+					})
+				}
 			}
 		}
 		res := validation.ValidateWord(t.Surface())
@@ -181,6 +192,7 @@ func (s *server) analyze(_ context.Context, _ *mcp.CallToolRequest, in analyzeIn
 
 type composeIn struct {
 	Expression string `json:"expression" jsonschema:"gloss-style compose expression; slots separated by '-', sub-fields by '/' or '.'; bare cluster like 'ml' or full 'S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG'"`
+	Verbose    bool   `json:"verbose,omitempty" jsonschema:"include category names, meanings, and root definition (default false)"`
 }
 
 type composeOut struct {
@@ -213,7 +225,11 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 		Gloss:   glosser.Formative(f),
 	}
 	if head.Code != "" {
-		out.Root = &rootHead{Code: head.Code, Meaning: head.Meaning}
+		r := &rootHead{Code: head.Code}
+		if in.Verbose {
+			r.Meaning = head.Meaning
+		}
+		out.Root = r
 	}
 	for _, sg := range segs {
 		out.Segments = append(out.Segments, segmentOut{
@@ -221,11 +237,13 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 			Encodes: sg.Encodes, Default: sg.Defaults, Elided: sg.Elided,
 		})
 	}
-	for _, ge := range view.Glossary(surface, f, segs, s.lex) {
-		out.Glossary = append(out.Glossary, glossaryRow{
-			Category: ge.Category, Code: ge.Code,
-			Name: ge.Name, Meaning: ge.Meaning,
-		})
+	if in.Verbose {
+		for _, ge := range view.Glossary(surface, f, segs, s.lex) {
+			out.Glossary = append(out.Glossary, glossaryRow{
+				Category: ge.Category, Code: ge.Code,
+				Name: ge.Name, Meaning: ge.Meaning,
+			})
+		}
 	}
 	return nil, out, nil
 }
@@ -235,15 +253,17 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 // --------------------------------------------------------------------
 
 type grammarIn struct {
-	Query    string `json:"query,omitempty" jsonschema:"abbreviation, category, form, or description substring"`
-	Category string `json:"category,omitempty" jsonschema:"restrict to one category (Case, Aspect, Bias, ...)"`
-	Exact    bool   `json:"exact,omitempty" jsonschema:"if true, query must equal Abbrev exactly"`
-	Form     bool   `json:"form,omitempty" jsonschema:"if true, treat query as a surface form (vowel or consonant)"`
+	Abbrevs  []string `json:"abbrevs,omitempty" jsonschema:"batch list of abbreviations to resolve (e.g. [\"THM\",\"STA\",\"BSC\"])"`
+	Query    string   `json:"query,omitempty" jsonschema:"abbreviation, category, form, or description substring"`
+	Category string   `json:"category,omitempty" jsonschema:"restrict to one category (Case, Aspect, Bias, ...)"`
+	Exact    bool     `json:"exact,omitempty" jsonschema:"if true, query must equal Abbrev exactly"`
+	Form     bool     `json:"form,omitempty" jsonschema:"if true, treat query as a surface form (vowel or consonant)"`
 }
 
 type grammarEntryOut struct {
 	Category    string `json:"category"`
 	Abbrev      string `json:"abbrev"`
+	Name        string `json:"name,omitempty"`
 	Form        string `json:"form,omitempty"`
 	Description string `json:"description,omitempty"`
 }
@@ -254,6 +274,14 @@ type grammarOut struct {
 }
 
 func (s *server) grammar(_ context.Context, _ *mcp.CallToolRequest, in grammarIn) (*mcp.CallToolResult, grammarOut, error) {
+	// Batch abbreviation lookup.
+	if len(in.Abbrevs) > 0 {
+		var hits []compose.Entry
+		for _, a := range in.Abbrevs {
+			hits = append(hits, compose.Filter("", a, true)...)
+		}
+		return nil, grammarOut{Entries: toGrammarEntries(hits)}, nil
+	}
 	// No filters at all → return category list.
 	if in.Query == "" && in.Category == "" && !in.Form {
 		return nil, grammarOut{Categories: compose.Categories()}, nil
@@ -270,16 +298,21 @@ func (s *server) grammar(_ context.Context, _ *mcp.CallToolRequest, in grammarIn
 	} else {
 		hits = compose.Filter(in.Category, in.Query, in.Exact)
 	}
+	return nil, grammarOut{Entries: toGrammarEntries(hits)}, nil
+}
+
+func toGrammarEntries(hits []compose.Entry) []grammarEntryOut {
 	out := make([]grammarEntryOut, len(hits))
 	for i, e := range hits {
 		out[i] = grammarEntryOut{
 			Category:    e.Category,
 			Abbrev:      e.Abbrev,
+			Name:        e.Name,
 			Form:        e.Form,
 			Description: e.Description,
 		}
 	}
-	return nil, grammarOut{Entries: out}, nil
+	return out
 }
 
 func filterEntriesByCategory(in []compose.Entry, cat string) []compose.Entry {
