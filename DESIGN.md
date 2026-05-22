@@ -107,14 +107,14 @@ Layer D — string ↔ grammar value translation:
   moved-glottal for cases 37-52, then default-value elisions.
   Deterministic given the Formative — no options.
 
-`fullparse.ParseFormative` is `Parse` ∘ `ToGrammar`.
+`fullparse.Formative` is `Parse` ∘ `ToGrammar`.
 `render.Formative` is `FromGrammar` ∘ `Render`.
 `view.Segments` consumes the Layout directly to emit the
 slot-by-slot phonetic breakdown.
 
 The reverse-author path goes through `compose/`:
 
-- `compose.ParseString(gloss-expr, affixes) (Formative, error)` —
+- `compose.Formative(gloss-expr, affixes) (Formative, error)` —
   parses the canonical gloss output (with `Glosser.Canonical=true`)
   back into a Formative. Same syntax as the gloss output: slots
   separated by `-`, sub-fields by `/` or `.` (for Ca).

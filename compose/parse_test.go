@@ -19,10 +19,10 @@ func mustLex(t *testing.T) *lexicon.Lexicon {
 	return lex
 }
 
-// TestParseString_RoundTripGloss verifies that compose.ParseString
+// TestFormative_RoundTripGloss verifies that compose.Formative
 // inverts gloss.Formative for the cases it claims to support — gloss
 // the parsed result and the strings must match.
-func TestParseString_RoundTripGloss(t *testing.T) {
+func TestFormative_RoundTripGloss(t *testing.T) {
 	lex := mustLex(t)
 	gl := &gloss.Glosser{Lex: lex}
 	cases := []struct {
@@ -43,9 +43,9 @@ func TestParseString_RoundTripGloss(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			f, err := ParseString(c.in, lex.Affixes)
+			f, err := Formative(c.in, lex.Affixes)
 			if err != nil {
-				t.Fatalf("ParseString(%q): %v", c.in, err)
+				t.Fatalf("Formative(%q): %v", c.in, err)
 			}
 			// Sanity: must render to a non-empty surface word.
 			if surf := render.Formative(f); surf == "" {
@@ -60,11 +60,11 @@ func TestParseString_RoundTripGloss(t *testing.T) {
 	}
 }
 
-// TestParseString_Specific spot-checks specific field assignments.
-func TestParseString_Specific(t *testing.T) {
+// TestFormative_Specific spot-checks specific field assignments.
+func TestFormative_Specific(t *testing.T) {
 	lex := mustLex(t)
 
-	f, err := ParseString("S2/CPT-ml-DYN/OBJ-ERG", lex.Affixes)
+	f, err := Formative("S2/CPT-ml-DYN/OBJ-ERG", lex.Affixes)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
@@ -96,9 +96,9 @@ func TestParseString_Specific(t *testing.T) {
 	}
 }
 
-func TestParseString_AffixViaAbbrev(t *testing.T) {
+func TestFormative_AffixViaAbbrev(t *testing.T) {
 	lex := mustLex(t)
-	f, err := ParseString("ml-DEV/3", lex.Affixes)
+	f, err := Formative("ml-DEV/3", lex.Affixes)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
@@ -117,9 +117,9 @@ func TestParseString_AffixViaAbbrev(t *testing.T) {
 	}
 }
 
-func TestParseString_AffixTypeTag(t *testing.T) {
+func TestFormative_AffixTypeTag(t *testing.T) {
 	lex := mustLex(t)
-	f, err := ParseString("ml-nļ/1_2", lex.Affixes) // IVL type-2 degree 1
+	f, err := Formative("ml-nļ/1_2", lex.Affixes) // IVL type-2 degree 1
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
@@ -128,7 +128,7 @@ func TestParseString_AffixTypeTag(t *testing.T) {
 	}
 }
 
-func TestParseString_Errors(t *testing.T) {
+func TestFormative_Errors(t *testing.T) {
 	lex := mustLex(t)
 	cases := []struct {
 		name string
@@ -142,8 +142,8 @@ func TestParseString_Errors(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			if _, err := ParseString(c.in, lex.Affixes); err == nil {
-				t.Errorf("ParseString(%q) succeeded, want error", c.in)
+			if _, err := Formative(c.in, lex.Affixes); err == nil {
+				t.Errorf("Formative(%q) succeeded, want error", c.in)
 			}
 		})
 	}

@@ -12,7 +12,7 @@ import (
 	"github.com/christian-oudard/ithkuil/surface"
 )
 
-// ParseString builds a grammar.Formative from a gloss-style authoring
+// Formative builds a grammar.Formative from a gloss-style authoring
 // expression. The syntax is a strict subset of the gloss output: slots
 // are separated by "-", sub-fields within a slot by "/". The root
 // cluster is written in plain Ithkuil orthography or ASCII digraphs
@@ -34,7 +34,7 @@ import (
 // The MVP does not yet handle CsRoot/RefRoot, Ca complex spelled out
 // in the slot, or concatenation. Those return an error so callers can
 // detect when the input is beyond current coverage.
-func ParseString(s string, affixes map[string]lexicon.AffixEntry) (g.Formative, error) {
+func Formative(s string, affixes map[string]lexicon.AffixEntry) (g.Formative, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
 		return g.Formative{}, fmt.Errorf("empty input")

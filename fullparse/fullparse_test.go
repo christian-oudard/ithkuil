@@ -7,11 +7,11 @@ import (
 	"github.com/christian-oudard/ithkuil/render"
 )
 
-func TestParseFormative_Minimal(t *testing.T) {
+func TestFormative_Minimal(t *testing.T) {
 	// "amlala" is the rendering of MinimalFormative("ml").
-	f, err := ParseFormative("amlala")
+	f, err := Formative("amlala")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"amlala\") error: %v", err)
+		t.Fatalf("Formative(\"amlala\") error: %v", err)
 	}
 	cr, ok := f.Root.(g.CrRoot)
 	if !ok {
@@ -35,11 +35,11 @@ func TestParseFormative_Minimal(t *testing.T) {
 	}
 }
 
-func TestParseFormative_NonDefault(t *testing.T) {
+func TestFormative_NonDefault(t *testing.T) {
 	// "emlölo" = S2/PRC stem, root ml, DYN/OBJ/EXS Vr, default Ca, ERG case.
-	f, err := ParseFormative("emlölo")
+	f, err := Formative("emlölo")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"emlölo\") error: %v", err)
+		t.Fatalf("Formative(\"emlölo\") error: %v", err)
 	}
 	cr, ok := f.Root.(g.CrRoot)
 	if !ok {
@@ -57,12 +57,12 @@ func TestParseFormative_NonDefault(t *testing.T) {
 	}
 }
 
-func TestParseFormative_Verbal(t *testing.T) {
+func TestFormative_Verbal(t *testing.T) {
 	// "amlalú" has ultimate stress (acute on the final u), so the
 	// trailing vowel is Vk, not Vc. ASR + INF.
-	f, err := ParseFormative("amlalú")
+	f, err := Formative("amlalú")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"amlalú\") error: %v", err)
+		t.Fatalf("Formative(\"amlalú\") error: %v", err)
 	}
 	uv, ok := f.Final.(g.UnframedVerbal)
 	if !ok {
@@ -74,11 +74,11 @@ func TestParseFormative_Verbal(t *testing.T) {
 	}
 }
 
-func TestParseFormative_ElidedVc(t *testing.T) {
+func TestFormative_ElidedVc(t *testing.T) {
 	// "amlal" has no trailing vowel — Vc elides to THM.
-	f, err := ParseFormative("amlal")
+	f, err := Formative("amlal")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"amlal\") error: %v", err)
+		t.Fatalf("Formative(\"amlal\") error: %v", err)
 	}
 	un, ok := f.Final.(g.UnframedNominal)
 	if !ok || un.Case != g.THM {
@@ -89,7 +89,7 @@ func TestParseFormative_ElidedVc(t *testing.T) {
 func TestRoundTripMinimal(t *testing.T) {
 	original := g.MinimalFormative("ml")
 	surface := render.Formative(original)
-	parsed, err := ParseFormative(surface)
+	parsed, err := Formative(surface)
 	if err != nil {
 		t.Fatalf("round trip error on %q: %v", surface, err)
 	}
@@ -101,20 +101,20 @@ func TestRoundTripMinimal(t *testing.T) {
 	}
 }
 
-func TestParseFormative_TooShort(t *testing.T) {
+func TestFormative_TooShort(t *testing.T) {
 	for _, w := range []string{"", "a", "am"} {
-		if _, err := ParseFormative(w); err == nil {
-			t.Errorf("ParseFormative(%q) succeeded, want error", w)
+		if _, err := Formative(w); err == nil {
+			t.Errorf("Formative(%q) succeeded, want error", w)
 		}
 	}
 }
 
-func TestParseFormative_ConsonantInitial(t *testing.T) {
+func TestFormative_ConsonantInitial(t *testing.T) {
 	// "malal" = Cr=m, Vr=a (STA/BSC/EXS), Ca=l, no trailing Vc.
 	// Vv elides to (S1, PRC).
-	f, err := ParseFormative("malal")
+	f, err := Formative("malal")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"malal\") error: %v", err)
+		t.Fatalf("Formative(\"malal\") error: %v", err)
 	}
 	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "m" {
 		t.Errorf("Root = %v, want CrRoot{Cluster: m}", f.Root)
@@ -124,16 +124,16 @@ func TestParseFormative_ConsonantInitial(t *testing.T) {
 	}
 }
 
-func TestParseFormative_MalëuţřaitCanonical(t *testing.T) {
+func TestFormative_MalëuţřaitCanonical(t *testing.T) {
 	// "Malëuţřait" is the language's name for itself — the canonical
 	// V4 test word. Lowercased: "malëuţřait".
 	// Conjuncts: ["m", "a", "l", "ëu", "ţř", "ai", "t"]
 	// Cr=m, Vr=a, Ca=l, Vx=ëu/Cs=ţř (affix 1), Vx=ai/Cs=t (affix 2).
 	// Stress is on the penultimate syllable "ai" — no accent marks,
 	// 3 syllables → Penultimate by default.
-	f, err := ParseFormative("malëuţřait")
+	f, err := Formative("malëuţřait")
 	if err != nil {
-		t.Fatalf("ParseFormative(canonical Maleuţřait) error: %v", err)
+		t.Fatalf("Formative(canonical Maleuţřait) error: %v", err)
 	}
 	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "m" {
 		t.Errorf("Root = %v, want CrRoot{Cluster: m}", f.Root)
@@ -156,12 +156,12 @@ func TestParseFormative_MalëuţřaitCanonical(t *testing.T) {
 	}
 }
 
-func TestParseFormative_SlotI_Type1(t *testing.T) {
+func TestFormative_SlotI_Type1(t *testing.T) {
 	// "h" prefix + vowel-initial body = Type 1 concatenation.
 	// "hamlala" = h + amlala.
-	f, err := ParseFormative("hamlala")
+	f, err := Formative("hamlala")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"hamlala\") error: %v", err)
+		t.Fatalf("Formative(\"hamlala\") error: %v", err)
 	}
 	if f.Concat == g.ConcatNone || f.Concat != g.Type1 {
 		t.Errorf("SlotI = %v, want Type1", f.Concat)
@@ -171,23 +171,23 @@ func TestParseFormative_SlotI_Type1(t *testing.T) {
 	}
 }
 
-func TestParseFormative_SlotI_Type2(t *testing.T) {
+func TestFormative_SlotI_Type2(t *testing.T) {
 	// "hw" prefix → Type 2 concatenation.
-	f, err := ParseFormative("hwamlala")
+	f, err := Formative("hwamlala")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"hwamlala\") error: %v", err)
+		t.Fatalf("Formative(\"hwamlala\") error: %v", err)
 	}
 	if f.Concat == g.ConcatNone || f.Concat != g.Type2 {
 		t.Errorf("SlotI = %v, want Type2", f.Concat)
 	}
 }
 
-func TestParseFormative_ShortcutW_Series1(t *testing.T) {
+func TestFormative_ShortcutW_Series1(t *testing.T) {
 	// "waml" = shortcut "w" + Vv "a" (series 1, S1/PRC) + Cr "ml".
 	// Shortcut W series 1 = default Ca (UNI/CSL/M/DEL/NRM).
-	f, err := ParseFormative("waml")
+	f, err := Formative("waml")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"waml\") error: %v", err)
+		t.Fatalf("Formative(\"waml\") error: %v", err)
 	}
 	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "ml" {
 		t.Errorf("Root = %v, want CrRoot{Cluster: ml}", f.Root)
@@ -197,13 +197,13 @@ func TestParseFormative_ShortcutW_Series1(t *testing.T) {
 	}
 }
 
-func TestParseFormative_ShortcutY_Series3(t *testing.T) {
+func TestFormative_ShortcutY_Series3(t *testing.T) {
 	// "yuml" = shortcut "y" + Vv "u" (series 1 vowel… wait, let me think).
 	// Vv vowel "u" is series 1 form 9. So series=1. Shortcut Y series 1
 	// = UNI/CSL/M/PRX/NRM (extension PRX).
-	f, err := ParseFormative("yuml")
+	f, err := Formative("yuml")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"yuml\") error: %v", err)
+		t.Fatalf("Formative(\"yuml\") error: %v", err)
 	}
 	want := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}
 	if f.SlotVI != want {
@@ -211,11 +211,11 @@ func TestParseFormative_ShortcutY_Series3(t *testing.T) {
 	}
 }
 
-func TestParseFormative_ShortcutW_Series2(t *testing.T) {
+func TestFormative_ShortcutW_Series2(t *testing.T) {
 	// Vv "ai" is series 2 form 1. Shortcut W series 2 = UNI/CSL/G/DEL/NRM.
-	f, err := ParseFormative("waiml")
+	f, err := Formative("waiml")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"waiml\") error: %v", err)
+		t.Fatalf("Formative(\"waiml\") error: %v", err)
 	}
 	want := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}
 	if f.SlotVI != want {
@@ -223,11 +223,11 @@ func TestParseFormative_ShortcutW_Series2(t *testing.T) {
 	}
 }
 
-func TestParseFormative_ShortcutWithConcat(t *testing.T) {
+func TestFormative_ShortcutWithConcat(t *testing.T) {
 	// "hlaml" = "hl" (Type1 + ShortcutW) + "a" (Vv) + "ml" (Cr).
-	f, err := ParseFormative("hlaml")
+	f, err := Formative("hlaml")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"hlaml\") error: %v", err)
+		t.Fatalf("Formative(\"hlaml\") error: %v", err)
 	}
 	if f.Concat == g.ConcatNone || f.Concat != g.Type1 {
 		t.Errorf("SlotI = %v, want Type1", f.Concat)
@@ -237,11 +237,11 @@ func TestParseFormative_ShortcutWithConcat(t *testing.T) {
 	}
 }
 
-func TestParseFormative_ShortcutWithAffix(t *testing.T) {
+func TestFormative_ShortcutWithAffix(t *testing.T) {
 	// "wamlar" = shortcut W + Vv a + Cr ml + Slot VII affix (a, r) + no Vc.
-	f, err := ParseFormative("wamlar")
+	f, err := Formative("wamlar")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"wamlar\") error: %v", err)
+		t.Fatalf("Formative(\"wamlar\") error: %v", err)
 	}
 	if len(f.SlotVII) != 1 {
 		t.Fatalf("SlotVII = %v, want 1 affix", f.SlotVII)
@@ -254,7 +254,7 @@ func TestParseFormative_ShortcutWithAffix(t *testing.T) {
 	}
 }
 
-func TestParseFormative_Corpus_Ärmaläwia(t *testing.T) {
+func TestFormative_Corpus_Ärmaläwia(t *testing.T) {
 	// From agent-4's corpus tests. "ärmaläwi'a" should parse with:
 	//   Vv=ä → S1/CPT
 	//   Cr=rm
@@ -263,9 +263,9 @@ func TestParseFormative_Corpus_Ärmaläwia(t *testing.T) {
 	//   Vn=ä, Cn=w → VnCnAspect{PRS, ...}
 	//   Vc=i'a → LOC case
 	//   Stress=Penultimate
-	f, err := ParseFormative("ärmaläwi'a")
+	f, err := Formative("ärmaläwi'a")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"ärmaläwi'a\") error: %v", err)
+		t.Fatalf("Formative(\"ärmaläwi'a\") error: %v", err)
 	}
 	cr, ok := f.Root.(g.CrRoot)
 	if !ok || cr.Cluster != "rm" {
@@ -289,7 +289,7 @@ func TestParseFormative_Corpus_Ärmaläwia(t *testing.T) {
 // The ç(ë)/çç sentence-juncture prefix is purely prosodic per §1.3.2
 // ("normally never written"). Parser accepts it and produces the same
 // formative as the bare body — no grammatical residue.
-func TestParseFormative_SentencePrefix_StrippedSilently(t *testing.T) {
+func TestFormative_SentencePrefix_StrippedSilently(t *testing.T) {
 	cases := []struct {
 		in, equiv string
 	}{
@@ -299,13 +299,13 @@ func TestParseFormative_SentencePrefix_StrippedSilently(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.in, func(t *testing.T) {
-			f1, err := ParseFormative(c.in)
+			f1, err := Formative(c.in)
 			if err != nil {
-				t.Fatalf("ParseFormative(%q): %v", c.in, err)
+				t.Fatalf("Formative(%q): %v", c.in, err)
 			}
-			f2, err := ParseFormative(c.equiv)
+			f2, err := Formative(c.equiv)
 			if err != nil {
-				t.Fatalf("ParseFormative(%q): %v", c.equiv, err)
+				t.Fatalf("Formative(%q): %v", c.equiv, err)
 			}
 			// Root identity must match — the only test we need: the
 			// prefix produced nothing visible in the grammar.
@@ -321,12 +321,12 @@ func TestParseFormative_SentencePrefix_StrippedSilently(t *testing.T) {
 	}
 }
 
-func TestParseFormative_GlottalCaseAlone(t *testing.T) {
+func TestFormative_GlottalCaseAlone(t *testing.T) {
 	// "amlali'a" = vowel-initial minimal formative with LOC case via
 	// glottalized Vc. No Slot VIII.
-	f, err := ParseFormative("amlali'a")
+	f, err := Formative("amlali'a")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"amlali'a\") error: %v", err)
+		t.Fatalf("Formative(\"amlali'a\") error: %v", err)
 	}
 	if un, ok := f.Final.(g.UnframedNominal); !ok || un.Case != g.LOC {
 		t.Errorf("Final = %v, want UnframedNominal{LOC}", f.Final)
@@ -339,7 +339,7 @@ func TestRoundTrip_ConsonantInitial(t *testing.T) {
 	// consonant-initial-style Formative goes through render and comes
 	// back as vowel-initial. We instead start from a parsed consonant-
 	// initial word and check the slot values match expectations.
-	parsed, err := ParseFormative("malal")
+	parsed, err := Formative("malal")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -349,7 +349,7 @@ func TestRoundTrip_ConsonantInitial(t *testing.T) {
 	if surface != "amal" {
 		t.Fatalf("surface synthesis error: %s", surface)
 	}
-	reparsed, err := ParseFormative(surface)
+	reparsed, err := Formative(surface)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -358,12 +358,12 @@ func TestRoundTrip_ConsonantInitial(t *testing.T) {
 	}
 }
 
-func TestParseFormative_WithSlotVIIAffix(t *testing.T) {
+func TestFormative_WithSlotVIIAffix(t *testing.T) {
 	// "amlalara" = Vv=a, Cr=ml, Vr=a, Ca=l, then Slot VII affix (a, r),
 	// then Vc=a. The affix "r" is not a valid Cn, so it stays as affix.
-	f, err := ParseFormative("amlalara")
+	f, err := Formative("amlalara")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"amlalara\") error: %v", err)
+		t.Fatalf("Formative(\"amlalara\") error: %v", err)
 	}
 	want := []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}}
 	if len(f.SlotVII) != 1 || f.SlotVII[0] != want[0] {
@@ -377,14 +377,14 @@ func TestParseFormative_WithSlotVIIAffix(t *testing.T) {
 	}
 }
 
-func TestParseFormative_WithSlotVIII(t *testing.T) {
+func TestFormative_WithSlotVIII(t *testing.T) {
 	// "amlalahla" = Vv=a, Cr=ml, Vr=a, Ca=l, Vn=a, Cn=hl, Vc=a.
 	// "hl" is a valid Pattern-1 Cn → Slot VIII = VnCnValence(MNO, SUB).
 	// Stress is penultimate, so Mood (SUB) is reinterpreted as the
 	// parallel CaseScope (CCA).
-	f, err := ParseFormative("amlalahla")
+	f, err := Formative("amlalahla")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"amlalahla\") error: %v", err)
+		t.Fatalf("Formative(\"amlalahla\") error: %v", err)
 	}
 	vc, ok := f.SlotVIII.(g.VnCnValence)
 	if !ok {
@@ -406,12 +406,12 @@ func TestParseFormative_WithSlotVIII(t *testing.T) {
 	}
 }
 
-func TestParseFormative_SlotVIIIVerbal(t *testing.T) {
+func TestFormative_SlotVIIIVerbal(t *testing.T) {
 	// Same shape as above but ultimate stress on the final vowel.
 	// "amlalahlá" → Final = UnframedVerbal{Assertive{OBS}}, SlotVIII MoodVal.
-	f, err := ParseFormative("amlalahlá")
+	f, err := Formative("amlalahlá")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"amlalahlá\") error: %v", err)
+		t.Fatalf("Formative(\"amlalahlá\") error: %v", err)
 	}
 	if _, ok := f.Final.(g.UnframedVerbal); !ok {
 		t.Errorf("Final = %v, want UnframedVerbal", f.Final)
@@ -429,7 +429,7 @@ func TestRoundTrip_WithSlotVII(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.SlotVII = []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}}
 	surface := render.Formative(f)
-	parsed, err := ParseFormative(surface)
+	parsed, err := Formative(surface)
 	if err != nil {
 		t.Fatalf("round trip %q failed: %v", surface, err)
 	}
@@ -448,7 +448,7 @@ func TestRoundTrip_WithSlotVIII(t *testing.T) {
 		MoodScope: g.SUB,
 	}
 	surface := render.Formative(f)
-	parsed, err := ParseFormative(surface)
+	parsed, err := Formative(surface)
 	if err != nil {
 		t.Fatalf("round trip %q failed: %v", surface, err)
 	}
@@ -457,7 +457,7 @@ func TestRoundTrip_WithSlotVIII(t *testing.T) {
 	}
 }
 
-func TestParseFormative_RoundTripVariants(t *testing.T) {
+func TestFormative_RoundTripVariants(t *testing.T) {
 	cases := []struct {
 		name string
 		f    g.Formative
@@ -482,7 +482,7 @@ func TestParseFormative_RoundTripVariants(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			surface := render.Formative(c.f)
-			parsed, err := ParseFormative(surface)
+			parsed, err := Formative(surface)
 			if err != nil {
 				t.Fatalf("round trip error on %q: %v", surface, err)
 			}

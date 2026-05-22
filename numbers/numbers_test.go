@@ -119,7 +119,7 @@ func TestRender_RoundTripsThroughFullparse(t *testing.T) {
 		if !ok {
 			t.Fatalf("Render(%d): ok=false", n)
 		}
-		f, err := fullparse.ParseFormative(surface)
+		f, err := fullparse.Formative(surface)
 		if err != nil {
 			t.Errorf("Parse(%q): %v", surface, err)
 			continue
@@ -204,7 +204,7 @@ func TestPhrase_IntermediateCountUsesCOM(t *testing.T) {
 		t.Fatalf("Phrase(269766) got %d words, want 4: %v", len(words), words)
 	}
 	mid := words[2] // 97
-	f, err := fullparse.ParseFormative(mid)
+	f, err := fullparse.Formative(mid)
 	if err != nil {
 		t.Fatalf("parse %q: %v", mid, err)
 	}
@@ -222,7 +222,7 @@ func TestPhrase_FirstAndLastCountUseTHM(t *testing.T) {
 		t.Fatal("Phrase(4229): ok=false")
 	}
 	for idx := range words {
-		f, err := fullparse.ParseFormative(words[idx])
+		f, err := fullparse.Formative(words[idx])
 		if err != nil {
 			t.Errorf("parse %q: %v", words[idx], err)
 			continue
@@ -335,7 +335,7 @@ func TestPhrase_RoundTripsThroughFullparse(t *testing.T) {
 		var mag int64 = 1
 		prevWasCount := false
 		for _, w := range words {
-			f, err := fullparse.ParseFormative(w)
+			f, err := fullparse.Formative(w)
 			if err != nil {
 				t.Errorf("Phrase(%d) parse %q: %v", n, w, err)
 				continue
@@ -435,7 +435,7 @@ func TestRenderSPT_ParsesBack(t *testing.T) {
 				t.Errorf("RenderSPT(%d, %d) ok=false", n, deg)
 				continue
 			}
-			parsed, err := fullparse.ParseFormative(surf)
+			parsed, err := fullparse.Formative(surf)
 			if err != nil {
 				t.Errorf("RenderSPT(%d, %d) = %q parse-err: %v", n, deg, surf, err)
 				continue

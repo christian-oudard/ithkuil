@@ -36,7 +36,7 @@ func TestMalformed_GlottalPatterns(t *testing.T) {
 		t.Run(c.in, func(t *testing.T) {
 			// Either fullparse returns an error, or the phonotactic
 			// validator reports a violation.
-			_, parseErr := fullparse.ParseFormative(c.in)
+			_, parseErr := fullparse.Formative(c.in)
 			res := validation.ValidateWord(c.in)
 			if parseErr == nil && res.Valid {
 				t.Errorf("%q: expected parse error or phonotactic violation, got both clean", c.in)

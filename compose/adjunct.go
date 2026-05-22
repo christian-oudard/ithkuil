@@ -87,9 +87,9 @@ func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
 		return parseAffixualAdjunct(s, lex.Affixes)
 	}
 
-	// Default: try as a formative via the existing ParseString.
+	// Default: try as a formative via the existing Formative.
 	if lex != nil {
-		f, err := ParseString(s, lex.Affixes)
+		f, err := Formative(s, lex.Affixes)
 		if err == nil {
 			return tokenize.FormativeWord{Text: s, Formative: f}, nil
 		}

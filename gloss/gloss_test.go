@@ -331,7 +331,7 @@ func TestGlosser_NilLexiconBehavesLikePackageFn(t *testing.T) {
 
 func TestFormative_Maleuţřait(t *testing.T) {
 	// End-to-end: parse the canonical test word and gloss it.
-	parsed, err := fullparse.ParseFormative("malëuţřait")
+	parsed, err := fullparse.Formative("malëuţřait")
 	if err != nil {
 		t.Fatalf("parse error: %v", err)
 	}

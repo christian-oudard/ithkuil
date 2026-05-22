@@ -29,7 +29,7 @@ type Glosser struct {
 	// Canonical suppresses display-only annotations that aren't part
 	// of the compose authoring syntax — currently just the quoted
 	// lexicon meaning after the root ("-ml- 'gold (color)'"). The
-	// resulting gloss is exactly what compose.ParseString accepts,
+	// resulting gloss is exactly what compose.Formative accepts,
 	// so set Canonical=true for round-tripping.
 	Canonical bool
 }

@@ -7,10 +7,10 @@ import (
 	"github.com/christian-oudard/ithkuil/slots"
 )
 
-// ParseFormative decodes a single surface Ithkuil word into a Formative.
+// Formative decodes a single surface Ithkuil word into a grammar.Formative.
 // Returns a descriptive error if the word doesn't match a recognized
 // formative shape.
-func ParseFormative(word string) (g.Formative, error) {
+func Formative(word string) (g.Formative, error) {
 	l, err := slots.Parse(word)
 	if err != nil {
 		return g.Formative{}, err

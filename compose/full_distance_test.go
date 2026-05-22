@@ -30,7 +30,7 @@ func TestFullDistance_SlotsCorpus(t *testing.T) {
 
 	for _, w := range slots.FormativeCorpus {
 		t.Run(w, func(t *testing.T) {
-			f, err := fullparse.ParseFormative(w)
+			f, err := fullparse.Formative(w)
 			if err != nil {
 				t.Skipf("fullparse rejects %q: %v", w, err)
 			}
@@ -41,9 +41,9 @@ func TestFullDistance_SlotsCorpus(t *testing.T) {
 			// shortcut equivalents) differs from the input. That's
 			// by design; see TestCanonicalize in slots/.
 			s1 := gl.Formative(f)
-			f2, err := ParseString(s1, lex.Affixes)
+			f2, err := Formative(s1, lex.Affixes)
 			if err != nil {
-				t.Fatalf("compose.ParseString(%q): %v\n  formative: %+v", s1, err, f)
+				t.Fatalf("compose.Formative(%q): %v\n  formative: %+v", s1, err, f)
 			}
 			s2 := gl.Formative(f2)
 			if s1 != s2 {

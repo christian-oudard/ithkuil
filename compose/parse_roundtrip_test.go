@@ -9,12 +9,12 @@ import (
 	"github.com/christian-oudard/ithkuil/render"
 )
 
-// TestParseString_FullRoundTrip composes a formative from a gloss
+// TestFormative_FullRoundTrip composes a formative from a gloss
 // string, renders it to surface text, parses that back, and verifies
 // the resulting gloss matches the original compose input's gloss.
 // This is the strongest invariant: compose ∘ render ∘ fullparse ∘
 // gloss == gloss ∘ compose.
-func TestParseString_FullRoundTrip(t *testing.T) {
+func TestFormative_FullRoundTrip(t *testing.T) {
 	lex, err := lexicon.LoadDefault()
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
@@ -38,15 +38,15 @@ func TestParseString_FullRoundTrip(t *testing.T) {
 	}
 	for _, in := range inputs {
 		t.Run(in, func(t *testing.T) {
-			f, err := ParseString(in, lex.Affixes)
+			f, err := Formative(in, lex.Affixes)
 			if err != nil {
-				t.Fatalf("ParseString: %v", err)
+				t.Fatalf("Formative: %v", err)
 			}
 			surf := render.Formative(f)
 			if surf == "" {
 				t.Fatalf("rendered empty")
 			}
-			parsed, err := fullparse.ParseFormative(surf)
+			parsed, err := fullparse.Formative(surf)
 			if err != nil {
 				t.Fatalf("re-parse %q: %v", surf, err)
 			}

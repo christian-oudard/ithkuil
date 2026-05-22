@@ -11,9 +11,9 @@ import (
 
 func TestCsRoot_ëilal(t *testing.T) {
 	// ëi → (PRC, STA). cs="l". Vr="a" → degree 1, EXS.
-	f, err := ParseFormative("ëilal")
+	f, err := Formative("ëilal")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"ëilal\") error: %v", err)
+		t.Fatalf("Formative(\"ëilal\") error: %v", err)
 	}
 	cs, ok := f.Root.(g.CsRoot)
 	if !ok {
@@ -34,9 +34,9 @@ func TestCsRoot_ëilal(t *testing.T) {
 func TestCsRoot_oërmölá(t *testing.T) {
 	// oë → (CPT, DYN). cs="rm". Vr="ö" → degree 6, EXS.
 	// Ultimate stress on the final á → Vk = ASR/OBS.
-	f, err := ParseFormative("oërmölá")
+	f, err := Formative("oërmölá")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"oërmölá\") error: %v", err)
+		t.Fatalf("Formative(\"oërmölá\") error: %v", err)
 	}
 	cs, ok := f.Root.(g.CsRoot)
 	if !ok {
@@ -61,9 +61,9 @@ func TestCsRoot_oërmölá(t *testing.T) {
 
 func TestCsRoot_oërmoulá_FNC(t *testing.T) {
 	// Vr="ou" → series 2 form 6 → degree 6, FNC.
-	f, err := ParseFormative("oërmoulá")
+	f, err := Formative("oërmoulá")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"oërmoulá\") error: %v", err)
+		t.Fatalf("Formative(\"oërmoulá\") error: %v", err)
 	}
 	cs, ok := f.Root.(g.CsRoot)
 	if !ok {
@@ -76,9 +76,9 @@ func TestCsRoot_oërmoulá_FNC(t *testing.T) {
 
 func TestCsRoot_DegreeZero(t *testing.T) {
 	// Vr="ae" → degree 0, EXS.
-	f, err := ParseFormative("ëilael")
+	f, err := Formative("ëilael")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"ëilael\") error: %v", err)
+		t.Fatalf("Formative(\"ëilael\") error: %v", err)
 	}
 	cs, ok := f.Root.(g.CsRoot)
 	if !ok || cs.Degree != 0 {
@@ -88,9 +88,9 @@ func TestCsRoot_DegreeZero(t *testing.T) {
 
 func TestRefRoot_ealali(t *testing.T) {
 	// ea → (CPT). C1="l".
-	f, err := ParseFormative("ealali")
+	f, err := Formative("ealali")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"ealali\") error: %v", err)
+		t.Fatalf("Formative(\"ealali\") error: %v", err)
 	}
 	rr, ok := f.Root.(g.RefRoot)
 	if !ok {
@@ -106,9 +106,9 @@ func TestRefRoot_ealali(t *testing.T) {
 
 func TestRefRoot_aelali(t *testing.T) {
 	// ae → (PRC).
-	f, err := ParseFormative("aelali")
+	f, err := Formative("aelali")
 	if err != nil {
-		t.Fatalf("ParseFormative(\"aelali\") error: %v", err)
+		t.Fatalf("Formative(\"aelali\") error: %v", err)
 	}
 	rr, ok := f.Root.(g.RefRoot)
 	if !ok || rr.Version != g.PRC {
@@ -120,7 +120,7 @@ func TestSpecialVv_NotShortcut(t *testing.T) {
 	// Shortcuts can't combine with Cs-root. "yëilal" — y prefix
 	// (shortcut) + ëi as Vv. ParseSlotII rejects ëi (form 5 reserved),
 	// so the shortcut path bails out with an error.
-	_, err := ParseFormative("yëilal")
+	_, err := Formative("yëilal")
 	if err == nil {
 		t.Error("expected error: shortcuts can't use Cs-root Vv")
 	}

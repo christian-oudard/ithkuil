@@ -62,9 +62,9 @@ func TestWithMCSMood_RoundTrip(t *testing.T) {
 		t.Fatalf("WithMCSMood: %v", err)
 	}
 	surf := render.Formative(f)
-	back, err := fullparse.ParseFormative(surf)
+	back, err := fullparse.Formative(surf)
 	if err != nil {
-		t.Fatalf("ParseFormative(%q): %v", surf, err)
+		t.Fatalf("Formative(%q): %v", surf, err)
 	}
 	var found *g.Affix
 	for i, a := range back.SlotVII {
@@ -104,9 +104,9 @@ func TestWithCHC_RoundTrip(t *testing.T) {
 			continue
 		}
 		surf := render.Formative(f)
-		back, err := fullparse.ParseFormative(surf)
+		back, err := fullparse.Formative(surf)
 		if err != nil {
-			t.Errorf("ParseFormative(%q): %v", surf, err)
+			t.Errorf("Formative(%q): %v", surf, err)
 			continue
 		}
 		var found *g.Affix

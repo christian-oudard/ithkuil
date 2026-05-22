@@ -200,7 +200,7 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 	if s.lex != nil {
 		affixes = s.lex.Affixes
 	}
-	f, err := compose.ParseString(expr, affixes)
+	f, err := compose.Formative(expr, affixes)
 	if err != nil {
 		return nil, composeOut{}, err
 	}

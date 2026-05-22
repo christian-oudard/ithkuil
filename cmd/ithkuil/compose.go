@@ -15,7 +15,7 @@ import (
 //
 // Usage: ithkuil compose EXPR
 //
-// EXPR is the syntax accepted by compose.ParseString: slots separated
+// EXPR is the syntax accepted by compose.Formative: slots separated
 // by "-", sub-fields by "/" or "." (for Ca). Examples:
 //
 //	ml
@@ -41,7 +41,7 @@ func cmdCompose(args []string, stdout, stderr io.Writer, lexDir string) int {
 	if lex != nil {
 		affixes = lex.Affixes
 	}
-	f, err := compose.ParseString(rest[0], affixes)
+	f, err := compose.Formative(rest[0], affixes)
 	if err != nil {
 		fmt.Fprintf(stderr, "compose: %v\n", err)
 		return 2

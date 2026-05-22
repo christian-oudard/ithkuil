@@ -318,7 +318,7 @@ func ClassifyWord(word string) WordToken {
 	}
 
 	// 6. Formative.
-	if f, err := fullparse.ParseFormative(word); err == nil {
+	if f, err := fullparse.Formative(word); err == nil {
 		return FormativeWord{Text: word, Formative: f}
 	}
 
@@ -630,7 +630,7 @@ func tryConcatenation(word string) (*concatenation.Chain, bool) {
 	}
 	formatives := make([]g.Formative, 0, len(parts))
 	for _, p := range parts {
-		f, err := fullparse.ParseFormative(p)
+		f, err := fullparse.Formative(p)
 		if err != nil {
 			return nil, false
 		}

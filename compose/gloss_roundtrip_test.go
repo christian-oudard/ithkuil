@@ -14,7 +14,7 @@ import (
 //
 //	random Formative
 //	  → gloss (Canonical: true)
-//	  → compose.ParseString
+//	  → compose.Formative
 //	  → re-gloss (Canonical: true)
 //	must equal the first gloss.
 //
@@ -41,9 +41,9 @@ func TestFuzz_GlossComposeRoundTrip(t *testing.T) {
 	for i := 0; i < iterations; i++ {
 		f := randomFormative(rng, lex)
 		s1 := gl.Formative(f)
-		f2, err := ParseString(s1, lex.Affixes)
+		f2, err := Formative(s1, lex.Affixes)
 		if err != nil {
-			t.Errorf("iter %d: compose.ParseString(%q): %v\n  formative: %+v",
+			t.Errorf("iter %d: compose.Formative(%q): %v\n  formative: %+v",
 				i, s1, err, f)
 			continue
 		}

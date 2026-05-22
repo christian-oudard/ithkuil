@@ -13,9 +13,9 @@ import (
 func assertRoundTrip(t *testing.T, name string, f g.Formative) {
 	t.Helper()
 	surface := render.Formative(f)
-	parsed, err := ParseFormative(surface)
+	parsed, err := Formative(surface)
 	if err != nil {
-		t.Errorf("%s: ParseFormative(%q): %v", name, surface, err)
+		t.Errorf("%s: Formative(%q): %v", name, surface, err)
 		return
 	}
 	if !reflect.DeepEqual(parsed.Root, f.Root) {
@@ -79,9 +79,9 @@ func TestRoundTrip_Final(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			surface := render.Formative(tc.f)
-			parsed, err := ParseFormative(surface)
+			parsed, err := Formative(surface)
 			if err != nil {
-				t.Fatalf("ParseFormative(%q): %v", surface, err)
+				t.Fatalf("Formative(%q): %v", surface, err)
 			}
 			if !reflect.DeepEqual(parsed.Final, tc.f.Final) {
 				t.Errorf("Final: got %v, want %v (surface: %q)", parsed.Final, tc.f.Final, surface)
@@ -290,9 +290,9 @@ func TestRoundTrip_ShortcutEncodableSlotVI(t *testing.T) {
 			assertRoundTrip(t, c.name, f)
 			// Also exercise the shortcut surface form explicitly.
 			surface := render.Formative(f)
-			parsed, err := ParseFormative(surface)
+			parsed, err := Formative(surface)
 			if err != nil {
-				t.Fatalf("ParseFormative(%q): %v", surface, err)
+				t.Fatalf("Formative(%q): %v", surface, err)
 			}
 			if parsed.SlotVI != c.slotVI {
 				t.Errorf("shortcut SlotVI: got %v, want %v (surface %q)", parsed.SlotVI, c.slotVI, surface)

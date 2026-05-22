@@ -17,7 +17,7 @@ import (
 //	surface ─tokenize→ FormativeWord
 //	         ─fullparse→ grammar.Formative
 //	         ─gloss(Canonical)→ G1
-//	         ─compose.ParseString→ Formative'
+//	         ─compose.Formative→ Formative'
 //	         ─gloss(Canonical)→ G2
 //
 // G1 must equal G2 — compose is the inverse of canonical gloss on
@@ -38,14 +38,14 @@ func TestFullDistance_MorphologyCorpus(t *testing.T) {
 			if _, ok := tok.(tokenize.FormativeWord); !ok {
 				t.Skipf("not a FormativeWord: %T", tok)
 			}
-			f, err := fullparse.ParseFormative(w)
+			f, err := fullparse.Formative(w)
 			if err != nil {
 				t.Skipf("fullparse rejects %q: %v", w, err)
 			}
 			s1 := gl.Formative(f)
-			f2, err := ParseString(s1, lex.Affixes)
+			f2, err := Formative(s1, lex.Affixes)
 			if err != nil {
-				t.Fatalf("compose.ParseString(%q): %v\n  formative: %+v", s1, err, f)
+				t.Fatalf("compose.Formative(%q): %v\n  formative: %+v", s1, err, f)
 			}
 			s2 := gl.Formative(f2)
 			if s1 != s2 {

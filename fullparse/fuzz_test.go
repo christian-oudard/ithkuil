@@ -27,9 +27,9 @@ func TestFuzz_FormativeRoundTrip(t *testing.T) {
 	for i := 0; i < iterations; i++ {
 		f := randomFormative(rng)
 		surface := render.Formative(f)
-		parsed, err := ParseFormative(surface)
+		parsed, err := Formative(surface)
 		if err != nil {
-			t.Errorf("iter %d: ParseFormative(%q): %v\n  formative: %+v",
+			t.Errorf("iter %d: Formative(%q): %v\n  formative: %+v",
 				i, surface, err, f)
 			continue
 		}

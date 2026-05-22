@@ -32,9 +32,9 @@ func TestCanonicalize(t *testing.T) {
 	}
 	for _, p := range pairs {
 		t.Run(p.in, func(t *testing.T) {
-			f, err := fullparse.ParseFormative(p.in)
+			f, err := fullparse.Formative(p.in)
 			if err != nil {
-				t.Fatalf("ParseFormative(%q): %v", p.in, err)
+				t.Fatalf("Formative(%q): %v", p.in, err)
 			}
 			got := render.Formative(f)
 			if got != p.want {
