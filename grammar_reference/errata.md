@@ -507,3 +507,61 @@ Illocutions, each marked on the prominent first member. Two do not:
 
 Every other "Sec. N.N" reference in the document resolves to a heading
 that exists.
+
+### G16. Gradient type is not determined by C_S shape, though it nearly is
+
+§3.5.0.1 opens: "Each affix's nine degrees follow one of seven
+'gradient types' **determined by the phonological shape of the C_S
+consonant form**", and then gives a shape description for each type.
+Classifying all 527 affixes by those descriptions and comparing against
+their declared types, 512 of the 526 typed affixes sit in a shape-class
+that maps to more than one type. Taken literally the claim is false —
+but the way it fails is specific, and three separate things have to be
+supplied before it comes right.
+
+**Type 0 is not a shape class.** Its own text gives the game away:
+"The nine degrees represent an arbitrary list of nine related but
+non-graduated concepts". That is a semantic property, and it is
+assigned to 221 affixes spread across *every* shape class — 27 that
+begin with r/ř (A1's shape), 9 ending in -m or -x (D2's), 4 containing
+ç (B's), 3 ending in -ř (C's), 2 ending in -h (A2's), and 33 matching
+no shape rule at all. Its stated shape covers only 171 of the 221.
+Setting Type 0 aside as semantically assigned leaves 271 affixes for
+the shape rules to determine.
+
+**Type 0's third clause overreaches.** It reads "or is a bi-consonantal
+form ending in a sibilant", which catches sibilant + sibilant pairs and
+so claims 14 affixes that are declared D1 — `šč`, `cj`, `žč`, `sc`,
+`sj`, `zj` and their like. The preceding clause already covers a
+sibilant followed by a stop or non-sibilant fricative, so the third is
+evidently meant for a *non*-sibilant followed by a sibilant. Read that
+way, the 14 stop being misclaimed.
+
+**The rules need a priority order, and none is given.** Thirty-seven
+C_S forms match two or more shape rules: `rř` is both A1 and C, `rx`
+and `rm` are both A1 and D2, `rç` is both A1 and B, `çx` is both B and
+D2, and 16 forms are both Type 0 and A1. Only A2 states a precedence
+("except -rh and -řh, which are Type A1"). The declared types imply
+C > A1 > B > D2 consistently, but the document never says so.
+
+With those three supplied, the shape rules become a function on 268 of
+the remaining 271 affixes. The three that stay out:
+
+- **AUT** `pč`, declared **B**. Type B is "two contrasting states …
+  with a neutral midpoint"; AUT's nine degrees are nine unrelated
+  grounds of authorization — personal privilege, natural right,
+  statute, custom, favour, threat, rank, class, governing entity — with
+  no contrast and no midpoint. And `pč` contains no ç, which is B's
+  entire shape condition. Both shape and semantics say Type 0.
+- **COO** `ň`, declared **C**. Type C requires C_S to end in -ř and
+  means "a scale of anticipated-to-unanticipated effect". COO's degrees
+  are nine flavours of "and" — shared topic, shared participant, in
+  sequence, at the same time — which is neither a scale nor about
+  anticipation, and `ň` does not end in -ř.
+- **NEG** `r`, declared **D1**. Here the declaration is right and the
+  rule is wrong: NEG runs from relative negation (1-4) through
+  "neither the preceding nor X" (5) to absolute negation (6-9), which
+  is exactly D1's "standard spectrum from one extreme through a
+  midpoint to the opposite extreme" and not A1's "gradient from
+  zero/none to maximum". `r` is the one affix where A1's shape rule
+  demonstrably picks the wrong type.
