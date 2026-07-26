@@ -7,8 +7,8 @@ import "github.com/christian-oudard/ithkuil/grammar"
 // 5 shortcut table:
 //
 //	Series:        1                2          3          4
-//	ShortcutW: UNI/CSL/M/DEL/NRM  UNI/G/DEL  UNI/N/DEL  UNI/G/DEL/RPV
-//	ShortcutY: UNI/M/PRX/NRM      UNI/M/RPV  UNI/A/DEL  UNI/M/PRX/RPV
+//	ShortcutW: UPX/CSL/M/DEL/NRM  UPX/G/DEL  UPX/N/DEL  UPX/G/DEL/RPV
+//	ShortcutY: UPX/M/PRX/NRM      UPX/M/RPV  UPX/A/DEL  UPX/M/PRX/RPV
 //
 // Unrecognized series fall back to the default Ca.
 func ShortcutCa(s ShortcutVariant, series int) grammar.SlotVI {
@@ -18,22 +18,22 @@ func ShortcutCa(s ShortcutVariant, series int) grammar.SlotVI {
 		case 1:
 			return grammar.DefaultSlotVI
 		case 2:
-			return grammar.SlotVI{Configuration: grammar.UNI, Affiliation: grammar.CSL, Perspective: grammar.G_, Extension: grammar.DEL, Essence: grammar.NRM}
+			return grammar.SlotVI{Configuration: grammar.UPX, Affiliation: grammar.CSL, Perspective: grammar.G_, Extension: grammar.DEL, Essence: grammar.NRM}
 		case 3:
-			return grammar.SlotVI{Configuration: grammar.UNI, Affiliation: grammar.CSL, Perspective: grammar.N_, Extension: grammar.DEL, Essence: grammar.NRM}
+			return grammar.SlotVI{Configuration: grammar.UPX, Affiliation: grammar.CSL, Perspective: grammar.N_, Extension: grammar.DEL, Essence: grammar.NRM}
 		case 4:
-			return grammar.SlotVI{Configuration: grammar.UNI, Affiliation: grammar.CSL, Perspective: grammar.G_, Extension: grammar.DEL, Essence: grammar.RPV}
+			return grammar.SlotVI{Configuration: grammar.UPX, Affiliation: grammar.CSL, Perspective: grammar.G_, Extension: grammar.DEL, Essence: grammar.RPV}
 		}
 	case ShortcutY:
 		switch series {
 		case 1:
-			return grammar.SlotVI{Configuration: grammar.UNI, Affiliation: grammar.CSL, Perspective: grammar.M_, Extension: grammar.PRX, Essence: grammar.NRM}
+			return grammar.SlotVI{Configuration: grammar.UPX, Affiliation: grammar.CSL, Perspective: grammar.M_, Extension: grammar.PRX, Essence: grammar.NRM}
 		case 2:
-			return grammar.SlotVI{Configuration: grammar.UNI, Affiliation: grammar.CSL, Perspective: grammar.M_, Extension: grammar.DEL, Essence: grammar.RPV}
+			return grammar.SlotVI{Configuration: grammar.UPX, Affiliation: grammar.CSL, Perspective: grammar.M_, Extension: grammar.DEL, Essence: grammar.RPV}
 		case 3:
-			return grammar.SlotVI{Configuration: grammar.UNI, Affiliation: grammar.CSL, Perspective: grammar.A_, Extension: grammar.DEL, Essence: grammar.NRM}
+			return grammar.SlotVI{Configuration: grammar.UPX, Affiliation: grammar.CSL, Perspective: grammar.A_, Extension: grammar.DEL, Essence: grammar.NRM}
 		case 4:
-			return grammar.SlotVI{Configuration: grammar.UNI, Affiliation: grammar.CSL, Perspective: grammar.M_, Extension: grammar.PRX, Essence: grammar.RPV}
+			return grammar.SlotVI{Configuration: grammar.UPX, Affiliation: grammar.CSL, Perspective: grammar.M_, Extension: grammar.PRX, Essence: grammar.RPV}
 		}
 	}
 	return grammar.DefaultSlotVI

@@ -24,7 +24,7 @@ func TestSlotVINonUniplexCount(t *testing.T) {
 	// Sanity check the spec count: 19 non-uniplex configurations.
 	n := 0
 	for _, c := range AllConfigurations {
-		if c != UNI {
+		if c != UPX {
 			n++
 		}
 	}
@@ -34,7 +34,7 @@ func TestSlotVINonUniplexCount(t *testing.T) {
 }
 
 func TestDefaultSlotVI(t *testing.T) {
-	want := SlotVI{UNI, CSL, M_, DEL, NRM}
+	want := SlotVI{UPX, CSL, M_, DEL, NRM}
 	if DefaultSlotVI != want {
 		t.Errorf("DefaultSlotVI = %v, want %v", DefaultSlotVI, want)
 	}

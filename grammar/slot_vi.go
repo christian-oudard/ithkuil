@@ -5,7 +5,7 @@ package grammar
 type Configuration int
 
 const (
-	UNI Configuration = iota
+	UPX Configuration = iota
 	DPX
 	DSS
 	DSC
@@ -28,7 +28,7 @@ const (
 )
 
 var configurationNames = [...]string{
-	"UNI", "DPX",
+	"UPX", "DPX",
 	"DSS", "DSC", "DSF", "DDS", "DDC", "DDF", "DFS", "DFC", "DFF",
 	"MSS", "MSC", "MSF", "MDS", "MDC", "MDF", "MFS", "MFC", "MFF",
 }
@@ -37,7 +37,7 @@ func (c Configuration) String() string { return configurationNames[c] }
 
 // AllConfigurations enumerates all 20 configurations in declaration order.
 var AllConfigurations = []Configuration{
-	UNI, DPX,
+	UPX, DPX,
 	DSS, DSC, DSF, DDS, DDC, DDF, DFS, DFC, DFF,
 	MSS, MSC, MSF, MDS, MDC, MDF, MFS, MFC, MFF,
 }
@@ -118,5 +118,5 @@ type SlotVI struct {
 	Essence       Essence
 }
 
-// DefaultSlotVI is the unmarked Ca: UNI/CSL/M/DEL/NRM. It encodes as "l".
-var DefaultSlotVI = SlotVI{UNI, CSL, M_, DEL, NRM}
+// DefaultSlotVI is the unmarked Ca: UPX/CSL/M/DEL/NRM. It encodes as "l".
+var DefaultSlotVI = SlotVI{UPX, CSL, M_, DEL, NRM}

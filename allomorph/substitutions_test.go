@@ -33,7 +33,7 @@ func TestApplySubstitutions_ContextNonInitial(t *testing.T) {
 	cases := []struct {
 		in, want string
 	}{
-		// Initial "gm" is preserved (UNI + ICP + N_/RPV produces "gm").
+		// Initial "gm" is preserved (UPX + ICP + N_/RPV produces "gm").
 		{"gm", "gm"},
 		// Non-initial "gm" becomes "x".
 		{"ngm", "nx"},
@@ -76,8 +76,8 @@ func TestConstructCa_RoundsTrip(t *testing.T) {
 		{g.SlotVI{Configuration: g.MSC, Affiliation: g.CSL, Perspective: g.M_, Extension: g.GRA, Essence: g.NRM}, "ng"},
 		// MDF + CSL + A_ + DEL + NRM → "ç" + "y" → çy → nd
 		{g.SlotVI{Configuration: g.MDF, Affiliation: g.CSL, Perspective: g.A_, Extension: g.DEL, Essence: g.NRM}, "nd"},
-		// UNI + N_/ICP/RPV → "gm" initial, no substitution.
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.N_, Extension: g.ICP, Essence: g.RPV}, "gm"},
+		// UPX + N_/ICP/RPV → "gm" initial, no substitution.
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.N_, Extension: g.ICP, Essence: g.RPV}, "gm"},
 		// MSC + CSL + N_/GRA/RPV → raw "kgm" → "nx".
 		{g.SlotVI{Configuration: g.MSC, Affiliation: g.CSL, Perspective: g.N_, Extension: g.GRA, Essence: g.RPV}, "nx"},
 	}

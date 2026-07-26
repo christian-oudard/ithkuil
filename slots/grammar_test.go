@@ -69,7 +69,7 @@ func TestFromGrammar_ToGrammar_RoundTrip(t *testing.T) {
 	withConcatT2.Concat = t2
 
 	nonDefaultCa := g.MinimalFormative("ml")
-	nonDefaultCa.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}
+	nonDefaultCa.SlotVI = g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}
 
 	cases := []struct {
 		name string

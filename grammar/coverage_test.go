@@ -93,7 +93,7 @@ func TestIsVerbal_Variants(t *testing.T) {
 
 func TestNames_RoundTripCanonicalAbbrevs(t *testing.T) {
 	for _, abbrev := range []string{"THM", "ERG", "DAT", "S1", "PRC", "CPT",
-		"STA", "DYN", "BSC", "EXS", "UNI", "CSL", "M",
+		"STA", "DYN", "BSC", "EXS", "UPX", "CSL", "M",
 		"DEL", "NRM", "FAC", "CCN", "ASR", "OBS",
 	} {
 		if n := Name(abbrev); n == "" {

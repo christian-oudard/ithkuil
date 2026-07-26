@@ -17,15 +17,15 @@ func TestConstructCaRaw_StandalonePerspectives(t *testing.T) {
 		s    g.SlotVI
 		want string
 	}{
-		// UNI/CSL/DEL with each perspective × essence
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}, "l"},
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}, "r"},
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.N_, Extension: g.DEL, Essence: g.NRM}, "v"},
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.A_, Extension: g.DEL, Essence: g.NRM}, "j"},
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DEL, Essence: g.RPV}, "tļ"},
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.RPV}, "ř"},
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.N_, Extension: g.DEL, Essence: g.RPV}, "m"},
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.A_, Extension: g.DEL, Essence: g.RPV}, "n"},
+		// UPX/CSL/DEL with each perspective × essence
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}, "l"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}, "r"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.N_, Extension: g.DEL, Essence: g.NRM}, "v"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.A_, Extension: g.DEL, Essence: g.NRM}, "j"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DEL, Essence: g.RPV}, "tļ"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.RPV}, "ř"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.N_, Extension: g.DEL, Essence: g.RPV}, "m"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.A_, Extension: g.DEL, Essence: g.RPV}, "n"},
 	}
 	for _, c := range cases {
 		if got := ConstructCaRaw(c.s); got != c.want {
@@ -35,16 +35,16 @@ func TestConstructCaRaw_StandalonePerspectives(t *testing.T) {
 }
 
 func TestConstructCaRaw_UniWithExtension(t *testing.T) {
-	// UNI + Extension uses voiced standalone forms (d/g/b/gz/bz) + persp suffix.
+	// UPX + Extension uses voiced standalone forms (d/g/b/gz/bz) + persp suffix.
 	cases := []struct {
 		s    g.SlotVI
 		want string
 	}{
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}, "d"},
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.ICP, Essence: g.NRM}, "g"},
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.ATV, Essence: g.NRM}, "b"},
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.GRA, Essence: g.NRM}, "gz"},
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DPL, Essence: g.NRM}, "bz"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}, "d"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.ICP, Essence: g.NRM}, "g"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.ATV, Essence: g.NRM}, "b"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.GRA, Essence: g.NRM}, "gz"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DPL, Essence: g.NRM}, "bz"},
 	}
 	for _, c := range cases {
 		if got := ConstructCaRaw(c.s); got != c.want {
@@ -54,14 +54,14 @@ func TestConstructCaRaw_UniWithExtension(t *testing.T) {
 }
 
 func TestConstructCaRaw_UniWithAffiliation(t *testing.T) {
-	// UNI + Affiliation alone (M_/NRM) uses long Affiliation form.
+	// UPX + Affiliation alone (M_/NRM) uses long Affiliation form.
 	cases := []struct {
 		s    g.SlotVI
 		want string
 	}{
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.ASO, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}, "nļ"},
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.COA, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}, "rļ"},
-		{g.SlotVI{Configuration: g.UNI, Affiliation: g.VAR, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}, "ň"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.ASO, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}, "nļ"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.COA, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}, "rļ"},
+		{g.SlotVI{Configuration: g.UPX, Affiliation: g.VAR, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}, "ň"},
 	}
 	for _, c := range cases {
 		if got := ConstructCaRaw(c.s); got != c.want {

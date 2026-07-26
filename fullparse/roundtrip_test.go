@@ -256,13 +256,13 @@ func TestRoundTrip_SlotVIII_VerbalMood(t *testing.T) {
 // choice — the grammar carries only the SlotVI.
 func TestRoundTrip_ShortcutEncodableSlotVI(t *testing.T) {
 	wDefault := g.DefaultSlotVI
-	wG := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}
-	wN := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.N_, Extension: g.DEL, Essence: g.NRM}
-	wGR := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.RPV}
-	yPRX := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}
-	yRPV := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DEL, Essence: g.RPV}
-	yA := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.A_, Extension: g.DEL, Essence: g.NRM}
-	yBoth := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.RPV}
+	wG := g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}
+	wN := g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.N_, Extension: g.DEL, Essence: g.NRM}
+	wGR := g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.RPV}
+	yPRX := g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}
+	yRPV := g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DEL, Essence: g.RPV}
+	yA := g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.A_, Extension: g.DEL, Essence: g.NRM}
+	yBoth := g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.RPV}
 
 	cases := []struct {
 		name   string

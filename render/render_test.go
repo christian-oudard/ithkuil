@@ -284,7 +284,7 @@ func TestFormative_ShortcutOnlyWhenItShortens(t *testing.T) {
 			cr := f.Root.(g.CrRoot)
 			cr.Stem = c.stem
 			f.Root = cr
-			f.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL,
+			f.SlotVI = g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL,
 				Perspective: c.persp, Extension: g.DEL, Essence: g.NRM}
 			f.Final = g.UnframedNominal{Case: c.kase}
 			if got := Formative(f); got != c.want {
@@ -301,7 +301,7 @@ func TestFormative_ShortcutY_Series1(t *testing.T) {
 	cr := f.Root.(g.CrRoot)
 	cr.Stem = g.S2
 	f.Root = cr
-	f.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL,
+	f.SlotVI = g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL,
 		Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}
 	f.Final = g.UnframedNominal{Case: g.ERG}
 	got := Formative(f)

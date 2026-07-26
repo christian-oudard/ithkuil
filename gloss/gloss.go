@@ -317,7 +317,7 @@ func slotVI(s g.SlotVI, slotVFilled bool) string {
 		return ""
 	}
 	parts := []string{}
-	if s.Configuration != g.UNI {
+	if s.Configuration != g.UPX {
 		parts = append(parts, s.Configuration.String())
 	}
 	if s.Affiliation != g.CSL {

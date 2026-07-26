@@ -9,9 +9,9 @@ import (
 )
 
 // ca1 is the Configuration component of Ca (grammar ch.3 table).
-// UNI is empty — no consonant is contributed.
+// UPX is empty — no consonant is contributed.
 var ca1 = [...]string{
-	g.UNI: "",
+	g.UPX: "",
 	g.DPX: "s",
 	g.DSS: "c",
 	g.DSC: "ks",
@@ -45,7 +45,7 @@ var ca2 = [...]string{
 }
 
 // ca2Standalone is the Extension component in the voiced form, used when
-// Configuration is UNI (no Ca1 consonant to follow).
+// Configuration is UPX (no Ca1 consonant to follow).
 var ca2Standalone = [...]string{
 	g.DEL: "",
 	g.PRX: "d",
@@ -102,16 +102,16 @@ func ca4(p g.Perspective, e g.Essence) ca4Entry {
 // ConstructCaRaw builds the raw Ca consonant cluster from a SlotVI by
 // concatenating its components in grammatical order
 // (Affiliation + Configuration + Extension + Perspective/Essence) with
-// special-case forms for UNI Configuration. Allomorphic substitutions
+// special-case forms for UPX Configuration. Allomorphic substitutions
 // are NOT applied here — see ApplySubstitutions for that next step.
 //
 // Special-case rules (grammar §3.5):
 //
-//  1. UNI + Extension ≠ DEL: use voiced standalone Extension form
+//  1. UPX + Extension ≠ DEL: use voiced standalone Extension form
 //     (d/g/b/gz/bz) followed by the perspective suffix.
-//  2. UNI + Affiliation ≠ CSL: use the long Affiliation form alone if
+//  2. UPX + Affiliation ≠ CSL: use the long Affiliation form alone if
 //     no perspective suffix; otherwise short prefix + suffix.
-//  3. UNI/CSL/DEL (fully default Configuration/Affiliation/Extension):
+//  3. UPX/CSL/DEL (fully default Configuration/Affiliation/Extension):
 //     use the standalone perspective form.
 //  4. General: Affiliation prefix + Configuration + Extension +
 //     Perspective suffix, with grammar §3.5.1 N_/A_ RPV → h/ç when
@@ -119,22 +119,22 @@ func ca4(p g.Perspective, e g.Essence) ca4Entry {
 func ConstructCaRaw(s g.SlotVI) string {
 	persp := ca4(s.Perspective, s.Essence)
 
-	if s.Configuration == g.UNI && s.Extension != g.DEL {
-		// UNI Configuration contributes no consonant of its own, so
+	if s.Configuration == g.UPX && s.Extension != g.DEL {
+		// UPX Configuration contributes no consonant of its own, so
 		// Extension always takes its voiced standalone form
 		// (d/g/b/gz/bz) — this is the rule for UNIPLEX in the §3.6
 		// table, not the "alternate when preceded by [C]t/k/p" rule
-		// that applies to non-UNI Configurations. The Affiliation
+		// that applies to non-UPX Configurations. The Affiliation
 		// prefix sits in front; the original code dropped it.
 		return ca3[s.Affiliation] + ca2Standalone[s.Extension] + persp.suffix
 	}
-	if s.Configuration == g.UNI && s.Affiliation != g.CSL {
+	if s.Configuration == g.UPX && s.Affiliation != g.CSL {
 		if persp.suffix == "" {
 			return ca3Standalone[s.Affiliation]
 		}
 		return ca3[s.Affiliation] + persp.suffix
 	}
-	if s.Configuration == g.UNI {
+	if s.Configuration == g.UPX {
 		return persp.standalone
 	}
 

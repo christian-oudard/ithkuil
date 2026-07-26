@@ -230,7 +230,7 @@ func TestFormative_SlotI_Type2(t *testing.T) {
 
 func TestFormative_ShortcutW_Series1(t *testing.T) {
 	// "waml" = shortcut "w" + Vv "a" (series 1, S1/PRC) + Cr "ml".
-	// Shortcut W series 1 = default Ca (UNI/CSL/M/DEL/NRM).
+	// Shortcut W series 1 = default Ca (UPX/CSL/M/DEL/NRM).
 	f, err := Formative("waml")
 	if err != nil {
 		t.Fatalf("Formative(\"waml\") error: %v", err)
@@ -246,24 +246,24 @@ func TestFormative_ShortcutW_Series1(t *testing.T) {
 func TestFormative_ShortcutY_Series3(t *testing.T) {
 	// "yuml" = shortcut "y" + Vv "u" (series 1 vowel… wait, let me think).
 	// Vv vowel "u" is series 1 form 9. So series=1. Shortcut Y series 1
-	// = UNI/CSL/M/PRX/NRM (extension PRX).
+	// = UPX/CSL/M/PRX/NRM (extension PRX).
 	f, err := Formative("yuml")
 	if err != nil {
 		t.Fatalf("Formative(\"yuml\") error: %v", err)
 	}
-	want := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}
+	want := g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}
 	if f.SlotVI != want {
 		t.Errorf("SlotVI = %v, want %v", f.SlotVI, want)
 	}
 }
 
 func TestFormative_ShortcutW_Series2(t *testing.T) {
-	// Vv "ai" is series 2 form 1. Shortcut W series 2 = UNI/CSL/G/DEL/NRM.
+	// Vv "ai" is series 2 form 1. Shortcut W series 2 = UPX/CSL/G/DEL/NRM.
 	f, err := Formative("waiml")
 	if err != nil {
 		t.Fatalf("Formative(\"waiml\") error: %v", err)
 	}
-	want := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}
+	want := g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}
 	if f.SlotVI != want {
 		t.Errorf("SlotVI = %v, want %v", f.SlotVI, want)
 	}

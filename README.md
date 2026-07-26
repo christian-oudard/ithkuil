@@ -38,7 +38,7 @@ maţřëullait
   -a-       Vr    STA / BSC / EXS
   -ţř-      Cs₅₁  SYS
   -ëu-      Vx₅₁  DEG5
-  -ll-      Ca    UNI / CSL / M / DEL / NRM
+  -ll-      Ca    UPX / CSL / M / DEL / NRM
   -ai-      Vx₁   DEG1
   -t        Cs₁   DCD
    ∅        Vc    THM
@@ -49,7 +49,7 @@ maţřëullait
   function       STA    Static                  entity as a state, condition, or quality
   context        EXS    Existential             pure existence (default ontology)
   affix          SYS/5  Networks & Systems      A feedback-driven/self-sustaining/autopoietic system based on X
-  configuration  UNI    Uniplex                 a single instance
+  configuration  UPX    Uniplex                 a single instance
   affiliation    CSL    Consolidative           no specific affiliation among members
   perspective    M      Monadic                 single instance/individual
   extension      DEL    Delimitive              default — bounded, demarcated

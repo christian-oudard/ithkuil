@@ -49,7 +49,7 @@ var canonicalNames = map[string]string{
 	"RPS": "Representational",
 	"AMG": "Amalgamative",
 	// Configuration
-	"UNI": "Uniplex",
+	"UPX": "Uniplex",
 	"DPX": "Duplex",
 	"DSS": "Duplex Similar Separate",
 	"DSC": "Duplex Similar Connected",
@@ -644,7 +644,7 @@ var meanings = map[string]string{
 	"CGT": "internal thought",
 	"END": "ends the open register",
 	// Configuration — matrix of Plexity × Similarity × Separability
-	"UNI": "a single instance",
+	"UPX": "a single instance",
 	"DPX": "two instances forming one entity",
 	"DSS": "two similar instances, separate",
 	"DSC": "two similar instances, connected",

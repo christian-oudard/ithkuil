@@ -112,9 +112,9 @@ func TestRoundTrip_Grid_ConcatShortcut(t *testing.T) {
 	// Pick a SlotVI value for each shortcut series.
 	series := []g.SlotVI{
 		g.DefaultSlotVI, // w-series-1
-		{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM},  // w-series-2
-		{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM},  // y-series-1
-		{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DEL, Essence: g.RPV},  // y-series-2
+		{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM},  // w-series-2
+		{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM},  // y-series-1
+		{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DEL, Essence: g.RPV},  // y-series-2
 	}
 	for _, c := range concats {
 		for i, s := range series {
@@ -141,7 +141,7 @@ func TestShortcutVariant_Selection(t *testing.T) {
 	if v := shortcutVariant(g.DefaultSlotVI); v != parse.ShortcutW {
 		t.Errorf("default SlotVI: shortcutVariant = %v, want W", v)
 	}
-	yShortcut := g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}
+	yShortcut := g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}
 	if v := shortcutVariant(yShortcut); v != parse.ShortcutY {
 		t.Errorf("PRX SlotVI: shortcutVariant = %v, want Y", v)
 	}
@@ -276,7 +276,7 @@ func TestMaybeMoveCnToCa_Conditions(t *testing.T) {
 	// Not applied: SlotVI not default.
 	f = base()
 	f.SlotVIII = g.VnCnValence{Valence: g.MNO, MoodScope: g.SUB}
-	f.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.ASO, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}
+	f.SlotVI = g.SlotVI{Configuration: g.UPX, Affiliation: g.ASO, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}
 	l = FromGrammar(f)
 	if l.CnInCa {
 		t.Error("non-default Ca: CnInCa should be false")

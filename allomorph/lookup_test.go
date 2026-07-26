@@ -35,24 +35,24 @@ func TestParseCa_KnownForms(t *testing.T) {
 		want g.SlotVI
 	}{
 		// Standalone perspective forms
-		{"l", g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}},
-		{"r", g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}},
-		{"v", g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.N_, Extension: g.DEL, Essence: g.NRM}},
-		{"j", g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.A_, Extension: g.DEL, Essence: g.NRM}},
-		{"tļ", g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DEL, Essence: g.RPV}},
-		{"ř", g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.RPV}},
-		{"m", g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.N_, Extension: g.DEL, Essence: g.RPV}},
-		{"n", g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.A_, Extension: g.DEL, Essence: g.RPV}},
-		// UNI + Extension
-		{"d", g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}},
-		{"g", g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.ICP, Essence: g.NRM}},
-		{"b", g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.ATV, Essence: g.NRM}},
-		{"gz", g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.GRA, Essence: g.NRM}},
-		{"bz", g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DPL, Essence: g.NRM}},
-		// UNI + Affiliation
-		{"nļ", g.SlotVI{Configuration: g.UNI, Affiliation: g.ASO, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}},
-		{"rļ", g.SlotVI{Configuration: g.UNI, Affiliation: g.COA, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}},
-		{"ň", g.SlotVI{Configuration: g.UNI, Affiliation: g.VAR, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}},
+		{"l", g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}},
+		{"r", g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}},
+		{"v", g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.N_, Extension: g.DEL, Essence: g.NRM}},
+		{"j", g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.A_, Extension: g.DEL, Essence: g.NRM}},
+		{"tļ", g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DEL, Essence: g.RPV}},
+		{"ř", g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.RPV}},
+		{"m", g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.N_, Extension: g.DEL, Essence: g.RPV}},
+		{"n", g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.A_, Extension: g.DEL, Essence: g.RPV}},
+		// UPX + Extension
+		{"d", g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}},
+		{"g", g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.ICP, Essence: g.NRM}},
+		{"b", g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.ATV, Essence: g.NRM}},
+		{"gz", g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.GRA, Essence: g.NRM}},
+		{"bz", g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DPL, Essence: g.NRM}},
+		// UPX + Affiliation
+		{"nļ", g.SlotVI{Configuration: g.UPX, Affiliation: g.ASO, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}},
+		{"rļ", g.SlotVI{Configuration: g.UPX, Affiliation: g.COA, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}},
+		{"ň", g.SlotVI{Configuration: g.UPX, Affiliation: g.VAR, Perspective: g.M_, Extension: g.DEL, Essence: g.NRM}},
 		// Config + perspective suffix
 		{"tr", g.SlotVI{Configuration: g.MSS, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}},
 		{"kr", g.SlotVI{Configuration: g.MSC, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}},
@@ -78,9 +78,9 @@ func TestParseCa_KnownForms(t *testing.T) {
 		{"mp", g.SlotVI{Configuration: g.MSF, Affiliation: g.CSL, Perspective: g.M_, Extension: g.ATV, Essence: g.NRM}},
 		{"mb", g.SlotVI{Configuration: g.MSF, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DPL, Essence: g.NRM}},
 		{"ng", g.SlotVI{Configuration: g.MSC, Affiliation: g.CSL, Perspective: g.M_, Extension: g.GRA, Essence: g.NRM}},
-		{"gm", g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL, Perspective: g.N_, Extension: g.ICP, Essence: g.RPV}},
+		{"gm", g.SlotVI{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.N_, Extension: g.ICP, Essence: g.RPV}},
 		{"nd", g.SlotVI{Configuration: g.MDF, Affiliation: g.CSL, Perspective: g.A_, Extension: g.DEL, Essence: g.NRM}},
-		{"nš", g.SlotVI{Configuration: g.UNI, Affiliation: g.COA, Perspective: g.G_, Extension: g.DEL, Essence: g.RPV}},
+		{"nš", g.SlotVI{Configuration: g.UPX, Affiliation: g.COA, Perspective: g.G_, Extension: g.DEL, Essence: g.RPV}},
 		{"nx", g.SlotVI{Configuration: g.MSC, Affiliation: g.CSL, Perspective: g.N_, Extension: g.GRA, Essence: g.RPV}},
 		{"řkpl", g.SlotVI{Configuration: g.MSC, Affiliation: g.VAR, Perspective: g.M_, Extension: g.ATV, Essence: g.RPV}},
 	}

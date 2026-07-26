@@ -574,7 +574,7 @@
       "description": "amalgamative context (blended/composite)"
     },
     {
-      "abbrev": "UNI",
+      "abbrev": "UPX",
       "name": "Uniplex",
       "category": "Configuration",
       "description": "a single instance"
