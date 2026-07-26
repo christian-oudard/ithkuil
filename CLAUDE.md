@@ -4,10 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build Commands
 
-Enter the dev shell first, then use `go` directly:
+Everything runs inside the dev shell. It is the only supported environment:
+`go`, `python3` and `curl` are on PATH there and nowhere else, and it sets
+`CGO_ENABLED=0`.
 
 ```bash
-nix develop               # Provides go and python3 on PATH with CGO_ENABLED=0
+nix develop               # Enter the shell, then run the commands below
 python3 tools/build_db.py # Build the data store (needed before the CLI runs)
 go install ./cmd/...      # Drop binaries into $GOBIN
 go build ./...            # Typecheck and compile everything; writes no binaries
@@ -15,7 +17,25 @@ go test ./...             # Run the full test suite
 tools/test.sh             # Test suite with cross-package coverage summary
 ```
 
-`CGO_ENABLED=0` is set in `flake.nix` because `segmentio/asm` (transitive from the MCP SDK) tries to invoke gcc otherwise; the pure-Go fallback is used.
+One-shot form, for anything that can't hold an interactive shell open:
+
+```bash
+nix develop --command go test ./...
+nix develop --command python3 tools/build_db.py
+```
+
+Do not reach around the shell: no hand-set `CGO_ENABLED`, no `go` from a Nix
+store path, no `nix shell nixpkgs#python3`. Those drift from what `flake.nix`
+pins and hide breakage. `CGO_ENABLED=0` is set there because `segmentio/asm`
+(transitive from the MCP SDK) otherwise tries to invoke gcc; the pure-Go
+fallback is used instead.
+
+The first `nix develop` on a cold store fetches the Go toolchain and can take
+several minutes. Let it finish rather than working around it; every later
+invocation is instant.
+
+Rebuild the store with `tools/build_db.py` after any edit to `data/data.json`,
+or the CLI and the store-backed tests keep reading the old data.
 
 There is no `.gitignore`, and the repo should stay that way. Everything in the
 tree is source; everything else lives elsewhere. Generated output goes to
