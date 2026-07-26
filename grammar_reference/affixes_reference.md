@@ -1,6 +1,6 @@
 # Ithkuil V4 Affix Reference
 
-Complete reference for all 527 VxCs affixes in New Ithkuil (v1.3.2).
+Complete reference for all 528 VxCs affixes in New Ithkuil (v1.3.2).
 Each affix has a consonant form (Cs), a gradient type, and 9 degrees of meaning.
 
 ## Gradient Types
@@ -2678,6 +2678,27 @@ Each affix has a consonant form (Cs), a gradient type, and 9 degrees of meaning.
 | 7 | most of them |
 | 8 | almost every |
 | 9 | each |
+
+### XCL - External Standard for Comparison for Use with Levels
+
+- **Cs**: -çx-
+- **Type**: not stated in the grammar
+
+Applied to either the "X" noun bearing a LEVEL Comparison Operator or the
+"Y" noun to which something is compared (the "than Y"). See morphology
+Sec. 5.6.
+
+| Degree | Meaning |
+|--------|---------|
+| 1 | ...although X (still) isn't very M compared to some external standard or expectation of M-ness |
+| 2 | ...and where X now meets some external standard or expectation of M-ness |
+| 3 | ...and where X now exceeds some external standard or expectation of M-ness |
+| 4 | ...although neither X nor Y are very M compared to some external standard or expectation of M-ness |
+| 5 | ...and where both X and Y meet some external standard or expectation of M-ness, where previously only Y met/exceeded it |
+| 6 | ...and where both X and Y exceed some external standard or expectation of M-ness, where previously only Y exceeded it |
+| 7 | ...and where X's degree of M-ness exceeds that of Y, but neither is (still) very M compared to some external standard or expectation of M-ness |
+| 8 | ...and where X now meets some external standard or expectation of M-ness and Y does not |
+| 9 | ...and where X now exceeds some external standard or expectation of M-ness and Y does not |
 
 ## Qualifying
 

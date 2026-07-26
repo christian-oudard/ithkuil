@@ -60,7 +60,7 @@ maţřëullait
 
 This tool provides:
 - **Morphological parsing**: Decomposition of formatives into their 10 slot structure
-- **Lexicon lookup**: 4,720 roots and 527 affixes from the official lexicon
+- **Lexicon lookup**: 5,951 roots and 528 affixes from the official lexicon
 - **Word type classification**: Formatives, referentials, bias adjuncts, register adjuncts, modular adjuncts, affixual adjuncts, carrier adjuncts, combination referentials
 - **Composition**: Building formatives from grammatical specifications
 - **Grammar search**: Looking up grammatical categories, roots, and affixes by keyword
@@ -104,7 +104,7 @@ This tool provides:
 ### Other Features
 
 - **Numbers** (Ch. 13): Centesimal system, TNX affix for 11-99, power roots
-- **Lexicon**: 4,720 roots and 527 affixes with keyword search and ranking
+- **Lexicon**: 5,951 roots and 528 affixes with keyword search and ranking
 - **Allomorph engine**: 3,840 Ca forms with 9 substitution rules
 - **Composition engine**: Formative construction from grammatical specifications
 - **Phonotactic validation**: Consonant cluster and vowel sequence constraints

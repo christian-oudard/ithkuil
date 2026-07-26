@@ -205,6 +205,15 @@ def merge_affix_entries(parsed: list[dict], existing: list[dict]) -> list[dict]:
             if not a.get("type") and cur.get("type"):
                 a["type"] = cur["type"]
         out.append(a)
+    # Affixes documented in the grammar but absent from the spreadsheet
+    # (XCL -çx, at the time of writing) would otherwise be dropped on
+    # every sync. Keep them, and name them so the run says what it kept.
+    upstream_cs = {a["cs"] for a in parsed}
+    local_only = [a for a in existing if a["cs"] not in upstream_cs]
+    if local_only:
+        names = ", ".join(f"{a['cs']} ({a.get('abbrev', '?')})" for a in local_only)
+        print(f"  keeping {len(local_only)} affix(es) not in upstream: {names}")
+        out.extend(local_only)
     return out
 
 

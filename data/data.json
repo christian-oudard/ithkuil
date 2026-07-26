@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "grammar": [
     {
       "abbrev": "THM",
@@ -52897,6 +52897,22 @@
         "as the focal point/key to an inquiry/investigation/mystery",
         "as a causal/triggering element/circumstance for a story/plot/series of events",
         "as the source of one’s emotional state"
+      ]
+    },
+    {
+      "cs": "çx",
+      "abbrev": "XCL",
+      "description": "External Standard for Comparison for Use with Levels",
+      "degrees": [
+        "...although X (still) isn't very M compared to some external standard or expectation of M-ness",
+        "...and where X now meets some external standard or expectation of M-ness",
+        "...and where X now exceeds some external standard or expectation of M-ness",
+        "...although neither X nor Y are very M compared to some external standard or expectation of M-ness",
+        "...and where both X and Y meet some external standard or expectation of M-ness, where previously only Y met/exceeded it",
+        "...and where both X and Y exceed some external standard or expectation of M-ness, where previously only Y exceeded it",
+        "...and where X's degree of M-ness exceeds that of Y, but neither is (still) very M compared to some external standard or expectation of M-ness",
+        "...and where X now meets some external standard or expectation of M-ness and Y does not",
+        "...and where X now exceeds some external standard or expectation of M-ness and Y does not"
       ]
     }
   ]

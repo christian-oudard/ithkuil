@@ -89,7 +89,7 @@ Everything under `tools/` is non-Go tooling. Go tools stay with the code they be
 ## Grammar Reference
 
 - `grammar_reference/morphology.md` - Canonical V4 grammar reference (phonology, morphology, slots, cases, adjuncts, syntax, script, numbers)
-- `grammar_reference/affixes_reference.md` - All 527 affixes with gradient types and 9 degrees
+- `grammar_reference/affixes_reference.md` - All 528 affixes with gradient types and 9 degrees
 - `grammar_reference/phonotactics.md` - Detailed consonant cluster rules
 - `grammar_reference/v4_script.md`, `v4_script_pdf.md` - Writing system reference
 - Source PDFs and any intermediate extraction output (html, per-page pdf) go outside the repo, under `$XDG_DATA_HOME/ithkuil/reference/`.

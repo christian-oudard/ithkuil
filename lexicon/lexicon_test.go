@@ -166,3 +166,23 @@ func TestAffixEntry_CategoryValue(t *testing.T) {
 		}
 	}
 }
+
+// XCL is documented in the grammar but absent from the upstream
+// spreadsheet the lexicon syncs from, so it only survives because
+// tools/sync_lexicon.py keeps local-only affixes. Guard that.
+func TestLoad_LocalOnlyAffix(t *testing.T) {
+	lex, err := Load(dataPath("data.json"))
+	if err != nil {
+		t.Fatalf("Load error: %v", err)
+	}
+	xcl, ok := lex.Affixes["çx"]
+	if !ok {
+		t.Fatal("affix \"çx\" (XCL) not found; did a lexicon sync drop it?")
+	}
+	if xcl.Abbrev != "XCL" {
+		t.Errorf("affix \"çx\" abbrev = %q, want XCL", xcl.Abbrev)
+	}
+	if len(xcl.Degrees) != 9 {
+		t.Errorf("affix \"çx\" degrees = %d, want 9", len(xcl.Degrees))
+	}
+}
