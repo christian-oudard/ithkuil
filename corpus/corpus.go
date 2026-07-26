@@ -69,3 +69,60 @@ func isSeparator(r rune) bool {
 	}
 	return false
 }
+
+//go:embed judged.txt
+var judgedFile string
+
+// Verdict is a judgment about a word taken from the community Discord
+// archive: whether the word itself is well-formed, not whether we
+// currently handle it.
+type Verdict string
+
+const (
+	// OK marks a word that is well-formed under v1.3.1.
+	OK Verdict = "ok"
+	// Bad marks a word that is not, with Rule naming what it breaks.
+	Bad Verdict = "bad"
+	// Unsure marks a word that has been looked at and not settled.
+	// It is a result, not a placeholder: the archive is usage rather
+	// than authority, and a word we cannot judge is worth recording
+	// as such so that later work does not count it as evidence.
+	Unsure Verdict = "unsure"
+)
+
+// Judgment is one curated verdict. See judged.txt for the reasoning
+// behind each entry and for why provenance is tracked at all.
+type Judgment struct {
+	Verdict Verdict
+	Word    string
+	Rule    string // the spec section the verdict rests on
+	Reason  string
+}
+
+// Judged returns every curated verdict in file order.
+func Judged() []Judgment {
+	var out []Judgment
+	for _, line := range strings.Split(judgedFile, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		f := strings.SplitN(line, "|", 4)
+		if len(f) != 4 {
+			panic("corpus: malformed judged.txt line: " + line)
+		}
+		v := Verdict(strings.TrimSpace(f[0]))
+		switch v {
+		case OK, Bad, Unsure:
+		default:
+			panic("corpus: unknown verdict " + string(v) + " in: " + line)
+		}
+		out = append(out, Judgment{
+			Verdict: v,
+			Word:    strings.TrimSpace(f[1]),
+			Rule:    strings.TrimSpace(f[2]),
+			Reason:  strings.TrimSpace(f[3]),
+		})
+	}
+	return out
+}
