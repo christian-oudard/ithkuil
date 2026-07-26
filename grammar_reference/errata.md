@@ -53,12 +53,22 @@ surface form, and both are ordinary Vx-Cs affixes occupying the same
 slots — nothing in a formative can distinguish them. Any lookup keyed
 on Cs has to pick one and lose the other.
 
-### A3. -rw- is a spurious duplicate of SPT
+### A3. SPT has two C_S forms and no rule for choosing between them
 
-The spreadsheet lists SPT (Specified Points in Calendrical Time) twice,
-at `rw` and at `ry`, with byte-identical degree lists. The reference
-document has SPT at `ry` only and assigns nothing to `rw`. The `rw` row
-looks like a copy that was never given its own affix.
+§6.0 introduces the affix as "**SPT -- Specified Points in Calendrical
+Time** (form: -**rw**/-**ry**)" — two consonant forms, one entry. The
+spreadsheet accordingly carries two SPT rows, at `rw` and at `ry`, with
+identical degree lists. `grammar_reference/affixes_reference.md` has
+only `ry` and assigns nothing to `rw`, so it is the reference document
+that is incomplete here, not the spreadsheet that is duplicated.
+
+What no source supplies is a rule. `-rw-`/`-ry-` is stated once and
+never mentioned again; §6.0's degrees, examples and prose never
+distinguish the two. The case-accessor affixes of §3.9.2 split their
+increments the same way and do say which is which — w-forms for cases
+1-36, y-forms for 37-68 — so the machinery for stating such a rule
+exists and was not used here. Compare G7, where the Pattern-2 Mood FAC
+value is likewise written "w/y" with nothing to choose by.
 
 ### A4. ANG's Type cell holds a spilled degree list
 
@@ -846,3 +856,42 @@ The notation is otherwise dependable. Sweeping every affix degree label
 in the document and checking the vowel that precedes its C_S in the
 accompanying Ithkuil word, 40 of the 45 that could be aligned are
 exactly right; the five failures are these.
+
+### G27. §7.0 gives CLG a form that no affix bears and §2.2 prohibits
+
+§7.0 introduces "**CLG -- Cultural or Geo-Demographic Association**
+(form: -**dc**)". The affix table has CLG at **ḑc**, and `dc` is
+assigned to no affix at all.
+
+The cited form is not merely unassigned, it is unpronounceable: §2.2
+says "The dental stops (**t**, **d**) cannot be immediately followed by
+any sibilant (s, z, š, ž, c, ż, č, j)", and `c` is a sibilant
+affricate. `ḑ` is an interdental fricative, not a dental stop, so `ḑc`
+is unaffected — §2.23's bar on ḑ before a sibilant names only the
+fricatives s, š, z, ž. A missing cedilla turns a legal cluster into a
+prohibited one.
+
+Every other affix form cited in the body checks out against the affix
+table: PTN `sv`, CHC `rz`, SEQ `nt`, OGC `dn`, POR `ft`, TNX `rs`,
+SIZ `x`, and SPT `rw`/`ry` per A3.
+
+### G28. §7.2 writes OCG for OGC
+
+§7.0 defines the affix as **OGC**, Orientation relative to a
+Geographic Central point, and the affix table agrees. §7.2 refers to
+"the Type-2 **OCG**" when explaining that the Southern Ocean takes the
+affix directly rather than a carrier stem. The two letters are
+transposed; OCG is not an affix.
+
+Otherwise §7 holds up. All 489 romanized forms in §7.1 through §7.7 use
+only characters from the §1.1 inventory, which is what §7.0 requires of
+them — it waives the phonotactic rules for proper names ("Ithkuil
+phonotactic restraints do not apply as long as the name is
+pronounceable") but not the phoneme inventory. OGC's nine degrees match
+the affix table exactly and form the antipodal arrangement its D1
+gradient type calls for: 1 northern against 9 southern, 2 northwestern
+against 8 southeastern, 3 western against 7 eastern, 4 northeastern
+against 6 southwestern, with 5 geographically central at the midpoint.
+And *usarcsaidna amerika* / *usarcsuidna amerika* use OGC at Type-2
+degrees 1 and 9 — `ai` and `ui` — which is northern and southern, as
+North and South America require.
