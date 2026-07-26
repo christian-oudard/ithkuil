@@ -117,10 +117,12 @@ func CheckProhibitedPair(a, b rune) (rule, reason string) {
 		return "2.11", "n + sibilant affricate"
 	}
 
-	// 2.12: m + labial stop / dental stop / interdental.
-	if a == 'm' && (isLabialStop(b) || isDentalStop(b) || b == 'ţ' || b == 'ḑ') {
-		return "2.12", "m + " + string(b)
-	}
+	// §2.12 constrains m + bilabial stop + a third consonant, so it is
+	// a rule about triples and is checked in ValidateCluster. The pair
+	// on its own is fine: §2.12 names mt, md, mţ and mḑ as the very
+	// forms the prohibited triples collapse to, §2.13 builds mps and
+	// mbz on top of mp and mb, and §2.14 bans np/nb precisely because
+	// they assimilate to the permitted mp/mb.
 
 	// 2.14: n + labial stop (np, nb).
 	if a == 'n' && isLabialStop(b) {

@@ -308,11 +308,13 @@ func TestCheckProhibitedPair_Rule211(t *testing.T) {
 	}
 }
 
-func TestCheckProhibitedPair_Rule212(t *testing.T) {
-	// m + labial / dental / interdental.
+func TestCheckProhibitedPair_Rule212_PairsAreLegal(t *testing.T) {
+	// §2.12 is about triples. The pairs it names — mt, md, mţ, mḑ —
+	// are the permitted forms the prohibited triples collapse to, and
+	// mp/mb carry the Ca complex's MSF configuration.
 	for _, c2 := range []rune{'p', 'b', 't', 'd', 'ţ', 'ḑ'} {
-		if rule, _ := CheckProhibitedPair('m', c2); rule != "2.12" {
-			t.Errorf("expected 2.12 for m+%s, got %q", string(c2), rule)
+		if rule, reason := CheckProhibitedPair('m', c2); rule != "" {
+			t.Errorf("m+%s should be legal, got %s: %s", string(c2), rule, reason)
 		}
 	}
 }
