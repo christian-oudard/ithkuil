@@ -1,0 +1,38 @@
+# Notices
+
+## Ithkuil linguistic material
+
+Ithkuil was created by **John Quijada**. Official documentation:
+<https://ithkuil.net/>. This project is independent and unofficial; it is not
+affiliated with or endorsed by him.
+
+Grammar descriptions, lexicon entries, and example sentences in this
+repository derive from his documentation and remain subject to the copyright
+and reuse terms published on ithkuil.net, whatever terms this repository's own
+code carries. Those website terms state:
+
+> ©2004-2019 by John Quijada. You may copy or excerpt any portion of the
+> contents of this website for private, individual, or personal use which is
+> non-commercial in nature and not for purposes of profit. Otherwise, you may
+> copy or excerpt brief portions of the contents of this website in published,
+> web-accessible, or commercially distributed articles, papers or webpages for
+> purposes of review, commentary or analysis, provided you give full
+> attribution to the author and this website.
+
+Affected paths: `grammar_reference/`, `data/data.json`, `corpus/examples.txt`.
+
+These are larger than "brief portions", so the private-use clause is what
+covers them today. Publishing this repository needs Quijada's permission
+first. Permission granted to the IthkuilTranslator project does not extend
+here; it was asked for and given for that codebase.
+
+## Third-party material
+
+`corpus/examples.txt` was transcribed and glossed by the IthkuilTranslator
+project (<https://github.com/humblevladimirthegreat/IthkuilTranslator>, GPL v3
+for its software, ithkuil.net terms for its linguistic data).
+
+That project's `archive/` tree, holding the official PDFs, chapter text dumps,
+extracted tables, and PDF extraction scripts, is marked not for distribution
+by its author. Do not copy any of it into this repository. Get source
+documents from ithkuil.net instead.
