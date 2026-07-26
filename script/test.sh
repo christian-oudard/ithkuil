@@ -16,7 +16,7 @@
 set -euo pipefail
 
 if ! command -v go >/dev/null 2>&1; then
-  exec nix-shell "$(dirname "$0")/../shell.nix" --run "$0 $*"
+  exec nix develop "$(dirname "$0")/.." --command "$0" "$@"
 fi
 
 cd "$(dirname "$0")/../go"

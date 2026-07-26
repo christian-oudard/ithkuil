@@ -110,7 +110,7 @@ Requires Go 1.25+. The repo uses [Nix](https://nixos.org/) to pin the toolchain,
 Install the CLIs to `$GOBIN` (typically `~/go/bin`, or `~/.local/bin` if you've set `GOBIN`):
 
 ```bash
-nix-shell                # Enter dev shell with go on PATH
+nix develop              # Enter dev shell with go on PATH
 go install ./cmd/ithkuil ./cmd/ithkuil-mcp ./cmd/ithkuil-input
 ```
 

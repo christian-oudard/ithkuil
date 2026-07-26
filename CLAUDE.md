@@ -7,13 +7,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Enter the dev shell first, then use `go` directly:
 
 ```bash
-nix-shell                # Provides go on PATH with CGO_ENABLED=0
+nix develop              # Provides go on PATH with CGO_ENABLED=0
 go install ./cmd/ithkuil ./cmd/ithkuil-mcp ./cmd/ithkuil-input   # Drop binaries into $GOBIN
 go build ./...           # Build everything in place
 go test ./...            # Run the full test suite
 ```
 
-`CGO_ENABLED=0` is set in `shell.nix` because `segmentio/asm` (transitive from the MCP SDK) tries to invoke gcc otherwise; the pure-Go fallback is used.
+`CGO_ENABLED=0` is set in `flake.nix` because `segmentio/asm` (transitive from the MCP SDK) tries to invoke gcc otherwise; the pure-Go fallback is used.
 
 ## What This Project Is
 
