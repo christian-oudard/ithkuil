@@ -39,9 +39,9 @@ func (s *server) registerTools(srv *mcp.Server) {
 			"(applying to the stem alone); write '{Ca}' for an all-default Ca that still needs " +
 			"to mark that boundary. The returned surface is canonical. By default " +
 			"(verbose=false) descriptions are omitted. Set verbose=true for inline names and " +
-			"meanings. Examples: expression=\"ml\" → \"wamla\"; \"S2/CPT-ml-ERG\" → \"wimlo\"; " +
+			"meanings. Examples: expression=\"ml\" → \"mlala\"; \"S2/CPT-ml-ERG\" → \"wimlo\"; " +
 			"\"S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG\" → \"imlötrebo\"; \"(CTR)/1\" → \"ëilal\"; " +
-			"\"m-SYS/5_2-{Ca}-DCD/1_2\" → \"wamëu'ţřait\".",
+			"\"m-SYS/5_2-{Ca}-DCD/1_2\" → \"maţřëullait\".",
 	}, s.compose)
 
 	mcp.AddTool(srv, &mcp.Tool{

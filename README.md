@@ -156,14 +156,11 @@ Vowel runs use right-grouping: `eee`→eë, `eeee`→ëë. Pending characters ar
 ### CLI Subcommands
 
 ```bash
-ithkuil analyze Maţřëullait              # full slot breakdown (above)
-ithkuil analyze --short Maţřëullait      # one-line surface / type / gloss
-ithkuil analyze --polygraph kala mala   # multi-column slot polygraph
+ithkuil analyze Maţřëullait             # full slot breakdown (above)
+ithkuil analyze --short Maţřëullait     # one-line surface / type / gloss
 
-ithkuil compose --stem=S2 --case=ERG ml # build a formative → "emlalo"
-
-ithkuil diff maţřëullait meţřëullait      # slot-by-slot diff
-ithkuil diff a b c -- a b d             # aligned sentence diff
+ithkuil compose S2/CPT-ml-ERG           # build a formative → "wimlo"
+ithkuil compose 'm-SYS/5_2-{Ca}-DCD/1_2'  # → "maţřëullait"
 
 ithkuil grammar Ergative --exact        # look up by abbreviation
 ithkuil grammar please                  # substring search across all categories

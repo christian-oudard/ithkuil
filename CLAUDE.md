@@ -57,7 +57,7 @@ Go packages at the repo root:
 
 Command-line entrypoints under `cmd/`:
 
-- `cmd/ithkuil/` - The main CLI. Subcommands: analyze, compose, diff, grammar, lexicon, validate. `main.go` dispatches; `flags.go` parses shared flags.
+- `cmd/ithkuil/` - The main CLI. Subcommands: analyze, compose, grammar, lexicon, validate. `main.go` dispatches; `flags.go` parses shared flags.
 - `cmd/ithkuil-mcp/` - Model Context Protocol server exposing the parser/glosser/lexicon as MCP tools and resources.
 - `cmd/ithkuil-input/` - Raw-mode TUI that types Ithkuil Unicode from ASCII digraphs (aa→ä, t,→ţ, sq→š, dz→ẓ). Pending chars are shown dim. Backed by `surface.InputState`; `surface.FromASCII` / `ToASCII` provide the batch transforms.
 
