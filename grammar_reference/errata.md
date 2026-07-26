@@ -226,7 +226,66 @@ reserves for marking the end of Slot V. The pattern of the other three
 entries (r→n/ř→ň in first position, r→s/ř→š in second) supplies the
 missing value `ňš` unambiguously, but the document never states it.
 
-### G5. The Pattern-2 Mood FAC value is written "w/y" with no selection rule
+### G5. The gemination rules leave 115 of the 3840 Ca forms with no geminated form
+
+§3.6.1 geminates the Ca complex to mark where Slot V ends, so every Ca
+that can co-occur with a Slot V affix needs a geminated form. Running
+the nine rules as written over all 3840 Ca values, 115 match no rule at
+all. Each gap traces to a list that is narrower than the rule around
+it.
+
+**Rule 4's sibilant list omits the voiced affricates.** It names
+"a sibilant fricative or affricate (**s**, **š**, **z**, **ž**, **ç**,
+**c**, **č**)" — seven of the nine, leaving out **ẓ** and **j**. ẓ is
+the MFF Configuration, so `ẓb`, `ẓg`, `ẓk`, `ẓl`, `ẓm`, `ẓn`, `ẓp`,
+`ẓr`, `ẓt`, `ẓv`, `ẓw`, `ẓx`, `ẓy`, `ẓň`, `ẓř`, `ẓḑ`, `ẓkh`, `ẓph` and
+`ẓth` all fall through. Rule 1's own example list geminates ẓ —
+"**ẓ → ẓẓ**" — so the omission is in rule 4's parenthetical, not in the
+phonology.
+
+**Rule 6's fricative list omits five fricatives.** It covers a
+voiceless stop followed by "(**s**, **š**, **f**, **ţ**, **ç**)". The
+§1.1 chart has eleven fricatives; **v**, **ḑ**, **x**, **ļ** and **h**
+are not on rule 6's list and are not sibilants, so `kv`, `kḑ`, `px`,
+`pļ`, `tv` and `tx` have no rule. The h-forms are the widest of these:
+the N/RPV Perspective alternate is **h**, so `th`, `ph`, `kh`, `kph`,
+`kth`, `pkh`, `pth`, `tkh`, `tph`, `ẓkh`, `ẓph` and `ẓth` — twelve
+forms — end in a fricative no rule can reach.
+
+**Rule 7's table omits the voiceless-plus-voiced stop pairs.** The rule
+covers "C_A forms ending in two stops" and supplies six substitutions:
+pt, pk, kt, kp, tk, tp — every pair voiceless. But `kb`, `pg`, `tb` and
+`tg` all arise (a stop Configuration plus the DPL or GRA Extension) and
+are perfectly legal under §2.4, which names **tg** among its permitted
+pairs. None has an entry.
+
+**Rule 8's table omits ň.** The rule covers a form ending in "a stop
+(t, k, p, d, g, b) plus nasal (**n**, **m**, **ň**)" and then supplies
+twelve substitutions covering m and n only. `pň` and `tň` match the
+condition and find nothing in the table.
+
+**Rule 3 only reaches forms that begin with stop + liquid.** It says
+"For forms **beginning with** a stop … followed by a liquid or an
+approximant", which leaves the 99 Ca values of the shape
+stop + stop + liquid — `kbl`, `kbr`, `kbw`, `kby`, `kbř`, `kpl`,
+`kpr`, `kpw` and so on — matching neither rule 3 (they do not begin
+with stop + liquid) nor rules 7 and 8 (they do not end in stop + stop
+or stop + nasal).
+
+Reading rule 3 loosely, as "a stop followed by a liquid anywhere in the
+form", closes those 99 but not the rest: 40 forms still match no rule.
+It is also not a free repair — the loose reading takes 300 further
+forms away from rule 5 and geminates them somewhere else, so the two
+readings disagree on the surface of `fkl` and its like, not just on
+coverage.
+
+None of this shows up as an ambiguity: the 3725 covered forms geminate
+to 3725 distinct clusters, none of which collides with a bare Ca. The
+system is sound where it is defined. It is simply not defined
+everywhere, and a formative whose Ca is one of the 115 cannot take a
+Slot V affix at all.
+
+### G6. The Pattern-2 Mood FAC value is written "w/y" with no selection rule
 
 The Pattern-2 Mood table gives FAC as `w/y` and says nothing about
 which to use. No rule elsewhere in the document conditions the choice.
@@ -241,7 +300,7 @@ several diphthongs, so no phonological conditioning accounts for it.
 The minority form is not rare enough to dismiss as a slip, and -ou-
 inverts the ratio outright: 12 y against 7 w.
 
-### G6. The NOMIC increment reproduces the Obv and PVS alternate forms
+### G7. The NOMIC increment reproduces the Obv and PVS alternate forms
 
 §4.6 gives each of the eleven referential categories three Effect
 forms, and gives Obv and PVS a second form apiece "used in Referential
@@ -278,7 +337,7 @@ increments -**w** or -**y**" — and says nothing about NOMIC.
 Roots, which are a different construction. The alternates were
 introduced to remove an ambiguity and introduce a different one.
 
-### G7. The AGGLOMERATIVE increment is ambiguous with 2p/BEN plus AGGLOMERATIVE
+### G8. The AGGLOMERATIVE increment is ambiguous with 2p/BEN plus AGGLOMERATIVE
 
 AGGLOMERATIVE is shown by **-ļ-** or **-tļ-**. The second form exists
 because a lone ļ has nowhere legal to stand — §3.1 bars it
@@ -291,7 +350,7 @@ AGGLOMERATIVE: `mtļ` is "he and co." or "he and you(pl., beneficial)
 and co." Both readings are phonotactically fine and both are built by
 rules the same paragraph gives.
 
-### G8. Most bias adjuncts are not permissible words
+### G9. Most bias adjuncts are not permissible words
 
 A bias adjunct (§4.7) is a bare consonant conjunct standing alone as a
 word — a shape §1.4 and §3-§4 never contemplate, since every rule
@@ -334,7 +393,7 @@ permitted nor prohibited.
 Four more — CMD `pļļ`, EXA `kçç`, OPT `ççk` and STU `ļļč` — are the
 §2.24 geminates of G1 above.
 
-### G9. §4.7's stated design principle contradicts its own table
+### G10. §4.7's stated design principle contradicts its own table
 
 §4.7 says each bias adjunct is "phonologically structured to contain
 continuant and sonorant consonants so that … they may be pronounced in
@@ -349,7 +408,7 @@ The very next sentence concedes the point in passing — "those ending in
 a voiceless stop or voiceless affricate may aspirate or even
 ejectivize" — without reconciling it with the claim it follows.
 
-### G10. §1.2.1's vowel inventory does not cover the conjuncts the morphology uses
+### G11. §1.2.1's vowel inventory does not cover the conjuncts the morphology uses
 
 §1.2.1 gives ten permissible diphthongs — ai, ei, ëi, oi, ui, au, eu,
 ëu, ou, iu — and describes every other two-vowel sequence as a
@@ -360,7 +419,7 @@ diphthong, and the tables never say how many syllables these forms
 carry — which matters, because syllable count is what selects the
 formative's Relation in Slot X.
 
-### G11. The referential table switches romanization mid-document
+### G12. The referential table switches romanization mid-document
 
 §1.3 sanctions alternate spellings — **ḑ** may be written **ḍ** or
 **đ** — and the document uses **ḑ** everywhere it appears: the §1.1
