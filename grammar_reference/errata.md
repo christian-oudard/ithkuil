@@ -285,7 +285,42 @@ system is sound where it is defined. It is simply not defined
 everywhere, and a formative whose Ca is one of the 115 cannot take a
 Slot V affix at all.
 
-### G6. The Pattern-2 Mood FAC value is written "w/y" with no selection rule
+### G6. A moved C_N leaves the end of Slot V unmarkable
+
+§3.8.1.2 lets a Pattern-1 Mood/Case-Scope C_N move out of Slot VIII
+into the Slot VI C_A position, "thus shortening the word by one
+syllable", on three conditions: Slot VIII's V_N is default MNO, the
+C_N is something other than FAC/CCN -**h**-, and the C_A is the default
+-**l**-. What lands in the C_A slot is then one of **hl**, **hr**,
+**hm**, **hn**, **hň**.
+
+That much is clean. None of the five collides with any of the 3840 C_A
+forms or with any of their geminates — no C_A begins with h- at all —
+and all five are permissible intervocalically under §5.2.
+
+The problem is the other rule that owns Slot VI. §3.6.1 opens "If Slot
+V contains any affixes, it becomes necessary to show where Slot V ends
+and Slot VI begins", and accomplishes it by geminating the C_A form.
+Run the nine rules against `hl`, `hr`, `hm`, `hn` and `hň` and none
+fires: h is not a stop (rules 3, 6, 7, 8), not a sibilant (rule 4), not
+on rule 5's list of non-sibilant fricatives (f, ţ, v, ḑ) nor a nasal,
+not a liquid (rule 9), and the forms are not single consonants (rule
+1).
+
+Nor does §3.6.2 reach the case. It covers "the absence of a C_A form",
+but scopes itself to a C_A "elided as per Sec. 3.1 and 3.2" — the Slot
+I shortcut — and a formative using that shortcut has no Slot VI C_A for
+§3.8.1.2 to replace in the first place.
+
+So a formative with a Slot V affix, a default C_A, MNO Valence and a
+non-FAC Mood has no way to mark where Slot V ends. Every one of those
+conditions is an independent choice and nothing forbids the
+combination. The document does consider §3.8.1.2's interactions
+elsewhere — §3.9.1's Special Note suspends the V_C shortening rule when
+§3.8.1.2 has been applied — so the omission here is of a piece the
+author was otherwise tracking.
+
+### G7. The Pattern-2 Mood FAC value is written "w/y" with no selection rule
 
 The Pattern-2 Mood table gives FAC as `w/y` and says nothing about
 which to use. No rule elsewhere in the document conditions the choice.
@@ -300,7 +335,7 @@ several diphthongs, so no phonological conditioning accounts for it.
 The minority form is not rare enough to dismiss as a slip, and -ou-
 inverts the ratio outright: 12 y against 7 w.
 
-### G7. The NOMIC increment reproduces the Obv and PVS alternate forms
+### G8. The NOMIC increment reproduces the Obv and PVS alternate forms
 
 §4.6 gives each of the eleven referential categories three Effect
 forms, and gives Obv and PVS a second form apiece "used in Referential
@@ -337,7 +372,7 @@ increments -**w** or -**y**" — and says nothing about NOMIC.
 Roots, which are a different construction. The alternates were
 introduced to remove an ambiguity and introduce a different one.
 
-### G8. The AGGLOMERATIVE increment is ambiguous with 2p/BEN plus AGGLOMERATIVE
+### G9. The AGGLOMERATIVE increment is ambiguous with 2p/BEN plus AGGLOMERATIVE
 
 AGGLOMERATIVE is shown by **-ļ-** or **-tļ-**. The second form exists
 because a lone ļ has nowhere legal to stand — §3.1 bars it
@@ -350,7 +385,7 @@ AGGLOMERATIVE: `mtļ` is "he and co." or "he and you(pl., beneficial)
 and co." Both readings are phonotactically fine and both are built by
 rules the same paragraph gives.
 
-### G9. Most bias adjuncts are not permissible words
+### G10. Most bias adjuncts are not permissible words
 
 A bias adjunct (§4.7) is a bare consonant conjunct standing alone as a
 word — a shape §1.4 and §3-§4 never contemplate, since every rule
@@ -393,7 +428,7 @@ permitted nor prohibited.
 Four more — CMD `pļļ`, EXA `kçç`, OPT `ççk` and STU `ļļč` — are the
 §2.24 geminates of G1 above.
 
-### G10. §4.7's stated design principle contradicts its own table
+### G11. §4.7's stated design principle contradicts its own table
 
 §4.7 says each bias adjunct is "phonologically structured to contain
 continuant and sonorant consonants so that … they may be pronounced in
@@ -408,7 +443,7 @@ The very next sentence concedes the point in passing — "those ending in
 a voiceless stop or voiceless affricate may aspirate or even
 ejectivize" — without reconciling it with the claim it follows.
 
-### G11. §1.2.1's vowel inventory does not cover the conjuncts the morphology uses
+### G12. §1.2.1's vowel inventory does not cover the conjuncts the morphology uses
 
 §1.2.1 gives ten permissible diphthongs — ai, ei, ëi, oi, ui, au, eu,
 ëu, ou, iu — and describes every other two-vowel sequence as a
@@ -419,7 +454,7 @@ diphthong, and the tables never say how many syllables these forms
 carry — which matters, because syllable count is what selects the
 formative's Relation in Slot X.
 
-### G12. The referential table switches romanization mid-document
+### G13. The referential table switches romanization mid-document
 
 §1.3 sanctions alternate spellings — **ḑ** may be written **ḍ** or
 **đ** — and the document uses **ḑ** everywhere it appears: the §1.1
@@ -431,3 +466,44 @@ Nothing is wrong with the form; it is the only place the alternate is
 exercised, and a reader working through the tables meets a character
 that appears nowhere else and is absent from the §1.1 inventory as
 printed.
+
+### G14. The V_K table marks two of its eleven forms wrongly
+
+§3.9.3 states that "the V_K affix for verbs uses the same vowel-forms
+as the V_C case affix", and V_K is by definition the ultimate-stressed
+Slot IX, so every V_K form should carry a stress diacritic placed by
+§1.3.1: an undiacriticked vowel takes the acute, a vowel with dieresis
+takes the circumflex instead.
+
+Nine of the eleven follow that exactly — á, é, í, ô, ó, û, ú for the
+Validations and ái, áu, éi, éu, óu, ói, íu, úi for the non-Assertive
+Illocutions, each marked on the prominent first member. Two do not:
+
+- **REC** is printed **à**, a grave on plain `a`. The Validations run
+  down the standard vowel sequence, so REC is form 2, `ä` — the V_C
+  table gives `ä` for case 2, and IMA `ö → ô` and ITU `ü → û` in the
+  same column confirm the series and the convention. REC should be
+  **â**. As printed it is the only grave accent in the table, and
+  §1.3.1 reserves the grave for an *unstressed* -i- (or -u-) as the
+  first member of a vocalic conjunct — never for a stressed vowel and
+  never on `a`.
+- **USP** is printed **ëi**, with no mark at all, where §1.3.1 would
+  give **êi**. Unmarked means penultimate stress, which contradicts
+  V_K's own definition.
+
+### G15. Three cross-references point at the wrong section
+
+- §3.9.3 closes by saying "Sec. 3.9.3.4 below provides the Slot IX V_K
+  affix values denoting these categories". There is no §3.9.3.4; the
+  subsections stop at 3.9.3.3. The V_K values are in fact in §3.9.3.2,
+  the section the same sentence has just described as covering
+  Validation.
+- §3.9.1 says "The phonological structure of case-accessor affixes is
+  shown in Sec. 3.9.3". §3.9.3 is V_K — Illocution and Validation. The
+  case-accessor affixes are §3.9.2.
+- §4.9 says "adherence to the parsing rules in Sec. 2.1". §2.1 is the
+  slot-structure table for a formative without a Slot IV/VI shortcut;
+  the parsing rules are §2.3.
+
+Every other "Sec. N.N" reference in the document resolves to a heading
+that exists.
