@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/corpus"
+	"github.com/christian-oudard/ithkuil/gloss"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -19,21 +20,18 @@ var corpusUnclassified = []string{
 	"espanya",
 
 	// Concatenation chains that tryConcatenation rejects.
+	"hakšilaölwie-addyabzëuttuo",
 	"hakšilaölwie-addyëubzattuo",
 	"hlaçköé-yeřdö'e",
 	"hlurmiô-igulotruxröxḑuökfái",
+	"hrelu-azčojhaillöelyá",
 
-	// Glottalized Vc, which selects the second case series. We decode
-	// some glottalized vowel forms ("ukthili'a" gives LOC) but not
-	// these: deleting the glottal makes every one of them parse, with
-	// the first-series case.
-	"iträlo'a",
-	"mma'oxinļ",
-	"přa'ölua",
-	"pře'ilua",
-	"při'olua",
-	"wapšorco'a",
-	"wupšersaryo'a",
+	// A vowel in Vx position that isn't in the §3.5 Vx table. These
+	// used to read as degree-0 affixes because the Vx lookup defaulted
+	// silently; they now fail honestly.
+	"itriloalö",
+	"kšölaölwáu",
+	"yamţröalwa'o",
 
 	// Unexplained.
 	"zëmse",   // §9.1, a three-referent referential
@@ -56,5 +54,30 @@ func TestCorpus_Classification(t *testing.T) {
 	sort.Strings(want)
 	if strings.Join(got, " ") != strings.Join(want, " ") {
 		t.Errorf("unclassified corpus words drifted\n  got:  %v\n  want: %v", got, want)
+	}
+}
+
+// §5.6 forms WH-questions from the PVS referential plus the IVL1/4
+// affix -inļ. The case vowel carries a glottal in "When?", which only
+// resolves if the combination-referential path merges glottal vowels.
+// Glossed without a lexicon, so the affix shows as its raw cluster.
+func TestCorpus_WHQuestions(t *testing.T) {
+	cases := []struct{ word, gloss string }{
+		{"Mmiexinļ", "REF[PVS]-PUR.BSC-nļ/4"},     // Why?
+		{"Mma'oxinļ", "REF[PVS]-CNR.BSC-nļ/4"},    // When?
+		{"Nnioxinļ", "REF[PVS/BEN]-TRA.BSC-nļ/4"}, // To/for whose benefit?
+		{"Ňňeöxinļ", "REF[PVS/DET]-RSL.BSC-nļ/4"}, // Resulting detrimentally in what?
+		{"Mmauxinļ", "REF[PVS]-PRP.BSC-nļ/4"},     // Whose?
+	}
+	gl := &gloss.Glosser{}
+	for _, c := range cases {
+		tok := tokenize.ClassifyWord(c.word)
+		if _, ok := tok.(tokenize.CombinationRefWord); !ok {
+			t.Errorf("ClassifyWord(%s) = %T, want CombinationRefWord", c.word, tok)
+			continue
+		}
+		if got := gl.Token(tok); got != c.gloss {
+			t.Errorf("gloss(%s) = %q, want %q", c.word, got, c.gloss)
+		}
 	}
 }

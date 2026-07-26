@@ -215,3 +215,61 @@ func TestParse_MovedGlottalRoundTrip(t *testing.T) {
 		t.Errorf("Final = %+v, want UnframedNominal{PRN}", f.Final)
 	}
 }
+
+// The §3.9.1 glottal may sit inside a vowel conjunct rather than at the
+// head of a consonant one — "přa'ölua" carries it intervocalically in
+// Vr. MergeGlottalVowels folds that into a single "a'ö" conjunct, so
+// stripMovedGlottal has to look inside vowel conjuncts too. The three
+// forms below are §3.9.2-3.9.4 examples, all NAV case.
+func TestParse_MovedGlottalInsideVr(t *testing.T) {
+	cases := []struct{ word, vr string }{
+		{"pře'ilua", "ei"},
+		{"při'olua", "io"},
+		{"přa'ölua", "aö"},
+	}
+	for _, c := range cases {
+		l, err := Parse(c.word)
+		if err != nil {
+			t.Errorf("Parse(%s): %v", c.word, err)
+			continue
+		}
+		if !l.MovedGlottal {
+			t.Errorf("Parse(%s) should set MovedGlottal", c.word)
+		}
+		if l.Vr != c.vr {
+			t.Errorf("Parse(%s) Vr = %q, want %q", c.word, l.Vr, c.vr)
+		}
+		f, err := ToGrammar(l)
+		if err != nil {
+			t.Errorf("ToGrammar(%s): %v", c.word, err)
+			continue
+		}
+		un, ok := f.Final.(g.UnframedNominal)
+		if !ok || un.Case != g.NAV {
+			t.Errorf("%s Final = %+v, want UnframedNominal{NAV}", c.word, f.Final)
+		}
+	}
+}
+
+// A glottal in the last vowel conjunct is an ordinary Vc glottal, not a
+// moved one. "iträlo'a" is PLM (case 68), whose Vc is "o'a".
+func TestParse_VcGlottalNotMoved(t *testing.T) {
+	l, err := Parse("iträlo'a")
+	if err != nil {
+		t.Fatalf("Parse(iträlo'a): %v", err)
+	}
+	if l.MovedGlottal {
+		t.Error("Parse(iträlo'a) should not set MovedGlottal")
+	}
+	if l.Vc != "o'a" {
+		t.Errorf("Vc = %q, want \"o'a\"", l.Vc)
+	}
+	f, err := ToGrammar(l)
+	if err != nil {
+		t.Fatalf("ToGrammar: %v", err)
+	}
+	un, ok := f.Final.(g.UnframedNominal)
+	if !ok || un.Case != g.PLM {
+		t.Errorf("Final = %+v, want UnframedNominal{PLM}", f.Final)
+	}
+}

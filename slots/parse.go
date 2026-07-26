@@ -400,13 +400,29 @@ func parseAfterCa(l *Layout, conjs []string, i int) error {
 // leading "'" and flag the layout so ToGrammar reads the Vc with the
 // glottal re-attached.
 func stripMovedGlottal(conjs []string) ([]string, bool) {
+	// The unmoved Vc glottal lives in the last vowel conjunct, so only
+	// an earlier one can be a §3.9.1 shortening.
+	lastVowel := -1
+	for i, c := range conjs {
+		if surface.IsVowelConjunct(c) {
+			lastVowel = i
+		}
+	}
 	moved := false
 	out := make([]string, 0, len(conjs))
 	for i, c := range conjs {
-		if !moved && i > 0 && surface.IsVowelConjunct(conjs[i-1]) &&
-			len(c) > 1 && c[0] == '\'' {
+		switch {
+		case moved:
+		case i > 0 && surface.IsVowelConjunct(conjs[i-1]) && len(c) > 1 && c[0] == '\'':
+			// Glottal at the head of a consonant conjunct ("la'la").
 			moved = true
 			out = append(out, c[1:])
+			continue
+		case i < lastVowel && surface.IsVowelConjunct(c) && strings.Contains(c, "'"):
+			// Glottal intervocalic within a vowel conjunct, which is
+			// how MergeGlottalVowels leaves a Vr-borne one ("přa'ölua").
+			moved = true
+			out = append(out, stripVvGlottal(c))
 			continue
 		}
 		out = append(out, c)

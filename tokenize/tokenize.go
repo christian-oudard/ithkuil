@@ -538,6 +538,10 @@ func tryReferential(word string) (ReferentialWord, bool) {
 // fails. The Vc2 special form "üa" maps to THM and "a" alone means
 // "no second case".
 func tryCombinationRef(text string, conjs []string) (CombinationRefWord, bool) {
+	// Vc is looked up as a whole conjunct, so a glottalized case vowel
+	// ("a'o" in mma'oxinļ) has to be one conjunct rather than the three
+	// SplitConjuncts leaves it as.
+	conjs = surface.MergeGlottalVowels(conjs)
 	// §4.6.3 epenthesis: "a-" lets a C_P suppletive cluster occupy C1
 	// instead of a personal-reference cluster. Otherwise "ë" is the
 	// only acceptable prefix.

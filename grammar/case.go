@@ -189,7 +189,7 @@ var canonicalCaseVowel = map[Case]string{
 	ORI: "e'ë", IRL: "u'ö", INV: "u'o", NAV: "u'a",
 	// Spatio-Temporal II (Series 4 + glottal stop)
 	CNR: "a'o", ASS: "a'ö", PER: "e'o", PRO: "e'ö",
-	PCV: "o'ë", PCR: "ö'e", ELP: "o'e", PLM: "ö'a",
+	PCV: "o'ë", PCR: "ö'e", ELP: "o'e", PLM: "o'a",
 }
 
 // CaseToVc returns the canonical Vc form for a case.
