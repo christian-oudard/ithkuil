@@ -81,6 +81,14 @@ var section2 = []clusterCase{
 	{"2.5", Medial, "cj", true},
 	{"2.5", Medial, "ẓč", true},
 	{"2.5", Medial, "ẓj", true},
+	// The rule applies "to fricatives and to affricates" — each
+	// manner to itself. Every example it gives pairs like with like,
+	// and reading it across the two manners rejects live roots: zc
+	// 'chop/dice/mince', šj, žč, and the §6.2.2 word arţtudëužči'a.
+	{"2.5", Medial, "zc", true},
+	{"2.5", Medial, "šj", true},
+	{"2.5", Medial, "žč", true},
+	{"2.5", Medial, "sj", true},
 	{"2.5", Medial, "čc", false},
 	{"2.5", Medial, "jc", false},
 	{"2.5", Medial, "čẓ", false},
@@ -110,6 +118,16 @@ var section2 = []clusterCase{
 	{"2.9", Medial, "js", false},
 	{"2.9", Medial, "jz", false},
 	{"2.9", Medial, "jš", false},
+	// One direction only: every starred form has the affricate first.
+	// The reverse order is ordinary vocabulary — sc 'wash/bathe',
+	// zc 'chop/dice', šč and žč — and shows up in weščayá and
+	// žžjádu'u. §2.6 and §2.7 are what bar the reverse order, for the
+	// alveolo-palatal fricatives and for s + ẓ specifically.
+	{"2.9", Medial, "sc", true},
+	{"2.9", Medial, "sč", true},
+	{"2.9", Medial, "zč", true},
+	{"2.9", Medial, "šč", true},
+	{"2.9", Medial, "zj", true},
 
 	// §2.10 the ç restrictions, which run in both directions.
 	{"2.10", Medial, "sç", false},
@@ -199,6 +217,14 @@ var section2 = []clusterCase{
 	{"2.17", Medial, "xp", true},
 	{"2.17", Medial, "xt", true},
 	{"2.17", Medial, "xm", true},
+	// The rule names the four sibilant fricatives and stops there.
+	// The affricates are not on its list, and xc 'equine', xč
+	// 'murder', xj 'tapir' and xẓ 'dusty' are all live roots. §3.2.3
+	// even makes xc- and xč- permissible word-initially.
+	{"2.17", Medial, "xc", true},
+	{"2.17", Medial, "xč", true},
+	{"2.17", Medial, "xj", true},
+	{"2.17", Medial, "xẓ", true},
 
 	// §2.18 ļ cannot follow a voiced stop, h or ç; and cannot precede
 	// a sibilant fricative, h or ç.
@@ -286,6 +312,31 @@ var section34 = []clusterCase{
 	{"4.1", Final, "t", true},
 	{"4.1", Final, "r", true},
 	{"4.1", Final, "ň", true},
+
+	// §6 governs geminates, and §3 says so in its opening line: its
+	// rules run "not including rules for geminated forms — see Sec.
+	// 6". §6.2 lets any intervocalically-geminable consonant geminate
+	// word-initially, stops excepted. That is what rrala 'cat',
+	// sstilomke, vvralá and žžjádu'u all rely on.
+	{"6.2", Initial, "rr", true},
+	{"6.2", Initial, "ll", true},
+	{"6.2", Initial, "ss", true},
+	{"6.2", Initial, "žž", true},
+	{"6.2", Initial, "mm", true},
+	{"6.2", Initial, "pp", false},
+	{"6.2", Initial, "tt", false},
+	{"6.2", Initial, "gg", false},
+	// §6.3.1 #C₁C₁C₂-: legal when #C₁C₂- is. sst- holds because st-
+	// does; ssm- does not, because sm- is not a permissible pair.
+	{"6.3.1", Initial, "sst", true},
+	{"6.3.1", Initial, "rrl", false},
+	// §6.4.1 #C₁C₂C₂-: legal when #C₁C₂- is. mřř- holds because mř-
+	// does.
+	{"6.4.1", Initial, "mřř", true},
+	{"6.4.1", Initial, "vvr", true},
+	{"6.4.1", Initial, "žžj", true},
+	// §6.5 only one geminate pair per conjunct.
+	{"6.5", Initial, "rrll", false},
 }
 
 func runClusterCases(t *testing.T, cases []clusterCase) {

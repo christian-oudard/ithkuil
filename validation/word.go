@@ -69,6 +69,24 @@ func ValidateWord(word string) Result {
 		return Result{Valid: true}
 	}
 
+	// §3.1.7 concatenation chains are written with a hyphen, and each
+	// link carries its own stress and its own word-initial and
+	// word-final positions. Checking the joined string instead reads
+	// two stress marks as one over-marked word and mistakes both
+	// interior edges for medial clusters.
+	if strings.Contains(word, "-") {
+		var errs []Error
+		for _, part := range strings.Split(word, "-") {
+			if r := ValidateWord(part); !r.Valid {
+				errs = append(errs, r.Errors...)
+			}
+		}
+		if len(errs) == 0 {
+			return Result{Valid: true}
+		}
+		return Result{Valid: false, Errors: errs}
+	}
+
 	// Non-Ithkuil characters mean no other check can be trusted —
 	// short-circuit so callers see the chars error alone, not a pile of
 	// downstream cluster/stress complaints derived from garbage input.

@@ -507,7 +507,9 @@ func TestCheckProhibitedPair_RemainingRules(t *testing.T) {
 	}{
 		{'š', 'c', "2.6"},
 		{'c', 's', "2.9"},
-		{'s', 'c', "2.9"},
+		// §2.9 runs one way only. sc is the root 'wash/bathe/rinse';
+		// the reverse order is what the rule bars.
+		{'s', 'c', ""},
 		{'ç', 's', "2.10"},
 		{'s', 'ç', "2.10"},
 		{'c', 'ç', "2.10"},

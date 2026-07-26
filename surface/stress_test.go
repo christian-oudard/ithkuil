@@ -122,3 +122,44 @@ func TestStrip_DoubleMarked(t *testing.T) {
 		}
 	}
 }
+
+// §1.2.1 names ten falling diphthongs — ai, ei, ëi, oi, ui, au, eu,
+// ëu, ou, iu — and those alone share a syllable. Every other vowel
+// pair is disyllabic, which is why §1.3.1 needs a grave accent to
+// mark the unstressed -i- of -Cìa-. Counting vowel conjuncts instead
+// of syllables put the stress of any word ending in one of those
+// pairs one position too far right.
+func TestSyllableCount(t *testing.T) {
+	cases := []struct {
+		word string
+		want int
+	}{
+		{"lal", 1},
+		{"lala", 2},
+		{"laila", 2},                                     // ai is one syllable
+		{"laula", 2},                                     // au is one syllable
+		{"liala", 3},                                     // ia is two
+		{"loala", 3},                                     // oa is two
+		{"wuttihia", 4} /* wu-tti-hi-a */, {"kalioa", 4}, // ka-li-o-a
+	}
+	for _, c := range cases {
+		if got := SyllableCount(c.word); got != c.want {
+			t.Errorf("SyllableCount(%q) = %d, want %d", c.word, got, c.want)
+		}
+	}
+}
+
+// wuttíhia is glossed FRAMED in the §6.2.2 example, i.e. carries
+// antepenultimate stress: wu-ttí-hi-a. Read as three vowel conjuncts
+// (wu-ttí-hia) the mark looks penultimate, and Strip both mislabelled
+// the word and dropped the diacritic when re-rendering.
+func TestStrip_DisyllabicFinalConjunct(t *testing.T) {
+	bare, stress := Strip("wuttíhia")
+	if bare != "wuttihia" || stress != Antepenultimate {
+		t.Errorf("Strip(wuttíhia) = (%q, %v), want (%q, %v)",
+			bare, stress, "wuttihia", Antepenultimate)
+	}
+	if got := Apply("wuttihia", Antepenultimate); got != "wuttíhia" {
+		t.Errorf("Apply(wuttihia, Antepenultimate) = %q, want %q", got, "wuttíhia")
+	}
+}

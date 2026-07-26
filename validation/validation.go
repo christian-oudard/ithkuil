@@ -63,12 +63,19 @@ func CheckProhibitedPair(a, b rune) (rule, reason string) {
 	}
 
 	// 2.5: homologous fricative or affricate with a voicing mismatch.
-	// The rule says "applies to fricatives and to affricates", not to
-	// the sibilants alone: fv, vf, ţḑ and ḑţ are on its example list.
-	if (isFricative(a) || isSibilantAffricate(a)) &&
-		(isFricative(b) || isSibilantAffricate(b)) &&
+	// The rule says "applies to fricatives and to affricates" — the
+	// two manners separately, not across them. Its whole example list
+	// pairs like with like: fv, vf, ţḑ, ḑţ are fricative-fricative and
+	// cẓ, ẓc, čj, jč are affricate-affricate. Reading it across manners
+	// rejects zc 'chop/dice', žč and šj, which the lexicon and the §4.4
+	// examples both use.
+	if isFricative(a) && isFricative(b) &&
 		areHomologous(a, b) && !sameVoicing(a, b) {
-		return "2.5", "homologous fricative/affricate voicing mismatch"
+		return "2.5", "homologous fricative voicing mismatch"
+	}
+	if isSibilantAffricate(a) && isSibilantAffricate(b) &&
+		areHomologous(a, b) && !sameVoicing(a, b) {
+		return "2.5", "homologous affricate voicing mismatch"
 	}
 
 	// 2.5: an alveolo-palatal affricate cannot precede an alveolar
@@ -93,12 +100,16 @@ func CheckProhibitedPair(a, b rune) (rule, reason string) {
 		return "2.8", "distinct sibilant fricatives"
 	}
 
-	// 2.9: sibilant affricate + sibilant fricative (either order)
+	// 2.9: sibilant affricate followed by a sibilant fricative. The
+	// rule is one-directional — every form it names (čs, cz, ẓz, čž,
+	// ẓs, js, jz, jš) has the affricate first. The reverse order is
+	// ordinary: sc 'wash/bathe', zc 'chop/dice', šč and žč all appear
+	// in the lexicon, and weščayá, žžjádu'u and arţtudëužči'a in the
+	// §4.4/§6 examples. What the reverse order *is* barred for is the
+	// alveolo-palatal fricative before an apico-alveolar affricate
+	// (§2.6, just above) and s before ẓ (§2.7).
 	if isSibilantAffricate(a) && isSibilantFricative(b) {
 		return "2.9", "sibilant affricate + sibilant fricative"
-	}
-	if isSibilantFricative(a) && isSibilantAffricate(b) {
-		return "2.9", "sibilant fricative + sibilant affricate"
 	}
 
 	// 2.10: ç restrictions
@@ -138,10 +149,13 @@ func CheckProhibitedPair(a, b rune) (rule, reason string) {
 		return "2.14", "n + labial stop"
 	}
 
-	// 2.17: x + sibilant or other prohibited followers
+	// 2.17: x + sibilant fricative or other prohibited followers. The
+	// rule lists the four sibilant fricatives by name and stops there;
+	// the affricates are not on it, and xc 'equine', xč 'murder', xj
+	// 'tapir' and xẓ 'dusty' are all live roots.
 	if a == 'x' {
-		if isSibilant(b) {
-			return "2.17", "x + sibilant"
+		if isSibilantFricative(b) {
+			return "2.17", "x + sibilant fricative"
 		}
 		if strings.ContainsRune("gļňyhř", b) {
 			return "2.17", "x + " + string(b)
@@ -343,11 +357,18 @@ func ValidateClusterAt(p Position, cluster string) Result {
 		// §3.4 are approximated conservatively there, which is right
 		// for declining an elision — the cost is a syllable — but as a
 		// validity verdict it would reject legal words.
-		if n := runeLen(cluster); n == 1 || n == 2 {
+		//
+		// Geminates are the exception at any length: §6.3.1, §6.4.1
+		// and §6.5 state exactly which conjuncts hold, so there is no
+		// approximation to be careful about.
+		if n := runeLen(cluster); n == 1 || n == 2 || hasGeminate(cluster) {
 			if !ValidWordInitial(cluster) {
 				rule := "3.2"
-				if n == 1 {
+				switch {
+				case n == 1:
 					rule = "3.1"
+				case hasGeminate(cluster):
+					rule = "6.2"
 				}
 				errs = append(errs, Error{
 					Rule:    rule,
@@ -602,8 +623,14 @@ func IsVoicedStop(c rune) bool { return isVoicedStop(c) }
 // opening condition holds — a word-initial stop. Declining a legal
 // elision only costs a syllable; allowing an illegal one emits a word
 // nobody can say.
+//
+// §3 opens by exempting geminates ("not including rules for geminated
+// forms — see Sec. 6"), so those go to validInitialGeminate first.
 func ValidWordInitial(cluster string) bool {
 	rs := []rune(cluster)
+	if ok, handled := validInitialGeminate(rs); handled {
+		return ok
+	}
 	switch len(rs) {
 	case 0:
 		return false
@@ -627,6 +654,57 @@ func ValidWordInitial(cluster string) bool {
 		return isSibilantFricative(rs[0]) && isStop(rs[1]) && rs[2] == 'l' && rs[3] == 'y'
 	}
 	return false
+}
+
+// validInitialGeminate implements §6.2, §6.3.1 and §6.4.1 for a
+// word-initial conjunct containing a geminate. handled is false when
+// the conjunct has no geminate, leaving it to the §3 rules.
+//
+// §6.2: any consonant that geminates intervocalically may also
+// geminate word-initially, except the stops. §6.1 excludes ', w and y
+// from gemination outright. That is what lets rrala 'cat', mřřala,
+// sstilomke, vvralá and žžjádu'u start the way they do.
+// hasGeminate reports whether s contains a doubled consonant.
+func hasGeminate(s string) bool {
+	var prev rune
+	for i, r := range s {
+		if i > 0 && r == prev {
+			return true
+		}
+		prev = r
+	}
+	return false
+}
+
+func validInitialGeminate(rs []rune) (ok, handled bool) {
+	geminateAt := -1
+	for i := 0; i+1 < len(rs); i++ {
+		if rs[i] == rs[i+1] {
+			if geminateAt >= 0 {
+				// §6.5: only one geminate pair per conjunct.
+				return false, true
+			}
+			geminateAt = i
+		}
+	}
+	if geminateAt < 0 {
+		return false, false
+	}
+	c := rs[geminateAt]
+	if isStop(c) || c == '\'' || c == 'w' || c == 'y' {
+		return false, true
+	}
+	switch {
+	case len(rs) == 2:
+		return true, true
+	case len(rs) == 3 && geminateAt == 0:
+		// §6.3.1: #C₁C₁C₂- is fine when #C₁C₂- is.
+		return validInitialPair(rs[0], rs[2]), true
+	case len(rs) == 3 && geminateAt == 1:
+		// §6.4.1: #C₁C₂C₂- is fine when #C₁C₂- is.
+		return validInitialPair(rs[0], rs[1]), true
+	}
+	return false, true
 }
 
 // validInitialTriple implements §3.3 for a three-consonant word-initial
