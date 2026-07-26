@@ -675,3 +675,50 @@ lexicon (`vr` zero, `ll` one … `čg` ten-quadrillion, plus `cg` `jd`
 100⁴ = 10⁸, 100⁸ = 10¹⁶); TNX's nine degrees are +10 to +90 as stated;
 and the examples' case marking follows the rule, with PARTITIVE `-ui`
 on *gzalui* and *wapcui* and COMITATIVE `-ë'i` on *wansorsë'i*.
+
+### G20. The modular adjunct's mandatory Slot 4 has no way to say which category it is
+
+§4.3 lays the adjunct out in four slots and says "Slots 1 and 4 are
+mandatory; the other slots are optional". Slot 4 holds "Aspect or
+Valence/Phase/Level/Effect or Specialized Scope", and the row beneath
+gives its content as "V_N or V_H" — a bare vowel, with no consonant.
+
+That is a problem, because a V_N vowel does not by itself say which
+category it belongs to. The four Pattern-1 categories and the four
+Aspect columns share the same vowel forms one for one: series 1 is
+Valence *or* Aspect column 1, series 2 is Phase *or* column 2, series 3
+is Effect *or* column 3, series 4 is Level *or* column 4. In formative
+Slot VIII the following C_N resolves it — Pattern 1 (h, hl, hr, hm, hn,
+hň) means Valence/Phase/Effect/Level, Pattern 2 (w/y, hw, hrw, hmw,
+hnw, hňw) means Aspect. Slot 4 of the adjunct has no C_N.
+
+The adjunct's other two slots both carry the distinction. Slot 2 has
+its C_N and so inherits the formative's mechanism. Slot 3 is given a
+consonant for no other purpose: "C_M = **n** if V_N represents an
+Aspect, otherwise C_M = **ň**". Slot 4 — the mandatory one — is the
+only one left without a marker, and the omission is visible in the
+document's own example list: `uhlaini` ends in a Slot-4 `i`, which is
+RCP Valence or PRG Aspect with nothing to choose between them.
+
+Stress does not help. §4.3 says the Slot 4 vowel is read as V_H,
+the specialized-scope value, only "if the adjunct has ultimate stress",
+so penultimate stress already means "this is a V_N" and cannot also
+encode which V_N.
+
+### G21. The PHR adjunct's example list breaks its own paradigm
+
+§4.5's four suppletive adjuncts are given identical example lists,
+differing only in the C_P:
+
+| | | | | | | |
+|---|---|---|---|---|---|---|
+| CAR `hl` | hla | hlei | **hloa** | hle'e | hla'u | hli'a |
+| QUO `hm` | hma | hmei | **hmoa** | hme'e | hma'u | hmi'a |
+| NAM `hn` | hna | hnei | **hnoa** | hne'e | hna'u | hni'a |
+| PHR `hň` | hňa | hňei | **hňo** | hňe'e | hňa'u | hňi'a |
+
+The six V_C values are THM `a`, GEN `ei`, SIT `oa`, COR `e'e`, ASI
+`a'u` and LOC `i'a` — chosen to exercise one case from each of §1.7's
+insertion patterns, which is why the same six recur four times. PHR's
+third entry is `hňo`, whose V_C is `o`, ERG. The paradigm calls for
+`hňoa`.
