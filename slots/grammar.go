@@ -218,12 +218,12 @@ func finalFromVc(vc string, stress surface.Stress) (g.Final, error) {
 }
 
 // FromGrammar converts a grammar.Formative into a Layout — Layer D
-// inverse. The surface form is always canonical: the §3.2 Cc shortcut
-// fires whenever the formative permits it, the §3.8.1.2 Cn→Ca shortcut
-// fires when its conditions match, the §3.9.1 moved-glottal applies
-// for cases 37-52, and default-value elisions run last. There is no
-// option to request the long form — non-canonical surfaces exist only
-// as input to the parser.
+// inverse. Three of the encoding choices are optional shortenings that
+// the spec permits rather than requires (see encoding), so instead of
+// deciding each one greedily we lay the word out every legal way and
+// keep the best by surfaceCost. Default-value elisions run within each
+// candidate. There is no option to request a particular spelling —
+// non-canonical surfaces exist only as input to the parser.
 func FromGrammar(f g.Formative) Layout {
 	if f.Root == nil {
 		panic("slots: Formative.Root is nil")
@@ -231,9 +231,100 @@ func FromGrammar(f g.Formative) Layout {
 	if f.Final == nil {
 		panic("slots: Formative.Final is nil")
 	}
+	best := layoutFor(f, encoding{})
+	bestCost := surfaceCost(best, encoding{})
+	for _, e := range allEncodings[1:] {
+		l := layoutFor(f, e)
+		if c := surfaceCost(l, e); c.better(bestCost) {
+			best, bestCost = l, c
+		}
+	}
+	return best
+}
+
+// encoding selects which of the optional shortenings to attempt. Each
+// is permissive in the spec ("may"), so switching one off always
+// yields a legal surface; switching one on has no effect unless the
+// formative also meets that shortcut's own conditions.
+type encoding struct {
+	ccShortcut bool // §3.2 Slot IV/VI a+Ca shortcut, Cc = w-/y-
+	cnInCa     bool // §3.8.1.2 Mood/Case-Scope Cn moved into the Ca slot
+	vcGlottal  bool // §3.9.1 Vc glottal-stop moved earlier in the word
+}
+
+// allEncodings is every combination, plainest first so it wins ties.
+var allEncodings = func() []encoding {
+	var out []encoding
+	for _, cc := range []bool{false, true} {
+		for _, cn := range []bool{false, true} {
+			for _, vc := range []bool{false, true} {
+				out = append(out, encoding{ccShortcut: cc, cnInCa: cn, vcGlottal: vc})
+			}
+		}
+	}
+	return out
+}()
+
+func (e encoding) count() int {
+	n := 0
+	for _, b := range []bool{e.ccShortcut, e.cnInCa, e.vcGlottal} {
+		if b {
+			n++
+		}
+	}
+	return n
+}
+
+// cost ranks candidate encodings of one Formative. §3.2 justifies the
+// shortcuts as "shortening the formative by one syllable", so syllable
+// count leads. A shortcut that buys no syllable but forces a glottal
+// stop (§3.6.2 marks the end of Slot V that way once the Ca is gone)
+// is a loss, hence glottals next. Length breaks the remaining ties.
+// Past that the candidates are indistinguishable on any measure the
+// spec offers, so the last two keys only exist to make the choice
+// deterministic: prefer the compressed form, then the earlier surface
+// string.
+type cost struct {
+	syllables int
+	glottals  int
+	runes     int
+	shortcuts int
+	surface   string
+}
+
+func (c cost) better(than cost) bool {
+	if c.syllables != than.syllables {
+		return c.syllables < than.syllables
+	}
+	if c.glottals != than.glottals {
+		return c.glottals < than.glottals
+	}
+	if c.runes != than.runes {
+		return c.runes < than.runes
+	}
+	if c.shortcuts != than.shortcuts {
+		return c.shortcuts > than.shortcuts
+	}
+	return c.surface < than.surface
+}
+
+func surfaceCost(l Layout, e encoding) cost {
+	s := Render(l)
+	c := cost{runes: len([]rune(s)), shortcuts: e.count(), surface: s}
+	for _, conj := range surface.SplitConjuncts(s) {
+		if surface.IsVowelConjunct(conj) {
+			c.syllables++
+		}
+	}
+	c.glottals = strings.Count(s, "'")
+	return c
+}
+
+// layoutFor builds the Layout for one choice of optional shortenings.
+func layoutFor(f g.Formative, e encoding) Layout {
 	l := Layout{}
 
-	useShortcut := canUseShortcut(f)
+	useShortcut := e.ccShortcut && canUseShortcut(f)
 	l.Cc = ccFromGrammar(f.Concat, useShortcut, f)
 
 	switch r := f.Root.(type) {
@@ -286,8 +377,12 @@ func FromGrammar(f g.Formative) Layout {
 	// shortcut's freed-up syllable isn't claimed by elision first — that
 	// ordering let elision burn enough slack to keep the shortcut's
 	// minimum-syllables guard from firing, and the long form leaked out.
-	maybeMoveCnToCa(&l, f)
-	maybeShortenVcGlottal(&l, f)
+	if e.cnInCa {
+		maybeMoveCnToCa(&l, f)
+	}
+	if e.vcGlottal {
+		maybeShortenVcGlottal(&l, f)
+	}
 	applyDefaultElisions(&l, f)
 	return l
 }
@@ -382,14 +477,6 @@ func canUseShortcut(f g.Formative) bool {
 	// need three (FramedVerbal's antepenultimate stress) can't fit
 	// the diacritic and must take the long form.
 	if _, framed := f.Final.(g.FramedVerbal); framed {
-		return false
-	}
-	// When the §3.8.1.2 Cn→Ca shortcut also applies (Pattern-1
-	// non-FAC Mood with default MNO valence and default Ca), prefer
-	// that — it folds Slot VIII into the Ca position, which Cc
-	// shortcut would leave in place. Picking one canonical form
-	// avoids fighting over which compression "wins".
-	if cnCaShortcutEligible(f) {
 		return false
 	}
 	return true
@@ -699,9 +786,6 @@ func canElideLeadingVv(l *Layout, f g.Formative) bool {
 		return false
 	}
 	if cr.Stem != g.S1 || cr.Version != g.PRC {
-		return false
-	}
-	if len(f.SlotV) > 0 {
 		return false
 	}
 	return strings.HasPrefix(l.Vv, "a") && l.Vv == "a"

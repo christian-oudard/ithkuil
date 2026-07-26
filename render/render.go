@@ -11,10 +11,10 @@ import (
 )
 
 // Formative renders a formative to its canonical surface string. The
-// canonical form is uniquely determined by the grammar: shortcuts fire
-// when their conditions match, default-value elisions apply, and
-// stress lands per §3.10. There is no knob — a Formative renders to
-// one surface, full stop.
+// canonical form is uniquely determined by the grammar: of every legal
+// spelling, the shortest wins (see slots.FromGrammar for the ranking),
+// default-value elisions apply, and stress lands per §3.10. There is
+// no knob — a Formative renders to one surface, full stop.
 //
 // Panics if f.Root or f.Final is nil — the zero value Formative{} is
 // not a valid input. Construct via grammar.MinimalFormative or set

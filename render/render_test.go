@@ -76,23 +76,23 @@ func TestFormative_MovedGlottal_Cases37To52(t *testing.T) {
 		want string
 	}{
 		// Relational (37-44): Series 1 + glottal.
-		{g.PRN, "wamla'a"},
-		{g.DSP, "wamlä'ä"},
-		{g.COR, "wamle'e"},
-		{g.CPS, "wamli'i"},
-		{g.COM, "wamlë'i"},
-		{g.UTL, "wamlö'ö"},
-		{g.PRD, "wamlo'o"},
-		{g.RLT, "wamlu'u"},
+		{g.PRN, "mla'la"},
+		{g.DSP, "mla'lä"},
+		{g.COR, "mla'le"},
+		{g.CPS, "mla'li"},
+		{g.COM, "mla'lëi"},
+		{g.UTL, "mla'lö"},
+		{g.PRD, "mla'lo"},
+		{g.RLT, "mla'lu"},
 		// Affinitive (45-52): Series 2 + glottal.
-		{g.ACT, "wamla'i"},
-		{g.ASI, "wamla'u"},
-		{g.ESS, "wamle'i"},
-		{g.TRM, "wamle'u"},
-		{g.SEL, "wamlë'u"},
-		{g.CFM, "wamlo'u"},
-		{g.DEP, "wamlo'i"},
-		{g.VOC, "wamlu'i"},
+		{g.ACT, "mla'lai"},
+		{g.ASI, "mla'lau"},
+		{g.ESS, "mla'lei"},
+		{g.TRM, "mla'leu"},
+		{g.SEL, "mla'lëu"},
+		{g.CFM, "mla'lou"},
+		{g.DEP, "mla'loi"},
+		{g.VOC, "mla'lui"},
 	}
 	for _, c := range cases {
 		f := g.MinimalFormative("ml")
@@ -245,14 +245,43 @@ func TestFormative_ShortcutW_Series1(t *testing.T) {
 	}
 }
 
-func TestFormative_ShortcutW_Series2(t *testing.T) {
-	f := g.MinimalFormative("ml")
-	f.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL,
-		Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}
-	got := Formative(f)
-	want := "waimla"
-	if got != want {
-		t.Errorf("Formative(W shortcut series 2) = %q, want %q", got, want)
+// TestFormative_ShortcutOnlyWhenItShortens pins the rule that decides
+// between the §3.2 Cc shortcut and the plain form. The shortcut exists
+// to shorten the word by a syllable, and it can only do that when the
+// plain form would have to spell out Vv. With default Stem/Version the
+// leading Vv elides anyway, so the shortcut buys nothing and the plain
+// form wins.
+func TestFormative_ShortcutOnlyWhenItShortens(t *testing.T) {
+	cases := []struct {
+		name  string
+		stem  g.Stem
+		persp g.Perspective
+		kase  g.Case
+		want  string
+	}{
+		// Vv is default and elides, so both forms are two syllables and
+		// the same length. The tie goes to the shortcut.
+		{"default Vv, series 1", g.S1, g.M_, g.THM, "wamla"},
+		// Same tie, but series 2 spells its Ca as a single -r-, making
+		// the plain form a rune shorter than "waimla".
+		{"default Vv, series 2", g.S1, g.G_, g.THM, "mlara"},
+		// Non-default Vv can't elide, so the shortcut saves a syllable.
+		{"non-default Vv, series 1", g.S2, g.M_, g.THM, "wemla"},
+		{"non-default Vv, series 2", g.S2, g.G_, g.ERG, "weimlo"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			f := g.MinimalFormative("ml")
+			cr := f.Root.(g.CrRoot)
+			cr.Stem = c.stem
+			f.Root = cr
+			f.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL,
+				Perspective: c.persp, Extension: g.DEL, Essence: g.NRM}
+			f.Final = g.UnframedNominal{Case: c.kase}
+			if got := Formative(f); got != c.want {
+				t.Errorf("Formative = %q, want %q", got, c.want)
+			}
+		})
 	}
 }
 

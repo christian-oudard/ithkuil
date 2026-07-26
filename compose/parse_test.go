@@ -207,9 +207,15 @@ func TestFormative_SlotVAffixes(t *testing.T) {
 func TestFormative_MaţřëullaitRoundTrip(t *testing.T) {
 	lex := mustLex(t)
 	gl := &gloss.Glosser{Lex: lex, Canonical: true}
-	cases := []struct{ surface, want string }{
-		{"maţřëullait", "m-SYS/5_2-{Ca}-DCD/1_2"},
-		{"malëuţřait", "m-SYS/5_2-DCD/1_2"},
+	cases := []struct{ surface, want, canonical string }{
+		// Slot V forces a §3.6.2 glottal into the shortcut encoding
+		// ("wamëu'ţřait"), which the plain form doesn't pay, so the
+		// plain form is canonical.
+		{"maţřëullait", "m-SYS/5_2-{Ca}-DCD/1_2", "maţřëullait"},
+		// Without Slot V there is no glottal, and the two encodings
+		// tie on syllables and length. The tie goes to the shortcut,
+		// so this one does not render back to what was typed.
+		{"malëuţřait", "m-SYS/5_2-DCD/1_2", "wamëuţřait"},
 	}
 	for _, c := range cases {
 		f, err := fullparse.Formative(c.surface)
@@ -226,6 +232,9 @@ func TestFormative_MaţřëullaitRoundTrip(t *testing.T) {
 		}
 		if again := gl.Formative(back); again != got {
 			t.Errorf("round-trip of %q: %q → %q", c.surface, got, again)
+		}
+		if surf := render.Formative(back); surf != c.canonical {
+			t.Errorf("render(%q) = %q, want %q", got, surf, c.canonical)
 		}
 	}
 }

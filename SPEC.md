@@ -24,14 +24,15 @@ Every arm has a `format → Formative → format` round-trip identity, modulo ca
 
 ## Canonical surface
 
-A Formative has exactly one canonical surface. The grammar permits several equivalent spellings of the same word; the system chooses among them deterministically, with no options to flip:
+A Formative has exactly one canonical surface. The grammar permits several equivalent spellings of the same word, and three of them are optional shortenings the speaker may or may not take: the §3.2 Cc shortcut, the §3.8.1.2 Cn→Ca shortcut, and the §3.9.1 moved Vc glottal. The system spells the word every legal way and keeps the best one, ranked by:
 
-- The §3.8.1.2 Cn→Ca shortcut is used whenever its conditions hold.
-- Otherwise the §3.2 Cc shortcut is used whenever the slot grammar allows it. It is unavailable to framed-verbal formatives, whose antepenultimate stress needs a third syllable that the shortened form does not have.
-- The §3.9.1 moved-glottal spelling is used for cases 37-52.
-- Default slot values are elided.
+1. Fewest syllables. §3.2 justifies its shortcut as "shortening the formative by one syllable", so that is the language's own measure.
+2. Fewest glottal stops. A shortcut that saves no syllable but forces a glottal, as §3.6.2 does to mark the end of Slot V once the Ca is gone, is a loss.
+3. Fewest characters.
 
-Parsing accepts the non-canonical spellings too; they simply re-render as the canonical one.
+Past that the candidates are indistinguishable on any measure the spec offers, so the remaining tie-breaks exist only to keep the choice deterministic: prefer the compressed spelling, then the alphabetically earlier one.
+
+Default slot values are elided regardless, and parsing accepts the non-canonical spellings too; they simply re-render as the canonical one.
 
 ## Cross-format conversion
 

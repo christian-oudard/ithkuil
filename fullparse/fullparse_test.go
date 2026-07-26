@@ -193,18 +193,12 @@ func TestFormative_CanonicalWord(t *testing.T) {
 	if un, ok := f.Final.(g.UnframedNominal); !ok || un.Case != g.THM {
 		t.Errorf("Final = %v, want UnframedNominal{THM}", f.Final)
 	}
-	// Render canonicalizes to the Cc-shortcut spelling rather than the
-	// community's long form, so assert the round-trip instead of the
-	// surface: whatever it emits must parse back to the same slots.
-	back, err := Formative(render.Formative(f))
-	if err != nil {
-		t.Fatalf("re-parse of rendered form: %v", err)
-	}
-	if len(back.SlotV) != 1 || back.SlotV[0] != f.SlotV[0] {
-		t.Errorf("round-trip Slot V = %v, want %v", back.SlotV, f.SlotV)
-	}
-	if len(back.SlotVII) != 1 || back.SlotVII[0] != f.SlotVII[0] {
-		t.Errorf("round-trip Slot VII = %v, want %v", back.SlotVII, f.SlotVII)
+	// The Cc-shortcut encoding of this formative is "wamëu'ţřait":
+	// the same three syllables, plus a §3.6.2 glottal to mark the end
+	// of Slot V once the Ca is gone. It shortens nothing and costs a
+	// glottal stop, so the plain form is canonical.
+	if got := render.Formative(f); got != "maţřëullait" {
+		t.Errorf("render = %q, want canonical %q", got, "maţřëullait")
 	}
 }
 
