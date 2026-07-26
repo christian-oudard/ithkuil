@@ -7,6 +7,7 @@ import (
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // TestFuzz_FormativeRoundTrip generates pseudo-random Formatives and
@@ -27,6 +28,13 @@ func TestFuzz_FormativeRoundTrip(t *testing.T) {
 	for i := 0; i < iterations; i++ {
 		f := randomFormative(rng)
 		surface := render.Formative(f)
+		// Anything we emit has to be a word by our own rules. A
+		// round-trip alone can't see this: a surface form both halves
+		// mis-handle the same way still comes back equal.
+		if r := validation.ValidateWord(surface); !r.Valid {
+			t.Errorf("iter %d: render produced %q, which our own validator rejects: %v\n  formative: %+v",
+				i, surface, r.Errors, f)
+		}
 		parsed, err := Formative(surface)
 		if err != nil {
 			t.Errorf("iter %d: Formative(%q): %v\n  formative: %+v",
@@ -139,8 +147,15 @@ func randomFinal(rng *rand.Rand) g.Final {
 		// Framed verbal with a case.
 		return g.FramedVerbal{Case: g.AllCases[rng.Intn(len(g.AllCases))]}
 	default:
-		// Unframed verbal (assertive observational by default).
-		return g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
+		// Unframed verbal. Draw across all nine illocutions and, for
+		// ASR, all nine validations: the Vk vowel varies with both, and
+		// ultimate stress marks whichever one lands, so pinning this to
+		// a single value leaves most of the stressed endings unreached.
+		vk := g.AllVk[rng.Intn(len(g.AllVk))]
+		if _, ok := vk.(g.Assertive); ok {
+			vk = g.Assertive{Validation: g.AllValidations[rng.Intn(len(g.AllValidations))]}
+		}
+		return g.UnframedVerbal{Vk: vk}
 	}
 }
 

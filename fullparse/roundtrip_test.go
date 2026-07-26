@@ -6,6 +6,7 @@ import (
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // assertRoundTrip renders f, parses the result, and asserts that the
@@ -13,6 +14,10 @@ import (
 func assertRoundTrip(t *testing.T, name string, f g.Formative) {
 	t.Helper()
 	surface := render.Formative(f)
+	if r := validation.ValidateWord(surface); !r.Valid {
+		t.Errorf("%s: render produced %q, which our own validator rejects: %v",
+			name, surface, r.Errors)
+	}
 	parsed, err := Formative(surface)
 	if err != nil {
 		t.Errorf("%s: Formative(%q): %v", name, surface, err)
