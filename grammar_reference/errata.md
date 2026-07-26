@@ -927,3 +927,63 @@ against 6 southwestern, with 5 geographically central at the midpoint.
 And *usarcsaidna amerika* / *usarcsuidna amerika* use OGC at Type-2
 degrees 1 and 9 — `ai` and `ui` — which is northern and southern, as
 North and South America require.
+
+### G29. The 0* marker cannot mean what §3.5.0.1 says it means
+
+§3.5.0.1 introduces the marker in one clause: "Some Type-0 affixes are
+marked **0\***, indicating an associated C_R root form." Read as an
+existence claim it is uninformative, because it is true of almost every
+affix:
+
+| | affixes | whose C_S is also a root C_R |
+|---|---|---|
+| marked with a star | 36 | 34 (94%) |
+| unmarked | 491 | 468 (95%) |
+
+The root lexicon has 5946 entries over the same short consonant
+clusters the affixes use, so a same-cluster root nearly always exists.
+Whatever the star distinguishes, it is not that.
+
+Read instead as a claim about a *semantically* associated root, it
+holds for most of the marked affixes — CNQ `řv` "Degree of
+Consequentiality" beside the root "consequence/outcome/result", EXT
+`řḑ` "Exactness of Identity" beside "exactitude", FLS `mh` "Degree of
+Fluctuation/Stability" beside "change/stability/fluctuation" — but
+four of them point at a root with no relation to the affix at all:
+
+| Affix | C_S | Affix meaning | Root at that C_S |
+|-------|-----|---------------|------------------|
+| ANG | dg | Angular Measurement | weight/mass |
+| GID | c | Gender Identity | hearing/sound |
+| PCM | bḑ | Primary Construction Material | cucumis 1 |
+| TNX | rs | Multiples of Ten | sincerity/honesty/guilelessness |
+
+Either the star on these four is wrong, or it points at a root the
+tables never name.
+
+Separately, the marker **D1\*** occurs once, on NEW (`sp`,
+Newness/Revision), and is defined nowhere. §3.5.0.1 attaches the star
+to Type 0 alone. NEW's root at `sp` is "degree of newness", so the star
+is evidently doing the same work on a D1 affix — work the document does
+not sanction.
+
+### G30. PHS degree 4 is coded IMT where the category is ITM
+
+Ninety category codes are embedded in affix degree descriptions in the
+form "(CODE) Full Name" — the MCS, PHS, AP1-4, IVL, LVL and VAL
+affixes, which take grammatical categories as their degrees rather than
+lexical meanings. Eighty-nine resolve to an abbreviation in the grammar
+tables. One does not:
+
+| PHS degree | Affix table | Phase category |
+|------------|-------------|----------------|
+| 3 | (REP) Repetitive | REP Repetitive |
+| **4** | **(IMT) Intermittent** | **ITM** Intermittent |
+| 5 | (RCT) Recurrent | RCT Recurrent |
+
+Every other degree of PHS matches the Phase table exactly and in order,
+and the name "Intermittent" is right, so `IMT` is a transposition of
+`ITM`. The grammar document uses ITM throughout — in the Slot VIII
+Pattern-1 table and in the writing-system chapter — and IMT appears
+nowhere in it. The affix table is the only place the transposed form
+occurs.
