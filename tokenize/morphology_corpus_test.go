@@ -152,10 +152,12 @@ func TestMorphologyCorpus_Sec5_7_CaseStacking(t *testing.T) {
 			"A", "hrelu-azcoijhailloelya",
 			"Ksolaolwau",
 		},
-		// Ksolaolwau and hrelu-azcoijhailloelya carry a vowel in Vx
-		// position that isn't in the §3.5 Vx table ("ao", "ai"-after-
-		// "hail"). They used to read as degree-0 affixes because the
-		// Vx lookup defaulted silently; now they fail honestly.
+		// Ksolaolwau and hrelu-azcoijhailloelya are still unreadable.
+		// Both lost diacritics along with the rest of this block (the
+		// clown root is -kš-, not -ks-), but unlike the §5.8 words we
+		// can't recover the original spelling from the intralinear
+		// analysis alone, so they stay on the list until someone
+		// checks them against the source PDF.
 		unknown: []string{"Hre", "Ksolaolwau", "hrelu-azcoijhailloelya"},
 	})
 }
@@ -164,18 +166,16 @@ func TestMorphologyCorpus_Sec5_8_CHC_Eat(t *testing.T) {
 	runCorpusSection(t, corpusSection{
 		name: "Sec5.8 eat",
 		words: []string{
-			"Etxula", "welacu", "wanzekcooe",
+			"Etxula", "welacu", "wanzekcoë",
 			"Itxula",
 			"Enula", "laleco", "welaculwu", "etxulie",
 			"welacurzu", "welacarzulwu", "welacarzu",
-			"welacerzooe", "welaculwooe", "welacorzooe",
+			"welacerzoë", "welaculwoë", "welacorzoë",
 			"Etxularza",
-			"hetxejie-etxitooe",
+			"hetxejie-etxitoë",
 		},
-		unknown: []string{
-			"hetxejie-etxitooe", "wanzekcooe",
-			"welacerzooe", "welaculwooe", "welacorzooe",
-		},
+		// (Was unknown: all five -oë words, which the reference spells
+		// "-ooe" because §5.8 lost its diacritics in extraction.)
 	})
 }
 
@@ -183,15 +183,13 @@ func TestMorphologyCorpus_Sec5_8_CHC_Jump(t *testing.T) {
 	runCorpusSection(t, corpusSection{
 		name: "Sec5.8 jump",
 		words: []string{
-			"Adcsuloeuha", "welecu",
-			"ampalaicooe", "welecarzu",
+			"Adcsulëuha", "welecu",
+			"ampalaicoë", "welecarzu",
 			"Yadcseuha", "Adcsuleuha", "Adcsularzeuha",
 		},
-		// (Was unknown: [Yadcseuha, ampalaicooe]. Yadcseuha now classifies
-		// via case-normalization in slots.Parse; ampalaicooe still falls
-		// through pending separate parser work.) Adcsuloeuha has "oe" in
-		// Vx position, which is a Slot II Vv value and not a Vx form.
-		unknown: []string{"Adcsuloeuha", "ampalaicooe"},
+		// (Was unknown: [Yadcseuha, ampalaicooe]. Yadcseuha now
+		// classifies via case-normalization in slots.Parse; ampalaicoë
+		// once its diacritic is restored.)
 	})
 }
 
@@ -200,7 +198,7 @@ func TestMorphologyCorpus_Sec5_8_CHC_Sing(t *testing.T) {
 		name: "Sec5.8 sing",
 		words: []string{
 			"Yubskirfui", "ellyuhru", "lalacu", "ellyila",
-			"ellyahru", "ellyuleeihru",
+			"ellyahru", "ellyulëihru",
 			"Ellyula", "ro", "Ellyulerza", "Ellyalerza",
 		},
 		// ellyahru and ellyuhru previously fell through; both classify
@@ -208,11 +206,8 @@ func TestMorphologyCorpus_Sec5_8_CHC_Sing(t *testing.T) {
 		// (Was unknown: [Yubskirfui] — now classifies via case-
 		// normalization in slots.Parse.)
 		//
-		// ellyuleeihru is written in ASCII digraphs ("ee" for ë) and
-		// ClassifyWord doesn't fold those the way the analyze path
-		// does, so it sees a Vx of "ee" and gives up. The word itself
-		// parses fine as "ellyulëihru".
-		unknown: []string{"ellyuleeihru"},
+		// (Was unknown: [ellyuleeihru], the same lost-diacritic
+		// spelling of "ellyulëihru".)
 	})
 }
 
