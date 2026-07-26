@@ -7,9 +7,11 @@ import (
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
-// Corpus tests for translation draft forms. Each test parses a candidate
-// translation form and asserts the gloss contains the intended
-// morphological features.
+// Corpus tests over concrete Ithkuil forms. Each test parses a form and
+// asserts its gloss contains the intended morphological features.
+//
+// Most forms here come from translating "I will be home late tonight,
+// don't wait for me, just sleep."
 
 // glossOne deliberately runs without a lexicon so affixes show as
 // "Cs/degree". This keeps the assertions structural rather than tied to
@@ -26,51 +28,49 @@ func assertContains(t *testing.T, word, gloss, want string) {
 	}
 }
 
-// v1 — "I will be home late tonight, don't wait for me, just sleep."
-
-func TestCorpus_V1_Ärmaläwia(t *testing.T) {
+func TestCorpus_Ärmaläwia(t *testing.T) {
 	g := glossOne(t, "ärmaläwi'a")
 	assertContains(t, "ärmaläwi'a", g, "CPT")
 	assertContains(t, "ärmaläwi'a", g, "PRS")
 	assertContains(t, "ärmaläwi'a", g, "LOC")
 }
 
-func TestCorpus_V1_La(t *testing.T) {
+func TestCorpus_La(t *testing.T) {
 	g := glossOne(t, "la")
 	assertContains(t, "la", g, "1m")
 	assertContains(t, "la", g, "THM")
 }
 
-func TestCorpus_V1_WäḑḑáiSleep(t *testing.T) {
+func TestCorpus_WäḑḑáiSleep(t *testing.T) {
 	g := glossOne(t, "wäḑḑái")
 	assertContains(t, "wäḑḑái", g, "CPT")
 	assertContains(t, "wäḑḑái", g, "DIR")
 }
 
-func TestCorpus_V1_Wäfsöróu(t *testing.T) {
+func TestCorpus_Wäfsöróu(t *testing.T) {
 	g := glossOne(t, "wäfsöróu")
 	assertContains(t, "wäfsöróu", g, "CPT")
 	assertContains(t, "wäfsöróu", g, "r/6")
 	assertContains(t, "wäfsöróu", g, "ADM")
 }
 
-func TestCorpus_V1_Lü(t *testing.T) {
+func TestCorpus_Lü(t *testing.T) {
 	g := glossOne(t, "lü")
 	assertContains(t, "lü", g, "1m")
 	assertContains(t, "lü", g, "DAT")
 }
 
-// v1 counter-example: malformed verbal forms must NOT parse as a Formative.
-func TestCorpus_V1_Malformed_aḑḑái(t *testing.T) {
+// Counter-example: malformed verbal forms must NOT parse as a Formative.
+func TestCorpus_Malformed_aḑḑái(t *testing.T) {
 	tok := tokenize.ClassifyWord("aḑḑái")
 	if _, isFormative := tok.(tokenize.FormativeWord); isFormative {
 		t.Error("aḑḑái should not parse as a Formative; verbal forms need w-/y- prefix")
 	}
 }
 
-// v2 — refined stems and aspects.
+// Stem and aspect variants of the same forms.
 
-func TestCorpus_V2_Ürmaläwia(t *testing.T) {
+func TestCorpus_Ürmaläwia(t *testing.T) {
 	g := glossOne(t, "ürmaläwi'a")
 	assertContains(t, "ürmaläwi'a", g, "S3")
 	assertContains(t, "ürmaläwi'a", g, "CPT")
@@ -78,32 +78,32 @@ func TestCorpus_V2_Ürmaläwia(t *testing.T) {
 	assertContains(t, "ürmaläwi'a", g, "LOC")
 }
 
-func TestCorpus_V2_Wükmao(t *testing.T) {
+func TestCorpus_Wükmao(t *testing.T) {
 	g := glossOne(t, "wükmao")
 	assertContains(t, "wükmao", g, "S3")
 	assertContains(t, "wükmao", g, "FUN")
 }
 
-func TestCorpus_V2_Ilnalia(t *testing.T) {
+func TestCorpus_Ilnalia(t *testing.T) {
 	g := glossOne(t, "ilnali'a")
 	assertContains(t, "ilnali'a", g, "S2")
 	assertContains(t, "ilnali'a", g, "LOC")
 }
 
-func TestCorpus_V2_Ümtyile(t *testing.T) {
+func TestCorpus_Ümtyile(t *testing.T) {
 	g := glossOne(t, "ümtyile")
 	assertContains(t, "ümtyile", g, "S3")
 	assertContains(t, "ümtyile", g, "OBJ")
 	assertContains(t, "ümtyile", g, "ABS")
 }
 
-func TestCorpus_V2_Äklläla(t *testing.T) {
+func TestCorpus_Äklläla(t *testing.T) {
 	g := glossOne(t, "äklläla")
 	assertContains(t, "äklläla", g, "CPT")
 	assertContains(t, "äklläla", g, "CTE")
 }
 
-func TestCorpus_V2_Wämžwüxëiwói(t *testing.T) {
+func TestCorpus_Wämžwüxëiwói(t *testing.T) {
 	g := glossOne(t, "wämžwüxëiwói")
 	assertContains(t, "wämžwüxëiwói", g, "CPT")
 	assertContains(t, "wämžwüxëiwói", g, "x/8")
@@ -111,9 +111,9 @@ func TestCorpus_V2_Wämžwüxëiwói(t *testing.T) {
 	assertContains(t, "wämžwüxëiwói", g, "POT")
 }
 
-// v3 — bias adjuncts plus an affix-compressed ST2/6.
+// Affix-degree variants and affix-compressed forms.
 
-func TestCorpus_V3_Ärmalöxbäwia(t *testing.T) {
+func TestCorpus_Ärmalöxbäwia(t *testing.T) {
 	g := glossOne(t, "ärmalöxbäwi'a")
 	assertContains(t, "ärmalöxbäwi'a", g, "CPT")
 	assertContains(t, "ärmalöxbäwi'a", g, "xb/6")
@@ -121,32 +121,32 @@ func TestCorpus_V3_Ärmalöxbäwia(t *testing.T) {
 	assertContains(t, "ärmalöxbäwi'a", g, "LOC")
 }
 
-func TestCorpus_V3_Wäfsiróu_SoftNeg(t *testing.T) {
+func TestCorpus_Wäfsiróu_SoftNeg(t *testing.T) {
 	g := glossOne(t, "wäfsiróu")
 	assertContains(t, "wäfsiróu", g, "r/4")
 	assertContains(t, "wäfsiróu", g, "ADM")
 }
 
-func TestCorpus_V3_Wäčnüróu_EmphaticNeg(t *testing.T) {
+func TestCorpus_Wäčnüróu_EmphaticNeg(t *testing.T) {
 	g := glossOne(t, "wäčnüróu")
 	assertContains(t, "wäčnüróu", g, "r/8")
 	assertContains(t, "wäčnüróu", g, "ADM")
 }
 
-func TestCorpus_V3_Wämžwoxëiwói(t *testing.T) {
+func TestCorpus_Wämžwoxëiwói(t *testing.T) {
 	g := glossOne(t, "wämžwoxëiwói")
 	assertContains(t, "wämžwoxëiwói", g, "x/7")
 	assertContains(t, "wämžwoxëiwói", g, "IMM")
 	assertContains(t, "wämžwoxëiwói", g, "POT")
 }
 
-func TestCorpus_V3_Wafsöţpao(t *testing.T) {
+func TestCorpus_Wafsöţpao(t *testing.T) {
 	g := glossOne(t, "wafsöţpao")
 	assertContains(t, "wafsöţpao", g, "ţp/6")
 	assertContains(t, "wafsöţpao", g, "FUN")
 }
 
-func TestCorpus_V3_Iklläla(t *testing.T) {
+func TestCorpus_Iklläla(t *testing.T) {
 	g := glossOne(t, "iklläla")
 	assertContains(t, "iklläla", g, "S2")
 	assertContains(t, "iklläla", g, "CTE")
@@ -176,7 +176,7 @@ func TestCorpus_FramedVerb_MoodNotScope(t *testing.T) {
 	assertContains(t, "arţtúliwa", g, "PRG")
 }
 
-func TestCorpus_V3_BiasAdjuncts(t *testing.T) {
+func TestCorpus_BiasAdjuncts(t *testing.T) {
 	cases := []struct {
 		word     string
 		biasAbbr string
