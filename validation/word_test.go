@@ -16,10 +16,10 @@ func TestValidateWord_Valid(t *testing.T) {
 func TestValidateWord_CapitalizedIsValid(t *testing.T) {
 	// Capital letters are orthographic (sentence-initial, proper
 	// nouns); the canonical name of the language is conventionally
-	// written "Malëuţřait" and must validate.
-	r := ValidateWord("Malëuţřait")
+	// written "Maţřëullait" and must validate.
+	r := ValidateWord("Maţřëullait")
 	if !r.Valid {
-		t.Errorf("Malëuţřait should validate, got %v", r.Errors)
+		t.Errorf("Maţřëullait should validate, got %v", r.Errors)
 	}
 }
 

@@ -247,10 +247,10 @@ func TestGlosser_CategoryValuedAffix(t *testing.T) {
 	lex := loadLex(t)
 	gl := &Glosser{Lex: lex}
 	cases := []struct {
-		cs       string
-		atype    g.AffixType
-		degree   int
-		want     string
+		cs     string
+		atype  g.AffixType
+		degree int
+		want   string
 	}{
 		{"bẓ", g.Type1Affix, 3, "MCS:SPC"},
 		{"bž", g.Type1Affix, 1, "PHS:PCT"},
@@ -330,17 +330,66 @@ func TestGlosser_NilLexiconBehavesLikePackageFn(t *testing.T) {
 }
 
 func TestFormative_CanonicalWord(t *testing.T) {
-	// End-to-end: parse the canonical test word and gloss it.
-	parsed, err := fullparse.Formative("malëuţřait")
-	if err != nil {
-		t.Fatalf("parse error: %v", err)
+	// End-to-end: parse the canonical test word and gloss it, alongside
+	// the older spelling it replaced. Cr=m in both; ţř/5 sits in Slot V
+	// in the first and Slot VII in the second, and the "{Ca}" marker is
+	// what keeps the two glosses apart. Type 2 emits a "₂" subscript in
+	// display mode (silent in canonical mode); Type 1 stays silent.
+	cases := []struct{ surface, want string }{
+		{"maţřëullait", "-m--ţř/5₂-{Ca}-t/1₂"},
+		{"malëuţřait", "-m--ţř/5₂-t/1₂"},
 	}
-	got := Formative(parsed)
-	// Cr=m, two Slot VII affixes: ëu→Type2 degree 5 + ţř, ai→Type2
-	// degree 1 + t. Type 2 emits a "₂" subscript in display mode (silent
-	// in canonical mode); Type 1 stays silent in both modes.
-	want := "-m--ţř/5₂-t/1₂"
-	if got != want {
-		t.Errorf("Formative(Malëuţřait) = %q, want %q", got, want)
+	for _, c := range cases {
+		parsed, err := fullparse.Formative(c.surface)
+		if err != nil {
+			t.Fatalf("parse %q: %v", c.surface, err)
+		}
+		if got := Formative(parsed); got != c.want {
+			t.Errorf("Formative(%s) = %q, want %q", c.surface, got, c.want)
+		}
+	}
+}
+
+// TestGlosser_SlotVDistinctFromSlotVII pins the Ca boundary. An affix
+// in Slot V applies to the stem alone; the same affix in Slot VII has
+// scope over the Ca complex. Positionally the gloss already separates
+// them, but a default Ca is suppressed — so without an explicit marker
+// the two formatives glossed identically. Slot V forces the Ca to be
+// shown, as "{Ca}" when it holds nothing but defaults.
+//
+// This is the "maţřëullait" vs "malëuţřait" distinction.
+func TestGlosser_SlotVDistinctFromSlotVII(t *testing.T) {
+	gl := &Glosser{}
+	affix := g.Affix{Type: g.Type2Affix, Degree: 5, Consonant: "ţř"}
+
+	inner := g.MinimalFormative("m")
+	inner.SlotV = []g.Affix{affix}
+	outer := g.MinimalFormative("m")
+	outer.SlotVII = []g.Affix{affix}
+
+	gotInner, gotOuter := gl.Formative(inner), gl.Formative(outer)
+	if gotInner == gotOuter {
+		t.Fatalf("Slot V and Slot VII gloss identically: %q", gotInner)
+	}
+	if want := "-m--ţř/5₂-{Ca}"; gotInner != want {
+		t.Errorf("Slot V gloss = %q, want %q", gotInner, want)
+	}
+	if want := "-m--ţř/5₂"; gotOuter != want {
+		t.Errorf("Slot VII gloss = %q, want %q", gotOuter, want)
+	}
+}
+
+// TestGlosser_SlotVWithNonDefaultCa checks that a Slot V affix does not
+// add the "{Ca}" placeholder when the Ca already prints its own values.
+func TestGlosser_SlotVWithNonDefaultCa(t *testing.T) {
+	gl := &Glosser{}
+	f := g.MinimalFormative("m")
+	f.SlotV = []g.Affix{{Type: g.Type2Affix, Degree: 5, Consonant: "ţř"}}
+	f.SlotVI = g.SlotVI{
+		Configuration: g.MSS, Affiliation: g.CSL,
+		Perspective: g.G_, Extension: g.DEL, Essence: g.NRM,
+	}
+	if want, got := "-m--ţř/5₂-MSS.G", gl.Formative(f); got != want {
+		t.Errorf("Formative = %q, want %q", got, want)
 	}
 }

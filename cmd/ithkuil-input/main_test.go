@@ -11,13 +11,13 @@ import (
 // Ctrl+D, then checks that the committed word appears in the
 // output stream.
 func TestTUIEnterCommits(t *testing.T) {
-	in := strings.NewReader("Maleeut,rqait\r\x04")
+	in := strings.NewReader("Mat,rqeeullait\r\x04")
 	var out bytes.Buffer
 	err := tui(in, &out)
 	if err != nil && err != io.EOF {
 		t.Fatalf("tui returned %v", err)
 	}
-	if !strings.Contains(out.String(), "Malëuţřait") {
+	if !strings.Contains(out.String(), "Maţřëullait") {
 		t.Errorf("output missing committed word: %q", out.String())
 	}
 }

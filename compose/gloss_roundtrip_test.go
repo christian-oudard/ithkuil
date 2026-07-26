@@ -89,12 +89,10 @@ func randomFormative(rng *rand.Rand, lex *lexicon.Lexicon) g.Formative {
 		}
 	}
 	if rng.Intn(10) < 3 {
-		// Pick from a small set of attested Cs to keep affixes valid.
-		cs := []string{"b", "r", "t", "kt", "rf", "lk", "tk"}[rng.Intn(7)]
-		atype := []g.AffixType{g.Type1Affix, g.Type2Affix, g.Type3Affix}[rng.Intn(3)]
-		f.SlotVII = []g.Affix{{
-			Type: atype, Degree: rng.Intn(9) + 1, Consonant: cs,
-		}}
+		f.SlotV = []g.Affix{randomAffix(rng)}
+	}
+	if rng.Intn(10) < 3 {
+		f.SlotVII = []g.Affix{randomAffix(rng)}
 	}
 	if rng.Intn(10) < 3 {
 		val := g.AllValences[rng.Intn(len(g.AllValences))]
@@ -113,4 +111,12 @@ func randomFormative(rng *rand.Rand, lex *lexicon.Lexicon) g.Formative {
 		f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
 	}
 	return f
+}
+
+// randomAffix picks from a small set of attested Cs clusters so the
+// generated affixes stay phonotactically valid.
+func randomAffix(rng *rand.Rand) g.Affix {
+	cs := []string{"b", "r", "t", "kt", "rf", "lk", "tk"}[rng.Intn(7)]
+	atype := []g.AffixType{g.Type1Affix, g.Type2Affix, g.Type3Affix}[rng.Intn(3)]
+	return g.Affix{Type: atype, Degree: rng.Intn(9) + 1, Consonant: cs}
 }

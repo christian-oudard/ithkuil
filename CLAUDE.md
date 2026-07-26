@@ -26,9 +26,9 @@ repo root.
 
 ## What This Project Is
 
-A Go implementation of the Ithkuil V4 ("Malëuţřait") constructed language grammar (v1.3.1, 2023). The system parses formatives (words) into their morphological slots, looks up roots in a JSON lexicon, and renders glosses. There is also an MCP server that exposes the same functionality to AI assistants.
+A Go implementation of the Ithkuil V4 constructed language grammar (v1.3.1, 2023). The system parses formatives (words) into their morphological slots, looks up roots in a JSON lexicon, and renders glosses. There is also an MCP server that exposes the same functionality to AI assistants.
 
-The canonical test word is the language's name for itself: "Malëuţřait".
+The canonical test word is "Maţřëullait", the community nickname for v4 (not an official name — Quijada calls every version "Iţkuil"). It replaced an earlier form, "Malëuţřait", which has the same morphemes with the SYS affix in Slot VII instead of Slot V.
 
 ## Architecture
 

@@ -124,9 +124,10 @@ func TestFormative_ConsonantInitial(t *testing.T) {
 	}
 }
 
-func TestFormative_CanonicalWord(t *testing.T) {
-	// "Malëuţřait" is the language's name for itself — the canonical
-	// V4 test word. Lowercased: "malëuţřait".
+func TestFormative_SlotVIIAffixPair(t *testing.T) {
+	// Two Slot VII affixes after a default Ca, the shape the community
+	// endonym had before the SYS affix moved to Slot V. Surface:
+	// "malëuţřait".
 	// Conjuncts: ["m", "a", "l", "ëu", "ţř", "ai", "t"]
 	// Cr=m, Vr=a, Ca=l, Vx=ëu/Cs=ţř (affix 1), Vx=ai/Cs=t (affix 2).
 	// Stress is on the penultimate syllable "ai" — no accent marks,
@@ -153,6 +154,57 @@ func TestFormative_CanonicalWord(t *testing.T) {
 	}
 	if un, ok := f.Final.(g.UnframedNominal); !ok || un.Case != g.THM {
 		t.Errorf("Final = %v, want UnframedNominal{THM}", f.Final)
+	}
+}
+
+func TestFormative_CanonicalWord(t *testing.T) {
+	// "Maţřëullait" is the current community endonym, and the canonical
+	// V4 test word. Lowercased: "maţřëullait".
+	// Conjuncts: ["m", "a", "ţř", "ëu", "ll", "ai", "t"]
+	// Cr=m, Vr=a, Cs=ţř/Vx=ëu (Slot V, reversed order), Ca=ll,
+	// Vx=ai/Cs=t (Slot VII).
+	//
+	// It differs from "malëuţřait" only in that the SYS affix sits in
+	// Slot V, applying to the stem alone rather than having scope over
+	// the Ca complex. The geminated -ll- is the marker that Slot V is
+	// filled; the underlying Ca is still the default.
+	f, err := Formative("maţřëullait")
+	if err != nil {
+		t.Fatalf("Formative(canonical Maţřëullait) error: %v", err)
+	}
+	if cr, ok := f.Root.(g.CrRoot); !ok || cr.Cluster != "m" {
+		t.Errorf("Root = %v, want CrRoot{Cluster: m}", f.Root)
+	}
+	if f.SlotVI != g.DefaultSlotVI {
+		t.Errorf("Ca → %v, want default", f.SlotVI)
+	}
+	if len(f.SlotV) != 1 {
+		t.Fatalf("Slot V = %v, want 1 affix", f.SlotV)
+	}
+	if f.SlotV[0] != (g.Affix{Type: g.Type2Affix, Degree: 5, Consonant: "ţř"}) {
+		t.Errorf("Slot V affix = %v", f.SlotV[0])
+	}
+	if len(f.SlotVII) != 1 {
+		t.Fatalf("Slot VII = %v, want 1 affix", f.SlotVII)
+	}
+	if f.SlotVII[0] != (g.Affix{Type: g.Type2Affix, Degree: 1, Consonant: "t"}) {
+		t.Errorf("Slot VII affix = %v", f.SlotVII[0])
+	}
+	if un, ok := f.Final.(g.UnframedNominal); !ok || un.Case != g.THM {
+		t.Errorf("Final = %v, want UnframedNominal{THM}", f.Final)
+	}
+	// Render canonicalizes to the Cc-shortcut spelling rather than the
+	// community's long form, so assert the round-trip instead of the
+	// surface: whatever it emits must parse back to the same slots.
+	back, err := Formative(render.Formative(f))
+	if err != nil {
+		t.Fatalf("re-parse of rendered form: %v", err)
+	}
+	if len(back.SlotV) != 1 || back.SlotV[0] != f.SlotV[0] {
+		t.Errorf("round-trip Slot V = %v, want %v", back.SlotV, f.SlotV)
+	}
+	if len(back.SlotVII) != 1 || back.SlotVII[0] != f.SlotVII[0] {
+		t.Errorf("round-trip Slot VII = %v, want %v", back.SlotVII, f.SlotVII)
 	}
 }
 

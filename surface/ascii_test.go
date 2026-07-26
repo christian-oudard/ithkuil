@@ -38,7 +38,7 @@ func TestFromASCII(t *testing.T) {
 		{"mal", "mal"},
 		{"", ""},
 		// Mixed: the test corpus word.
-		{"Maleeut,rqait", "Malëuţřait"},
+		{"Mat,rqeeullait", "Maţřëullait"},
 		// Starters followed by a non-digraph commit as themselves.
 		{"ta", "ta"},
 		{"ca", "ca"},
@@ -111,7 +111,7 @@ func TestToASCII(t *testing.T) {
 		{"ţ", "t,"},
 		{"š", "sq"},
 		{"ẓ", "dz"},
-		{"Malëuţřait", "Maleeut,rqait"},
+		{"Maţřëullait", "Mat,rqeeullait"},
 		{"", ""},
 		// Non-digraph chars pass through.
 		{"abc", "abc"},
@@ -176,10 +176,10 @@ func TestInputState(t *testing.T) {
 		{"aae", "aae", "ä", "e"},
 		// Full word — the final `t` is a starter so it sits in
 		// pending until the user types another char or commits.
-		{"corpus", "Maleeut,rqait", "Malëuţřai", "t"},
+		{"corpus", "Mat,rqeeullait", "Maţřëullai", "t"},
 		// Without the trailing `t`, the `i` commits immediately
 		// (not a starter), leaving no pending.
-		{"corpus-no-t", "Maleeut,rqai", "Malëuţřai", ""},
+		{"corpus-no-t", "Mat,rqeeullai", "Maţřëullai", ""},
 	}
 	for _, c := range cases {
 		var s InputState

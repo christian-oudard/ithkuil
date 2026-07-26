@@ -54,7 +54,7 @@ func (gl *Glosser) Formative(f g.Formative) string {
 		gl.rootBody(f),
 		gl.rootSuffix(f.Root),
 		gl.affixes(f.SlotV),
-		slotVI(f.SlotVI),
+		slotVI(f.SlotVI, len(f.SlotV) > 0),
 		gl.affixes(f.SlotVII),
 		slotVIII(f.SlotVIII, isVerbalFinal(f.Final)),
 		finalSlotIX(f.Final),
@@ -302,8 +302,18 @@ func slotIV(s g.SlotIV) string {
 	return fmt.Sprintf("%s/%s/%s", s.Function, s.Specification, s.Context)
 }
 
-func slotVI(s g.SlotVI) string {
+// slotVI renders the Ca complex, suppressing components at their
+// default value. slotVFilled forces a "{Ca}" placeholder for an
+// all-default Ca: Slot V affixes apply to the stem without scope over
+// Ca, Slot VII affixes have scope over it, and position in the gloss
+// is what tells them apart — so the Ca must stay visible as the
+// boundary between them. The surface does the same thing, geminating
+// the Ca whenever Slot V is filled.
+func slotVI(s g.SlotVI, slotVFilled bool) string {
 	if s == g.DefaultSlotVI {
+		if slotVFilled {
+			return "{Ca}"
+		}
 		return ""
 	}
 	parts := []string{}

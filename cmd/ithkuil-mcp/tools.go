@@ -26,7 +26,7 @@ func (s *server) registerTools(srv *mcp.Server) {
 			"and per-word phonotactic validation. By default (verbose=false) descriptions " +
 			"are omitted; use grammar/lexicon tools for separate lookups. Set verbose=true " +
 			"to include inline category names, meanings, and root definition. " +
-			"Example: text=\"Malëuţřait\".",
+			"Example: text=\"Maţřëullait\".",
 	}, s.analyze)
 
 	mcp.AddTool(srv, &mcp.Tool{
@@ -35,10 +35,13 @@ func (s *server) registerTools(srv *mcp.Server) {
 			"Slots are separated by '-', sub-fields by '/' (S2/CPT, DYN/OBJ) or '.' (Ca: " +
 			"MSS.G.RPV). The root is a lowercase consonant cluster (Cr), or (ABBREV)/degree " +
 			"for a CsRoot, or (1m+2p) for a RefRoot. Affixes write Cs/degree or ABBREV/degree, " +
-			"with an optional :2 or :3 type tag. The returned surface is canonical. By default " +
+			"with an optional _2 or _3 type tag. Affixes placed before the Ca land in Slot V " +
+			"(applying to the stem alone); write '{Ca}' for an all-default Ca that still needs " +
+			"to mark that boundary. The returned surface is canonical. By default " +
 			"(verbose=false) descriptions are omitted. Set verbose=true for inline names and " +
 			"meanings. Examples: expression=\"ml\" → \"wamla\"; \"S2/CPT-ml-ERG\" → \"wimlo\"; " +
-			"\"S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG\" → \"imlötrebo\"; \"(CTR)/1\" → \"ëilal\".",
+			"\"S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG\" → \"imlötrebo\"; \"(CTR)/1\" → \"ëilal\"; " +
+			"\"m-SYS/5_2-{Ca}-DCD/1_2\" → \"wamëu'ţřait\".",
 	}, s.compose)
 
 	mcp.AddTool(srv, &mcp.Tool{
@@ -194,7 +197,7 @@ func (s *server) analyze(_ context.Context, _ *mcp.CallToolRequest, in analyzeIn
 // --------------------------------------------------------------------
 
 type composeIn struct {
-	Expression string `json:"expression" jsonschema:"gloss-style compose expression; slots separated by '-', sub-fields by '/' or '.'; bare cluster like 'ml' or full 'S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG'"`
+	Expression string `json:"expression" jsonschema:"gloss-style compose expression; slots separated by '-', sub-fields by '/' or '.'; affixes before the Ca land in Slot V, with '{Ca}' marking an all-default Ca; bare cluster like 'ml' or full 'S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG'"`
 	Verbose    bool   `json:"verbose,omitempty" jsonschema:"include category names, meanings, and root definition (default false)"`
 }
 

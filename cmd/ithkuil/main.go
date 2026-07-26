@@ -67,8 +67,12 @@ Subcommands:
                        --short / -s        one-line surface/type/gloss
   compose EXPR       Build a surface formative from a gloss-style
                      expression. Slots separated by "-"; sub-fields
-                     by "/" or "." (for Ca). Examples: "ml",
-                     "S2/CPT-ml-ERG", "S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG".
+                     by "/" or "." (for Ca). Affixes before the Ca
+                     land in Slot V; write "{Ca}" for an all-default
+                     Ca that still needs to mark that boundary.
+                     Examples: "ml", "S2/CPT-ml-ERG",
+                     "S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG",
+                     "m-SYS/5_2-{Ca}-DCD/1_2".
   grammar [Q]        Look up grammar inventory.
                        --category / -c CAT
                        --exact    / -e

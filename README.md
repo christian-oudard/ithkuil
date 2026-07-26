@@ -2,16 +2,27 @@
 
 A Go implementation of the grammar of **New Ithkuil** (v1.3.1, 2023), the constructed language created by John Quijada. Ithkuil is a philosophical language designed to express deeper levels of human cognition with precision and conciseness. It features a highly regular morpho-phonological system.
 
-This project implements a parser, renderer, and glosser for Ithkuil formatives and adjuncts. In New Ithkuil, the language's name for itself is *Malëuţřait*. The goal of this codebase is to serve as a canonical programmatic reference for the language's grammar.
+This project implements a parser, renderer, and glosser for Ithkuil formatives and adjuncts. The goal of this codebase is to serve as a canonical programmatic reference for the language's grammar.
 
 ## Version History
 
-| Version | Year | Native Name | Description |
-|---------|------|-------------|-------------|
+| Version | Year | Name | Description |
+|---------|------|------|-------------|
 | I | 2004 | Iţkuîl | Original grammar with consonant grades and biliteral roots |
 | II | 2007 | Ilákš | Revised with tonal vowel system |
-| III | 2011 | Elartkha | Major redesign with Designation, Pattern, and Sanction |
-| **IV** | **2023** | **Malëuţřait** | **Current version - implemented here (morphology v1.3.1)** |
+| III | 2011 | Iţkuil | Major redesign with Designation, Pattern, and Sanction |
+| **IV** | **2023** | **Iţkuil** | **Current version - implemented here (morphology v1.3.1)** |
+
+Quijada calls all four versions *Iţkuil*, disambiguating v3 and v4 in running
+text as *êpal Iţkuil* and *wiosaḑca Iţkuil*. The community nicknames *Elartkʰa*
+(v3) and *Maţřëullait* (v4) are not official names, and Quijada has said so
+explicitly; they are in wide use anyway, and *Maţřëullait* is this project's
+canonical test word.
+
+*Maţřëullait* replaced an earlier form, *Malëuţřait*, in late 2024. The two
+words are the same morphemes: the SYS affix moved from Slot VII to Slot V, so
+it applies to the stem alone instead of having scope over the Ca complex, and
+the Ca geminates (`-l-` → `-ll-`) to mark that Slot V is filled.
 
 
 ## What This Project Does
@@ -19,17 +30,17 @@ This project implements a parser, renderer, and glosser for Ithkuil formatives a
 Given an Ithkuil word or sentence, the parser decomposes it into its morphological slots, looks up roots and affixes in the lexicon, and renders a learner-oriented breakdown:
 
 ```
-$ ithkuil analyze Malëuţřait
-malëuţřait
+$ ithkuil analyze Maţřëullait
+maţřëullait
   PHONETIC  SLOT  ENCODES
    ∅        Vv    S1 / PRC
    m-       Cr    Root "m"
   -a-       Vr    STA / BSC / EXS
-  -l-       Ca    UNI / CSL / M / DEL / NRM
-  -ëu-      Vx₁   DEG5
-  -ţř-      Cs₁   SYS
-  -ai-      Vx₂   DEG1
-  -t        Cs₂   DCD
+  -ţř-      Cs₅₁  SYS
+  -ëu-      Vx₅₁  DEG5
+  -ll-      Ca    UNI / CSL / M / DEL / NRM
+  -ai-      Vx₁   DEG1
+  -t        Cs₁   DCD
    ∅        Vc    THM
   ROOT
   "m" / S1 / BSC — stem 1: linguistic utterance for communication
@@ -37,12 +48,12 @@ malëuţřait
   version        PRC    Processual              the act/state as a process
   function       STA    Static                  entity as a state, condition, or quality
   context        EXS    Existential             pure existence (default ontology)
+  affix          SYS/5  Networks & Systems      A feedback-driven/self-sustaining/autopoietic system based on X
   configuration  UNI    Uniplex                 a single instance
   affiliation    CSL    Consolidative           no specific affiliation among members
   perspective    M      Monadic                 single instance/individual
   extension      DEL    Delimitive              default — bounded, demarcated
   essence        NRM    Normal                  the entity as it actually exists
-  affix          SYS/5  Networks & Systems      A feedback-driven/self-sustaining/autopoietic system based on X
   affix          DCD/1  Deictic Demonstratives  this
   case           THM    Thematic                inactive participant (CONTENT role)
 ```
@@ -114,14 +125,14 @@ nix develop              # Enter dev shell with go on PATH
 go install ./cmd/ithkuil ./cmd/ithkuil-mcp ./cmd/ithkuil-input
 ```
 
-Then `ithkuil analyze Malëuţřait` works from anywhere on PATH.
+Then `ithkuil analyze Maţřëullait` works from anywhere on PATH.
 
 For development:
 
 ```bash
 go build ./...                              # Build everything
 go test ./...                               # Run the test suite
-go run ./cmd/ithkuil analyze Malëuţřait     # Run without installing
+go run ./cmd/ithkuil analyze Maţřëullait     # Run without installing
 ```
 
 ### ASCII Input Method
@@ -130,7 +141,7 @@ go run ./cmd/ithkuil analyze Malëuţřait     # Run without installing
 
 ```bash
 ithkuil-input            # interactive raw-mode TUI
-echo 't,Maleeut,rqait' | ithkuil-input   # batch: ASCII in, Unicode out
+echo 'Mat,rqeeullait' | ithkuil-input   # batch: ASCII in, Unicode out
 ```
 
 | | Char | ASCII | Char | ASCII | Char | ASCII | Char | ASCII | Char | ASCII |
@@ -145,13 +156,13 @@ Vowel runs use right-grouping: `eee`→eë, `eeee`→ëë. Pending characters ar
 ### CLI Subcommands
 
 ```bash
-ithkuil analyze Malëuţřait              # full slot breakdown (above)
-ithkuil analyze --short Malëuţřait      # one-line surface / type / gloss
+ithkuil analyze Maţřëullait              # full slot breakdown (above)
+ithkuil analyze --short Maţřëullait      # one-line surface / type / gloss
 ithkuil analyze --polygraph kala mala   # multi-column slot polygraph
 
 ithkuil compose --stem=S2 --case=ERG ml # build a formative → "emlalo"
 
-ithkuil diff malëuţřait melëuţřait      # slot-by-slot diff
+ithkuil diff maţřëullait meţřëullait      # slot-by-slot diff
 ithkuil diff a b c -- a b d             # aligned sentence diff
 
 ithkuil grammar Ergative --exact        # look up by abbreviation

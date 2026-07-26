@@ -17,7 +17,7 @@ func TestSplitConjuncts(t *testing.T) {
 		{"ţřai", []string{"ţř", "ai"}},
 		{"emal", []string{"e", "m", "a", "l"}},
 		{"", nil},
-		{"Malëuţřait", []string{"M", "a", "l", "ëu", "ţř", "ai", "t"}},
+		{"Maţřëullait", []string{"M", "a", "ţř", "ëu", "ll", "ai", "t"}},
 	}
 	for _, c := range cases {
 		got := surface.SplitConjuncts(c.in)
@@ -36,8 +36,8 @@ func TestNormalizeAccents(t *testing.T) {
 		{"é", "e"},
 		{"â", "ä"},
 		{"ô", "ö"},
-		{"Malëuţřait", "Malëuţřait"},
-		{"Maléuţřait", "Maleuţřait"},
+		{"Maţřëullait", "Maţřëullait"},
+		{"Maţřéullait", "Maţřeullait"},
 	}
 	for _, c := range cases {
 		if got := NormalizeAccents(c.in); got != c.want {

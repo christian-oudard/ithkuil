@@ -2,8 +2,10 @@ package compose
 
 import (
 	"path/filepath"
+	"slices"
 	"testing"
 
+	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
@@ -146,5 +148,84 @@ func TestFormative_Errors(t *testing.T) {
 				t.Errorf("Formative(%q) succeeded, want error", c.in)
 			}
 		})
+	}
+}
+
+// TestFormative_SlotVAffixes checks that the "{Ca}" boundary marker
+// routes affixes to Slot V (before the Ca) instead of Slot VII, and
+// that a spelled-out Ca complex acts as the same boundary.
+func TestFormative_SlotVAffixes(t *testing.T) {
+	lex := mustLex(t)
+	cases := []struct {
+		name          string
+		in            string
+		slotV, slotV2 []g.Affix
+	}{
+		{
+			name:  "no boundary — everything is Slot VII",
+			in:    "m-ţř/5_2-t/1_2",
+			slotV: nil,
+			slotV2: []g.Affix{
+				{Type: g.Type2Affix, Degree: 5, Consonant: "ţř"},
+				{Type: g.Type2Affix, Degree: 1, Consonant: "t"},
+			},
+		},
+		{
+			name:   "default Ca marker splits the affixes",
+			in:     "m-ţř/5_2-{Ca}-t/1_2",
+			slotV:  []g.Affix{{Type: g.Type2Affix, Degree: 5, Consonant: "ţř"}},
+			slotV2: []g.Affix{{Type: g.Type2Affix, Degree: 1, Consonant: "t"}},
+		},
+		{
+			name:   "spelled-out Ca splits the affixes",
+			in:     "m-ţř/5_2-MSS.G-t/1_2",
+			slotV:  []g.Affix{{Type: g.Type2Affix, Degree: 5, Consonant: "ţř"}},
+			slotV2: []g.Affix{{Type: g.Type2Affix, Degree: 1, Consonant: "t"}},
+		},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			f, err := Formative(c.in, lex.Affixes)
+			if err != nil {
+				t.Fatalf("Formative(%q): %v", c.in, err)
+			}
+			if !slices.Equal(f.SlotV, c.slotV) {
+				t.Errorf("SlotV = %v, want %v", f.SlotV, c.slotV)
+			}
+			if !slices.Equal(f.SlotVII, c.slotV2) {
+				t.Errorf("SlotVII = %v, want %v", f.SlotVII, c.slotV2)
+			}
+		})
+	}
+}
+
+// TestFormative_MaţřëullaitRoundTrip closes the loop on the community
+// endonym and on the older spelling it replaced: surface → canonical
+// gloss → compose must land back on the same formative. The two words
+// differ only in which side of the Ca the SYS affix sits on, so this
+// fails the moment the gloss stops carrying the Ca boundary.
+func TestFormative_MaţřëullaitRoundTrip(t *testing.T) {
+	lex := mustLex(t)
+	gl := &gloss.Glosser{Lex: lex, Canonical: true}
+	cases := []struct{ surface, want string }{
+		{"maţřëullait", "m-SYS/5_2-{Ca}-DCD/1_2"},
+		{"malëuţřait", "m-SYS/5_2-DCD/1_2"},
+	}
+	for _, c := range cases {
+		f, err := fullparse.Formative(c.surface)
+		if err != nil {
+			t.Fatalf("fullparse.Formative(%q): %v", c.surface, err)
+		}
+		got := gl.Formative(f)
+		if got != c.want {
+			t.Fatalf("gloss(%q) = %q, want %q", c.surface, got, c.want)
+		}
+		back, err := Formative(got, lex.Affixes)
+		if err != nil {
+			t.Fatalf("compose.Formative(%q): %v", got, err)
+		}
+		if again := gl.Formative(back); again != got {
+			t.Errorf("round-trip of %q: %q → %q", c.surface, got, again)
+		}
 	}
 }
