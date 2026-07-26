@@ -740,7 +740,8 @@ func applyDefaultElisions(l *Layout, f g.Formative) {
 	}
 
 	canVv := canElideLeadingVv(l, f)
-	canVc := canElideTrailingTHMVc(l, f) || canElideMonosyllabicVerbalVc(l, f)
+	canVc := (canElideTrailingTHMVc(l, f) || canElideMonosyllabicVerbalVc(l, f)) &&
+		validWordFinalAfterVcElision(l)
 	slack := vowelCount(l) - requiredSyllables(f.Final)
 	if slack < 0 {
 		slack = 0
@@ -825,6 +826,31 @@ func canElideLeadingVv(l *Layout, f g.Formative) bool {
 		return false
 	}
 	return strings.HasPrefix(l.Vv, "a") && l.Vv == "a"
+}
+
+// validWordFinalAfterVcElision reports whether dropping Vc would leave
+// a legal word. The conjunct in front of Vc lands at the end of the
+// word, where §4.1-§4.5 permit a narrower set than medial position
+// does: "hňw" is a well-formed Cn, but §4.1 lets no word end in -w.
+// §1.4 names the remedy directly, which is to fill Slot IX instead.
+//
+// This is the mirror of the word-initial check in canElideLeadingVv.
+func validWordFinalAfterVcElision(l *Layout) bool {
+	var trailing string
+	switch {
+	case l.Cn != "":
+		trailing = l.Cn
+	case len(l.SlotVII) > 0:
+		trailing = l.SlotVII[len(l.SlotVII)-1].Cs
+	default:
+		// No Ca either means a shortcut form, whose last conjunct is a
+		// vowel; nothing to check.
+		trailing = l.Ca
+	}
+	if trailing == "" {
+		return true
+	}
+	return validation.ValidateClusterAt(validation.Final, trailing).Valid
 }
 
 func canElideTrailingTHMVc(l *Layout, f g.Formative) bool {

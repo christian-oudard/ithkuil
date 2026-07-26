@@ -418,8 +418,11 @@ func TestRenderSPT_ShortcutForm(t *testing.T) {
 	if !ok {
 		t.Fatalf("RenderSPT(8, SPTHour): ok=false")
 	}
-	// "wučkerw": w + u + čk(8) + e(T1D3) + rw(SPT) + a(THM, elided).
-	want := "wučkerw"
+	// "wučkerwa": w + u + čk(8) + e(T1D3) + rw(SPT) + a(THM).
+	// The THM "a" cannot elide here: §2.22 lets w appear only as the
+	// last member of a conjunct and only when a vowel follows it, and
+	// §4.1 bars a word-final -w outright.
+	want := "wučkerwa"
 	if got != want {
 		t.Errorf("RenderSPT(8, SPTHour) = %q, want %q", got, want)
 	}
