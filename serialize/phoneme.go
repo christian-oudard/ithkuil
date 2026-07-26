@@ -1,21 +1,15 @@
-// Package serialize provides a compact binary codec for Ithkuil
-// grammatical words — the same data the gloss canonical format
-// represents in text, encoded as bytes.
+// Package serialize provides a binary codec for Ithkuil words: the
+// grammatical structure a formative parses into, written as bytes.
 //
-// Layout principles:
+// The point is to store meaning rather than pronunciation. A
+// grammar.Formative is the parsed word, and the romanized surface is
+// one rendering of it; this codec writes the structure directly, so
+// nothing depends on orthographic or phonotactic detail.
 //
-//   - One byte per phoneme. Cr roots, Cs roots, affix Cs, and
-//     referential C1 clusters all encode as a 1-byte length prefix
-//     followed by N phoneme bytes (max 6 from phonotactics).
-//   - One byte per enum value. All grammatical enums (Case, Aspect,
-//     Configuration, etc.) fit in 1 byte with substantial headroom.
-//   - Sum types use a leading variant-tag byte; the payload depends
-//     on the variant.
-//   - Tokens are prefixed with a one-byte type tag (TokenFormative,
-//     TokenBias, etc.) so the decoder can dispatch.
-//
-// No bit-packing inside bytes — gzip/zstd handles whatever bytes
-// remain compressible.
+// The encoding is version-independent: roots and affixes are written
+// as phoneme clusters, never as lexicon indices, so a file stays
+// readable when the lexicon is updated. See formative.go for the
+// layout rules and what they buy.
 package serialize
 
 import (
@@ -65,44 +59,52 @@ func DecodePhoneme(b byte) (string, error) {
 	return byteToPhoneme[b], nil
 }
 
-// EncodeCluster encodes a phoneme cluster (e.g. "ml", "ţř", "kpt") as
-// a length-prefixed byte run. Each rune in the cluster must be a
-// recognized phoneme. Max length 6 per the phonotactics; this codec
-// allows up to 255 since the length is a full byte.
+// clusterEnd marks the last phoneme of a cluster. Phoneme values run
+// 0..39, so bit 6 is free to carry the terminator and no length prefix
+// is needed: a two-consonant cluster costs two bytes.
+const clusterEnd = 0x40
+
+// EncodeCluster encodes a phoneme cluster (e.g. "ml", "ţř", "kpt").
+// Each rune must be a recognized phoneme. Clusters are never empty.
 func EncodeCluster(cluster string) ([]byte, error) {
+	return putCluster(nil, cluster)
+}
+
+// DecodeCluster reads a cluster from the head of buf and returns
+// (cluster, bytes-consumed, error).
+func DecodeCluster(buf []byte) (string, int, error) {
+	return getCluster(buf)
+}
+
+func putCluster(out []byte, cluster string) ([]byte, error) {
 	runes := []rune(cluster)
-	if len(runes) > 255 {
-		return nil, fmt.Errorf("cluster too long for byte length: %d", len(runes))
+	if len(runes) == 0 {
+		return nil, fmt.Errorf("empty cluster")
 	}
-	out := make([]byte, 1, 1+len(runes))
-	out[0] = byte(len(runes))
-	for _, r := range runes {
+	for i, r := range runes {
 		b, err := EncodePhoneme(string(r))
 		if err != nil {
 			return nil, fmt.Errorf("cluster %q: %w", cluster, err)
+		}
+		if i == len(runes)-1 {
+			b |= clusterEnd
 		}
 		out = append(out, b)
 	}
 	return out, nil
 }
 
-// DecodeCluster reads a length-prefixed cluster from buf and returns
-// (cluster, bytes-consumed, error).
-func DecodeCluster(buf []byte) (string, int, error) {
-	if len(buf) == 0 {
-		return "", 0, fmt.Errorf("empty buffer reading cluster length")
-	}
-	n := int(buf[0])
-	if len(buf) < 1+n {
-		return "", 0, fmt.Errorf("cluster wants %d bytes, have %d", n, len(buf)-1)
-	}
-	out := make([]rune, 0, n)
-	for i := 0; i < n; i++ {
-		s, err := DecodePhoneme(buf[1+i])
+func getCluster(buf []byte) (string, int, error) {
+	var out []rune
+	for i, b := range buf {
+		s, err := DecodePhoneme(b &^ clusterEnd)
 		if err != nil {
 			return "", 0, fmt.Errorf("cluster byte %d: %w", i, err)
 		}
 		out = append(out, []rune(s)...)
+		if b&clusterEnd != 0 {
+			return string(out), i + 1, nil
+		}
 	}
-	return string(out), 1 + n, nil
+	return "", 0, fmt.Errorf("unterminated cluster")
 }

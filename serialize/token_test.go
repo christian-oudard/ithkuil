@@ -188,6 +188,168 @@ func TestFuzz_BinaryRoundTrip(t *testing.T) {
 	}
 }
 
+// TestFinal_AllValues covers the flat Final byte, which packs three
+// sum-type variants into one byte with no variant tag. Every case in
+// both framings and every illocution must survive.
+func TestFinal_AllValues(t *testing.T) {
+	var finals []g.Final
+	for _, c := range g.AllCases {
+		finals = append(finals, g.UnframedNominal{Case: c}, g.FramedVerbal{Case: c})
+	}
+	for _, v := range g.AllValidations {
+		finals = append(finals, g.UnframedVerbal{Vk: g.Assertive{Validation: v}})
+	}
+	for _, k := range leafVk {
+		finals = append(finals, g.UnframedVerbal{Vk: k})
+	}
+	for _, want := range finals {
+		b, err := putFinal(nil, want)
+		if err != nil {
+			t.Errorf("putFinal(%+v): %v", want, err)
+			continue
+		}
+		if len(b) != 1 {
+			t.Errorf("putFinal(%+v) wrote %d bytes, want 1", want, len(b))
+		}
+		got, err := getFinal(b[0])
+		if err != nil {
+			t.Errorf("getFinal(%d): %v", b[0], err)
+			continue
+		}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("Final round-trip: %+v → %+v", want, got)
+		}
+	}
+}
+
+// TestSlotVIII_AllValues covers every Vn variant against every Mood,
+// including the Aspect values above 31 and the Level Absolute flag —
+// the three cases that leave the one-byte form.
+func TestSlotVIII_AllValues(t *testing.T) {
+	var slots []g.SlotVIII
+	for _, m := range g.AllMoods {
+		for _, v := range g.AllValences {
+			slots = append(slots, g.VnCnValence{Valence: v, MoodScope: m})
+		}
+		for _, p := range g.AllPhases {
+			slots = append(slots, g.VnCnPhase{Phase: p, MoodScope: m})
+		}
+		for _, e := range g.AllEffects {
+			slots = append(slots, g.VnCnEffect{Effect: e, MoodScope: m})
+		}
+		for _, l := range g.AllLevels {
+			slots = append(slots,
+				g.VnCnLevel{Level: l, MoodScope: m, Absolute: false},
+				g.VnCnLevel{Level: l, MoodScope: m, Absolute: true})
+		}
+		for _, a := range g.AllAspects {
+			slots = append(slots, g.VnCnAspect{Aspect: a, MoodScope: m})
+		}
+	}
+	for _, want := range slots {
+		b, err := putSlotVIII(nil, want)
+		if err != nil {
+			t.Errorf("putSlotVIII(%+v): %v", want, err)
+			continue
+		}
+		got, n, err := getSlotVIII(b)
+		if err != nil {
+			t.Errorf("getSlotVIII(%+v): %v", want, err)
+			continue
+		}
+		if n != len(b) {
+			t.Errorf("%+v: consumed %d of %d bytes", want, n, len(b))
+		}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("SlotVIII round-trip: %+v → %+v", want, got)
+		}
+	}
+}
+
+// TestCa_AllValues covers the Slot VI selector byte and its
+// mixed-radix escape across the whole 3840-value space.
+func TestCa_AllValues(t *testing.T) {
+	for _, cfg := range g.AllConfigurations {
+		for _, aff := range g.AllAffiliations {
+			for _, per := range g.AllPerspectives {
+				for _, ext := range g.AllExtensions {
+					for _, ess := range g.AllEssences {
+						want := g.SlotVI{
+							Configuration: cfg, Affiliation: aff,
+							Perspective: per, Extension: ext, Essence: ess,
+						}
+						b := putCa(nil, want)
+						got, n, err := getCa(b)
+						if err != nil {
+							t.Fatalf("getCa(%+v): %v", want, err)
+						}
+						if n != len(b) {
+							t.Errorf("%+v: consumed %d of %d bytes", want, n, len(b))
+						}
+						if got != want {
+							t.Errorf("Ca round-trip: %+v → %+v", want, got)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+// TestNonFormativeEscape pins the invariant that lets a formative go
+// untagged: no formative may encode to the two-byte prefix that
+// introduces every other token. The near miss is a concatenated
+// formative with a plain root, which shares the first byte.
+func TestNonFormativeEscape(t *testing.T) {
+	for _, c := range []g.ConcatenationStatus{g.Type1, g.Type2} {
+		f := g.MinimalFormative("ml")
+		f.Concat = c
+		b, err := putFormative(nil, f)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if b[0] != nonFormative[0] {
+			t.Fatalf("expected a first-byte collision to test, got %x", b[0])
+		}
+		if b[1] == nonFormative[1] {
+			t.Errorf("Concat %v encoded to the non-formative prefix %x", c, b[:2])
+		}
+	}
+	// A stream mixing both must survive, since it is the escape that
+	// keeps the decoder's dispatch unambiguous.
+	f := g.MinimalFormative("ml")
+	f.Concat = g.Type1
+	tokens := []tokenize.WordToken{
+		tokenize.FormativeWord{Formative: f},
+		tokenize.BiasWord{Bias: g.DOL},
+		tokenize.FormativeWord{Formative: g.MinimalFormative("m")},
+	}
+	b, err := MarshalTokens(tokens)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := UnmarshalTokens(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(got, tokens) {
+		t.Errorf("mixed stream\n  want: %+v\n  got:  %+v", tokens, got)
+	}
+}
+
+// TestDefaultElision pins the compaction the layout exists for: a
+// formative with everything at its grammatical default must cost only
+// the header byte plus its root cluster.
+func TestDefaultElision(t *testing.T) {
+	b, err := putFormative(nil, g.MinimalFormative("ml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(b) != 3 {
+		t.Errorf("minimal formative encoded to %d bytes (%x), want 3", len(b), b)
+	}
+}
+
 func randomFormative(rng *rand.Rand) g.Formative {
 	f := g.MinimalFormative("ml")
 	cr := f.Root.(g.CrRoot)
@@ -207,6 +369,21 @@ func randomFormative(rng *rand.Rand) g.Formative {
 		cr.SlotIV.Context = []g.Context{g.EXS, g.FNC, g.RPS, g.AMG}[rng.Intn(4)]
 	}
 	f.Root = cr
+	switch rng.Intn(10) {
+	case 8:
+		f.Root = g.CsRoot{
+			Cs: "kt", Degree: rng.Intn(10), Version: cr.Version,
+			Function: cr.SlotIV.Function, Context: cr.SlotIV.Context,
+		}
+	case 9:
+		f.Root = g.RefRoot{C1: "l", Version: cr.Version, SlotIV: cr.SlotIV}
+	}
+	if rng.Intn(10) < 2 {
+		f.Concat = []g.ConcatenationStatus{g.Type1, g.Type2}[rng.Intn(2)]
+	}
+	if rng.Intn(10) < 3 {
+		f.SlotV = randomAffixes(rng)
+	}
 	if rng.Intn(10) < 4 {
 		f.SlotVI = g.SlotVI{
 			Configuration: g.AllConfigurations[rng.Intn(len(g.AllConfigurations))],
@@ -217,11 +394,7 @@ func randomFormative(rng *rand.Rand) g.Formative {
 		}
 	}
 	if rng.Intn(10) < 3 {
-		cs := []string{"b", "r", "t", "kt", "rf", "lk", "tk"}[rng.Intn(7)]
-		atype := []g.AffixType{g.Type1Affix, g.Type2Affix, g.Type3Affix}[rng.Intn(3)]
-		f.SlotVII = []g.Affix{{
-			Type: atype, Degree: rng.Intn(9) + 1, Consonant: cs,
-		}}
+		f.SlotVII = randomAffixes(rng)
 	}
 	if rng.Intn(10) < 3 {
 		val := g.AllValences[rng.Intn(len(g.AllValences))]
@@ -240,6 +413,21 @@ func randomFormative(rng *rand.Rand) g.Formative {
 		f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
 	}
 	return f
+}
+
+// randomAffixes builds a run of one to three affixes, exercising the
+// continuation bit that lets an affix run carry no count prefix.
+func randomAffixes(rng *rand.Rand) []g.Affix {
+	n := rng.Intn(3) + 1
+	out := make([]g.Affix, n)
+	for i := range out {
+		out[i] = g.Affix{
+			Type:      []g.AffixType{g.Type1Affix, g.Type2Affix, g.Type3Affix}[rng.Intn(3)],
+			Degree:    rng.Intn(9) + 1,
+			Consonant: []string{"b", "r", "t", "kt", "rf", "lk", "tk"}[rng.Intn(7)],
+		}
+	}
+	return out
 }
 
 // equalTokens compares two WordTokens for structural equality. Uses

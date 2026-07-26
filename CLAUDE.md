@@ -63,7 +63,9 @@ Go packages at the repo root:
 - `semantics/` - Context-dependent labels derived from grammar values: Mood vs CaseScope, V_N vs V_H, the Vn category for a given Cn. Never looks at surface text.
 - `fullparse/` - Turns surface text into a `grammar.Formative` (handles stress detection, returns errors). This is `slots.Parse` ∘ `slots.ToGrammar`.
 - `render/` - Renders a `grammar.Formative` back to surface text: `slots.FromGrammar` ∘ `slots.Render`.
-- `serialize/` - Compact binary encoding of parsed tokens.
+- `serialize/` - Binary encoding of parsed tokens. Default-eliding and
+  byte-aligned; no lexicon indices, so files outlive lexicon updates.
+  `formative.go` documents why the layout is shaped the way it is.
 - `gloss/` - Human-readable morphological glossing.
 - `validation/` - Phonotactic constraint checking (cluster lengths, vowel sequences, stress).
 - `tokenize/` - Classifies words in a sentence into formatives, referentials, bias adjuncts, etc.

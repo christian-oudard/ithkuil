@@ -13,8 +13,13 @@
         default = pkgs.mkShell {
           packages = [
             pkgs.go
-            pkgs.python3   # data/build_db.py, data/sync_lexicon.py
+            pkgs.python3   # tools/build_db.py, tools/sync_lexicon.py
             pkgs.curl
+            # Compressors, for measuring how well a serialization
+            # format holds up under a general-purpose compressor.
+            pkgs.gzip
+            pkgs.zstd
+            pkgs.xz
           ];
           CGO_ENABLED = "0";
         };
