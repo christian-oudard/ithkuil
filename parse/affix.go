@@ -1,6 +1,8 @@
 package parse
 
 import (
+	"fmt"
+
 	"github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/surface"
 )
@@ -34,10 +36,18 @@ var type3Vowels = [...]string{"üo", "ia", "ie", "io", "iö", "eë", "uö", "uo"
 
 // AffixVowel returns the canonical surface vowel for an affix of the
 // given Type and Degree (0-9). For Type-3, the canonical (non-alternate)
-// form is returned. An out-of-range degree returns the empty string.
+// form is returned.
+//
+// Panics on a Type or Degree outside the §3.5 table. Nothing a user can
+// write reaches that: parsing derives degrees from AffixVowelDegree,
+// whose tables only hold 0-9, and the compose syntax matches a single
+// digit. An out-of-range value therefore means a Formative was built in
+// code that no surface form can express. Returning "" instead would
+// splice an affix with no vowel into the output and yield a different,
+// well-formed word with no complaint.
 func AffixVowel(t grammar.AffixType, degree int) string {
 	if degree < 0 || degree > 9 {
-		return ""
+		panic(fmt.Sprintf("parse.AffixVowel: degree %d outside 0-9", degree))
 	}
 	switch t {
 	case grammar.Type1Affix:
@@ -47,7 +57,7 @@ func AffixVowel(t grammar.AffixType, degree int) string {
 	case grammar.Type3Affix:
 		return type3Vowels[degree]
 	}
-	return ""
+	panic(fmt.Sprintf("parse.AffixVowel: unknown affix type %d", t))
 }
 
 // Type2DegreeToVowel returns the Series-2 vowel for a degree (0-9).

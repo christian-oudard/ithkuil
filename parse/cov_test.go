@@ -17,14 +17,28 @@ func TestAffixVowel_AllTypes(t *testing.T) {
 		{grammar.Type1Affix, 5, "ëi"},
 		{grammar.Type2Affix, 1, "ai"},
 		{grammar.Type3Affix, 1, "ia"},
-		{grammar.Type1Affix, -1, ""},
-		{grammar.Type1Affix, 10, ""},
 	}
 	for _, c := range cases {
 		got := AffixVowel(c.t, c.degree)
 		if got != c.want {
 			t.Errorf("AffixVowel(%v,%d) = %q, want %q", c.t, c.degree, got, c.want)
 		}
+	}
+}
+
+// TestAffixVowel_RejectsOutOfRange pins the panic. Returning "" here
+// used to splice a vowel-less affix into the surface form, so
+// render.Formative silently produced a different, valid word.
+func TestAffixVowel_RejectsOutOfRange(t *testing.T) {
+	for _, degree := range []int{-1, 10, 20} {
+		func() {
+			defer func() {
+				if recover() == nil {
+					t.Errorf("AffixVowel(Type1, %d) returned instead of panicking", degree)
+				}
+			}()
+			AffixVowel(grammar.Type1Affix, degree)
+		}()
 	}
 }
 
