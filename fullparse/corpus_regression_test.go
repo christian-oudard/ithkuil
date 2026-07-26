@@ -7,6 +7,7 @@ import (
 	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/gloss"
 	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // Words in this file come from the community Discord archive (see
@@ -183,6 +184,34 @@ func TestCorpus_RootCannotStartWithHWY(t *testing.T) {
 	for _, w := range []string{"awaçmas", "awaçmasá", "awaçmüsúi", "awáçmaisa"} {
 		if _, err := fullparse.Formative(w); err == nil {
 			t.Errorf("Formative(%q) succeeded; a root may not begin with w-", w)
+		}
+	}
+}
+
+// TestCorpus_NoWordFinalApproximant covers §4.1: a word may end in any
+// single consonant except -w or -y, and §2.22 lets both appear only as
+// the last member of a conjunct with a vowel after them. Every word
+// here has a root ending in w or y, so eliding the default Vc strands
+// that approximant at the end of the word.
+//
+// These are the last five corpus words where a legal input renders
+// into something our own validator rejects.
+func TestCorpus_NoWordFinalApproximant(t *testing.T) {
+	for _, w := range []string{
+		"wiärkwá",          // root rkw, Slot IV/VI shortcut
+		"uļgwalá",          // root ļgw, long form that renders as a shortcut
+		"waňtyá",           // root ňty
+		"oţtaswivv",        // Ca sw
+		"a'lčkhwakcažyivv", // Ca žy
+	} {
+		f, err := fullparse.Formative(w)
+		if err != nil {
+			t.Errorf("%s: %v", w, err)
+			continue
+		}
+		out := render.Formative(f)
+		if r := validation.ValidateWord(out); !r.Valid {
+			t.Errorf("%s renders to %q, which our own validator rejects: %v", w, out, r.Errors)
 		}
 	}
 }

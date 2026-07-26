@@ -51,8 +51,14 @@ func TestFuzz_FormativeRoundTrip(t *testing.T) {
 
 // randomFormative builds a valid Formative biased toward default-value
 // fields. The root cluster is always "ml" (a safe, attested Cr).
+// fuzzRoots vary the shape of the root, which decides what sits at the
+// two ends of the word. "ml" alone never put an approximant last, so
+// the elision that stranded the w of "waňtyá" was unreachable. "ţt"
+// and "rkw" also open with clusters that block the leading-Vv elision.
+var fuzzRoots = []string{"ml", "m", "rkw", "ňty", "ţt", "ļgw"}
+
 func randomFormative(rng *rand.Rand) g.Formative {
-	f := g.MinimalFormative("ml")
+	f := g.MinimalFormative(fuzzRoots[rng.Intn(len(fuzzRoots))])
 	cr := f.Root.(g.CrRoot)
 
 	if rng.Intn(10) < 3 { // 30% non-default stem

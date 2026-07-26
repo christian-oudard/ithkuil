@@ -3,6 +3,7 @@ package slots
 import (
 	"fmt"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/christian-oudard/ithkuil/allomorph"
 	g "github.com/christian-oudard/ithkuil/grammar"
@@ -836,21 +837,23 @@ func canElideLeadingVv(l *Layout, f g.Formative) bool {
 //
 // This is the mirror of the word-initial check in canElideLeadingVv.
 func validWordFinalAfterVcElision(l *Layout) bool {
-	var trailing string
-	switch {
-	case l.Cn != "":
-		trailing = l.Cn
-	case len(l.SlotVII) > 0:
-		trailing = l.SlotVII[len(l.SlotVII)-1].Cs
-	default:
-		// No Ca either means a shortcut form, whose last conjunct is a
-		// vowel; nothing to check.
-		trailing = l.Ca
-	}
-	if trailing == "" {
+	// Which conjunct ends up last depends on the whole layout: a Slot
+	// IV/VI shortcut leaves Ca empty and puts the root there, §3.6.2
+	// leaves it empty and puts a Slot V affix's Cs there, and Cn or a
+	// Slot VII Cs takes it otherwise. Rather than restate that order
+	// and let it drift, render the layout without its Vc and look at
+	// what actually came last.
+	probe := *l
+	probe.Vc = ""
+	conjs := surface.SplitConjuncts(Render(probe))
+	if len(conjs) == 0 {
 		return true
 	}
-	return validation.ValidateClusterAt(validation.Final, trailing).Valid
+	last := conjs[len(conjs)-1]
+	if r, _ := utf8.DecodeRuneInString(last); surface.IsVowel(r) {
+		return true
+	}
+	return validation.ValidateClusterAt(validation.Final, last).Valid
 }
 
 func canElideTrailingTHMVc(l *Layout, f g.Formative) bool {
