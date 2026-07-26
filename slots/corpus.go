@@ -13,6 +13,7 @@ package slots
 // well-known set.
 var FormativeCorpus = []string{
 	// Canonical and minimal.
+	"maţřëullait",
 	"malëuţřait",
 	"amlal",
 	"amlala",
