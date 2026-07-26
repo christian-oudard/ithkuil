@@ -9,7 +9,7 @@ import (
 // Cs-root formatives put an affix Cs in the Cr slot and encode the
 // degree in Vr. The grammar exposes them as g.CsRoot.
 
-func TestCsRoot_ëilal(t *testing.T) {
+func TestCsRoot_Processual_Static_Degree1(t *testing.T) {
 	// ëi → (PRC, STA). cs="l". Vr="a" → degree 1, EXS.
 	f, err := Formative("ëilal")
 	if err != nil {
@@ -31,7 +31,7 @@ func TestCsRoot_ëilal(t *testing.T) {
 	}
 }
 
-func TestCsRoot_oërmölá(t *testing.T) {
+func TestCsRoot_Completive_Dynamic_Degree6_Assertive(t *testing.T) {
 	// oë → (CPT, DYN). cs="rm". Vr="ö" → degree 6, EXS.
 	// Ultimate stress on the final á → Vk = ASR/OBS.
 	f, err := Formative("oërmölá")
@@ -59,7 +59,7 @@ func TestCsRoot_oërmölá(t *testing.T) {
 	}
 }
 
-func TestCsRoot_oërmoulá_FNC(t *testing.T) {
+func TestCsRoot_Degree6_Functional(t *testing.T) {
 	// Vr="ou" → series 2 form 6 → degree 6, FNC.
 	f, err := Formative("oërmoulá")
 	if err != nil {

@@ -124,7 +124,7 @@ func TestFormative_ConsonantInitial(t *testing.T) {
 	}
 }
 
-func TestFormative_MalëuţřaitCanonical(t *testing.T) {
+func TestFormative_CanonicalWord(t *testing.T) {
 	// "Malëuţřait" is the language's name for itself — the canonical
 	// V4 test word. Lowercased: "malëuţřait".
 	// Conjuncts: ["m", "a", "l", "ëu", "ţř", "ai", "t"]
@@ -254,8 +254,8 @@ func TestFormative_ShortcutWithAffix(t *testing.T) {
 	}
 }
 
-func TestFormative_Corpus_Ärmaläwia(t *testing.T) {
-	// From agent-4's corpus tests. "ärmaläwi'a" should parse with:
+func TestFormative_Stem1_Completive_ProspectiveAspect_Locative(t *testing.T) {
+	// "ärmaläwi'a" should parse with:
 	//   Vv=ä → S1/CPT
 	//   Cr=rm
 	//   Vr=a → STA/BSC/EXS (default)

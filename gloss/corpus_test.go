@@ -28,40 +28,40 @@ func assertContains(t *testing.T, word, gloss, want string) {
 	}
 }
 
-func TestCorpus_Ärmaläwia(t *testing.T) {
+func TestCorpus_Completive_Prospective_Locative(t *testing.T) {
 	g := glossOne(t, "ärmaläwi'a")
 	assertContains(t, "ärmaläwi'a", g, "CPT")
 	assertContains(t, "ärmaläwi'a", g, "PRS")
 	assertContains(t, "ärmaläwi'a", g, "LOC")
 }
 
-func TestCorpus_La(t *testing.T) {
+func TestCorpus_Referential_1m_Thematic(t *testing.T) {
 	g := glossOne(t, "la")
 	assertContains(t, "la", g, "1m")
 	assertContains(t, "la", g, "THM")
 }
 
-func TestCorpus_WäḑḑáiSleep(t *testing.T) {
+func TestCorpus_Completive_Directive(t *testing.T) {
 	g := glossOne(t, "wäḑḑái")
 	assertContains(t, "wäḑḑái", g, "CPT")
 	assertContains(t, "wäḑḑái", g, "DIR")
 }
 
-func TestCorpus_Wäfsöróu(t *testing.T) {
+func TestCorpus_Completive_Admonitive_Negation6(t *testing.T) {
 	g := glossOne(t, "wäfsöróu")
 	assertContains(t, "wäfsöróu", g, "CPT")
 	assertContains(t, "wäfsöróu", g, "r/6")
 	assertContains(t, "wäfsöróu", g, "ADM")
 }
 
-func TestCorpus_Lü(t *testing.T) {
+func TestCorpus_Referential_1m_Dative(t *testing.T) {
 	g := glossOne(t, "lü")
 	assertContains(t, "lü", g, "1m")
 	assertContains(t, "lü", g, "DAT")
 }
 
 // Counter-example: malformed verbal forms must NOT parse as a Formative.
-func TestCorpus_Malformed_aḑḑái(t *testing.T) {
+func TestCorpus_VerbalFormRequiresPrefix(t *testing.T) {
 	tok := tokenize.ClassifyWord("aḑḑái")
 	if _, isFormative := tok.(tokenize.FormativeWord); isFormative {
 		t.Error("aḑḑái should not parse as a Formative; verbal forms need w-/y- prefix")
@@ -70,7 +70,7 @@ func TestCorpus_Malformed_aḑḑái(t *testing.T) {
 
 // Stem and aspect variants of the same forms.
 
-func TestCorpus_Ürmaläwia(t *testing.T) {
+func TestCorpus_Stem3_Completive_Prospective_Locative(t *testing.T) {
 	g := glossOne(t, "ürmaläwi'a")
 	assertContains(t, "ürmaläwi'a", g, "S3")
 	assertContains(t, "ürmaläwi'a", g, "CPT")
@@ -78,32 +78,32 @@ func TestCorpus_Ürmaläwia(t *testing.T) {
 	assertContains(t, "ürmaläwi'a", g, "LOC")
 }
 
-func TestCorpus_Wükmao(t *testing.T) {
+func TestCorpus_Stem3_Functive(t *testing.T) {
 	g := glossOne(t, "wükmao")
 	assertContains(t, "wükmao", g, "S3")
 	assertContains(t, "wükmao", g, "FUN")
 }
 
-func TestCorpus_Ilnalia(t *testing.T) {
+func TestCorpus_Stem2_Locative(t *testing.T) {
 	g := glossOne(t, "ilnali'a")
 	assertContains(t, "ilnali'a", g, "S2")
 	assertContains(t, "ilnali'a", g, "LOC")
 }
 
-func TestCorpus_Ümtyile(t *testing.T) {
+func TestCorpus_Stem3_Objective_Absolutive(t *testing.T) {
 	g := glossOne(t, "ümtyile")
 	assertContains(t, "ümtyile", g, "S3")
 	assertContains(t, "ümtyile", g, "OBJ")
 	assertContains(t, "ümtyile", g, "ABS")
 }
 
-func TestCorpus_Äklläla(t *testing.T) {
+func TestCorpus_Completive_Contential(t *testing.T) {
 	g := glossOne(t, "äklläla")
 	assertContains(t, "äklläla", g, "CPT")
 	assertContains(t, "äklläla", g, "CTE")
 }
 
-func TestCorpus_Wämžwüxëiwói(t *testing.T) {
+func TestCorpus_Completive_Imminent_Potentiative_Size8(t *testing.T) {
 	g := glossOne(t, "wämžwüxëiwói")
 	assertContains(t, "wämžwüxëiwói", g, "CPT")
 	assertContains(t, "wämžwüxëiwói", g, "x/8")
@@ -113,7 +113,7 @@ func TestCorpus_Wämžwüxëiwói(t *testing.T) {
 
 // Affix-degree variants and affix-compressed forms.
 
-func TestCorpus_Ärmalöxbäwia(t *testing.T) {
+func TestCorpus_Completive_Prospective_Locative_ShortTermTime6(t *testing.T) {
 	g := glossOne(t, "ärmalöxbäwi'a")
 	assertContains(t, "ärmalöxbäwi'a", g, "CPT")
 	assertContains(t, "ärmalöxbäwi'a", g, "xb/6")
@@ -121,32 +121,32 @@ func TestCorpus_Ärmalöxbäwia(t *testing.T) {
 	assertContains(t, "ärmalöxbäwi'a", g, "LOC")
 }
 
-func TestCorpus_Wäfsiróu_SoftNeg(t *testing.T) {
+func TestCorpus_Admonitive_Negation4_Soft(t *testing.T) {
 	g := glossOne(t, "wäfsiróu")
 	assertContains(t, "wäfsiróu", g, "r/4")
 	assertContains(t, "wäfsiróu", g, "ADM")
 }
 
-func TestCorpus_Wäčnüróu_EmphaticNeg(t *testing.T) {
+func TestCorpus_Admonitive_Negation8_Emphatic(t *testing.T) {
 	g := glossOne(t, "wäčnüróu")
 	assertContains(t, "wäčnüróu", g, "r/8")
 	assertContains(t, "wäčnüróu", g, "ADM")
 }
 
-func TestCorpus_Wämžwoxëiwói(t *testing.T) {
+func TestCorpus_Imminent_Potentiative_Size7(t *testing.T) {
 	g := glossOne(t, "wämžwoxëiwói")
 	assertContains(t, "wämžwoxëiwói", g, "x/7")
 	assertContains(t, "wämžwoxëiwói", g, "IMM")
 	assertContains(t, "wämžwoxëiwói", g, "POT")
 }
 
-func TestCorpus_Wafsöţpao(t *testing.T) {
+func TestCorpus_Functive_TemporalPlacement6(t *testing.T) {
 	g := glossOne(t, "wafsöţpao")
 	assertContains(t, "wafsöţpao", g, "ţp/6")
 	assertContains(t, "wafsöţpao", g, "FUN")
 }
 
-func TestCorpus_Iklläla(t *testing.T) {
+func TestCorpus_Stem2_Contential(t *testing.T) {
 	g := glossOne(t, "iklläla")
 	assertContains(t, "iklläla", g, "S2")
 	assertContains(t, "iklläla", g, "CTE")

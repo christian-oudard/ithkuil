@@ -477,7 +477,7 @@ func TestValidateClusterAt_MTripleIndistinct(t *testing.T) {
 	}
 }
 
-func TestValidateClusterAt_NgḑProhibited(t *testing.T) {
+func TestValidateClusterAt_MedialProhibitedCluster(t *testing.T) {
 	r := ValidateClusterAt(Medial, "ngḑ")
 	if r.Valid {
 		t.Error("ValidateClusterAt(medial, ngḑ): expected invalid")

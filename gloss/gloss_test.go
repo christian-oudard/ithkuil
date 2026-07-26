@@ -329,7 +329,7 @@ func TestGlosser_NilLexiconBehavesLikePackageFn(t *testing.T) {
 	}
 }
 
-func TestFormative_Maleuţřait(t *testing.T) {
+func TestFormative_CanonicalWord(t *testing.T) {
 	// End-to-end: parse the canonical test word and gloss it.
 	parsed, err := fullparse.Formative("malëuţřait")
 	if err != nil {
