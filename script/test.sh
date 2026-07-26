@@ -19,7 +19,7 @@ if ! command -v go >/dev/null 2>&1; then
   exec nix develop "$(dirname "$0")/.." --command "$0" "$@"
 fi
 
-cd "$(dirname "$0")/../go"
+cd "$(dirname "$0")/.."
 
 PKGS=("${@:-./...}")
 PROFILE=$(mktemp -t ithkuil-cov.XXXXXX.out)
@@ -37,7 +37,7 @@ echo "=== Per-package coverage (merged) ==="
 # The profile contains one entry per (range, test-binary), so most ranges
 # repeat ~N times where N is the number of tested packages. Dedupe by
 # range first (taking the max count across binaries), then aggregate.
-awk '
+awk -v mod="$(go list -m)" '
   NR == 1 { next }                       # skip "mode:" line
   {
     range = $1
@@ -48,12 +48,12 @@ awk '
   }
   END {
     for (range in seen) {
-      # range looks like "pkg/path/file.go:line.col,line.col"
+      # range looks like "module/pkg/path/file.go:line.col,line.col"
       file = range
       sub(/:.*/, "", file)
-      n = split(file, parts, "/")
-      pkg = parts[n-1]
-      if (parts[n-2] != "go") pkg = parts[n-2] "/" pkg
+      sub("^" mod "/", "", file)
+      pkg = file
+      sub(/\/[^\/]*$/, "", pkg)          # drop the file name
       total[pkg] += rstmts[range]
       if (seen[range] > 0) covered[pkg] += rstmts[range]
     }

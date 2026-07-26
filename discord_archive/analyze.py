@@ -4,11 +4,9 @@
 import json
 import os
 import re
-import subprocess
-from collections import Counter, defaultdict
+from collections import Counter
 
 EXTRACTED_DIR = os.path.join(os.path.dirname(__file__), "extracted")
-PROJECT_DIR = "/projects/ithkuil"
 ITHKUIL_CHARS = set("ţřšžňļḑçëüöäâîûôẓ")
 
 
@@ -38,31 +36,6 @@ def extract_words(text):
         if word and any(c in ITHKUIL_CHARS for c in word.lower()) and len(word) >= 3:
             words.append(word.lower())
     return words
-
-
-def parse_batch(words):
-    """Run parser on words, return dict of word -> parsed output."""
-    results = {}
-    input_text = "\n".join(words)
-    try:
-        result = subprocess.run(
-            ["nix-shell", "--run",
-             f"cabal run ithkuil-gloss -- 2>/dev/null <<'WORDS'\n{input_text}\nWORDS"],
-            capture_output=True, text=True, timeout=120,
-            cwd=PROJECT_DIR
-        )
-        sections = re.split(r'\x1b\[1m', result.stdout)
-        for section in sections:
-            if not section.strip():
-                continue
-            match = re.match(r'(.+?)\x1b\[0m', section)
-            if match:
-                w = match.group(1).strip().lower()
-                clean = re.sub(r'\x1b\[[0-9;]*m', '', section).strip()
-                results[w] = clean
-    except Exception as e:
-        pass
-    return results
 
 
 def analyze_common_roots(messages):
