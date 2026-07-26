@@ -45,6 +45,15 @@ func TestFuzz_FormativeRoundTrip(t *testing.T) {
 		if !formativesEquivalent(parsed, f) {
 			t.Errorf("iter %d: round-trip mismatch (surface %q)\n  want: %+v\n  got:  %+v",
 				i, surface, f, parsed)
+			continue
+		}
+		// Canonicalization must be a fixed point. Round-tripping alone
+		// does not show this: render could alternate between two
+		// spellings of the same formative and both would parse back to
+		// f. Only re-rendering the parse catches that.
+		if again := render.Formative(parsed); again != surface {
+			t.Errorf("iter %d: canonicalization is not a fixed point: %q -> %q",
+				i, surface, again)
 		}
 	}
 }

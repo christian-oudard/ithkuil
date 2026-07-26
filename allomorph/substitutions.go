@@ -49,23 +49,41 @@ var secondPassSubstitutions = []rule{
 }
 
 // UnresolvedCa reports whether s carries the one Ca cluster we do not
-// yet compose correctly: MDS/A/DPL/RPV, which lands on "ţḑ" and is
-// barred by §2.5 as a homologous voicing mismatch. Matching on the
+// compose into a sayable form: MDS/A/DPL/RPV, which lands on "ţḑ" and
+// is barred by §2.5 as a homologous voicing mismatch. Matching on the
 // substring covers the liquid-prefixed and geminated forms too.
 //
-// The §3.6 substitution "ţbn → (tḑ) → ḑy" reads as if it should apply,
-// but its input names "ţbn" while its intermediate names the "tḑ" that
-// MSS/A/DPL/RPV produces, and routing both through it would collapse
-// two Ca values onto one surface form that ParseCa cannot separate.
+// What is known, so the next person does not redo it:
 //
-// That is not enough to conclude the grammar is at fault. §3.6 also
-// says "use the alternate Extension form when preceded by [C]t-, [C]k-
-// or [C]p-", and ConstructCaRaw does not implement it — it uses the
-// alternate for a UPX Configuration instead, which is the condition
-// the table gives for the Perspective+Essence alternate. Working out
-// what that rule actually means is the place to start; a naive reading
-// makes things worse, since PRX after a "t" Configuration would give
-// the §2.4-prohibited "td".
+// The §3.6 substitution "ţbn → (tḑ) → ḑy" cannot cover both cases that
+// need it. MDS composes "ţbn" and MSS composes "tbn"; the rule names
+// the first on its input side and the second in its intermediate, and
+// routing both through it collapses two Ca values onto one surface
+// form that ParseCa cannot separate. Whichever we take, the other
+// composes an unsayable cluster: "ţḑ" under §2.5 or "tḑ" under §2.2.
+// We take the intermediate, which is the older reading here.
+//
+// Structure argues for the other one. This rule sits beside "fbm →
+// (fv) → vw", and both escape the same thing: the general [C]bm/[C]bn
+// rule producing a §2.5 homologous voicing mismatch. f/v and ţ/ḑ are
+// exactly the two non-sibilant fricative voicing pairs, and applying
+// [C]bn → [C]ḑ to "ţbn" mechanically yields "ţḑ", so the parenthesis
+// looks like the typo rather than the input. That argument does not
+// reduce the breakage, only move it, so it did not seem worth the
+// churn on its own.
+//
+// Two hypotheses have been tested and refuted. Making both inputs map
+// to "ḑy" collides, as above. Reading §3.6's "use the alternate
+// Extension form when preceded by [C]t-, [C]k- or [C]p-" as "take the
+// voiced alternate after a t/k/p Configuration" is much worse: it adds
+// 128 §2.13 violations, 56 §2.4 and 8 §2.2. That rule means something
+// else, and ConstructCaRaw does not implement it at all.
+//
+// The corpus cannot settle it. DPL+A+RPV appears zero times in
+// Quijada's 384 official examples and zero times in the 3893-word
+// Discord corpus, in any Configuration. This is an unvisited corner of
+// the grammar, so there is no usage to appeal to and no cost to
+// leaving it until someone can ask.
 func UnresolvedCa(s string) bool { return strings.Contains(s, "ţḑ") }
 
 // replaceNonInitial replaces every occurrence of from with to in s,
