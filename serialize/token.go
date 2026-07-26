@@ -27,6 +27,7 @@ var nonFormative = [2]byte{fConcat, 0}
 const (
 	TokenBias           byte = 2
 	TokenRegister       byte = 3
+	TokenForeign        byte = 4
 	TokenParsingAdjunct byte = 5
 	TokenCarrier        byte = 6
 	TokenModular        byte = 7
@@ -65,6 +66,8 @@ func MarshalWord(t tokenize.WordToken) ([]byte, error) {
 		return append(out, TokenRegister, byte(v.Register)|registerEnd), nil
 	case tokenize.ParsingAdjunctWord:
 		return append(out, TokenParsingAdjunct, byte(v.Adjunct.Stress)), nil
+	case tokenize.ForeignWord:
+		return putForeign(append(out, TokenForeign), v.Text), nil
 	case tokenize.CarrierWord:
 		return putCarrier(append(out, TokenCarrier), v.Carrier), nil
 	case tokenize.ModularWord:
@@ -135,6 +138,12 @@ func UnmarshalWord(buf []byte) (tokenize.WordToken, int, error) {
 
 	// The variable-length tags.
 	switch tag {
+	case TokenForeign:
+		s, n, err := getForeign(rest)
+		if err != nil {
+			return nil, 0, err
+		}
+		return tokenize.ForeignWord{Text: s}, hdr + n, nil
 	case TokenCarrier:
 		c, n, err := getCarrier(rest)
 		if err != nil {
@@ -228,5 +237,9 @@ func UnmarshalTokens(buf []byte) ([]tokenize.WordToken, error) {
 		cur += consumed
 		out = append(out, t)
 	}
+	// A modular adjunct's MarksMood is read off its neighbours rather
+	// than off the adjunct, so it is not stored. Restore it now that
+	// the whole stream is back.
+	tokenize.ResolveModularMood(out)
 	return out, nil
 }

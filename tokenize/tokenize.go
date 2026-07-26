@@ -356,15 +356,29 @@ func Tokenize(sentence string) []WordToken {
 			out[i+1] = ForeignWord{Text: fields[i+1]}
 		}
 	}
-	for i, t := range out {
-		if mw, ok := t.(ModularWord); ok {
-			if verbal, found := nextFormativeIsVerbal(out, i); found {
-				mw.MarksMood = &verbal
-				out[i] = mw
-			}
+	ResolveModularMood(out)
+	return out
+}
+
+// ResolveModularMood fills in each ModularWord's MarksMood from the
+// tokens around it: the flag says whether the next formative-bearing
+// token is verbal, which is what disambiguates the adjunct's Cn
+// between Mood and Case-Scope.
+//
+// It is derived rather than intrinsic, so nothing needs to store it.
+// Any consumer that rebuilds a token stream from something other than
+// surface text calls this to restore it.
+func ResolveModularMood(toks []WordToken) {
+	for i, t := range toks {
+		mw, ok := t.(ModularWord)
+		if !ok {
+			continue
+		}
+		if verbal, found := nextFormativeIsVerbal(toks, i); found {
+			mw.MarksMood = &verbal
+			toks[i] = mw
 		}
 	}
-	return out
 }
 
 // nextFormativeIsVerbal scans forward from i+1 for the next formative-

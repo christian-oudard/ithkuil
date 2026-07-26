@@ -431,3 +431,35 @@ func getCombinationRef(buf []byte) (tokenize.CombinationRefWord, int, error) {
 }
 
 func stressFromByte(b byte) surface.Stress { return surface.Stress(b) }
+
+// ── foreign text ────────────────────────────────────────────────────
+//
+// A foreign word is the one token whose meaning genuinely is its text.
+// §4.4 and §4.5 provide the CAR register and the carrier adjuncts so a
+// speaker can drop a name or a quotation into Ithkuil without it being
+// read as Ithkuil, and what those constructions carry is the letters
+// themselves. Writing them verbatim is not a retreat from storing
+// meaning; the letters are the meaning, and a formative's phoneme
+// clusters are stored for the same reason.
+//
+// This is why UnknownWord is not encodable and never will be. A word
+// we could not classify is a parse failure, not a meaning, and giving
+// it a byte string here would let a document encode without complaint
+// while quietly recording that we did not understand it.
+
+func putForeign(out []byte, text string) []byte {
+	out = appendUvarint(out, uint64(len(text)))
+	return append(out, text...)
+}
+
+func getForeign(buf []byte) (string, int, error) {
+	n, hdr, err := getUvarint(buf)
+	if err != nil {
+		return "", 0, fmt.Errorf("foreign word: %w", err)
+	}
+	end := hdr + int(n)
+	if end > len(buf) {
+		return "", 0, fmt.Errorf("foreign word: want %d bytes, have %d", n, len(buf)-hdr)
+	}
+	return string(buf[hdr:end]), end, nil
+}

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"math/rand"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/concatenation"
@@ -578,4 +579,90 @@ func randomAffixes(rng *rand.Rand) []g.Affix {
 // fields and slices.
 func equalTokens(a, b tokenize.WordToken) bool {
 	return reflect.DeepEqual(a, b)
+}
+
+// TestForeignWord_RoundTrip covers the one token whose meaning is its
+// text. A carrier scopes a name or quotation that is deliberately not
+// Ithkuil, so the letters go out verbatim, including case, which the
+// rest of the pipeline normalizes away.
+func TestForeignWord_RoundTrip(t *testing.T) {
+	for _, s := range []string{
+		"John", "", "Ithkuil", "Ⅳ", "naïve café", "日本語",
+		strings.Repeat("x", 200), // past the one-byte uvarint length
+	} {
+		tokens := []tokenize.WordToken{
+			tokenize.CarrierWord{Carrier: g.CarrierAdjunct{Type: g.Naming}},
+			tokenize.ForeignWord{Text: s},
+			tokenize.FormativeWord{Formative: g.MinimalFormative("ml")},
+		}
+		b, err := MarshalTokens(tokens)
+		if err != nil {
+			t.Fatalf("%q: marshal: %v", s, err)
+		}
+		got, err := UnmarshalTokens(b)
+		if err != nil {
+			t.Fatalf("%q: unmarshal: %v", s, err)
+		}
+		if !reflect.DeepEqual(got, tokens) {
+			t.Errorf("%q\n  want: %+v\n  got:  %+v", s, tokens, got)
+		}
+	}
+}
+
+// TestUnknownWord_NotEncodable pins the deliberate gap. A word we
+// could not classify is a parse failure, not a meaning; storing its
+// bytes would let a document encode cleanly while recording that we
+// did not understand part of it.
+func TestUnknownWord_NotEncodable(t *testing.T) {
+	if _, err := MarshalWord(tokenize.UnknownWord{Text: "hello"}); err == nil {
+		t.Error("UnknownWord encoded without error, want a rejection")
+	}
+}
+
+// TestModularMood_Restored covers the one field the codec derives
+// rather than stores. MarksMood says whether the next formative is
+// verbal, which decides whether the adjunct's Cn reads as Mood or as
+// Case-Scope, and it comes off the neighbouring tokens. Storing it
+// would be storing a fact already present in the stream, so the
+// decoder recomputes it instead.
+func TestModularMood_Restored(t *testing.T) {
+	verbal := g.MinimalFormative("ml")
+	verbal.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
+	nominal := g.MinimalFormative("ml")
+
+	for _, tc := range []struct {
+		name string
+		next g.Formative
+		want bool
+	}{
+		{"before a verbal formative", verbal, true},
+		{"before a nominal formative", nominal, false},
+	} {
+		tokens := []tokenize.WordToken{
+			tokenize.ModularWord{Modular: g.ModularAdjunct{
+				Content: []g.SlotVIII{g.VnCnAspect{Aspect: g.RTR, MoodScope: g.SUB}},
+			}},
+			tokenize.FormativeWord{Formative: tc.next},
+		}
+		tokenize.ResolveModularMood(tokens)
+		b, err := MarshalTokens(tokens)
+		if err != nil {
+			t.Fatalf("%s: marshal: %v", tc.name, err)
+		}
+		got, err := UnmarshalTokens(b)
+		if err != nil {
+			t.Fatalf("%s: unmarshal: %v", tc.name, err)
+		}
+		mw := got[0].(tokenize.ModularWord)
+		if mw.MarksMood == nil {
+			t.Errorf("%s: MarksMood came back nil, want %v", tc.name, tc.want)
+			continue
+		}
+		if *mw.MarksMood != tc.want {
+			t.Errorf("%s: MarksMood = %v, want %v", tc.name, *mw.MarksMood, tc.want)
+		}
+		if !reflect.DeepEqual(got, tokens) {
+			t.Errorf("%s\n  want: %+v\n  got:  %+v", tc.name, tokens, got)
+		}
+	}
 }
