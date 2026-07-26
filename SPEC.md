@@ -34,6 +34,12 @@ Past that the candidates are indistinguishable on any measure the spec offers, s
 
 Default slot values are elided regardless, and parsing accepts the non-canonical spellings too; they simply re-render as the canonical one.
 
+The canonical surface is also composed (Unicode NFC) and lowercase. Decomposed
+input and capitals parse — a capital is a sentence-position artifact and carries
+no meaning in Ithkuil — and re-render composed and lowercase. The one exception
+is a foreign word following a carrier adjunct: that is passthrough text, not
+Ithkuil, and keeps whatever the writer typed.
+
 ## Cross-format conversion
 
 Any format-to-format trip (e.g. gloss → Unicode surface) is the composition of two single-arm trips through the in-memory center. There is no direct format-to-format converter and no need for one. N arms give N² round-trip pairs from N converter pairs.

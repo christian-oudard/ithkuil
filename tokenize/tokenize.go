@@ -216,15 +216,12 @@ func ClassifyWord(word string) WordToken {
 	if word == "" {
 		return UnknownWord{Text: word}
 	}
-	// Ithkuil orthography is case-insensitive; a capital is a
-	// sentence-position artifact. Normalize before any classifier reads
-	// the letters. slots.Parse does the same for its own input, which is
-	// why capitalized formatives used to be the only word class that
-	// survived sentence-initial position. Words we fail to classify keep
-	// their original text: a carrier adjunct scopes over a following
-	// foreign name ("hnas John"), where capitalization is meaningful.
+	// Compose and lowercase before any classifier reads the letters;
+	// see surface.Normalize. Words we fail to classify keep their
+	// original text: a carrier adjunct scopes over a following foreign
+	// name ("hnas John"), where capitalization is meaningful.
 	orig := word
-	word = strings.ToLower(word)
+	word = surface.Normalize(word)
 	if r := validation.ValidateChars(word); !r.Valid {
 		return UnknownWord{Text: orig}
 	}
