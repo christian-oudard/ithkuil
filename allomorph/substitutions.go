@@ -48,28 +48,24 @@ var secondPassSubstitutions = []rule{
 	{"fv", "vw"}, {"tḑ", "ḑy"},
 }
 
-// OpenQuestionBn records a gap in the published grammar.
+// UnresolvedCa reports whether s carries the one Ca cluster we do not
+// yet compose correctly: MDS/A/DPL/RPV, which lands on "ţḑ" and is
+// barred by §2.5 as a homologous voicing mismatch. Matching on the
+// substring covers the liquid-prefixed and geminated forms too.
 //
-// Two configurations reach a prohibited intermediate here. MSS/A/DPL/
-// RPV composes "tbn" and lands on "tḑ", which §2.2 bars as a dental
-// stop plus interdental. MDS/A/DPL/RPV composes "ţbn" and lands on
-// "ţḑ", which §2.5 bars as a homologous voicing mismatch. §3.6 gives
-// exactly one escape, "ţbn → (tḑ) → ḑy", and it names the second on
-// its input side and the first in its intermediate.
+// The §3.6 substitution "ţbn → (tḑ) → ḑy" reads as if it should apply,
+// but its input names "ţbn" while its intermediate names the "tḑ" that
+// MSS/A/DPL/RPV produces, and routing both through it would collapse
+// two Ca values onto one surface form that ParseCa cannot separate.
 //
-// It cannot cover both: they would then share the surface "ḑy" and
-// ParseCa could not tell them apart. We match the intermediate, so
-// MDS/A/DPL/RPV still composes an unsayable "ţḑ". The other reading
-// has a point in its favour — "ţbn" is parallel to the neighbouring
-// "fbm → (fv) → vw", both a fricative before bm/bn, where "t" is a
-// stop — but it only moves the breakage onto MSS. Settling this needs
-// Quijada or a reference implementation, not more reading.
-const OpenQuestionBn = "MDS/A/DPL/RPV composes ţḑ, which §2.5 prohibits"
-
-// UnresolvedCa reports whether s carries the OpenQuestionBn cluster.
-// Anything checking phonotactic legality has to let it through: what
-// needs fixing is the grammar, not the code. Matching on the substring
-// covers the liquid-prefixed and geminated forms too.
+// That is not enough to conclude the grammar is at fault. §3.6 also
+// says "use the alternate Extension form when preceded by [C]t-, [C]k-
+// or [C]p-", and ConstructCaRaw does not implement it — it uses the
+// alternate for a UPX Configuration instead, which is the condition
+// the table gives for the Perspective+Essence alternate. Working out
+// what that rule actually means is the place to start; a naive reading
+// makes things worse, since PRX after a "t" Configuration would give
+// the §2.4-prohibited "td".
 func UnresolvedCa(s string) bool { return strings.Contains(s, "ţḑ") }
 
 // replaceNonInitial replaces every occurrence of from with to in s,
