@@ -16,6 +16,12 @@ type rule struct{ from, to string }
 var simpleSubstitutions = []rule{
 	{"pp", "mp"}, {"tt", "nt"}, {"kk", "nk"},
 	{"pb", "mb"}, {"kg", "ng"},
+	// "ngn" is the spec's named exception to the [C]gn → [C]ň rule
+	// below. It has to fire here, after kg → ng has created the "ngn"
+	// and before the general rule turns it into the §2.23-prohibited
+	// "nň". It is not a [C] rule: MSC/CSL/A/GRA/RPV composes to a bare
+	// "kgn", so the match sits at the head of the cluster.
+	{"ngn", "ňn"},
 	{"ll", "pļ"}, {"rr", "ns"},
 	{"çy", "nd"},
 	{"řř", "ňš"}, {"rř", "nš"}, {"řr", "ňs"},
