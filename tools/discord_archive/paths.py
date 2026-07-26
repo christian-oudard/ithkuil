@@ -7,6 +7,13 @@ discord/ when XDG_DATA_HOME is unset. Set ITHKUIL_DISCORD_DIR to override.
 import os
 from pathlib import Path
 
+# The servers we mirror, newest first. The community moved to a
+# revamped server in 2025; the original is kept because it holds every
+# message before that.
+GUILDS = {
+    "1345994901200044072": "revamp",
+    "131937038139260928": "ithkuil",
+}
 GUILD_ID = "131937038139260928"
 
 
@@ -24,9 +31,25 @@ def mirror_dir() -> Path:
     return base_dir() / "mirror"
 
 
-def guild_dir() -> Path:
-    """The one guild we mirror, inside mirror_dir()."""
-    return mirror_dir() / f"ithkuil_{GUILD_ID}"
+def guild_dir(guild_id: str = GUILD_ID) -> Path:
+    """One guild's raw messages, inside mirror_dir()."""
+    return mirror_dir() / f"{GUILDS.get(guild_id, 'guild')}_{guild_id}"
+
+
+def token() -> str:
+    """The Discord user token, from DISCORD_TOKEN or from a file.
+
+    Discord tokens are short-lived, so the file is the usual route: it
+    is copied into the data directory and never read into anything that
+    gets printed or committed.
+    """
+    env = os.environ.get("DISCORD_TOKEN")
+    if env:
+        return env.strip()
+    path = base_dir() / "token"
+    if path.exists():
+        return path.read_text().strip()
+    raise SystemExit(f"no Discord token: set DISCORD_TOKEN or write {path}")
 
 
 def extracted_dir() -> Path:

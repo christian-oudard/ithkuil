@@ -17,19 +17,22 @@ import urllib.parse
 import paths
 
 API_BASE = "https://discord.com/api/v10"
-TOKEN = os.environ.get("DISCORD_TOKEN", "")
 OUTPUT_DIR = str(paths.mirror_dir())
 MAX_BYTES = int(os.environ.get("DISCORD_MAX_BYTES", 10 * 1024 * 1024 * 1024))  # 10GB default
 
 HEADERS = {
-    "Authorization": TOKEN,
     "Content-Type": "application/json",
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0",
 }
 
-GUILD_ID = paths.GUILD_ID
+# Channel types that hold messages: text, announcement, and the two
+# thread kinds. Voice and category channels have none.
+TEXT_TYPES = {0, 5, 10, 11, 12}
 
-# All text channels in priority order (V4 first)
+# Preferred order for the original server, most useful first, so that a
+# run cut short by the disk budget still gets the v4 material. Channels
+# not listed here are archived afterwards in whatever order the API
+# returns, which is all a server we have no list for can do.
 PRIORITY_CHANNELS = [
     "700825122017378374",   # v4-only
     "509906677210808340",   # general-v4
@@ -194,25 +197,32 @@ def fetch_archived_threads(ch_id):
     return threads
 
 
-def main():
-    if not TOKEN:
-        print("Set DISCORD_TOKEN environment variable")
-        sys.exit(1)
+def channel_order(channels):
+    """Every message-bearing channel, preferred ones first."""
+    by_id = {c["id"]: c for c in channels if c.get("type") in TEXT_TYPES}
+    ordered = [i for i in PRIORITY_CHANNELS if i in by_id]
+    ordered += [i for i in by_id if i not in set(ordered)]
+    return ordered, by_id
 
-    guild_dir = str(paths.guild_dir())
+
+def main():
+    HEADERS["Authorization"] = paths.token()
+    guild_id = sys.argv[1] if len(sys.argv) > 1 else paths.GUILD_ID
+
+    guild_dir = str(paths.guild_dir(guild_id))
     os.makedirs(guild_dir, exist_ok=True)
 
     print("Fetching channel list...", flush=True)
-    channels = api_get(f"/guilds/{GUILD_ID}/channels")
+    channels = api_get(f"/guilds/{guild_id}/channels")
     save_json(os.path.join(guild_dir, "_channels.json"), channels)
-    ch_by_id = {c["id"]: c for c in channels}
+    order, ch_by_id = channel_order(channels)
 
     grand_total = 0
 
-    for i, ch_id in enumerate(PRIORITY_CHANNELS):
+    for i, ch_id in enumerate(order):
         ch = ch_by_id.get(ch_id, {})
         ch_name = ch.get("name", ch_id)
-        print(f"\n[{i+1}/{len(PRIORITY_CHANNELS)}] #{ch_name} ({ch_id})", flush=True)
+        print(f"\n[{i+1}/{len(order)}] #{ch_name} ({ch_id})", flush=True)
 
         count = archive_channel(ch_id, ch_name, guild_dir)
         grand_total += count
