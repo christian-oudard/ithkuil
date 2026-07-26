@@ -101,6 +101,37 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 			Case: g.ERG,
 			Spec: g.BSC,
 		},
+		// Multi-affix with no Rest — the run holds only the head, so
+		// Rest must come back nil rather than an empty slice.
+		tokenize.MultipleAffixWord{Affixes: g.MultipleAffixAdjunct{
+			First:      g.Affix{Type: g.Type1Affix, Degree: 3, Consonant: "r"},
+			FirstScope: g.ScopeVSub,
+			RestScope:  g.ScopeVIIDom,
+		}},
+		// Carrier at its default case, which the encoding elides.
+		tokenize.CarrierWord{Carrier: g.CarrierAdjunct{Type: g.Naming, Case: g.THM}},
+		// Modular carrying the maximum three Vn/Cn pairs.
+		tokenize.ModularWord{Modular: g.ModularAdjunct{
+			Scope: g.ModularScopeConcat,
+			Reach: g.ModularReachAdjacent,
+			Content: []g.SlotVIII{
+				g.VnCnValence{Valence: g.PRL, MoodScope: g.FAC},
+				g.VnCnAspect{Aspect: g.SQN, MoodScope: g.FAC},
+				g.VnCnLevel{Level: g.MAX, MoodScope: g.FAC, Absolute: true},
+			},
+		}},
+		// Referential with no Refs at all.
+		tokenize.ReferentialWord{Case: &thm},
+		// Combination ref at its default Case and Spec, both elided.
+		tokenize.CombinationRefWord{
+			Refs: []referentials.PersonalRef{{Referent: referentials.Rpvs, Effect: referentials.DET}},
+			Case: g.THM,
+			Spec: g.BSC,
+		},
+		// Combination ref with no Refs, which the corpus contains and
+		// which used to write zero ref bytes but read one back,
+		// desynchronising every token after it in the stream.
+		tokenize.CombinationRefWord{Carrier: &carrType, Case: g.ERG, Spec: g.CTE},
 		// Combination ref with affixes + case2.
 		tokenize.CombinationRefWord{
 			Refs:    []referentials.PersonalRef{{Referent: referentials.R1m, Effect: referentials.NEU}},
