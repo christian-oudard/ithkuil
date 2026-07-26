@@ -433,12 +433,15 @@ A bias adjunct (§4.7) is a bare consonant conjunct standing alone as a
 word — a shape §1.4 and §3-§4 never contemplate, since every rule
 there is written about a conjunct with a vowel-form beside it (§4.1
 opens "A single word-final consonant **following a vowel-form**…").
-Taking the word-initial inventory at its word, 35 of the 61 forms are
-not licensed:
+Taking the word-initial inventory at its word, 34 of the 61 forms are
+not licensed. These are not hypothetical words: every one of them is
+attested as a standalone word in the community corpus — `pļļ` 291
+times, `msf` 127, `kçç` 48, `cč` 33, `ļļč` 29, `lst` 13, `lf` 12,
+`rrj` 10.
 
 - **§3.2.9** — "Word-initial liquids l- and r- may be followed by the
   semiconsonants -w or -y", and by nothing else in §3: ACC `lf`,
-  ADS `lļ`, SAT `lţ`, ANP `lst`, FOR `lzp`, ISP `lçp`, SGS `ltç`,
+  ADS `lļ`, ANP `lst`, FOR `lzp`, ISP `lçp`, SGS `ltç`,
   SKP `rnž`, and via §6.3.1 the geminates PPX `llh`, RFL `llm`,
   TRP `llč`, EXG `rrs`, CNV `rrj`.
 - **§3.2.8** — word-initial nasals take a liquid or an approximant:
@@ -460,8 +463,13 @@ not licensed:
   as a third consonant: DRS `pfc`.
 - **§3.3.4** — a sibilant plus a same-voiced stop admits a liquid or
   approximant third, and ļ is neither: RPU `šštļ`.
-- **§2.21** — "-ř- cannot be followed by -r-", in any position:
-  DES `mřr`.
+
+SAT is a further case, and its form is unsettled: the grammar prints
+`lţ` and `data/data.json` has `ļţ`, with the community corpus using
+both (35 `ļţ` against 21 `lţ`). Neither is licensed — `lţ` falls to
+§3.2.9 with the rest of the l-initials, and `ļţ` to §3.2.6, which lets
+a word-initial ļ- take "a voiceless stop, a voiceless affricate, a
+nasal, or -w or -y" and not a fricative.
 
 ARB `xtļ` is a further case: §3.2.3 licenses `xt` word-initially but
 §3.3 grants no triple beginning with x-, so the form is neither
@@ -987,3 +995,21 @@ and the name "Intermittent" is right, so `IMT` is a transposition of
 Pattern-1 table and in the writing-system chapter — and IMT appears
 nowhere in it. The affix table is the only place the transposed form
 occurs.
+
+
+### G31. The DES bias is printed mřr, which §2.21 forbids; the form is mřř
+
+§4.7's table gives the DESPERATIVE bias as **mřr**. §2.21 is
+unambiguous — "The uvular approximant -**ř**- cannot be followed by
+-**r**-" — so as printed the form is unpronounceable in any position,
+not merely word-initially.
+
+The geminate `mřř` is what the language actually uses. It stands alone
+as a word 42 times in the community corpus against a single instance of
+`mřr`, `data/data.json` records it as `mřř`, and unlike `mřr` it is
+legal: §6.4.1 admits a word-initial #C₁C₂C₂- whenever #C₁C₂- is
+permitted, and §3.2.8 permits a word-initial nasal before the
+approximant ř.
+
+A dropped diacritic, then — but one that turns a legal word into a
+prohibited one, the same shape of error as §7.0's `dc` for `ḑc` in G27.
