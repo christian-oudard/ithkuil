@@ -180,13 +180,17 @@ func CheckProhibitedPair(a, b rune) (rule, reason string) {
 		return "2.23", "n + ň"
 	}
 
-	// 2.24: çç and ļļ geminates not permitted
-	if a == 'ç' && b == 'ç' {
-		return "2.24", "çç geminate"
-	}
-	if a == 'ļ' && b == 'ļ' {
-		return "2.24", "ļļ geminate"
-	}
+	// §2.24 bars çç and ļļ, but the morphology generates both and the
+	// spec contradicts itself on this point. §3.6.1 rule 4 geminates a
+	// sibilant "in any position" and gives çkl → ççkl as its own
+	// worked example; rule 6 gives tçkl → tççkl. The bias-adjunct
+	// table holds pļļ (CMD) and kçç (EXA). The Discord corpus has 40
+	// words with çç or ļļ, among them formatives whose geminated Ca
+	// marks the end of Slot V: wiapļļalká, hamphelsuirççaité.
+	//
+	// So §2.24 constrains the root and affix conjuncts that are §2's
+	// subject; it does not reach a form the grammar itself builds.
+	// Enforcing it here rejected every one of those words.
 
 	return "", ""
 }

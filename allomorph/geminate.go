@@ -1,5 +1,7 @@
 package allomorph
 
+import "github.com/christian-oudard/ithkuil/validation"
+
 // GeminateCa applies the §3.6.1 gemination rules to a Ca cluster.
 // Gemination is required whenever Slot V has any affixes; it marks
 // where Slot V ends and Slot VI begins.
@@ -20,12 +22,16 @@ func GeminateCa(cluster string) string {
 		return cluster
 	}
 	// Rule 9: initial l/r/ř — geminate the rest as if the liquid
-	// weren't there. If the cluster has no other consonant to
-	// geminate, double the liquid itself.
+	// weren't there, "if the resulting form including the initial l-,
+	// r- or ř- is not phonotactically permissible or is euphonically
+	// awkward, geminate the l-, r- or ř- instead". "lw" is the case
+	// that bites: the inner "w" doubles to "ww", which §1.7 and §2.22
+	// both forbid, so the liquid takes the gemination and it is "llw".
 	if len(rs) > 1 && isLiquid(rs[0]) {
 		inner := geminateCore(string(rs[1:]))
-		if inner != string(rs[1:]) {
-			return string(rs[0]) + inner
+		candidate := string(rs[0]) + inner
+		if inner != string(rs[1:]) && validation.ValidateClusterAt(validation.Medial, candidate).Valid {
+			return candidate
 		}
 		return string(rs[0]) + string(rs[0]) + string(rs[1:])
 	}
