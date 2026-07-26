@@ -160,7 +160,73 @@ The neighbouring rule **fbm → (fv) → vw** is parallel to the `ţbn`
 reading — a fricative before bm/bn in both — which argues for the input
 side. That still leaves MSS/A/DPL/RPV stranded.
 
-### G3. The Pattern-2 Mood FAC value is written "w/y" with no selection rule
+### G3. §3.6's two alternate-form rules have their conditions swapped
+
+The Ca table prints two components with a primary and an alternate
+form — Extension (`t / d`, `k / g`, `p / b`, `g / gz`, `b / bz`) and
+the RPV column of Perspective+Essence (`m / h` for N, `n / ç` for A) —
+and two rules for choosing between them:
+
+> Use the alternate Extension form when preceded by [C]**t**-, [C]**k**-,
+> or [C]**p**-.
+>
+> Use the alternate Perspective+Essence RPV form (for N and A) when the
+> Configuration of the word is UPX.
+
+Composing all 3840 Ca values four ways — the two rules as printed, with
+their conditions exchanged, and with both conditions the same — gives:
+
+| Reading | Distinct forms | Colliding | Phonotactically illegal |
+|---------|---------------|-----------|------------------------|
+| As printed (Ext ← t/k/p, RPV ← UPX) | 3767 | 73 | 100 |
+| **Conditions exchanged** | **3840** | **0** | **4** |
+| Both on t/k/p | 3744 | 96 | 100 |
+| Both on UPX | 3839 | 1 | 12 |
+
+Only the exchanged reading is a bijection. As printed, 73 clusters
+carry two or more meanings and the Ca complex stops being decodable:
+`rt` is both UPX/COA/M/PRX/NRM and MSS/COA/M/DEL/NRM, `py` is both
+UPX/CSL/A/ATV/NRM and MSF/CSL/A/DEL/NRM, and so on for 71 more.
+
+The exchanged reading is also the one the forms themselves argue for.
+UPX contributes no Configuration consonant, so a UPX Extension would
+sit alone where a Configuration consonant would otherwise be — `t` for
+UPX/PRX against `t` for MSS/DEL. The voiced alternate `d` is what keeps
+those apart, which is exactly the collision the printed reading
+produces. Likewise the RPV alternates `h` and `ç` avoid a stop plus
+nasal, which is what "preceded by [C]t-, [C]k-, [C]p-" describes.
+
+(The four remaining illegal forms under the exchanged reading are the
+single `ţḑ` configuration of G2 above, with its three Affiliation
+prefixes.)
+
+### G4. The Ca substitution list is missing a character and a rule
+
+The §3.6 substitution list reads, in its third column:
+
+```
+rr → ns
+ř  → nš
+řr → ňs
+```
+
+Applied literally, `ř → nš` rewrites every ř in every Ca — including
+the VAR Affiliation prefix and the G/RPV Perspective suffix, neither of
+which is part of a cluster the rule could be about. The result is 385
+phonotactically illegal Ca forms (`cḑš`, `fḑš`, `kḑš` … all violating
+§2.23) and 48 that contain a geminate. The entry has to be **rř → nš**:
+that completes the r/ř matrix the other two entries start, and it is
+the only reading under which the list works at all.
+
+Even repaired, the matrix is missing its fourth cell. `rr`, `rř` and
+`řr` are given; `řř` is not. It arises — UPX/VAR/G/DEL/RPV composes the
+VAR prefix `ř` with the G/RPV suffix `ř` — and with no rule to rewrite
+it, that configuration's bare Ca is the geminate `řř`, which §3.6.1
+reserves for marking the end of Slot V. The pattern of the other three
+entries (r→n/ř→ň in first position, r→s/ř→š in second) supplies the
+missing value `ňš` unambiguously, but the document never states it.
+
+### G5. The Pattern-2 Mood FAC value is written "w/y" with no selection rule
 
 The Pattern-2 Mood table gives FAC as `w/y` and says nothing about
 which to use. No rule elsewhere in the document conditions the choice.
@@ -175,7 +241,7 @@ several diphthongs, so no phonological conditioning accounts for it.
 The minority form is not rare enough to dismiss as a slip, and -ou-
 inverts the ratio outright: 12 y against 7 w.
 
-### G4. The NOMIC increment reproduces the Obv and PVS alternate forms
+### G6. The NOMIC increment reproduces the Obv and PVS alternate forms
 
 §4.6 gives each of the eleven referential categories three Effect
 forms, and gives Obv and PVS a second form apiece "used in Referential
@@ -212,7 +278,7 @@ increments -**w** or -**y**" — and says nothing about NOMIC.
 Roots, which are a different construction. The alternates were
 introduced to remove an ambiguity and introduce a different one.
 
-### G5. The AGGLOMERATIVE increment is ambiguous with 2p/BEN plus AGGLOMERATIVE
+### G7. The AGGLOMERATIVE increment is ambiguous with 2p/BEN plus AGGLOMERATIVE
 
 AGGLOMERATIVE is shown by **-ļ-** or **-tļ-**. The second form exists
 because a lone ļ has nowhere legal to stand — §3.1 bars it
@@ -225,7 +291,7 @@ AGGLOMERATIVE: `mtļ` is "he and co." or "he and you(pl., beneficial)
 and co." Both readings are phonotactically fine and both are built by
 rules the same paragraph gives.
 
-### G6. Most bias adjuncts are not permissible words
+### G8. Most bias adjuncts are not permissible words
 
 A bias adjunct (§4.7) is a bare consonant conjunct standing alone as a
 word — a shape §1.4 and §3-§4 never contemplate, since every rule
@@ -268,7 +334,7 @@ permitted nor prohibited.
 Four more — CMD `pļļ`, EXA `kçç`, OPT `ççk` and STU `ļļč` — are the
 §2.24 geminates of G1 above.
 
-### G7. §4.7's stated design principle contradicts its own table
+### G9. §4.7's stated design principle contradicts its own table
 
 §4.7 says each bias adjunct is "phonologically structured to contain
 continuant and sonorant consonants so that … they may be pronounced in
@@ -283,7 +349,7 @@ The very next sentence concedes the point in passing — "those ending in
 a voiceless stop or voiceless affricate may aspirate or even
 ejectivize" — without reconciling it with the claim it follows.
 
-### G8. §1.2.1's vowel inventory does not cover the conjuncts the morphology uses
+### G10. §1.2.1's vowel inventory does not cover the conjuncts the morphology uses
 
 §1.2.1 gives ten permissible diphthongs — ai, ei, ëi, oi, ui, au, eu,
 ëu, ou, iu — and describes every other two-vowel sequence as a
@@ -294,7 +360,7 @@ diphthong, and the tables never say how many syllables these forms
 carry — which matters, because syllable count is what selects the
 formative's Relation in Slot X.
 
-### G9. The referential table switches romanization mid-document
+### G11. The referential table switches romanization mid-document
 
 §1.3 sanctions alternate spellings — **ḑ** may be written **ḍ** or
 **đ** — and the document uses **ḑ** everywhere it appears: the §1.1
