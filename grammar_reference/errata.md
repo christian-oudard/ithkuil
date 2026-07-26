@@ -135,6 +135,38 @@ The other rule-violating roots in the lexicon are all retired:
 and `mpx` violate §2.13, and every one of them is daggered. The rule
 and the vocabulary agree everywhere except at L2.
 
+## Corpus
+
+The example sentences in `corpus/examples.txt` were transcribed and
+glossed by a third party, not taken verbatim from Quijada. Defects
+there are the transcription's, and are recorded separately for that
+reason.
+
+### C1. Two examples name a root the form does not contain
+
+Cross-checking every root gloss in the corpus against the lexicon —
+parsing each word, taking the C_R our parser finds, and comparing the
+quoted root meaning in the aligned gloss segment against that C_R's
+entry — 151 of 153 agree. The lexicon and the grammar's examples are
+otherwise in step, including where the wording diverges: `bšt` glossed
+'priest' against "religious leader", `lh` 'cousin' against "collateral
+familiar relation", `tr` 'approach'/'go.away' against "linear motion",
+`ňvy` 'apply.varnish' against "paint".
+
+The two exceptions both involve the word for 'child', which is C_R
+**l** at stem 2 ("human child"):
+
+- **§4.8.4 / §6.1.3** *Weru'i*, glossed `'child'-G-VOC`. The C_R is
+  `r`, whose stem 2 is "denying". G Perspective under a w- shortcut
+  also needs a series-2 V_V, so the form the gloss describes is
+  *Weilu'i*.
+- **§5.1.6** *wesu*, glossed `[default CA]-stem2/prc-'child'-DPX-IND`.
+  The C_R is `s`, the carrier root. The gloss is also inconsistent with
+  itself: DPX is a Configuration, so a formative carrying it does not
+  have a default C_A. The form the gloss describes is *elsu* — V_V `e`
+  for stem2/prc, C_R `l`, C_A `s` for DPX, V_C `u` for IND — with no
+  shortcut and no default C_A.
+
 ## Grammar
 
 ### G1. §2.24 bars çç and ļļ, and the morphology builds both
