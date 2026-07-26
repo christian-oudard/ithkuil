@@ -504,18 +504,34 @@ diphthong, and the tables never say how many syllables these forms
 carry — which matters, because syllable count is what selects the
 formative's Relation in Slot X.
 
-### G13. The referential table switches romanization mid-document
+### G13. The documents disagree on how to write ẓ and ḑ
 
-§1.3 sanctions alternate spellings — **ḑ** may be written **ḍ** or
-**đ** — and the document uses **ḑ** everywhere it appears: the §1.1
-phoneme chart, the §3.6 Ca substitutions, the affix tables, the
-lexicon. The one exception is the §4.6 referential table, which gives
-the mi/DETRIMENTAL form as **đ**.
+§1.1's phoneme chart gives the affricates as **c ẓ č j**, and §1.3 lists
+the sanctioned alternate spellings: ţ may be written ṭ or ŧ, ḑ as ḍ or
+đ, ň as ṇ or ŋ, ř as ṛ or ṙ, ļ as ł or ḷ. **ẓ is not on that list** — it
+has no sanctioned variant. The documents use one anyway:
 
-Nothing is wrong with the form; it is the only place the alternate is
-exercised, and a reader working through the tables meets a character
-that appears nowhere else and is absent from the §1.1 inventory as
-printed.
+| | ẓ (U+1E93, dot below) | ż (U+017C, dot above) |
+|---|---|---|
+| morphology.md | 8 | 1 |
+| phonotactics.md | 0 | 23 |
+| affixes_reference.md | 31 | 0 |
+| data.json | 162 | 0 |
+
+Every ẓ in the phonotactics document is written ż, including in §2.2's
+roster of the sibilants and in §2.5's list of prohibited conjuncts —
+the places a reader goes to learn which characters the language has.
+morphology.md keeps ẓ throughout except once, in §12.2.1's table of
+core script characters.
+
+ḑ has the same problem in miniature, and there the variant is at least
+sanctioned: the §4.6 referential table gives the mi/DETRIMENTAL form as
+**đ**, the only place in the document that exercises §1.3's alternate,
+and a reader working through the tables meets a character that appears
+nowhere else and is absent from §1.1 as printed.
+
+Either way a machine reader checking the phonotactic rules against the
+phoneme inventory sees an unknown codepoint twenty-three times.
 
 ### G14. The V_K table marks two of its eleven forms wrongly
 
@@ -1013,3 +1029,18 @@ approximant ř.
 
 A dropped diacritic, then — but one that turns a legal word into a
 prohibited one, the same shape of error as §7.0's `dc` for `ḑc` in G27.
+
+### G32. §12.2 counts 28 core script characters and tabulates 30
+
+§12.2.1 introduces the core secondary characters with "The **28** core
+forms each have a 'top' and 'bottom' end that take extensions", and
+§12.2.2 opens "For each of the **28** consonants, there are three
+extension orientations". The table between the two sentences lists
+thirty:
+
+> p b f v t d ţ ḑ k g s z x š ž c ż č j ç h l r ļ ř m n ň w y
+
+That is exactly §1.1's consonant inventory — all thirty letters, with
+nothing missing and nothing extra — leaving out only the glottal stop,
+which is the one consonant with no secondary character. The table is
+right and complete; the count in the prose on either side of it is not.
