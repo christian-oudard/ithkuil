@@ -94,6 +94,12 @@ func ValidateWord(word string) Result {
 		}
 	}
 
+	// The stress mark is suprasegmental: it rides on a vowel but is not
+	// one of the nine. ValidateStress above has read it, so take it off
+	// before any cluster or vowel-sequence lookup, which all key on the
+	// bare letters.
+	word, _ = surface.Strip(word)
+
 	// Single-consonant-conjunct words are stand-alone Bias adjuncts;
 	// their cluster table is authoritative and may legitimately contain
 	// shapes the §2 root/affix rules disallow (e.g. "pļļ" CMD, "kçç"

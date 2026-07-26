@@ -47,6 +47,18 @@ func TestValidateWord_BadVowelSequence(t *testing.T) {
 	}
 }
 
+func TestValidateWord_StressedDiphthong(t *testing.T) {
+	// A stress mark sits on the first vowel of a diphthong (§1.3.1), so
+	// ultimate stress on a final diphthong gives "áu", "ói" and friends.
+	// The phonotactic tables list bare vowels, so the mark has to come
+	// off before the conjunct is looked up.
+	for _, w := range []string{"walţmáu", "attaláu", "avļarüřjiatói", "amlaléi"} {
+		if r := ValidateWord(w); !r.Valid {
+			t.Errorf("ValidateWord(%q) flagged %v, want clean", w, r.Errors)
+		}
+	}
+}
+
 func TestValidateWord_Empty(t *testing.T) {
 	if r := ValidateWord(""); !r.Valid {
 		t.Errorf("empty word should be valid; got %v", r.Errors)
