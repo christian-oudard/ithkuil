@@ -815,3 +815,34 @@ of **each stem** of the Specialized Personal-Reference Root changes
 depending on its Perspective", and the table below it is headed "Stem 1
 Nominal meaning" and "Stem 1 Verbal meaning" — a label that only means
 something if Stems 2 and 3 can also be expressed.
+
+### G26. Five CHC examples label a degree-1 vowel as degree 2
+
+§5.8's worked sentences insert the CHC affix (C_S = **rz**) at four
+different degrees, and the Type-1 V_X series is a, ä, e, i, ëi, ö, o,
+ü, u. Three of the four degrees are written correctly:
+
+| Label | Vowel used | Vowel required | |
+|-------|-----------|----------------|---|
+| CHC1/3 | e | e | *Ellyulerza*, *Ellyalerza*, *welacerzooe* |
+| CHC1/7 | o | o | *welacorzooe* |
+| CHC1/9 | u | u | *welacurzu* (twice) |
+| **CHC1/2** | **a** | **ä** | *welacarzulwu*, *welacarzu*, *Etxularza*, *welecarzu*, *Adcsularzeuha* |
+
+`a` is degree 1, not degree 2. All five CHC1/2 examples use it.
+
+The English gloss suggests the labels are what slipped rather than the
+forms. Degree 1 is "can do nothing to stop it, initiation is
+inevitable"; degree 2 is "chooses to acquiesce due to being okay with,
+or indifferent as to outcome". Three of the five sentences are *The boy
+is made to jump*, *Someone's being made to jump* and *Being made to eat
+is taking place* — compulsion, which is degree 1. Reading them as
+CHC1/1 makes form and meaning agree at once.
+
+This survived two rounds of correction: v1.3 revised §5.8's examples
+and v1.3.1 corrected "a few typos in the example sentences".
+
+The notation is otherwise dependable. Sweeping every affix degree label
+in the document and checking the vowel that precedes its C_S in the
+accompanying Ithkuil word, 40 of the 45 that could be aligned are
+exactly right; the five failures are these.
