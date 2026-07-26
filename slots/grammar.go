@@ -101,6 +101,13 @@ func rootFromLayout(l Layout, shortcut parse.ShortcutVariant) (g.Root, g.SlotVI,
 			}
 			slotII = parsed
 		}
+		// §3 (Permissible Consonant Forms): no Cr root and no Cs affix
+		// begins with h-, w- or y-. A segmentation that lands one of
+		// those in the root has gone wrong somewhere upstream, and
+		// saying so beats handing back a root that cannot exist.
+		if strings.HasPrefix(l.Cr, "h") || strings.HasPrefix(l.Cr, "w") || strings.HasPrefix(l.Cr, "y") {
+			return nil, g.SlotVI{}, fmt.Errorf("root %q cannot begin with h-, w- or y-", l.Cr)
+		}
 		var slotIV g.SlotIV
 		if l.Vr == "" {
 			slotIV = g.DefaultSlotIV
