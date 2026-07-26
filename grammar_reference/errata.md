@@ -175,7 +175,65 @@ several diphthongs, so no phonological conditioning accounts for it.
 The minority form is not rare enough to dismiss as a slip, and -ou-
 inverts the ratio outright: 12 y against 7 w.
 
-### G4. §1.2.1's vowel inventory does not cover the conjuncts the morphology uses
+### G4. Most bias adjuncts are not permissible words
+
+A bias adjunct (§4.7) is a bare consonant conjunct standing alone as a
+word — a shape §1.4 and §3-§4 never contemplate, since every rule
+there is written about a conjunct with a vowel-form beside it (§4.1
+opens "A single word-final consonant **following a vowel-form**…").
+Taking the word-initial inventory at its word, 35 of the 61 forms are
+not licensed:
+
+- **§3.2.9** — "Word-initial liquids l- and r- may be followed by the
+  semiconsonants -w or -y", and by nothing else in §3: ACC `lf`,
+  ADS `lļ`, SAT `lţ`, ANP `lst`, FOR `lzp`, ISP `lçp`, SGS `ltç`,
+  SKP `rnž`, and via §6.3.1 the geminates PPX `llh`, RFL `llm`,
+  TRP `llč`, EXG `rrs`, CNV `rrj`.
+- **§3.2.8** — word-initial nasals take a liquid or an approximant:
+  ATE `ňj`, CRR `ňţ`, ACH `mçt`, MAN `msk`, RSG `msf`, and the
+  geminates DUB `mmf`, GRT `mmh`, IRO `mmž`, RVL `mmļ`, PSM `nnţ`,
+  SOL `ňňs`.
+- **ř-** is granted no word-initial pair at all — §3.2.9 covers l- and
+  r- only: APB `řs`, DOL `řřx`, IVD `řřn`.
+- **§3.2.5** — word-initial f, v, ţ, ḑ take a liquid, approximant,
+  nasal, or a stop/affricate *of the same voicing*: APH `vvz`,
+  EUP `vvt`, DPB `ffx`.
+- **§3.2.1** — a word-initial sibilant fricative takes a consonant of
+  the same voicing: PSC `žžt` pairs voiced ž with voiceless t.
+- **§3.2.2** — a word-initial sibilant affricate "cannot be followed
+  by … another affricate": DFD `cč`. §2.5 permits `cč` in general and
+  names it as an example, so this form is legal everywhere except at
+  the start of a word, which is the only place a bias adjunct puts it.
+- **§3.3** — a stop plus a non-sibilant fricative admits only -w or -y
+  as a third consonant: DRS `pfc`.
+- **§3.3.4** — a sibilant plus a same-voiced stop admits a liquid or
+  approximant third, and ļ is neither: RPU `šštļ`.
+- **§2.21** — "-ř- cannot be followed by -r-", in any position:
+  DES `mřr`.
+
+ARB `xtļ` is a further case: §3.2.3 licenses `xt` word-initially but
+§3.3 grants no triple beginning with x-, so the form is neither
+permitted nor prohibited.
+
+Four more — CMD `pļļ`, EXA `kçç`, OPT `ççk` and STU `ļļč` — are the
+§2.24 geminates of G1 above.
+
+### G5. §4.7's stated design principle contradicts its own table
+
+§4.7 says each bias adjunct is "phonologically structured to contain
+continuant and sonorant consonants so that … they may be pronounced in
+an exaggerated, prolonged fashion". Thirty-five of the 61 forms contain
+a stop or an affricate, and seventeen *begin* with one — ANN `drr`,
+CMD `pļļ`, CRP `gžž`, CTP `kšš`, CTV `gvv`, DCC `gzj`, DFD `cč`,
+DIS `kff`, DLC `ẓmm`, DRS `pfc`, EUH `gzz`, EXA `kçç`, MNF `pss`,
+IDG `pšš`, PES `ksp`, RAC `kll`, VEX `ksk`. An onset of `drr` or `ksk`
+is the one thing that cannot be prolonged.
+
+The very next sentence concedes the point in passing — "those ending in
+a voiceless stop or voiceless affricate may aspirate or even
+ejectivize" — without reconciling it with the claim it follows.
+
+### G6. §1.2.1's vowel inventory does not cover the conjuncts the morphology uses
 
 §1.2.1 gives ten permissible diphthongs — ai, ei, ëi, oi, ui, au, eu,
 ëu, ou, iu — and describes every other two-vowel sequence as a
