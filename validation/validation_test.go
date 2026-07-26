@@ -131,8 +131,9 @@ func TestSameVoicing(t *testing.T) {
 }
 
 func TestCheckProhibitedPair_Rule218(t *testing.T) {
-	if rule, _ := CheckProhibitedPair('ļ', 'b'); rule != "2.18" {
-		t.Errorf("ļ + voiced stop b: rule = %q, want 2.18", rule)
+	// §2.18 is directional: ļ "cannot be preceded by a voiced stop".
+	if rule, _ := CheckProhibitedPair('b', 'ļ'); rule != "2.18" {
+		t.Errorf("voiced stop b + ļ: rule = %q, want 2.18", rule)
 	}
 	if rule, _ := CheckProhibitedPair('h', 'ļ'); rule != "2.18" {
 		t.Errorf("h + ļ: rule = %q, want 2.18", rule)
@@ -514,7 +515,7 @@ func TestCheckProhibitedPair_RemainingRules(t *testing.T) {
 		{'ň', 'k', "2.16"},
 		{'x', 's', "2.17"},
 		{'x', 'g', "2.17"},
-		{'ļ', 'b', "2.18"},
+		{'b', 'ļ', "2.18"},
 		{'h', 'ļ', "2.18"},
 		{'ļ', 's', "2.18"},
 		{'ļ', 'h', "2.19"},

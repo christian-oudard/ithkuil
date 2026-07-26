@@ -148,9 +148,12 @@ func CheckProhibitedPair(a, b rune) (rule, reason string) {
 		}
 	}
 
-	// 2.18: ļ restrictions
-	if a == 'ļ' && isVoicedStop(b) {
-		return "2.18", "ļ + voiced stop"
+	// 2.18: ļ restrictions. The rule is directional — ļ "cannot be
+	// preceded by a voiced stop nor by -h- or -ç-. It cannot be
+	// followed by any sibilant fricative nor by -h- or -ç-." So the
+	// prohibited pairs are dļ/gļ/bļ, not ļd/ļg/ļb.
+	if isVoicedStop(a) && b == 'ļ' {
+		return "2.18", "voiced stop + ļ"
 	}
 	if a == 'h' && b == 'ļ' {
 		return "2.18", "h + ļ"
@@ -331,8 +334,27 @@ func ValidateClusterAt(p Position, cluster string) Result {
 	// Position-specific rules.
 	switch p {
 	case Initial:
-		if cluster == "ļ" {
-			errs = append(errs, Error{Rule: "3.1", Cluster: cluster, Reason: "ļ alone not allowed word-initially"})
+		// §3.1 and §3.2 are an inventory of what may open a word, and
+		// ValidWordInitial already holds it. Consult it here so the
+		// two do not drift: without this, *pz, *kļ and *pm passed
+		// general validation while the elision guard rejected them.
+		//
+		// Only the one- and two-consonant cases delegate. §3.3 and
+		// §3.4 are approximated conservatively there, which is right
+		// for declining an elision — the cost is a syllable — but as a
+		// validity verdict it would reject legal words.
+		if n := runeLen(cluster); n == 1 || n == 2 {
+			if !ValidWordInitial(cluster) {
+				rule := "3.2"
+				if n == 1 {
+					rule = "3.1"
+				}
+				errs = append(errs, Error{
+					Rule:    rule,
+					Cluster: cluster,
+					Reason:  "not permissible word-initially",
+				})
+			}
 		}
 		if runeLen(cluster) > 1 && firstRune(cluster) == '\'' {
 			errs = append(errs, Error{Rule: "1.5", Cluster: cluster, Reason: "glottal stop word-initial within cluster"})
