@@ -43,8 +43,17 @@ const registerEnd = 1 << 7
 // is written directly; every other token is introduced by the
 // nonFormative prefix and a type tag.
 func MarshalWord(t tokenize.WordToken) ([]byte, error) {
-	if fw, ok := t.(tokenize.FormativeWord); ok {
-		return putFormative(nil, fw.Formative)
+	switch v := t.(type) {
+	case tokenize.FormativeWord:
+		// A Cc marker means "another formative follows", so it belongs
+		// to a chain and never to a lone formative. Writing one here
+		// would make the decoder swallow the next token.
+		if v.Formative.Concat != g.ConcatNone {
+			return nil, fmt.Errorf("lone formative carries concatenation status %v; use a ConcatenatedFormativeWord", v.Formative.Concat)
+		}
+		return putFormative(nil, v.Formative)
+	case tokenize.ConcatenatedFormativeWord:
+		return putChain(nil, v.Chain)
 	}
 	out := append([]byte{}, nonFormative[:]...)
 	switch v := t.(type) {
@@ -83,6 +92,15 @@ func UnmarshalWord(buf []byte) (tokenize.WordToken, int, error) {
 		f, n, err := getFormative(buf)
 		if err != nil {
 			return nil, 0, err
+		}
+		// A Cc marker on the first formative opens a §3.1.7 chain; the
+		// rest of it follows inline, ending at the parent.
+		if f.Concat != g.ConcatNone {
+			c, rest, err := getChain(f, buf[n:])
+			if err != nil {
+				return nil, 0, err
+			}
+			return tokenize.ConcatenatedFormativeWord{Chain: c}, n + rest, nil
 		}
 		return tokenize.FormativeWord{Formative: f}, n, nil
 	}

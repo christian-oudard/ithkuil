@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/christian-oudard/ithkuil/concatenation"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/surface"
@@ -348,10 +349,13 @@ func TestNonFormativeEscape(t *testing.T) {
 	}
 	// A stream mixing both must survive, since it is the escape that
 	// keeps the decoder's dispatch unambiguous.
-	f := g.MinimalFormative("ml")
-	f.Concat = g.Type1
+	dep := g.MinimalFormative("ml")
+	dep.Concat = g.Type1
 	tokens := []tokenize.WordToken{
-		tokenize.FormativeWord{Formative: f},
+		tokenize.ConcatenatedFormativeWord{Chain: &concatenation.Chain{
+			Head: g.MinimalFormative("l"),
+			Tail: []g.Formative{dep},
+		}},
 		tokenize.BiasWord{Bias: g.DOL},
 		tokenize.FormativeWord{Formative: g.MinimalFormative("m")},
 	}
@@ -379,6 +383,115 @@ func TestDefaultElision(t *testing.T) {
 	if len(b) != 3 {
 		t.Errorf("minimal formative encoded to %d bytes (%x), want 3", len(b), b)
 	}
+}
+
+// TestChain_FreeFraming pins the property the chain layout is built
+// on: a chain costs exactly the sum of its formatives. The Cc marker
+// each dependent already carries is what delimits the run, so there
+// is no tag, no count, and no terminator to pay for.
+func TestChain_FreeFraming(t *testing.T) {
+	dep := g.MinimalFormative("ml")
+	dep.Concat = g.Type1
+	head := g.MinimalFormative("l")
+
+	depBytes, err := putFormative(nil, dep)
+	if err != nil {
+		t.Fatal(err)
+	}
+	headBytes, err := putFormative(nil, head)
+	if err != nil {
+		t.Fatal(err)
+	}
+	chain, err := MarshalWord(tokenize.ConcatenatedFormativeWord{
+		Chain: &concatenation.Chain{Head: head, Tail: []g.Formative{dep}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := len(depBytes) + len(headBytes); len(chain) != want {
+		t.Errorf("chain encoded to %d bytes, want %d (the parts, with no framing)", len(chain), want)
+	}
+}
+
+// TestChain_RejectsUngrammatical covers the states the surface cannot
+// express either: a Cc on a lone formative, a chain whose parent
+// carries a Cc, and a dependent that carries none.
+func TestChain_RejectsUngrammatical(t *testing.T) {
+	withConcat := func(cluster string, c g.ConcatenationStatus) g.Formative {
+		f := g.MinimalFormative(cluster)
+		f.Concat = c
+		return f
+	}
+	for _, tc := range []struct {
+		name  string
+		token tokenize.WordToken
+	}{
+		{"lone formative with a Cc", tokenize.FormativeWord{
+			Formative: withConcat("ml", g.Type1),
+		}},
+		{"parent with a Cc", tokenize.ConcatenatedFormativeWord{
+			Chain: &concatenation.Chain{
+				Head: withConcat("l", g.Type2),
+				Tail: []g.Formative{withConcat("ml", g.Type1)},
+			},
+		}},
+		{"dependent without a Cc", tokenize.ConcatenatedFormativeWord{
+			Chain: &concatenation.Chain{
+				Head: g.MinimalFormative("l"),
+				Tail: []g.Formative{g.MinimalFormative("ml")},
+			},
+		}},
+		{"chain of one", tokenize.ConcatenatedFormativeWord{
+			Chain: &concatenation.Chain{Head: g.MinimalFormative("l")},
+		}},
+	} {
+		if _, err := MarshalWord(tc.token); err == nil {
+			t.Errorf("%s: encoded without error, want a rejection", tc.name)
+		}
+	}
+}
+
+// TestFuzz_ChainRoundTrip runs random chains through the codec, mixed
+// into a stream so a chain that over- or under-read would corrupt the
+// tokens after it.
+func TestFuzz_ChainRoundTrip(t *testing.T) {
+	rng := rand.New(rand.NewSource(2026_07_26))
+	for i := 0; i < 200; i++ {
+		tokens := []tokenize.WordToken{
+			tokenize.ConcatenatedFormativeWord{Chain: randomChain(rng)},
+			tokenize.BiasWord{Bias: g.DOL},
+			tokenize.FormativeWord{Formative: randomFormative(rng)},
+		}
+		b, err := MarshalTokens(tokens)
+		if err != nil {
+			t.Fatalf("iter %d: marshal: %v", i, err)
+		}
+		got, err := UnmarshalTokens(b)
+		if err != nil {
+			t.Fatalf("iter %d: unmarshal: %v", i, err)
+		}
+		if len(got) != len(tokens) {
+			t.Fatalf("iter %d: got %d tokens, want %d", i, len(got), len(tokens))
+		}
+		b2, err := MarshalTokens(got)
+		if err != nil {
+			t.Fatalf("iter %d: re-marshal: %v", i, err)
+		}
+		if !reflect.DeepEqual(b, b2) {
+			t.Fatalf("iter %d: bytes differ after a round trip\n  %x\n  %x", i, b, b2)
+		}
+	}
+}
+
+// randomChain builds a chain of one to three dependents plus a parent.
+func randomChain(rng *rand.Rand) *concatenation.Chain {
+	c := &concatenation.Chain{Head: randomFormative(rng)}
+	for n := 1 + rng.Intn(3); n > 0; n-- {
+		dep := randomFormative(rng)
+		dep.Concat = []g.ConcatenationStatus{g.Type1, g.Type2}[rng.Intn(2)]
+		c.Tail = append(c.Tail, dep)
+	}
+	return c
 }
 
 func randomFormative(rng *rand.Rand) g.Formative {
@@ -409,9 +522,8 @@ func randomFormative(rng *rand.Rand) g.Formative {
 	case 9:
 		f.Root = g.RefRoot{C1: "l", Version: cr.Version, SlotIV: cr.SlotIV}
 	}
-	if rng.Intn(10) < 2 {
-		f.Concat = []g.ConcatenationStatus{g.Type1, g.Type2}[rng.Intn(2)]
-	}
+	// Concat is deliberately left at its default: it is only legal on
+	// a chain dependent, so randomChain sets it.
 	if rng.Intn(10) < 3 {
 		f.SlotV = randomAffixes(rng)
 	}

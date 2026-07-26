@@ -3,6 +3,7 @@ package serialize
 import (
 	"fmt"
 
+	"github.com/christian-oudard/ithkuil/concatenation"
 	g "github.com/christian-oudard/ithkuil/grammar"
 )
 
@@ -516,6 +517,63 @@ func getFormative(buf []byte) (g.Formative, int, error) {
 		}
 	}
 	return f, cur, nil
+}
+
+// ── concatenation chain ─────────────────────────────────────────────
+
+// A §3.1.7 chain costs no framing at all. Its dependents each carry a
+// Slot I Cc marker and its parent carries none, so the concatenation
+// status already delimits the run: read formatives until one comes
+// back with ConcatNone, and that one is the parent.
+//
+// This is the same signal the surface uses, which is why it is free
+// here. It also makes the ungrammatical state unrepresentable: a
+// lone formative may not carry a Cc, because a Cc means "another
+// formative follows". MarshalWord rejects one rather than writing
+// bytes that would swallow the following token into a phantom chain.
+
+func putChain(out []byte, c *concatenation.Chain) ([]byte, error) {
+	if c == nil {
+		return nil, fmt.Errorf("chain: nil")
+	}
+	if len(c.Tail) == 0 {
+		return nil, fmt.Errorf("chain: no dependents; a chain of one is a plain formative")
+	}
+	if c.Head.Concat != g.ConcatNone {
+		return nil, fmt.Errorf("chain: parent carries concatenation status %v, want none", c.Head.Concat)
+	}
+	var err error
+	for i, f := range c.Tail {
+		if f.Concat == g.ConcatNone {
+			return nil, fmt.Errorf("chain: dependent %d carries no concatenation status", i)
+		}
+		if out, err = putFormative(out, f); err != nil {
+			return nil, fmt.Errorf("chain: dependent %d: %w", i, err)
+		}
+	}
+	if out, err = putFormative(out, c.Head); err != nil {
+		return nil, fmt.Errorf("chain: parent: %w", err)
+	}
+	return out, nil
+}
+
+// getChain reads the rest of a chain given its first dependent, which
+// the caller has already decoded and found to carry a Cc marker.
+func getChain(first g.Formative, buf []byte) (*concatenation.Chain, int, error) {
+	c := &concatenation.Chain{Tail: []g.Formative{first}}
+	cur := 0
+	for {
+		f, n, err := getFormative(buf[cur:])
+		if err != nil {
+			return nil, 0, fmt.Errorf("chain: after %d dependents: %w", len(c.Tail), err)
+		}
+		cur += n
+		if f.Concat == g.ConcatNone {
+			c.Head = f
+			return c, cur, nil
+		}
+		c.Tail = append(c.Tail, f)
+	}
 }
 
 // ── varint ──────────────────────────────────────────────────────────
