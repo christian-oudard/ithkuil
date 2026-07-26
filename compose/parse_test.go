@@ -212,10 +212,10 @@ func TestFormative_MaţřëullaitRoundTrip(t *testing.T) {
 		// ("wamëu'ţřait"), which the plain form doesn't pay, so the
 		// plain form is canonical.
 		{"maţřëullait", "m-SYS/5_2-{Ca}-DCD/1_2", "maţřëullait"},
-		// Without Slot V there is no glottal, and the two encodings
-		// tie on syllables and length. The tie goes to the shortcut,
-		// so this one does not render back to what was typed.
-		{"malëuţřait", "m-SYS/5_2-DCD/1_2", "wamëuţřait"},
+		// Without Slot V there is no glottal, and the two encodings tie
+		// on syllables and length. A shortcut that gains nothing isn't
+		// taken, so this spelling is canonical too.
+		{"malëuţřait", "m-SYS/5_2-DCD/1_2", "malëuţřait"},
 	}
 	for _, c := range cases {
 		f, err := fullparse.Formative(c.surface)

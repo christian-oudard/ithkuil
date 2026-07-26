@@ -18,13 +18,14 @@ func TestCanonicalize(t *testing.T) {
 	pairs := []struct {
 		in, want string
 	}{
-		// Consonant-initial long form → Cc shortcut canonical.
-		{"mlala", "wamla"},
-		{"malëuţřait", "wamëuţřait"},
+		// The Cc shortcut ties on syllables and length here, so it buys
+		// nothing and the plain spelling stays put.
+		{"mlala", "mlala"},
+		{"malëuţřait", "malëuţřait"},
 		// Long-form Slot VIII Mood → Cn→Ca shortcut canonical.
 		{"amlalahla", "mlahla"},
 		// Default Vv "a" emitted instead of elided.
-		{"amlala", "wamla"},
+		{"amlala", "mlala"},
 		// §3.9.1 long-form Vc-glottal (cases 37-52). The Cc shortcut
 		// elides Vr, leaving §3.9.1 nowhere to move the glottal to, so
 		// the shortcut form stays three syllables while the plain form

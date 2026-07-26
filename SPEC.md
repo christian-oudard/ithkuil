@@ -30,7 +30,7 @@ A Formative has exactly one canonical surface. The grammar permits several equiv
 2. Fewest glottal stops. A shortcut that saves no syllable but forces a glottal, as §3.6.2 does to mark the end of Slot V once the Ca is gone, is a loss.
 3. Fewest characters.
 
-Past that the candidates are indistinguishable on any measure the spec offers, so the remaining tie-breaks exist only to keep the choice deterministic: prefer the compressed spelling, then the alphabetically earlier one.
+Past that the candidates are indistinguishable on any measure the spec offers, so the remaining tie-breaks exist only to keep the choice deterministic: leave the word in its plain spelling, since a compression that gained nothing is work for reader and writer with no return; then the alphabetically earlier form.
 
 Default slot values are elided regardless, and parsing accepts the non-canonical spellings too; they simply re-render as the canonical one.
 

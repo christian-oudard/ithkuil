@@ -10,10 +10,11 @@ import (
 func TestFormative_Minimal(t *testing.T) {
 	// MinimalFormative("ml"): I=∅, II=S1/PRC ("a"), III="ml", IV=STA/BSC/EXS ("a"),
 	// V=[], VI=default ("l"), VII=[], VIII=nil, IX=CaseSlot{THM} ("a").
-	// Default Vv elides per §3.2 → short form "wamla".
+	// Default Vv elides per §3.2 → "mlala". The Cc shortcut would
+	// give "wamla", the same length, so the plain form wins.
 	f := g.MinimalFormative("ml")
 	got := Formative(f)
-	want := "wamla"
+	want := "mlala"
 	if got != want {
 		t.Errorf("Formative(minimal \"ml\") = %q, want %q", got, want)
 	}
@@ -40,11 +41,11 @@ func TestFormative_NonDefaultSlots(t *testing.T) {
 
 func TestFormative_Ultimate(t *testing.T) {
 	// Verbal formative: Final is UnframedVerbal{Assertive{INF}}.
-	// Ultimate marks the last vowel; default Vv elides → "wamlú".
+	// Ultimate marks the last vowel; default Vv elides → "mlalú".
 	f := g.MinimalFormative("ml")
 	f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.INF}}
 	got := Formative(f)
-	want := "wamlú"
+	want := "mlalú"
 	if got != want {
 		t.Errorf("Formative(verbal) = %q, want %q", got, want)
 	}
@@ -148,8 +149,8 @@ func TestFormative_WithAffixes(t *testing.T) {
 	// Slot VII affix: vowel=a, cons=r → "ar"
 	f.SlotVII = []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}}
 	got := Formative(f)
-	// Long: a-ml-a-l-ar-a. Both default Vv and THM Vc elide → "wamlar".
-	want := "wamlar"
+	// Long: a-ml-a-l-ar-a. Both default Vv and THM Vc elide → "mlalar".
+	want := "mlalar"
 	if got != want {
 		t.Errorf("Formative(with affix) = %q, want %q", got, want)
 	}
@@ -160,7 +161,7 @@ func TestFormative_THMVcElision_KeepsForMinimal(t *testing.T) {
 	// PEN needs 2; slack is 1; only one elision fits. Prefer Vv.
 	f := g.MinimalFormative("ml")
 	got := Formative(f)
-	want := "wamla"
+	want := "mlala"
 	if got != want {
 		t.Errorf("Formative(minimal) = %q, want %q", got, want)
 	}
@@ -174,7 +175,7 @@ func TestFormative_AssertiveOBS_MonosyllabicElision(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
 	got := Formative(f)
-	want := "waml"
+	want := "mlal"
 	if got != want {
 		t.Errorf("Formative(ultimate-ASR-OBS) = %q, want %q", got, want)
 	}
@@ -200,7 +201,7 @@ func TestFormative_ShortForm_NonDefaultVvNoElision(t *testing.T) {
 	cr.Stem = g.S2
 	f.Root = cr
 	got := Formative(f)
-	want := "wemla"
+	want := "emlal"
 	if got != want {
 		t.Errorf("Formative(S2/PRC) = %q, want %q", got, want)
 	}
@@ -213,7 +214,7 @@ func TestFormative_ShortForm_WithSlotI_NoElision(t *testing.T) {
 	t1 := g.Type1
 	f.Concat = t1
 	got := Formative(f)
-	want := "hlamla"
+	want := "hamlal"
 	if got != want {
 		t.Errorf("Formative(T1) = %q, want %q", got, want)
 	}
@@ -237,9 +238,15 @@ func TestFormative_ANTPaddingNilSlotIX(t *testing.T) {
 }
 
 func TestFormative_ShortcutW_Series1(t *testing.T) {
+	// Non-default Stem keeps Vv from eliding, so the shortcut's folding
+	// of Vr+Ca into that vowel is a real syllable saved: "emlalo" → "wemlo".
 	f := g.MinimalFormative("ml")
+	cr := f.Root.(g.CrRoot)
+	cr.Stem = g.S2
+	f.Root = cr
+	f.Final = g.UnframedNominal{Case: g.ERG}
 	got := Formative(f)
-	want := "wamla"
+	want := "wemlo"
 	if got != want {
 		t.Errorf("Formative(W shortcut series 1) = %q, want %q", got, want)
 	}
@@ -259,14 +266,16 @@ func TestFormative_ShortcutOnlyWhenItShortens(t *testing.T) {
 		kase  g.Case
 		want  string
 	}{
-		// Vv is default and elides, so both forms are two syllables and
-		// the same length. The tie goes to the shortcut.
-		{"default Vv, series 1", g.S1, g.M_, g.THM, "wamla"},
-		// Same tie, but series 2 spells its Ca as a single -r-, making
-		// the plain form a rune shorter than "waimla".
+		// Vv is default and elides, so the shortcut saves nothing:
+		// "mlala" and "wamla" are both two syllables, five characters.
+		{"default Vv, series 1", g.S1, g.M_, g.THM, "mlala"},
 		{"default Vv, series 2", g.S1, g.G_, g.THM, "mlara"},
-		// Non-default Vv can't elide, so the shortcut saves a syllable.
-		{"non-default Vv, series 1", g.S2, g.M_, g.THM, "wemla"},
+		// A non-default Vv can't elide, but with a THM case the plain
+		// form drops its trailing Vc instead and still ties.
+		{"non-default Vv, elidable Vc", g.S2, g.M_, g.THM, "emlal"},
+		// Give the case a vowel of its own and the plain form has to
+		// carry three syllables. Now the shortcut earns its keep.
+		{"non-default Vv, series 1", g.S2, g.M_, g.ERG, "wemlo"},
 		{"non-default Vv, series 2", g.S2, g.G_, g.ERG, "weimlo"},
 	}
 	for _, c := range cases {
@@ -286,22 +295,33 @@ func TestFormative_ShortcutOnlyWhenItShortens(t *testing.T) {
 }
 
 func TestFormative_ShortcutY_Series1(t *testing.T) {
+	// PRX Extension takes the y- shortcut letter. Same setup as the w-
+	// case: a non-default Stem is what makes the shortcut worth taking.
 	f := g.MinimalFormative("ml")
+	cr := f.Root.(g.CrRoot)
+	cr.Stem = g.S2
+	f.Root = cr
 	f.SlotVI = g.SlotVI{Configuration: g.UNI, Affiliation: g.CSL,
 		Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}
+	f.Final = g.UnframedNominal{Case: g.ERG}
 	got := Formative(f)
-	want := "yamla"
+	want := "yemlo"
 	if got != want {
 		t.Errorf("Formative(Y shortcut series 1) = %q, want %q", got, want)
 	}
 }
 
 func TestFormative_ShortcutWithConcat(t *testing.T) {
+	// Under concatenation the shortcut rides on the Cc value itself:
+	// Type-1 h- becomes hl- when the Slot IV/VI shortcut is present.
 	f := g.MinimalFormative("ml")
-	t1 := g.Type1
-	f.Concat = t1
+	cr := f.Root.(g.CrRoot)
+	cr.Stem = g.S2
+	f.Root = cr
+	f.Concat = g.Type1
+	f.Final = g.UnframedNominal{Case: g.ERG}
 	got := Formative(f)
-	want := "hlamla"
+	want := "hlemlo"
 	if got != want {
 		t.Errorf("Formative(T1+W shortcut) = %q, want %q", got, want)
 	}

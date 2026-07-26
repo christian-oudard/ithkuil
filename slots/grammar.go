@@ -280,10 +280,10 @@ func (e encoding) count() int {
 // count leads. A shortcut that buys no syllable but forces a glottal
 // stop (§3.6.2 marks the end of Slot V that way once the Ca is gone)
 // is a loss, hence glottals next. Length breaks the remaining ties.
-// Past that the candidates are indistinguishable on any measure the
-// spec offers, so the last two keys only exist to make the choice
-// deterministic: prefer the compressed form, then the earlier surface
-// string.
+// Past that, a shortcut that has bought nothing on any of those three
+// measures is pure overhead for reader and writer alike, so the plain
+// spelling wins. Surface text is the final backstop, so the choice is
+// always deterministic.
 type cost struct {
 	syllables int
 	glottals  int
@@ -303,7 +303,7 @@ func (c cost) better(than cost) bool {
 		return c.runes < than.runes
 	}
 	if c.shortcuts != than.shortcuts {
-		return c.shortcuts > than.shortcuts
+		return c.shortcuts < than.shortcuts
 	}
 	return c.surface < than.surface
 }

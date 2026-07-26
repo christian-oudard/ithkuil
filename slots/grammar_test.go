@@ -107,15 +107,19 @@ func TestFromGrammar_ToGrammar_RoundTrip(t *testing.T) {
 }
 
 // TestFromGrammar_Shortcut exercises the Cc shortcut path in
-// FromGrammar — only fires when Options{Shortcut: true} and the
-// formative has the right shape (CrRoot, default SlotIV, no Slot V,
-// Slot VI in the shortcut table).
+// FromGrammar. Eligibility needs a CrRoot with default SlotIV and a
+// Slot VI the shortcut table can encode, but eligibility alone isn't
+// enough: the shortcut is only taken when it produces a shorter
+// surface, which needs a Vv that wouldn't have elided anyway.
 func TestFromGrammar_Shortcut(t *testing.T) {
-	// Default formative is shortcut-eligible.
 	f := g.MinimalFormative("ml")
+	cr := f.Root.(g.CrRoot)
+	cr.Stem = g.S2
+	f.Root = cr
+	f.Final = g.UnframedNominal{Case: g.ERG}
 	l := FromGrammar(f)
 	if l.Cc == "" {
-		t.Error("Shortcut: expected non-empty Cc on minimal formative")
+		t.Error("Shortcut: expected non-empty Cc on shortcut-winning formative")
 	}
 	got, err := ToGrammar(l)
 	if err != nil {
