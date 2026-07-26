@@ -1,0 +1,395 @@
+# Official example sentences from the New Ithkuil grammar (v1.3.1, 2023)
+# by John Quijada, https://ithkuil.net/ — reproduced under the reuse terms
+# of that site. Transcribed and glossed by the IthkuilTranslator project.
+#
+# Pipe-delimited, one example per line:
+#   Section | Ithkuil | Gloss | English
+#
+# The Gloss column is the upstream hand-curated notation, which differs
+# from what gloss.Formative emits; it is reference material, not an
+# expected value.
+Section | Ithkuil | Gloss | English
+3.1 | rrala | 'cat'-UPX | a cat
+3.1 | anzwul | 'spherical-shape'-OBJ-UPX | a sphere
+3.1 | rrasa | 'cat'-DPX | a pair of cats
+3.1 | anzwut | 'spherical-shape'-OBJ-MSS | a group of similar spheres
+3.1 | rraca | 'cat'-DSS | a pair of similar cats
+3.1 | anzwuk | 'spherical-shape'-OBJ-MSC | a group of similar spheres touching each other
+3.1 | rraţsa | 'cat'-DDS | a pair of dissimilar cats
+3.1 | anzwup | 'spherical-shape'-OBJ-MSF | a group of similar spheres fused together
+3.1 | rrata | 'cat'-MSS | a group of similar cats
+3.1 | anzwuf | 'spherical-shape'-OBJ-MDC | a group of dissimilar spheres touching each other
+3.1 | rraţa | 'cat'-MDS | a group of dissimilar cats
+3.1 | anzwuç | 'spherical-shape'-OBJ-MDF | a group of dissimilar spheres fused together
+3.1 | rraza | 'cat'-MFS | a group of what appear to be cats, some more than others
+3.1 | anzwuž | 'spherical-shape'-OBJ-MFC | a group of rounded objects touching each other/connected to one another, some of which appear to be spheres, others less so
+3.1 | Blöfêi onţlilu. | 'curved.translative.motion'-DYN-OBJ-MDC-ASR-USP stem0/prc-'automobile'-STA-OBJ-IND | The driver drove the car along a series of variously-sized curves.
+3.2.1 | čveţa |  | a bunch of tools
+3.2.1 | arsweţ |  | a group of planets
+3.2.1 | zvata |  | a set/group of similar dogs
+3.2.1 | sřula |  | a room's function
+3.2.2 | čvelţa |  | a well-designed set of tools
+3.2.2 | arswelţ |  | an alliance of planets
+3.2.2 | zvalta |  | a pack of similar dogs
+3.2.2 | sřunļa |  | the room's singular purpose
+3.2.3 | čverţa |  | a toolset
+3.2.3 | arswerţ |  | a confederation of planets
+3.2.3 | zvarta |  | a dog team
+3.2.3 | sřurļa |  | a room whose purposes are interrelated
+3.2.4 | čveřţa |  | a mish-mash of various tools
+3.2.4 | arsweřţ |  | a disorganized group of planets
+3.2.4 | zvařta |  | a rag-tag group of dogs
+3.2.4 | sřuňa |  | a room with disparate purposes
+3.3.1 | avsal |  | a season
+3.3.1 | ţrala |  | a drop of water
+3.3.1 | elzeţ |  | different rivers
+3.3.2 | avsar |  | one or more seasons / any number of seasons
+3.3.2 | ţrara |  | some water
+3.3.2 | elzeţra |  | at least one set of different rivers
+3.3.3 | avsav |  | a season (as a generic concept)
+3.3.3 | ţrava |  | water (as a generic concept)
+3.3.3 | elzeţwa |  | different rivers (as a generic concept)
+3.3.4 | avsaj |  | everything about a season / season-hood
+3.3.4 | ţraja |  | everything having to do with water
+3.3.4 | elzeţya |  | different rivers as an idea
+3.4.1 | elzel |  | a river
+3.4.1 | psulça |  | a situation
+3.4.1 | uẓfäl |  | a tunnel
+3.4.1 | erbräl |  | an explanation
+3.4.2 | elzed |  | a section/stretch of (a) river
+3.4.2 | psulçta |  | the midst of a situation
+3.4.2 | ujrarft |  | an area/section of a transportation system
+3.4.2 | erbräd |  | a portion of an explanation
+3.4.3 | elzeg |  | the source of a river
+3.4.3 | psulçka |  | the beginning of a situation
+3.4.3 | ujrarfk |  | the initial part of a transportation system
+3.4.3 | erbräg |  | the start of an explanation
+3.4.4 | elzeb |  | the end of a river
+3.4.4 | psulçpa |  | a situation's end
+3.4.4 | ujrarfpa |  | end of a transportation system
+3.4.4 | erbräb |  | the end of an explanation
+3.4.5 | elzegz |  | the headwaters of a river
+3.4.5 | psulçga |  | an evolving situation
+3.4.5 | ujrarfga |  | a developing transportation system
+3.4.5 | erbrägz |  | a gradual explanation
+3.4.6 | elzebz |  | the mouth of a river
+3.4.6 | psulçba |  | last vestiges of a situation
+3.4.6 | ujrarfba |  | decline of a transportation system
+3.4.6 | erbräbz |  | the unraveling of an explanation
+3.5.1 | Ẓalá kšili ežḑatļëi. | 'see'-NRM 'clown'-NRM-AFF 'ghost'-RPV-STM | The clown sees what he thinks is/imagines to be ghost.
+3.5.1 | Ẓatļá kšili wežḑëi. | 'see'-RPV 'clown'-NRM-AFF 'ghost'-NRM-STM | The clown imagines he is seeing a ghost.
+3.7 | Arţtulawá ulhiliolu wiosaḑca Iţkuil. | PRC-'study'-DYN-RTR-OBS-stem3/prc-'cousin'-OBJ-GEN-1M-IND-stem2/n-CARRIER-CLG1-1-THM 'Ithkuil' | My cousin studied the Ithkuil language.
+3.7 | Ärţtulawá ulhiliolu wiosaḑca Iţkuil. | CPT-'study'-DYN-RTR-OBS-stem3/prc-'cousin'-OBJ-GEN-1M-IND-stem2/n-CARRIER-CLG1-1-THM 'Ithkuil' | My cousin learned the Ithkuil language.
+3.8 | Byalá pa. |  | He has/shows/is showing common sense.
+3.8 | Byulá pa. (Byulá pu.) |  | He uses/exercises/is demonstrating common sense.
+3.8 | Vvralá mi wurçpi. |  | Her passion is dance / She feels passionate about dance.
+3.8 | Vvralá mi urçpuli. |  | Her passion is dancing / She feels passionate about dancing.
+3.8 | Tlasatřá çkava. |  | Disease is rampant there.
+3.8 | Tlusatřá çkava. |  | Disease runs rampant there.
+3.8 | Txasá ku. |  | They are having a meal.
+3.8 | Txusá ku. |  | They are eating a meal.
+3.8 | Waltlá wele lo. |  | I make the child wear a jacket.
+3.8 | Altlúl wele lo. |  | I put a jacket on the child / I dress the child in a jacket.
+3.8 | Malá welu wiosaḑcä espanya. |  | The child is speaking (in) Spanish.
+3.8 | Mulá welu wiosaḑcä espanya. |  | The child is saying something in Spanish.
+3.8 | Yeg arrlalu. |  | The cheetah is running. [focus on current state/characteristic]
+3.8 | Egúd arrlalu. |  | The cheetah is running. [focus on purposeful action]
+3.9.1 | Frulawá warru přelu'a. | 'parallel.translative.motion'-DYN-EXS-RTR-OBS 'cat'-STA-EXS-IND 'doorway'-STA-EXS-NAV | The cat ran past the doorway. [neutral description of physical scene only]
+3.9.2 | Fruilawá rrailu pře'ilua. | 'parallel.translative.motion'-DYN-FNC-RTR-OBS 'cat'-STA-FNC-IND 'doorway'-STA-FNC-NAV | The cat ran past the doorway. [focus on personal/social meaning/significance]
+3.9.3 | Frualawá rrialu při'olua. | 'parallel.translative.motion'-DYN-RPS-RTR-OBS 'cat'-STA-RPS-IND 'doorway'-STA-RPS-NAV | The cat ran past the doorway. [connotes metaphorical meaning]
+3.9.4 | Froalawá rraolu přa'ölua. | 'parallel.translative.motion'-DYN-AMG-RTR-OBS 'cat'-STA-AMG-IND 'doorway'-STA-AMG-NAV | The cat ran past the doorway. [focus on emotional impact plus cultural significance]
+3.10 | Yedpéi mmoi. / Edpadéi mmoi. |  | Where's the thumping sound coming from?
+3.10 | Weinţdâ. / Enţdarâ. |  | I recall at least one motorcyclist going by.
+4.2.12 | Etxulá | 'eat'-DYN 'child'-GID1-1-IND | The girl eats.
+4.2.12 | Etxulá | 'eat'-DYN 'child'-GID1-1-IND [default CA]-'apple.tree'-EPP1-3-CSM | The girl is eating an apple.
+4.2.12 | Itxulá | CPT-'eat'-DYN [default CA]-'apple.tree'-EPP1-3-CSM | An apple gets eaten. / Someone eats an apple.
+4.2.12 | Enulá | 'give'-DYN 'adult'-GID1-3-ERG 'child'-GID1-1-DAT-IND-[default CA] 'apple.tree'-EPP1-3-CSM 'eat'-DYN-[default CA]-PUR | The man feeds the girl an apple.
+4.2.12 | Etxulá | 'eat'-DYN 'adult'-GID1-3-EFF 'child'-GID1-1-CHC₁-9-IND-[default CA] 'apple.tree'-EPP1-3-CSM | The man gets the girl to eat an apple.
+4.2.12 | Enulá | 'give'-DYN 'child'-GID1-1-DAT-IND-[default CA] 'apple.tree'-EPP1-3-CSM 'eat'-DYN-[default CA]-PUR | The girl is given an apple to eat.
+4.2.12 | Etxulá | 'eat'-DYN 'child'-GID1-1-CHC₁-9-IND [default CA]-'apple.tree'-EPP1-3-CSM | The girl is/gets fed an apple.
+4.2.12 | Enulá | 'give'-DYN-[default CA] 'apple.tree'-EPP1-3-CSM 'child'-GID1-1-CHC₁-2-DAT-IND 'eat'-DYN-[default CA]-PUR | An apple gets fed to the girl.
+4.2.12 | Etxulá | 'eat'-DYN 'child'-GID1-1-CHC1-2-IND | The girl gets fed.
+4.2.12 | Etxulá | 'eat'-DYN 'child'-GID1-1-CHC1-3-CSM | The girl gets eaten.
+4.2.12 | Etxulá | 'eat'-DYN 'child'-GID1-1-IND-CSM | The girl eats herself.
+4.2.12 | Etxulá | 'eat'-DYN 'child'-GID1-1-CHC1-7-CSM | The girl gets herself eaten.
+4.2.12 | Etxulärzá | 'eat'-DYN-CHC1-2 | Feeding is taking place (i.e., someone is feeding someone/something else).
+4.2.12 | Enulá | 'give'-DYN-CONCATENATED 'eat'-CSV-A-PUR-PARENT 'food'-OBJ-MDS-CSM | Feeding is taking place (i.e., someone is giving someone else food to eat).
+4.2.12 | Aḑçulëuhá | 'jump'-DYN-RCT-OBS [default CA]-'child'-GID1-3-IND | The boy jumps (up and down).
+4.2.12 | Aḑçulëuhá | 'jump'-DYN-RCT-OBS 'parent'-GID2-1-EFF-[default CA] 'child'-GID1-3-IND | Mother makes the boy jump (up and down).
+4.2.12 | Aḑçulëuhá | 'jump'-DYN-RCT-OBS [default CA]-'child'-GID1-3-CHC₁-2-IND | The boy is made to jump (up and down).
+4.2.12 | Yaḑçëuhá | PRX-'jump'-STA-RCT-OBS | Jumping (up and down) takes place. / There's jumping (up and down) going on.
+4.2.12 | Aḑçulëuhá | 'jump'-DYN-RCT-OBS | Someone's jumping (up and down). / There's someone jumping (up and down).
+4.2.12 | Aḑçulärzëuhá | 'jump'-DYN-CHC₁-2-RCT-OBS | Someone's being made to jump (up and down).
+4.2.12 | Yubškirfúi | PRX-stem3/prc-'audience.member'-PTW1-4-CNJ 'sing'-DYN-ASM-INF 'adult'-GID1-1-IND | If there's an audience, the woman will sing.
+4.2.12 | Yubškirfúi | PRX-stem3/prc-'audience.member'-PTW1-4-CNJ 'sing'-DYN-ASM-INF 'adult'-GID1-1-IND 'song'-THM | If there's an audience, the woman will sing a song.
+4.2.12 | Yubškirfúi | PRX-stem3/prc-'audience.member'-PTW1-4-CNJ 'sing'-DYN-ASM-INF 'song'-THM | If there's an audience, a song will be sung.
+4.2.12 | Yubškirfúi | PRX-stem3/prc-'audience.member'-PTW1-4-CNJ 'sing'-STA-ASM-INF | If there's an audience, there will be singing going on. / If there's an audience, someone will sing.
+4.2.12 | Yubškirfúi | PRX-stem3/prc-'audience.member'-PTW1-4-CNJ 'sing'-DYN-3-BEN-ASM-INF 'adult'-GID1-1-IND | If there's an audience, the woman will sing for someone.
+4.2.12 | Ellyulá | 'sing'-DYN-OBS 1M-BEN-EFF 'adult'-GID1-1-IND | I make the woman sing.
+4.2.12 | Ellyulerzá | 'sing'-DYN-CHC1-3-OBS 1M-BEN-EFF 'adult'-GID1-1-IND | I get the woman to sing.
+4.2.12 | Ellyalerzá | 'sing'-STA-CHC1-3-OBS-1M-BEN-EFF | I get singing to happen.
+4.2.12 | Ellyulá | 'sing'-DYN-OBS 1M-BEN-EFF | I make singing occur.
+4.2.13 | Yantxečmeihá aţpwato | 'chew'-DIF1-3-REP 'snail'-MSS-ERG | The snails chew easily. [meaning: It is easy for the snails to chew things.]
+4.2.13 | Yantxečmeihá aţpwate | 'chew'-DIF1-3-REP 'snail'-MSS-ABS | The snails chew easily. [meaning: It is easy to chew (on) the snails.]
+4.3.1 | kštala wampeicai | 'chair'-[default CA]-THM [default CA]-PARENT-GID2-3-POS | father's chair
+4.3.2 | onţläla wampeicau | stem0/prc-'automobile'-CTE [default CA]-THM [default CA]-PARENT-GID2-3-PRP | father's car
+4.3.3 | walţa enžtalekcei | 'pellicle'-THM 'peach.tree'-EPP1-3 | the skin of a peach
+4.3.3 | walža kšilei | 'face'-THM 'clown'-GEN | the clown's face
+4.3.4 | mřřala weleu | 'grief'-THM 'child'-ATT | the child's grief
+4.3.4 | yuäčla kšileu | 'deviousness'-THM 'clown'-ATT | the clown's deviousness
+4.3.5 | eňalţra wampacëu | 'written.composition'-ASO-MDS-G PARENT-GID1-1-PDC | mother's writings
+4.3.6 | yerla kšilou | PRX-'subjective.viewpoint'-THM 'clown'-ITP | the clown's point of view
+4.3.7 | ekcatra walḑoi | 'fruit'-MSS-G-THM 'tree'-OGN | the fruit of a tree
+4.3.8 | wailpla endyaftioriu | G-'blood'-THM 'vein'-MDC-PRX-GEN-1M-BEN-IDP | the blood in my veins
+4.3.9 | unţwäla kšiţui | 'bus'-THM 'clown'-MDS-PAR | a busload of clowns
+4.4.1 | rrala udklälia | 'cat'-THM 'projectile.weapon'-CTE-APL | a cat for use as a projectile weapon
+4.4.2 | skela agçiţrie | 'container/receptacle'-CSV-THM 'trash/garbage'-OBJ-MDS-G-PUR | a trashcan / a garbage bin
+4.4.3 | utxala welio | 'drink'-THM 'child'-TRA | a drink for the child
+4.4.4 | ujtajiö | 'tradition'-A-DFR | out of respect for tradition
+4.4.5 | Wat alcmar afdareë | [default CA]-'be.what.is.under.discussion'-PRX-OBS 'sugar'-G-THM 'salt'-G-CRS | It's sugar, not salt
+4.4.6 | Xpulá kšilo waigvbre waiňnuö | 'act.of.substitution'-DYN-OBS 'clown'-ERG-G 'methane'-ABS 'oxygen'-G-TSP | The clown is substituting methane for oxygen
+4.4.7 | Weščayá ampasu hakšilaölwie-addyabzëuttuo welio | 'pay.money'-RTR-OBS-PARENT-DPX-IND-CONCATENATED 'clown'-TFM-PUR-PARENT 'teacher' 'student.complementary.interaction'-FEA2-5-MSS-CMM 'child'-TRA | The parents paid for the child's clown lessons
+4.4.8 | Amsävá wialcma afdavue | 'taste.sweet'-CTE-N-OBS N-'sugar'-THM 'salt'-N-CMP | Sugar is sweet compared to salt
+4.4.9 | eddyulua | stem2/prc-'teach'-OBJ-[default CA]-CSD | according to the teacher
+4.5.1 | Wamá kšilu wiamfmavügao | 'speak'-OBS 'clown'-OBJ-IND 'act.of.assurance'-N-EXN1-8-FUN | The clown speaks most assuredly
+4.5.2 | Weščayá ampasu hakšilaölwie-addyëubzattuo welio | 'pay.money'-RTR-OBS-PARENT-DPX-IND-CONCATENATED 'clown'-TFM-PUR-PARENT 'teacher' 'student.complementary.interaction'-FEA2-5-MSS-TSP 'child'-TRA | The parents paid for the child's clown lessons
+4.5.3 | wajneo | 'length.of.object'-CLA | lengthwise
+4.5.3 | Erčuläyá kšivo weleo | 'corrupt'-DYN-PRS-OBS 'clown'-N-ERG 'child'-CLA | The clowns will corrupt child after child
+4.5.4 | wadpweö | 'act.of.blackmail'-RSL | resulting in (an act of) blackmail
+4.5.5 | Elkswuvá wampacu aţmwaroë | 'cook.seafood'-DYN-N-OBS-PARENT-GID1-1-IND-G 'wine'-CSM | Mother cooks seafood with wine
+4.5.6 | wardplitöe | 'act.of.embezzlement'-DCD1-4-CON | in spite of that (act of) embezzlement
+4.5.7 | Wiamftrá ru avtyävairxoe | N-'engage.in.drinking.contest'-OBS 1M-DET-IND 'state.of.chemical.intoxication'-N-SIM2-1-AVR | I engage in drinking contests out of fear of sobriety
+4.5.8 | Wašḑayá cwe warröa | 'remove'-RTR-OBS-MX-NEU-A-ABS 'cat'-CVS | Everything was removed except the cat
+4.5.9 | Wekská weli kšiloa | 'feel.anger'-OBS 'child'-AFF 'clown'-SIT | The child is angry because of the clown
+4.6.1 | ellyila engla'ra | 'singing'-OBJ-THM 'bivalve'-G | a song about some shellfish
+4.6.1 | Malihái alxla'va | 'talk'-RCP-DIR 'science'-N-PRN | Let's discuss science
+4.6.2 | wala yačpä'ä | 'person'-THM-PRX 'being.stupid' | a stupid person
+4.6.2 | aţkläl uçfa'dä | 'place'-CTE-THM 'peaceableness'-PRX-DSP | a peaceful place
+4.6.3 | eţir iolca'le | 'entity.situated.in.a.particular.direction'-G-THM-DCD1-4 'road' | objects lying in the direction of the road
+4.6.3 | emževa lya'je | 'sexual.relations'-CSV-N-THM 'work.of.art'-A-COR | sex in art
+4.6.4 | aňļir atļmä'vi | 'existent.thing'-G-THM 'plastic'-CTE-N-CPS | things made of plastic
+4.6.5 | waleca amtri'lëi | 'person'-GID1-3-THM 'hat'-OBJ-COM | a man with a hat
+4.6.6 | waleca amtri'lö | 'person'-GID1-3-THM 'hat'-OBJ-UTL | a man wearing a hat
+4.6.7 | aẓtaţra usla'vo | 'law'-MDS-G-THM 'reasoning'-N-PRD | laws based in reason
+4.6.8 | kšila erḑmezwo'ivvu | 'clown'-THM 'act.of.cheating'-CSV-ACCESSOR2-ERG-N-RLT | a clown who cheats
+4.7.1 | Amskadwû kšivöla'i wiorkwa | 'necessity'-PRX-N-ITU 'clown'-N-CTR1-6-ACT-N 'filial.love'-THM | I think even clowns need love
+4.7.2 | Malá su wela'u | 'talk'-OBS 2M-NEU-IND 'child'-ASI | You talk like a child (even though you are not a child)
+4.7.3 | Malá su wele'i | 'talk'-OBS 2M-NEU-IND 'child'-ESS | You talk like a child (because you are one)
+4.7.4 | Pţradá kro wailve'u | 'hunt'-PRX-OBS 3P-BEN-1M-BEN-ERG-G 'deer'-G-TRM | We're hunting deer
+4.7.5 | walazë'u | 'person'-XX31-1-SEL | every third person
+4.7.6 | Uẓtavo'u arzälalžóu sa'i | 'applicability.of.law'-N-CFM 'obey'-OBG1-1-ADM 2M-NEU-ACT | Under the law you must obey
+4.7.7 | Watkwäyû welu weppļi'a kšilütřacko'i | 'attendance.at.event'-PRS-ITU 'child'-IND 'party'-LOC 'clown'-DX11-8-DPC1-1-DEP | The child will probably only come to the party if there's a clown there
+4.7.8 | Kši'lui! | 'clown'-VOC | Hey, clown!
+4.8.1 | epřeli'a | 'entryway'-CSV-LOC | at the entrance
+4.8.2 | Ẓalá li welenëi máli'hu thi'e kširu. | 'see'-OBS 1M-NEU-IND 'child'-G-IND 'talk'-PRX-OBS 'clown'-MDS-COR 'child'-ATD | I see the child who is talking with the clowns.
+4.8.3 | wajli'a | 'mountain'-ALL | to(ward) the mountain
+4.8.4 | Weru'i gulái onţläli'ö kši've! | 'child'-G-VOC 'ambulate'-DYN-DIR 'automobile'-CTE-ABL 'clown'-N-COR | Children walk away from the clown car!
+4.8.5 | Gavó wioḑpu ustyale'ë | 'ambulate'-N-ASR-CVN N-'crab'-IND 'flank/side'-ORI | They say crabs walk sideways
+4.8.6 | Arveléi iträlu'ö kši'ţe? | 'amount.of.elapsed.time'-CSV-IRG CPT-'process.of.approaching'-CTE-IRL 'clown'-MDS-COR | How long has it been since the clowns' arrival? [focus on the temporal relationship between the elapsed period of time and the point in time when the clowns arrived; compare this example to the one immediately below]
+4.8.7 | Arveléi iträlu'o kši'ţe? | 'amount.of.elapsed.time'-CSV-IRG CPT-'process.of.approaching'-CTE-INV 'clown'-MDS-COR | How long has it been since the clowns' arrival? [focus on the juxtaposition between one temporal context and another adjacent to it]
+4.8.8 | Tralá elařţru hakšiţé-alcialu'a | 'translative.motion'-OBS 'child'-VAR-MDS-G-IND CONCATENATED 'clown'-MDS-COR PARENT-'path'-RPS-NAV | The children follow the way of the clowns
+4.9.1 | ujthäda'o | 'war'-CTE-PRX-CNR | during a war/during wartime
+4.9.1 | wucpirwa'o | 'sixth'-SPT1-4-CNR | on Saturday
+4.9.2 | elesa kšila'ö | 'child'-DPX-THM 'clown'-ASS | a pair of children per clown
+4.9.3 | Řese'o yeirčá kšivo wiole | '24.hour.day'-CSV-DPX-PER RPV-'corrupt'-RTR-OBS 'clown'-N-ERG 'child'-N-ABS | It takes two days for a clown to corrupt a child
+4.9.4 | Wellyawá urwale'ö | 'sing.a.song'-RTR-OBS 'hour'-PRO | They sang for an hour
+4.9.5 | epssalo'ë | 'present.moment'-PCV | before the present moment
+4.9.5 | wucpirwo'ë | 'sixth'-SPT1-4-PCV | prior to Saturday
+4.9.6 | ujthädö'e | 'war'-CTE-PRX-PCR | after the war
+4.9.6 | welkošmo'e | 'make.music'-FRM1-7-PCR | after the music recital
+4.9.7 | wapšorco'e | 'four'-ELA1-7-ELP | four days ago / four days from now
+4.9.7 | Iträlawó kši'ţu waçčëizo'e | CPT-'process.of.approaching'-CTE-RTR-CVN 'clown'-MDS-IND 'winter'-XX31-5-ELP | They say the clowns arrived three winters ago
+4.9.8 | wapšorco'a | 'four'-ELA1-7-PLM | by the end of four days from now
+4.9.8 | iträlo'a kši'ţe | CPT-'process.of.approaching'-CTE-PLM 'clown'-MDS-COR | by the time of the clown's arrival / by the time the clowns arrive
+5.1.1 | Švel elasu ukthili'a | 'play'-CSV-[default CA]-MNO-OBS stem2/prc-'child'-DPX-IND stem3/prc-'floor'-OBJ-[default CA]-LOC | Two children are playing on the floor. [the implication being that the two children are not playing with each other nor are they necessarily playing the same game]
+5.1.2 | Švelähá elasu ukthili'a | 'play'-CSV-[default CA]-PRL-FAC-OBS stem2/prc-'child'-DPX-IND stem3/prc-'floor'-OBJ-[default CA]-LOC | Two children are playing on the floor. [they are playing the same kind of game but separately from each other]
+5.1.3 | Švelehá elasu ukthili'a | 'play'-CSV-[default CA]-CRO-FAC-OBS stem2/prc-'child'-DPX-IND stem3/prc-'floor'-OBJ-[default CA]-LOC | Two children are playing on the floor. [they are playing at the same time, but each is playing a different game]
+5.1.4 | Švelihá elasu ukthili'a | 'play'-CSV-[default CA]-RCP-FAC-OBS stem2/prc-'child'-DPX-IND stem3/prc-'floor'-OBJ-[default CA]-LOC | Two children are playing on the floor. [they are playing with another, unnamed party, presumably other children. See NOTE immediately below]
+5.1.4 | Šveladřihá elasu ukthili'a | 'play'-CSV-[default CA]-SBS1-1-RCP-FAC-OBS stem2/prc-'child'-DPX-IND stem3/prc-'floor'-OBJ-[default CA]-LOC | Two children are playing on the floor. [they are playing with each other]
+5.1.4 | Wioňihá puyuöt | [default CA]-N-'write'-RCP-FAC-OBS MA/BEN-IND+TSP-2M/BEN | You (two) write on each other's behalf.
+5.1.4 | Malihá lalecu welü kši'la | 'talk'-[default CA]-RCP-FAC-OBS 'person'-[default CA]-GID1-3-IND [default CA]-stem2/prc-'child-dat'-'clown'-[default CA]-PRN | The man and the child talk to each other about the clown.
+5.1.4 | Malihá ňu kši'la | 'talk'-[default CA]-RCP-FAC-OBS PA-NEU-IND 'clown'-[default CA]-PRN | They talk about the clown (with somebody else).
+5.1.4 | Malihá ňuxadřa kši'la | 'talk'-[default CA]-RCP-FAC-OBS-PA-NEU-IND-SBS1-1 'clown'-[default CA]-PRN | They talk to each other about the clown.
+5.1.4 | Malihá lalecu welü lalecë'iča | 'talk'-[default CA]-RCP-FAC-OBS 'person'-[default CA]-GID1-3-IND [default CA]-stem2/prc-'child-dat'-'person'-[default CA]-GID1-3-SWR1-5-PRN | The man and the child talk to each other about the man. [i.e., the man being talked about is the same man who is talking with the child].
+5.1.5 | Švelëihá elasu ukthili'a | 'play'-CSV-[default CA]-CPL-FAC-OBS stem2/prc-'child'-DPX-IND stem3-PRC-'floor'-OBJ-[default CA]-LOC | Two children are playing on the floor. [they are playing a coplementary game/activity with each other, where one performs one half/side of the activity and the other performs the other half]
+5.1.6 | Švelöhá wesu ukthili'a | 'play'-CSV-[default CA]-DUP-FAC-OBS [default CA]-stem2/prc-'child'-DPX-IND stem3/prc-'floor'-OBJ-[default CA]-LOC | Two children are playing on the floor. [where one child performs a play activity and the second child then copies/duplicates the same activity]
+5.1.7 | Švelohá elasu ukthili'a | 'play'-CSV-[default CA]-DEM-FAC-OBS stem2/prc-'child'-DPX-IND stem3/prc-'floor'-OBJ-[default CA]-LOC | Two children are on the floor and one is showing the other how to play (a game).
+5.1.8 | Švelühá elasu ukthili'a | 'play'-CSV-[default CA]-CNG-FAC-OBS stem2/prc-'child'-DPX-IND stem3/prc-'floor'-OBJ-[default CA]-LOC | Two children are playing on the floor and one performs one part of the play activity then the other performs the next part.
+5.1.9 | Šveluhá elasu ukthili'a | 'play'-CSV-[default CA]-PTI-FAC-OBS stem2/prc-'child'-DPX-IND stem3/prc-'floor'-OBJ-[default CA]-LOC | Two children are on the floor taking part in the play activity.
+5.2.1 | Yuçká elari | PRX-stem3/prc-'suffer.from.illness'-FAC-OBS stem2/prc-'child'-G-AFF | Their kids are ill. [i.e., it is known he has kids and it is known they are ill]
+5.2.1 | Hlešvie-galoktähá pra'i | CONCATENATED-[default CA]-stem2/prc-'self-involved.leisure.activity'-PUR-PARENT-'ambulation'-[default CA]-TPP1-7-PRL-FAC-OBS MA/BEN+1M/BEN-ACT | She and I are (planning on) taking a walk later on. [i.e., it is our intention and we have the opportunity to do so]
+5.2.1 | Webglá afbalfa umflilacai pei | [default CA]-stem2/prc-'be.inside-out'-FAC-OBS PRC-'article.of.clothing'-ASO MDC-THM stem3/prc-'spouse'-OBJ-[default CA]-GID1-1-POS MA-BEN-GEN | His wife's clothes are inside-out.
+5.2.2 | Yuçkahlá elari | PRX-stem3/prc-'suffer.from.illness'-SUB-OBS stem2/prc-'child'-G-AFF | Maybe his kids are ill. [i.e., it is known that he has kids but it is not known whether they are ill]
+5.2.2 | Hlešvie-galoktählá pra'i | CONCATENATED-[default CA]-stem2/prc-'self-involved.leisure.activity'-PUR-PARENT-'ambulation'-[default CA]-TPP1-7-PRL-SUB-OBS MA/BEN+1M/BEN-ACT | She and I may take a walk later on. [i.e., it is known that the opportunity to do so will arise, but it is uncertain whether we will choose to]
+5.2.2 | Webglahlá afbalfa umflilacai pei | [default CA]-stem2/prc-'be.inside-out'-SUB-OBS PRC-'article.of.clothing'-ASO MDC-THM stem3/prc-'spouse'-OBJ-[default CA]-GID1-1-POS MA-BEN-GEN | His wife's clothes may be inside-out.
+5.2.3 | Yuçkahrú elari | PRX-stem3/prc-'suffer.from.illness'-ASM-INF stem2/prc-'child'-G-AFF | His kids'll be ill OR If he has kids they are ill. [i.e., it is unknown whether he has kids, but if he does, they are certainly ill.]
+5.2.3 | Hlešvie-galoktährá pra'i | CONCATENATED-[default CA]-stem2/prc-'self-involved.leisure.activity'-PUR-PARENT-'ambulation'-[default CA]-TPP1-7-PRL-ASM-OBS MA/BEN+1M/BEN-ACT | She and I will take a walk later on [i.e., if we can] OR We intend to take a walk. [i.e., but we don't know if we'll be able to]
+5.2.3 | Webglahrû afbalfa umflilacai pei | [default CA]-stem2/prc-'be.inside-out'-ASM-ITU PRC-'article.of.clothing'-ASO MDC-THM stem3/prc-'spouse'-OBJ-[default CA]-GID1-1-POS MA-BEN-GEN | If he has a wife her clothes are inside-out.
+5.2.4 | Yuçkahmû elari | PRX-stem3/prc-'suffer.from.illness'-SPC-ITU stem2/prc-'child'-G-AFF | Maybe his kids are ill. [i.e., it is unknown if he has kids but if he does, they may be ill]
+5.2.4 | Hlešvie-galoktähmû pra'i | CONCATENATED-[default CA]-stem2/prc-'self-involved.leisure.activity'-PUR-PARENT-'ambulation'-[default CA]-TPP1-7-PRL-SPC-ITU MA/BEN+1M/BEN-ACT | She and I may take a walk later on. [i.e., it is unknown whether we will have the opportunity to do so, and even if we do, it is uncertain whether we will choose to]
+5.2.4 | Webglahmû afbalfa umflilacai pei | [default CA]-stem2/prc-'be.inside-out'-SPC-ITU PRC-'article.of.clothing'-ASO MDC-THM stem3/prc-'spouse'-OBJ-[default CA]-GID1-1-POS MA-BEN-GEN | If he has a wife her clothes may be inside-out.
+5.2.5 | Yuçkahnú elari | PRX-stem3/prc-'suffer.from.illness'-COU-INF stem2/prc-'child'-G-AFF | His kids would be (would have been) ill. [i.e., if he had kids they would be ill, but he doesn't]
+5.2.5 | Hlešvie-galoktähnû pra'i | CONCATENATED-[default CA]-stem2/prc-'self-involved.leisure.activity'-PUR-PARENT-'ambulation'-[default CA]-TPP1-7-PRL-COU-ITU MA/BEN+1M/BEN-ACT | She and I would take (would have taken) a walk later on. [i.e., it is our intention but we won't have the opportunity]
+5.2.5 | Webglahnú afbalfa umflilacai pei | [default CA]-stem2/prc-'be.inside-out'-COU-INF PRC-'article.of.clothing'-ASO MDC-THM stem3/prc-'spouse'-OBJ-[default CA]-GID1-1-POS MA-BEN-GEN | If he were to have a wife her clothes would be inside-out.
+5.2.6 | Yuçkahňú elari | PRX-stem3/prc-'suffer.from.illness'-HYP-INF stem2/prc-'child'-G-AFF | His kids might've been ill. [i.e., if he had kids, but he doesn't, so we'll never know]
+5.2.6 | Hlešvie-galoktähňû pra'i | CONCATENATED-[default CA]-stem2/prc-'self-involved.leisure.activity'-PUR-PARENT-'ambulation'-[default CA]-TPP1-7-PRL-HYP-ITU MA/BEN+1M/BEN-ACT | She and I might've taken a walk later on. [i.e., but we won't have the opportunity, so the decision whether to do so is moot].
+5.2.6 | Webglahňú afbalfa umflilacai pei | [default CA]-stem2/prc-'be.inside-out'-HYP-INF PRC-'article.of.clothing'-ASO MDC-THM stem3/prc-'spouse'-OBJ-[default CA]-GID1-1-POS MA-BEN-GEN | If he were to have a wife her clothes might be inside-out. [i.e., but he doesn't have a wife, so whether her clothes would or wouldn't be wet is moot]
+5.3.1 | Weždaihá sstilomke | [default CA]-stem2/prc-'sound.of.high-pitched.buzz/beep'-PCT-OBS 'device'-OBJ-[default CA]-FGN1-7-ABS | The alien device (has) emitted a single short beeping sound.
+5.3.2 | Weždauhá sstilomke | [default CA]-stem2/prc-'sound.of.high-pitched.buzz/beep'-ITR-OBS 'device'-OBJ-[default CA]-FGN1-7-ABS | The alien device (has) emitted a series of short beeping sounds.
+5.3.3 | Weždeihá sstilomke | [default CA]-stem2/prc-'sound.of.high-pitched.buzz/beep'-REP-OBS 'device'-OBJ-[default CA]-FGN1-7-ABS | The alien device (has) emitted a series of long beeping sounds.
+5.3.4 | Weždeuhá sstilomke | [default CA]-stem2/prc-'sound.of.high-pitched.buzz/beep'-ITM-OBS 'device'-OBJ-[default CA]-FGN1-7-ABS | The alien device (has) emitted a repeating short beeping sound.
+5.3.5 | Weždëuhá sstilomke | [default CA]-stem2/prc-'sound.of.high-pitched.buzz/beep'-RCT-OBS 'device'-OBJ-[default CA]-FGN1-7-ABS | The alien device (has) emitted a repeating long beeping sound.
+5.3.6 | Weždouhá sstilomke | [default CA]-stem2/prc-'sound.of.high-pitched.buzz/beep'-FRE-OBS 'device'-OBJ-[default CA]-FGN1-7-ABS | The alien device (has) emitted a repeating series of single beeping sounds.
+5.3.7 | Weždoihá sstilomke | [default CA]-stem2/prc-'sound.of.high-pitched.buzz/beep'-FRG-OBS 'device'-OBJ-[default CA]-FGN1-7-ABS | The alien device (has) emitted several random series of repeating short beeping sounds.
+5.3.8 | Weždiuhá sstilomke | [default CA]-stem2/prc-'sound.of.high-pitched.buzz/beep'-VAC-OBS 'device'-OBJ-[default CA]-FGN1-7-ABS | The alien device (has) emitted several random series of repeating long beeping sounds.
+5.3.9 | Wežduihá sstilomke | [default CA]-stem2/prc-'sound.of.high-pitched.buzz/beep'-FLC-OBS 'device'-OBJ-[default CA]-FGN1-7-ABS | The alien device (has) emitted a string of random short and long beeping sounds.
+5.4.1 | Kšilu jraliahá wonţla | 'clown'-OBJ-[default CA]-IND 'drive.vehicle'-[default CA]-1-BEN-OBS [default CA] stem0/prc-'automobile'-THM | It's the clown who's driving the car.
+5.4.2 | Yamţriehí chwadi'a | PRX-PRC-'rain'-[default CA]-2-BEN-RPR 'outdoors'-PRX-LOC | I'm told it's raining outside.
+5.4.3 | Oërmöliohá wuřkoswu zvalau | CS-ROOT-ITN1-6-3-BEN-OBS 'own'-ACCESSOR-ERG 'dog'-[default CA]-PRP | The dog's owner has returned.
+5.4.4 | Wimbruswiöháu! | [default CA] stem2/cpt-'compete.to.win'-ACCESSOR-IND-SLF-BEN-DEC | Here's the winner!/We have a winner!
+5.4.5 | Anzwiňeëhá wurmuxri'a | PRC-'spherical.shape'-OBJ-VAR-UNK-OBS [default CA]-stem3/prc-'house'-S241-9-LOC | There's a spheroidal object in the yard.
+5.4.6 | Wimbraiduswöëháu! | [default CA] stem2/cpt-'compete.to.win'-SCS2-1-ACCESSOR-IND-SLF-DET-DEC | What a total loser!
+5.4.7 | Yaçkörmuohá zvali | PRX-PRC-'illness'-ITN1-6-3-DET-OBS 'dog'-[default CA]-AFF | The dog's illness has returned.
+5.4.8 | Yamţruehí chwadi'a | PRX-PRC-'rain'-[default CA]-2-DET-RPR 'outdoors'-PRX-LOC | I'm told it's raining outside.
+5.4.9 | Kšilu jraluahá wonţla | 'clown'-OBJ-[default CA]-IND 'drive.vehicle'-[default CA]-1-DET-OBS [default CA] stem0/prc-'automobile'-THM | It's the clown who's driving the car. [i.e., which is bad for me because I don't want to be in a car with a clown driving]
+5.5.4 | Hlellwoehú-alxwädé hla Siryus afthili'a elneda'o | [default CA]-CONCATENATED stem2/prc-'be.bright'-SPL-RLT-PARENT 'state.of.star.shining'-CTE-PRX-PUP CARRIER 'Sirius' 'sky'-OBJ-[default CA]-LOC stem2/prc-'nighttime'-CSV-PRX-CNR | Sirius is the brightest star in the night sky.
+5.5.4 | Hlellwořžú-alxwädé hla Siryus afthili'a elneda'o | [default CA]-CONCATENATED stem2/prc-'be.bright'-LVL1-7-RLT-PARENT 'state.of.star.shining'-CTE-PRX-PUP CARRIER 'Sirius' 'sky'-OBJ-[default CA]-LOC stem2/prc-'nighttime'-CSV-PRX-CNR | Sirius is the brightest star in the night sky.
+5.5.4 | Hlellwoiřžú-alxwädé hla Deneb afthili'a elneda'o | [default CA]-CONCATENATED stem2/prc-'be.bright'-LVL2-7-RLT-PARENT 'state.of.star.shining'-CTE-PRX-PUP CARRIER 'Deneb' 'sky'-OBJ-[default CA]-LOC stem2/prc-'nighttime'-CSV-PRX-CNR | Deneb is the brightest star in the night sky.
+5.5.4 | Wurçpethoëhá elaru wailue | [default CA]-stem3/prc-'dance'-QUA1-3-EQU-OBS stem2/prc-'child'-G-IND G-stem1/prc-'adult.person'-CMP | The children dance as poorly as the adults
+5.5.4 | Wäšwelciçxöehâ walhaci walhecue | [default CA]-CPT-'be.alive'-COS1-3-XCL1-4-SUR-REC [default CA]-'parent's.sibling'-GID1-1-AFF-[default CA]-'parent's.sibling'-GID1-3-CMP | My aunt lived longer than my uncle although neither of them lived to old age
+5.6.1 | Arţtulawá ulhiliolu wiosaḑca Iţkuil | PRC-'study'-DYN-RTR-OBS-stem3/prc-'cousin'-OBJ [default CA]-GEN-1M-IND-stem2/n-CARRIER-CLG1-1-THM-'Ithkuil' | My cousin studied the Ithkuil language
+5.6.1 | Yellyawá urwale'ö | PRX-stem2/prc-'sing.a.song'-RTR-OBS stem3/prc-'hour'-[default CA]-PRO | There's been singing going on for an hour
+5.6.2 | Arţtuläwá ulhiliolu wiosaḑca Iţkuil | PRC-'study'-DYN-PRS-OBS-stem3/prc-'cousin'-OBJ [default CA]-GEN-1M-IND-stem2/n-CARRIER-CLG1-1-THM-'Ithkuil' | My cousin will study the Ithkuil language
+5.6.2 | Yellyäwá urwale'ö | PRX-stem2/prc-'sing.a.song'-PRS-OBS stem3/prc-'hour'-[default CA]-PRO | The singing (you can hear now) will be going on for an hour
+5.6.3 | Arţtudewá ulhiliolu wiosaḑca Iţkuil | PRC-'study'-DYN-PRX-HAB-OBS-stem3/prc-'cousin'-OBJ [default CA]-GEN-1M-IND-stem2/n-CARRIER-CLG1-1-THM-'Ithkuil' | My cousin is always studying the Ithkuil language
+5.6.3 | A yellyewá urwale'ö | RTR-PRX-stem2/prc-'sing.a.song'-HAB-OBS stem3/prc-'hour'-[default CA]-PRO | The singing used to go on for an hour
+5.6.4 | Arţtudiwá ulhiliolu wiosaḑca Iţkuil | 'study'-DYN-PRX-PRG-OBS-stem3/prc-'cousin'-OBJ-GEN-1M-IND-stem2/n-CARRIER-CLG1-1-THM 'Ithkuil' | My cousin is studying the Ithkuil language (right now)
+5.6.4 | Yellyiwá | PRX-stem2/prc-'sing.a.song'-PRG-OBS | There's singing going on (right now)
+5.6.5 | Mulëiwá ulhiliolu wiosaḑcä Iţkuil | 'communicate.linguistic.message'-DYN-[default CA]-IMM-OBS-stem3/prc-'cousin'-OBJ [default CA]-GEN-1M-IND-stem2/n-CARRIER-CLG1-1-INS-'Ithkuil' | My cousin is about to say something in the Ithkuil language
+5.6.5 | Wellyëiwá | [default CA]-stem2/prc-'sing.a.song'-IMM-OBS | There's singing about to begin / Someone is about to sing
+5.6.6 | Ẓalöwá li kšilëi arţtudëužči'a | 'see.something'-[default CA]-PCS-OBS 1M-NEU-AFF 'clown'-OBJ-[default CA]-STM PRC-'study'-DYN-PRX-BMP2-5-LOC | I just saw a clown at the school
+5.6.7 | Erčudowá kšivo wiolastře | stem2/prc-'corruption'-DYN-PRX-REG-OBS 'clown'-OBJ-N-ERG stem2/n-'child'-DX21-1-ABS | Clowns have been busy corrupting children everywhere
+5.6.8 | Älksolëubzuöřcüwá kširu | CPT-'eat/drink.foodstuff'-DYN-CSV-[default CA]-FEA2-5-AMD3-6-SMM-OBS 'clown'-OBJ-G-IND | The clowns have already finished eating breakfast
+5.6.9 | Alksolëubzuöřcuyá kširu | PRC-'eat/drink.foodstuff'-DYN-CSV-[default CA]-FEA2-5-AMD3-6-ATP-OBS 'clown'-OBJ-G-IND | The clowns have yet to eat breakfast / The clowns haven't yet eaten breakfast
+5.6.10 | Alksolëubzuöřcaiwá kširu | PRC-'eat/drink.foodstuff'-DYN-CSV-[default CA]-FEA2-5-AMD3-6-RSM-OBS 'clown'-OBJ-G-IND | The clowns resumed eating breakfast / The clowns went back to eating breakfast
+5.6.11 | Alksolëubzuöřcauwá kširu | PRC-'eat/drink.foodstuff'-DYN-CSV-[default CA]-FEA2-5-AMD3-6-CSS-OBS 'clown'-OBJ-G-IND | The clowns stopped/ceased eating breakfast
+5.6.12 | Alksolëubzuöřceiwá kširu | PRC-'eat/drink.foodstuff'-DYN-CSV-[default CA]-FEA2-5-AMD3-6-PAU-OBS 'clown'-OBJ-G-IND | The clowns paused in eating breakfast
+5.6.13 | Hlaçköé-yeřdö'e arţtudeuyá kšilu ažtwa'ra | [default CA]-CONCATENATED-PRC-'illness'-PCR-PARENT-PRX-stem2/prc-'recuperate'-PCR 'study'-DYN-PRX-RGR-OBS 'clown'-OBJ-[default CA]-IND 'poison'-G-PRN | After recovering from an illness, the clown got back to studying poisons
+5.6.14 | Intxulëuwá waţlo wangwe | stem2/cpt-'swallow'-DYN-[default CA]-PCL-OBS [default CA]-PRC-'bird'-ERG [default CA]-PRC-'worm'-ABS | The bird swallowed the worm whole
+5.6.15 | Allyilouwá | PRC-'singing'-OBJ-[default CA]-CNT-OBS | There's still the sound of singing going on / The sound of singing is still there
+5.6.15 | Airţtulawá ulhiliolu wiosaḑca Iţkuil | PRC-NEG1-4-'study'-DYN-[default CA]-CNT-OBS-stem3/prc-'cousin'-OBJ [default CA]-GEN-1M-IND-stem2/n-CARRIER-CLG1-1-THM-'Ithkuil' | My cousin no longer studies the Ithkuil language
+5.6.16 | Aḑxidaurhoiwá kšilu | PRC-'communicative.vocal.utterance'-OBJ-PRX-RLV2-2-ICS-OBS 'clown'-OBJ-[default CA]-IND | The clown keeps prattling on and on
+5.6.17 | Ẓaliuyéu si kšilëi arţtudëužči'a? | 'see.something'-[default CA]-EXP-VER 2M-NEU-AFF 'clown'-OBJ-[default CA]-STM PRC-'study'-DYN-PRX-BMP2-5-LOC | Have you ever seen a clown at the school?
+5.6.18 | Eňsmloduiwá itriloalö | stem2/prc-'fortune.telling'-DYN-CSV-PRX-IRP-OBS stem2/cpt-'approach'-OBJ-[default CA]-1M-NEU-IND-EFF | The fortune-telling was interrupted by my arrival
+5.6.19 | Wimžiawêi ebštilu | [default CA]-stem2/cpt-'sexual.relations'-PMP-USP stem2-'priest'-OBJ-[default CA]-IND | The priest finally lost his virginity
+5.6.20 | Yepššiewáu žowiř | PRX-stem2/prc-'feel.insulted'-CLM-DEC 2M/DET/ERG+AFF/1M/DET | You have insulted me for the last time!
+5.6.21 | Ipţuläčřiowá rowaš | stem2/cpt-'seek'-DYN-[default CA]-AFM1-2-DLT-OBS 1M/BEN/ERG+THM/2M/NEU | It certainly has taken me a long time to find you
+5.6.22 | Kšireriöwá arţtudëužči'a | 'clown'-OBJ-G-NEG1-3-TMP-OBS PRC-'study'-DYN-PRX-BMP2-5-LOC | The school is free of clowns for the time being
+5.6.23 | Yujgleëwá bi | PRX-stem3/prc-'feeling.of.futility.in.the.face.of.realizing.the.transience.and.seeming.meaninglessness.of.life.and.the.universe'-XPD-OBS 3M-DET-AFF | He wastes his time pondering the futility and meaninglessness of existence
+5.6.24 | Wütruöwá kru kširëuţcievčeö | [default CA]-stem3/cpt-'go.away'-LIM-OBS PA+1M/BEN/IND 'clown'-OBJ-G-EML2-5-AVS3-2-RSL | We left just in time to avoid being turned into clowns
+5.6.25 | Wimžadřuowêi muyum | [default CA]-stem2/cpt-'sexual.relations'-SBS1-1-EPD-USP MA-IND+IND-MA | They had sex in a hurry
+5.6.26 | Yamţruewá | PRX-PRC-'rain'-PTC-OBS | It's been raining for quite a while
+5.6.27 | Yurcxuawá kširo wučra | PRX-stem2/prc-'plan'-PPR-OBS 'clown'-OBJ-G-ERG [default CA]-stem3/prc-'physical.attack'-THM | The clowns planned the attack in advance
+5.6.28 | Arţtularaowá ulhiliolu wiosaḑca Iţkuil | PRC-'study'-DYN-[default CA]-NEG1-1-DCL-OBS-stem3/prc-'cousin'-OBJ [default CA]-GEN-1M-IND-stem2/prc-N-CARRIER-CLG1-1-THM-'Ithkuil' | It turns out my cousin hasn't studied the Ithkuil language at all
+5.6.29 | Ätrulaöwá dře Hakšivé-Warswi'a | CPT-'translative.motion'-DYN-[default CA]-CCL-OBS 2P+1M/DET-ABS CONCATENATED-'clown'-OBJ-N-COR-PARENT-[default CA]-PRC-'planet'-LOC | We've ended up on the Clown Planet
+5.6.30 | Ätruleowá dře Hakšivé-Warswi'a | CPT-'translative.motion'-DYN-[default CA]-CUL-OBS 2P+1M/DET-ABS CONCATENATED-'clown'-OBJ-N-COR-PARENT-[default CA]-PRC-'planet'-LOC | We eventually wound up on the Clown Planet
+5.6.31 | Trulüňzeöwá řu | 'translative.motion'-DYN-[default CA]-RNC1-8-IMD-OBS 1M-DET-IND | Somewhere along the way I lost my way (literally)
+5.6.31 | Weryüňzeöwá řu | [default CA]-stem2/prc-'determine.own.course.of.action'-RNC1-8-IMD-OBS 1M DET-IND | Somewhere along the way I lost my way (figuratively)
+5.6.32 | Yurplürnoëwá ři | PRX-stem3/prc-'joie.de.vivre'-LTD1-8-TRD-OBS 1M-DET-AFF | My zest for life wanes as the years go by
+5.6.33 | Kšijöewá ulhiliolu ušvi'lei | 'clown'-A-TRD-OBS stem3/prc-'cousin'-OBJ-[default CA]-GEN-1M-IND stem3/prc-'pastime'-OBJ-[default CA]-ESS | My cousin has taken up clown-hood as a pastime
+5.6.34 | Ẓadecboewá weluöhu kšilëi | 'see'-PRX-RSN1-3-ITC-OBS [default CA]-stem2/prc-'child'-SLF-DET-IND 'clown'-OBJ-[default CA]-STM | The child couldn't help but stare back at the clown with curiosity
+5.6.35 | Ätrulöawái tru Hakšivé-Warswi'o! | CPT-'translative.motion.away'-DYN-[default CA]-MTV-DIR 2P+1M/BEN-IND CONCATENATED-'clown'-OBJ-N-COR-PARENT-[default CA]-PRC-'planet'-ALL | Let's head off to the Clown Planet!
+5.6.36 | Ämţtulöboawá amtfiluřt | CPT-'demonstrate.factuality.of.something'-DYN-[default CA]-DEV1-6-SQN-OBS-PRC 'list'-OBJ [default CA]-INL1-9-THM | I checked off each item on the list one by one
+5.7 | Ätrulaöwá dře Hakšivé-Warswi'a | CPT-'translative.motion'-DYN-[default CA]-CCL-OBS 2P+1M/DET-ABS CONCATENATED-'clown'-OBJ-N-COR-PARENT-[default CA]-PRC-'planet'-LOC | We've ended up on the Clown Planet
+5.7 | Ätruleowá dře Hakšivé-Warswi'a | CPT-'translative.motion'-DYN-[default CA]-CUL-OBS 2P+1M/DET-ABS CONCATENATED-'clown'-OBJ-N-COR-PARENT-[default CA]-PRC-'planet'-LOC | We eventually wound up on the Clown Planet
+5.7.1 | A arţtulewá ulhiliolu wiosaḑca Iţkuil | RTR-PRC-'study'-DYN-[default CA]-DEL-HAB-OBS-stem3/prc-'cousin'-OBJ [default CA]-GEN-1M-IND-stem2/n-CARRIER-CLG1-1-THM-'Ithkuil' | My cousin used to study the Ithkuil language, but no longer
+5.7.2 | Yiţxirňiexnalté wialmya | PRX-stem2/cpt-'evolve'-EPC1-4-PZE3-2-RTI1-1-PUP [default CA]-N-'flowering.plant'-THM | Flowering plants had not yet developed / were yet to develop during the Cambrian geological period (but they have developed since)
+5.8 | Äňvyulahlâ | CPT-'apply.varnish'-DYN-[default CA]-MNO-SUB-REC | Varnish might've been applied / It might be varnished
+5.8 | Äňvyuhlâ | CPT-'apply.varnish'-DYN-SUB-REC | Varnish might've been applied / It might be varnished
+6.1.3 | Wäšwelciçxöehâ walhaci walhecue | [default CA]-CPT-'be.alive'-COS1-3-XCL1-4-SUR-REC [default CA]-'parent's.sibling'-GID1-1-AFF-[default CA]-'parent's.sibling'-GID1-3-CMP | My aunt lived longer than my uncle although neither of them lived to old age.
+6.1.3 | Yiţxirňiexnalté wialmya | PRX-stem2/cpt-'evolve'-EPC1-4-PZE3-2-RTI1-1-PUP [default CA]-N-'flowering.plant'-THM | Flowering plants had not yet developed / were yet to develop during the Cambrian geological period (but they have developed since).
+6.1.3 | Yamţrí chwadi'a | PRX-PRC-'rain'-[default CA]-RPR 'outdoors'-PRX-LOC | I'm told it's raining outside.
+6.1.3 | Wimžiawêi ebštilu | [default CA]-stem2/cpt-'sexual.relations'-PMP-USP stem2-'priest'-OBJ-[default CA]-IND | The priest finally lost his virginity.
+6.1.3 | Wekškô wakçmi'a | [default CA]-stem2/prc-'monster'-IMA [default CA]-PRC-'outdoor.balcony'-LOC | There's a monster on the balcony.
+6.1.3 | Iuprulövḑuadnó walxu ëivḑilamki'a lei | stem3/cpt-NEG1-4-'descend'-DYN-ASC1-6-OGC3-9-CVN [default CA]-stem1/prc-'Sol'-IND CS-ROOT-ASC1-4-FGN2-1-LOC 1M-GEN | They say down south the sun won't set on my home town.
+6.1.3 | Amskadwû kšivöla'i wiorkwa | 'necessity'-PRX-N-ITU 'clown'-N-CTR1-6-ACT-N 'filial.love'-THM | I think even clowns need love.
+6.1.3 | Yuçkú elari | PRX-stem3/prc-'suffer.from.illness'-INF stem2/prc-'child'-G-AFF | The kids must be ill.
+6.1.3 | Weru'i gulái onţläli'ö kši've! | 'child'-G-VOC 'ambulate'-DYN-DIR 'automobile'-CTE-ABL 'clown'-N-COR | Children, walk away from the clown car!
+6.1.3 | Wimbruswiöháu! | [default CA] stem2/cpt-'compete.to.win'-ACCESSOR-IND-SLF-BEN-DEC | Here's the winner!/ We have a winner!
+6.1.3 | Arveléi iträlu'ö kši'ţe? | 'amount.of.elapsed.time'-CSV-IRG CPT-'process.of.approaching'-CTE-IRL 'clown'-MDS-COR | How long has it been since the clowns' arrival?
+6.1.3 | Yuçkéu elari? | PRX-stem3/prc-'suffer.from.illness'-VER stem2/prc-'child'-G-AFF | Are the kids ill?
+6.1.3 | Wušštilkřóu! | [default CA]-stem3/prc-'SARS-CoV-2.virus'-ADI1-4-ADM | Beware of getting Covid-19!
+6.1.3 | Wuišštilkřói elare! | [default CA] stem3/prc-NEG1-4-'SARS-CoV-2.virus'-ADI1-4-POT stem2/prc-'child'-G-ABS | I hope the children don't get Covid-19!
+6.1.3 | Wušštilkříu wopňuivẓe! | [default CA] stem3/prc-NEG1-4-'SARS-CoV-2.virus'-ADI1-4-HOR PRX-stem0/prc-'feel.malevolence/cruelty/sadism'-PSA2-9-ABS | If only that bastard would get Covid-19!
+6.1.3 | Ätrulúi žu Hakšivé-Warswi'o ä eutruloewû | CPT-'translative.motion'-DYN-[default CA]-CNJ 2M-DET-IND CONCATENATED 'clown'-OBJ-N-COR-PARENT-[default CA]-PRC-'planet'-ALL PRS stem2/cpt-NEG1-4-'approach'-DYN-[default CA]-ITC-ITU | If you go to the Clown Planet, there'll be no coming back.
+6.2.2 | Étkwö'e wairţtuzwu welhwëubzanëi itrulalžói ka'i wurmieli'o wuttíhia kšiluržu | stem2/prc-FRAMED-'attend.scheduled.event'-PCR [default CA]-G-'study'-ACCESSOR-IND2-IND [default CA]-stem2/prc-'play.musical.instrument'-FEA2-5-TPF1-1-STM stem2/cpt-'approach'-OBG1-1-POT PA-BEN-ACT [default CA]-stem3/prc-'house'-1M-NEU-PRP-ALL [default CA]-stem3/prc-FRAMED-'introduce'-RCP-APL 'clown'-OBJ-[default CA]-HRC1-9-IND | After the students attend the concert, they must come to my house to meet the Chief Clown.
+6.2.2 | Weňayá kšilo äpçólöwa lu eňtyarkena | 'compose.in.writing'-RTR 'clown'-STA-OBJ-ERG FRAMED-CPT-'read'-DYN-CSV-PCS-THM 1M-IND 'written.page'-MSC-COA-TPF1-3-THM | A clown wrote the book I just finished reading.
+6.2.2 | Weňayá kšilo eňtyarkena äpçólö'yu lu thaxač | 'compose.in.writing'-RTR 'clown'-STA-OBJ-ERG 'written.page'-MSC COA-TPF1-3-THM FRAMED-CPT-'read'-DYN-CSV-PCS-RLT 1M-IND RDP-SWR1-1-THM | A clown wrote the book I just finished reading.
+6.2.2 | Ẓalá li kšilenëi máli'hu welu | 'see'-1M-NEU-AFF 'clown'-STA-OBJ-TPF1-3-STM FRAMED-'talk'-RCP-FAC-RLT 'child'-IND | I see a clown (who is) talking with a child.
+6.2.2 | Erčädókh elavöte žžjádu'u kšivëi | 'state.of.being.corrupted'-STA-CTE-PRX-SBT1-7 'child'-N-DCD1-6-ABS FRAMED-'feel.fascination'-STA-BSC-PRX-RLT 'clown'-STA-OBJ-N-STM | Children who like clowns have obviously been corrupted.
+6.2.2 | Erčuláfs elaţwe ainšai'dä kšivöto hlarrnëi-yúřku'u | 'corrupt'-DYN-BSC-ATI1-1 'child'-MDS-N-ABS NEG1-4-FNC-'be.well-behaved'-PRX-DSP 'clown'-STA-OBJ-N-DCD1-6-ERG CONCATENATED-'ocelot'-STM-FRAMED-PARENT-'own'-PRX-RLT | Ocelot-owning clowns tend to corrupt children who are naughty.
+6.2.2 | Yuřká warrnenëi kšila hlu'u Bubu | 'own'-PRX 'ocelot'-TPF1-3-STM 'clown'-STA-OBJ-THM CARRIER-RLT | The clown owns an ocelot named Boo-boo.
+6.2.2 | Umňälöřdá ẓúlikti lo kšilëi welene | 'scream'-STA-CTE-SQC1-6 FRAMED 'see'-DYN-TPP1-4-AFF 1M-ERG 'clown'-STM 'child'-TPF1-3-ABS | The child whom I made look at a clown is now screaming.
+6.2.2 | Umňälá lo welene máli'hu kšivu | 'scream'-STA-CTE 1M-ERG 'child'-TPF1-3-ABS FRAMED-'talk'-RCP-FAC-RLT 'clown'-N-IND | I made the child who talks with clowns scream.
+6.2.2 | Umňälá lo welene máli'hu thu kšivu | 'scream'-STA-CTE 1M-ERG 'child'-TPF1-3-ABS FRAMED-'talk'-RCP-FAC-RLT RDP-IND 'clown'-N-IND | I made the child who talks with clowns scream.
+7.2 | Alksodëubzuöřcá kšilu | 'eat/drink.foodstuff'-DYN-CSV-PRX-FEA2-5-AMD3-6-OBS 'clown'-OBJ-IND | The clown is eating breakfast
+7.6.2 | Pţödá lu psoloswëi | 'seek'-OBJ-DYN-PRX-OBS 1M-NEU-IND 'cause.to.happen'-CSV-DYN-[default CA]-ACCESSOR-ERG1-STM | What I'm seeking is the party who has done this
+7.6.2 | Pţödá lu psolozwëi | 'seek'-OBJ-DYN-PRX-OBS 1M-NEU-IND 'cause.to.happen'-CSV-DYN-[default CA]-ACCESSOR-ERG2-STM | What I'm seeking is the perpetrator
+7.6.2 | Äţtulalzói la'i welošwa kšile | CPT-'know'-DYN-[default CA] DSD1-1-POT 1M-NEU-ACT [default CA]-stem2/prc-'child'-INVERSE.ACCESSOR-ERG1-THM 'clown'-OBJ-[default CA]-ABS | I want to know what the child did to the clown
+7.6.2 | Malalzói la'i erdwilařstëuswü | 'talk'-[default CA]-DSD1-1-POT 1M-NEU-ACT stem2/cpt-'building'-OBJ-[default CA]-LCM1-1-ACCESSOR-PDC1-DAT | I want to talk to the designer of the building
+7.6.2 | Malalzói la'i erdwilařstëuzwü | 'talk'-[default CA]-DSD1-1-POT 1M-NEU-ACT stem2/cpt-'building'-OBJ-[default CA]-LCM1-1-ACCESSOR-PDC2-DAT | I want to talk to the architect of the building
+7.6.2 | Malalzói la'i erdwili'sya | 'talk'-[default CA]-DSD1-1-POT 1M-NEU-ACT stem2/cpt-'building'-OBJ-[default CA]-ACCESSOR-CPS1-PRN | I want to talk about what the building is made out of
+7.6.2 | Malalzói la'i erdwili'zya | 'talk'-[default CA]-DSD1-1-POT 1M-NEU-ACT stem2/cpt-'building'-OBJ-[default CA]-ACCESSOR-CPS2-PRN | I want to talk about the building's construction materials
+7.6.2 | Kšilá welëisya | 'clown'-OBJ-[default CA]-OBS [default CA]-stem2/prc-'child'-INVERSE.ACCESSOR-COM1-THM | The one whom the child is with is a clown
+7.6.2 | Kšilá welëizya | 'clown'-OBJ-[default CA]-OBS [default CA]-stem2/prc-'child'-INVERSE.ACCESSOR-COM2-THM | The child's chaperone is a clown
+7.6.3 | wupsovļäčwa | [default CA]-stem3/prc-'event'-PLE1-7-ACCESSOR-INS3 | that by which a pleasant event occurs
+7.6.3 | wupsovļäjwa | [default CA]-stem3/prc-'event'-PLE1-7-INVERSE.ACCESSOR-INS3 | what a pleasant event is used for
+7.6.3 | weproptočwa | [default CA]-stem2/prc-'upward.motion'-DNG1-7-ACCESSOR-ERG3 | the one who dangerously pushes (it) upward
+7.6.3 | weproptojwa | [default CA]-stem2/prc-'upward.motion'-DNG1-7-INVERSE.ACCESSOR-ERG3 | that which one dangerously pushes upward
+7.6.3 | wufjopčiečwa | [default CA]-stem3/prc-'interfere'-AUT1-7-ACCESSOR-PUR3 | the purpose for using one's authority to interfere
+7.6.3 | wufjopčiejwa | [default CA]-stem3/prc-'interfere'-AUT1-7-INVERSE.ACCESSOR-PUR3 | what using one's authority to interfere is for
+7.6.3 | weläxţičya | [default CA]-stem2/prc-'child'-CNC2-2-ACCESSOR-TRM3 | the selfish child's goal / what the selfish child is after
+7.6.3 | weläxţijya | [default CA]-stem2/prc-'child'-CNC2-2-INVERSE.ACCESSOR-TRM3 | the goal being a selfish child / in pursuit/hope of a selfish child
+7.6.4 | Hmažfie-egulirkwá ru yamţröalwa'o | PRX-CONCATENATED-PRC-'healthy.state'-PUR-PARENT-stem2-'ambulate'-DYN-CYC1-4-OBS 1M-BEN-IND PRX-PRC-'rain'-CVS-CNR | I jog every day except during the rain
+7.6.4 | Ẓulá mu eňtyarka bzmare'na äšgú'layu ro | 'see'-DYN-[default CA]-OBS-MA-NEU-IND stem2/prc-'written.page'-MSC-COA-THM 'rat'-G-TPF1-3-PRN-CPT 'capture'-DYN-FRAMED-[default CA]-RTR-RLT-1M-BEN-ERG | S/he looks at the book about the rats I captured
+7.6.4 | Ẓulá mu eňtyarka bzmarulye'na äšgulayâ ro | 'see'-DYN-[default CA]-OBS-MA-NEU-IND stem2/prc-'written.page'-MSC-COA-THM 'rat'-G-RLT-TPF1-3-RLT-PRN-CPT 'capture'-DYN-[default CA]-RTR-REC-1M-BEN-ERG | S/he looks at the book about the rats I captured
+7.6.4 | Ẓulá mu eňtyarka äšgú'laya ro bzmare | 'see'-DYN-[default CA]-OBS-MA-NEU-IND stem2/prc-'written.page'-MSC-COA-THM-CPT 'capture'-DYN-FRAMED-[default CA]-RTR-PRN-1M-BEN-ERG-PRC 'rat'-G-ABS | S/he looks at the book about me having captured the rats
+8.1.1 | Adři wimžuowêi muyum | SBS1-1-SLOT.VII.1ST.POSITION [default CA]-stem2/cpt-'sexual.relations'-EPD-USP MA-IND+IND-MA | They had sex in a hurry
+8.1.2 | Wütruöwá kru ëţcëu'hlievče kšireö | [default CA]-stem3/cpt-'go.away'-LIM-OBS PA+1M/BEN/IND EML2-5-SLOT.VII.LAST.POSITION-AVS3-2-SLOT.VII.LAST.POSITION 'clown'-OBJ-G-RSL | We left just in time to avoid being turned into clowns
+8.2 | Wähňainui hlešvie-willyû pra'i | SCOPE-PARENT-PRL-HYP-RSM-FLC-CONCATENATED-[default CA]-stem2/prc-'self-involved.leisure.activity'-PUR-PARENT [default CA]-stem2/prc-DYN-'sing.a.song'-ITU MA/BEN+1M/BEN-ACT | She and I might've resumed randomly bursting into snippets of song for fun
+9.1 | püwüp | MA-BEN-DAT-MA-BEN-DAT | to him/her and to (a different) him/her
+9.1 | zäwiez | MI-INS-MI-TRA | with it and for (a different) it
+9.1 | zëmse |  | it and s/he and you(sg.)-ABS
+9.1 | smlo |  | you (sg.) and (s)he and I'-ergative
+10.1.5 | Hlellwoehú-alxwädé hla Siryus afthili'a elneda'o | [default CA]-CONCATENATED stem2/prc-'be.bright'-SPL-RLT-PARENT 'state.of.star.shining'-CTE-PRX-PUP CARRIER 'Sirius' 'sky'-OBJ-[default CA]-LOC stem2/prc-'nighttime'-CSV-PRX-CNR | Sirius is the brightest star in the night sky
+10.1.5 | Hlaçköé-yeřdö'e arţtudeuyá kšilu ažtwa'ra | [default CA]-CONCATENATED-PRC-'illness'-PCR-PARENT-PRX-stem2/prc-'recuperate'-PCR 'study'-DYN-PRX-RGR-OBS 'clown'-OBJ-[default CA]-IND 'poison'-G-PRN | After recovering from an illness, the clown got back to studying poisons
+10.1.5 | Ätruleowá dře Hakšivé-Warswi'a | CPT-'translative.motion'-DYN-[default CA]-CUL-OBS 2P+1M/DET-ABS CONCATENATED-'clown'-OBJ-N-COR-PARENT-[default CA]-PRC-'planet'-LOC | We eventually wound up on the Clown Planet
+10.1.5 | Hlešvie-galoktähá pra'i | CONCATENATED-[default CA]-stem2/prc-'self-involved.leisure.activity'-PUR-PARENT-'ambulation'-[default CA]-TPP1-7-PRL-FAC-OBS MA/BEN+1M/BEN-ACT | She and I are (planning on) taking a walk later on
+10.3 | Oërmölá wuřkoswu zvalau | CS-ROOT-ITN1-6-[default CA]-OBS 'own'-ACCESSOR-ERG 'dog'-[default CA]-PRP | The dog's owner has returned
+10.3 | Iuprulövḑuadnó walxu ëivḑilamki'a lei | stem3/cpt-NEG1-4-'descend'-DYN-ASC1-6-OGC3-9-CVN [default CA]-stem1/prc-'Sol'-IND CS-ROOT-ASC1-4-FGN2-1-LOC 1M-GEN | They say down south the sun won't set on my home town
+10.6 | Mmiexinļ |  | Why?[i.e., For what purpose?]
+10.6 | Mma'oxinļ |  | When?
+10.6 | Nnioxinļ |  | To/for whose benefit? / To the benefit of what?
+10.6 | Ňňeöxinļ |  | Resulting (detrimentally) in what? / With what undesirable result?
+10.6 | Mmauxinļ |  | Whose? / Belonging to what?
+10.6 | Weilüsve erčuléi kšilo? |  | Which of the children did the clown corrupt?
+10.6 | Laluţkusvu utxoléi akftyäloë? |  | What kind of person drinks ammonia?
+10.7 | Abẓe willyothoilyá utplaliör |  | My self-esteem is dependent upon (my) singing this song well
+10.7 | A hrelu-azčojhaillöelyá | RTR-TYPE2-CONCATENATED-ROOT-'person' stem2/prc-PARENT-ROOT stem1-'self-centered.behavior'-DYN-CSV-CRL2-1-[default CA]-PCR-ASR-OBS | It was after the child pulled a tantrum
+10.7 | Kšölaölwáu wele |  | The child is hereby transformed into a clown!
+10.8 | Etrulökryekrwitrokfái wakçmi'o | stem2/prc-'translative.motion'-DYN-[default CA]-M03Y1-6-M03W1-3-M011-4-S171-7-DIR [default CA]-PRC-'outdoor.balcony'-ALL | Come on down inside, up along through out back to the balcony
+10.8 | Hlurmiô-igulotruxröxḑuökfái | [default CA]-CONCATENATED-stem3/prc-'house'-ABL-PARENT-stem2/cpt-'ambulate'-DYN-[default CA]-M011-7-S241-9-S251-6-S173-6-DIR | Go run outside along the wall until you reach the back outside corner of the house
+12.8 | Wezvwaušburdóu yaizxra sai. | stem2-'fox'-GEO2-2-REA1-9-ADM 'fork'-RPV-THM 2M-POS | Be careful, your fork is actually a fennec.
+13.4 | ksalirsa (gzalui) walẓärs | "literally: ""42 (of hundreds) 29""" | 4229
+13.4 | cpalärsa wapcui wansorsë'i (gzalui) cpalörs | "literally: ""26 of ten-thousands with 97 (of hundreds) 66""" | 269,766
+13.4 | wallärsa gzalui wapcui | "literally: ""21 of hundred of ten-thousands""" | 21,000,000
+13.4 | ksalorsa gzalui walẓorsiň wakẓui za'lëi gzalui zalëirsiň wapcui pša'lersëi vralörs | "literally: ""72 of hundreds and 79 of hundred-millions with 3 of hundreds and 53 of ten-thousands with 3460""" | 727,903,533,460
+13.5 | wupšersaryo'a |  | by the 34-second mark
+13.5 | wučkerwa ksalëirsoň |  | 8:52 a.m.
+13.5 | wuvrärserwa ksalëirsoň wazersarwë'i |  | 8:52 p.m. and 33 seconds
+13.5 | wucpirwa'o |  | on Saturday
+13.5 | wucpirwölţa'o |  | on Saturday of next week
+13.5 | wustarsëirwiaza walẓarsa'o walẓörsürwë'i |  | the 15th of March, 1969
+13.5 | wullärsurya |  | the 21st century
+13.5 | wuksärsëirwa |  | 22nd day of the month
+13.5 | wuksärsëirwiasta |  | 22nd of May

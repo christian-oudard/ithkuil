@@ -216,8 +216,17 @@ func ClassifyWord(word string) WordToken {
 	if word == "" {
 		return UnknownWord{Text: word}
 	}
+	// Ithkuil orthography is case-insensitive; a capital is a
+	// sentence-position artifact. Normalize before any classifier reads
+	// the letters. slots.Parse does the same for its own input, which is
+	// why capitalized formatives used to be the only word class that
+	// survived sentence-initial position. Words we fail to classify keep
+	// their original text: a carrier adjunct scopes over a following
+	// foreign name ("hnas John"), where capitalization is meaningful.
+	orig := word
+	word = strings.ToLower(word)
 	if r := validation.ValidateChars(word); !r.Valid {
-		return UnknownWord{Text: word}
+		return UnknownWord{Text: orig}
 	}
 	// §4.8 parsing adjunct: 'V' is a fixed three-character word; check
 	// before anything else so a leading glottal doesn't get reinterpreted
@@ -233,7 +242,7 @@ func ClassifyWord(word string) WordToken {
 		if c, ok := tryConcatenation(word); ok {
 			return ConcatenatedFormativeWord{Text: word, Chain: c}
 		}
-		return UnknownWord{Text: word}
+		return UnknownWord{Text: orig}
 	}
 	conjs := surface.SplitConjuncts(word)
 
@@ -329,7 +338,7 @@ func ClassifyWord(word string) WordToken {
 		}
 	}
 
-	return UnknownWord{Text: word}
+	return UnknownWord{Text: orig}
 }
 
 // Tokenize splits a sentence on whitespace and classifies each word.
@@ -344,7 +353,10 @@ func Tokenize(sentence string) []WordToken {
 	}
 	for i := 0; i+1 < len(out); i++ {
 		if isCarrierToken(out[i]) {
-			out[i+1] = ForeignWord{Text: out[i+1].Surface()}
+			// Foreign text is passthrough: take the raw field rather
+			// than the discarded classification's surface, which has
+			// been case-normalized as Ithkuil.
+			out[i+1] = ForeignWord{Text: fields[i+1]}
 		}
 	}
 	for i, t := range out {

@@ -54,6 +54,7 @@ Go packages at the repo root:
 - `view/` - Presentation layer for parsed tokens: the per-token type tag (`view.Type`) plus the phonetic-segment + glossary breakdown (`view.Segments`, `view.Headword`, `view.Glossary`) consumed by the analyze CLI and MCP server.
 - `store/` - Read-only SQLite access to `data/data.db` (roots, affixes, grammar tables).
 - `lexicon/` - Roots and affixes in memory. `LoadFromStore(*store.Store)` is the normal path; `Load(path)` reads the JSON source directly (used by tests).
+- `corpus/` - The 384 official example sentences from the grammar, with Quijada's English translations, embedded as test data. `corpus.Examples()` and `corpus.Words()`. `tokenize/corpus_test.go` guards the set of words we still fail to classify.
 
 Command-line entrypoints under `cmd/`:
 

@@ -142,8 +142,9 @@ func TestMorphologyCorpus_Sec5_6_WHQuestion(t *testing.T) {
 }
 
 func TestMorphologyCorpus_Sec5_7_CaseStacking(t *testing.T) {
-	// "Hre" and "A" (single-vowel modular adjunct, RTR aspect) appear
-	// in the source examples but are not classified today.
+	// "Hre" appears in the source examples but is not classified today.
+	// ("A" is the single-vowel RTR modular adjunct; it classifies now
+	// that ClassifyWord case-normalizes.)
 	runCorpusSection(t, corpusSection{
 		name: "Sec5.7",
 		words: []string{
@@ -155,7 +156,7 @@ func TestMorphologyCorpus_Sec5_7_CaseStacking(t *testing.T) {
 		// position that isn't in the §3.5 Vx table ("ao", "ai"-after-
 		// "hail"). They used to read as degree-0 affixes because the
 		// Vx lookup defaulted silently; now they fail honestly.
-		unknown: []string{"A", "Hre", "Ksolaolwau", "hrelu-azcoijhailloelya"},
+		unknown: []string{"Hre", "Ksolaolwau", "hrelu-azcoijhailloelya"},
 	})
 }
 
