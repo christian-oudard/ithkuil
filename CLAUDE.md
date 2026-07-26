@@ -69,7 +69,7 @@ Command-line entrypoints under `cmd/`:
 - `Affix` stores `(Type, Degree)` plus the consonant cluster; never the surface vowel string.
 - Grammatical values use standard Ithkuil abbreviations (3-letter uppercase): THM, INS, ABS, STA, DYN, BSC, CTE, etc.
 - Data comes from the store at `store.DefaultPath()`; pass `--data FILE` on the CLI to point elsewhere.
-- Reference implementations, cloned outside the repo to `$XDG_DATA_HOME/ithkuil/reference/`: `IthkuilGloss/` (Kotlin), `mamkait/` (Haskell).
+- Reference implementations, cloned outside the repo to `$XDG_DATA_HOME/ithkuil/reference/`: `IthkuilGloss/` (Kotlin).
 
 ## Data Files
 
