@@ -9,6 +9,7 @@ import (
 	"github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // Parse decodes a surface Ithkuil word into a Layout. It runs Layers A
@@ -21,6 +22,13 @@ func Parse(word string) (Layout, error) {
 	// Compose and lowercase early so every slot- and shortcut-detection
 	// rule sees one spelling; see surface.Normalize.
 	word = surface.Normalize(word)
+	// Reject anything outside the alphabet up front. Downstream code
+	// treats a parsed Layout as well-formed Ithkuil — surface.ToASCII,
+	// for one, panics on a rune it has no mapping for — so a stray 'ı'
+	// or Latin 'q' has to stop here rather than ride along in a root.
+	if r := validation.ValidateChars(word); !r.Valid {
+		return Layout{}, fmt.Errorf("slots: %s", r.Errors[0].Reason)
+	}
 	bare, stress := surface.Strip(word)
 	if stress == surface.InvalidStress {
 		return Layout{}, fmt.Errorf("word %q has more than one stress mark", word)

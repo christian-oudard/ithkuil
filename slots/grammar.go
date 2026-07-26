@@ -811,6 +811,12 @@ func canElideLeadingVv(l *Layout, f g.Formative) bool {
 	if !validation.ValidWordInitial(l.Cr) {
 		return false
 	}
+	// A root that starts with ç- or cs- can't go word-initial either:
+	// stripSentencePrefix reads those as the §1.3.2 sentence-juncture
+	// marker and eats them, so "açmuliwá" would re-parse as root -m-.
+	if strings.HasPrefix(l.Cr, "ç") || strings.HasPrefix(l.Cr, "cs") {
+		return false
+	}
 	return strings.HasPrefix(l.Vv, "a") && l.Vv == "a"
 }
 

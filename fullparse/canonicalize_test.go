@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/fullparse"
+	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/render"
 )
 
@@ -68,6 +69,34 @@ func TestCanonicalize_LeadingVvNeedsLegalInitialCluster(t *testing.T) {
 		}
 		if got := render.Formative(f); got != p.want {
 			t.Errorf("render(%q) = %q, want %q (%s)", p.in, got, p.want, p.why)
+		}
+	}
+}
+
+// TestCanonicalize_LeadingVvKeptForSentencePrefixRoots checks that a
+// root beginning with ç- or cs- keeps its Vv. Those are the §1.3.2
+// sentence-juncture markers, which the parser strips, so exposing one
+// at the start of a word would cost the root its first consonant on
+// the way back in.
+func TestCanonicalize_LeadingVvKeptForSentencePrefixRoots(t *testing.T) {
+	for _, in := range []string{"açmuliwá", "açpulúgmö"} {
+		f, err := fullparse.Formative(in)
+		if err != nil {
+			t.Fatalf("Formative(%q): %v", in, err)
+		}
+		out := render.Formative(f)
+		back, err := fullparse.Formative(out)
+		if err != nil {
+			t.Fatalf("re-parse of %q: %v", out, err)
+		}
+		cr, ok := f.Root.(g.CrRoot)
+		if !ok {
+			t.Fatalf("%q: root is %T, want CrRoot", in, f.Root)
+		}
+		backCr, ok := back.Root.(g.CrRoot)
+		if !ok || backCr.Cluster != cr.Cluster {
+			t.Errorf("%q rendered as %q, which re-parses with root %v, want %q",
+				in, out, back.Root, cr.Cluster)
 		}
 	}
 }
