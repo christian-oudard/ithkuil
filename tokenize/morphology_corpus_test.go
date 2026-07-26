@@ -151,7 +151,11 @@ func TestMorphologyCorpus_Sec5_7_CaseStacking(t *testing.T) {
 			"A", "hrelu-azcoijhailloelya",
 			"Ksolaolwau",
 		},
-		unknown: []string{"A", "Hre"},
+		// Ksolaolwau and hrelu-azcoijhailloelya carry a vowel in Vx
+		// position that isn't in the §3.5 Vx table ("ao", "ai"-after-
+		// "hail"). They used to read as degree-0 affixes because the
+		// Vx lookup defaulted silently; now they fail honestly.
+		unknown: []string{"A", "Hre", "Ksolaolwau", "hrelu-azcoijhailloelya"},
 	})
 }
 
@@ -184,8 +188,9 @@ func TestMorphologyCorpus_Sec5_8_CHC_Jump(t *testing.T) {
 		},
 		// (Was unknown: [Yadcseuha, ampalaicooe]. Yadcseuha now classifies
 		// via case-normalization in slots.Parse; ampalaicooe still falls
-		// through pending separate parser work.)
-		unknown: []string{"ampalaicooe"},
+		// through pending separate parser work.) Adcsuloeuha has "oe" in
+		// Vx position, which is a Slot II Vv value and not a Vx form.
+		unknown: []string{"Adcsuloeuha", "ampalaicooe"},
 	})
 }
 
@@ -201,6 +206,12 @@ func TestMorphologyCorpus_Sec5_8_CHC_Sing(t *testing.T) {
 		// now via the §3.8.1.2 Cn-in-Ca shortcut (hr in the Ca slot).
 		// (Was unknown: [Yubskirfui] — now classifies via case-
 		// normalization in slots.Parse.)
+		//
+		// ellyuleeihru is written in ASCII digraphs ("ee" for ë) and
+		// ClassifyWord doesn't fold those the way the analyze path
+		// does, so it sees a Vx of "ee" and gives up. The word itself
+		// parses fine as "ellyulëihru".
+		unknown: []string{"ellyuleeihru"},
 	})
 }
 

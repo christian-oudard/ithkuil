@@ -314,8 +314,22 @@ func parseShortcutSlotV(l *Layout, conjs []string, i int) ([]string, int) {
 		if !surface.IsVowelConjunct(vx) || !surface.IsConsonantConjunct(cs) {
 			break
 		}
+		// §3.6.2 marks the end of Slot V with a glottal-stop infixed
+		// into the final Vx. §1.7 gives it two landing spots: after the
+		// vowel-form, where SplitConjuncts hands it to us on the front
+		// of the following Cs ("ëu" + "'ţř"), or inside it when the
+		// first placement won't do ("ë'u", and "a'a" for a single
+		// vowel). Both mean the same thing.
 		if strings.HasPrefix(cs, "'") {
 			collected = append(collected, AffixChunk{Vx: vx, Cs: cs[1:]})
+			l.SlotV = append(l.SlotV, collected...)
+			out := make([]string, 0, len(conjs))
+			out = append(out, conjs[:j]...)
+			out = append(out, conjs[j+2:]...)
+			return out, j
+		}
+		if stripped := stripVvGlottal(vx); stripped != vx {
+			collected = append(collected, AffixChunk{Vx: stripped, Cs: cs})
 			l.SlotV = append(l.SlotV, collected...)
 			out := make([]string, 0, len(conjs))
 			out = append(out, conjs[:j]...)

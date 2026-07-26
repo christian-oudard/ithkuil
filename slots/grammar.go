@@ -33,16 +33,27 @@ func ToGrammar(l Layout) (g.Formative, error) {
 	// decode against that Cn, fold the pair back into Slot VII as a
 	// regular affix.
 	var slotVIII g.SlotVIII
-	slotVII := affixesVxCs(l.SlotVII)
+	slotVII, err := affixesVxCs(l.SlotVII)
+	if err != nil {
+		return g.Formative{}, fmt.Errorf("Slot VII: %w", err)
+	}
 	if l.Cn != "" {
 		if s8, ok := parse.ParseVnCn(l.Vn, l.Cn); ok {
 			slotVIII = s8
 		} else {
-			t, d := parse.ClassifyAffixVowel(l.Vn)
+			t, d, ok := parse.AffixVowelDegree(l.Vn)
+			if !ok {
+				return g.Formative{}, fmt.Errorf(
+					"Slot VIII: %q does not decode against Cn %q, and is not a Vx form either",
+					l.Vn, l.Cn)
+			}
 			slotVII = append(slotVII, g.Affix{Type: t, Degree: d, Consonant: l.Cn})
 		}
 	}
-	slotV := affixesVxCs(l.SlotV)
+	slotV, err := affixesVxCs(l.SlotV)
+	if err != nil {
+		return g.Formative{}, fmt.Errorf("Slot V: %w", err)
+	}
 
 	root, slotVI, err := rootFromLayout(l, shortcut)
 	if err != nil {
@@ -152,17 +163,21 @@ func rootFromLayout(l Layout, shortcut parse.ShortcutVariant) (g.Root, g.SlotVI,
 }
 
 // affixesVxCs decodes a list of AffixChunks (each carrying a raw Vx
-// vowel and Cs consonant) into grammar Affixes.
-func affixesVxCs(chunks []AffixChunk) []g.Affix {
+// vowel and Cs consonant) into grammar Affixes. A Vx outside the §3.5
+// table is a parse failure, not a degree-0 affix.
+func affixesVxCs(chunks []AffixChunk) ([]g.Affix, error) {
 	if len(chunks) == 0 {
-		return nil
+		return nil, nil
 	}
 	out := make([]g.Affix, len(chunks))
 	for i, c := range chunks {
-		t, d := parse.ClassifyAffixVowel(c.Vx)
+		t, d, ok := parse.AffixVowelDegree(c.Vx)
+		if !ok {
+			return nil, fmt.Errorf("affix vowel %q on Cs %q is not a Vx form", c.Vx, c.Cs)
+		}
 		out[i] = g.Affix{Type: t, Degree: d, Consonant: c.Cs}
 	}
-	return out
+	return out, nil
 }
 
 // restoreMovedGlottal re-inserts the glottal stop that the §3.9.1

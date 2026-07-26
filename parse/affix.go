@@ -56,20 +56,30 @@ func Type2DegreeToVowel(degree int) string {
 	return AffixVowel(grammar.Type2Affix, degree)
 }
 
-// ClassifyAffixVowel returns the AffixType and degree (0-9) of an affix
-// vowel Vx. Unrecognized vowels default to (Type1Affix, 0); this path
-// is only reached when a richer parser has already validated the input.
-func ClassifyAffixVowel(v string) (grammar.AffixType, int) {
+// AffixVowelDegree returns the AffixType and degree (0-9) of an affix
+// vowel Vx, and whether v is a Vx form at all. The §3.5 table is the
+// whole inventory: anything outside it is not an affix vowel, and a
+// caller building a Formative has to say so rather than pick a degree.
+func AffixVowelDegree(v string) (grammar.AffixType, int, bool) {
 	if d, ok := type1Degrees[v]; ok {
-		return grammar.Type1Affix, d
+		return grammar.Type1Affix, d, true
 	}
 	if d, ok := type2Degrees[v]; ok {
-		return grammar.Type2Affix, d
+		return grammar.Type2Affix, d, true
 	}
 	if d, ok := type3Degrees[v]; ok {
-		return grammar.Type3Affix, d
+		return grammar.Type3Affix, d, true
 	}
-	return grammar.Type1Affix, 0
+	return grammar.Type1Affix, 0, false
+}
+
+// ClassifyAffixVowel is the lenient form of AffixVowelDegree, for the
+// callers that are sniffing at a word's shape rather than decoding it
+// — an unrecognized vowel reads as (Type1Affix, 0) instead of failing.
+// Anything that produces a Formative wants AffixVowelDegree.
+func ClassifyAffixVowel(v string) (grammar.AffixType, int) {
+	t, d, _ := AffixVowelDegree(v)
+	return t, d
 }
 
 
