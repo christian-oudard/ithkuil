@@ -722,3 +722,96 @@ The six V_C values are THM `a`, GEN `ei`, SIT `oa`, COR `e'e`, ASI
 insertion patterns, which is why the same six recur four times. PHR's
 third entry is `hňo`, whose V_C is `o`, ERG. The paradigm calls for
 `hňoa`.
+
+### G22. §4.2's lead-in was not updated when its table was
+
+The version history for v1.3 records the change:
+
+> **Sec. 4.2:** The Slot IV V_R Values for the Specialized C_S-Root now
+> show Degree plus Context, instead of Degree plus Specification, as it
+> did not make sense for these Specialized C_S-Roots to show any
+> Specification other than BSC given that Specification does not apply
+> to V_X C_S affixes.
+
+The table was updated — its header reads "showing Affix-degree for the
+Slot III C_S-form plus Context" and its four columns are EXS, FNC, RPS
+and AMG — and so was the closing note, "these Specialized C_S-roots are
+considered to have BSC Specification only". The sentence that
+introduces the table was not:
+
+> The Affix-Degree and **Specification** of the Specialized C_S-root is
+> shown by the V_R value in Slot IV:
+
+A reader who takes that sentence at face value will look for
+Specification in a table that does not encode it.
+
+### G23. §4.4 still refers to a "CAR adjunct hü" that no longer exists
+
+v1.3 relabelled the Carrier-End Register Adjunct from **CAR** to
+**END**, and reassigned **CAR** to the Carrier Suppletive Adjunct of
+§4.5.1. §4.4's table reflects that: the END row reads "CARRIER-END: end
+of term/phrase governed by carrier stem/adjunct", with no initial
+adjunct and a final adjunct of `hüi`. The note directly beneath it does
+not:
+
+> Since Sec. 1.5 external juncture rules do not apply to foreign
+> names/words, insert a pause after uttering the name/words prior to
+> the **CAR** adjunct *hü*, or pronounce the last word of the proper
+> name/phrase with low tone.
+
+Both halves are stale. **CAR** now names §4.5.1's adjunct, which is
+`hl` + V_C and never `hü`; and `hü` itself occurs exactly once in the
+document, in this sentence. What the note describes — pausing before
+the marker that closes a carrier phrase — is the END adjunct `hüi`.
+
+### G24. Every version-history pointer into §3.9.3 is one subsection off
+
+Three changelog entries name a §3.9.3 subsection that does not contain
+what they describe:
+
+| Entry | Says | Actually in |
+|-------|------|-------------|
+| v1.3 | "**Sec. 3.9.3.3:** The presentation of V_K Illocution and Validation phonological values has been simplified" | §3.9.3.2 |
+| v1.3.1 | "**Sec. 3.9.3.1:** The table providing descriptions of the nine validations has been reinstated" | §3.9.3.2 |
+| v1.3.2 | "**Sec. 3.9.3.3:** The 3-letter abbreviation for VERIFICATIVE Illocution has been changed to **VER**" | §3.9.3.1 |
+
+§3.9.3.1 is Illocution, §3.9.3.2 is Validation and carries both V_K
+tables, and §3.9.3.3 is "If desired to show V_K information on a FRAMED
+formative or a concatenated formative".
+
+Read with G15 — where §3.9.3's own closing sentence promises that
+"Sec. 3.9.3.4 below provides the Slot IX V_K affix values" and no such
+subsection exists — the pattern suggests §3.9.3 once had four
+subsections, that the V_K value tables had one of their own, and that
+it was merged into the Validation section without any of the four
+pointers into the range being renumbered.
+
+Every other version-history entry checks out: MTH is gone from §4.4's
+register table and END is there; §4.5's four adjuncts carry the labels
+CAR, QUO, NAM and PHR; the Mood/Case-Scope adjunct is gone and MCS
+exists as an affix (`bẓ`, "Mood and Case-Scoping"); and §4.7 has ADS,
+MNF MANIFESTIVE and RSG RESIGNATIVE with no EXPERIENTIAL or
+RENUNCIATIVE bias remaining.
+
+### G25. Both specialized root types drop Stem from Slot II without saying so
+
+Slot II of a standard formative encodes Stem and Version — eight
+values, four stems by two versions. Both specialized root constructions
+replace that table and neither mentions what becomes of Stem:
+
+- §4.2's Specialized C_S-Root uses four Slot II values (`ëi`, `eë`,
+  `ëu`, `oë`) encoding Version by Function. Function has moved up from
+  Slot IV to make room for Affix-Degree there; Stem has simply gone.
+  §4.2 is careful to settle Specification — "considered to have BSC
+  Specification only" — and says nothing at all about Stem.
+- §4.6.4's Specialized Personal-Reference Root uses two Slot II values
+  (`ae`, `ea`) encoding Version alone, and states that "Slot IV values
+  for these Specialized Personal-Reference roots are the same as for
+  standard formatives, showing Function, Specification, and Context".
+  So Stem has no home in either slot.
+
+§4.6.4 then writes as though stems were still available: "the meaning
+of **each stem** of the Specialized Personal-Reference Root changes
+depending on its Perspective", and the table below it is headed "Stem 1
+Nominal meaning" and "Stem 1 Verbal meaning" — a label that only means
+something if Stems 2 and 3 can also be expressed.
