@@ -39,12 +39,11 @@ func main() {
 			continue
 		}
 		total++
-		fm, err := fullparse.Formative(w)
-		if err != nil {
+		out, before, ok := glossAndRender(gl, w)
+		if !ok {
 			continue
 		}
 		parsed++
-		out := render.Formative(fm)
 		if out == surface.Normalize(w) {
 			same++
 		}
@@ -56,18 +55,14 @@ func main() {
 			}
 		}
 		// Does it survive a second trip?
-		back, err := fullparse.Formative(out)
-		if err != nil {
-			if len(lossy) < 200 {
-				lossy = append(lossy, fmt.Sprintf("%s -> %s (reparse: %v)", w, out, err))
-			}
-			continue
-		}
-		if gl.Formative(back) == gl.Formative(fm) {
+		_, after, ok := glossAndRender(gl, out)
+		switch {
+		case !ok:
+			lossy = append(lossy, fmt.Sprintf("%s -> %s (does not re-parse)", w, out))
+		case before == after:
 			lossless++
-		} else if len(lossy) < 200 {
-			lossy = append(lossy, fmt.Sprintf("%s -> %s (%s vs %s)",
-				w, out, gl.Formative(fm), gl.Formative(back)))
+		default:
+			lossy = append(lossy, fmt.Sprintf("%s -> %s (%s vs %s)", w, out, before, after))
 		}
 	}
 
@@ -78,6 +73,22 @@ func main() {
 	fmt.Printf("spelled as attested:  %d (%.1f%% of parsed)\n", same, pct(same, parsed))
 	report("lossy round-trips", lossy)
 	report("phonotactically invalid output", illegal)
+}
+
+// glossAndRender parses one word and returns its canonical spelling and
+// its gloss. A hyphen joins a §3.1.7 chain of formatives, so each link
+// is handled on its own and the results rejoined.
+func glossAndRender(gl *gloss.Glosser, word string) (out, gloss string, ok bool) {
+	var outs, glosses []string
+	for _, link := range strings.Split(word, "-") {
+		f, err := fullparse.Formative(link)
+		if err != nil {
+			return "", "", false
+		}
+		outs = append(outs, render.Formative(f))
+		glosses = append(glosses, gl.Formative(f))
+	}
+	return strings.Join(outs, "-"), strings.Join(glosses, "-"), true
 }
 
 func report(label string, xs []string) {

@@ -1,6 +1,7 @@
 package fullparse_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/fullparse"
@@ -17,8 +18,30 @@ import (
 // parse again must land on the same gloss. Whether our canonical
 // spelling matches what the author typed is a separate question and
 // deliberately not asserted here, because the renderer canonicalizes.
+//
+// A few words predate the 2023 morphology we implement. words.py drops
+// that era from the audit corpus, but a word kept here is kept because
+// the rule it breaks is a v1.3.1 rule, so its vintage does not matter.
+// Where the intended reading is genuinely unrecoverable the word is not
+// here at all: ažxwö'rka'súm, for one, is 2020 bot output that segments
+// with a glottal at the head of its Ca, and its neighbours in the same
+// message are spelled with ı and ù, letters v4 does not have.
 
+// roundTrips checks one word. A §3.1.7 chain is a sequence of
+// formatives sharing one word, so each link is checked on its own.
 func roundTrips(t *testing.T, word string) bool {
+	t.Helper()
+	if strings.Contains(word, "-") {
+		ok := true
+		for _, part := range strings.Split(word, "-") {
+			ok = roundTripsOne(t, part) && ok
+		}
+		return ok
+	}
+	return roundTripsOne(t, word)
+}
+
+func roundTripsOne(t *testing.T, word string) bool {
 	t.Helper()
 	gl := &gloss.Glosser{Canonical: true}
 	f, err := fullparse.Formative(word)
@@ -91,14 +114,14 @@ func TestCorpus_GlottalPlacement(t *testing.T) {
 	}
 }
 
-// TestCorpus_ShortcutSlotV covers what's left after the glottal fixes:
-// formatives carrying a Slot IV/VI shortcut, whose slots come back
-// shifted by one. The last two are not concatenated but share the
-// shortcut, which is what the §3.6.2 end-of-Slot-V glottal marks
-// against — so this is one defect, not two.
-func TestCorpus_ShortcutSlotV(t *testing.T) {
-	t.Skip("known defect: see the Slot IV/VI shortcut group in the corpus audit")
+// TestCorpus_ConcatenatedChain covers §3.1.7 chains. A hyphen joins
+// whole formatives, so it is legal in a word but never inside one;
+// these all came back with their slots shifted by one because the
+// hyphen was segmenting as a consonant conjunct and landing in an
+// affix Cs.
+func TestCorpus_ConcatenatedChain(t *testing.T) {
 	for _, w := range []string{
+		"heltyurëi-annarëi",
 		"hlabzëicdú-afçnizyuëlla",
 		"hlabzřëicdú-afçnizyuëlla",
 		"hlarrëicdú-afçnizyuëlla",
@@ -107,12 +130,47 @@ func TestCorpus_ShortcutSlotV(t *testing.T) {
 		"hriamžé-akbiçňuivva",
 		"hroisvé-maţřëujja",
 		"hropšmyí-okšňafřuilli",
-		"hliařţiá-wa'aňsätļi'jva",
-		"hliařţiá-wa'aňsätļijva'řga",
 		"hmuksküţmurbâ-a'rkwau'zwëillikbiažřui",
 		"hmuksküţmurbâ-arkwauzwëillikbiažřu'i",
+	} {
+		roundTrips(t, w)
+	}
+}
+
+// TestFormative_RejectsChain pins the other half of that fix: a chain
+// is a sequence of formatives, so asking for one formative is an error
+// rather than a best effort.
+func TestFormative_RejectsChain(t *testing.T) {
+	if _, err := fullparse.Formative("heltyurëi-annarëi"); err == nil {
+		t.Error("Formative accepted a hyphenated chain as one formative")
+	}
+}
+
+// TestCorpus_UltimateStressVf covers §3.1.3: a concatenated formative
+// under ultimate stress ends in an alternate Vf, not a Vk. We read it
+// as a Vk and reject the word.
+func TestCorpus_UltimateStressVf(t *testing.T) {
+	t.Skip("known defect: ultimate stress on a concatenated formative is a Vf")
+	for _, w := range []string{
+		"hliařţiá-wa'aňsätļi'jva",
+		"hliařţiá-wa'aňsätļijva'řga",
+	} {
+		roundTrips(t, w)
+	}
+}
+
+// TestCorpus_GlottalHeadedCs covers the last group in the audit. We
+// segment these into a Slot VII affix whose Cs begins with a glottal,
+// which §1.5 does not allow: a glottal between a vowel and a consonant
+// is syllable-final, so it belongs to the Vx before it. The renderer
+// then drops it, and the affix reappears in Slot V a degree off.
+func TestCorpus_GlottalHeadedCs(t *testing.T) {
+	t.Skip("known defect: a Cs may not begin with a glottal")
+	for _, w := range []string{
+		"anţtaleu'há",
 		"anzvarönţiçřoi'há'kšš",
-		"žfaléa'ha'rš",
+		"ežfaléa'ha'rš",
+		"hwarswiäle-wuijxwo'lla'a",
 	} {
 		roundTrips(t, w)
 	}
@@ -126,23 +184,5 @@ func TestCorpus_RootCannotStartWithHWY(t *testing.T) {
 		if _, err := fullparse.Formative(w); err == nil {
 			t.Errorf("Formative(%q) succeeded; a root may not begin with w-", w)
 		}
-	}
-}
-
-// TestCorpus_Unexplained holds the words with no diagnosis yet. They
-// are here so the count stays honest and so a future fix has something
-// to turn green.
-func TestCorpus_Unexplained(t *testing.T) {
-	t.Skip("no diagnosis yet")
-	for _, w := range []string{
-		// Parses with Ca = "'rk". Nothing in §3.6.2 or §3.9.1 puts a
-		// glottal at the head of a Ca, and the word carries a second one
-		// on a Slot VII Cs, so the segmentation is likely wrong.
-		"ažxwö'rka'súm",
-		// Comes back STM (ëi) instead of COM (uo), which is not one of
-		// the glottal case pairs.
-		"ltyurëi-annarëi",
-	} {
-		roundTrips(t, w)
 	}
 }

@@ -29,6 +29,12 @@ func Parse(word string) (Layout, error) {
 	if r := validation.ValidateChars(word); !r.Valid {
 		return Layout{}, fmt.Errorf("slots: %s", r.Errors[0].Reason)
 	}
+	// A hyphen joins a §3.1.7 chain of formatives, so it is legal in a
+	// word but never inside one. Without this the hyphen segments as a
+	// consonant conjunct and becomes an affix Cs.
+	if strings.Contains(word, "-") {
+		return Layout{}, fmt.Errorf("slots: %q is a concatenated chain, not one formative", word)
+	}
 	bare, stress := surface.Strip(word)
 	if stress == surface.InvalidStress {
 		return Layout{}, fmt.Errorf("word %q has more than one stress mark", word)

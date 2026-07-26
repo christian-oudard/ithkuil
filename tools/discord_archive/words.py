@@ -11,7 +11,16 @@ OUT = pathlib.Path(paths.extracted_dir()) / "v4_words.txt"
 # Only the two channels that are unambiguously v4.
 V4_CHANNELS = ("v4-only_700825122017378374", "works-v4_725787403163271189")
 
-LETTERS = "abcçdḑfghijklļmnňoprřsštţuvwxyzžẓäëïöüáéíóúâêîôû'-"
+# The morphology we implement is v1.3.1, published in 2023, and the
+# channels predate it by three years. Older messages are written in
+# earlier drafts, sometimes in an alphabet v4 no longer has (dotless ı,
+# grave ì and ù). Measured against our parser the break is sharp: every
+# half-year through 2022 sits at 36-56% parsed, every half-year from
+# 2023 on sits at 61-80%. Scoring the parser against a grammar it does
+# not implement measures nothing, so those years are dropped.
+SINCE = "2023-01-01"
+
+LETTERS = "abcčçdḑefghijklļmnňoprřsštţuvwxyzžẓäëïöüáéíóúâêîôû'-"
 TOKEN = re.compile(r"[%s]+" % re.escape(LETTERS), re.IGNORECASE)
 ITHKUIL_ONLY = set("ţřšžňļḑçëüöäẓ")
 
@@ -21,8 +30,12 @@ if isinstance(data, dict):
 
 counts = collections.Counter()
 kept_msgs = 0
+dropped_msgs = 0
 for m in data:
     if m.get("channel") not in V4_CHANNELS:
+        continue
+    if m.get("date", "") < SINCE:
+        dropped_msgs += 1
         continue
     text = m.get("content", "")
     if not text.strip():
@@ -38,7 +51,7 @@ for m in data:
             counts[tok] += 1
 
 OUT.write_text("\n".join(w for w, _ in counts.most_common()), encoding="utf-8")
-print(f"messages scanned: {kept_msgs}")
+print(f"messages scanned: {kept_msgs} (dropped {dropped_msgs} from before {SINCE})")
 print(f"distinct candidate words: {len(counts)}")
 print(f"total tokens: {sum(counts.values())}")
 print("top 15:", [w for w, _ in counts.most_common(15)])
