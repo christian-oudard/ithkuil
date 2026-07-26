@@ -99,9 +99,24 @@ whether what we emit is a legal word at all, and whether our canonical
 spelling matches what a human wrote. Only the first is a defect; the
 last is a style difference, because the renderer canonicalizes.
 
+`words.py` has unit tests, because a tokenizer bug reads as an
+implementation bug: junk tokens land in the audit as parse failures
+and make the parser look worse than it is.
+
+```bash
+python3 -m unittest discover tools/discord_archive
+```
+
 ## What counts as attested usage
 
 `words.py` decides what reaches the corpus.
+
+A token is a whole run of letters, taken whole and then required to
+lie inside the V4 alphabet. Matching the alphabet directly instead
+would cut a word around any foreign letter and feed the fragment to
+the audit: `ıţkuil` became `ţkuil`, which is not a word anyone wrote.
+Dropping the chunk removed 260 of them and moved the parse rate from
+77.8% to 80.8% without touching the parser.
 
 Channels, per server. The original ran every version of the language
 side by side, so only `#v4-only` and `#works-v4` qualify. The study

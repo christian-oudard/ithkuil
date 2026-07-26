@@ -25,13 +25,33 @@ V4_CHANNELS = {
 # not implement measures nothing, so those years are dropped.
 SINCE = "2023-01-01"
 
-LETTERS = "abcčçdḑefghijklļmnňoprřsštţuvwxyzžẓäëïöüáéíóúâêîôû'-"
-TOKEN = re.compile(r"[%s]+" % re.escape(LETTERS), re.IGNORECASE)
+ALPHABET = set("abcčçdḑefghijklļmnňoprřsštţuvwxyzžẓäëïöüáéíóúâêîôû'-")
 ITHKUIL_ONLY = set("ţřšžňļḑçëüöäẓ")
 
-data = json.load(open(SRC, encoding="utf-8"))
-if isinstance(data, dict):
-    data = [m for v in data.values() for m in v]
+# A chunk is a run of letters, optionally joined by the apostrophe that
+# writes the glottal stop or the hyphen that joins a §3.1.7 chain. The
+# run is taken whole and then required to lie inside the alphabet, so a
+# word carrying one foreign letter is dropped rather than split around
+# it. Matching the alphabet directly would instead cut "ıţkuil" down to
+# "ţkuil" and feed that fragment to the audit as a parse failure.
+CHUNK = re.compile(r"[^\W\d_]+(?:['\-][^\W\d_]+)*", re.UNICODE)
+
+
+def tokens(text):
+    """Candidate Ithkuil word tokens in one message's text."""
+    # Drop URLs and code spans, which carry Latin junk.
+    text = re.sub(r"https?://\S+", " ", text)
+    text = re.sub(r"`[^`]*`", " ", text)
+    out = []
+    for tok in CHUNK.findall(text.lower()):
+        tok = tok.strip("-'")
+        if len(tok) < 3 or not set(tok) <= ALPHABET:
+            continue
+        # Require a distinctively Ithkuil letter so English words drop out.
+        if ITHKUIL_ONLY & set(tok):
+            out.append(tok)
+    return out
+
 
 def in_scope(m):
     if m.get("guild") not in V4_CHANNELS:
@@ -40,37 +60,40 @@ def in_scope(m):
     return allowed is None or m.get("channel") in allowed
 
 
-counts = collections.Counter()
-kept_msgs = 0
-dropped_msgs = 0
-bot_msgs = 0
-for m in data:
-    if not in_scope(m):
-        continue
-    # Bot output is another implementation's opinion, not attested
-    # usage, and the dictionary bots post bare roots that are not words.
-    if m.get("bot"):
-        bot_msgs += 1
-        continue
-    if m.get("date", "") < SINCE:
-        dropped_msgs += 1
-        continue
-    text = m.get("content", "")
-    if not text.strip():
-        continue
-    # Drop URLs and code spans, which carry Latin junk.
-    text = re.sub(r"https?://\S+", " ", text)
-    text = re.sub(r"`[^`]*`", " ", text)
-    kept_msgs += 1
-    for tok in TOKEN.findall(text.lower()):
-        tok = tok.strip("-'")
-        # Require a distinctively Ithkuil letter so English words drop out.
-        if len(tok) >= 3 and ITHKUIL_ONLY & set(tok):
-            counts[tok] += 1
+def main():
+    data = json.load(open(SRC, encoding="utf-8"))
+    if isinstance(data, dict):
+        data = [m for v in data.values() for m in v]
 
-OUT.write_text("\n".join(w for w, _ in counts.most_common()), encoding="utf-8")
-print(f"messages scanned: {kept_msgs} "
-      f"(dropped {dropped_msgs} from before {SINCE}, {bot_msgs} from bots)")
-print(f"distinct candidate words: {len(counts)}")
-print(f"total tokens: {sum(counts.values())}")
-print("top 15:", [w for w, _ in counts.most_common(15)])
+    counts = collections.Counter()
+    kept_msgs = 0
+    dropped_msgs = 0
+    bot_msgs = 0
+    for m in data:
+        if not in_scope(m):
+            continue
+        # Bot output is another implementation's opinion, not attested
+        # usage, and the dictionary bots post bare roots that are not
+        # words.
+        if m.get("bot"):
+            bot_msgs += 1
+            continue
+        if m.get("date", "") < SINCE:
+            dropped_msgs += 1
+            continue
+        text = m.get("content", "")
+        if not text.strip():
+            continue
+        kept_msgs += 1
+        counts.update(tokens(text))
+
+    OUT.write_text("\n".join(w for w, _ in counts.most_common()), encoding="utf-8")
+    print(f"messages scanned: {kept_msgs} "
+          f"(dropped {dropped_msgs} from before {SINCE}, {bot_msgs} from bots)")
+    print(f"distinct candidate words: {len(counts)}")
+    print(f"total tokens: {sum(counts.values())}")
+    print("top 15:", [w for w, _ in counts.most_common(15)])
+
+
+if __name__ == "__main__":
+    main()
