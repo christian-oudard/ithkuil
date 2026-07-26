@@ -1,5 +1,5 @@
-// Package store provides read access to the Ithkuil data database
-// (data/data.db, built from data/data.json via data/build_db.py).
+// Package store provides read access to the Ithkuil data database, built
+// from data/data.json by data/build_db.py and installed at DefaultPath.
 //
 // Open the database once at process startup and pass the *Store to
 // whatever needs it. All methods are read-only and safe for concurrent
@@ -10,9 +10,29 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 
 	_ "modernc.org/sqlite"
 )
+
+// DefaultPath is where the database lives: $XDG_DATA_HOME/ithkuil/data.db,
+// or ~/.local/share/ithkuil/data.db when XDG_DATA_HOME is unset (the
+// location the XDG Base Directory spec mandates in that case).
+//
+// The database is a build artifact, so it does not belong in the source
+// tree. data/build_db.py writes here; --data overrides.
+func DefaultPath() string {
+	dir := os.Getenv("XDG_DATA_HOME")
+	if dir == "" {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			panic(fmt.Sprintf("store.DefaultPath: %v", err))
+		}
+		dir = filepath.Join(home, ".local", "share")
+	}
+	return filepath.Join(dir, "ithkuil", "data.db")
+}
 
 // Store is an open connection to the Ithkuil data database.
 type Store struct {

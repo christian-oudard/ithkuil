@@ -2,13 +2,14 @@ package main
 
 import (
 	"bytes"
-	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/christian-oudard/ithkuil/store"
 )
 
 func dataFile() string {
-	return filepath.Join("..", "..", "data", "data.db")
+	return store.DefaultPath()
 }
 
 // runCLI invokes the CLI in-process with the given args.

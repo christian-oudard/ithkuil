@@ -7,9 +7,8 @@ import (
 	"github.com/christian-oudard/ithkuil/store"
 )
 
-const testDB = "../data/data.db"
-
 func TestOpen(t *testing.T) {
+	testDB := store.DefaultPath()
 	if _, err := os.Stat(testDB); err != nil {
 		t.Skipf("data.db not found (%v); run data/build_db.py first", err)
 	}

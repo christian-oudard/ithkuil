@@ -14,9 +14,11 @@ import urllib.request
 import urllib.error
 import urllib.parse
 
+import paths
+
 API_BASE = "https://discord.com/api/v10"
 TOKEN = os.environ.get("DISCORD_TOKEN", "")
-OUTPUT_DIR = os.environ.get("DISCORD_OUTPUT_DIR", os.path.join(os.path.dirname(__file__), "data"))
+OUTPUT_DIR = str(paths.mirror_dir())
 MAX_BYTES = int(os.environ.get("DISCORD_MAX_BYTES", 10 * 1024 * 1024 * 1024))  # 10GB default
 
 HEADERS = {
@@ -25,8 +27,7 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0",
 }
 
-# Ithkuil guild
-GUILD_ID = "131937038139260928"
+GUILD_ID = paths.GUILD_ID
 
 # All text channels in priority order (V4 first)
 PRIORITY_CHANNELS = [
@@ -198,8 +199,7 @@ def main():
         print("Set DISCORD_TOKEN environment variable")
         sys.exit(1)
 
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    guild_dir = os.path.join(OUTPUT_DIR, f"ithkuil_{GUILD_ID}")
+    guild_dir = str(paths.guild_dir())
     os.makedirs(guild_dir, exist_ok=True)
 
     print("Fetching channel list...", flush=True)

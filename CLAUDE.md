@@ -7,13 +7,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Enter the dev shell first, then use `go` directly:
 
 ```bash
-nix develop              # Provides go on PATH with CGO_ENABLED=0
-go install ./cmd/ithkuil ./cmd/ithkuil-mcp ./cmd/ithkuil-input   # Drop binaries into $GOBIN
-go build ./...           # Build everything in place
+nix develop              # Provides go and python3 on PATH with CGO_ENABLED=0
+python3 data/build_db.py # Build the data store (needed before the CLI runs)
+go install ./cmd/...     # Drop binaries into $GOBIN
+go build ./...           # Typecheck and compile everything; writes no binaries
 go test ./...            # Run the full test suite
 ```
 
 `CGO_ENABLED=0` is set in `flake.nix` because `segmentio/asm` (transitive from the MCP SDK) tries to invoke gcc otherwise; the pure-Go fallback is used.
+
+Nothing generated belongs in the source tree. Use `go install`, never
+`go build ./cmd/ithkuil`, which would drop a binary at the repo root. The
+`.gitignore` is one line, and should stay that way: new generated output
+goes to `$XDG_DATA_HOME/ithkuil/` (see `store.DefaultPath`), to a path given
+on the command line, or to `local/` for anything local-only.
 
 ## What This Project Is
 
@@ -59,18 +66,24 @@ Command-line entrypoints under `cmd/`:
 - `Final` is a sum-type interface covering the various case/illocution endings (UnframedNominal, UnframedVerbal, FramedVerbal, etc.).
 - `Affix` stores `(Type, Degree)` plus the consonant cluster; never the surface vowel string.
 - Grammatical values use standard Ithkuil abbreviations (3-letter uppercase): THM, INS, ABS, STA, DYN, BSC, CTE, etc.
-- Data comes from `data/data.db`; pass `--data FILE` on the CLI to point elsewhere.
-- Reference implementations in `reference/` (gitignored): `IthkuilGloss/` (Kotlin), `mamkait/` (Haskell).
+- Data comes from the store at `store.DefaultPath()`; pass `--data FILE` on the CLI to point elsewhere.
+- Reference implementations in `local/reference/`: `IthkuilGloss/` (Kotlin), `mamkait/` (Haskell).
 
 ## Data Files
 
-- `data/data.db` - SQLite store read at runtime. Gitignored; build it with `data/build_db.py`.
 - `data/data.json` - Source of truth for the store: roots, affixes, and grammar tables.
+- `data/build_db.py` - Builds the SQLite store from `data.json`. Writes to `$XDG_DATA_HOME/ithkuil/data.db` (`~/.local/share/ithkuil/data.db` when unset), which is what `store.DefaultPath()` returns in Go. `-o PATH` overrides.
 - `data/sync_lexicon.py` - Refreshes the roots/affixes sections of `data.json` (and the TSV mirrors kept for diff visibility) from the upstream community spreadsheet.
+- `discord_archive/` - Scrapers for the community Discord. Output goes to `$XDG_DATA_HOME/ithkuil/discord/`; see `discord_archive/paths.py`.
 
 ## Grammar Reference
 
 - `grammar_reference/morphology.md` - Canonical V4 grammar reference (phonology, morphology, slots, cases, adjuncts, syntax, script, numbers)
 - `grammar_reference/affixes_reference.md` - All 527 affixes with gradient types and 9 degrees
 - `grammar_reference/phonotactics.md` - Detailed consonant cluster rules
-- `grammar_reference_pdf/` - Gitignored: source PDFs
+- `grammar_reference/v3_script.md`, `v4_script.md`, `v4_script_pdf.md` - Writing system reference
+- `local/grammar_reference_pdf/` - Source PDFs, not committed. Put any intermediate extraction output (html, per-page pdf) under `local/` too.
+
+The Ithkuil writing system is documented but not implemented on `main`. The
+earlier Python attempts and the extracted reference figures they were checked
+against live on the `writing` branch.

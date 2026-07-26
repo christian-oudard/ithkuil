@@ -4,7 +4,7 @@
 //
 // Usage: ithkuil-mcp [-data FILE] [-grammar DIR]
 //
-//	-data FILE     Path to data.db (default: data/data.db).
+//	-data FILE     Path to data.db (default: $XDG_DATA_HOME/ithkuil/data.db).
 //	-grammar DIR   Directory holding grammar reference markdown
 //	               (default ./grammar_reference). Files are served as
 //	               MCP resources.
@@ -33,7 +33,7 @@ type server struct {
 }
 
 func main() {
-	dataFile := flag.String("data", "data/data.db", "path to data.db")
+	dataFile := flag.String("data", store.DefaultPath(), "path to data.db")
 	grammarDir := flag.String("grammar", "./grammar_reference", "directory with grammar reference markdown")
 	flag.Parse()
 

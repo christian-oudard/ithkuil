@@ -47,7 +47,7 @@ func TestLoad(t *testing.T) {
 }
 
 func TestLoadFromStore(t *testing.T) {
-	s, err := store.Open(dataPath("data.db"))
+	s, err := store.Open(store.DefaultPath())
 	if err != nil {
 		t.Skipf("data.db not available: %v", err)
 	}

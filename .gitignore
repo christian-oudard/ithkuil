@@ -1,27 +1,3 @@
-dist-newstyle/
-*.hi
-*.o
-*.dyn_hi
-*.dyn_o
-grammar_reference_pdf/
-grammar_reference/images/
-grammar_reference/*.html
-grammar_reference/*.pdf
-reference/
-*.ttf
-*.otf
-.venv/
-script/*.png
-script/__pycache__/
-script/**/__pycache__/
-script/*.svg
-script/v3/*.svg
-discord_archive/data/
-
-# Built Go binaries at the module root after `go build ./cmd/...`.
-/ithkuil
-/ithkuil-mcp
-/bin/
-
-# Generated SQLite database (built from data/data.json via data/build_db.py).
-data/data.db
+# Local-only material: reference implementations, grammar reference source
+# PDFs, and scratch extraction output. See CLAUDE.md.
+/local/

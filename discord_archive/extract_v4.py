@@ -6,7 +6,9 @@ import os
 import re
 import sys
 
-ARCHIVE_DIR = os.path.join(os.path.dirname(__file__), "data", "ithkuil_131937038139260928")
+import paths
+
+ARCHIVE_DIR = str(paths.guild_dir())
 
 # Ithkuil-specific characters
 ITHKUIL_CHARS = set("ţřšžňļḑçëüöäâîûôẓ")
@@ -121,7 +123,7 @@ def main():
             print(f"{ch_dir_name}: {len(pairs)} translations, {len(grammar)} grammar discussions, {len(messages)} total msgs")
 
     # Save outputs
-    out_dir = os.path.join(os.path.dirname(__file__), "extracted")
+    out_dir = str(paths.extracted_dir())
     os.makedirs(out_dir, exist_ok=True)
 
     with open(os.path.join(out_dir, "translation_pairs.json"), "w") as f:

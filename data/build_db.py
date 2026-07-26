@@ -1,16 +1,26 @@
 #!/usr/bin/env python3
-"""Build data/data.db (SQLite) from data/data.json.
+"""Build the SQLite data store from data/data.json.
 
 Usage (from repo root):
-    python3 data/build_db.py [--lang LANG]
+    python3 data/build_db.py [--lang LANG] [-o PATH]
 
 LANG selects which data file to read: data/data.LANG.json (default: data/data.json).
-The output is always data/data.db.
+
+The database is a build artifact, so it is written outside the source tree:
+$XDG_DATA_HOME/ithkuil/data.db, or ~/.local/share/ithkuil/data.db when
+XDG_DATA_HOME is unset. This is the path store.DefaultPath() reads in Go.
 """
 import argparse
 import json
+import os
 import sqlite3
 from pathlib import Path
+
+
+def default_db_path() -> Path:
+    xdg = os.environ.get("XDG_DATA_HOME")
+    base = Path(xdg) if xdg else Path.home() / ".local" / "share"
+    return base / "ithkuil" / "data.db"
 
 SCHEMA = """
 CREATE TABLE grammar (
@@ -130,13 +140,15 @@ def build(data_path: Path, db_path: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--lang", default="", help="language suffix (e.g. 'zh' → data.zh.json)")
+    parser.add_argument("-o", "--output", type=Path, default=default_db_path(),
+                        help="output path (default: $XDG_DATA_HOME/ithkuil/data.db)")
     args = parser.parse_args()
 
     data_dir = Path(__file__).parent
     suffix = f".{args.lang}" if args.lang else ""
     data_path = data_dir / f"data{suffix}.json"
-    db_path = data_dir / "data.db"
-    build(data_path, db_path)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    build(data_path, args.output)
 
 
 if __name__ == "__main__":

@@ -13,6 +13,7 @@
         default = pkgs.mkShell {
           packages = [
             pkgs.go
+            pkgs.python3   # data/build_db.py, data/sync_lexicon.py
             pkgs.curl
           ];
           CGO_ENABLED = "0";

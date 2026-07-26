@@ -6,7 +6,9 @@ import os
 import re
 from collections import Counter
 
-EXTRACTED_DIR = os.path.join(os.path.dirname(__file__), "extracted")
+import paths
+
+EXTRACTED_DIR = str(paths.extracted_dir())
 ITHKUIL_CHARS = set("ţřšžňļḑçëüöäâîûôẓ")
 
 
@@ -189,7 +191,7 @@ def main():
 
     # 8. Interesting thread titles (all in Ithkuil!)
     thread_titles = []
-    archive_dir = os.path.join(os.path.dirname(__file__), "data", "ithkuil_131937038139260928")
+    archive_dir = str(paths.guild_dir())
     for d in sorted(os.listdir(archive_dir)):
         if d.startswith("thread_") and any(c in ITHKUIL_CHARS for c in d):
             # Extract title from directory name

@@ -80,7 +80,8 @@ Subcommands:
   help               Show this help.
 
 Global flags:
-  --data / -d FILE   Path to data.db (default: data/data.db).
+  --data / -d FILE   Path to data.db
+                     (default: $XDG_DATA_HOME/ithkuil/data.db).
 `
 
 // extractDataFlag walks args for `--data FILE` (or `-data` or short `-d`)
@@ -101,7 +102,7 @@ func extractDataFlag(args []string) (string, []string) {
 		}
 	}
 	if file == "" {
-		file = "data/data.db"
+		file = store.DefaultPath()
 	}
 	return file, out
 }
