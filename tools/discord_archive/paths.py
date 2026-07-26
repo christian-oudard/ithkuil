@@ -11,7 +11,9 @@ from pathlib import Path
 # revamped server in 2025; the original is kept because it holds every
 # message before that.
 GUILDS = {
-    "1345994901200044072": "revamp",
+    # "New Ithkuil Study Group (hlacnyo'unfé-ediláu)", founded 2025.
+    "1345994901200044072": "study_group",
+    # The original server, which holds everything before that.
     "131937038139260928": "ithkuil",
 }
 GUILD_ID = "131937038139260928"
