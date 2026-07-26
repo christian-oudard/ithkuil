@@ -56,9 +56,14 @@ func Parse(word string) (Layout, error) {
 	// form. In shortcut form the same "'C" surface pattern is the
 	// §3.6.2 Slot V end-of-slot marker, not a moved Vc glottal — the
 	// §3.6.2 footnote makes the two mutually exclusive.
-	if !isShortcutCc(l.Cc) {
+	//
+	// It also runs only where there is a case to move a glottal off.
+	// §3.9.1 shortens V_C for cases 37-52; an ultimate-stress formative
+	// carries V_K instead, and V_K has no glottalized forms, so any
+	// glottal in one of those is marking something else.
+	if !isShortcutCc(l.Cc) && stress != surface.Ultimate && stress != surface.Monosyllabic {
 		var movedGlottal bool
-		conjs, movedGlottal = stripMovedGlottal(conjs)
+		conjs, movedGlottal = stripMovedGlottal(conjs, i)
 		l.MovedGlottal = movedGlottal
 	}
 
@@ -416,7 +421,7 @@ func parseAfterCa(l *Layout, conjs []string, i int) error {
 // [l, a, 'l, a]). When the preceding conjunct is a vowel we strip the
 // leading "'" and flag the layout so ToGrammar reads the Vc with the
 // glottal re-attached.
-func stripMovedGlottal(conjs []string) ([]string, bool) {
+func stripMovedGlottal(conjs []string, vvIdx int) ([]string, bool) {
 	// The unmoved Vc glottal lives in the last vowel conjunct, so only
 	// an earlier one can be a §3.9.1 shortening.
 	lastVowel := -1
@@ -425,11 +430,20 @@ func stripMovedGlottal(conjs []string) ([]string, bool) {
 			lastVowel = i
 		}
 	}
+	// §3.9.1 may move the glottal onto any vocalic form *after Slot II*,
+	// so a glottal on the Vv is never this one — it is the §3.5.1 marker
+	// for two or more Slot V affixes. Skip both spellings of it: inside
+	// the Vv itself ("i'i"), and on the head of the following conjunct
+	// ("a'rt"), which is where §1.7's first placement puts it.
+	skipA, skipB := -1, -1
+	if vvIdx >= 0 && vvIdx < len(conjs) && surface.IsVowelConjunct(conjs[vvIdx]) {
+		skipA, skipB = vvIdx, vvIdx+1
+	}
 	moved := false
 	out := make([]string, 0, len(conjs))
 	for i, c := range conjs {
 		switch {
-		case moved:
+		case moved || i == skipA || i == skipB:
 		case i > 0 && surface.IsVowelConjunct(conjs[i-1]) && len(c) > 1 && c[0] == '\'':
 			// Glottal at the head of a consonant conjunct ("la'la").
 			moved = true

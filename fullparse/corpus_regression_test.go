@@ -63,14 +63,12 @@ func TestCorpus_LeadingVvElision(t *testing.T) {
 // come back as an invalid Vk, and the Slot V forms move their
 // end-of-slot marker onto the wrong affix.
 func TestCorpus_GlottalPlacement(t *testing.T) {
-	t.Skip("known defect: see the glottal round-trip group in the corpus audit")
 	for _, w := range []string{
 		// Render emits a reduplicated Vv ("a'a-") that won't re-parse.
 		"anzvarönţiçřoi'hákšš",
 		"attualië'hú'žžg",
 		"aňzkçaẓäçnëumvuožžô",
 		"aňţärko'lá'rš",
-		"ažxwö'rka'súm",
 		"rtawuihážžg",
 		"uňňsozahé'kšš",
 		"ňvailoţmá'gzz",
@@ -82,24 +80,24 @@ func TestCorpus_GlottalPlacement(t *testing.T) {
 		"a'ļfažíravva",
 		"alçpi'lä-abzgauçmaussä",
 		"arštilsau'lualla",
-		"žfaléa'ha'rš",
 		// A spurious glottal upgrades the case by 36 (IND u -> RLT u'u,
 		// EFF ö -> UTL ö'ö, CSD ua -> NAV u'a, PAR ui -> VOC u'i).
 		"idřoutasyövvu",
 		"mcialorjiřřö",
 		"häsuandävussahniä",
 		"hasäza-wappļaţsö",
-		"hmuksküţmurbâ-a'rkwau'zwëillikbiažřui",
 	} {
 		roundTrips(t, w)
 	}
 }
 
-// TestCorpus_ConcatenatedChains covers concatenated formatives whose
-// slots come back shifted by one. Every case starts with a Type-1 or
-// Type-2 Cc that also carries the Slot IV/VI shortcut (hl-, hr-, hm-).
-func TestCorpus_ConcatenatedChains(t *testing.T) {
-	t.Skip("known defect: see the concatenation group in the corpus audit")
+// TestCorpus_ShortcutSlotV covers what's left after the glottal fixes:
+// formatives carrying a Slot IV/VI shortcut, whose slots come back
+// shifted by one. The last two are not concatenated but share the
+// shortcut, which is what the §3.6.2 end-of-Slot-V glottal marks
+// against — so this is one defect, not two.
+func TestCorpus_ShortcutSlotV(t *testing.T) {
+	t.Skip("known defect: see the Slot IV/VI shortcut group in the corpus audit")
 	for _, w := range []string{
 		"hlabzëicdú-afçnizyuëlla",
 		"hlabzřëicdú-afçnizyuëlla",
@@ -109,6 +107,12 @@ func TestCorpus_ConcatenatedChains(t *testing.T) {
 		"hriamžé-akbiçňuivva",
 		"hroisvé-maţřëujja",
 		"hropšmyí-okšňafřuilli",
+		"hliařţiá-wa'aňsätļi'jva",
+		"hliařţiá-wa'aňsätļijva'řga",
+		"hmuksküţmurbâ-a'rkwau'zwëillikbiažřui",
+		"hmuksküţmurbâ-arkwauzwëillikbiažřu'i",
+		"anzvarönţiçřoi'há'kšš",
+		"žfaléa'ha'rš",
 	} {
 		roundTrips(t, w)
 	}
@@ -122,5 +126,23 @@ func TestCorpus_RootCannotStartWithHWY(t *testing.T) {
 		if _, err := fullparse.Formative(w); err == nil {
 			t.Errorf("Formative(%q) succeeded; a root may not begin with w-", w)
 		}
+	}
+}
+
+// TestCorpus_Unexplained holds the words with no diagnosis yet. They
+// are here so the count stays honest and so a future fix has something
+// to turn green.
+func TestCorpus_Unexplained(t *testing.T) {
+	t.Skip("no diagnosis yet")
+	for _, w := range []string{
+		// Parses with Ca = "'rk". Nothing in §3.6.2 or §3.9.1 puts a
+		// glottal at the head of a Ca, and the word carries a second one
+		// on a Slot VII Cs, so the segmentation is likely wrong.
+		"ažxwö'rka'súm",
+		// Comes back STM (ëi) instead of COM (uo), which is not one of
+		// the glottal case pairs.
+		"ltyurëi-annarëi",
+	} {
+		roundTrips(t, w)
 	}
 }
