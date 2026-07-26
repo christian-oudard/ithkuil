@@ -9,6 +9,7 @@ import (
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // ToGrammar converts a Layout into a grammar.Formative — Layer D
@@ -801,6 +802,13 @@ func canElideLeadingVv(l *Layout, f g.Formative) bool {
 		return false
 	}
 	if cr.Stem != g.S1 || cr.Version != g.PRC {
+		return false
+	}
+	// Dropping Vv puts Cr at the start of the word, where §3.1/§3.2
+	// permit a narrower set of clusters than medial position does.
+	// "amlala" can lose its Vv because m- takes a following liquid;
+	// "ardvilëilḑá" cannot, because word-initial r- takes only -w or -y.
+	if !validation.ValidWordInitial(l.Cr) {
 		return false
 	}
 	return strings.HasPrefix(l.Vv, "a") && l.Vv == "a"

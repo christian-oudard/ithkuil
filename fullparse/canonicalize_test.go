@@ -45,3 +45,29 @@ func TestCanonicalize(t *testing.T) {
 		})
 	}
 }
+
+// TestCanonicalize_LeadingVvNeedsLegalInitialCluster checks that the
+// default Vv only elides when the root cluster can actually start a
+// word. Eliding it moves Cr into word-initial position, where §3.1 and
+// §3.2 permit a narrower set of clusters than medial position does.
+func TestCanonicalize_LeadingVvNeedsLegalInitialCluster(t *testing.T) {
+	pairs := []struct {
+		in, want, why string
+	}{
+		// m- takes a following liquid (§3.2.8), so the Vv can go.
+		{"amlala", "mlala", "ml- is a legal word-initial cluster"},
+		// Word-initial r- takes only -w or -y (§3.2.9), so it can't.
+		{"ardvilëilḑá", "ardvilëilḑá", "rdv- is not"},
+		// §3.4 admits no tetra-conjunct whose tri-prefix is "kţg".
+		{"akţgyiva", "akţgyiv", "kţgy- is not (the trailing THM Vc still elides)"},
+	}
+	for _, p := range pairs {
+		f, err := fullparse.Formative(p.in)
+		if err != nil {
+			t.Fatalf("Formative(%q): %v", p.in, err)
+		}
+		if got := render.Formative(f); got != p.want {
+			t.Errorf("render(%q) = %q, want %q (%s)", p.in, got, p.want, p.why)
+		}
+	}
+}

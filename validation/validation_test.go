@@ -536,3 +536,47 @@ func TestValidateClusterAt_ProhibitedGeminate(t *testing.T) {
 		t.Error("ValidateClusterAt(medial, ''): expected invalid")
 	}
 }
+
+// TestValidWordInitial checks the §3.1/§3.2 word-initial inventory
+// against the clusters the spec itself names, in both directions. The
+// renderer consults this before eliding a leading default Vv, which is
+// what moves a root cluster into word-initial position.
+func TestValidWordInitial(t *testing.T) {
+	// Drawn from the example lists in §3.2 and its sub-rules.
+	legal := []string{
+		"m", "k", "h",
+		"pţ", "pf", "bv", "bḑ", "pļ", "px", "tç", "ph", "tf", "dv",
+		"tx", "tļ", "th", "kç", "kf", "gv", "kţ", "gḑ", "kh",
+		"ps", "gz", "kš", "bž", "tr", "kl", "gy",
+		"ml", "nr", "ňl", "hl", "hw", "lw", "ry", "sm", "žv",
+		// §3.3 triples.
+		"psm", "kšp", "pfw", "kţy", "pļy", "tļy", "kçm", "tlw", "kry",
+		"skl", "zgr", "çpw", "smw", "cpr", "hlw", "hmy", "flw", "ţly",
+		"xpl", "xmw", "xcw",
+		// §3.4 quadruples.
+		"pskw", "gzdr", "kšpl", "bždy", "pstř", "skly", "zgly",
+	}
+	illegal := []string{
+		"",
+		"ļ",        // §3.1: indistinguishable from word-initial hl-
+		"rd", "ln", // §3.2.9: l- and r- take only -w or -y
+		"kļ",                   // §3.2: explicit exception, too close to tļ
+		"pm", "bn", "tn", "dm", // §3.2: bilabial/dental stop + nasal
+		"pz", "gs", "kž", "bš", // §3.2: sibilant of the wrong voicing
+		"ňy", "ňř", // §3.2.8: ň- excludes -y and -ř
+		"rdv", "mlk", // §3.3: no rule admits a liquid- or nasal-initial triple
+		"hxw",        // §3.3.5: the h- triples are a closed list
+		"flm", "xfl", // §3.3.7 / §3.3.8: neither list admits these
+		"kţgy", // §3.4: the tri-prefix "kţg" is itself illegal
+	}
+	for _, c := range legal {
+		if !ValidWordInitial(c) {
+			t.Errorf("ValidWordInitial(%q) = false, want true", c)
+		}
+	}
+	for _, c := range illegal {
+		if ValidWordInitial(c) {
+			t.Errorf("ValidWordInitial(%q) = true, want false", c)
+		}
+	}
+}

@@ -550,3 +550,209 @@ func isVowel(r rune) bool {
 // IsVoicedStop is exported because the cluster-level rules in callers
 // sometimes need the predicate. (Kept thin to avoid leaking the rest.)
 func IsVoicedStop(c rune) bool { return isVoicedStop(c) }
+
+// ValidWordInitial reports whether cluster is permissible at the start
+// of a word, per §3.1 (single consonant) and §3.2 (biconsonantal). It
+// matters because the renderer may elide a leading default Vv, which
+// moves the root cluster into word-initial position where a narrower
+// set of clusters is legal than medially.
+//
+// Clusters of three or more are conservatively rejected unless §3.3's
+// opening condition holds — a word-initial stop. Declining a legal
+// elision only costs a syllable; allowing an illegal one emits a word
+// nobody can say.
+func ValidWordInitial(cluster string) bool {
+	rs := []rune(cluster)
+	switch len(rs) {
+	case 0:
+		return false
+	case 1:
+		// §3.1: any single consonant except ļ, which is indistinguishable
+		// from the allophone of word-initial hl-.
+		return rs[0] != 'ļ'
+	case 2:
+		return validInitialPair(rs[0], rs[1])
+	case 3:
+		return validInitialTriple(rs[0], rs[1], rs[2])
+	case 4:
+		// §3.4.1: a tri-conjunct ending in a stop takes a liquid or
+		// approximant. §3.4.2: sibilant + stop + l takes a following -y.
+		if !validInitialTriple(rs[0], rs[1], rs[2]) {
+			return false
+		}
+		if isStop(rs[2]) {
+			return strings.ContainsRune("rlřwy", rs[3])
+		}
+		return isSibilantFricative(rs[0]) && isStop(rs[1]) && rs[2] == 'l' && rs[3] == 'y'
+	}
+	return false
+}
+
+// validInitialTriple implements §3.3 for a three-consonant word-initial
+// conjunct.
+func validInitialTriple(a, b, c rune) bool {
+	isLiquid := func(r rune) bool { return r == 'l' || r == 'r' }
+	voiced := func(r rune) bool { return strings.ContainsRune("bdgvḑzžẓj", r) }
+	sameVoicing := func(x, y rune) bool { return voiced(x) == voiced(y) }
+	nonSibilantFricative := func(r rune) bool { return strings.ContainsRune("fvţḑçxļh", r) }
+
+	// §3.3.4: a sibilant fricative or ç- plus a same-voiced stop takes a
+	// liquid or approximant; plus a nasal, it takes whatever semi-
+	// consonant that nasal admits in a pair.
+	if isSibilantFricative(a) || a == 'ç' {
+		if isStop(b) && sameVoicing(a, b) {
+			return strings.ContainsRune("rlřwy", c)
+		}
+		return isNasal(b) && (c == 'w' || c == 'y') && validInitialPair(b, c)
+	}
+	// §3.3.6: the same shape for a sibilant affricate.
+	if isSibilantAffricate(a) {
+		if isStop(b) && sameVoicing(a, b) {
+			return strings.ContainsRune("rlřwy", c)
+		}
+		return isNasal(b) && (c == 'w' || c == 'y') && validInitialPair(b, c)
+	}
+	// §3.3.5: the h- triples are an explicit closed list.
+	if a == 'h' {
+		switch string([]rune{a, b, c}) {
+		case "hlw", "hrw", "hmw", "hnw", "hmy", "hny", "hll", "hrr", "hmm", "hnn":
+			return true
+		}
+		return false
+	}
+	// §3.3.7: fl- and ţl- take -w or -y. Any other fricative-plus-liquid
+	// triple is intervocalic only.
+	if a == 'f' || a == 'ţ' {
+		return b == 'l' && (c == 'w' || c == 'y')
+	}
+	// §3.3.8: the x- triples are an explicit closed list.
+	if a == 'x' {
+		switch {
+		case (b == 'p' || b == 't') && strings.ContainsRune("lrwy", c):
+			return true
+		case (b == 'm' || b == 'n') && (c == 'w' || c == 'y'):
+			return true
+		case (b == 'c' || b == 'č') && c == 'w':
+			return true
+		}
+		return false
+	}
+	if !isStop(a) {
+		return false
+	}
+	// A stop other than t/d, plus a same-voiced sibilant fricative, plus
+	// anything that may follow that sibilant in a pair.
+	if !isDentalStop(a) && isSibilantFricative(b) && sameVoicing(a, b) {
+		if validInitialPair(b, c) {
+			return true
+		}
+	}
+	// Any stop plus a same-voiced non-sibilant fricative other than x,
+	// then only the approximant that fricative admits.
+	if nonSibilantFricative(b) && b != 'x' && sameVoicing(a, b) {
+		if (c == 'w' || c == 'y') && validInitialPair(b, c) {
+			return true
+		}
+	}
+	// §3.3.1: stop + l/r takes -w or -y.
+	if isLiquid(b) && (c == 'w' || c == 'y') {
+		return true
+	}
+	// §3.3.2: voiceless stop + ç takes a nasal.
+	if b == 'ç' && !voiced(a) && isNasal(c) {
+		return true
+	}
+	// §3.3.3: p-/k- with f or ţ takes -y or -w; pļ- and tļ- take -y.
+	if (a == 'p' || a == 'k') && (b == 'f' || b == 'ţ') && (c == 'y' || c == 'w') {
+		return true
+	}
+	if (a == 'p' || a == 't') && b == 'ļ' && c == 'y' {
+		return true
+	}
+	return false
+}
+
+// validInitialPair implements the §3.2 sub-rules for a two-consonant
+// word-initial conjunct.
+func validInitialPair(a, b rune) bool {
+	isLiquid := func(c rune) bool { return c == 'l' || c == 'r' }
+	isApprox := func(c rune) bool { return c == 'w' || c == 'y' || c == 'ř' }
+	// "Same voicing" is a voicing class, not a place: p and ţ are both
+	// voiceless and so may pair, while p and ḑ may not.
+	voiced := func(c rune) bool { return strings.ContainsRune("bdgvḑzžẓj", c) }
+	sameVoicing := func(x, y rune) bool { return voiced(x) == voiced(y) }
+	// §3.2 pairs a stop with a non-sibilant fricative only across a
+	// place difference; the labials, dentals and velars each rule out
+	// their own fricative.
+	samePlace := func(x, y rune) bool { return voicedOf(x) != 0 && voicedOf(x) == voicedOf(y) }
+
+	switch {
+	// §3.2.9: word-initial l- and r- take only -w or -y.
+	case isLiquid(a):
+		return b == 'w' || b == 'y'
+	// §3.2.8: m- and n- take a liquid or an approximant; ň- excludes -y and -ř.
+	case isNasal(a):
+		if a == 'ň' {
+			return isLiquid(b) || b == 'w'
+		}
+		return isLiquid(b) || isApprox(b)
+	// §3.2.7: h- takes -l, -r, -m, -n or -w.
+	case a == 'h':
+		return isLiquid(b) || b == 'm' || b == 'n' || b == 'w'
+	// §3.2.1: a sibilant fricative takes any same-voiced consonant except
+	// another sibilant fricative, -ļ and -h; plus any nasal, liquid,
+	// approximant or -v regardless of voicing.
+	case isSibilantFricative(a):
+		if isNasal(b) || isLiquid(b) || isApprox(b) || b == 'v' {
+			return true
+		}
+		return sameVoicing(a, b) && !isSibilantFricative(b) && b != 'ļ' && b != 'h'
+	// §3.2.2: a sibilant affricate takes liquids, nasals, -w, same-voiced
+	// stops, same-voiced non-sibilant fricatives other than -ļ, and -v.
+	case isSibilantAffricate(a):
+		if isLiquid(b) || isNasal(b) || b == 'w' || b == 'v' {
+			return true
+		}
+		if isSibilantFricative(b) || isSibilantAffricate(b) || b == 'y' || b == 'ļ' {
+			return false
+		}
+		return sameVoicing(a, b)
+	// §3.2.3 and §3.2.4: the two dorsal fricatives have explicit lists.
+	case a == 'x':
+		return strings.ContainsRune("ptcčmnlrw", b)
+	case a == 'ç':
+		return strings.ContainsRune("ptcčkmnňlrřw", b)
+	// §3.2.5: f, v, ţ and ḑ take any liquid, approximant or nasal, plus
+	// same-voiced stops and affricates.
+	case a == 'f' || a == 'v' || a == 'ţ' || a == 'ḑ':
+		if isLiquid(b) || isApprox(b) || isNasal(b) {
+			return true
+		}
+		return (isStop(b) || isSibilantAffricate(b)) && sameVoicing(a, b)
+	// §3.2.6: ļ- takes a voiceless stop or affricate, a nasal, -w or -y.
+	case a == 'ļ':
+		return strings.ContainsRune("ptkcč", b) || isNasal(b) || b == 'w' || b == 'y'
+	// §3.2: a stop takes any liquid or approximant; a same-voiced sibilant
+	// fricative; or a same-voiced non-sibilant fricative at a different
+	// place of articulation. The kļ and initial-nasal exceptions follow.
+	case isStop(a):
+		if isLiquid(b) || isApprox(b) {
+			return true
+		}
+		if isNasal(b) {
+			// Bilabial and dental stops cannot be followed by a nasal;
+			// velar stops take -m or -n.
+			return isVelarStop(a) && (b == 'm' || b == 'n')
+		}
+		if b == 'ļ' {
+			return a != 'k'
+		}
+		if isSibilantFricative(b) {
+			// Only the labials and velars take a sibilant; §3.2 excludes
+			// the dentals (*ts, *dz would clash with the affricates).
+			return !isDentalStop(a) && sameVoicing(a, b)
+		}
+		return sameVoicing(a, b) && !samePlace(a, b)
+	}
+	return false
+}
