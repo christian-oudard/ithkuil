@@ -175,7 +175,57 @@ several diphthongs, so no phonological conditioning accounts for it.
 The minority form is not rare enough to dismiss as a slip, and -ou-
 inverts the ratio outright: 12 y against 7 w.
 
-### G4. Most bias adjuncts are not permissible words
+### G4. The NOMIC increment reproduces the Obv and PVS alternate forms
+
+§4.6 gives each of the eleven referential categories three Effect
+forms, and gives Obv and PVS a second form apiece "used in Referential
+Affixes (see Sec. 4.6.5) to avoid ambiguity with geminated C_A forms":
+
+| | NEUTRAL | BENEFICIAL | DETRIMENTAL |
+|---|---|---|---|
+| **Obv** | ll / **lç** | rr / **rç** | řř / **řç** |
+| **PVS** | mm / **mç** | nn / **nç** | ňň / **ňç** |
+
+The same section then says the NOMIC category is shown by adding
+**-ç-** to a referent. Every one of the six alternates is what that
+produces:
+
+| Alternate | Also reads as |
+|-----------|---------------|
+| lç Obv/NEU | 1m/NEU `l` + NOMIC |
+| rç Obv/BEN | 1m/BEN `r` + NOMIC |
+| řç Obv/DET | 1m/DET `ř` + NOMIC |
+| mç PVS/NEU | ma/NEU `m` + NOMIC |
+| nç PVS/BEN | 2p/NEU `n` + NOMIC |
+| ňç PVS/DET | pa/NEU `ň` + NOMIC |
+
+`mç` is the worst of them, because §4.6 does not merely permit that
+reading, it prescribes it: "The IPa and IPi Impersonal categories …
+will instead be shown by adding the NOMIC affix above to the **ma** or
+**mi** affixes." So in a referential affix, `mç` is both "whatever"
+(PVS) and "one/someone" (ma + NOMIC).
+
+Nothing rules the second reading out. §4.6.5 bars exactly one
+increment — "a Referential affix cannot add the ABSTRACT Perspective
+increments -**w** or -**y**" — and says nothing about NOMIC.
+§4.6.4 does bar NOMIC, but only for Specialized Personal-Reference
+Roots, which are a different construction. The alternates were
+introduced to remove an ambiguity and introduce a different one.
+
+### G5. The AGGLOMERATIVE increment is ambiguous with 2p/BEN plus AGGLOMERATIVE
+
+AGGLOMERATIVE is shown by **-ļ-** or **-tļ-**. The second form exists
+because a lone ļ has nowhere legal to stand — §3.1 bars it
+word-initially and §5.1 bars it intervocalically — so `-tļ-` is the
+repair.
+
+But `t` is itself a referent, 2p/BEN. A referential affix ending
+`-tļ` is therefore either *X* + AGGLOMERATIVE, or *X* + 2p/BEN +
+AGGLOMERATIVE: `mtļ` is "he and co." or "he and you(pl., beneficial)
+and co." Both readings are phonotactically fine and both are built by
+rules the same paragraph gives.
+
+### G6. Most bias adjuncts are not permissible words
 
 A bias adjunct (§4.7) is a bare consonant conjunct standing alone as a
 word — a shape §1.4 and §3-§4 never contemplate, since every rule
@@ -218,7 +268,7 @@ permitted nor prohibited.
 Four more — CMD `pļļ`, EXA `kçç`, OPT `ççk` and STU `ļļč` — are the
 §2.24 geminates of G1 above.
 
-### G5. §4.7's stated design principle contradicts its own table
+### G7. §4.7's stated design principle contradicts its own table
 
 §4.7 says each bias adjunct is "phonologically structured to contain
 continuant and sonorant consonants so that … they may be pronounced in
@@ -233,7 +283,7 @@ The very next sentence concedes the point in passing — "those ending in
 a voiceless stop or voiceless affricate may aspirate or even
 ejectivize" — without reconciling it with the claim it follows.
 
-### G6. §1.2.1's vowel inventory does not cover the conjuncts the morphology uses
+### G8. §1.2.1's vowel inventory does not cover the conjuncts the morphology uses
 
 §1.2.1 gives ten permissible diphthongs — ai, ei, ëi, oi, ui, au, eu,
 ëu, ou, iu — and describes every other two-vowel sequence as a
@@ -243,3 +293,16 @@ ejectivize" — without reconciling it with the claim it follows.
 diphthong, and the tables never say how many syllables these forms
 carry — which matters, because syllable count is what selects the
 formative's Relation in Slot X.
+
+### G9. The referential table switches romanization mid-document
+
+§1.3 sanctions alternate spellings — **ḑ** may be written **ḍ** or
+**đ** — and the document uses **ḑ** everywhere it appears: the §1.1
+phoneme chart, the §3.6 Ca substitutions, the affix tables, the
+lexicon. The one exception is the §4.6 referential table, which gives
+the mi/DETRIMENTAL form as **đ**.
+
+Nothing is wrong with the form; it is the only place the alternate is
+exercised, and a reader working through the tables meets a character
+that appears nowhere else and is absent from the §1.1 inventory as
+printed.
