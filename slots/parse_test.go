@@ -39,6 +39,30 @@ func TestParse_SlotVGlottalBothPlacements(t *testing.T) {
 	}
 }
 
+// TestParse_RejectsWordFinalGlottal covers the §3.6.2 end-of-Slot-V
+// marker with nothing after it. SplitConjuncts hands a word-final
+// glottal back as a bare "'" conjunct, which used to have its leading
+// glottal stripped like any other "'C" and be recorded as an affix
+// with an empty Cs. An affix is its Cs, so that value was not a word
+// at all: it re-rendered to different text and no encoding could
+// represent it.
+func TestParse_RejectsWordFinalGlottal(t *testing.T) {
+	// Shortcut Cc, so the Slot V end-marker path is the one taken.
+	for _, in := range []string{"warwä'", "yúřku'", "wasahňe'"} {
+		if l, err := Parse(in); err == nil {
+			t.Errorf("Parse(%q) succeeded with Slot V %+v, want an error", in, l.SlotV)
+		}
+	}
+	// The same marker followed by a real Cs still parses.
+	l, err := Parse("wala'na")
+	if err != nil {
+		t.Fatalf("Parse(wala'na): %v", err)
+	}
+	if len(l.SlotV) != 1 || l.SlotV[0].Cs != "n" {
+		t.Errorf("Parse(wala'na): Slot V = %+v, want one affix with Cs \"n\"", l.SlotV)
+	}
+}
+
 // TestToGrammar_RejectsNonVxVowel checks that a vowel outside the §3.5
 // table is a parse error rather than a silently invented degree 0.
 func TestToGrammar_RejectsNonVxVowel(t *testing.T) {

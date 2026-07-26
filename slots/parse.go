@@ -199,7 +199,10 @@ func parseVowelInitial(l *Layout, conjs []string, i int) error {
 	// slot marker. After Slot V (or immediately, if absent), continue
 	// with Slot VII / VIII / IX.
 	if isShortcutCc(l.Cc) {
-		newConjs, newI := parseShortcutSlotV(l, conjs, i)
+		newConjs, newI, err := parseShortcutSlotV(l, conjs, i)
+		if err != nil {
+			return err
+		}
 		if hadGlottalVv && len(l.SlotV) < 2 {
 			return fmt.Errorf("shortcut form: Vv glottal-stop requires ≥2 Slot V affixes (got %d)", len(l.SlotV))
 		}
@@ -305,7 +308,7 @@ func parseFromCa(l *Layout, conjs []string, i int, allowSlotV bool) error {
 // contiguous run of (Vx, Cs) pairs, no Slot V is recorded and the
 // caller picks up at the original position — the shortcut form
 // simply had no Slot V.
-func parseShortcutSlotV(l *Layout, conjs []string, i int) ([]string, int) {
+func parseShortcutSlotV(l *Layout, conjs []string, i int) ([]string, int, error) {
 	var collected []AffixChunk
 	j := i
 	for j+1 < len(conjs) {
@@ -320,12 +323,18 @@ func parseShortcutSlotV(l *Layout, conjs []string, i int) ([]string, int) {
 		// first placement won't do ("ë'u", and "a'a" for a single
 		// vowel). Both mean the same thing.
 		if strings.HasPrefix(cs, "'") {
+			// A bare "'" conjunct is a word-final glottal: the marker
+			// is there but the Cs it should precede is not. An affix
+			// is its Cs, so there is no affix to record.
+			if cs == "'" {
+				return nil, 0, fmt.Errorf("Slot V end-marker glottal after Vx %q has no Cs", vx)
+			}
 			collected = append(collected, AffixChunk{Vx: vx, Cs: cs[1:]})
 			l.SlotV = append(l.SlotV, collected...)
 			out := make([]string, 0, len(conjs))
 			out = append(out, conjs[:j]...)
 			out = append(out, conjs[j+2:]...)
-			return out, j
+			return out, j, nil
 		}
 		if stripped := stripVvGlottal(vx); stripped != vx {
 			collected = append(collected, AffixChunk{Vx: stripped, Cs: cs})
@@ -333,13 +342,13 @@ func parseShortcutSlotV(l *Layout, conjs []string, i int) ([]string, int) {
 			out := make([]string, 0, len(conjs))
 			out = append(out, conjs[:j]...)
 			out = append(out, conjs[j+2:]...)
-			return out, j
+			return out, j, nil
 		}
 		collected = append(collected, AffixChunk{Vx: vx, Cs: cs})
 		j += 2
 	}
 	// No glottal-marked Cs found → not a Slot V context after all.
-	return conjs, i
+	return conjs, i, nil
 }
 
 // isMovedCn reports whether c is a Pattern-1 Cn consonant cluster
