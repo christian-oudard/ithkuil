@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Build the SQLite data store from data/data.json.
 
-Usage (from repo root):
-    python3 data/build_db.py [--lang LANG] [-o PATH]
+Usage:
+    python3 tools/build_db.py [--lang LANG] [-o PATH]
 
 LANG selects which data file to read: data/data.LANG.json (default: data/data.json).
 
@@ -15,6 +15,8 @@ import json
 import os
 import sqlite3
 from pathlib import Path
+
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 
 def default_db_path() -> Path:
@@ -144,9 +146,8 @@ def main() -> None:
                         help="output path (default: $XDG_DATA_HOME/ithkuil/data.db)")
     args = parser.parse_args()
 
-    data_dir = Path(__file__).parent
     suffix = f".{args.lang}" if args.lang else ""
-    data_path = data_dir / f"data{suffix}.json"
+    data_path = DATA_DIR / f"data{suffix}.json"
     args.output.parent.mkdir(parents=True, exist_ok=True)
     build(data_path, args.output)
 

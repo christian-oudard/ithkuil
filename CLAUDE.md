@@ -7,20 +7,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Enter the dev shell first, then use `go` directly:
 
 ```bash
-nix develop              # Provides go and python3 on PATH with CGO_ENABLED=0
-python3 data/build_db.py # Build the data store (needed before the CLI runs)
-go install ./cmd/...     # Drop binaries into $GOBIN
-go build ./...           # Typecheck and compile everything; writes no binaries
-go test ./...            # Run the full test suite
+nix develop               # Provides go and python3 on PATH with CGO_ENABLED=0
+python3 tools/build_db.py # Build the data store (needed before the CLI runs)
+go install ./cmd/...      # Drop binaries into $GOBIN
+go build ./...            # Typecheck and compile everything; writes no binaries
+go test ./...             # Run the full test suite
+tools/test.sh             # Test suite with cross-package coverage summary
 ```
 
 `CGO_ENABLED=0` is set in `flake.nix` because `segmentio/asm` (transitive from the MCP SDK) tries to invoke gcc otherwise; the pure-Go fallback is used.
 
-Nothing generated belongs in the source tree. Use `go install`, never
-`go build ./cmd/ithkuil`, which would drop a binary at the repo root. The
-`.gitignore` is one line, and should stay that way: new generated output
-goes to `$XDG_DATA_HOME/ithkuil/` (see `store.DefaultPath`), to a path given
-on the command line, or to `local/` for anything local-only.
+There is no `.gitignore`, and the repo should stay that way. Everything in the
+tree is source; everything else lives elsewhere. Generated output goes to
+`$XDG_DATA_HOME/ithkuil/` (see `store.DefaultPath`) or to a path given on the
+command line, and downloaded reference material goes there too. Use
+`go install`, never `go build ./cmd/ithkuil`, which would drop a binary at the
+repo root.
 
 ## What This Project Is
 
@@ -67,14 +69,21 @@ Command-line entrypoints under `cmd/`:
 - `Affix` stores `(Type, Degree)` plus the consonant cluster; never the surface vowel string.
 - Grammatical values use standard Ithkuil abbreviations (3-letter uppercase): THM, INS, ABS, STA, DYN, BSC, CTE, etc.
 - Data comes from the store at `store.DefaultPath()`; pass `--data FILE` on the CLI to point elsewhere.
-- Reference implementations in `local/reference/`: `IthkuilGloss/` (Kotlin), `mamkait/` (Haskell).
+- Reference implementations, cloned outside the repo to `$XDG_DATA_HOME/ithkuil/reference/`: `IthkuilGloss/` (Kotlin), `mamkait/` (Haskell).
 
 ## Data Files
 
 - `data/data.json` - Source of truth for the store: roots, affixes, and grammar tables.
-- `data/build_db.py` - Builds the SQLite store from `data.json`. Writes to `$XDG_DATA_HOME/ithkuil/data.db` (`~/.local/share/ithkuil/data.db` when unset), which is what `store.DefaultPath()` returns in Go. `-o PATH` overrides.
-- `data/sync_lexicon.py` - Refreshes the roots/affixes sections of `data.json` (and the TSV mirrors kept for diff visibility) from the upstream community spreadsheet.
-- `discord_archive/` - Scrapers for the community Discord. Output goes to `$XDG_DATA_HOME/ithkuil/discord/`; see `discord_archive/paths.py`.
+- `data/gen_grammar.go` - `//go:build ignore` one-shot that printed the grammar section of `data.json`. Never compiled by `go build`, so assume it has rotted.
+
+## Tools
+
+Everything under `tools/` is non-Go tooling. Go tools stay with the code they belong to.
+
+- `tools/build_db.py` - Builds the SQLite store from `data/data.json`. Writes to `$XDG_DATA_HOME/ithkuil/data.db` (`~/.local/share/ithkuil/data.db` when unset), which is what `store.DefaultPath()` returns in Go. `-o PATH` overrides.
+- `tools/sync_lexicon.py` - Refreshes the roots/affixes sections of `data.json` (and the TSV mirrors kept for diff visibility) from the upstream community spreadsheet.
+- `tools/test.sh` - Go test suite with a cross-package coverage summary. `COVERAGE_THRESHOLD=NN` fails below a floor; `SHOW_UNCOVERED=1` lists functions under 100%.
+- `tools/discord_archive/` - Scrapers for the community Discord. Output goes to `$XDG_DATA_HOME/ithkuil/discord/`; see its `paths.py`.
 
 ## Grammar Reference
 
@@ -82,7 +91,7 @@ Command-line entrypoints under `cmd/`:
 - `grammar_reference/affixes_reference.md` - All 527 affixes with gradient types and 9 degrees
 - `grammar_reference/phonotactics.md` - Detailed consonant cluster rules
 - `grammar_reference/v3_script.md`, `v4_script.md`, `v4_script_pdf.md` - Writing system reference
-- `local/grammar_reference_pdf/` - Source PDFs, not committed. Put any intermediate extraction output (html, per-page pdf) under `local/` too.
+- Source PDFs and any intermediate extraction output (html, per-page pdf) go outside the repo, under `$XDG_DATA_HOME/ithkuil/reference/`.
 
 The Ithkuil writing system is documented but not implemented on `main`. The
 earlier Python attempts and the extracted reference figures they were checked

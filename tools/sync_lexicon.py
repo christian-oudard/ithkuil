@@ -22,6 +22,8 @@ import unicodedata
 import urllib.request
 from pathlib import Path
 
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+
 SHEET_ID = "1JdaG1PaSQJRE2LpILvdzthbzz1k_a0VT86XSXouwGy8"
 ROOTS_URL = (
     f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq"
@@ -240,8 +242,7 @@ def write_data(roots: list[dict], affixes: list[dict], path: Path) -> int:
 
 
 def main() -> int:
-    data_dir = Path(__file__).parent
-    data_path = data_dir / "data.json"
+    data_path = DATA_DIR / "data.json"
 
     print("Fetching roots from upstream sheet...")
     roots = parse_roots(fetch(ROOTS_URL))
@@ -252,8 +253,8 @@ def main() -> int:
     affixes = merge_affixes_from_data(affixes, data_path)
     print(f"  {len(affixes)} affix entries")
 
-    write_roots_tsv(roots, data_dir / "roots.tsv")
-    write_affixes_tsv(affixes, data_dir / "affixes.tsv")
+    write_roots_tsv(roots, DATA_DIR / "roots.tsv")
+    write_affixes_tsv(affixes, DATA_DIR / "affixes.tsv")
     version = write_data(roots, affixes, data_path)
     print(f"Wrote roots.tsv, affixes.tsv, data.json (version v{version})")
     return 0
