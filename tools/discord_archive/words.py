@@ -8,8 +8,13 @@ import paths
 SRC = pathlib.Path(paths.extracted_dir()) / "ithkuil_messages.json"
 OUT = pathlib.Path(paths.extracted_dir()) / "v4_words.txt"
 
-# Only the two channels that are unambiguously v4.
-V4_CHANNELS = ("v4-only_700825122017378374", "works-v4_725787403163271189")
+# Which channels count as v4. The original server ran every version of
+# the language side by side, so only its two v4 channels qualify. The
+# study group was founded after v4 won, so all of it does.
+V4_CHANNELS = {
+    "ithkuil": ("v4-only_700825122017378374", "works-v4_725787403163271189"),
+    "study_group": None,  # every channel
+}
 
 # The morphology we implement is v1.3.1, published in 2023, and the
 # channels predate it by three years. Older messages are written in
@@ -28,11 +33,24 @@ data = json.load(open(SRC, encoding="utf-8"))
 if isinstance(data, dict):
     data = [m for v in data.values() for m in v]
 
+def in_scope(m):
+    if m.get("guild") not in V4_CHANNELS:
+        return False
+    allowed = V4_CHANNELS[m["guild"]]
+    return allowed is None or m.get("channel") in allowed
+
+
 counts = collections.Counter()
 kept_msgs = 0
 dropped_msgs = 0
+bot_msgs = 0
 for m in data:
-    if m.get("channel") not in V4_CHANNELS:
+    if not in_scope(m):
+        continue
+    # Bot output is another implementation's opinion, not attested
+    # usage, and the dictionary bots post bare roots that are not words.
+    if m.get("bot"):
+        bot_msgs += 1
         continue
     if m.get("date", "") < SINCE:
         dropped_msgs += 1
@@ -51,7 +69,8 @@ for m in data:
             counts[tok] += 1
 
 OUT.write_text("\n".join(w for w, _ in counts.most_common()), encoding="utf-8")
-print(f"messages scanned: {kept_msgs} (dropped {dropped_msgs} from before {SINCE})")
+print(f"messages scanned: {kept_msgs} "
+      f"(dropped {dropped_msgs} from before {SINCE}, {bot_msgs} from bots)")
 print(f"distinct candidate words: {len(counts)}")
 print(f"total tokens: {sum(counts.values())}")
 print("top 15:", [w for w, _ in counts.most_common(15)])

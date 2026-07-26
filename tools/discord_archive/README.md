@@ -99,6 +99,19 @@ whether what we emit is a legal word at all, and whether our canonical
 spelling matches what a human wrote. Only the first is a defect; the
 last is a style difference, because the renderer canonicalizes.
 
+## What counts as attested usage
+
+`words.py` decides what reaches the corpus.
+
+Channels, per server. The original ran every version of the language
+side by side, so only `#v4-only` and `#works-v4` qualify. The study
+group was founded after v4 won, so all of it does.
+
+Bots are excluded. Their output is another implementation's opinion
+rather than attested usage, and the dictionary bots post bare roots,
+which are not words and cannot parse as formatives. `IthGlyph` alone
+accounts for most of `#spam-bot-talk`.
+
 ## Why the corpus starts at 2023
 
 `words.py` drops messages from before 2023-01-01. The morphology we

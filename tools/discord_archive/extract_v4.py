@@ -8,8 +8,6 @@ import sys
 
 import paths
 
-ARCHIVE_DIR = str(paths.guild_dir())
-
 # Ithkuil-specific characters
 ITHKUIL_CHARS = set("ţřšžňļḑçëüöäâîûôẓ")
 
@@ -77,50 +75,60 @@ def extract_grammar_discussions(messages):
             })
     return discussions
 
+def guild_dirs():
+    """Every mirrored guild, as (guild name, path)."""
+    root = paths.mirror_dir()
+    for d in sorted(os.listdir(root)):
+        if (root / d).is_dir():
+            yield d.rsplit("_", 1)[0], root / d
+
+
 def main():
     all_pairs = []
     all_grammar = []
     all_ithkuil_messages = []
 
-    channel_dirs = sorted(os.listdir(ARCHIVE_DIR))
+    for guild, guild_path in guild_dirs():
+        for ch_dir_name in sorted(os.listdir(guild_path)):
+            ch_path = os.path.join(guild_path, ch_dir_name)
+            if not os.path.isdir(ch_path):
+                continue
+            if ch_dir_name.startswith("_"):
+                continue
 
-    for ch_dir_name in channel_dirs:
-        ch_path = os.path.join(ARCHIVE_DIR, ch_dir_name)
-        if not os.path.isdir(ch_path):
-            continue
-        if ch_dir_name.startswith("_"):
-            continue
+            messages = extract_messages(ch_path)
+            if not messages:
+                continue
 
-        messages = extract_messages(ch_path)
-        if not messages:
-            continue
+            # Translation pairs
+            pairs = extract_translation_pairs(messages)
+            for p in pairs:
+                p["guild"], p["channel"] = guild, ch_dir_name
+            all_pairs.extend(pairs)
 
-        # Translation pairs
-        pairs = extract_translation_pairs(messages)
-        for p in pairs:
-            p["channel"] = ch_dir_name
-        all_pairs.extend(pairs)
+            # Grammar discussions
+            grammar = extract_grammar_discussions(messages)
+            for g in grammar:
+                g["guild"], g["channel"] = guild, ch_dir_name
+            all_grammar.extend(grammar)
 
-        # Grammar discussions
-        grammar = extract_grammar_discussions(messages)
-        for g in grammar:
-            g["channel"] = ch_dir_name
-        all_grammar.extend(grammar)
+            # All messages containing Ithkuil text
+            for m in messages:
+                content = m.get("content", "")
+                if has_ithkuil(content) and len(content.strip()) > 5:
+                    all_ithkuil_messages.append({
+                        "date": m.get("timestamp", "")[:10],
+                        "author": m.get("author", {}).get("username", "?"),
+                        "bot": bool(m.get("author", {}).get("bot")),
+                        "content": content,
+                        "guild": guild,
+                        "channel": ch_dir_name,
+                        "message_id": m.get("id", ""),
+                    })
 
-        # All messages containing Ithkuil text
-        for m in messages:
-            content = m.get("content", "")
-            if has_ithkuil(content) and len(content.strip()) > 5:
-                all_ithkuil_messages.append({
-                    "date": m.get("timestamp", "")[:10],
-                    "author": m.get("author", {}).get("username", "?"),
-                    "content": content,
-                    "channel": ch_dir_name,
-                    "message_id": m.get("id", ""),
-                })
-
-        if pairs or grammar:
-            print(f"{ch_dir_name}: {len(pairs)} translations, {len(grammar)} grammar discussions, {len(messages)} total msgs")
+            if pairs or grammar:
+                print(f"{guild}/{ch_dir_name}: {len(pairs)} translations, "
+                      f"{len(grammar)} grammar discussions, {len(messages)} total msgs")
 
     # Save outputs
     out_dir = str(paths.extracted_dir())
