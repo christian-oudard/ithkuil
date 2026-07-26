@@ -22,6 +22,17 @@ The ASCII phonetic form is a notation-only codec on top of the Unicode form (no 
 
 Every arm has a `format → Formative → format` round-trip identity, modulo canonicalization. Non-canonical inputs parse successfully but re-encode to the canonical equivalent. A given Formative has exactly one canonical form in each format. The system does not preserve incidental user choices (e.g. shortcut form vs. expanded form when both are valid). Equivalent inputs are folded to one canonical output, by design.
 
+## Canonical surface
+
+A Formative has exactly one canonical surface. The grammar permits several equivalent spellings of the same word; the system chooses among them deterministically, with no options to flip:
+
+- The §3.8.1.2 Cn→Ca shortcut is used whenever its conditions hold.
+- Otherwise the §3.2 Cc shortcut is used whenever the slot grammar allows it. It is unavailable to framed-verbal formatives, whose antepenultimate stress needs a third syllable that the shortened form does not have.
+- The §3.9.1 moved-glottal spelling is used for cases 37-52.
+- Default slot values are elided.
+
+Parsing accepts the non-canonical spellings too; they simply re-render as the canonical one.
+
 ## Cross-format conversion
 
 Any format-to-format trip (e.g. gloss → Unicode surface) is the composition of two single-arm trips through the in-memory center. There is no direct format-to-format converter and no need for one. N arms give N² round-trip pairs from N converter pairs.

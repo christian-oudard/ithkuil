@@ -27,10 +27,14 @@ Go packages at the repo root:
 
 - `phonology/` - 31 consonants, 9 vowels, vowel form table (4 series x 9 forms)
 - `grammar/` - All morphological types. `Formative` is the central struct (Concat, Root, SlotV, SlotVI, SlotVII, SlotVIII, Final, SentenceStarter). `Root` and `Final` are sum-type interfaces; see `root.go` and `final.go`.
-- `parse/` - Conjunct splitting and slot-by-slot parsing primitives. Contains all lookup tables (Vv, Vr, Vc, Vn, Cn).
+- `surface/` - Pure rune-level work, no grammatical knowledge: `Strip`/`Apply` for stress diacritics, `SplitConjuncts`/`JoinConjuncts` for vowel/consonant runs, `MergeGlottalVowels`, vowel classification. Also `InputState` and `FromASCII`/`ToASCII` for the digraph notation.
+- `slots/` - `Layout` is the slot-labelled surface form: one raw conjunct per string field (Cc, Vv, Cr, Vr, Ca, Vn, Cn, Vc), plus affix pairs and observed stress. `Parse`/`Render` convert between surface text and `Layout` by shape alone; `ToGrammar`/`FromGrammar` translate `Layout` ↔ `Formative` through the lookup tables. All canonical-form choices (which shortcut wins, moved-glottal, default elisions) live in `FromGrammar`.
+- `parse/` - Grammatical decoders for individual slot positions, plus all lookup tables (Vv, Vr, Vc, Vn, Cn). Nothing text-level.
 - `allomorph/` - Slot VI Ca complex construction and parsing. Pre-generates all Ca forms from component tables with allomorphic substitutions, stores bidirectional lookup.
-- `fullparse/` - Turns surface text into a `grammar.Formative` (handles stress detection, returns errors).
-- `render/` - Renders a `grammar.Formative` back to surface text. All encoding decisions (shortcut form, default-value elision, stress placement, etc.) live here, not in `grammar`.
+- `semantics/` - Context-dependent labels derived from grammar values: Mood vs CaseScope, V_N vs V_H, the Vn category for a given Cn. Never looks at surface text.
+- `fullparse/` - Turns surface text into a `grammar.Formative` (handles stress detection, returns errors). This is `slots.Parse` ∘ `slots.ToGrammar`.
+- `render/` - Renders a `grammar.Formative` back to surface text: `slots.FromGrammar` ∘ `slots.Render`.
+- `serialize/` - Compact binary encoding of parsed tokens.
 - `gloss/` - Human-readable morphological glossing.
 - `validation/` - Phonotactic constraint checking (cluster lengths, vowel sequences, stress).
 - `tokenize/` - Classifies words in a sentence into formatives, referentials, bias adjuncts, etc.
@@ -39,7 +43,8 @@ Go packages at the repo root:
 - `numbers/` - Centesimal/base-100 number system.
 - `compose/` - Builds formatives from grammatical specifications + lexicon search helpers.
 - `view/` - Presentation layer for parsed tokens: the per-token type tag (`view.Type`) plus the phonetic-segment + glossary breakdown (`view.Segments`, `view.Headword`, `view.Glossary`) consumed by the analyze CLI and MCP server.
-- `lexicon/` - Loads roots and affixes from JSON; `LoadDefault()` returns the embedded lexicon.
+- `store/` - Read-only SQLite access to `data/data.db` (roots, affixes, grammar tables).
+- `lexicon/` - Roots and affixes in memory. `LoadFromStore(*store.Store)` is the normal path; `Load(path)` reads the JSON source directly (used by tests).
 
 Command-line entrypoints under `cmd/`:
 
@@ -54,13 +59,14 @@ Command-line entrypoints under `cmd/`:
 - `Final` is a sum-type interface covering the various case/illocution endings (UnframedNominal, UnframedVerbal, FramedVerbal, etc.).
 - `Affix` stores `(Type, Degree)` plus the consonant cluster; never the surface vowel string.
 - Grammatical values use standard Ithkuil abbreviations (3-letter uppercase): THM, INS, ABS, STA, DYN, BSC, CTE, etc.
-- `lexicon.LoadDefault()` returns the embedded lexicon; pass `-lex DIR` on the CLI to override with a local copy.
+- Data comes from `data/data.db`; pass `--data FILE` on the CLI to point elsewhere.
 - Reference implementations in `reference/` (gitignored): `IthkuilGloss/` (Kotlin), `mamkait/` (Haskell).
 
 ## Data Files
 
-- `data/roots.json` / `data/affixes.json` - Lexicon, also embedded into the binaries via `//go:embed`.
-- `data/convert_lexicon.py` / `data/update_affixes.py` - Maintenance scripts.
+- `data/data.db` - SQLite store read at runtime. Gitignored; build it with `data/build_db.py`.
+- `data/data.json` - Source of truth for the store: roots, affixes, and grammar tables.
+- `data/sync_lexicon.py` - Refreshes the roots/affixes sections of `data.json` (and the TSV mirrors kept for diff visibility) from the upstream community spreadsheet.
 
 ## Grammar Reference
 
