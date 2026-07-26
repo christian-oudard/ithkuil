@@ -75,3 +75,56 @@ func TestParseModular_ChainsWithVnCn(t *testing.T) {
 		t.Errorf("expected VnCnValence{MNO, ...}, got %#v", s8)
 	}
 }
+
+// TestParseModular_SpecExamples runs every worked example from the
+// §4.3 structure table. The two longest, "uhlaini" and "öhwoňó", fill
+// all four slots; they used to fail here and get picked up by the
+// formative recogniser as roots "hl" and "hw".
+func TestParseModular_SpecExamples(t *testing.T) {
+	for _, w := range []string{
+		"o", "yu", "üha", "ihwe", "yewia", "uhlaini", "uya", "öhwoňó",
+	} {
+		if _, err := ParseModular(w); err != nil {
+			t.Errorf("ParseModular(%q): %v", w, err)
+		}
+	}
+}
+
+// TestParseModular_SlotConsonants pins the §4.3 split: Slot 2 takes a
+// C_N, which carries Mood/Case-Scope, and Slot 3 takes a C_M, which is
+// only n or ň and carries none. The inventories are disjoint, so
+// neither consonant is legal in the other's slot.
+func TestParseModular_SlotConsonants(t *testing.T) {
+	// Slot 3 with a C_M: "ai" + "n" reads as an Aspect at default FAC.
+	ma, err := ParseModular("uhlaini")
+	if err != nil {
+		t.Fatalf("uhlaini: %v", err)
+	}
+	if len(ma.Content) != 3 {
+		t.Fatalf("uhlaini: Content len = %d, want 3 (slots 2, 3, 4)", len(ma.Content))
+	}
+	slot3, ok := ma.Content[1].(grammar.VnCnAspect)
+	if !ok {
+		t.Fatalf("uhlaini: slot 3 = %T, want VnCnAspect (C_M \"n\")", ma.Content[1])
+	}
+	if slot3.MoodScope != grammar.FAC {
+		t.Errorf("uhlaini: slot 3 MoodScope = %v, want FAC (C_M carries none)", slot3.MoodScope)
+	}
+	// A C_M in slot 2, and a C_N in slot 3, are both rejected.
+	for _, w := range []string{"ani", "uhlaihi"} {
+		if _, err := ParseModular(w); err == nil {
+			t.Errorf("ParseModular(%q) succeeded, want a slot-consonant rejection", w)
+		}
+	}
+}
+
+// TestParseModular_MaxTwoPairs covers the pair limit. §4.3 has exactly
+// two (V_N C) slots, so a third pair is not a modular adjunct. We used
+// to accept up to three.
+func TestParseModular_MaxTwoPairs(t *testing.T) {
+	for _, w := range []string{"uahuehuohuö", "eëyueyoaya", "aiwiuhayô"} {
+		if _, err := ParseModular(w); err == nil {
+			t.Errorf("ParseModular(%q) succeeded with three pairs, want an error", w)
+		}
+	}
+}

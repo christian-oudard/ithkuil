@@ -196,8 +196,14 @@ func ParseVnCn(vn, cn string) (grammar.SlotVIII, bool) {
 		return grammar.VnCnAspect{Aspect: asp, MoodScope: ms}, true
 	}
 
-	// Pattern 1: probe in declaration order
-	// (Valence → Phase → Effect → Level by vowel series).
+	return ParseVnPattern1(vn, ms)
+}
+
+// ParseVnPattern1 decodes a pattern-1 Vn — the non-Aspect categories —
+// against an already-decoded Mood/Case-Scope. It probes in declaration
+// order (Valence → Phase → Effect → Level), which the vowel series
+// keep distinct.
+func ParseVnPattern1(vn string, ms grammar.Mood) (grammar.SlotVIII, bool) {
 	if val, ok := ParseVnValence(vn); ok {
 		return grammar.VnCnValence{Valence: val, MoodScope: ms}, true
 	}
