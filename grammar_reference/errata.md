@@ -565,3 +565,68 @@ the remaining 271 affixes. The three that stay out:
   midpoint to the opposite extreme" and not A1's "gradient from
   zero/none to maximum". `r` is the one affix where A1's shape rule
   demonstrably picks the wrong type.
+
+### G17. §3.9.2 requires fourteen C_S increments and publishes eight
+
+The prose is explicit about the inventory:
+
+> There are two separate C_S increments for each of the seven types of
+> affix (Types-1, -2, and -3 Case-Accessor, Types-1, -2, and -3 Inverse
+> Case-Accessor, and Case-Stacking Affix), the first C_S increment
+> being used for Cases 1 through 36, while the second C_S increment is
+> used for Cases 37 through 68.
+
+Seven types times two increments is fourteen. The table below it
+supplies four pairs — **sw**/**sy**, **čw**/**čy**, **šw**/**šy** and
+**lw**/**ly** — and those eight forms are every occurrence of an
+accessor increment anywhere in the document. Six are missing, and with
+them three of the seven affix types cannot be written at all.
+
+The table is inconsistent with itself as well: its second header row
+names seven columns (Type-1/2/3 Case-Accessor, Type-1/2/3 Inverse
+Case-Accessor, Case-Stacking), while its third header row lays out only
+four `V_X = Series No. | C_S =` column pairs, which is what the data
+rows fill.
+
+What is published is otherwise sound. The V_X carries the case-group in
+its series and the case within the group in its form — four series by
+nine forms for cases 1-36, by eight for cases 37-68 with vowel-tier 8
+unused, giving exactly 36 and 32. And none of the eight increments
+collides with an ordinary affix: `sw`, `čw`, `šw`, `lw`, `sy`, `čy`,
+`šy` and `ly` are all absent from the 527-affix table, though twenty
+other two-consonant forms ending in -w or -y are taken.
+
+### G18. Every referential consonant is also an ordinary affix C_S
+
+§4.6.5 lets an otherwise-empty Slot V or VII hold a "Referential
+affix": one of the 33 referential consonant-forms with a Type-3 V_X.
+All 33 of those forms are also C_S forms of ordinary affixes — not
+most, all:
+
+| | | | |
+|---|---|---|---|
+| l = CTR | r = NEG | ř = IOR | s = CMF |
+| š = SEX | ž = CPC | n = TPF | t = DCD |
+| d = SCS | m = EFE | p = P05 | b = DEV |
+| ň = COO | k = P06 | g = EXN | z = XX3 |
+| ţ = P01 | ḑ = P02 | ẓ = PLA | f = P07 |
+| v = P08 | c = GID | č = SWR | j = X10 |
+| th = QUA | ph = PCN | kh = SBT | lç = SID |
+| rç = PEB | řç = BCD | mç = DCF | nç = MCF |
+| ňç = VRF | | | |
+
+Most of the overlap costs nothing, and that appears to be the design.
+§3.5 defines Type-3 as applying "to previous C_S V_X / V_X C_S affix
+only (or the following affix if it is the first in the slot)", so a
+Type-3 affix with nothing adjacent is already meaningless — its slot is
+free to be repurposed, which is precisely what §4.6.5 does.
+
+What the document does not settle is the cross-slot case. §4.6.5's
+trigger is "a lone Type-3 V_X C_S affix without any adjacent Type-1 or
+Type-2 affix **for it to apply to**". If Slot V holds affixes and Slot
+VII holds a single Type-3 affix, §3.5 says that affix applies to the
+previous one — which is in Slot V. So it does have something to apply
+to, and by the letter of the trigger the referential reading is
+blocked; but nothing says whether a slot boundary interrupts
+adjacency. Since the 33 collisions include such common affixes as NEG,
+DCD, SWR, COO and SEX, which reading holds decides a great many words.
