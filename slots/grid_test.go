@@ -112,9 +112,9 @@ func TestRoundTrip_Grid_ConcatShortcut(t *testing.T) {
 	// Pick a SlotVI value for each shortcut series.
 	series := []g.SlotVI{
 		g.DefaultSlotVI, // w-series-1
-		{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM},  // w-series-2
-		{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM},  // y-series-1
-		{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DEL, Essence: g.RPV},  // y-series-2
+		{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.G_, Extension: g.DEL, Essence: g.NRM}, // w-series-2
+		{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.PRX, Essence: g.NRM}, // y-series-1
+		{Configuration: g.UPX, Affiliation: g.CSL, Perspective: g.M_, Extension: g.DEL, Essence: g.RPV}, // y-series-2
 	}
 	for _, c := range concats {
 		for i, s := range series {
@@ -230,10 +230,10 @@ func TestParse_SlotV(t *testing.T) {
 // paths (special Vv with too few conjuncts, etc.).
 func TestParse_Errors(t *testing.T) {
 	cases := []string{
-		"",                // empty word
-		"a",               // too short
-		"aml",             // too short to be a complete formative
-		"ç" + "amláláu",   // double-stressed body
+		"",              // empty word
+		"a",             // too short
+		"aml",           // too short to be a complete formative
+		"ç" + "amláláu", // double-stressed body
 	}
 	for _, w := range cases {
 		if _, err := Parse(w); err == nil {

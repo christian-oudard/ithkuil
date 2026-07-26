@@ -212,12 +212,12 @@ func TestVnCategory_AllVnCategories(t *testing.T) {
 		vn, cn, want string
 	}{
 		// Aspect when no Cn or Pattern-2 Cn.
-		{"a", "w", "RTR"},  // Aspect series 1
+		{"a", "w", "RTR"}, // Aspect series 1
 		// Pattern-1 fallback chain for Vn series.
-		{"a", "hl", "MNO"}, // Valence (series 1)
-		{"ai", "h", "PCT"}, // Phase (series 2)
+		{"a", "hl", "MNO"},  // Valence (series 1)
+		{"ai", "h", "PCT"},  // Phase (series 2)
 		{"ia", "h", "BEN1"}, // Effect (series 3)
-		{"ao", "h", "MIN"}, // Level (series 4)
+		{"ao", "h", "MIN"},  // Level (series 4)
 		// Unknown Vn but valid Pattern-1 Cn → final fallback.
 		{"zz", "h", "Vn?"},
 	}

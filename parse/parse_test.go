@@ -61,7 +61,7 @@ func TestParseSlotII(t *testing.T) {
 		{"o", grammar.SlotII{Stem: grammar.S0, Version: grammar.PRC}, true},
 		{"ö", grammar.SlotII{Stem: grammar.S0, Version: grammar.CPT}, true},
 		{"á", grammar.SlotII{Stem: grammar.S1, Version: grammar.PRC}, true}, // accent stripped
-		{"ëi", grammar.SlotII{}, false},                      // form 5 reserved
+		{"ëi", grammar.SlotII{}, false},                                     // form 5 reserved
 		{"x", grammar.SlotII{}, false},
 	}
 	for _, c := range cases {

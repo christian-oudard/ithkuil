@@ -8,9 +8,9 @@ import (
 
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/view"
 	"github.com/christian-oudard/ithkuil/tokenize"
 	"github.com/christian-oudard/ithkuil/validation"
+	"github.com/christian-oudard/ithkuil/view"
 )
 
 // indentedWriter wraps an io.Writer and prefixes every non-empty
@@ -293,4 +293,3 @@ func padRunes(s string, w int) string {
 	}
 	return s + strings.Repeat(" ", w-r)
 }
-

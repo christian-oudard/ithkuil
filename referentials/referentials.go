@@ -116,8 +116,8 @@ func LookupRefC1(c string) (PersonalRef, bool) {
 // reserved for the agglomerative modifier). Greedy decomposition checks
 // these first so a leading "ll" parses as Robv/NEU rather than two l's.
 var biconsonantalForms = map[string]bool{
-	"tļ":  true,
-	"th":  true, "ph": true, "kh": true,
+	"tļ": true,
+	"th": true, "ph": true, "kh": true,
 	"ll": true, "rr": true, "řř": true,
 	"mm": true, "nn": true, "ňň": true,
 	"hl": true, "hm": true, "hn": true, "hň": true,

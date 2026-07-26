@@ -3,8 +3,8 @@ package numbers
 import (
 	"testing"
 
-	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/fullparse"
+	g "github.com/christian-oudard/ithkuil/grammar"
 )
 
 func TestRootValue_DigitsAndPowers(t *testing.T) {

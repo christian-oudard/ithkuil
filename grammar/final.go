@@ -27,13 +27,13 @@ type Final interface {
 // UnframedNominal: penultimate stress, Slot IX is Vc Case.
 type UnframedNominal struct{ Case Case }
 
-func (UnframedNominal) final()    {}
+func (UnframedNominal) final()      {}
 func (UnframedNominal) Tag() string { return "" }
 
 // FramedVerbal: antepenultimate stress, Slot IX is Vc Case.
 type FramedVerbal struct{ Case Case }
 
-func (FramedVerbal) final()    {}
+func (FramedVerbal) final()      {}
 func (FramedVerbal) Tag() string { return "ANT" }
 
 // UnframedVerbal: ultimate stress, Slot IX is Vk.

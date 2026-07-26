@@ -152,4 +152,3 @@ func isLiquidOrApproximant(r rune) bool {
 	}
 	return r == 'w' || r == 'y'
 }
-

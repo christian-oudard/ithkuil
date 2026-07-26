@@ -31,16 +31,16 @@ func TestParseParsingAdjunct(t *testing.T) {
 func TestParseParsingAdjunct_Rejected(t *testing.T) {
 	// These all look like the adjunct but don't fit the exact shape.
 	bad := []string{
-		"",      // empty
-		"'",     // single glottal
-		"''",    // empty body
-		"'i'",   // vowel "i" not assigned
-		"'ä'",   // umlaut vowel not assigned
-		"'aa'",  // two-vowel body
-		"'a",    // missing trailing glottal
-		"a'",    // missing leading glottal
-		"a",     // no glottals
-		"'a'b",  // trailing junk
+		"",     // empty
+		"'",    // single glottal
+		"''",   // empty body
+		"'i'",  // vowel "i" not assigned
+		"'ä'",  // umlaut vowel not assigned
+		"'aa'", // two-vowel body
+		"'a",   // missing trailing glottal
+		"a'",   // missing leading glottal
+		"a",    // no glottals
+		"'a'b", // trailing junk
 	}
 	for _, w := range bad {
 		if _, err := ParseParsingAdjunct(w); err == nil {

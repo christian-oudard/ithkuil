@@ -191,34 +191,34 @@ func TestClassifyWord_IthkuilGlossCorpus(t *testing.T) {
 		word string
 		kind want
 	}{
-		{"yužgrá", formative},        // S3 verbal, **žgr** root
-		{"eolaleici", formative},     // S2 PRC nominal, **l** root
-		{"khe", ref},                 // Rdp/DET referential, ABS
-		{"lalu", formative},          // basic **l** + IND
-		{"ha", registerStart},        // DSV register open
-		{"pļļ", bias},                // CMD "Funny!"
-		{"çalal", formative},         // sentence prefix + **l**
-		{"çëlal", formative},         // sentence prefix (ëi form) + **l**
-		{"ççala", formative},         // sentence prefix + y shortcut
-		{"çwala", formative},         // sentence prefix + w shortcut
-		{"ihnú", modular},            // RCP.COU modular
-		{"lala'a", formative},        // glottalized PRN
-		{"wala'ana", formative},      // w-prefix, **l** + affix
-		{"ëilal", formative},         // Cs-root (D1, **l**)
-		{"oërmölá", formative},       // Cs-root CPT.DYN
-		{"oërmoulá", formative},      // Cs-root CPT.DYN.FNC
-		{"lála'a", formative},        // PRN + ANT (framed)
-		{"hna", carrier},             // Naming carrier (cf. TestTokenize_CarrierForeign)
-		{"ţnaxeka", combref},         // [mi.BEN+2p] combination referential
-		{"ţnaxekka", formative},      // same shape but kk geminate → formative
-		{"äst", singleAffix},         // affixual adjunct **st**/2₁
-		{"are", singleAffix},         // V-C-V with VIIDom scope
-		{"xaheitr", multiAffix},      // multi-affix with Cz=h
-		{"xa'heitr", multiAffix},     // multi-affix with Cz='h (VSub)
-		{"layá", ref},                // 1m-THM-THM\RPV (Vc2 + RPV stress)
-		{"miyüs", ref},               // ma-AFF-DAT-2m (Vc2 + C2)
-		{"adni'lö", formative},       // dn root + UTL with moved-glottal Vc
-		{"la'la", formative},         // l root + PRN with moved-glottal Vc
+		{"yužgrá", formative},    // S3 verbal, **žgr** root
+		{"eolaleici", formative}, // S2 PRC nominal, **l** root
+		{"khe", ref},             // Rdp/DET referential, ABS
+		{"lalu", formative},      // basic **l** + IND
+		{"ha", registerStart},    // DSV register open
+		{"pļļ", bias},            // CMD "Funny!"
+		{"çalal", formative},     // sentence prefix + **l**
+		{"çëlal", formative},     // sentence prefix (ëi form) + **l**
+		{"ççala", formative},     // sentence prefix + y shortcut
+		{"çwala", formative},     // sentence prefix + w shortcut
+		{"ihnú", modular},        // RCP.COU modular
+		{"lala'a", formative},    // glottalized PRN
+		{"wala'ana", formative},  // w-prefix, **l** + affix
+		{"ëilal", formative},     // Cs-root (D1, **l**)
+		{"oërmölá", formative},   // Cs-root CPT.DYN
+		{"oërmoulá", formative},  // Cs-root CPT.DYN.FNC
+		{"lála'a", formative},    // PRN + ANT (framed)
+		{"hna", carrier},         // Naming carrier (cf. TestTokenize_CarrierForeign)
+		{"ţnaxeka", combref},     // [mi.BEN+2p] combination referential
+		{"ţnaxekka", formative},  // same shape but kk geminate → formative
+		{"äst", singleAffix},     // affixual adjunct **st**/2₁
+		{"are", singleAffix},     // V-C-V with VIIDom scope
+		{"xaheitr", multiAffix},  // multi-affix with Cz=h
+		{"xa'heitr", multiAffix}, // multi-affix with Cz='h (VSub)
+		{"layá", ref},            // 1m-THM-THM\RPV (Vc2 + RPV stress)
+		{"miyüs", ref},           // ma-AFF-DAT-2m (Vc2 + C2)
+		{"adni'lö", formative},   // dn root + UTL with moved-glottal Vc
+		{"la'la", formative},     // l root + PRN with moved-glottal Vc
 		{"hamlala-amlala", concatenated},
 		{"çëhamala-lala", concatenated},
 	}

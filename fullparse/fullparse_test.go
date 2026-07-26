@@ -490,7 +490,7 @@ func TestRoundTrip_WithSlotVIII(t *testing.T) {
 	// CaseScopeVal variant.
 	f := g.MinimalFormative("ml")
 	f.SlotVIII = g.VnCnValence{
-		Valence: g.MNO,
+		Valence:   g.MNO,
 		MoodScope: g.SUB,
 	}
 	surface := render.Formative(f)

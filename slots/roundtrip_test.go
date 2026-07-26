@@ -31,10 +31,10 @@ func TestLayout_SentencePrefix_csFamily(t *testing.T) {
 		in       string
 		wantBody string
 	}{
-		{"csalal", "alal"},        // cs- before vowel
-		{"cseamlala", "amlala"},   // cse- before consonant body
-		{"cswamlala", "wamlala"},  // csw- = cs- + w-Cc shortcut
-		{"cscsalal", "yalal"},     // cscs- = cs- + y-Cc shortcut
+		{"csalal", "alal"},       // cs- before vowel
+		{"cseamlala", "amlala"},  // cse- before consonant body
+		{"cswamlala", "wamlala"}, // csw- = cs- + w-Cc shortcut
+		{"cscsalal", "yalal"},    // cscs- = cs- + y-Cc shortcut
 	}
 	for _, c := range cases {
 		if body := stripSentencePrefix(c.in); body != c.wantBody {

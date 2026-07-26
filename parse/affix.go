@@ -82,7 +82,6 @@ func ClassifyAffixVowel(v string) (grammar.AffixType, int) {
 	return t, d
 }
 
-
 // ParseAffixes parses a sub-string of a formative into a list of affixes.
 // Both orderings work:
 //   - VxCs (vowel-then-consonant) for Slot VII.

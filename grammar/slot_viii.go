@@ -288,4 +288,3 @@ func SlotVIIIVnLabel(s SlotVIII) string {
 	}
 	return ""
 }
-

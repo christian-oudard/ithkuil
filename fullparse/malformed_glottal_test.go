@@ -13,8 +13,8 @@ import (
 // error or phonotactic violation) rather than silently picking one
 // interpretation.
 //
-// The user's "double-glottal-stop" concern surfaces here. Adjacent
-// "''" is rejected by the phonotactic validator (rules 1.7/2.1).
+// The double-glottal-stop case surfaces here. Two adjacent glottal
+// stops are rejected by the phonotactic validator (rules 1.7/2.1).
 // Structurally impossible combinations (two distinct §3.9.1 moved-
 // glottal patterns in one body, etc.) hit parse errors at slot
 // decode time. The remaining cases with two glottals in canonical
@@ -23,7 +23,7 @@ import (
 // canonical equivalent.
 func TestMalformed_GlottalPatterns(t *testing.T) {
 	cases := []struct {
-		in       string
+		in        string
 		expectErr string // substring expected somewhere in the failure
 	}{
 		// Adjacent doubled glottal-stop — phonotactic rule 1.7/2.1.

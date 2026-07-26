@@ -13,47 +13,47 @@ type Vk interface {
 // Assertive — ASR illocution, paired with one of nine Validations.
 type Assertive struct{ Validation Validation }
 
-func (Assertive) vk()        {}
+func (Assertive) vk()         {}
 func (Assertive) Tag() string { return "ASR" }
 
 type Directive struct{}
 
-func (Directive) vk()        {}
+func (Directive) vk()         {}
 func (Directive) Tag() string { return "DIR" }
 
 type Declarative struct{}
 
-func (Declarative) vk()        {}
+func (Declarative) vk()         {}
 func (Declarative) Tag() string { return "DEC" }
 
 type Interrogative struct{}
 
-func (Interrogative) vk()        {}
+func (Interrogative) vk()         {}
 func (Interrogative) Tag() string { return "IRG" }
 
 type Verificative struct{}
 
-func (Verificative) vk()        {}
+func (Verificative) vk()         {}
 func (Verificative) Tag() string { return "VER" }
 
 type Admonitive struct{}
 
-func (Admonitive) vk()        {}
+func (Admonitive) vk()         {}
 func (Admonitive) Tag() string { return "ADM" }
 
 type Potentiative struct{}
 
-func (Potentiative) vk()        {}
+func (Potentiative) vk()         {}
 func (Potentiative) Tag() string { return "POT" }
 
 type Hortative struct{}
 
-func (Hortative) vk()        {}
+func (Hortative) vk()         {}
 func (Hortative) Tag() string { return "HOR" }
 
 type Conjectural struct{}
 
-func (Conjectural) vk()        {}
+func (Conjectural) vk()         {}
 func (Conjectural) Tag() string { return "CNJ" }
 
 // AllVk lists one canonical Vk value per illocution. Assertive carries

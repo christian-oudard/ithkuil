@@ -472,9 +472,9 @@ func ParseSentence(s string, lex *lexicon.Lexicon) ([]tokenize.WordToken, error)
 func parseAffixualAdjunct(s string, affixes map[string]lexicon.AffixEntry) (tokenize.WordToken, error) {
 	parts := strings.Split(s, "-")
 	type element struct {
-		kind   string // "affix" or "scope"
-		affix  g.Affix
-		scope  g.AffixScope
+		kind  string // "affix" or "scope"
+		affix g.Affix
+		scope g.AffixScope
 	}
 	elems := make([]element, 0, len(parts))
 	for _, p := range parts {

@@ -177,14 +177,14 @@ func TestParseAffixVr_AllSeriesAllForms(t *testing.T) {
 		ctx grammar.Context
 		deg int
 	}{
-		{"a", grammar.EXS, 1},   // series 1 form 1
-		{"ai", grammar.FNC, 1},  // series 2 form 1
-		{"ia", grammar.RPS, 1},  // series 3 form 1
-		{"ao", grammar.AMG, 1},  // series 4 form 1
-		{"u", grammar.EXS, 9},   // series 1 form 9
-		{"ui", grammar.FNC, 9},  // series 2 form 9
-		{"ua", grammar.RPS, 9},  // series 3 form 9
-		{"oa", grammar.AMG, 9},  // series 4 form 9
+		{"a", grammar.EXS, 1},  // series 1 form 1
+		{"ai", grammar.FNC, 1}, // series 2 form 1
+		{"ia", grammar.RPS, 1}, // series 3 form 1
+		{"ao", grammar.AMG, 1}, // series 4 form 1
+		{"u", grammar.EXS, 9},  // series 1 form 9
+		{"ui", grammar.FNC, 9}, // series 2 form 9
+		{"ua", grammar.RPS, 9}, // series 3 form 9
+		{"oa", grammar.AMG, 9}, // series 4 form 9
 	}
 	for _, c := range cases {
 		d, ctx, ok := ParseAffixVr(c.v)

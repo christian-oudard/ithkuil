@@ -11,7 +11,6 @@ import (
 	"github.com/christian-oudard/ithkuil/phonology"
 )
 
-
 // accentMap strips stress marks for parsing. Acute accents map to the
 // plain vowel (á→a); circumflex maps to the umlauted variant (â→ä).
 var accentMap = map[rune]rune{

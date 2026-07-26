@@ -94,4 +94,3 @@ func applyVvGlottal(vv string, slotVLen int) string {
 	}
 	return vv + "'"
 }
-

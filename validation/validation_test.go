@@ -371,14 +371,14 @@ func TestValidateVowelSequence(t *testing.T) {
 		in    string
 		valid bool
 	}{
-		{"a", true},          // single
-		{"ai", true},         // diphthong
-		{"ëi", true},         // diphthong
-		{"ia", true},         // disyllabic conjunct (Series 3)
-		{"ao", true},         // disyllabic conjunct (Series 4)
-		{"ae", true},         // reference-root marker
-		{"aa", false},        // not a permissible diphthong
-		{"abc", false},       // too long
+		{"a", true},    // single
+		{"ai", true},   // diphthong
+		{"ëi", true},   // diphthong
+		{"ia", true},   // disyllabic conjunct (Series 3)
+		{"ao", true},   // disyllabic conjunct (Series 4)
+		{"ae", true},   // reference-root marker
+		{"aa", false},  // not a permissible diphthong
+		{"abc", false}, // too long
 	}
 	for _, c := range cases {
 		r := ValidateVowelSequence(c.in)

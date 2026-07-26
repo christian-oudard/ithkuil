@@ -34,8 +34,8 @@ func TestFormative_FullRoundTrip(t *testing.T) {
 		"ml-MSS",
 		"ml-MSS.G",
 		"ml-MSS.G.RPV",
-		"ml-G",      // perspective alone
-		"ml-RPV",    // essence alone
+		"ml-G",   // perspective alone
+		"ml-RPV", // essence alone
 	}
 	for _, in := range inputs {
 		t.Run(in, func(t *testing.T) {

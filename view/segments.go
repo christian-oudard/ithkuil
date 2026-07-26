@@ -7,10 +7,10 @@ import (
 	"github.com/christian-oudard/ithkuil/allomorph"
 	"github.com/christian-oudard/ithkuil/compose"
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/slots"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/semantics"
+	"github.com/christian-oudard/ithkuil/slots"
 )
 
 // ElidedMark is the symbol shown for an elided slot.

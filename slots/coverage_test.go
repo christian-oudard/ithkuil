@@ -13,14 +13,14 @@ import (
 
 func TestApplyVvGlottal_AllShapes(t *testing.T) {
 	cases := []struct {
-		vv      string
-		slotV   int
-		want    string
+		vv    string
+		slotV int
+		want  string
 	}{
-		{"", 2, ""},      // empty Vv passes through
-		{"a", 0, "a"},     // not enough slot V
-		{"a", 2, "a'a"},   // 1-rune → reduplicate around '
-		{"au", 2, "a'u"},  // 2-rune → ' between
+		{"", 2, ""},        // empty Vv passes through
+		{"a", 0, "a"},      // not enough slot V
+		{"a", 2, "a'a"},    // 1-rune → reduplicate around '
+		{"au", 2, "a'u"},   // 2-rune → ' between
 		{"aiu", 2, "aiu'"}, // >2-rune → trailing '
 	}
 	for _, c := range cases {
@@ -35,9 +35,9 @@ func TestStripVvGlottal_Shapes(t *testing.T) {
 	cases := []struct {
 		in, want string
 	}{
-		{"a'a", "a"},      // reduplicated form collapses
-		{"a'u", "au"},     // intervocalic glottal removed
-		{"a", "a"},        // no glottal: passthrough
+		{"a'a", "a"},  // reduplicated form collapses
+		{"a'u", "au"}, // intervocalic glottal removed
+		{"a", "a"},    // no glottal: passthrough
 	}
 	for _, c := range cases {
 		if got := stripVvGlottal(c.in); got != c.want {
@@ -51,17 +51,17 @@ func TestStripSentencePrefix_Variants(t *testing.T) {
 		in   string
 		body string
 	}{
-		{"", ""},                  // empty input
-		{"ç", "ç"},                // bare ç with no rest
-		{"çëalaba", "alaba"},      // çë body
-		{"ççalaba", "yalaba"},     // çç → y + body
-		{"çalaba", "alaba"},       // ç + vowel body
-		{"cscsalaba", "yalaba"},   // cscs → y + body
-		{"cswalaba", "walaba"},    // csw → w-shortcut Cc + rest
-		{"csealaba", "alaba"},     // cse → drop both
-		{"csalaba", "alaba"},      // cs + vowel
-		{"csmlat", "csmlat"},      // cs + consonant (not a prefix)
-		{"alaba", "alaba"},        // no prefix at all
+		{"", ""},                // empty input
+		{"ç", "ç"},              // bare ç with no rest
+		{"çëalaba", "alaba"},    // çë body
+		{"ççalaba", "yalaba"},   // çç → y + body
+		{"çalaba", "alaba"},     // ç + vowel body
+		{"cscsalaba", "yalaba"}, // cscs → y + body
+		{"cswalaba", "walaba"},  // csw → w-shortcut Cc + rest
+		{"csealaba", "alaba"},   // cse → drop both
+		{"csalaba", "alaba"},    // cs + vowel
+		{"csmlat", "csmlat"},    // cs + consonant (not a prefix)
+		{"alaba", "alaba"},      // no prefix at all
 	}
 	for _, c := range cases {
 		if body := stripSentencePrefix(c.in); body != c.body {

@@ -20,17 +20,17 @@ import (
 )
 
 const (
-	ansiDim     = "\x1b[2m"
-	ansiReset   = "\x1b[0m"
-	ansiClear   = "\x1b[K"
-	prompt      = "> "
-	keyCtrlC    = 3
-	keyCtrlD    = 4
-	keyEnter    = '\r'
-	keyNewline  = '\n'
-	keyBackOne  = 127
-	keyBackTwo  = 8
-	keyEscape   = 27
+	ansiDim    = "\x1b[2m"
+	ansiReset  = "\x1b[0m"
+	ansiClear  = "\x1b[K"
+	prompt     = "> "
+	keyCtrlC   = 3
+	keyCtrlD   = 4
+	keyEnter   = '\r'
+	keyNewline = '\n'
+	keyBackOne = 127
+	keyBackTwo = 8
+	keyEscape  = 27
 )
 
 func main() {

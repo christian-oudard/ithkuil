@@ -1,8 +1,8 @@
 package view
 
 import (
-	"strings"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
@@ -350,8 +350,8 @@ func TestSegments_ParseError(t *testing.T) {
 
 func TestCcCodes_AllBranches(t *testing.T) {
 	cases := []struct {
-		cc      string
-		want    []string // substrings expected in result
+		cc   string
+		want []string // substrings expected in result
 	}{
 		{"h", []string{"Type1 concat"}},
 		{"hw", []string{"Type2 concat"}},

@@ -53,15 +53,15 @@ func TestFromASCII(t *testing.T) {
 		{"aaae", "aäe"},
 		// Vowel form table entries — round-tripping verified separately,
 		// these check FromASCII directly.
-		{"ooa", "öa"},   // öa (row 4, form 8)
-		{"aoo", "aö"},   // aö (row 4, form 2)
-		{"oee", "oë"},   // oë (row 4, form 5)
-		{"ooe", "öe"},   // öe (row 4, form 6)
-		{"eei", "ëi"},   // ëi (row 1, form 5)
-		{"eee", "eë"},   // eë (row 3, form 5)
-		{"ooaa", "öä"},  // öä (series-3 alternate 6)
-		{"uuaa", "üä"},  // üä (series-3 alternate 3)
-		{"iaa", "iä"},   // iä (series-3 alternate 9)
+		{"ooa", "öa"},  // öa (row 4, form 8)
+		{"aoo", "aö"},  // aö (row 4, form 2)
+		{"oee", "oë"},  // oë (row 4, form 5)
+		{"ooe", "öe"},  // öe (row 4, form 6)
+		{"eei", "ëi"},  // ëi (row 1, form 5)
+		{"eee", "eë"},  // eë (row 3, form 5)
+		{"ooaa", "öä"}, // öä (series-3 alternate 6)
+		{"uuaa", "üä"}, // üä (series-3 alternate 3)
+		{"iaa", "iä"},  // iä (series-3 alternate 9)
 		// Stress on plain vowels.
 		{"a/", "á"},
 		{"e/", "é"},

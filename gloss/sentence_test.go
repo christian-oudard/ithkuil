@@ -176,10 +176,10 @@ func TestFormative_NumberRoot(t *testing.T) {
 		word    string
 		wantVal string
 	}{
-		{"ksalirsa", "'42'"},     // 2 + TNX/4 = 42
-		{"cpalörs", "'66'"},      // 6 + TNX/6 = 66
-		{"gzalui", "'100'"},      // power root for 100
-		{"wapcui", "'10000'"},    // W-shortcut power root for 10000
+		{"ksalirsa", "'42'"},  // 2 + TNX/4 = 42
+		{"cpalörs", "'66'"},   // 6 + TNX/6 = 66
+		{"gzalui", "'100'"},   // power root for 100
+		{"wapcui", "'10000'"}, // W-shortcut power root for 10000
 	}
 	for _, c := range cases {
 		tok := tokenize.ClassifyWord(c.word).(tokenize.FormativeWord)
@@ -198,10 +198,10 @@ func TestFormative_NumberWithSPT(t *testing.T) {
 		word    string
 		wantVal string
 	}{
-		{"wučkerw", "'8th hour'"},   // 8 + SPT/3 → "8th hour"
-		{"wucpirw", "'6th weekday'"}, // 6 + SPT/4 → "6th weekday"
+		{"wučkerw", "'8th hour'"},     // 8 + SPT/3 → "8th hour"
+		{"wucpirw", "'6th weekday'"},  // 6 + SPT/4 → "6th weekday"
 		{"wustarsëirw", "'15th day'"}, // 5 + TNX/1 + SPT/5 → "15th day"
-		{"wuzorw", "'3th month'"},    // 3 + SPT/7 → "3th month"
+		{"wuzorw", "'3th month'"},     // 3 + SPT/7 → "3th month"
 	}
 	for _, c := range cases {
 		tok, ok := tokenize.ClassifyWord(c.word).(tokenize.FormativeWord)
