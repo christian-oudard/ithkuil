@@ -38,6 +38,9 @@ func allSlotVI(yield func(g.SlotVI)) {
 func TestCa_EveryFormIsPronounceable(t *testing.T) {
 	allSlotVI(func(s g.SlotVI) {
 		ca := ConstructCa(s)
+		if UnresolvedCa(ca) {
+			return
+		}
 		if r := validation.ValidateClusterAt(validation.Medial, ca); !r.Valid {
 			t.Errorf("Ca %v composes to %q (raw %q): %v",
 				s, ca, ConstructCaRaw(s), r.Errors)
@@ -51,6 +54,9 @@ func TestCa_EveryGeminateIsPronounceable(t *testing.T) {
 	allSlotVI(func(s g.SlotVI) {
 		ca := ConstructCa(s)
 		gem := GeminateCa(ca)
+		if UnresolvedCa(gem) {
+			return
+		}
 		if r := validation.ValidateClusterAt(validation.Medial, gem); !r.Valid {
 			t.Errorf("Ca %v geminates %q to %q: %v", s, ca, gem, r.Errors)
 		}

@@ -62,11 +62,20 @@ func CheckProhibitedPair(a, b rune) (rule, reason string) {
 		return "2.4", "homologous stop voicing mismatch"
 	}
 
-	// 2.5: homologous sibilant with voicing mismatch
-	if (isSibilantFricative(a) || isSibilantAffricate(a)) &&
-		(isSibilantFricative(b) || isSibilantAffricate(b)) &&
+	// 2.5: homologous fricative or affricate with a voicing mismatch.
+	// The rule says "applies to fricatives and to affricates", not to
+	// the sibilants alone: fv, vf, ţḑ and ḑţ are on its example list.
+	if (isFricative(a) || isSibilantAffricate(a)) &&
+		(isFricative(b) || isSibilantAffricate(b)) &&
 		areHomologous(a, b) && !sameVoicing(a, b) {
-		return "2.5", "homologous sibilant voicing mismatch"
+		return "2.5", "homologous fricative/affricate voicing mismatch"
+	}
+
+	// 2.5: an alveolo-palatal affricate cannot precede an alveolar
+	// one. The reverse order (cč, cj, ẓč, ẓj) is explicitly permitted,
+	// so this is about sequence, not about the pair.
+	if (a == 'č' || a == 'j') && (b == 'c' || b == 'ẓ') {
+		return "2.5", "alveolo-palatal affricate + alveolar affricate"
 	}
 
 	// 2.6: alveolo-palatal fricative + alveolar affricate
@@ -279,7 +288,11 @@ func ValidateClusterAt(p Position, cluster string) Result {
 		a, b, c := runes[i], runes[i+1], runes[i+2]
 		// 2.13: nasal + homologous stop + sibilant is prohibited
 		// (mps, mbz, ntz, ndz, ňks, ňgz, etc.).
-		if isNasal(a) && isStop(b) && areHomologous(a, b) && isSibilant(c) {
+		// §1.2.2 assimilates the dental n to velar [ŋ] before k and g,
+		// so "nks" is the same sequence of sounds as "ňks" and falls
+		// under this rule as well. The spec lists both.
+		if isNasal(a) && isStop(b) && isSibilant(c) &&
+			(areHomologous(a, b) || (a == 'n' && (b == 'k' || b == 'g'))) {
 			errs = append(errs, Error{
 				Rule:    "2.13",
 				Cluster: string([]rune{a, b, c}),
@@ -761,4 +774,14 @@ func validInitialPair(a, b rune) bool {
 		return sameVoicing(a, b) && !samePlace(a, b)
 	}
 	return false
+}
+
+// isFricative covers the fricatives that take part in the §2.5
+// homologous-voicing pairs: the sibilants plus f/v and ţ/ḑ.
+func isFricative(r rune) bool {
+	switch r {
+	case 'f', 'v', 'ţ', 'ḑ':
+		return true
+	}
+	return isSibilantFricative(r)
 }

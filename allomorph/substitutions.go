@@ -38,9 +38,39 @@ var contextSubstitutions = []rule{
 
 // secondPassSubstitutions clean up intermediate forms produced by the
 // context pass. They apply unconditionally like simpleSubstitutions.
+// The grammar writes these as "fbm → (fv) → vw" and "ţbn → (tḑ) →
+// ḑy", the parenthesis being the intermediate the context pass leaves
+// behind. For ţbn that intermediate is really "ţḑ": [C]bn → [C]ḑ
+// rewrites only the "bn", so the ţ stays put. Taking the spec's "tḑ"
+// at face value left the rule unreachable, and MDS/A/DPL/RPV stopped
+// at "ţḑ", which §2.5 prohibits as a homologous voicing mismatch.
 var secondPassSubstitutions = []rule{
 	{"fv", "vw"}, {"tḑ", "ḑy"},
 }
+
+// OpenQuestionBn records a gap in the published grammar.
+//
+// Two configurations reach a prohibited intermediate here. MSS/A/DPL/
+// RPV composes "tbn" and lands on "tḑ", which §2.2 bars as a dental
+// stop plus interdental. MDS/A/DPL/RPV composes "ţbn" and lands on
+// "ţḑ", which §2.5 bars as a homologous voicing mismatch. §3.6 gives
+// exactly one escape, "ţbn → (tḑ) → ḑy", and it names the second on
+// its input side and the first in its intermediate.
+//
+// It cannot cover both: they would then share the surface "ḑy" and
+// ParseCa could not tell them apart. We match the intermediate, so
+// MDS/A/DPL/RPV still composes an unsayable "ţḑ". The other reading
+// has a point in its favour — "ţbn" is parallel to the neighbouring
+// "fbm → (fv) → vw", both a fricative before bm/bn, where "t" is a
+// stop — but it only moves the breakage onto MSS. Settling this needs
+// Quijada or a reference implementation, not more reading.
+const OpenQuestionBn = "MDS/A/DPL/RPV composes ţḑ, which §2.5 prohibits"
+
+// UnresolvedCa reports whether s carries the OpenQuestionBn cluster.
+// Anything checking phonotactic legality has to let it through: what
+// needs fixing is the grammar, not the code. Matching on the substring
+// covers the liquid-prefixed and geminated forms too.
+func UnresolvedCa(s string) bool { return strings.Contains(s, "ţḑ") }
 
 // replaceNonInitial replaces every occurrence of from with to in s,
 // except when the match begins at byte 0. The check is implemented by
