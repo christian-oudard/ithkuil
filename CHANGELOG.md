@@ -65,16 +65,34 @@ eight 2020 words it does reject are in `corpus/discord_examples.txt`
 with their sourced readings, and the ones whose update is exact are
 there too as their modernised v1.3.1 forms.
 
-**Still unenforced:** the same §3.5 sentence also bars a *geminated*
-C_S, and that half is open. Nine audit-corpus words parse into one, and
-unlike the glottal case they are current — 2024 to 2026, seven
-different authors — so this is a live question about the language we do
-implement. Every geminate un-geminates to a real affix (`ggz`→XOH,
-`ddy`→S18, `dd`→SCS, `jj`→X10), which is what a §3.6.1 geminated C_A
-looks like: we are choosing the wrong cluster for the C_A and pushing
-the Slot V affixes into Slot VII. In *ëicalçeajja* the C_A should be
-`jj`, geminated from `j`, with `lç`+`ea` as a Slot V affix; we read
-C_A `lç` and put `ea`+`jj` in Slot VII instead.
+### A specialized C_S-root can have a Slot V
+
+§4.2 says a C_S-root "operates like a standard formative except that
+Slots II and IV take specialized V_V and V_R forms and the Slot III
+C_R form is replaced by the C_S-form of a V_X C_S affix". Slot V is not
+among the exceptions, so the §3.6.1 geminated C_A means there what it
+means anywhere else. We were not looking for one on this path, and read
+the first cluster after V_R as the C_A, which pushed the Slot V affixes
+into Slot VII and left the geminate in an affix C_S:
+
+    ëicalçeajja
+      was   Ca=lç, Slot VII = (ea, jj)
+      now   Slot V = (lç, ea), Ca=j geminated to jj
+
+Found by measuring the unenforced half of §3.5, which bars a geminated
+C_S. That count drops from nine audit-corpus words to five.
+
+**Still unenforced.** §3.5's C_S sentence has three parts left, and the
+words that break each are narrower than they first looked:
+
+- *geminated C_S*, 5 words. Two are `ggz`, which is not a §3.6.1
+  geminate of anything — rule 4 gives `gz` → `gzz` — and one is
+  `ltsst`. Two are §4.6.5 referential affixes, whose consonant
+  inventory includes `ll` and `mm`, so any check has to apply per
+  affix kind rather than blanket.
+- *barred forms* `w y ç ļ ļw ļy`, 15 words. Fourteen are one author's
+  paradigm series posted on one day, all with C_S `y`.
+- *h-initial C_S*, 2 words.
 
 ### A concatenated formative's Slot IX is a Format
 

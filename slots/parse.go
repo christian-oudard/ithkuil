@@ -189,7 +189,13 @@ func parseVowelInitial(l *Layout, conjs []string, i int) error {
 		} else {
 			l.Kind = CsRootFormative
 		}
-		return parseFromCa(l, conjs, i, false)
+		// §4.2: a specialized C_S-root "operates like a standard
+		// formative except that Slots II and IV take specialized V_V
+		// and V_R forms and the Slot III C_R form is replaced by the
+		// C_S-form of a V_X C_S affix". Slot V is not among the
+		// exceptions, so the §3.6.1 geminated Ca means here what it
+		// means anywhere else.
+		return parseFromCa(l, conjs, i, true)
 	}
 
 	// Standard or shortcut Cr formative.

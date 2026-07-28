@@ -235,6 +235,37 @@ func TestCorpus_GlottalHeadedCs(t *testing.T) {
 	}
 }
 
+// TestCorpus_CsRootSlotV covers §4.2. A specialized C_S-root
+// "operates like a standard formative except that Slots II and IV take
+// specialized V_V and V_R forms and the Slot III C_R form is replaced
+// by the C_S-form of a V_X C_S affix" — Slot V is not among the
+// exceptions, so a §3.6.1 geminated C_A means there what it means
+// anywhere else. We were not looking for one, and read the first
+// cluster after V_R as the C_A instead, which pushed the Slot V
+// affixes into Slot VII and left the geminate sitting in an affix C_S
+// where §3.5 forbids it.
+//
+// In ëicalçeajja the C_A is "j", geminated to "jj", with "lç"+"ea" as
+// a Slot V affix. We read C_A "lç" and put "ea"+"jj" in Slot VII.
+func TestCorpus_CsRootSlotV(t *testing.T) {
+	for _, c := range []struct{ word, ca string }{
+		{"ëicalçeajja", "j"},
+		{"aešalyaidde", "d"},
+		{"ëitfëibëinnležói", "dn"},
+		{"ëitheřviddyá", "dy"},
+	} {
+		f, err := fullparse.Formative(c.word)
+		if err != nil {
+			t.Errorf("%s: %v", c.word, err)
+			continue
+		}
+		if len(f.SlotV) == 0 {
+			t.Errorf("%s: no Slot V affix; the geminated Ca says there is one", c.word)
+		}
+		roundTripsOne(t, c.word)
+	}
+}
+
 // TestCorpus_RootCannotStartWithHWY pins §3's restriction on root
 // shape. These parsed into a Formative with Cr = "w", which is not a
 // possible root, and then rendered into a word that read differently.
