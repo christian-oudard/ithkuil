@@ -198,12 +198,16 @@ func TestFormat_EveryCase(t *testing.T) {
 // anyway; the renderer then had nowhere to put the glottal, dropped
 // it, and the affix came back a degree off in a different slot.
 //
-// The eight words this cost are all from 2020, three years before the
-// v1.3.1 morphology, and §3.6.1 names the rule that changed under
-// them: gemination moved onto the Ca, "consequently, no Slot V/VII C_S
-// affix increment contains a geminate any longer". Three of the eight
-// end in exactly such an increment — kšš for BEH, žžg for OLF, gzz for
-// XOH. They are in corpus/discord_examples.txt with that reading.
+// The eight words this cost are all from 2020, and the archived
+// morphology of each word's own date explains it exactly. Two v1.3.1
+// rules did not exist yet: C_N still needed a preceding glottal stop,
+// which v0.17.0's changelog is where it goes away, and Bias was a
+// word-final C_B suffix rather than the §4.7 adjunct, taking a glottal
+// of its own. So every "'h" and "'l" here is a Slot VIII C_N, and
+// "'kšš", "'gzz" and "'žžg" are the CTP, EUH and DEJ biases. The forms
+// did not change, only their attachment, so the update is to split the
+// suffix off into its own word. corpus/discord_examples.txt carries
+// the readings and the modernised forms.
 //
 // Nothing in the language we do implement pays for the rule: across
 // the 3657-word audit corpus, which words.py filters to 2023 and

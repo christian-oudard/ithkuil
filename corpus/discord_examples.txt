@@ -149,31 +149,42 @@ incorrect | ëinļ | §3.5 | the IVL affix quoted bare, without its formative.
 incorrect | kçp | §2 | a bare consonant cluster, no vowels.
 incorrect | ë'i | §1.2 | two vowels and a glottal; no root.
 
-# ── the 2020 glottal-plus-Cs habit ──────────────────────────────────
-# Every one of these is from 2020, three years before the v1.3.1
-# morphology, and six are one author working through a translation
-# project. They share a shape: an affix vowel, a glottal, then a
-# consonant cluster, often at the end of the word.
+# ── 2020 formatives, read against the grammar of their own date ────
+# Every one of these is from 2020, and the archived morphology of each
+# word's date explains it exactly. The relevant documents are at
+# ithkuil.place/4/archive/morphology/.
 #
-# §3.5 forbids it twice over under v1.3.1 — "No C_S form can contain a
-# glottal-stop or begin with h-" — and §1.7 Rule 1 puts a glottal
-# between a vowel and a consonant after the vowel-form, so the V_X in
-# front carries it, not the C_S behind.
+# Two v1.3.1 rules did not exist yet:
 #
-# §3.6.1 names what changed: gemination moved onto the C_A,
-# "consequently, no Slot V/VII C_S affix increment contains a geminate
-# any longer". Three of these end in exactly such an increment, and
-# they are real affixes under the old reading: kšš is BEH geminated,
-# žžg is OLF, gzz is XOH. So the glottal was the affix boundary marker
-# that the geminated C_A does today.
+#   C_N needed a preceding glottal stop. v0.17.0's own changelog says
+#   what changed: "the Pattern 1 and Pattern 2 C_N forms have been
+#   changed in order to eliminate the need for a glottal-stop prior to
+#   C_N." Every "'h" and "'l" below is a Slot VIII C_N carrying the
+#   glottal its date required.
 #
-# Marked incorrect because the verdict is against v1.3.1, which these
-# predate. They were correct in the grammar they were written in.
-incorrect | anţtaleu'há | §3.5 | 2020; Cs "'h" holds a glottal and opens with h-.
-incorrect | anzvarönţiçřoi'há'kšš | §3.5 | 2020; two glottal-headed Cs in one word.
-incorrect | ežfaléa'ha'rš | §3.5 | 2020; "'h" then "'rš", both glottal-headed.
-incorrect | anzvarönţiçřoi'hákšš | §3.5 | 2020; "'h", and "kšš" is BEH geminated.
-incorrect | attualië'hú'žžg | §3.5 | 2020; "'h", and "žžg" is OLF geminated.
-incorrect | aňţärko'lá'rš | §3.5 | 2020; "'l" then "'rš".
-incorrect | uňňsozahé'kšš | §3.5 | 2020; "'kšš" is BEH geminated, the pre-2023 marking.
-incorrect | ňvailoţmá'gzz | §3.5 | 2020; "'gzz" is XOH geminated.
+#   Bias was a word-final suffix, not an adjunct. v0.17.2 §3.10 gives
+#   Slot X to "(')C_B or (')C_Y", the C_B suffix "immediately preceded
+#   by a glottal stop", and §3.10.1 lists the forms: kšš is CTP "What
+#   nonsense!", gzz is EUH "What bliss!", žžg is DEJ "[dejected sigh]".
+#   §3.10.2's C_Y is an alternate Mood/Case-Scope, where rš is SPC.
+#   v1.3.1 moved Bias out of the formative into the §4.7 adjunct and
+#   dropped C_Y in favour of the Slot VIII C_N.
+#
+# The forms are unchanged: our own §4.7 table gives kšš, gzz and žžg.
+# Only their attachment moved, so the update is to split the suffix off
+# into its own word. Each list entry is one word, so a modernised pair
+# is two entries.
+incorrect | ňvailoţmá'gzz | §4.7 | 2020-06-16, v0.12.0; C_B suffix EUH, now an adjunct.
+correct | ňvailoţmá | §4.7 | modernised: the formative alone, 'merriment/delight'.
+correct | gzz | §4.7 | modernised: EUH "What bliss!" as its own adjunct.
+incorrect | attualië'hú'žžg | §4.7 | 2020-07-13, v0.12.4; C_N glottal, then C_B suffix DEJ.
+correct | attualiëhú | §4.7 | modernised: the formative alone, 'greeting'.
+correct | žžg | §4.7 | modernised: DEJ "[dejected sigh]" as its own adjunct.
+incorrect | uňňsozahé'kšš | §4.7 | 2020-12-03, v0.17.2; C_B suffix CTP.
+correct | uňňsozahé | §4.7 | modernised: the formative alone, 'prayer'.
+correct | kšš | §4.7 | modernised: CTP "What nonsense!" as its own adjunct.
+incorrect | anzvarönţiçřoi'hákšš | §4.7 | 2020-10-08, v0.15; C_N glottal, then C_B suffix CTP.
+incorrect | anzvarönţiçřoi'há'kšš | §4.7 | 2020-10-07, the same word a day earlier, C_B glottal still written.
+incorrect | anţtaleu'há | §3.8 | 2020-11-13, v0.16; C_N "h" with the glottal its date required.
+incorrect | ežfaléa'ha'rš | §3.10 | 2020-11-07, v0.16; C_N glottal, then C_Y suffix SPC.
+incorrect | aňţärko'lá'rš | §3.10 | 2020-11-09, v0.16; C_N "l" glottal, then C_Y suffix SPC.
