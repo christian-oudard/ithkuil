@@ -7,7 +7,6 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
@@ -223,7 +222,7 @@ func splitFirstHyphenChunk(tail string) (first, rest string) {
 func buildRefFromTail(
 	text string,
 	carrier *g.CarrierType,
-	refs []referentials.PersonalRef,
+	refs []g.PersonalRef,
 	caseChunk string,
 	restTail string,
 ) (tokenize.WordToken, error) {
@@ -245,7 +244,7 @@ func buildRefFromTail(
 		}
 	}
 	var case2 *g.Case
-	var refB []referentials.PersonalRef
+	var refB []g.PersonalRef
 	rpv := false
 	if restTail != "" {
 		for _, p := range parts {
@@ -350,13 +349,13 @@ func looksLikeReferential(s string) bool {
 
 // splitCategoryTag peels the "AGM:"/"NOM:"/"ABS:" tag §4.6 puts on a
 // referent list, returning the category (nil when absent) and the rest.
-func splitCategoryTag(s string) (*referentials.Category, string) {
+func splitCategoryTag(s string) (*g.RefCategory, string) {
 	name, rest, found := strings.Cut(s, ":")
 	if !found {
 		return nil, s
 	}
-	for _, c := range []referentials.Category{
-		referentials.Agglomerative, referentials.Nomic, referentials.Abstract,
+	for _, c := range []g.RefCategory{
+		g.Agglomerative, g.Nomic, g.Abstract,
 	} {
 		if c.String() == name {
 			cat := c
@@ -637,7 +636,7 @@ func parseReferentialToken(s string) (tokenize.WordToken, error) {
 		if spec, ok := parseSpecName(rest[0]); ok {
 			return tokenize.CombinationRefWord{
 				Text: s,
-				Refs: []referentials.PersonalRef{{Referent: ref, Effect: eff}},
+				Refs: []g.PersonalRef{{Referent: ref, Effect: eff}},
 				Case: c,
 				Spec: spec,
 				// The affix and Case2 tail after the Spec slot is not
@@ -647,7 +646,7 @@ func parseReferentialToken(s string) (tokenize.WordToken, error) {
 	}
 	// Plain referential. Parse optional Case2, [refB], and RPV trail.
 	var case2 *g.Case
-	var refB []referentials.PersonalRef
+	var refB []g.PersonalRef
 	rpv := false
 	for _, p := range rest {
 		switch {
@@ -669,7 +668,7 @@ func parseReferentialToken(s string) (tokenize.WordToken, error) {
 	}
 	return tokenize.ReferentialWord{
 		Text:       s,
-		Refs:       []referentials.PersonalRef{{Referent: ref, Effect: eff}},
+		Refs:       []g.PersonalRef{{Referent: ref, Effect: eff}},
 		Category:   category,
 		Case:       &c,
 		Case2:      case2,
@@ -679,15 +678,15 @@ func parseReferentialToken(s string) (tokenize.WordToken, error) {
 }
 
 // parseRefList decodes "a+b+c" into a slice of PersonalRefs.
-func parseRefList(s string) ([]referentials.PersonalRef, error) {
+func parseRefList(s string) ([]g.PersonalRef, error) {
 	parts := strings.Split(s, "+")
-	out := make([]referentials.PersonalRef, 0, len(parts))
+	out := make([]g.PersonalRef, 0, len(parts))
 	for _, p := range parts {
 		ref, eff, err := parseRefSpec(p)
 		if err != nil {
 			return nil, err
 		}
-		out = append(out, referentials.PersonalRef{Referent: ref, Effect: eff})
+		out = append(out, g.PersonalRef{Referent: ref, Effect: eff})
 	}
 	return out, nil
 }

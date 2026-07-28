@@ -22,7 +22,6 @@ import (
 	"github.com/christian-oudard/ithkuil/fullparse"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/validation"
 )
@@ -138,12 +137,12 @@ func (CarrierWord) word()             {}
 // surface form starts with the epenthetic diphthong "üo-".
 type ReferentialWord struct {
 	Text       string
-	Category   *referentials.Category // nil if no category modifier
-	Carrier    *g.CarrierType         // §4.6.3: C_P in place of personal C1
-	Refs       []referentials.PersonalRef
+	Category   *g.RefCategory // nil if no category modifier
+	Carrier    *g.CarrierType // §4.6.3: C_P in place of personal C1
+	Refs       []g.PersonalRef
 	Case       *g.Case // Vc1: case of Referential A; nil when no Vc at all
 	Case2      *g.Case // Vc2: case of Referential B, or stacked second case
-	RefB       []referentials.PersonalRef
+	RefB       []g.PersonalRef
 	RpvEssence bool // true when stress is ultimate (Representative Essence)
 }
 
@@ -160,7 +159,7 @@ type ReferentialWord struct {
 type CombinationRefWord struct {
 	Text    string
 	Carrier *g.CarrierType
-	Refs    []referentials.PersonalRef
+	Refs    []g.PersonalRef
 	Case    g.Case
 	Spec    g.Specification
 	Affixes []g.Affix
@@ -337,7 +336,7 @@ func ClassifyWord(word string) WordToken {
 
 	// 7. Referential without case: single consonant cluster that decomposes.
 	if len(conjs) == 1 && surface.IsConsonantConjunct(conjs[0]) {
-		if cat, refs, ok := referentials.DecomposeRefWithCategory(conjs[0]); ok {
+		if cat, refs, ok := parse.DecomposeRefWithCategory(conjs[0]); ok {
 			return ReferentialWord{Text: word, Category: cat, Refs: refs}
 		}
 	}
@@ -491,15 +490,15 @@ func tryReferential(word string) (ReferentialWord, bool) {
 	if !surface.IsConsonantConjunct(c1) {
 		return ReferentialWord{}, false
 	}
-	var cat *referentials.Category
-	var refs []referentials.PersonalRef
+	var cat *g.RefCategory
+	var refs []g.PersonalRef
 	var carrier *g.CarrierType
 	if cpEpenthesis {
 		ct, _ := parse.ParseCarrierType(c1)
 		carrier = &ct
 	} else {
 		var ok bool
-		cat, refs, ok = referentials.DecomposeRefWithCategory(c1)
+		cat, refs, ok = parse.DecomposeRefWithCategory(c1)
 		if !ok || len(refs) == 0 {
 			return ReferentialWord{}, false
 		}
@@ -515,7 +514,7 @@ func tryReferential(word string) (ReferentialWord, bool) {
 	i++
 
 	var case2 *g.Case
-	var refB []referentials.PersonalRef
+	var refB []g.PersonalRef
 	if i < len(conjs) && (conjs[i] == "w" || conjs[i] == "y") {
 		i++
 		if i >= len(conjs) || !surface.IsVowelConjunct(conjs[i]) {
@@ -528,7 +527,7 @@ func tryReferential(word string) (ReferentialWord, bool) {
 		case2 = &c2v
 		i++
 		if i < len(conjs) && surface.IsConsonantConjunct(conjs[i]) {
-			rs, dok := referentials.DecomposeRefCluster(conjs[i])
+			rs, dok := parse.DecomposeRefCluster(conjs[i])
 			if !dok || len(rs) == 0 {
 				return ReferentialWord{}, false
 			}
@@ -586,14 +585,14 @@ func tryCombinationRef(text string, conjs []string) (CombinationRefWord, bool) {
 	if !specOK {
 		return CombinationRefWord{}, false
 	}
-	var refs []referentials.PersonalRef
+	var refs []g.PersonalRef
 	var carrier *g.CarrierType
 	if cpEpenthesis {
 		ct, _ := parse.ParseCarrierType(c1)
 		carrier = &ct
 	} else {
 		var refsOk bool
-		refs, refsOk = referentials.DecomposeRefCluster(c1)
+		refs, refsOk = parse.DecomposeRefCluster(c1)
 		if !refsOk || len(refs) == 0 {
 			return CombinationRefWord{}, false
 		}

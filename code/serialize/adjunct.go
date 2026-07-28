@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
@@ -33,7 +32,7 @@ import (
 
 const refMore = 1 << 7
 
-func putRefs(out []byte, refs []referentials.PersonalRef) ([]byte, error) {
+func putRefs(out []byte, refs []g.PersonalRef) ([]byte, error) {
 	for i, r := range refs {
 		if r.Referent > 15 {
 			return nil, fmt.Errorf("referent %d exceeds 4 bits", r.Referent)
@@ -50,13 +49,13 @@ func putRefs(out []byte, refs []referentials.PersonalRef) ([]byte, error) {
 	return out, nil
 }
 
-func getRefs(buf []byte) ([]referentials.PersonalRef, int, error) {
-	var out []referentials.PersonalRef
+func getRefs(buf []byte) ([]g.PersonalRef, int, error) {
+	var out []g.PersonalRef
 	for i := 0; i < len(buf); i++ {
 		b := buf[i]
-		out = append(out, referentials.PersonalRef{
-			Referent: referentials.Referent(b & 0x0F),
-			Effect:   referentials.Effect(b >> 4 & 0x03),
+		out = append(out, g.PersonalRef{
+			Referent: g.Referent(b & 0x0F),
+			Effect:   g.RefEffect(b >> 4 & 0x03),
 		})
 		if b&refMore == 0 {
 			return out, i + 1, nil
@@ -273,7 +272,7 @@ func getReferential(buf []byte) (tokenize.ReferentialWord, int, error) {
 		if err != nil {
 			return r, 0, err
 		}
-		cat := referentials.Category(b)
+		cat := g.RefCategory(b)
 		r.Category = &cat
 	}
 	if flags&refFlagRefs != 0 {

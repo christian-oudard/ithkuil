@@ -7,7 +7,6 @@ import (
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
@@ -181,23 +180,23 @@ func TestParseToken_Referential(t *testing.T) {
 	cases := []tokenize.ReferentialWord{
 		// Plain: single referent + case
 		{
-			Refs: []referentials.PersonalRef{{Referent: referentials.R1m, Effect: referentials.NEU}},
+			Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}},
 			Case: &thm,
 		},
 		// Effect
 		{
-			Refs: []referentials.PersonalRef{{Referent: referentials.R2m, Effect: referentials.BEN}},
+			Refs: []g.PersonalRef{{Referent: g.R2m, Effect: g.BEN}},
 			Case: &erg,
 		},
 		// Case2
 		{
-			Refs:  []referentials.PersonalRef{{Referent: referentials.R1m, Effect: referentials.NEU}},
+			Refs:  []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}},
 			Case:  &thm,
 			Case2: &erg,
 		},
 		// RpvEssence
 		{
-			Refs:       []referentials.PersonalRef{{Referent: referentials.R1m, Effect: referentials.NEU}},
+			Refs:       []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}},
 			Case:       &dat,
 			RpvEssence: true,
 		},
@@ -276,9 +275,9 @@ func TestParseToken_MultiReferential(t *testing.T) {
 	gl := canonicalGlosser(t)
 	erg := g.ERG
 	want := tokenize.ReferentialWord{
-		Refs: []referentials.PersonalRef{
-			{Referent: referentials.R1m, Effect: referentials.NEU},
-			{Referent: referentials.R2p, Effect: referentials.BEN},
+		Refs: []g.PersonalRef{
+			{Referent: g.R1m, Effect: g.NEU},
+			{Referent: g.R2p, Effect: g.BEN},
 		},
 		Case: &erg,
 	}
@@ -291,8 +290,8 @@ func TestParseToken_MultiReferential(t *testing.T) {
 	if !ok {
 		t.Fatalf("got %T", got)
 	}
-	if len(rw.Refs) != 2 || rw.Refs[0].Referent != referentials.R1m ||
-		rw.Refs[1].Referent != referentials.R2p || rw.Refs[1].Effect != referentials.BEN {
+	if len(rw.Refs) != 2 || rw.Refs[0].Referent != g.R1m ||
+		rw.Refs[1].Referent != g.R2p || rw.Refs[1].Effect != g.BEN {
 		t.Errorf("Refs = %+v", rw.Refs)
 	}
 	got2 := gl.Token(rw)
@@ -338,7 +337,7 @@ func TestParseToken_CarrierHeadedReferential(t *testing.T) {
 func TestParseToken_CombinationRef(t *testing.T) {
 	gl := canonicalGlosser(t)
 	want := tokenize.CombinationRefWord{
-		Refs: []referentials.PersonalRef{{Referent: referentials.R1m, Effect: referentials.NEU}},
+		Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}},
 		Case: g.ERG,
 		Spec: g.BSC,
 	}

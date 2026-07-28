@@ -76,7 +76,6 @@ relative to `code/`.
 - `validation/` - Phonotactic constraint checking (cluster lengths, vowel sequences, stress).
 - `tokenize/` - Classifies words in a sentence into formatives, referentials, bias adjuncts, etc.
 - `concatenation/` - Type 1/2 compound formative chains.
-- `referentials/` - Anaphoric references (11 referent categories x 3 effects, combinations).
 - `numbers/` - Centesimal/base-100 number system.
 - `compose/` - Builds formatives from grammatical specifications + lexicon search helpers.
 - `view/` - Presentation layer for parsed tokens: the per-token type tag (`view.Type`) plus the phonetic-segment + glossary breakdown (`view.Segments`, `view.Headword`, `view.Glossary`) consumed by the parse CLI and MCP server.

@@ -9,7 +9,6 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/validation"
 )
@@ -203,7 +202,7 @@ func affixesVxCs(chunks []AffixChunk) ([]g.Affix, error) {
 		// A Column-4 vowel on anything else is therefore an accessor,
 		// which decodes to a case rather than a referent.
 		if t == g.Column4Affix {
-			_, isRef := referentials.DecomposeRefCluster(c.Cs)
+			_, isRef := parse.DecomposeRefAffixCs(c.Cs)
 			_, _, isAccessor := g.ParseAccessorCs(c.Cs)
 			if !isRef && !isAccessor {
 				return nil, fmt.Errorf(

@@ -29,7 +29,7 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/numbers"
-	"github.com/christian-oudard/ithkuil/referentials"
+	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/semantics"
 	"github.com/christian-oudard/ithkuil/surface"
 )
@@ -120,11 +120,11 @@ func (gl *Glosser) rootBody(f g.Formative) string {
 		if gl.Canonical {
 			open, close = "(", ")"
 		}
-		if refs, ok := referentials.DecomposeRefCluster(x.C1); ok && len(refs) > 0 {
+		if refs, ok := parse.DecomposeRefCluster(x.C1); ok && len(refs) > 0 {
 			parts := make([]string, len(refs))
 			for i, pr := range refs {
 				s := pr.Referent.String()
-				if pr.Effect != referentials.NEU {
+				if pr.Effect != g.NEU {
 					s += "/" + pr.Effect.String()
 				}
 				parts[i] = s
@@ -396,14 +396,14 @@ func (gl *Glosser) affixes(as []g.Affix) string {
 // two shortcuts that put a referential in an affix slot: the §4.6.5
 // Type-3 degree form and the §4.6.5 Column-4 case form.
 func refClusterLabel(cluster string) string {
-	refs, ok := referentials.DecomposeRefCluster(cluster)
+	refs, ok := parse.DecomposeRefCluster(cluster)
 	if !ok || len(refs) == 0 {
 		return ""
 	}
 	parts := make([]string, len(refs))
 	for i, pr := range refs {
 		s := pr.Referent.String()
-		if pr.Effect != referentials.NEU {
+		if pr.Effect != g.NEU {
 			s += "/" + pr.Effect.String()
 		}
 		parts[i] = s

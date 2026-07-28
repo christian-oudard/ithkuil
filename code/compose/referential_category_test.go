@@ -7,7 +7,6 @@ import (
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	rf "github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -61,10 +60,10 @@ func TestReferentialCategory_EveryCategory(t *testing.T) {
 	gl := &gloss.Glosser{Lex: lex, Canonical: true}
 	erg := g.ERG
 
-	for _, cat := range []rf.Category{rf.Agglomerative, rf.Nomic, rf.Abstract} {
+	for _, cat := range []g.RefCategory{g.Agglomerative, g.Nomic, g.Abstract} {
 		c := cat
 		want := tokenize.ReferentialWord{
-			Refs:     []rf.PersonalRef{{Referent: rf.R1m}},
+			Refs:     []g.PersonalRef{{Referent: g.R1m}},
 			Category: &c,
 			Case:     &erg,
 		}
@@ -106,7 +105,7 @@ func TestCombinationReferential_AffixesAreLost(t *testing.T) {
 	gl := &gloss.Glosser{Lex: lex, Canonical: true}
 
 	want := tokenize.CombinationRefWord{
-		Refs:    []rf.PersonalRef{{Referent: rf.R1m}},
+		Refs:    []g.PersonalRef{{Referent: g.R1m}},
 		Case:    g.ERG,
 		Spec:    g.CTE,
 		Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 3, Consonant: "r"}},

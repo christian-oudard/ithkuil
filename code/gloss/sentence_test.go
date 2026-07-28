@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -476,15 +475,15 @@ func TestRefLabel_FullShape(t *testing.T) {
 	// Build a ReferentialWord covering Case2, Category, RefB, RpvEssence.
 	thm := g.THM
 	erg := g.ERG
-	cat := referentials.Nomic
+	cat := g.Nomic
 	r := tokenize.ReferentialWord{
-		Refs: []referentials.PersonalRef{
-			{Referent: referentials.R1m, Effect: referentials.BEN},
+		Refs: []g.PersonalRef{
+			{Referent: g.R1m, Effect: g.BEN},
 		},
 		Category:   &cat,
 		Case:       &thm,
 		Case2:      &erg,
-		RefB:       []referentials.PersonalRef{{Referent: referentials.R2m, Effect: referentials.NEU}},
+		RefB:       []g.PersonalRef{{Referent: g.R2m, Effect: g.NEU}},
 		RpvEssence: true,
 	}
 	out := (&Glosser{}).refLabel(r)
@@ -496,8 +495,8 @@ func TestRefLabel_FullShape(t *testing.T) {
 func TestCombinationRefLabel_WithAffixes(t *testing.T) {
 	thm := g.THM
 	c := tokenize.CombinationRefWord{
-		Refs: []referentials.PersonalRef{
-			{Referent: referentials.R1m, Effect: referentials.BEN},
+		Refs: []g.PersonalRef{
+			{Referent: g.R1m, Effect: g.BEN},
 		},
 		Case:    thm,
 		Spec:    g.BSC,

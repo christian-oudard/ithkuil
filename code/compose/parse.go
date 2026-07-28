@@ -9,7 +9,7 @@ import (
 	"github.com/christian-oudard/ithkuil/allomorph"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/referentials"
+	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/surface"
 )
 
@@ -226,17 +226,17 @@ func parseParensRoot(tok string, affixes map[string]lexicon.AffixEntry) (g.Root,
 		if err != nil {
 			return nil, true, err
 		}
-		c1.WriteString(referentials.RefC1(referentials.PersonalRef{Referent: ref, Effect: eff}))
+		c1.WriteString(parse.RefC1(g.PersonalRef{Referent: ref, Effect: eff}))
 	}
 	return g.RefRoot{C1: c1.String(), Version: g.PRC, SlotIV: g.DefaultSlotIV}, true, nil
 }
 
 // parseRefSpec decodes "1m" or "1m/BEN" into a Referent + Effect.
-func parseRefSpec(s string) (referentials.Referent, referentials.Effect, error) {
+func parseRefSpec(s string) (g.Referent, g.RefEffect, error) {
 	refName, effName, _ := strings.Cut(s, "/")
-	var ref referentials.Referent
+	var ref g.Referent
 	matched := false
-	for _, r := range referentials.AllReferents {
+	for _, r := range g.AllReferents {
 		if r.String() == refName {
 			ref = r
 			matched = true
@@ -246,10 +246,10 @@ func parseRefSpec(s string) (referentials.Referent, referentials.Effect, error) 
 	if !matched {
 		return 0, 0, fmt.Errorf("unknown referent %q", refName)
 	}
-	eff := referentials.NEU
+	eff := g.NEU
 	if effName != "" {
 		matched = false
-		for _, e := range referentials.AllEffects {
+		for _, e := range g.AllRefEffects {
 			if e.String() == effName {
 				eff = e
 				matched = true
@@ -435,7 +435,7 @@ func appendType3Affix(f *g.Formative, tok string, slotV bool) error {
 		if err != nil {
 			return err
 		}
-		c1.WriteString(referentials.RefC1(referentials.PersonalRef{Referent: ref, Effect: eff}))
+		c1.WriteString(parse.RefC1(g.PersonalRef{Referent: ref, Effect: eff}))
 	}
 	appendToAffixSlot(f, g.Affix{
 		Type: atype, Degree: degree, Consonant: c1.String(),

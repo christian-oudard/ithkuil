@@ -12,7 +12,7 @@ import (
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/referentials"
+	"github.com/christian-oudard/ithkuil/parse"
 )
 
 // TestFuzz_GlossComposeRoundTrip asserts compose ∘ gloss is the
@@ -206,9 +206,9 @@ func randomRefCluster(rng *rand.Rand) string {
 	}
 	var b strings.Builder
 	for i := 0; i < n; i++ {
-		b.WriteString(referentials.RefC1(referentials.PersonalRef{
-			Referent: referentials.AllReferents[rng.Intn(len(referentials.AllReferents))],
-			Effect:   referentials.AllEffects[rng.Intn(len(referentials.AllEffects))],
+		b.WriteString(parse.RefC1(g.PersonalRef{
+			Referent: g.AllReferents[rng.Intn(len(g.AllReferents))],
+			Effect:   g.AllRefEffects[rng.Intn(len(g.AllRefEffects))],
 		}))
 	}
 	return b.String()

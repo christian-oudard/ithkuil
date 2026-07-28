@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/semantics"
 	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/tokenize"
@@ -387,7 +386,7 @@ func (gl *Glosser) refLabel(r tokenize.ReferentialWord) string {
 // (display), or a referent list. The optional Category prefixes the
 // list with "X:" for non-personal categories (only used by
 // ReferentialWord; CombinationRefWord doesn't carry Category).
-func (gl *Glosser) refHead(carrier *g.CarrierType, refs []referentials.PersonalRef, category *referentials.Category) string {
+func (gl *Glosser) refHead(carrier *g.CarrierType, refs []g.PersonalRef, category *g.RefCategory) string {
 	if carrier != nil {
 		if gl.Canonical {
 			return "[" + carrierTypeAbbrev(*carrier) + "]"
@@ -407,11 +406,11 @@ func (gl *Glosser) refHead(carrier *g.CarrierType, refs []referentials.PersonalR
 // formatRefList renders a list of PersonalRefs as "a+b+c", optionally
 // wrapped in square brackets (used when the list has multiple refs or
 // must be visually distinct from a single referent).
-func formatRefList(refs []referentials.PersonalRef, brackets bool) string {
+func formatRefList(refs []g.PersonalRef, brackets bool) string {
 	parts := make([]string, len(refs))
 	for i, pr := range refs {
 		s := pr.Referent.String()
-		if pr.Effect != referentials.NEU {
+		if pr.Effect != g.NEU {
 			s += "/" + pr.Effect.String()
 		}
 		parts[i] = s

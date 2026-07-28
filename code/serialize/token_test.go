@@ -9,7 +9,6 @@ import (
 
 	"github.com/christian-oudard/ithkuil/concatenation"
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
@@ -87,7 +86,7 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 		}},
 		// Referential — single ref.
 		tokenize.ReferentialWord{
-			Refs: []referentials.PersonalRef{{Referent: referentials.R1m, Effect: referentials.NEU}},
+			Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}},
 			Case: &thm,
 		},
 		// Referential — full shape (carrier head + case2 + RpvEssence).
@@ -99,7 +98,7 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 		},
 		// Combination ref.
 		tokenize.CombinationRefWord{
-			Refs: []referentials.PersonalRef{{Referent: referentials.R2m, Effect: referentials.BEN}},
+			Refs: []g.PersonalRef{{Referent: g.R2m, Effect: g.BEN}},
 			Case: g.ERG,
 			Spec: g.BSC,
 		},
@@ -126,7 +125,7 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 		tokenize.ReferentialWord{Case: &thm},
 		// Combination ref at its default Case and Spec, both elided.
 		tokenize.CombinationRefWord{
-			Refs: []referentials.PersonalRef{{Referent: referentials.Rpvs, Effect: referentials.DET}},
+			Refs: []g.PersonalRef{{Referent: g.Rpvs, Effect: g.DET}},
 			Case: g.THM,
 			Spec: g.BSC,
 		},
@@ -136,7 +135,7 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 		tokenize.CombinationRefWord{Carrier: &carrType, Case: g.ERG, Spec: g.CTE},
 		// Combination ref with affixes + case2.
 		tokenize.CombinationRefWord{
-			Refs:    []referentials.PersonalRef{{Referent: referentials.R1m, Effect: referentials.NEU}},
+			Refs:    []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}},
 			Case:    g.ERG,
 			Spec:    g.OBJ,
 			Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}},
@@ -169,7 +168,7 @@ func TestMarshalTokens_RoundTrip(t *testing.T) {
 		tokenize.BiasWord{Bias: g.DOL},
 		tokenize.FormativeWord{Formative: g.MinimalFormative("m")},
 		tokenize.ReferentialWord{
-			Refs: []referentials.PersonalRef{{Referent: referentials.R1m, Effect: referentials.NEU}},
+			Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}},
 			Case: &thm,
 		},
 	}
