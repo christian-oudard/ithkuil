@@ -252,6 +252,29 @@ RECOVERED_DEGREES = {
     ],
 }
 
+
+# A Type cell holds one of Quijada's seven gradient types, optionally
+# starred to mark that the affix has an associated C_R root. ANG's cell
+# holds its type followed by a second, differently-ordered assignment of
+# its nine degrees, spilled in from somewhere:
+#
+#   0* 1 arc-seconds 2 arc-minutes 3 mils 4 grads 5 degrees 6 points
+#   7 hour angles 8 radians 9 sextants
+#
+# The degree columns of the same row order them points, hour angles,
+# grads, mils, radians, sextants, arc-seconds, arc-minutes, degrees,
+# which is the order the affix document gives, so the spill is the stray
+# text and the degrees stand. Only the type is taken from the cell.
+LEGAL_TYPES = {"", "0", "A1", "A2", "B", "C", "D1", "D2"}
+
+
+def clean_type(cell: str) -> str:
+    head = cell.split(" ", 1)[0]
+    if head.rstrip("*") not in LEGAL_TYPES:
+        raise ValueError(f"unrecognized gradient type {cell!r}")
+    return head
+
+
 def merge_affixes(upstream: list[dict], existing_path: Path) -> list[dict]:
     """Preserve local description/type when upstream is blank, and undo
     the three-row degree shift described at SHIFTED_DEGREES, and fill
@@ -261,6 +284,7 @@ def merge_affixes(upstream: list[dict], existing_path: Path) -> list[dict]:
     affixes (e.g. ḑg = MDI and ḑg = S07 are both in upstream).
     """
     for a in upstream:
+        a["type"] = clean_type(a["type"])
         blank = RECOVERED_DEGREES.get(a["abbrev"])
         if blank and not any(d.strip() for d in a["degrees"]):
             print(f"  filling blank degrees for {a['abbrev']} ({a['cs']}) from the PDF")

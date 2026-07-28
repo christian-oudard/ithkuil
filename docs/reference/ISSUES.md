@@ -117,38 +117,6 @@ a defect in the language.
 | G38 | §3.5.0's gradient-type descriptions were ours, and four were wrong |
 
 ## Affix table
-### A1. Three affixes' degree lists are shifted by one row
-
-*Confirmed in the live spreadsheet (layer 2), not an artifact of our
-mirror.* Rows 487-489 hold the wrong meanings:
-
-| Cs | Abbrev | Description | Degrees in the spreadsheet | Degrees in the reference |
-|----|--------|-------------|----------------------------|--------------------------|
-| ẓd | MET | Metonymic Categories | *(blank)* | part for whole, producer for product, … |
-| ẓḑ | GPJ | Functional Group J | part for whole, producer for product, … | thiocyanate, isothiocyanate, … |
-| zf | ENS | Environmental Niche | thiocyanate, isothiocyanate, … | active at twilight/crepuscular, nocturnal, … |
-
-Both sources agree on every Cs, abbreviation and description; only the
-degree cells differ. The reference's assignment is the coherent one —
-"part for whole" is metonymy, thiocyanate is a functional group, and
-crepuscular/nocturnal is an environmental niche — so the spreadsheet
-is what slipped.
-
-The shape is what an "insert cells, shift down" over a three-row
-selection produces: the first row is blanked, the first two rows'
-contents move down one, and the third row's contents fall out of the
-selection and are lost. ENS's nine meanings appear nowhere in the
-spreadsheet; they survive only in the reference document.
-
-Upstream, MET's Degree 1 is empty, GPJ's is "part for whole" and ENS's
-is "thiocyanate, thocyanato-, -thiocyanate" — exactly as our mirror has
-them. `data/data.json` is built from that sheet, so the shipped lexicon
-glosses MET as empty, GPJ as metonymy and ENS as thiocyanate chemistry.
-The reference document is the only place ENS's nine meanings survive.
-**Fixed:** `tools/sync_lexicon.py` now carries a `SHIFTED_DEGREES`
-override that restores all three from there on every sync, and
-`data/data.json` has been corrected.
-
 ### A3. SPT has two C_S forms and no rule for choosing between them
 
 Quijada's affix document gives the entry as **-rw/-ry SPT Specified
@@ -177,52 +145,6 @@ farther:
 
 plus ten more positional pairs on the -Z/+Z contrast. SPT is the one
 member of that family where -w and -y do not distinguish anything.
-
-### A4. ANG's Type cell holds a spilled degree list
-
-*Confirmed live upstream, verbatim.* The Type column for ANG (`dg`,
-Angular Measurement) reads:
-
-```
-0* 1 arc-seconds 2 arc-minutes 3 mils 4 grads 5 degrees 6 points
-7 hour angles 8 radians 9 sextants
-```
-
-The reference gives the type as plain `0*`. What follows it is a
-second, differently-ordered assignment of the same nine units — the
-reference and the spreadsheet both order the degrees points,
-hour angles, grads, mils, radians, sextants, arc-seconds, arc-minutes,
-degrees, while the stray text orders them arc-seconds, arc-minutes,
-mils, grads, degrees, points, hour angles, radians, sextants. Which
-ordering was meant is not recoverable from either source.
-
-### A6. XCL is absent from the community spreadsheet
-
-XCL (`çx`, External Standard for Comparison for Use with Levels) has a
-full entry in `docs/reference/affixes_reference.md` and no row in
-the Collaborative Ithkuil IV Roots and Affixes Spreadsheet — *checked
-live: the sheet has 527 rows, no XCL, and no affix at all with C_S
-`çx`.* Commit 214744e restored it by hand, and `tools/sync_lexicon.py`
-preserves locally-supplemented fields where upstream is blank, so a
-re-sync will not drop it again.
-
-This is the one entry where the two sources disagree by presence rather
-than content, and the reference document is the fuller of the two.
-
-### A7. ILT degree 7 reads "Eight"
-
-*Confirmed live upstream.* ILT (`rţy`, Iterations Per Long-Term) runs
-"X times per millenium", "per 10000 year period", "per 10⁵ year
-period", "per age (10⁶ years)", "per epoch (10⁷ years)", "per era (10⁸
-years)" — and then degree 7 is the bare word **Eight**, before degree 8
-resumes with "X times per billion (10⁹) year period".
-
-CYL, its sibling on the same scale (see A3), gives "occuring every 500
-million years" at degree 7, which is where the 10⁸-to-10⁹ gap wants
-filling. A stray cell has overwritten the entry.
-
-Quijada's degree 7 is "X times per eon [5 x 10⁸ yrs.]". **Fixed** in
-`data/data.json`.
 
 ## Lexicon
 
@@ -917,28 +839,6 @@ The marker **D1\*** on NEW (`sp`, Newness/Revision) is not itself an
 anomaly: Quijada attaches the asterisk to the abbreviation, so a D1
 affix may carry one, and NEW's root at `sp` is "degree of newness".
 It only looked anomalous while our §3.5.0.1 tied the star to Type 0.
-
-### G30. PHS degree 4 is coded IMT where the category is ITM
-
-Ninety category codes are embedded in affix degree descriptions in the
-form "(CODE) Full Name" — the MCS, PHS, AP1-4, IVL, LVL and VAL
-affixes, which take grammatical categories as their degrees rather than
-lexical meanings. Eighty-nine resolve to an abbreviation in the grammar
-tables. One does not:
-
-| PHS degree | Affix table | Phase category |
-|------------|-------------|----------------|
-| 3 | (REP) Repetitive | REP Repetitive |
-| **4** | **(IMT) Intermittent** | **ITM** Intermittent |
-| 5 | (RCT) Recurrent | RCT Recurrent |
-
-Every other degree of PHS matches the Phase table exactly and in order,
-and the name "Intermittent" is right, so `IMT` is a transposition of
-`ITM`. The grammar document uses ITM throughout — in the Slot VIII
-Pattern-1 table and in the writing-system chapter — and IMT appears
-nowhere in it. The affix table is the only place the transposed form
-occurs. **Fixed** in `data/data.json`.
-
 
 ### G13. The documents disagree on how to write ẓ and ḑ
 

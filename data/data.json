@@ -45219,7 +45219,7 @@
       "cs": "dg",
       "abbrev": "ANG",
       "description": "Angular Measurement",
-      "type": "0* 1 arc-seconds 2 arc-minutes 3 mils 4 grads 5 degrees 6 points 7 hour angles 8 radians 9 sextants",
+      "type": "0*",
       "degrees": [
         "(in) points",
         "(in) hour angles",
