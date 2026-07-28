@@ -1,8 +1,9 @@
 // Package tokenize classifies words in an Ithkuil sentence into their
 // grammatical roles. Each word becomes one of several WordToken
 // variants — a formative, a bias adjunct, a register marker, etc. —
-// using the parsers already built in the parse, fullparse, and
-// referentials packages.
+// each of which is a thin wrapper around the grammar type for its word
+// class. The decoding is done by parse and fullparse; what this
+// package adds is deciding which of them to believe.
 //
 // The classifier tries parsers in priority order tightest-first:
 //
@@ -10,8 +11,8 @@
 //  2. Recognized register opener/closer surface → Register.
 //  3. Recognized carrier consonant + vowel → Carrier.
 //  4. Vowel + valid Cn consonant → Modular.
-//  5. Anything else that parses as a formative → Formative.
-//  6. Anything else that decomposes as referential C1 → Referential.
+//  5. A referential, then a combination referential.
+//  6. Anything else that parses as a formative → Formative.
 //  7. Fallback → UnknownWord.
 package tokenize
 

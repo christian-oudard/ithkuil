@@ -453,6 +453,9 @@ var validDisyllabicConjuncts = map[string]bool{
 	// "ae | ea | üo | üö". üo is also the §4.6.3 referential epenthesis
 	// prefix, and üö is the §3.5/§3.7 Ca-stacking Vx.
 	"üo": true, "üö": true,
+	// §4.6.2 slot 5 takes "the same affixes as formative Slot IX except
+	// for THM case = -üa", the one position that vowel appears in.
+	"üa": true,
 }
 
 // ValidateVowelSequence checks a vowel sequence against rules 1.1-1.2.
