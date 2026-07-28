@@ -12,6 +12,7 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/slots"
 	"github.com/christian-oudard/ithkuil/tokenize"
 	"github.com/christian-oudard/ithkuil/validation"
 	"github.com/christian-oudard/ithkuil/view"
@@ -114,6 +115,7 @@ type analyzeWord struct {
 	Surface    string          `json:"surface"`
 	Type       string          `json:"type"`
 	Gloss      string          `json:"gloss"`
+	Reason     string          `json:"reason,omitempty"` // why an unclassified word could not be read
 	Root       *rootHead       `json:"root,omitempty"`
 	Segments   []segmentOut    `json:"segments,omitempty"`
 	Glossary   []glossaryRow   `json:"glossary,omitempty"`
@@ -178,6 +180,20 @@ func (s *server) analyze(_ context.Context, _ *mcp.CallToolRequest, in analyzeIn
 					w.Glossary = append(w.Glossary, glossaryRow{
 						Category: ge.Category, Code: ge.Code,
 						Name: ge.Name, Meaning: ge.Meaning,
+					})
+				}
+			}
+		case tokenize.UnknownWord:
+			// Without this the caller gets type "?" and a gloss that
+			// is the surface spelled back, and no way to tell an
+			// unreadable word from an unsupported one. The shape
+			// split survives even when the grammatical decode fails,
+			// so both the reason and the split are available.
+			w.Reason = view.UnknownReason(tt.Text)
+			if layout, err := slots.Parse(tt.Text); err == nil {
+				for _, sg := range view.LayoutSegments(layout) {
+					w.Segments = append(w.Segments, segmentOut{
+						Chunk: sg.Chunk, Raw: sg.Raw, Slot: sg.Slot,
 					})
 				}
 			}

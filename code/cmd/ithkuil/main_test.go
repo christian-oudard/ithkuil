@@ -117,6 +117,55 @@ func TestParse_UnclassifiedShowsDiagnostic(t *testing.T) {
 	}
 }
 
+// TestParse_ShortShowsReason checks the one-line view carries the
+// reason too. Its gloss for an unclassified word is the surface
+// spelled back with a "?", which repeats the type column and says
+// nothing about why the word could not be read.
+func TestParse_ShortShowsReason(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "parse", "--short", "mavẓorf")
+	if code != 0 {
+		t.Fatalf("parse --short exit %d; got %q", code, out)
+	}
+	if !strings.Contains(out, `unrecognized Ca "vẓ"`) {
+		t.Errorf("short view missing the reason; got %q", out)
+	}
+	if strings.Contains(out, "?mavẓorf") {
+		t.Errorf("short view still echoing the surface as a gloss; got %q", out)
+	}
+}
+
+// TestParse_CapitalDoesNotSkipValidation pins the bypass shut. The
+// invalid-word map was keyed by the raw token but read back with the
+// lower-cased surface, so a capital silently skipped validation:
+// "cskava" exited 1 while "Cskava" exited 0. Both must now report,
+// and the message must name the word as typed.
+func TestParse_CapitalDoesNotSkipValidation(t *testing.T) {
+	for _, word := range []string{"cskava", "Cskava"} {
+		t.Run(word, func(t *testing.T) {
+			_, errOut, code := runCLI("-data", dataFile(), "parse", word)
+			if code != 1 {
+				t.Errorf("parse %q exit = %d, want 1; stderr=%q", word, code, errOut)
+			}
+			if !strings.Contains(errOut, "2.9") {
+				t.Errorf("parse %q missing the rule; stderr=%q", word, errOut)
+			}
+		})
+	}
+}
+
+// TestParse_ErrorNamesTypedWord checks the ASCII input method does not
+// swallow the user's spelling. "aaaa" normalizes to "ää", and
+// reporting a rule against "ää" alone describes a word never written.
+func TestParse_ErrorNamesTypedWord(t *testing.T) {
+	_, errOut, code := runCLI("-data", dataFile(), "parse", "aaaa")
+	if code != 1 {
+		t.Fatalf("parse aaaa exit = %d, want 1; stderr=%q", code, errOut)
+	}
+	if !strings.Contains(errOut, "aaaa → ää") {
+		t.Errorf("error should show typed → normalized; got %q", errOut)
+	}
+}
+
 func TestParse_ASCIIInput(t *testing.T) {
 	// ASCII typing convention: "maleeut,rqait" must normalize to
 	// "malëuţřait" before parsing, so the slot breakdown shows the

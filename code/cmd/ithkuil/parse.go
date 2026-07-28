@@ -120,7 +120,16 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 				exit = 1
 				continue
 			}
-			fmt.Fprintf(stdout, "%s  %s  %s\n", t.Surface(), view.Type(t), glosser.Token(t))
+			// An unclassified word's gloss is just its surface spelled
+			// back with a "?" on it, which says nothing the type
+			// column has not. Give the reason instead.
+			detail := glosser.Token(t)
+			if _, ok := t.(tokenize.UnknownWord); ok {
+				if reason := view.UnknownReason(t.Surface()); reason != "" {
+					detail = reason
+				}
+			}
+			fmt.Fprintf(stdout, "%s  %s  %s\n", t.Surface(), view.Type(t), detail)
 		}
 		return exit
 	}
@@ -190,13 +199,13 @@ func renderUnknown(w io.Writer, word string) {
 
 	layout, err := slots.Parse(word)
 	if err != nil {
-		// slots.Parse errors already name their own package; a second
-		// label here just reads as "shape: slots: ...".
+		// A shape failure names its own package already, and leaves
+		// no split to show, so it is the whole story.
 		fmt.Fprintf(iw, "%v\n", err)
 		return
 	}
-	if _, err := slots.ToGrammar(layout); err != nil {
-		fmt.Fprintf(iw, "as a formative: %v\n", err)
+	if reason := view.UnknownReason(word); reason != "" {
+		fmt.Fprintf(iw, "as a formative: %s\n", reason)
 	}
 	fmt.Fprintln(iw)
 	fmt.Fprintln(iw, stylize(ansiDim, "slot shape, for the word as a whole:"))
