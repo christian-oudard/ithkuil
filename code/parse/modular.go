@@ -140,6 +140,29 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 	}
 	if final != "" {
 		// Lone-aspect modular: just the aspect vowel, default FAC mood.
+		//
+		// §4.3's Slot 4 is mandatory and holds "Aspect or
+		// Valence/Phase/Level/Effect or Specialized Scope", given as
+		// "V_N or V_H" — a bare vowel with no consonant, and a V_N
+		// vowel does not by itself say which category it is. The four
+		// Pattern-1 categories and the four Aspect columns share the
+		// same vowel forms one for one; in formative Slot VIII the
+		// following C_N resolves it, and Slot 4 has no C_N. The other
+		// two slots both carry the distinction — Slot 2 has its C_N and
+		// Slot 3 is given a consonant for no other purpose ("C_M = n if
+		// V_N represents an Aspect, otherwise C_M = ň") — so the
+		// mandatory slot is the one left without a marker. §4.3's own
+		// example uhlaini ends in a Slot-4 i, which is RCP Valence or
+		// PRG Aspect with nothing to choose between them.
+		//
+		// Stress does not help: the vowel is read as V_H only under
+		// ultimate stress, handled above, so penultimate stress already
+		// means "this is a V_N" and cannot also encode which V_N.
+		//
+		// We read Aspect. Slot 3 exists to say "the V_N beside me is an
+		// Aspect", which would be pointless if a bare V_N were not an
+		// Aspect by default, and every attested Slot-4 vowel we have
+		// decodes as one.
 		asp, ok := ParseVnAspect(final)
 		if !ok {
 			return grammar.ModularAdjunct{}, fmt.Errorf("modular adjunct: trailing vowel %q is not an aspect", final)

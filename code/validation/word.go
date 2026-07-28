@@ -122,6 +122,29 @@ func ValidateWord(word string) Result {
 	// their cluster table is authoritative and may legitimately contain
 	// shapes the §2 root/affix rules disallow (e.g. "pļļ" CMD, "kçç"
 	// EXA). Skip cluster validation in that case.
+	//
+	// The exemption is not for a handful of awkward forms. A bias
+	// adjunct is a bare consonant conjunct standing alone as a word, a
+	// shape §1.4 and §§3-4 never contemplate — every rule there is
+	// written about a conjunct with a vowel-form beside it, §4.1 opening
+	// "A single word-final consonant following a vowel-form". Taking the
+	// word-initial inventory at its word, 34 of the 61 forms are
+	// unlicensed: §3.2.9 grants word-initial l- and r- only -w or -y,
+	// which fails ACC lf, ANP lst and nine more; §3.2.8 grants nasals a
+	// liquid or approximant, which fails ATE ňj, RSG msf and nine more;
+	// ř- is granted no word-initial pair at all, failing APB řs, DOL řřx
+	// and IVD řřn; and §3.2.1, §3.2.2, §3.3 and §3.3.4 take one apiece.
+	//
+	// None of them is hypothetical: every one is attested standing alone
+	// in the community corpus, pļļ 291 times, msf 127, kçç 48, cč 33.
+	// So the table is taken as authoritative and §3's word-initial rules
+	// as scoped to words that have a vowel in them.
+	//
+	// Two forms stay unsettled and are simply admitted with the rest.
+	// SAT's spelling is itself in dispute — the grammar prints lţ,
+	// data.json has ļţ, the corpus uses both — and neither is licensed.
+	// ARB xtļ is neither permitted nor prohibited: §3.2.3 licenses xt
+	// word-initially but §3.3 grants no triple beginning with x-.
 	conjs := surface.SplitConjuncts(word)
 	if len(conjs) == 1 {
 		firstRune, _ := utf8.DecodeRuneInString(conjs[0])

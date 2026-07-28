@@ -18,6 +18,21 @@ package grammar
 //     consonant. Stem implicitly S1, otherwise structurally the same
 //     as CrRoot.
 //
+// Both specialized constructions replace Slot II's eight-value Stem ×
+// Version table and neither says what becomes of Stem. §4.2 uses four
+// Slot II values encoding Version by Function, Function having moved up
+// from Slot IV to make room for Affix-Degree, and it settles
+// Specification explicitly while saying nothing about Stem. §4.6.4 uses
+// two encoding Version alone and states that its Slot IV shows
+// Function, Specification and Context as for a standard formative, so
+// Stem has no home in either slot.
+//
+// S1 is the reading here because it is the only one either construction
+// can spell. §4.6.4 does write as though stems were still available —
+// "the meaning of each stem ... changes depending on its Perspective",
+// over a table headed "Stem 1 Nominal meaning" — but supplies no form
+// for a second or third, so nothing else is expressible.
+//
 // Surface markers that distinguish these (special Vv ëi/eë/ëu/oë for
 // CsRoot, ae/ea for RefRoot) are a rendering concern and do not
 // appear in the grammar.
