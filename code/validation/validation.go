@@ -537,6 +537,27 @@ func isLabialStop(c rune) bool { return c == 'p' || c == 'b' }
 
 func isVoicedStop(c rune) bool { return strings.ContainsRune("bdg", c) }
 
+// ç is in none of these three, against what the phonotactics document
+// says about itself twice over.
+//
+// Its opening paragraph defines "sibilant" as s, z, š, ž, c, ẓ, č, j
+// and ç, and "sibilant fricative" as s, z, š, ž and ç. Five later rules
+// write the membership out without ç — §2.2, §2.10, §2.17, §3.2 and
+// §3.2.1 — and only §3.3.4 keeps it.
+//
+// §2.2 settles it: it forbids a dental stop before any sibilant, and
+// §3.2 lists tç as permissible, so the two hold together only if ç is
+// not a sibilant. The opening definitions would also make §2.10 and
+// §2.17 redundant, since §2.8 already forbids adjacent distinct
+// sibilant fricatives. The corpus agrees.
+//
+// Which row ç belongs to is a separate disagreement between the two
+// documents: §1.1 of the grammar puts it in the fricative row and
+// leaves the palatal affricate cell empty, and the phonotactics
+// document does the reverse. The grammar is right, and the phonotactics
+// document agrees with it everywhere but that one cell — its own §2.10
+// opens "the voiceless palatal fricative -ç-", and §3.2 lists pç, tç
+// and kç among the stop + non-sibilant fricative conjuncts.
 func isSibilantFricative(c rune) bool { return strings.ContainsRune("sšzž", c) }
 
 func isSibilantAffricate(c rune) bool { return strings.ContainsRune("cčẓj", c) }

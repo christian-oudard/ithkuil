@@ -103,3 +103,31 @@ func TestParseCa_RejectsJunk(t *testing.T) {
 		}
 	}
 }
+
+// The Ca table's alternate-form footnote for UPX is printed with its
+// marker on only two of the five Extension rows, GRA and DPL. Read that
+// way, UPX/PRX composes a bare t which is already MSS/DEL, UPX/ICP
+// composes k against MSC/DEL, and UPX/ATV composes p against MSF/DEL,
+// across every Affiliation and Perspective — 96 pairs of Slot VI values
+// sharing a spelling. Reading the footnote over the whole Extension
+// column, as ConstructCaRaw does, makes the map injective instead.
+//
+// This is the test that says so. A regression that narrows the footnote
+// back to the printed two rows shows up here as 96 collisions.
+func TestCaFormsAreDistinct(t *testing.T) {
+	seen := make(map[string]g.SlotVI, len(CaForward))
+	collisions := 0
+	for s, cluster := range CaForward {
+		if prior, dup := seen[cluster]; dup {
+			collisions++
+			if collisions <= 5 {
+				t.Errorf("Ca %q is both %v and %v", cluster, prior, s)
+			}
+			continue
+		}
+		seen[cluster] = s
+	}
+	if collisions > 0 {
+		t.Errorf("%d colliding Ca forms; the 3840 Slot VI values must spell distinctly", collisions)
+	}
+}

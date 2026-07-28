@@ -126,6 +126,17 @@ func ConstructCaRaw(s g.SlotVI) string {
 		// table, not the "alternate when preceded by [C]t/k/p" rule
 		// that applies to non-UPX Configurations. The Affiliation
 		// prefix sits in front; the original code dropped it.
+		//
+		// The footnote this rests on — "use the alternate form if the
+		// Configuration of the word is UPX" — is printed with its
+		// marker on only two of the five Extension rows, GRA and DPL.
+		// It has to govern the whole column: UPX/PRX would otherwise
+		// compose a bare t, which is already MSS/DEL, and likewise k
+		// for UPX/ICP against MSC/DEL and p for UPX/ATV against
+		// MSF/DEL, across every Affiliation and Perspective. Read as
+		// printed that costs 96 of the 3840 Ca forms their distinct
+		// spelling; read over the column the map is injective, which
+		// TestCaFormsAreDistinct checks.
 		return ca3[s.Affiliation] + ca2Standalone[s.Extension] + persp.suffix
 	}
 	if s.Configuration == g.UPX && s.Affiliation != g.CSL {
