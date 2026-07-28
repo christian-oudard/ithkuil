@@ -8,9 +8,9 @@ import (
 )
 
 // dataPath returns the path to a file under the repo's data/ directory,
-// resolved relative to this test file (lexicon/ → ../data/).
+// resolved relative to this test file (code/lexicon/ → ../../data/).
 func dataPath(name string) string {
-	return filepath.Join("..", "data", name)
+	return filepath.Join("..", "..", "data", name)
 }
 
 func TestLoad(t *testing.T) {

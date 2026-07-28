@@ -19,7 +19,7 @@ if ! command -v go >/dev/null 2>&1; then
   exec nix develop "$(dirname "$0")/.." --command "$0" "$@"
 fi
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../code"
 
 PKGS=("${@:-./...}")
 PROFILE=$(mktemp -t ithkuil-cov.XXXXXX.out)

@@ -11,7 +11,7 @@ import (
 )
 
 func dataPath(name string) string {
-	return filepath.Join("..", "data", name)
+	return filepath.Join("..", "..", "data", name)
 }
 
 func loadLex(t *testing.T) *lexicon.Lexicon {

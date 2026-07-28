@@ -137,7 +137,7 @@ func TestSegments_WithSlotV_AndConcat(t *testing.T) {
 }
 
 func TestHeadword_WithLexicon(t *testing.T) {
-	lex, err := lexicon.Load(filepath.Join("..", "data", "data.json"))
+	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("LoadDefault: %v", err)
 	}
@@ -152,7 +152,7 @@ func TestHeadword_WithLexicon(t *testing.T) {
 }
 
 func TestGlossary_WithLexicon(t *testing.T) {
-	lex, err := lexicon.Load(filepath.Join("..", "data", "data.json"))
+	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("LoadDefault: %v", err)
 	}
@@ -306,7 +306,7 @@ func TestHeadword_CsRoot(t *testing.T) {
 		t.Errorf("CsRoot Headword without lex: Meaning = %q, want empty", h.Meaning)
 	}
 	// With lexicon — exercises the affix-lookup branch.
-	lex, err := lexicon.Load(filepath.Join("..", "data", "data.json"))
+	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("LoadDefault: %v", err)
 	}
@@ -488,7 +488,7 @@ func TestAffixDegreeGloss_Edge(t *testing.T) {
 	if name, meaning := affixDegreeGloss("r", 5, nil); name != "" || meaning != "" {
 		t.Errorf("affixDegreeGloss(nil lex) = (%q,%q), want empty", name, meaning)
 	}
-	lex, err := lexicon.Load(filepath.Join("..", "data", "data.json"))
+	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("LoadDefault: %v", err)
 	}

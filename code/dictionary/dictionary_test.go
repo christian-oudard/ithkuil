@@ -137,7 +137,7 @@ func TestLookupIsOrdered(t *testing.T) {
 }
 
 func TestRealLexicon(t *testing.T) {
-	lex, err := lexicon.Load(filepath.Join("..", "data", "data.json"))
+	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("Load: %v", err)
 	}

@@ -8,19 +8,23 @@ Everything runs inside the dev shell. It is the only supported environment:
 `go`, `python3` and `curl` are on PATH there and nowhere else, and it sets
 `CGO_ENABLED=0`.
 
+All Go work happens in `code/`, which holds the module; the `go` commands
+below only work from there.
+
 ```bash
 nix develop               # Enter the shell, then run the commands below
 python3 tools/build_db.py # Build the data store (needed before the CLI runs)
+cd code                   # The Go module lives here, not at the repo root
 go install ./cmd/...      # Drop binaries into $GOBIN
 go build ./...            # Typecheck and compile everything; writes no binaries
 go test ./...             # Run the full test suite
-tools/test.sh             # Test suite with cross-package coverage summary
+tools/test.sh             # Test suite with cross-package coverage summary (run from anywhere)
 ```
 
 One-shot form, for anything that can't hold an interactive shell open:
 
 ```bash
-nix develop --command go test ./...
+nix develop --command sh -c 'cd code && go test ./...'
 nix develop --command python3 tools/build_db.py
 ```
 
@@ -41,8 +45,8 @@ There is no `.gitignore`, and the repo should stay that way. Everything in the
 tree is source; everything else lives elsewhere. Generated output goes to
 `$XDG_DATA_HOME/ithkuil/` (see `store.DefaultPath`) or to a path given on the
 command line, and downloaded reference material goes there too. Use
-`go install`, never `go build ./cmd/ithkuil`, which would drop a binary at the
-repo root.
+`go install`, never `go build ./cmd/ithkuil`, which would drop a binary in
+`code/`.
 
 ## What This Project Is
 
@@ -52,7 +56,9 @@ The canonical test word is "Maţřëullait", the community nickname for v4 (not 
 
 ## Architecture
 
-Go packages at the repo root:
+The repo has four top-level folders: `code/` (the Go module, and the only
+place Go lives), `data/`, `docs/`, and `tools/`. Package paths below are
+relative to `code/`.
 
 - `phonology/` - 31 consonants, 9 vowels, vowel form table (4 series x 9 forms)
 - `grammar/` - All morphological types. `Formative` is the central struct (Concat, Root, SlotV, SlotVI, SlotVII, SlotVIII, Final). `Root` and `Final` are sum-type interfaces; see `root.go` and `final.go`.
@@ -76,6 +82,7 @@ Go packages at the repo root:
 - `view/` - Presentation layer for parsed tokens: the per-token type tag (`view.Type`) plus the phonetic-segment + glossary breakdown (`view.Segments`, `view.Headword`, `view.Glossary`) consumed by the analyze CLI and MCP server.
 - `store/` - Read-only SQLite access to `data/data.db` (roots, affixes, grammar tables).
 - `lexicon/` - Roots and affixes in memory. `LoadFromStore(*store.Store)` is the normal path; `Load(path)` reads the JSON source directly (used by tests).
+- `dictionary/` - The English index: reads the lexicon's English glosses backwards into a headword-to-lexical-core map. `english_doc_test.go` checks every claim made in `docs/dictionary/english.md` by composing it.
 - `corpus/` - The 384 official example sentences from the grammar, with Quijada's English translations, embedded as test data. `corpus.Examples()` and `corpus.Words()`. `tokenize/corpus_test.go` guards the set of words we still fail to classify.
   `discord_examples.txt` + `corpus.DiscordExamples()` hold curated words from the community Discord archive, each marked `correct` or `incorrect` with the rule it rests on. The archive is usage, not authority, so a word cited as evidence should appear there first. A leading `!` marks a word we currently disagree with (a filed defect). `fullparse/discord_examples_test.go` checks we agree.
 
@@ -111,7 +118,7 @@ Everything under `tools/` is non-Go tooling. Go tools stay with the code they be
 
 ## Documents
 
-All prose lives under `docs/`, and no Go package does. `docs/reference/`
+All prose lives under `docs/`, and no Go code does. `docs/reference/`
 holds the language reference below; `docs/dictionary/` holds one file per
 natural language (`english.md` so far) mapping that language into
 Ithkuil, authored rather than derived — see the "English index" section

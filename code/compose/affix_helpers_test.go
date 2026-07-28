@@ -140,7 +140,7 @@ func TestWithCHC_RejectsBadDegree(t *testing.T) {
 // in the bundled lexicon. Guards against silent drift if the lexicon
 // is regenerated and renames a Cs.
 func TestMCSCs_LexiconEntry(t *testing.T) {
-	lex, err := lexicon.Load(filepath.Join("..", "data", "data.json"))
+	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("LoadDefault: %v", err)
 	}

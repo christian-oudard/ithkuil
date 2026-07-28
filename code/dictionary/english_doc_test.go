@@ -23,11 +23,11 @@ var entryLine = regexp.MustCompile("^- `([^`]+)` → \\*\\*([^*]+)\\*\\*")
 
 func loadDoc(t *testing.T) (string, *lexicon.Lexicon) {
 	t.Helper()
-	b, err := os.ReadFile(filepath.Join("..", "docs", "dictionary", "english.md"))
+	b, err := os.ReadFile(filepath.Join("..", "..", "docs", "dictionary", "english.md"))
 	if err != nil {
 		t.Fatalf("read english.md: %v", err)
 	}
-	lex, err := lexicon.Load(filepath.Join("..", "data", "data.json"))
+	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("load lexicon: %v", err)
 	}

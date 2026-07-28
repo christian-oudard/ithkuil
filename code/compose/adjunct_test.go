@@ -16,7 +16,7 @@ import (
 // mode — the same one whose output we expect ParseToken to invert.
 func canonicalGlosser(t *testing.T) *gloss.Glosser {
 	t.Helper()
-	lex, err := lexicon.Load(filepath.Join("..", "data", "data.json"))
+	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}
@@ -99,7 +99,7 @@ func TestParseToken_ParsingAdjunct(t *testing.T) {
 
 func TestParseToken_SingleAffix(t *testing.T) {
 	gl := canonicalGlosser(t)
-	lex, _ := lexicon.Load(filepath.Join("..", "data", "data.json"))
+	lex, _ := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	cases := []struct {
 		atype g.AffixType
 		deg   int
@@ -133,7 +133,7 @@ func TestParseToken_SingleAffix(t *testing.T) {
 
 func TestParseToken_MultiAffix(t *testing.T) {
 	gl := canonicalGlosser(t)
-	lex, _ := lexicon.Load(filepath.Join("..", "data", "data.json"))
+	lex, _ := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	first := g.Affix{Type: g.Type1Affix, Degree: 3, Consonant: "r"}
 	rest := []g.Affix{
 		{Type: g.Type2Affix, Degree: 5, Consonant: "kt"},
