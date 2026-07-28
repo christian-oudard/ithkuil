@@ -212,9 +212,17 @@ func tryParseRoot(tok string, affixes map[string]lexicon.AffixEntry) (g.Root, bo
 // once. The §2 pair rules fire on two — "csk" and "dcs" are Quijada's
 // own roots, attested as "cskava" and "Adcsuleuha" — so a Cr cannot
 // be held to them, and validating the rendered word instead fails the
-// same two. Whether §2 or the corpus is wrong is open; see G37 and
-// the §2 audit in issues.md. Until it is settled, compose rejects
-// only what is certain.
+// same two.
+//
+// Which side is wrong is open. §2.2 bars a dental stop before any
+// sibilant and §2.9 a sibilant affricate before a sibilant fricative,
+// and §2.2's own justification argues against the examples: "dc"
+// really would be hard to tell from "cc". Against that, these are
+// Quijada's own roots in his own glossed sentences, in three separate
+// places and in the lexicon besides, and a typo repeated that often is
+// a stretch. Until it is settled, compose rejects only what is certain
+// and the parser applies §2 as written, so "cskava", "wiosadca" and
+// "Adcsuleuha" all fail there.
 func validateRootCluster(cluster string) error {
 	if r := validation.ValidateChars(cluster); !r.Valid {
 		return fmt.Errorf("root %q: %s", cluster, r.Errors[0].Reason)

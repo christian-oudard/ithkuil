@@ -163,8 +163,11 @@ func refChainForm(refs []g.PersonalRef) string {
 // its own: of lça, lxa, çla and xla, only the two prefixed forms are
 // clusters Ithkuil lets a word open with. Where more than one spelling
 // survives the section does not choose between them, so we take the
-// first it lists, its own order being the only ranking on offer. See
-// docs/reference/issues.md.
+// first it lists, its own order being the only ranking on offer. That
+// ranking is ours, not Quijada's: çla and xla are both legal, as are
+// tļma, mtļa and ļma, and the canonicalization heuristics in SPEC.md
+// have nothing to say here, the candidates being identical in syllable
+// count, glottal count and length.
 func categoryForm(chain string, cat g.RefCategory) (string, error) {
 	var tried []string
 	for _, f := range parse.RefCategoryForms {

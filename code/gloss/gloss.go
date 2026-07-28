@@ -375,6 +375,29 @@ func slotVI(s g.SlotVI, slotVFilled bool) string {
 // consonant reads as a personal-reference shortcut rather than a
 // regular affix. We render that as "(refs/degree)" to make the
 // referential reading visible.
+// affixes glosses one affix slot. Called once for Slot V and once for
+// Slot VII, which is what settles §4.6.5's ambiguity: its trigger is "a
+// lone Type-3 V_X C_S affix without any adjacent Type-1 or Type-2 affix
+// for it to apply to", and §3.5 says a Type-3 affix applies "to
+// previous C_S V_X / V_X C_S affix only (or the following affix if it
+// is the first in the slot)". If Slot V holds affixes and Slot VII
+// holds a single Type-3, that affix does have something to apply to by
+// §3.5, and by the letter of §4.6.5's trigger the referential reading
+// is blocked — but nothing says whether a slot boundary interrupts
+// adjacency.
+//
+// We take it that it does: "lone" is read per slot. §3.5's own
+// parenthetical scopes adjacency to the slot ("if it is the first in
+// the slot"), and the alternative would make the same Slot VII
+// spelling mean different things depending on Slot V, which no other
+// rule in §3.5 does.
+//
+// The stakes are that all 33 referential consonant forms are also C_S
+// forms of ordinary affixes — not most, all: l is CTR, r is NEG, s is
+// CMF, n is TPF, t is DCD, ň is COO, č is SWR, and so on through the
+// list. Most of that overlap costs nothing and appears to be the
+// design, since a Type-3 affix with nothing adjacent is already
+// meaningless and its slot is free to be repurposed.
 func (gl *Glosser) affixes(as []g.Affix) string {
 	if len(as) == 0 {
 		return ""

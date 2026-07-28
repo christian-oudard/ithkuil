@@ -29,6 +29,26 @@ var c1Table = map[g.PersonalRef]string{
 // everywhere would collide with the category affixes: "lç" is the
 // Nomic modifier on 1m, and only the narrower entry point can tell the
 // two readings apart.
+//
+// The collision is total, not incidental. §4.6 shows the NOMIC
+// category by adding -ç- to a referent, so all six alternates are
+// exactly what that produces: lç is 1m/NEU + NOMIC, rç is 1m/BEN +
+// NOMIC, mç is ma/NEU + NOMIC, nç is 2p/NEU + NOMIC, ňç is pa/NEU +
+// NOMIC. The alternates were introduced to remove an ambiguity with
+// geminated C_A forms and introduced a different one.
+//
+// mç is the worst of them, because §4.6 does not merely permit the
+// second reading, it prescribes it: "The IPa and IPi Impersonal
+// categories ... will instead be shown by adding the NOMIC affix above
+// to the ma or mi affixes." Nothing rules it out either — §4.6.5 bars
+// exactly one increment in a referential affix, ABSTRACT -w or -y, and
+// says nothing about NOMIC.
+//
+// Inside a referential affix this map wins, so mç reads as PVS. That
+// is a choice: it keeps the footnote's own purpose (the alternates
+// exist precisely so an affix can spell Obv and PVS) and leaves the
+// ma+NOMIC sense to the ordinary spelling, which the category path
+// still produces everywhere else.
 var refAffixAlternates = map[string]g.PersonalRef{
 	"lç": {Referent: g.Robv, Effect: g.NEU},
 	"rç": {Referent: g.Robv, Effect: g.BEN},
@@ -63,6 +83,16 @@ func LookupRefC1(c string) (g.PersonalRef, bool) {
 // is the Agglomerative modifier: matching it here and then failing the
 // lookup is what makes a cluster carrying one fall through to the
 // category-stripping path rather than being misread as "t" + "ļ".
+//
+// That misreading is a real alternative, not a hypothetical. §4.6
+// spells AGGLOMERATIVE -ļ- or -tļ-, the second because a lone ļ has
+// nowhere legal to stand (§3.1 bars it word-initially, §5.1
+// intervocalically), and t is itself the 2p/BEN referent. So a chain
+// ending -tļ is either X + AGGLOMERATIVE or X + 2p/BEN +
+// AGGLOMERATIVE, and mtļ is "he and co." or "he and you(pl.,
+// beneficial) and co." Both are built by rules the same paragraph
+// gives. Taking tļ whole is the reading here, since the two-consonant
+// spelling exists for no other reason.
 var biconsonantalForms = map[string]bool{
 	"tļ": true,
 	"th": true, "ph": true, "kh": true,
