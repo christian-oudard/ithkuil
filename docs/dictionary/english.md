@@ -300,14 +300,8 @@ not roots at all. They are degrees on a nine-point affix scale, attached
 to whatever they describe. Looking for a root meaning *big* is looking
 for the wrong thing.
 
-**SIZ** `-x-`, degree of size, is the clearest case. Degree 5 is the
-right size, and the scale runs out from there in both directions.
-
-- `S1-l-SIZ/3` → **lalex** — a small adult
-- `S1-l-SIZ/7` → **lalox** — a big adult
-
-Degrees 2 and 8 are *tiny* and *enormous*; 1 and 9 are *too small* and
-*too big*, which English needs an extra word for and Ithkuil does not.
+**SIZ** `-x-`, degree of size, is the clearest case, and it gets a
+worked entry of its own under *big, large* below.
 
 **QUA** `-th-`, degree of quality, effectiveness, or adequacy. English
 *good* and *bad* are two points on it.
@@ -492,3 +486,108 @@ Two roots. `-mp-` is the nuclear family member.
 - `S1-dň` → **adňal** — conducting business as a commercial enterprise
 - `S2-dň` → **edňal** — making a product available for purchase
 - `S3-dň` → **udňal** — an industrial enterprise
+
+---
+
+## big, large
+
+There is no word for *big*. **SIZ** `-x-` is an affix, and it goes inside
+the word for the thing that is big. Nothing can be placed next to a noun
+the way English places an adjective.
+
+### The scale
+
+All nine degrees, on one noun, so the shape is visible. The noun is
+`S3-rm`, a house.
+
+- `S3-rm-SIZ/1` → **wurmax** — too small a house
+- `S3-rm-SIZ/2` → **wurmäx** — a tiny house
+- `S3-rm-SIZ/3` → **wurmex** — a small house
+- `S3-rm-SIZ/4` → **wurmix** — an undersized house
+- `S3-rm-SIZ/5` → **wurmëix** — a house of the right size
+- `S3-rm-SIZ/6` → **wurmöx** — an oversized house
+- `S3-rm-SIZ/7` → **wurmox** — a big house
+- `S3-rm-SIZ/8` → **wurmüx** — an enormous house
+- `S3-rm-SIZ/9` → **wurmux** — too big a house
+
+The scale is anchored in the middle at *the right size*, so it measures
+against the norm for that kind of thing rather than against anything
+absolute. A big mouse and a big house are both degree 7 and are not the
+same number of metres. Degrees 1 and 9 carry a judgement English needs a
+separate word for: **wurmux** is not "very big", it is *too* big.
+
+### Big things
+
+The same degree on the common nouns, so the pattern can be read off
+rather than derived each time.
+
+- `S1-l-SIZ/7` → **lalox** — a big adult
+- `S2-l-SIZ/7` → **welox** — a big child
+- `S3-rm-SIZ/7` → **wurmox** — a big house
+- `S1-lḑ-SIZ/7` → **walḑox** — a big tree
+- `S1-jl-SIZ/7` → **jlalox** — a big mountain
+- `S2-lz-SIZ/7` → **welzox** — a big river
+- `S1-zv-SIZ/7` → **zvalox** — a big dog
+- `S1-žx-SIZ/7` → **wažxox** — a big fire
+- `S1-lks-SIZ/7` → **walksox** — a big meal
+- `S1-ř-SIZ/7` → **řalox** — a big day
+- `S1-d-SIZ/7` → **dalox** — a big gathering
+- `S1-bč-SIZ/7` → **wabčox** — a big family
+- `S3-ḑf-SIZ/7` → **wuḑfox** — a big government
+- `S0-dň-SIZ/7` → **wodňox** — a big business
+- `S1-nth-SIZ/7` → **wanthox** — a big number
+- `S1-thw-SIZ/7` → **thwalox** — a big part
+- `S1-rtm-SIZ/7` → **wartmox** — a big job
+- `S1-ţr-G-SIZ/7` → **ţrarox** — a big amount of water
+
+Two of these are traps. `S1-ksl-SIZ/7` → **kslalox** is an idea that is
+physically large, which is not what *a big idea* means, and
+`S1-ňf-SIZ/7` → **waňfox** is a problem of great physical extent, not an
+important one. English *big* slides into "important" and SIZ does not
+follow it there. Which affix does carry importance is not settled here
+yet.
+
+*A big drinker* and *a big brother* are not this affix either. The first
+is degree of extent, the second is seniority.
+
+### Where the affix sits, and why it matters
+
+With one house it makes no difference. With more than one it decides the
+meaning, and this is the choice English gives no practice in.
+
+- `S3-rm-SIZ/7-MSS.G` → **urmaxottr** — a set of big houses
+- `S3-rm-MSS.G-SIZ/7` → **urmatrox** — a big set of houses
+
+§3.7 is the rule: Slot VII affixes have scope over the C_A complex in
+Slot VI, and Slot V affixes do not. Written before the C_A, SIZ applies
+to the stem, so each house is big. Written after it, SIZ applies to the
+whole configured set, so the set is big and the houses may be any size.
+
+### Which type of affix
+
+The three affix types change what the size does to the meaning.
+
+- `S3-rm-SIZ/7` → **wurmox** — Type 1: this house happens to be big
+- `S3-rm-SIZ/7_2` → **wurmoix** — Type 2: derivational, a big-house as
+  its own kind of thing, the way English derives *mansion* rather than
+  describing a house
+- `S3-rm-SIZ/7_3` → **wurmuox** — Type 3: the size applies to the
+  neighbouring affix rather than to the house
+
+Type 1 is the default and is what an English adjective usually means.
+Reach for Type 2 only when the result is a distinct concept rather than
+a description.
+
+## small, little
+
+The same affix, low degrees. Everything above applies unchanged.
+
+- `S3-rm-SIZ/3` → **wurmex** — a small house
+- `S1-l-SIZ/3` → **lalex** — a small adult
+- `S2-l-SIZ/3` → **welex** — a small child
+- `S1-lḑ-SIZ/3` → **walḑex** — a small tree
+- `S1-zv-SIZ/3` → **zvalex** — a small dog
+
+English *little* often carries affection rather than size, as in *the
+little ones*. That is not SIZ, and putting degree 3 on a child says the
+child is undersized.
