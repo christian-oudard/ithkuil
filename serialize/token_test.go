@@ -666,3 +666,71 @@ func TestModularMood_Restored(t *testing.T) {
 		}
 	}
 }
+
+// TestCluster_Sizes pins the cluster layout's whole point: a consonant
+// is five bits, and a cluster of three fits in two bytes rather than
+// three. It also pins where packing stops, since lengths one and two
+// gain nothing from it and keep a byte per consonant so the byte's
+// value stays the consonant's own index.
+func TestCluster_Sizes(t *testing.T) {
+	for _, tc := range []struct {
+		cluster string
+		want    int
+	}{
+		{"m", 1},
+		{"ml", 2},
+		{"kpt", 2},  // 1 bit of framing + 3x5 = 16 bits exactly
+		{"kptm", 3}, // 3 + 20 = 23 bits
+	} {
+		b, err := EncodeCluster(tc.cluster)
+		if err != nil {
+			t.Fatalf("%s: %v", tc.cluster, err)
+		}
+		if len(b) != tc.want {
+			t.Errorf("%q encoded to %d bytes (%x), want %d", tc.cluster, len(b), b, tc.want)
+		}
+		got, n, err := DecodeCluster(b)
+		if err != nil || got != tc.cluster || n != len(b) {
+			t.Errorf("%q round-trip: got %q, %d bytes, err %v", tc.cluster, got, n, err)
+		}
+	}
+	// An unpacked cluster's later consonants keep their plain index, so
+	// the same consonant is the same byte wherever it lands.
+	b, _ := EncodeCluster("ml")
+	l, _ := EncodePhoneme("l")
+	if b[1] != l {
+		t.Errorf("second consonant of \"ml\" is byte %d, want its phoneme index %d", b[1], l)
+	}
+}
+
+// TestCluster_RejectsVowel pins the assumption the five-bit alphabet
+// rests on: clusters are consonants only, so a vowel has no encoding
+// and must fail loudly rather than silently truncate to five bits.
+func TestCluster_RejectsVowel(t *testing.T) {
+	if _, err := EncodeCluster("ma"); err == nil {
+		t.Error("encoded a cluster containing a vowel, want a rejection")
+	}
+}
+
+// TestCluster_AllLengths round-trips every length the code can express,
+// including the escape past four.
+func TestCluster_AllLengths(t *testing.T) {
+	cs := []string{"m", "l", "k", "p", "t", "r", "s", "n", "z", "v", "f", "x"}
+	for n := 1; n <= len(cs); n++ {
+		want := strings.Join(cs[:n], "")
+		b, err := EncodeCluster(want)
+		if err != nil {
+			t.Fatalf("len %d: %v", n, err)
+		}
+		got, used, err := DecodeCluster(b)
+		if err != nil {
+			t.Fatalf("len %d: decode: %v", n, err)
+		}
+		if got != want || used != len(b) {
+			t.Errorf("len %d: got %q using %d of %d bytes, want %q", n, got, used, len(b), want)
+		}
+	}
+	if _, err := EncodeCluster(strings.Repeat("m", maxCluster+1)); err == nil {
+		t.Error("encoded a cluster past the length code's range, want a rejection")
+	}
+}

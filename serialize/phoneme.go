@@ -59,10 +59,92 @@ func DecodePhoneme(b byte) (string, error) {
 	return byteToPhoneme[b], nil
 }
 
-// clusterEnd marks the last phoneme of a cluster. Phoneme values run
-// 0..39, so bit 6 is free to carry the terminator and no length prefix
-// is needed: a two-consonant cluster costs two bytes.
-const clusterEnd = 0x40
+// numConsonants is where the vowels start in the phoneme table. Every
+// cluster the format stores is consonants only, so it is also the size
+// of the alphabet a cluster draws on.
+const numConsonants = 31
+
+// Cluster encoding.
+//
+// Every cluster in the format is consonants only — a root Cr, an affix
+// Cs, a referential C1 — and Ithkuil has 31 consonants. So a consonant
+// is five bits, not the eight a byte apiece would spend, and a cluster
+// is those five-bit fields packed end to end behind a length code.
+//
+// The packing stays inside the cluster: a cluster begins and ends on a
+// byte boundary, which is for the decoder's sake. Raw size is what the
+// codec optimises, and compressing the result is a separate concern
+// with its own tools.
+//
+// The length codes are chosen against the corpus distribution
+// (1:1405, 2:3380, 3:1049, 4:71, 5:5, 6:5):
+//
+//	len 3    "1"                    1 + 15 = 16 bits → 2 bytes
+//	len 1    "000"                  3 +  5 =  8      → 1
+//	len 2    "001"                  3 + 10 = 13      → 2
+//	len 4    "010"                  3 + 20 = 23      → 3
+//	len 5+   "011" + 3 bits of n-5  6 + 5n
+//
+// Length 3 gets the one-bit code even though length 2 is three times
+// commoner. Fifteen bits of payload leaves room for exactly one bit of
+// framing inside two bytes, so it is the only length where a shorter
+// code buys a whole byte; length 2 needs a second byte either way.
+const (
+	lenCode1   = 0 // "000"
+	lenCode2   = 1 // "001"
+	lenCode4   = 2 // "010"
+	lenCodeBig = 3 // "011", followed by three bits of n-5
+	maxCluster = 12
+)
+
+// bitWriter appends big-endian bit fields, padding the last byte with
+// zeros. Only ever used within one cluster.
+type bitWriter struct {
+	out []byte
+	acc uint32
+	n   uint
+}
+
+func (w *bitWriter) put(v uint32, bits uint) {
+	w.acc = w.acc<<bits | v
+	w.n += bits
+	for w.n >= 8 {
+		w.n -= 8
+		w.out = append(w.out, byte(w.acc>>w.n))
+	}
+}
+
+func (w *bitWriter) flush() {
+	if w.n > 0 {
+		w.out = append(w.out, byte(w.acc<<(8-w.n)))
+		w.n = 0
+	}
+}
+
+// bitReader is the inverse, tracking a bit offset into buf.
+type bitReader struct {
+	buf []byte
+	pos uint
+}
+
+func (r *bitReader) get(bits uint) (uint32, error) {
+	if r.pos+bits > uint(len(r.buf))*8 {
+		return 0, fmt.Errorf("cluster: short read")
+	}
+	var v uint32
+	for i := uint(0); i < bits; i++ {
+		p := r.pos + i
+		v = v<<1 | uint32(r.buf[p/8]>>(7-p%8)&1)
+	}
+	r.pos += bits
+	return v, nil
+}
+
+// align advances to the next byte boundary, matching bitWriter.flush.
+func (r *bitReader) align() { r.pos = (r.pos + 7) / 8 * 8 }
+
+// bytesRead rounds the bit offset up to the byte the cluster ends on.
+func (r *bitReader) bytesRead() int { return int((r.pos + 7) / 8) }
 
 // EncodeCluster encodes a phoneme cluster (e.g. "ml", "ţř", "kpt").
 // Each rune must be a recognized phoneme. Clusters are never empty.
@@ -78,33 +160,114 @@ func DecodeCluster(buf []byte) (string, int, error) {
 
 func putCluster(out []byte, cluster string) ([]byte, error) {
 	runes := []rune(cluster)
-	if len(runes) == 0 {
+	n := len(runes)
+	if n == 0 {
 		return nil, fmt.Errorf("empty cluster")
 	}
+	if n > maxCluster {
+		return nil, fmt.Errorf("cluster %q: %d consonants, more than the %d the length code can express",
+			cluster, n, maxCluster)
+	}
+	codes := make([]uint32, n)
 	for i, r := range runes {
 		b, err := EncodePhoneme(string(r))
 		if err != nil {
 			return nil, fmt.Errorf("cluster %q: %w", cluster, err)
 		}
-		if i == len(runes)-1 {
-			b |= clusterEnd
+		if int(b) >= numConsonants {
+			return nil, fmt.Errorf("cluster %q: %q is a vowel, and a cluster is consonants only",
+				cluster, string(r))
 		}
-		out = append(out, b)
+		codes[i] = uint32(b)
 	}
-	return out, nil
+
+	w := bitWriter{out: out}
+	switch n {
+	case 3:
+		w.put(1, 1)
+	case 1:
+		w.put(lenCode1, 3)
+	case 2:
+		w.put(lenCode2, 3)
+	case 4:
+		w.put(lenCode4, 3)
+	default:
+		w.put(lenCodeBig, 3)
+		w.put(uint32(n-5), 3)
+	}
+	for i, c := range codes {
+		// Only the first consonant shares a byte with the length code.
+		// The rest are packed when packing buys a byte and given a byte
+		// each when it does not; see the table above for which lengths
+		// are which.
+		if i > 0 && !packs(n) {
+			// A whole byte, so the byte's value is the consonant's
+			// own index rather than a shifted slice of it. Costs
+			// nothing at these lengths and keeps a hex dump legible.
+			w.flush()
+			w.put(c, 8)
+			continue
+		}
+		w.put(c, 5)
+	}
+	w.flush()
+	return w.out, nil
 }
 
+// packs reports whether a cluster of n consonants is bit-packed. It is
+// worth doing only where five-bit fields fit in fewer bytes than a byte
+// apiece would take, which is every length from three up. Below that,
+// packing would smear a consonant across a byte boundary and buy
+// nothing, so each consonant keeps its own byte and its own value.
+func packs(n int) bool { return n >= 3 }
+
 func getCluster(buf []byte) (string, int, error) {
-	var out []rune
-	for i, b := range buf {
-		s, err := DecodePhoneme(b &^ clusterEnd)
+	r := bitReader{buf: buf}
+	lead, err := r.get(1)
+	if err != nil {
+		return "", 0, err
+	}
+	n := 3
+	if lead == 0 {
+		code, err := r.get(2)
 		if err != nil {
-			return "", 0, fmt.Errorf("cluster byte %d: %w", i, err)
+			return "", 0, err
 		}
-		out = append(out, []rune(s)...)
-		if b&clusterEnd != 0 {
-			return string(out), i + 1, nil
+		switch code {
+		case lenCode1:
+			n = 1
+		case lenCode2:
+			n = 2
+		case lenCode4:
+			n = 4
+		default:
+			extra, err := r.get(3)
+			if err != nil {
+				return "", 0, err
+			}
+			n = int(extra) + 5
 		}
 	}
-	return "", 0, fmt.Errorf("unterminated cluster")
+
+	var out []rune
+	for i := 0; i < n; i++ {
+		bits := uint(5)
+		if i > 0 && !packs(n) {
+			r.align()
+			bits = 8
+		}
+		v, err := r.get(bits)
+		if err != nil {
+			return "", 0, fmt.Errorf("cluster consonant %d: %w", i, err)
+		}
+		if v >= numConsonants {
+			return "", 0, fmt.Errorf("cluster consonant %d: value %d is not a consonant", i, v)
+		}
+		s, err := DecodePhoneme(byte(v))
+		if err != nil {
+			return "", 0, err
+		}
+		out = append(out, []rune(s)...)
+	}
+	return string(out), r.bytesRead(), nil
 }

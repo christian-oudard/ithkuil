@@ -18,7 +18,8 @@ import (
 //  2. Pack a slot into one byte when it fits. A modular adjunct's Scope,
 //     Reach and content count are 2 + 3 + 2 bits, so they share a byte
 //     instead of occupying three.
-//  3. Byte-aligned.
+//  3. Spend bits where a field is narrower than a byte and the
+//     saving is a whole byte, as the cluster encoding does.
 //
 // Variable-length runs carry a continuation bit in the high position of
 // each element rather than a count prefix, so a run costs nothing when

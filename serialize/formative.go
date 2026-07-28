@@ -22,14 +22,23 @@ import (
 //     Version 1, Function 1, Specification 2, Context 2), so a presence
 //     bitmap over those fields would cost more than it saves.
 //
-//  3. Stay byte-aligned. Packing fields across byte boundaries would
-//     make the same formative encode to different bytes depending on
-//     what preceded it, which destroys the repeated-substring matches a
-//     general-purpose compressor runs on. Measured on a 61k-word
-//     corpus, a byte-aligned encoding compresses to the same size as
-//     the romanized text while being 35% smaller uncompressed;
-//     regrouping the same bytes into per-field columns compresses 13%
-//     worse.
+//  3. Spend bits, not bytes, where a field is narrower than a byte and
+//     the saving is a whole byte. A cluster's consonants are five bits
+//     each because there are 31 consonants; see phoneme.go.
+//
+// Raw size is what this layout optimises. Packing does cost a little
+// compressed size, since it breaks up the byte histogram a compressor
+// builds its codes from, but a structural encoding that fights for the
+// compressor's job does neither well, and anything that needs to be
+// smaller can be handed to a compressor.
+//
+// What is left is distributional, not structural. Measured over the
+// corpus, the fixed fields spend 15,770 bytes and carry 7,357 bytes of
+// entropy, but each one is already at its natural width: Final is 153
+// values in 8 bits, the Slot II + IV byte is exactly 8 bits of enum,
+// the header is 8 flags that all mean something. Only the affix byte
+// has a spare bit. Closing the rest of that gap means modelling the
+// value distribution, which is what a compressor already does.
 //
 // No lexicon indices appear anywhere. Roots and affixes encode as their
 // phoneme clusters, so a file stays readable across lexicon updates.

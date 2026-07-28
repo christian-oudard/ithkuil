@@ -187,7 +187,7 @@ func UnmarshalWord(buf []byte) (tokenize.WordToken, int, error) {
 // FormatVersion is the current binary format version. A stream begins
 // with this byte; decoders reject unknown versions so any future
 // incompatible layout change is detected at the boundary.
-const FormatVersion byte = 2
+const FormatVersion byte = 3
 
 // MarshalTokens encodes a stream of tokens. Layout:
 //
