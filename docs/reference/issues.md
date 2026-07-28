@@ -70,40 +70,51 @@ Quijada's combinatorial tables — 679, 5183, 15034 and 12271 permissible
 forms — rather than reproducing them; the totals match the document but
 the forms themselves are not here.
 
-### What checking against layer 1 changed
+### How much of this list to believe
 
-Ten findings have been withdrawn in whole or in part. Eight were
-defects in **our markdown** rather than in Quijada — G3, G4, G14, G17,
-G19, G27, G31, G32 — and one, A2, was a spreadsheet transposition.
-G34, G37 and G38 are three more of the same kind, found by auditing the
-transcriptions rather than by chasing a finding. G38 in turn forced a
-rewrite of G16 and a correction to G29.
-They are kept below, marked WITHDRAWN, with what the source actually
-says, because the transcription and the data still need fixing even
-where the language does not.
+Thirteen entries have been settled, and eleven of those were defects in
+our own transcription rather than in Quijada. That is the base rate to
+apply to everything below.
 
-The largest was G3. Quijada's Ca table binds its two alternate-form
-rules with superscript footnote markers: Extension entries carry ¹
-("if the Configuration of the word is UPX") and the RPV Perspective
-entries carry ² ("when preceded by [C]t-, [C]k-, or [C]p-"). Our
-markdown dropped the superscripts and rendered the footnotes as
-free-standing sentences, which made the conditions look swapped. The
-binding in the PDF is the one the 3840-value bijection test had already
-identified as the only workable reading — the computation was right and
-the source was never wrong.
+The ones that fell hardest looked structural, not clerical. G3 argued
+that the C_A table's two alternate-form conditions were swapped; the
+PDF binds them with superscript footnote markers our markdown had
+dropped, and the binding is the one the 3840-value bijection test had
+already identified as the only workable reading. G16 argued that two
+affixes' semantics contradicted their declared gradient type; against
+Quijada's real definitions both fit exactly, and the mismatch was in a
+paraphrase of his wording that we had written ourselves.
 
-Two entries changed shape rather than falling: A3 (SPT really does have
-two C_S forms for one degree list) and A5 (the six blank
-functional-group affixes are populated in Quijada, so the gap is
-recoverable).
+**Verified against the source:** the Affix table and Lexicon sections,
+and G33, G35, G36, G39. **Not yet:** G2, G5-G13, G15, G18, G20-G26,
+G28, G30, G37 and the Corpus section. Those have been read against our
+markdown, not against the PDF, so each is a claim about a document that
+has been wrong eleven times.
 
-**Not yet re-checked against layer 1:** G1, G2, G5-G13, G15, G16, G18,
-G20-G26, G28-G30, and the Lexicon and Corpus sections. These are
-structural — missing rules, uncovered cases, tables that cannot be
-functions — and
-do not turn on single characters, so a transcription slip is unlikely
-to explain them away. But G3 and G4 looked structural too. Treat them
-as provisional until each is read against the PDF.
+## Settled
+
+Removed from the list below; the reasoning is in the commit that
+settled each. Kept as a ledger because the proportion is the useful part. Eleven of
+the thirteen were defects in our own transcription, not in Quijada;
+one was a transposition in the community spreadsheet; one was a real
+gap in the published data that turned out to be recoverable. None was
+a defect in the language.
+
+| | Disposition |
+|---|---|
+| A2 | the ḑg collision is a spreadsheet transposition |
+| A5 | fifty-four functional-group degrees recovered |
+| G1 | there is no §2.24, and this entry is the proof |
+| G3 | the conditions are footnotes, and our markdown lost them |
+| G4 | the substitution list is complete in the source |
+| G14 | the V_K diacritics are correct in the source |
+| G17 | the PDF publishes all fourteen increments |
+| G19 | §8 now transcribes Quijada, not the 2011 grammar |
+| G27 | CLG is -ḑc in the source |
+| G31 | the DES bias is mřř in the source |
+| G32 | the script document tabulates 28, as it says |
+| G34 | Our markdown lost three of the seven case-accessor affixes |
+| G38 | §3.5.0's gradient-type descriptions were ours, and four were wrong |
 
 ## Affix table
 ### A1. Three affixes' degree lists are shifted by one row
@@ -137,23 +148,6 @@ The reference document is the only place ENS's nine meanings survive.
 **Fixed:** `tools/sync_lexicon.py` now carries a `SHIFTED_DEGREES`
 override that restores all three from there on every sync, and
 `data/data.json` has been corrected.
-
-### A2. WITHDRAWN — the ḑg collision is a spreadsheet transposition
-
-The live spreadsheet has `ḑg` twice, for MDI and S07, and it is the
-only duplicated C_S among its 527 rows. Quijada's affix document does
-not:
-
-| | Quijada | Spreadsheet |
-|---|---------|-------------|
-| S07 Position/state intertwined in 3-D volume | **-ḑg** | ḑg |
-| MDI Modification | **-gḑ** | ḑg |
-
-MDI's cluster is `gḑ`, reversed upstream into `ḑg`, which manufactured
-the clash. There is no collision in the language, and `gḑ` is free.
-
-**Fixed** in `data/data.json`. It should also go upstream, where a
-duplicate-key check would catch it.
 
 ### A3. SPT has two C_S forms and no rule for choosing between them
 
@@ -201,31 +195,6 @@ hour angles, grads, mils, radians, sextants, arc-seconds, arc-minutes,
 degrees, while the stray text orders them arc-seconds, arc-minutes,
 mils, grads, degrees, points, hour angles, radians, sextants. Which
 ordering was meant is not recoverable from either source.
-
-### A5. RESOLVED — fifty-four functional-group degrees recovered
-
-GPB (`sļ`), GPC (`šḑ`), GPD (`šļ`), GPE (`zḑ`), GPF (`zļ`) and GPG
-(`žḑ`) carry a C_S, an abbreviation and a description in the
-spreadsheet, and nine empty degree cells apiece. They are not empty in
-Quijada — his affix document populates all six — so this was a
-transcription gap upstream, not a hole in the language.
-
-All 54 are now extracted from the PDF by column geometry and written
-into `data/data.json`, with a `RECOVERED_DEGREES` table in
-`tools/sync_lexicon.py` that refills them whenever upstream is still
-blank. No affix in the table has an empty degree list any more.
-
-The extraction was validated against the three groups the sheet does
-carry. **GPJ came back identical in all nine degrees.** GPA and GPH
-differ only in that the sheet's versions are shortened — "alkyl halide"
-against the PDF's "halo-, alkyl halide" — so the reading is faithful,
-and fuller than what upstream holds. Quijada's own "..." placeholder
-for the elided stem is kept as printed.
-
-That leaves an inconsistency worth knowing about: GPA and GPH are still
-the sheet's abbreviated forms while the other seven are now the PDF's
-full ones. Replacing them is a one-line change to the same table if the
-fuller wording is wanted throughout.
 
 ### A6. XCL is absent from the community spreadsheet
 
@@ -355,34 +324,6 @@ copy; §4.5.2 should not be treated as a second attestation of anything.
 
 ## Grammar
 
-### G1. WITHDRAWN — there is no §2.24, and this entry is the proof
-
-This reported a contradiction between §2.24, which bars the geminates
-**çç** and **ļļ**, and a grammar that builds both. G37 found the
-simpler explanation: §2.24 is not Quijada's. Phonotaxis v0.5.4 ends at
-2.22, and the rule appears in no published document.
-
-What this entry gathered is the strongest evidence for that. Nothing in
-Quijada's material behaves as though the rule exists:
-
-- §3.6.1 rule 4 geminates a sibilant "in any position" and gives
-  **çkl → ççkl** as its own worked example; rule 6 gives
-  **tçkl → tççkl**.
-- The bias-adjunct table holds **pļļ** (CMD) and **kçç** (EXA).
-- Thirty-nine words across the official examples and the community
-  corpus use one or the other, among them formatives whose geminated
-  C_A marks the end of Slot V.
-
-A rule invented in transcription would leave exactly this trace: a
-prohibition contradicted by the source's own worked examples, its
-tables, and its corpus, with no carve-out anywhere. The reading this
-entry settled on — that §2 constrains root and affix conjuncts, not
-forms the grammar derives — was a way to keep a sentence that was never
-there.
-
-`validation` never enforced it, which is why those thirty-nine words
-parse.
-
 ### G2. The §3.6 bn-substitution cannot cover both configurations that need it
 
 Two Ca configurations reach an unsayable intermediate:
@@ -401,47 +342,6 @@ reading is taken, one configuration is left with no pronounceable form.
 The neighbouring rule **fbm → (fv) → vw** is parallel to the `ţbn`
 reading — a fricative before bm/bn in both — which argues for the input
 side. That still leaves MSS/A/DPL/RPV stranded.
-
-### G3. WITHDRAWN — the conditions are footnotes, and our markdown lost them
-
-Quijada's Ca table attaches its two alternate-form rules with
-superscript markers:
-
-```
-GRA  GRADUATIVE   g / gz ¹        A  ABSTRACT   y (j)   n/ç²
-DPL  DEPLETIVE    b / bz ¹
-          ¹ Use the alternate form if the Configuration of the word is UPX
-          ² Use the alternate form when preceded by [C]t-, [C]k-, or [C]p-
-```
-
-The Extension alternate is conditioned on UPX and the RPV Perspective
-alternate on a preceding t/k/p — exactly the binding that composing all
-3840 Ca values showed to be the only bijection. The source is correct.
-
-`docs/reference/morphology.md` dropped the superscripts and rendered
-the two footnotes as free-standing sentences in page order, which reads
-as though the Extension rule owns the t/k/p condition. The transcription has been fixed: `morphology.md` now carries the
-footnote markers. See G33 for what the corrected table then shows.
-
-### G4. WITHDRAWN — the substitution list is complete in the source
-
-The §3.6 list in the PDF reads, in full:
-
-```
-pp mp    pb mb    rr ns    [C]gm [C]x    [C]bm [C]v
-tt nt    kg ng    rř nš    [C]gn [C]ň    [C]bn [C]ḑ
-kk nk    çy nd    řr ňs    ngn ňn        fbm (fv) vw
-ll pļ             řř ňš    [C]çx [C]xw   ţbn (tḑ) ḑy
-```
-
-All four cells of the r/ř matrix are present — `rr ns`, `rř nš`,
-`řr ňs`, `řř ňš` — so neither half of the old entry survives. Our
-markdown lost the leading `r` of `rř` and dropped the `řř ňš` line.
-Both are now restored, along with `çy`.
-
-It also has `cy nd` where the source has **`çy nd`**, which settles a
-question left open in the code: `allomorph/substitutions.go` is right
-to substitute `çy`, and the markdown is what was wrong.
 
 ### G5. The gemination rules leave 115 of the 3840 Ca forms with no geminated form
 
@@ -768,30 +668,6 @@ nor X" (5) to absolute negation (6-9), which is D1's trivalent "-1 to
 0 to +1" with a midpoint, not A1's bivalent extreme-to-extreme. `r` is
 the one affix where the A1 shape rule points at the wrong type.
 
-### G17. WITHDRAWN — the PDF publishes all fourteen increments
-
-Our markdown carried eight, not Quijada. See G34. What survives of
-this entry is the observation at the end, that none of the fourteen
-increments collides with an ordinary affix C_S.
-
-The original claim rested on the prose:
-
-> There are two separate C_S increments for each of the seven types of
-> affix (Types-1, -2, and -3 Case-Accessor, Types-1, -2, and -3 Inverse
-> Case-Accessor, and Case-Stacking Affix), the first C_S increment
-> being used for Cases 1 through 36, while the second C_S increment is
-> used for Cases 37 through 68.
-
-Seven types times two increments is fourteen, and the PDF's table
-supplies all fourteen. Ours supplied eight.
-
-What is published is otherwise sound. The V_X carries the case-group in
-its series and the case within the group in its form — four series by
-nine forms for cases 1-36, by eight for cases 37-68 with vowel-tier 8
-unused, giving exactly 36 and 32. And none of them collides with an
-ordinary affix: all fourteen are absent from the 527-affix table,
-though twenty other two-consonant forms ending in -w or -y are taken.
-
 ### G18. Every referential consonant is also an ordinary affix C_S
 
 §4.6.5 lets an otherwise-empty Slot V or VII hold a "Referential
@@ -826,20 +702,6 @@ to, and by the letter of the trigger the referential reading is
 blocked; but nothing says whether a slot boundary interrupts
 adjacency. Since the 33 collisions include such common affixes as NEG,
 DCD, SWR, COO and SEX, which reading holds decides a great many words.
-
-### G19. WITHDRAWN — §8 now transcribes Quijada, not the 2011 grammar
-
-Every claim in this entry was about our condensation of Chapter 13 of
-the 2011 grammar, which stood in for §8 while no V4 source for numbers
-was known. §6.4 of the lexicon document is that source, and §8 is now a
-transcription of it. Nothing the entry reported survives the
-replacement: the "single stems" sentence, the "roots for 1 to 99"
-sentence and the spoken-number rules are all 2011 text that §8 no
-longer carries.
-
-Three of its four claims were already withdrawn as artifacts of the
-condensation. See G39 for the one defect that is in Quijada's own
-number section.
 
 ### G20. The modular adjunct's mandatory Slot 4 has no way to say which category it is
 
@@ -1078,20 +940,6 @@ nowhere in it. The affix table is the only place the transposed form
 occurs. **Fixed** in `data/data.json`.
 
 
-### G32. WITHDRAWN — the script document tabulates 28, as it says
-
-*Concerns the writing system, which is no longer covered here; kept for
-the record.*
-
-Quijada's script document says "The 28 forms below are the 'core'
-characters" and then lists exactly 28: p b f v s z c ż / t d ţ ḍ š ž č
-j / k g x l r ļ ř / m n ň ç h. The two consonants missing against the
-§1.1 inventory of 30 are **w** and **y**, the semiconsonants, which the
-script handles elsewhere.
-
-Our markdown's table had added w and y, making it disagree with the
-count printed beside it. It now lists 28.
-
 ### G13. The documents disagree on how to write ẓ and ḑ
 
 §1.1's phoneme chart gives the affricates as **c ẓ č j**, and §1.3 lists
@@ -1121,23 +969,6 @@ nowhere else and is absent from §1.1 as printed.
 Either way a machine reader checking the phonotactic rules against the
 phoneme inventory sees an unknown codepoint twenty-three times.
 
-### G14. WITHDRAWN — the V_K diacritics are correct in the source
-
-Quijada's Validation table gives REC as **â** and USP as **êi** — the
-forms §1.3.1's rules require, and the ones this entry predicted. Our
-markdown had `à` (a-grave) and a bare `ëi`; both are now corrected.
-
-Both values were derived from the vowel-form series and the
-acute/circumflex convention before the PDF was available, and both
-turned out to match it.
-
-### G27. WITHDRAWN — CLG is -ḑc in the source
-
-The affix document and §7.0 of the grammar both give **-ḑc**. Our
-markdown lost the cedilla, producing `-dc-`, which is what §2.2
-prohibits. `data/data.json` already had `ḑc`; the markdown is now
-corrected too.
-
 ### G28. §7.2 writes OCG for OGC
 
 §7.0 defines the affix as **OGC**, Orientation relative to a
@@ -1158,13 +989,6 @@ against 6 southwestern, with 5 geographically central at the midpoint.
 And *usarcsaidna amerika* / *usarcsuidna amerika* use OGC at Type-2
 degrees 1 and 9 — `ai` and `ui` — which is northern and southern, as
 North and South America require.
-
-### G31. WITHDRAWN — the DES bias is mřř in the source
-
-§4.7 of the PDF reads `DES DESPERATIVE mřř`. Our markdown has `mřr`,
-which §2.21 forbids. The corpus evidence that pointed this way — 42
-standalone `mřř` against one `mřr` — was right, and the source
-confirms it. The markdown is now corrected.
 
 ### G33. The UPX footnote is marked on two of the five Extension rows
 
@@ -1203,37 +1027,6 @@ Perspective.
 So the footnote has to govern the column, and the marker belongs on all
 five rows. This is the residue of the old G3: the conditions were never
 swapped, but the ¹ is under-applied.
-
-### G34. Our markdown lost three of the seven case-accessor affixes
-
-*A transcription defect, in layer 3 rather than in Quijada.* §3.9.2
-names "two separate C_S increments for each of the seven types of
-affix", and the PDF's table gives all fourteen. Our markdown carried
-four of the seven columns and eight of the fourteen increments:
-
-| Affix | Quijada, cases 1-36 | Our markdown |
-|---|---|---|
-| Case-Accessor, Type-1 | sw | sw |
-| Case-Accessor, Type-2 | **zw** | *lost* |
-| Case-Accessor, Type-3 | čw | čw, mislabelled Inverse Type-1 |
-| Inverse Case-Accessor, Type-1 | šw | šw, mislabelled Type-3 |
-| Inverse Case-Accessor, Type-2 | **žw** | *lost* |
-| Inverse Case-Accessor, Type-3 | **jw** | *lost* |
-| Case-Stacking | lw | lw |
-
-Same for the -y series: `zy`, `žy` and `jy` were missing and the
-remaining labels were shifted. The header spans seven affix kinds over
-merged cells, and the markdown conversion collapsed the merges, so the
-four surviving C_S values were re-dealt across the wrong columns.
-
-The prose said "seven" the whole time, which is what makes the table
-self-evidently short — a count in the text against a count in the
-table is the cheapest check there is, and it was available without
-consulting the source at all.
-
-**Fixed** in `docs/reference/morphology.md`, which now lists the
-fourteen increments as a flat table plus a separate series-to-case-group
-table, rather than reproducing the merged-cell layout that caused this.
 
 ### G35. The documents disagree on whether ç is a fricative or an affricate
 
@@ -1329,44 +1122,6 @@ is defensible — they are combinatorial tables of 679, 5183, 15034 and
 679, printed twice, and a clause was added to Quijada's sentence about
 -ç- and -ļ- saying their geminates "are not permitted as roots", which
 is the same unsourced claim as 2.24. Both corrected.
-
-### G38. §3.5.0's gradient-type descriptions were ours, and four were wrong
-
-*A transcription defect, in layer 3.* §3.5.0.1 and §3.5.0.2 have no
-counterpart in any Quijada document — the section numbers are ours, and
-the content was added to `morphology.md` in March 2026 by a commit whose
-message says it came "from website ch07". It did not. Chapter 7 of the
-2011 grammar carries the same descriptions as the V4 affix document,
-word for word; the descriptions that landed in §3.5.0.1 match neither.
-Four of the seven describe a different system from the source's:
-
-| Type | Quijada | Our paraphrase |
-|------|---------|----------------|
-| B | a "three-by-three" pattern: degrees 1-3 under one sub-parameter, 4-6 under a second, 7-9 under a third | "two contrasting states (positive vs. negative, active vs. passive) with a neutral midpoint" |
-| C | a "one-by-two" or oscillating gradient; degree 5 neutral, 6-9 cycling back under an orthogonal sub-parameter | "a scale of anticipated-to-unanticipated effect" |
-| A2 | degrees 1 and 9 convey "too little X" and "too much X" | "insufficient (1) through optimal (5)" |
-| D2 | like D1, with 1 and 9 conveying sufficiency, the parameter being excessiveness | "complementary default: paired with a D1 affix" |
-
-B and C are not loose restatements; they describe different systems.
-Both sources — the V4 affix document and 2011's chapter 7 — say
-"three-by-three" for B and "one-by-two or oscillating" for C.
-The preamble had also been strengthened, from Quijada's "a particular
-phonological signature ... **as a mnemonic aid in learning the
-affixes**" to "seven gradient types **determined by** the phonological
-shape of the C_S consonant form", and the asterisk note had moved from
-the abbreviation to the type.
-
-This cost two findings. **G16** was built on the "determined by"
-reading and reported AUT and COO as affixes whose semantics contradict
-their declared type. Against Quijada's actual definitions both fit
-exactly — COO is a model Type C, with degree 5 neutral and 6-9
-mirroring 1-4 under an orthogonal parameter. **G29** asked what a "0*"
-type marker could mean, and treated a lone "D1*" as unsanctioned; the
-asterisk was never a type marker.
-
-All seven descriptions are now Quijada's, in `morphology.md` §3.5.0.1
-and in `affixes_reference.md`. The section numbers remain ours, since
-the source has none.
 
 ### G39. The lexicon promises six extra number roots and prints five
 
