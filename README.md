@@ -136,24 +136,6 @@ go test ./...                               # Run the test suite
 go run ./cmd/ithkuil analyze Maţřëullait     # Run without installing
 ```
 
-### ASCII Input Method
-
-`ithkuil-input` is a TUI for typing Ithkuil Unicode from ASCII keystrokes. Pending characters are shown dimmed until they resolve into a digraph or are broken by a different vowel:
-
-```bash
-ithkuil-input            # interactive raw-mode TUI
-echo 'Mat,rqeeullait' | ithkuil-input   # batch: ASCII in, Unicode out
-```
-
-| | Char | ASCII | Char | ASCII | Char | ASCII | Char | ASCII | Char | ASCII |
-|----------|------|-------|------|-------|------|-------|------|-------|------|-------|
-| Umlaut   | ä | `aa` | ë | `ee` | ö | `oo` | ü | `uu` | | |
-| Cedilla  | ţ | `t,` | ḑ | `d,` | ļ | `l,` | ç | `c,` | | |
-| Háček    | š | `sq` | ž | `zq` | č | `cq` | ň | `nq` | ř | `rq` |
-| Underdot | ẓ | `dz` | | | | | | | | |
-
-Vowel runs use right-grouping: `eee`→eë, `eeee`→ëë. Pending characters are shown dimmed until resolved.
-
 ### CLI Subcommands
 
 ```bash
@@ -173,7 +155,51 @@ ithkuil lexicon -k=affix system         # search the affix lexicon
 ithkuil validate tttest                 # phonotactic checks per word
 ```
 
-Pass `--lex DIR` globally to override the embedded lexicon with `roots.json` + `affixes.json` from a local directory. Pass `--color=auto|always|never` to `analyze` to control ANSI styling.
+Pass `--data FILE` globally to read a data store other than the default `$XDG_DATA_HOME/ithkuil/data.db`. Pass `--color=auto|always|never` to `analyze` to control ANSI styling.
+
+## ASCII Notation
+
+The orthography uses diacritics that aren't on a keyboard, so every character
+that carries one also has a two-keystroke ASCII spelling. The notation is a
+pure recoding of the Unicode text, one character to one digraph, and reversible
+in both directions. Anything with no digraph, `'` (glottal stop) included,
+passes through untouched, so an already-Unicode word is left as it is.
+
+| | Char | ASCII | Char | ASCII | Char | ASCII | Char | ASCII | Char | ASCII |
+|----------|------|-------|------|-------|------|-------|------|-------|------|-------|
+| Umlaut   | ä | `aa` | ë | `ee` | ö | `oo` | ü | `uu` | | |
+| Cedilla  | ţ | `t,` | ḑ | `d,` | ļ | `l,` | ç | `c,` | | |
+| Háček    | š | `sq` | ž | `zq` | č | `cq` | ň | `nq` | ř | `rq` |
+| Underdot | ẓ | `dz` | | | | | | | | |
+| Stress   | á | `a/` | é | `e/` | í | `i/` | ó | `o/` | ú | `u/` |
+| Stress   | â | `aa/` | ê | `ee/` | ô | `oo/` | û | `uu/` | | |
+
+A trailing `/` stresses the vowel you just typed, umlaut included:
+`hala/` → *halá*, `malee/ut,rqait` → *malêuţřait*. A `/` that follows anything
+else is left as a literal `/`, so type it right after its vowel.
+
+The vowel `i` has no umlaut and so no doubling rule: `ii` stays `ii`. The other
+four group to the right when repeated, `eee` → *eë* and `eeee` → *ëë*, which is
+how you write an umlaut adjacent to its own plain vowel.
+
+Every word argument to `ithkuil` is read through the notation, as are the root
+and affix clusters inside a `compose` expression. It is also what glosses print
+clusters in, so gloss output feeds straight back into `compose`:
+
+```bash
+ithkuil analyze mat,rqeeullait     # same word as Maţřëullait
+ithkuil compose 'm-SYS/5_2-{Ca}-DCD/1_2'
+```
+
+`ithkuil-input` applies the same notation for typing into anything else. It
+runs as a raw-mode TUI that shows pending keystrokes dimmed until they resolve
+into a digraph or are broken by a different character, and as a pipe filter
+when stdin isn't a terminal:
+
+```bash
+ithkuil-input                           # interactive
+echo 'Mat,rqeeullait' | ithkuil-input   # batch: ASCII in, Unicode out
+```
 
 ## References
 
