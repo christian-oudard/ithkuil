@@ -148,3 +148,32 @@ incorrect | maţreüllait | §1.2 | misspelling of maţřëullait: "eü" for "ë
 incorrect | ëinļ | §3.5 | the IVL affix quoted bare, without its formative.
 incorrect | kçp | §2 | a bare consonant cluster, no vowels.
 incorrect | ë'i | §1.2 | two vowels and a glottal; no root.
+
+# ── the 2020 glottal-plus-Cs habit ──────────────────────────────────
+# Every one of these is from 2020, three years before the v1.3.1
+# morphology, and six are one author working through a translation
+# project. They share a shape: an affix vowel, a glottal, then a
+# consonant cluster, often at the end of the word.
+#
+# §3.5 forbids it twice over under v1.3.1 — "No C_S form can contain a
+# glottal-stop or begin with h-" — and §1.7 Rule 1 puts a glottal
+# between a vowel and a consonant after the vowel-form, so the V_X in
+# front carries it, not the C_S behind.
+#
+# §3.6.1 names what changed: gemination moved onto the C_A,
+# "consequently, no Slot V/VII C_S affix increment contains a geminate
+# any longer". Three of these end in exactly such an increment, and
+# they are real affixes under the old reading: kšš is BEH geminated,
+# žžg is OLF, gzz is XOH. So the glottal was the affix boundary marker
+# that the geminated C_A does today.
+#
+# Marked incorrect because the verdict is against v1.3.1, which these
+# predate. They were correct in the grammar they were written in.
+incorrect | anţtaleu'há | §3.5 | 2020; Cs "'h" holds a glottal and opens with h-.
+incorrect | anzvarönţiçřoi'há'kšš | §3.5 | 2020; two glottal-headed Cs in one word.
+incorrect | ežfaléa'ha'rš | §3.5 | 2020; "'h" then "'rš", both glottal-headed.
+incorrect | anzvarönţiçřoi'hákšš | §3.5 | 2020; "'h", and "kšš" is BEH geminated.
+incorrect | attualië'hú'žžg | §3.5 | 2020; "'h", and "žžg" is OLF geminated.
+incorrect | aňţärko'lá'rš | §3.5 | 2020; "'l" then "'rš".
+incorrect | uňňsozahé'kšš | §3.5 | 2020; "'kšš" is BEH geminated, the pre-2023 marking.
+incorrect | ňvailoţmá'gzz | §3.5 | 2020; "'gzz" is XOH geminated.

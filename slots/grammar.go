@@ -181,6 +181,16 @@ func affixesVxCs(chunks []AffixChunk) ([]g.Affix, error) {
 	}
 	out := make([]g.Affix, len(chunks))
 	for i, c := range chunks {
+		// §3.5: "No C_S form can contain a glottal-stop." §1.7 Rule 1
+		// says where one between a vowel and a consonant really belongs:
+		// after the vowel-form, so it is the V_X in front that carries
+		// it. A segmentation that hands it to the C_S has gone wrong
+		// earlier, and saying so beats building the affix, because the
+		// renderer cannot place the glottal, drops it, and the affix
+		// comes back a degree off in a different slot.
+		if strings.Contains(c.Cs, "'") {
+			return nil, fmt.Errorf("affix Cs %q contains a glottal stop, which §3.5 does not allow", c.Cs)
+		}
 		t, d, ok := parse.AffixVowelDegree(c.Vx)
 		if !ok {
 			return nil, fmt.Errorf("affix vowel %q on Cs %q is not a Vx form", c.Vx, c.Cs)

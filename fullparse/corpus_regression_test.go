@@ -90,13 +90,8 @@ func TestCorpus_LeadingVvElision(t *testing.T) {
 func TestCorpus_GlottalPlacement(t *testing.T) {
 	for _, w := range []string{
 		// Render emits a reduplicated Vv ("a'a-") that won't re-parse.
-		"anzvarönţiçřoi'hákšš",
-		"attualië'hú'žžg",
 		"aňzkçaẓäçnëumvuožžô",
-		"aňţärko'lá'rš",
 		"rtawuihážžg",
-		"uňňsozahé'kšš",
-		"ňvailoţmá'gzz",
 		// Render emits a doubled glottal in the Vc.
 		"hrarráu-wäḑxë'iza'o",
 		"huţrilú-ujjäli'a",
@@ -196,46 +191,43 @@ func TestFormat_EveryCase(t *testing.T) {
 	}
 }
 
-// TestCorpus_GlottalHeadedCs covers the last group in the audit. We
-// segment these into a Slot VII affix whose Cs begins with a glottal,
-// which §3.5 flatly forbids: "No C_S form can contain a glottal-stop
-// or begin with h-." Both halves are violated here, since the Cs we
-// build is "'h". §1.7 Rule 1 says where the glottal really belongs —
-// after a single vowel or diphthong — so it is the Vx in front that
-// carries it. The renderer cannot place it there, drops it, and the
-// affix comes back a degree off in a different slot.
+// TestCorpus_GlottalHeadedCs pins §3.5: "No C_S form can contain a
+// glottal-stop." §1.7 Rule 1 says where one between a vowel and a
+// consonant belongs — after the vowel-form — so it is the Vx in front
+// that carries it, never the Cs behind. We used to build the affix
+// anyway; the renderer then had nowhere to put the glottal, dropped
+// it, and the affix came back a degree off in a different slot.
 //
-// Enforcing the §3.5 rule is not the fix on its own. It also rejects
-// five words in TestCorpus_GlottalPlacement above, which round-trip
-// today only because render puts the illegal Cs back exactly where it
-// found it; a faithful round trip through an impossible affix is not
-// evidence of a correct reading. Whatever replaces the affix has to be
-// found first.
+// The eight words this cost are all from 2020, three years before the
+// v1.3.1 morphology, and §3.6.1 names the rule that changed under
+// them: gemination moved onto the Ca, "consequently, no Slot V/VII C_S
+// affix increment contains a geminate any longer". Three of the eight
+// end in exactly such an increment — kšš for BEH, žžg for OLF, gzz for
+// XOH. They are in corpus/discord_examples.txt with that reading.
 //
-// What the intended reading is remains open. Two candidates were run
-// down and neither closes:
+// Nothing in the language we do implement pays for the rule: across
+// the 3657-word audit corpus, which words.py filters to 2023 and
+// after, no word parses into an affix whose Cs holds a glottal.
 //
-//   - §3.6.2's end-of-Slot-V glottal sits on the final Slot V Vx,
-//     which is exactly this surface. But the section applies only
-//     where the Ca has been elided, and these words have one. In
-//     uňňsozahé'kšš the trailing "kšš" is even a well-formed §3.6.1
-//     geminate of the affix cluster "kš", which is what a Ca marking
-//     a filled Slot V looks like.
-//   - §3.5.1 is the marker these words would need, a glottal in the
-//     Slot II Vv for two or more Slot V affixes. None of them has one.
-//
-// The corpus evidence is thin and one-sided: the words come from a
-// single author's translation project, so they may share one habit
-// rather than attest a rule.
+// The same §3.5 sentence also bars a geminated C_S, and that half is
+// not enforced here. Nine words in the audit corpus parse into one
+// (ltsst, nnl, ggz x2, ddy, dd, jj, ll, mm), which makes it a live
+// question about the language we do implement rather than about 2020,
+// and it wants its own look.
 func TestCorpus_GlottalHeadedCs(t *testing.T) {
-	t.Skip("known defect: a Cs may not contain a glottal, and the intended reading is undetermined")
 	for _, w := range []string{
 		"anţtaleu'há",
 		"anzvarönţiçřoi'há'kšš",
 		"ežfaléa'ha'rš",
-		"hwarswiäle-wuijxwo'lla'a",
+		"anzvarönţiçřoi'hákšš",
+		"attualië'hú'žžg",
+		"aňţärko'lá'rš",
+		"uňňsozahé'kšš",
+		"ňvailoţmá'gzz",
 	} {
-		roundTrips(t, w)
+		if _, err := fullparse.Formative(w); err == nil {
+			t.Errorf("Formative(%q) succeeded; its Cs holds a glottal, which §3.5 forbids", w)
+		}
 	}
 }
 
