@@ -282,33 +282,23 @@ func (gl *Glosser) modularLabel(m g.ModularAdjunct, marksMood *bool) string {
 	return "MOD(" + inner + ")"
 }
 
-// modularScopeSuffix returns the canonical "-{parent}" / "-{concat.}"
+// modularScopeSuffix returns the canonical "-{parent}" / "-{concat}"
 // trailing marker for non-default modular application scopes; empty
 // otherwise.
 func modularScopeSuffix(s g.ModularScope) string {
-	switch s {
-	case g.ModularScopeParent:
-		return "-{parent}"
-	case g.ModularScopeConcat:
-		return "-{concat.}"
+	if s == g.ModularScopeDefault {
+		return ""
 	}
-	return ""
+	return "-{" + s.String() + "}"
 }
 
 // modularReachSuffix returns the canonical "-{<name>}" trailing marker
 // for a non-None reach scope (§4.3 Slot 4 V_H).
 func modularReachSuffix(r g.ModularReach) string {
-	switch r {
-	case g.ModularReachCaseMood:
-		return "-{case/mood}"
-	case g.ModularReachCaseMoodIll:
-		return "-{case/mood/ill}"
-	case g.ModularReachFormative:
-		return "-{form.}"
-	case g.ModularReachAdjacent:
-		return "-{adj.}"
+	if r == g.ModularReachNone {
+		return ""
 	}
-	return ""
+	return "-{" + r.String() + "}"
 }
 
 // combinationRefLabel formats a combination-referential word.

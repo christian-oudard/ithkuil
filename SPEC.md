@@ -15,8 +15,26 @@ The ASCII phonetic form is a notation-only codec on top of the Unicode form (no 
 - **In-memory Formative**. The canonical value type. Every conversion routes through it.
 - **Unicode phonetic surface**. The natural orthography, e.g. `Maţřëullait`. Carries diacritics for stress and non-Latin consonants.
 - **ASCII phonetic surface**. Digraph notation, e.g. `aa` for `ä`, `t,` for `ţ`, `sq` for `š`, with a postfix `/` for stress: `ee/` for `ê`. A pure recoding of the Unicode form, one-to-one with characters. The full table is in the README.
-- **Canonical gloss**. Hyphen-separated morphological breakdown, e.g. `S2/PRC-ml-DYN/OBJ-MSS.G-ERG`. Both the human-readable rendering and a strict authoring syntax. Slot order carries meaning: affixes before the Ca complex apply to the stem alone, affixes after it have scope over the Ca. A Ca holding nothing but defaults is normally suppressed, but is written `{Ca}` when it must stay visible as that boundary. The gloss is entirely ASCII, including the root, which is written in the digraph notation: it has to be typable on an ordinary keyboard, since it is an authoring syntax and not only an output format.
+- **Canonical gloss**. Hyphen-separated morphological breakdown, e.g. `S2.PRC-ml-DYN.OBJ-MSS.G-ERG`. Both the human-readable rendering and a strict authoring syntax. Slot order carries meaning: affixes before the Ca complex apply to the stem alone, affixes after it have scope over the Ca. A Ca holding nothing but defaults is normally suppressed, but is written `{Ca}` when it must stay visible as that boundary. The gloss is entirely ASCII, including the root, which is written in the digraph notation: it has to be typable on an ordinary keyboard, since it is an authoring syntax and not only an output format. Its punctuation follows the rule below.
 - **Serialized bytes**. Binary form for storing text as parsed structure rather than as pronunciation. It writes what a word means, not how it sounds, so nothing in it depends on orthography or phonotactics. It carries no lexicon version and no lexicon indices, so a stored file survives lexicon updates. Slots at their grammatical default cost nothing, and a field narrower than a byte is spent in bits where that saves a whole byte, which together make it about 40% smaller than the romanized text. Raw size is what it optimises; compressing the result is a separate concern, and the layout is not shaped to suit a compressor. Grammatical states the language cannot express are not encodable: a concatenation chain costs no framing because a dependent's own concatenation marker delimits it, which in turn means a lone formative may not carry one.
+
+## Gloss punctuation
+
+Each mark in the canonical gloss has exactly one job. A token's kind therefore follows from its shape, and no lexicon lookup is needed to decide what it is.
+
+- `-` separates slots: `S2.CPT-ml-ERG`
+- `.` joins category values inside one slot: `S2.CPT`, `DYN.OBJ.FNC`, `MSS.G`, `RCP.HYP`, `ASR.RPR`
+- `/` binds an argument, a degree or a case, to a head: `DEV/3`, `ACC/INS`, `(1m)/AFF`, `1m/BEN`
+- `_` trails a modifier, currently only the affix Type: `t/1_2`, `IAC/PRP_3`, `DSV_END`
+- `:` tags a structured body, currently only the stacked Ca: `Ca:MSS.G`, `Ca:{Ca}`
+- `()` wraps a head built from referents or from a Cs: `(1m+2p/BEN)`, `(CTR)/1`
+- `+` joins referents: `1m+2p`
+- `{}` marks something structural rather than a morpheme: `{Ca}`, `{parent}`
+- `[]` marks a word-level head that is not a root: `[QUO]`, `[1m+2p]`
+
+The rule is what keeps the syntax extensible. Anything that binds a case to a head reads `HEAD/CASE`, whether it comes from §3.9.2 or §4.6.5, so the two do not have to be told apart by name. A construct that would need a new sense of an existing mark needs a new mark instead.
+
+Grammatical values that carry no punctuation of their own follow from this: the reach and scope markers inside `{}` are single words for that reason, since a `/` or `.` there would claim a job it does not have and a `-` would split the token.
 
 ## Round-trip guarantees
 

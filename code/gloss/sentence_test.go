@@ -301,7 +301,7 @@ func TestVkTag_AllVariants(t *testing.T) {
 		got := (&Glosser{}).Formative(f)
 		want := "ASR"
 		if val != g.OBS {
-			want = "ASR/" + val.String()
+			want = "ASR." + val.String()
 		}
 		if !strings.Contains(got, want) {
 			t.Errorf("ASR/%s gloss = %q, want substring %q", val, got, want)

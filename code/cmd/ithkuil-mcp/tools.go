@@ -32,15 +32,17 @@ func (s *server) registerTools(srv *mcp.Server) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "compose",
 		Description: "Build a surface Ithkuil formative from a gloss-style expression. " +
-			"Slots are separated by '-', sub-fields by '/' (S2/CPT, DYN/OBJ) or '.' (Ca: " +
-			"MSS.G.RPV). The root is a lowercase consonant cluster (Cr), or (ABBREV)/degree " +
-			"for a CsRoot, or (1m+2p) for a RefRoot. Affixes write Cs/degree or ABBREV/degree, " +
-			"with an optional _2 or _3 type tag. Affixes placed before the Ca land in Slot V " +
-			"(applying to the stem alone); write '{Ca}' for an all-default Ca that still needs " +
-			"to mark that boundary. The returned surface is canonical. By default " +
-			"(verbose=false) descriptions are omitted. Set verbose=true for inline names and " +
-			"meanings. Examples: expression=\"ml\" → \"mlala\"; \"S2/CPT-ml-ERG\" → \"wimlo\"; " +
-			"\"S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG\" → \"imlötrebo\"; \"(CTR)/1\" → \"ëilal\"; " +
+			"Each punctuation mark has one job: '-' separates slots, '.' joins category " +
+			"values inside a slot (S2.CPT, DYN.OBJ, MSS.G.RPV), '/' binds a degree or a " +
+			"case to a head (DEV/3, ACC/INS), '_' trails the affix Type (t/1_2), and ':' " +
+			"tags a stacked Ca (Ca:MSS.G). The root is a lowercase consonant cluster (Cr), " +
+			"or (ABBREV)/degree for a CsRoot, or (1m+2p) for a RefRoot. Affixes placed " +
+			"before the Ca land in Slot V (applying to the stem alone); write '{Ca}' for an " +
+			"all-default Ca that still needs to mark that boundary. The returned surface is " +
+			"canonical. By default (verbose=false) descriptions are omitted. Set " +
+			"verbose=true for inline names and meanings. Examples: expression=\"ml\" → " +
+			"\"mlala\"; \"S2.CPT-ml-ERG\" → \"wimlo\"; " +
+			"\"S2.CPT-ml-DYN.OBJ-MSS.G-DEV/3-ERG\" → \"imlötrebo\"; \"(CTR)/1\" → \"ëilal\"; " +
 			"\"m-SYS/5_2-{Ca}-DCD/1_2\" → \"maţřëullait\".",
 	}, s.compose)
 
@@ -197,7 +199,7 @@ func (s *server) analyze(_ context.Context, _ *mcp.CallToolRequest, in analyzeIn
 // --------------------------------------------------------------------
 
 type composeIn struct {
-	Expression string `json:"expression" jsonschema:"gloss-style compose expression; slots separated by '-', sub-fields by '/' or '.'; affixes before the Ca land in Slot V, with '{Ca}' marking an all-default Ca; bare cluster like 'ml' or full 'S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG'"`
+	Expression string `json:"expression" jsonschema:"gloss-style compose expression; '-' separates slots, '.' joins category values in a slot, '/' binds a degree or case to a head; affixes before the Ca land in Slot V, with '{Ca}' marking an all-default Ca; bare cluster like 'ml' or full 'S2.CPT-ml-DYN.OBJ-MSS.G-DEV/3-ERG'"`
 	Verbose    bool   `json:"verbose,omitempty" jsonschema:"include category names, meanings, and root definition (default false)"`
 }
 

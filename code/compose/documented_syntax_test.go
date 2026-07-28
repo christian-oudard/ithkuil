@@ -1,0 +1,67 @@
+package compose_test
+
+import (
+	"testing"
+
+	"github.com/christian-oudard/ithkuil/compose"
+	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/store"
+)
+
+// SPEC.md and README.md document the gloss syntax by example, one line
+// per punctuation mark. Those examples are the first thing a reader
+// copies, so they have to be real input rather than plausible-looking
+// input.
+//
+// They were not, once: the table illustrated "." with "ASR.RPT", and
+// RPT is not a Validation. Nothing checked it, because prose is not
+// compiled. This is that check.
+//
+// Keep it in step with the table in SPEC.md § Gloss punctuation.
+func TestDocumentedSyntaxExamples(t *testing.T) {
+	st, err := store.Open(store.DefaultPath())
+	if err != nil {
+		t.Skip("no data store; run tools/build_db.py")
+	}
+	lex, err := lexicon.LoadFromStore(st)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Formative-level examples, each wrapped on the "ml" root where the
+	// table shows a bare slot.
+	for _, in := range []string{
+		"S2.CPT-ml-ERG",     // "-" separates slots
+		"ml-DYN.OBJ.FNC",    // "." joins category values
+		"ml-MSS.G",          // "." in a Ca complex
+		"ml-RCP.HYP",        // "." in Slot VIII
+		"ml-ASR.RPR",        // "." on an Assertive Vk
+		"ml-DEV/3",          // "/" binds a degree
+		"ml-ACC/INS",        // "/" binds a case, §3.9.2
+		"ml-(1m)/AFF",       // "/" binds a case, §4.6.5
+		"ml-(1m/BEN)/3",     // "/" binds an effect, then a degree
+		"ml-t/1_2",          // "_" trails the affix Type
+		"ml-IAC/PRP_3",      // "_" on an accessor
+		"ml-Ca:MSS.G",       // ":" tags a stacked Ca
+		"ml-Ca:{Ca}",        // ":" with the structural body
+		"ml-(1m+2p/BEN)/3",  // "()" and "+"
+		"(CTR)/1",           // "()" around a Cs root
+		"ml-DEV/3-{Ca}-t/1", // "{}" as the Slot V/VII boundary
+	} {
+		if _, err := compose.Formative(in, lex.Affixes); err != nil {
+			t.Errorf("documented example %q does not compose: %v", in, err)
+		}
+	}
+
+	// Word-level examples, which go through the token dispatcher.
+	for _, in := range []string{
+		"[QUO]",            // "[]" around a carrier head
+		"[1m+2p]-ERG",      // "[]" around a multi-referent head
+		"RCP.HYP-{parent}", // "{}" around a scope marker
+		"DSV_END",          // "_" as a word-level modifier
+	} {
+		if _, err := compose.ParseToken(in, lex); err != nil {
+			t.Errorf("documented example %q does not parse: %v", in, err)
+		}
+	}
+}

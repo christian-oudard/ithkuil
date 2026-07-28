@@ -15,17 +15,20 @@ import (
 // for cases 1-36 and one for 37-68; the Vx series then picks the group
 // within that range and its degree the case within the group.
 //
-// The gloss writes "KIND:CASE" — ACC1 through ACC3 for the
-// case-accessors, IAC1 through IAC3 for the inverse ones, CST for
-// case-stacking.
+// The gloss writes "FAMILY/CASE" with the ordinary "_2"/"_3" affix
+// Type suffix — ACC for the case-accessors, IAC for the inverse ones,
+// CST for case-stacking. §3.9.2 names these "Case-Accessor, Type-1/-2/
+// -3", and its closing note rules on a "Type-3 case-accessor" and a
+// "standard Type-3 VxCs affix" together, so the suffix is the same
+// Type suffix rather than a lookalike.
 func TestAccessor_RoundTrip(t *testing.T) {
 	gl := &gloss.Glosser{Canonical: true}
 	for _, in := range []string{
-		"ml-CST:ERG-ERG",     // case-stacking, low increment
-		"ml-ACC1:INS-ERG",    // case-accessor, series 1
-		"ml-ACC2:ALL-ERG",    // second kind, one our markdown had lost
-		"ml-IAC3:PRP-ERG",    // inverse Type-3, high increment
-		"ml-CST:THM-t/1-ERG", // alongside an ordinary affix
+		"ml-CST/ERG-ERG",     // case-stacking, low increment
+		"ml-ACC/INS-ERG",     // case-accessor, Type 1
+		"ml-ACC/ALL_2-ERG",   // Type 2, one our markdown had lost
+		"ml-IAC/PRP_3-ERG",   // inverse Type-3, high increment
+		"ml-CST/THM-t/1-ERG", // alongside an ordinary affix
 	} {
 		f, err := compose.Formative(in, nil)
 		if err != nil {

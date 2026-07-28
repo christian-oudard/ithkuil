@@ -264,6 +264,29 @@ ANSI styling.
 parser, composer, and lookups as tools. Point an MCP client at the installed
 binary; it takes the same `--data` flag.
 
+### Gloss Syntax
+
+The gloss is both the output of `analyze` and the input to `compose`. Every mark in it has exactly one job, so what a token is follows from its shape:
+
+| Mark | Job | Example |
+|------|-----|---------|
+| `-` | separates slots | `S2.CPT-ml-ERG` |
+| `.` | joins category values in one slot | `DYN.OBJ.FNC`, `MSS.G`, `ASR.RPR` |
+| `/` | binds a degree or a case to a head | `DEV/3`, `ACC/INS`, `(1m)/AFF` |
+| `_` | trails the affix Type | `t/1_2`, `IAC/PRP_3` |
+| `:` | tags a stacked Ca | `Ca:MSS.G`, `Ca:{Ca}` |
+| `()` | a head built from referents or a Cs | `(1m+2p/BEN)`, `(CTR)/1` |
+| `+` | joins referents | `1m+2p` |
+| `{}` | structural, not a morpheme | `{Ca}`, `{parent}` |
+
+The whole gloss is ASCII, including the root, which uses the digraph notation from the table above. It has to be typable on an ordinary keyboard, since it is an authoring syntax and not only an output format.
+
+```bash
+ithkuil compose 'ml-Ca:PRX-ERG'         # a Ca stacked on the Slot VI Ca
+ithkuil compose 'ml-ACC/INS-ERG'        # a §3.9.2 case-accessor
+ithkuil compose 'ml-(1m)/AFF-ERG'       # a §4.6.5 Column-4 referential
+```
+
 ## References
 
 - **Morphology v1.3.1** (2023-02-11): the primary reference document

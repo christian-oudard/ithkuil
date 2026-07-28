@@ -58,6 +58,13 @@ func TransrelativeDegree(c Case) (int, bool) {
 // two Cs increments: one for cases 1-36 and one for cases 37-68. The
 // Vx then carries the case, its series picking the group of nine (or
 // eight, above case 36) and its degree the case within that group.
+//
+// The seven are two families of three plus one: §3.9.2 names them
+// "Case-Accessor, Type-1/-2/-3", "Inverse Case-Accessor, Type-1/-2/-3"
+// and "Case-Stacking Affix". The Type there is the same Type an
+// ordinary VxCs affix carries — §3.9.2's closing note groups a "Type-3
+// case-accessor" with a "standard Type-3 VxCs affix" under one rule —
+// so Family and Type are the two axes, not seven opaque values.
 type AccessorKind int
 
 const (
@@ -70,10 +77,42 @@ const (
 	CaseStacking
 )
 
-func (k AccessorKind) String() string {
-	return [...]string{
-		"ACC1", "ACC2", "ACC3", "IAC1", "IAC2", "IAC3", "CST",
+// Family is the gloss head for the kind: ACC for a case-accessor, IAC
+// for an inverse case-accessor, CST for case-stacking.
+func (k AccessorKind) Family() string {
+	return [...]string{"ACC", "ACC", "ACC", "IAC", "IAC", "IAC", "CST"}[k]
+}
+
+// Type is the §3.9.2 Type of the kind. Case-stacking has no Type
+// distinction and reports Type1Affix.
+func (k AccessorKind) Type() AffixType {
+	return [...]AffixType{
+		Type1Affix, Type2Affix, Type3Affix,
+		Type1Affix, Type2Affix, Type3Affix,
+		Type1Affix,
 	}[k]
+}
+
+// String is the kind's canonical name, family plus the "_2"/"_3" Type
+// suffix the gloss uses. Type 1 is unmarked, as it is on any affix.
+func (k AccessorKind) String() string {
+	switch k.Type() {
+	case Type2Affix:
+		return k.Family() + "_2"
+	case Type3Affix:
+		return k.Family() + "_3"
+	}
+	return k.Family()
+}
+
+// LookupAccessorKind is the inverse of Family and Type.
+func LookupAccessorKind(family string, t AffixType) (AccessorKind, bool) {
+	for _, k := range AllAccessorKinds {
+		if k.Family() == family && k.Type() == t {
+			return k, true
+		}
+	}
+	return 0, false
 }
 
 // AllAccessorKinds enumerates the seven in declaration order.

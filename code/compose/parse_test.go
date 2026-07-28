@@ -32,9 +32,9 @@ func TestFormative_RoundTripGloss(t *testing.T) {
 		in   string
 	}{
 		{"bare root", "ml"},
-		{"stem version", "S2/CPT-ml"},
+		{"stem version", "S2.CPT-ml"},
 		{"case ERG", "ml-ERG"},
-		{"function spec", "ml-DYN/OBJ"},
+		{"function spec", "ml-DYN.OBJ"},
 		{"context", "ml-FNC"},
 		{"aspect", "ml-RTR"},
 		{"illocution", "ml-DIR"},
@@ -66,7 +66,7 @@ func TestFormative_RoundTripGloss(t *testing.T) {
 func TestFormative_Specific(t *testing.T) {
 	lex := mustLex(t)
 
-	f, err := Formative("S2/CPT-ml-DYN/OBJ-ERG", lex.Affixes)
+	f, err := Formative("S2.CPT-ml-DYN.OBJ-ERG", lex.Affixes)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}

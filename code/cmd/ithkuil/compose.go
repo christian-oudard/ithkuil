@@ -15,12 +15,13 @@ import (
 //
 // Usage: ithkuil compose EXPR
 //
-// EXPR is the syntax accepted by compose.Formative: slots separated
-// by "-", sub-fields by "/" or "." (for Ca). Examples:
+// EXPR is the syntax accepted by compose.Formative: "-" separates
+// slots, "." joins category values inside a slot, "/" binds a degree
+// or a case to a head. Examples:
 //
 //	ml
-//	S2/CPT-ml-ERG
-//	S2/CPT-ml-DYN/OBJ-MSS.G.RPV-DEV/3-ERG
+//	S2.CPT-ml-ERG
+//	S2.CPT-ml-DYN.OBJ-MSS.G.RPV-DEV/3-ERG
 func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 	fs := newFlagSet("compose", stderr)
 	fs.describe("Build a surface formative from a gloss-style expression.", "EXPR")

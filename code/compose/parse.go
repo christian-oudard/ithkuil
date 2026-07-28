@@ -14,13 +14,14 @@ import (
 )
 
 // Formative builds a grammar.Formative from a gloss-style authoring
-// expression. The syntax is a strict subset of the gloss output: slots
-// are separated by "-", sub-fields within a slot by "/". The root
-// cluster is written in plain Ithkuil orthography or ASCII digraphs
-// (aa→ä, t,→ţ, sq→š, cq→č, dz→ẓ). Every other token is either a
-// grammatical abbreviation (Stem, Version, Function, Specification,
-// Context, Case, Aspect, Valence, Mood, Illocution, Stress) or an
-// affix written "Cs/degree" or "ABBREV/degree".
+// expression. The syntax is exactly the canonical gloss: slots are
+// separated by "-", category values within a slot by ".", and "/"
+// binds an argument — a degree or a case — to a head. The root cluster
+// is written in plain Ithkuil orthography or ASCII digraphs (aa→ä,
+// t,→ţ, sq→š, cq→č, dz→ẓ). Every other token is either a grammatical
+// abbreviation (Stem, Version, Function, Specification, Context, Case,
+// Aspect, Valence, Mood, Illocution, Stress) or an affix written
+// "Cs/degree" or "ABBREV/degree".
 //
 // Affixes land in Slot VII unless they precede the Ca complex, which
 // is written either as its components ("MSS.G") or, when every
@@ -30,10 +31,13 @@ import (
 // Examples
 //
 //	ml                              minimal nominal formative on root "ml"
-//	S2/CPT-ml-ERG                   stem 2, completive, ergative case
-//	S2/CPT-ml-DYN/OBJ-DEV/3-ERG     plus dynamic+objective and a DEV/3 affix
+//	S2.CPT-ml-ERG                   stem 2, completive, ergative case
+//	S2.CPT-ml-DYN.OBJ-DEV/3-ERG     plus dynamic+objective and a DEV/3 affix
 //	m-ţř/5_2-{Ca}-t/1_2             SYS/5 in Slot V, DCD/1 in Slot VII
 //	t,k-FNC                         ASCII digraph root "t,k" → "ţk"
+//	ml-Ca:PRX-ERG                   a Ca stacked on the Slot VI Ca
+//	ml-ACC/INS-ERG                  a §3.9.2 case-accessor
+//	ml-(1m)/AFF-ERG                 a §4.6.5 Column-4 referential
 //
 // Lexicon-aware affix resolution requires passing an AffixMap; pass
 // nil to accept only the bare Cs form.
@@ -47,7 +51,7 @@ func Formative(s string, affixes map[string]lexicon.AffixEntry) (g.Formative, er
 		return g.Formative{}, fmt.Errorf("empty input")
 	}
 	// Collapse run of "-" into a single separator: gloss output writes
-	// "S2/CPT--ml-…" with a double hyphen around the root marker.
+	// "S2.CPT--ml-…" with a double hyphen around the root marker.
 	tokens := splitSlots(s)
 	if len(tokens) == 0 {
 		return g.Formative{}, fmt.Errorf("no slot tokens")
@@ -285,7 +289,7 @@ var affixToken = regexp.MustCompile(`^([^/_]+)/([0-9])(?:_([23]))?$`)
 
 // applyToken dispatches one inter-slot token to ApplyFlag for plain
 // abbreviations, to the affix builder for "X/N" forms, or splits on
-// "/" and recurses for compound slot groups like "S2/CPT". slotV
+// "." and recurses for compound slot groups like "S2.CPT". slotV
 // selects which affix slot the token lands in when it is an affix.
 func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntry, slotV bool) error {
 	// Type-3 referential affix: "(refs)/degree" where refs is a
@@ -300,23 +304,22 @@ func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntr
 	if strings.HasPrefix(tok, caStackPrefix) {
 		return appendCaStack(f, strings.TrimPrefix(tok, caStackPrefix), slotV)
 	}
-	// §3.9.2 case-accessor family: "KIND:CASE".
+	// §3.9.2 case-accessor family: "ACC/CASE", "IAC/CASE_3", "CST/CASE".
 	if m := accessorToken.FindStringSubmatch(tok); m != nil {
-		return appendAccessor(f, m[1], m[2], slotV)
+		return appendAccessor(f, m[1], m[2], m[3], slotV)
 	}
 	// Affix form takes precedence over the generic slash-split path:
 	// "DEV/3" must mean affix DEV degree 3, not flag DEV plus flag 3.
 	if m := affixToken.FindStringSubmatch(tok); m != nil {
 		return appendAffix(f, m[1], m[2], m[3], affixes, slotV)
 	}
-	if strings.ContainsAny(tok, "/.") {
-		// "/" groups sub-fields like S2/CPT or DYN/OBJ; "." separates
-		// Ca-complex components like MSS.G.RPV. Both flatten to a list
-		// of independent flags.
-		fields := strings.FieldsFunc(tok, func(r rune) bool {
-			return r == '/' || r == '.'
-		})
-		for _, part := range fields {
+	// "." joins category values inside one slot — S2.CPT, DYN.OBJ,
+	// MSS.G.RPV, ASR.INF — which flatten to a list of independent
+	// flags. It is the only separator that does this: "/" binds an
+	// argument to a head, and every shape that uses it was tried above,
+	// so a "/" still here is an error rather than a grouping.
+	if strings.Contains(tok, ".") {
+		for _, part := range strings.Split(tok, ".") {
 			if part == "" {
 				continue
 			}
@@ -362,25 +365,21 @@ func appendCaStack(f *g.Formative, body string, slotV bool) error {
 	return nil
 }
 
-// accessorToken matches "KIND:CASE" — a §3.9.2 case-accessor, inverse
-// case-accessor or case-stacking affix.
-var accessorToken = regexp.MustCompile(`^([A-Z]{3}[0-9]?):([A-Z]{3})$`)
+// accessorToken matches "FAMILY/CASE" with the optional "_2"/"_3" Type
+// suffix — a §3.9.2 case-accessor, inverse case-accessor or
+// case-stacking affix. Only the three family names lead, so the shape
+// cannot be confused with an ordinary "ABBREV/degree" affix, whose
+// argument is a digit rather than a case.
+var accessorToken = regexp.MustCompile(`^(ACC|IAC|CST)/([A-Z]{3})(?:_([23]))?$`)
 
-// appendAccessor builds a §3.9.2 affix. The kind chooses which of the
-// fourteen Cs increments to write, and the case decides which half of
-// the 68 it falls in and therefore which of the kind's two increments
-// applies; the Vx then carries the case within that half.
-func appendAccessor(f *g.Formative, kindName, caseName string, slotV bool) error {
-	var kind g.AccessorKind
-	found := false
-	for _, k := range g.AllAccessorKinds {
-		if k.String() == kindName {
-			kind, found = k, true
-			break
-		}
-	}
+// appendAccessor builds a §3.9.2 affix. The family and Type choose
+// which of the fourteen Cs increments to write, and the case decides
+// which half of the 68 it falls in and therefore which of that kind's
+// two increments applies; the Vx then carries the case within the half.
+func appendAccessor(f *g.Formative, family, caseName, typeStr string, slotV bool) error {
+	kind, found := g.LookupAccessorKind(family, affixTypeFromSuffix(typeStr))
 	if !found {
-		return fmt.Errorf("unknown case-accessor kind %q", kindName)
+		return fmt.Errorf("%s has no Type-%s form", family, typeStr)
 	}
 	c, ok := parseCaseName(caseName)
 	if !ok {
@@ -448,6 +447,18 @@ func appendType3Affix(f *g.Formative, tok string, slotV bool) error {
 	return nil
 }
 
+// affixTypeFromSuffix decodes the "_2"/"_3" Type suffix. Type 1 is
+// unmarked, so an absent suffix and an explicit "1" both give it.
+func affixTypeFromSuffix(s string) g.AffixType {
+	switch s {
+	case "2":
+		return g.Type2Affix
+	case "3":
+		return g.Type3Affix
+	}
+	return g.Type1Affix
+}
+
 // appendToAffixSlot puts a parsed affix in Slot V (applies to the stem
 // alone) or Slot VII (has scope over the Ca complex).
 func appendToAffixSlot(f *g.Formative, a g.Affix, slotV bool) {
@@ -460,15 +471,7 @@ func appendToAffixSlot(f *g.Formative, a g.Affix, slotV bool) {
 
 func appendAffix(f *g.Formative, csOrAbbrev, degreeStr, typeStr string, affixes map[string]lexicon.AffixEntry, slotV bool) error {
 	degree, _ := strconv.Atoi(degreeStr)
-	atype := g.Type1Affix
-	switch typeStr {
-	case "", "1":
-		atype = g.Type1Affix
-	case "2":
-		atype = g.Type2Affix
-	case "3":
-		atype = g.Type3Affix
-	}
+	atype := affixTypeFromSuffix(typeStr)
 	cs := resolveAffixCs(csOrAbbrev, affixes)
 	if cs == "" {
 		return fmt.Errorf("unknown affix %q", csOrAbbrev)

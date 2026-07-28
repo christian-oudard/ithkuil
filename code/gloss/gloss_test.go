@@ -41,9 +41,9 @@ func TestFormative_NonDefaultSlotII(t *testing.T) {
 	cr.Version = g.CPT
 	f.Root = cr
 	got := Formative(f)
-	want := "S2/CPT--ml-"
+	want := "S2.CPT--ml-"
 	if got != want {
-		t.Errorf("Formative(S2/CPT) = %q, want %q", got, want)
+		t.Errorf("Formative(S2.CPT) = %q, want %q", got, want)
 	}
 }
 
@@ -53,9 +53,9 @@ func TestFormative_NonDefaultSlotIV(t *testing.T) {
 	cr.SlotIV = g.SlotIV{Function: g.DYN, Specification: g.OBJ, Context: g.EXS}
 	f.Root = cr
 	got := Formative(f)
-	want := "-ml--DYN/OBJ/EXS"
+	want := "-ml--DYN.OBJ.EXS"
 	if got != want {
-		t.Errorf("Formative(DYN/OBJ/EXS) = %q, want %q", got, want)
+		t.Errorf("Formative(DYN.OBJ.EXS) = %q, want %q", got, want)
 	}
 }
 
@@ -94,9 +94,9 @@ func TestFormative_Verbal(t *testing.T) {
 	// Non-default validation should appear.
 	f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.INF}}
 	got = Formative(f)
-	want = "-ml--ASR/INF-ULT"
+	want = "-ml--ASR.INF-ULT"
 	if got != want {
-		t.Errorf("Formative(ASR/INF) = %q, want %q", got, want)
+		t.Errorf("Formative(ASR.INF) = %q, want %q", got, want)
 	}
 }
 
@@ -218,7 +218,7 @@ func TestGlosser_RootDifferentStem(t *testing.T) {
 	f.Root = cr
 	got := gl.Formative(f)
 	entry := lex.Roots["m"]
-	want := "S3/PRC--m-'" + entry.Stem3 + "'"
+	want := "S3.PRC--m-'" + entry.Stem3 + "'"
 	if got != want {
 		t.Errorf("Formative(m, S3) = %q, want %q", got, want)
 	}

@@ -30,9 +30,24 @@ const (
 	ModularReachAdjacent                        // V_H = o
 )
 
+// String names the reach. The canonical gloss writes these inside "{}"
+// and joins the result to its neighbours with "-", so the names carry
+// no punctuation of their own: a "/" or a "." would claim a job it does
+// not have, and a "-" would split the token.
 func (r ModularReach) String() string {
-	return [...]string{"none", "case/mood", "case/mood/ill", "form.", "adj."}[r]
+	return [...]string{"none", "casemood", "casemoodill", "formative", "adjacent"}[r]
 }
+
+// AllModularScopes and AllModularReaches enumerate the two in
+// declaration order, so a parser can invert String without repeating
+// the names.
+var (
+	AllModularScopes  = []ModularScope{ModularScopeDefault, ModularScopeParent, ModularScopeConcat}
+	AllModularReaches = []ModularReach{
+		ModularReachNone, ModularReachCaseMood, ModularReachCaseMoodIll,
+		ModularReachFormative, ModularReachAdjacent,
+	}
+)
 
 // ModularAdjunct carries one or more SlotVIII-shaped content slots as
 // a stand-alone adjunct, scoping mood/aspect/etc. across an adjacent

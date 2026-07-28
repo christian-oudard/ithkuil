@@ -23,9 +23,9 @@ func TestFormative_FullRoundTrip(t *testing.T) {
 	gl := &gloss.Glosser{Lex: lex}
 	inputs := []string{
 		"ml",
-		"S2/CPT-ml",
+		"S2.CPT-ml",
 		"ml-ERG",
-		"S2/CPT-ml-DYN/OBJ-ERG",
+		"S2.CPT-ml-DYN.OBJ-ERG",
 		"ml-DEV/3-ERG",
 		"ml-MCS/3",
 		"ml-PRG",

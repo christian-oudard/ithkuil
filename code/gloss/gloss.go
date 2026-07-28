@@ -2,7 +2,19 @@
 // grammar.Formative. The output format is hyphen-separated slot
 // abbreviations with grammatical defaults suppressed, e.g.
 //
-//	S2/PRC-ml-DYN/OBJ-MSS.G-ERG
+//	S2.PRC-ml-DYN.OBJ-MSS.G-ERG
+//
+// Each punctuation mark has exactly one job, so a token's kind can be
+// told from its shape without consulting the lexicon:
+//
+//	"-"  separates slots
+//	"."  joins category values within one slot
+//	"/"  binds an argument, a degree or a case, to a head
+//	"_"  trails a modifier, currently the affix Type
+//	":"  tags a structured body, currently only "Ca:"
+//	"()" wraps a head built from referents or a Cs
+//	"+"  joins referents
+//	"{}" marks something structural rather than a morpheme
 //
 // When a lexicon is supplied (via Glosser.Lex), roots show their
 // stem-selected meaning and affixes show their ABBREV/degree form;
@@ -27,11 +39,13 @@ import (
 // package-level Formative function.
 type Glosser struct {
 	Lex *lexicon.Lexicon
-	// Canonical suppresses display-only annotations that aren't part
-	// of the compose authoring syntax — currently just the quoted
-	// lexicon meaning after the root ("-ml- 'gold (color)'"). The
-	// resulting gloss is exactly what compose.Formative accepts,
-	// so set Canonical=true for round-tripping.
+	// Canonical suppresses display-only annotations that aren't part of
+	// the compose authoring syntax: the quoted lexicon meaning after the
+	// root ("-ml- 'gold (color)'"), and the category code that replaces
+	// the degree on affixes like MCS ("MCS:SUB" for "MCS/1"). Both are
+	// derivable from what remains, so dropping them loses nothing and
+	// keeps one spelling per Formative. The result is exactly what
+	// compose.Formative accepts, so set Canonical=true for round-tripping.
 	Canonical bool
 }
 
@@ -72,7 +86,7 @@ func (gl *Glosser) rootPrefix(r g.Root) string {
 		if (g.SlotII{Stem: x.Stem, Version: x.Version}) == g.DefaultSlotII {
 			return ""
 		}
-		return fmt.Sprintf("%s/%s", x.Stem, x.Version)
+		return fmt.Sprintf("%s.%s", x.Stem, x.Version)
 	case g.CsRoot:
 		if x.Version == g.PRC {
 			return ""
@@ -139,7 +153,7 @@ func (gl *Glosser) rootSuffix(r g.Root) string {
 		if x.Context != g.EXS {
 			parts = append(parts, x.Context.String())
 		}
-		return strings.Join(parts, "/")
+		return strings.Join(parts, ".")
 	}
 	return ""
 }
@@ -293,15 +307,15 @@ func slotIV(s g.SlotIV) string {
 	if s == g.DefaultSlotIV {
 		return ""
 	}
-	return fmt.Sprintf("%s/%s/%s", s.Function, s.Specification, s.Context)
+	return fmt.Sprintf("%s.%s.%s", s.Function, s.Specification, s.Context)
 }
 
 // caStackPrefix tags a §3.5/§3.7 Ca-stacking affix in the gloss. The
 // body after it is the same component list slotVI writes, so a stacked
 // Ca and the Slot VI Ca read alike and only the tag distinguishes
-// them. "Ca:" reuses the tag-introduces-a-value sense ":" already has
-// for category-valued affixes, and cannot be mistaken for one: affix
-// abbreviations are three-letter uppercase.
+// them. ":" does this one job in the canonical gloss and no other, so
+// the tag is unmistakable: nothing else in a formative token carries a
+// colon.
 const caStackPrefix = "Ca:"
 
 // stackedCaBody renders a stacked Ca cluster as its components. An
@@ -402,13 +416,21 @@ func (gl *Glosser) affix(a g.Affix) string {
 		return caStackPrefix + stackedCaBody(a.Consonant)
 	}
 	// §3.9.2 case-accessor, inverse case-accessor or case-stacking
-	// affix. The Cs increment names the kind and which half of the 68
+	// affix. The Cs increment names the family and which half of the 68
 	// cases it reaches; the Vx series and degree name the case within
-	// that half. Written "KIND:CASE".
+	// that half. Written "ACC/INS", "IAC/PRP_3", "CST/ERG" — the same
+	// head-slash-argument shape the Column-4 shortcut uses, since both
+	// bind a case to a head. The Type suffix is the affix Type suffix,
+	// because §3.9.2's three accessor Types are affix Types.
+	//
+	// The Vx series is not written: it is derived from the case, so
+	// spelling it would be redundant, and the stored Affix.Type holds it
+	// rather than the accessor Type for exactly that reason.
 	if kind, high, ok := g.ParseAccessorCs(a.Consonant); ok {
 		if series, sok := g.VxSeries(a.Type); sok {
 			if c, cok := g.AccessorCase(series, a.Degree, high); cok {
-				return fmt.Sprintf("%s:%s", kind, c)
+				return fmt.Sprintf("%s/%s%s",
+					kind.Family(), c, gl.affixTypeSuffix(kind.Type()))
 			}
 		}
 	}
@@ -435,12 +457,12 @@ func (gl *Glosser) affix(a g.Affix) string {
 			// "MCS/1".
 			//
 			// Canonical mode keeps the degree. The code is derived from
-			// (Cs, degree, type) and adds nothing, while its "ABBREV:CAT"
-			// shape is indistinguishable from a §3.9.2 accessor's
-			// "KIND:CASE" — both are three uppercase letters either side
-			// of a colon, and only a lexicon lookup separates them. That
-			// ambiguity cost the round trip: compose read "MCS:SUB" as an
-			// accessor and rejected the whole word.
+			// (Cs, degree, type), so writing it is redundant, and a
+			// canonical form that admits two spellings of one Formative
+			// is not canonical. It also keeps ":" doing the single job
+			// it has here, tagging a "Ca:" body; "ABBREV:CAT" would be a
+			// second sense of the same mark, and the last time two
+			// constructs shared a shape the round trip broke on it.
 			if cat := entry.CategoryValue(a.Degree, int(a.Type)+1); cat != "" && !gl.Canonical {
 				return fmt.Sprintf("%s:%s", entry.Abbrev, cat)
 			}
@@ -473,7 +495,7 @@ func joinDot(parts ...string) string {
 
 // finalSlotIX glosses the Slot IX content of the Formative's Final.
 // THM Case is the unmarked default and is suppressed. Assertive
-// Vk renders as "ASR" (or "ASR/<val>" for non-OBS Validations);
+// Vk renders as "ASR" (or "ASR.<val>" for non-OBS Validations);
 // the other Vk variants render as their illocution tag.
 func finalSlotIX(f g.Final) string {
 	if f == nil {
@@ -504,7 +526,7 @@ func vkTag(v g.Vk) string {
 		if as.Validation == g.OBS {
 			return "ASR"
 		}
-		return "ASR/" + as.Validation.String()
+		return "ASR." + as.Validation.String()
 	}
 	return v.Tag()
 }

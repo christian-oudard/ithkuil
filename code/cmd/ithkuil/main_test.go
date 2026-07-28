@@ -419,7 +419,7 @@ func TestCompare_NoSlotBreakdown(t *testing.T) {
 // ---- compose ----
 
 func TestCompose_Expression(t *testing.T) {
-	out, _, code := runCLI("-data", dataFile(), "compose", "S2/CPT-ml-ERG")
+	out, _, code := runCLI("-data", dataFile(), "compose", "S2.CPT-ml-ERG")
 	if code != 0 {
 		t.Fatalf("compose exit %d", code)
 	}

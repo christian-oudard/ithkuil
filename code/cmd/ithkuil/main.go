@@ -71,12 +71,13 @@ Subcommands:
   compare A B        Lay two words' slot breakdowns side by side and
                      mark what differs.
   compose EXPR       Build a surface formative from a gloss-style
-                     expression. Slots separated by "-"; sub-fields
-                     by "/" or "." (for Ca). Affixes before the Ca
+                     expression. "-" separates slots, "." joins
+                     category values in a slot, "/" binds a degree
+                     or a case to a head. Affixes before the Ca
                      land in Slot V; write "{Ca}" for an all-default
                      Ca that still needs to mark that boundary.
-                     Examples: "ml", "S2/CPT-ml-ERG",
-                     "S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG",
+                     Examples: "ml", "S2.CPT-ml-ERG",
+                     "S2.CPT-ml-DYN.OBJ-MSS.G-DEV/3-ERG",
                      "m-SYS/5_2-{Ca}-DCD/1_2".
   search [Q]         Look a term up in the grammar inventory and the
                      lexicon at once, grammar hits first. With no

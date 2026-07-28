@@ -349,24 +349,13 @@ func looksLikeReferential(s string) bool {
 // looksLikeModular reports whether s has the shape of a modular
 // adjunct: a Vn category abbreviation followed by "." and a Mood/
 // CaseScope abbreviation (e.g. "RTR.SUB", "PRG.HYP"), optionally with
-// a "-{parent}" / "-{concat.}" scope suffix. The bare "MOD" case is
+// a "-{parent}" / "-{concat}" scope suffix. The bare "MOD" case is
 // handled before this check.
 func looksLikeModular(s string) bool {
 	// Strip the optional reach tail then the application-scope tail
 	// before testing the body shape.
-	body := s
-	for _, suf := range []string{"-{case/mood/ill}", "-{case/mood}", "-{form.}", "-{adj.}"} {
-		if strings.HasSuffix(body, suf) {
-			body = strings.TrimSuffix(body, suf)
-			break
-		}
-	}
-	switch {
-	case strings.HasSuffix(body, "-{parent}"):
-		body = strings.TrimSuffix(body, "-{parent}")
-	case strings.HasSuffix(body, "-{concat.}"):
-		body = strings.TrimSuffix(body, "-{concat.}")
-	}
+	body, _ := trimModularReach(s)
+	body, _ = trimModularScope(body)
 	if body == "MOD" {
 		return true
 	}
@@ -424,7 +413,8 @@ func looksLikeAffixual(s string) bool {
 	if slash < 1 {
 		return false
 	}
-	// A formative slot like "S2/PRC" starts with uppercase and has more
+	// A formative slot like "S2.CPT" has no "/" at all; a slot that
+	// does, like "DEV/3", sits among more hyphen-separated slots.
 	// hyphens around it; an affixual adjunct is the whole token.
 	// Heuristic: token has a "/" and either ends with "}" (scope) or
 	// has only one hyphen-separated slot (just the affix).
@@ -712,48 +702,15 @@ func parseSpecName(s string) (g.Specification, bool) {
 //	MOD                       — all-default (MNO Valence + FAC Mood/CaseScope)
 //	RTR.SUB                   — typed Vn.Cn content
 //	RTR.SUB-{parent}          — with non-default application scope
-//	MOD-{concat.}             — empty body with scope
+//	MOD-{concat}              — empty body with scope
 //
 // Returns a tokenize.ModularWord. Reach scope (V_H, §4.3 Slot 4) is
 // not yet representable in our data model and falls out of round-trip.
 func parseModularToken(s string) (tokenize.WordToken, error) {
-	body := s
-	reach := g.ModularReachNone
-	// Reach suffix comes after the application-scope suffix in canonical
-	// output, so peel it first.
-	for {
-		matched := false
-		switch {
-		case strings.HasSuffix(body, "-{case/mood}"):
-			reach = g.ModularReachCaseMood
-			body = strings.TrimSuffix(body, "-{case/mood}")
-			matched = true
-		case strings.HasSuffix(body, "-{case/mood/ill}"):
-			reach = g.ModularReachCaseMoodIll
-			body = strings.TrimSuffix(body, "-{case/mood/ill}")
-			matched = true
-		case strings.HasSuffix(body, "-{form.}"):
-			reach = g.ModularReachFormative
-			body = strings.TrimSuffix(body, "-{form.}")
-			matched = true
-		case strings.HasSuffix(body, "-{adj.}"):
-			reach = g.ModularReachAdjacent
-			body = strings.TrimSuffix(body, "-{adj.}")
-			matched = true
-		}
-		if !matched {
-			break
-		}
-	}
-	scope := g.ModularScopeDefault
-	switch {
-	case strings.HasSuffix(body, "-{parent}"):
-		scope = g.ModularScopeParent
-		body = strings.TrimSuffix(body, "-{parent}")
-	case strings.HasSuffix(body, "-{concat.}"):
-		scope = g.ModularScopeConcat
-		body = strings.TrimSuffix(body, "-{concat.}")
-	}
+	// The reach suffix comes after the application-scope suffix in
+	// canonical output, so peel it first.
+	body, reach := trimModularReach(s)
+	body, scope := trimModularScope(body)
 	ma := g.ModularAdjunct{Scope: scope, Reach: reach}
 	if body != "MOD" {
 		// One or more Vn.Cn entries joined by "-" in display, or just
@@ -774,6 +731,34 @@ func parseModularToken(s string) (tokenize.WordToken, error) {
 		}
 	}
 	return tokenize.ModularWord{Text: s, Modular: ma}, nil
+}
+
+// trimModularReach and trimModularScope strip a trailing "-{name}"
+// marker and return the value it names, or the default when there is
+// none. Both invert the String forms rather than repeating the names,
+// so a rename in grammar cannot leave the parser reading the old ones.
+func trimModularReach(s string) (string, g.ModularReach) {
+	for _, r := range g.AllModularReaches {
+		if r == g.ModularReachNone {
+			continue
+		}
+		if body, ok := strings.CutSuffix(s, "-{"+r.String()+"}"); ok {
+			return body, r
+		}
+	}
+	return s, g.ModularReachNone
+}
+
+func trimModularScope(s string) (string, g.ModularScope) {
+	for _, sc := range g.AllModularScopes {
+		if sc == g.ModularScopeDefault {
+			continue
+		}
+		if body, ok := strings.CutSuffix(s, "-{"+sc.String()+"}"); ok {
+			return body, sc
+		}
+	}
+	return s, g.ModularScopeDefault
 }
 
 // slotVIIIFromNames builds a typed SlotVIII from the canonical Vn and

@@ -25,7 +25,7 @@ func TestRoundTrip_Grid_AllVk(t *testing.T) {
 		f.Final = g.UnframedVerbal{Vk: vk}
 		name := vk.Tag()
 		if asr, ok := vk.(g.Assertive); ok {
-			name = "ASR/" + asr.Validation.String()
+			name = "ASR." + asr.Validation.String()
 		}
 		t.Run(name, func(t *testing.T) {
 			l := FromGrammar(f)
