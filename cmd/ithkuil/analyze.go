@@ -8,6 +8,7 @@ import (
 
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/slots"
 	"github.com/christian-oudard/ithkuil/tokenize"
 	"github.com/christian-oudard/ithkuil/validation"
 	"github.com/christian-oudard/ithkuil/view"
@@ -144,9 +145,35 @@ func renderDetailed(w io.Writer, t tokenize.WordToken, lex interface{}, glosser 
 		renderConcatenated(w, tt, glosser)
 	case tokenize.ModularWord:
 		renderModular(w, tt)
+	case tokenize.UnknownWord:
+		renderUnknown(w, tt.Text)
 	default:
 		fmt.Fprintf(w, "%s  %s  %s\n", t.Surface(), view.Type(t), glosser.Token(t))
 	}
+}
+
+// renderUnknown reports why no classifier claimed a word. The
+// formative decoder gets furthest into a word of any of them, so its
+// complaint is the most specific description of the shape available;
+// it is a diagnostic, not a claim that the word was meant to be a
+// formative.
+func renderUnknown(w io.Writer, word string) {
+	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(word)))
+	iw := indented(w, "  ")
+	fmt.Fprintln(iw, stylize(ansiDim, "(unclassified)"))
+	fmt.Fprintln(iw)
+
+	layout, err := slots.Parse(word)
+	if err != nil {
+		fmt.Fprintf(iw, "shape: %v\n", err)
+		return
+	}
+	if _, err := slots.ToGrammar(layout); err != nil {
+		fmt.Fprintf(iw, "as a formative: %v\n", err)
+	}
+	fmt.Fprintln(iw)
+	fmt.Fprintln(iw, stylize(ansiDim, "slot shape, for the word as a whole:"))
+	renderPhoneticTable(iw, view.LayoutSegments(layout))
 }
 
 // renderModular prints the phonetic + glossary tables for a modular
@@ -222,6 +249,26 @@ func renderPhoneticTable(w io.Writer, segs []view.Segment) {
 		if n := runeWidth(s.Slot); n > slW {
 			slW = n
 		}
+	}
+	// A Layout carries no Encodes, so drop the column entirely rather
+	// than printing a header over blanks and trailing whitespace.
+	encoded := false
+	for _, s := range segs {
+		if len(s.Encodes) > 0 {
+			encoded = true
+			break
+		}
+	}
+	if !encoded {
+		fmt.Fprintf(w, "%s  %s\n",
+			stylize(ansiDim, padRunes("PHONETIC", phW)),
+			stylize(ansiDim, "SLOT"))
+		for _, s := range segs {
+			fmt.Fprintf(w, "%s  %s\n",
+				stylize(ansiCyan, padRunes(s.Chunk, phW)),
+				stylize(ansiYellow, s.Slot))
+		}
+		return
 	}
 	fmt.Fprintf(w, "%s  %s  %s\n",
 		stylize(ansiDim, padRunes("PHONETIC", phW)),

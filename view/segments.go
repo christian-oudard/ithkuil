@@ -501,6 +501,43 @@ func decorateHyphens(segs []Segment) {
 	}
 }
 
+// LayoutSegments renders a slots.Layout as phonetic-table rows, in
+// surface order, skipping empty slots. It carries no Encodes, because
+// a Layout is the shape split alone — it is what Parse recovered
+// before ToGrammar assigned any grammatical value, and is the only
+// view available for a word that fails to decode.
+//
+// The split describes the whole word, not a prefix reached before
+// giving up. parseFromCa scans ahead for a geminated Ca to decide
+// whether the conjunct after Vr is the Ca or a Slot V affix, so a
+// different ending re-splits everything before it.
+func LayoutSegments(l slots.Layout) []Segment {
+	var segs []Segment
+	add := func(chunk, slot string) {
+		if chunk != "" {
+			segs = append(segs, Segment{Chunk: chunk, Raw: chunk, Slot: slot})
+		}
+	}
+	add(l.Cc, "Cc")
+	add(l.Vv, "Vv")
+	add(l.Cr, "Cr")
+	add(l.Vr, "Vr")
+	for i, a := range l.SlotV {
+		add(a.Cs, fmt.Sprintf("Cs₅%s", subscript(i+1)))
+		add(a.Vx, fmt.Sprintf("Vx₅%s", subscript(i+1)))
+	}
+	add(l.Ca, "Ca")
+	for i, a := range l.SlotVII {
+		add(a.Vx, fmt.Sprintf("Vx%s", subscript(i+1)))
+		add(a.Cs, fmt.Sprintf("Cs%s", subscript(i+1)))
+	}
+	add(l.Vn, "Vn")
+	add(l.Cn, "Cn")
+	add(l.Vc, "Vc")
+	decorateHyphens(segs)
+	return segs
+}
+
 func subscript(n int) string {
 	digits := []rune("₀₁₂₃₄₅₆₇₈₉")
 	if n < 0 || n > 9 {

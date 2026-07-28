@@ -90,6 +90,33 @@ func TestAnalyze_ConcatenatedChainLabels(t *testing.T) {
 	}
 }
 
+func TestAnalyze_UnclassifiedShowsDiagnostic(t *testing.T) {
+	// An unreadable word used to print only "?mavẓorf". The shape
+	// split survives even when the grammatical decode fails, so both
+	// the decoder's complaint and the slot split are available and
+	// worth showing. "mavẓorf" is "mavẓorff" with the §3.6.1 Ca
+	// gemination removed, which forces "vẓ" to be read as the Ca.
+	out, _, code := runCLI("-data", dataFile(), "analyze", "mavẓorf")
+	if code != 0 {
+		t.Fatalf("analyze exit %d; got %q", code, out)
+	}
+	for _, want := range []string{
+		"(unclassified)",
+		`unrecognized Ca "vẓ"`,
+		"PHONETIC", "SLOT",
+		"Cr", "Vr", "Ca",
+	} {
+		if !strings.Contains(out, want) {
+			t.Errorf("diagnostic missing %q; got %q", want, out)
+		}
+	}
+	// No grammatical values are known, so the column must be gone
+	// rather than printed empty over the rows.
+	if strings.Contains(out, "ENCODES") {
+		t.Errorf("empty ENCODES column should be dropped; got %q", out)
+	}
+}
+
 func TestAnalyze_ASCIIInput(t *testing.T) {
 	// ASCII typing convention: "maleeut,rqait" must normalize to
 	// "malëuţřait" before parsing, so the slot breakdown shows the
