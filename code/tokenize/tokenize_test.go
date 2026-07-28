@@ -384,3 +384,35 @@ func TestSurface(t *testing.T) {
 		}
 	}
 }
+
+// §4.6.2 puts the Slot 3 Specification consonant directly after the V_C,
+// so a V_C in cases 37-68 is not word-final and takes its glottal-stop in
+// the §1.7 Rule 1 position, after the vowel-form. SplitConjuncts then
+// groups that glottal with the Spec consonant that follows it, which is
+// why the case lookup has to put it back.
+func TestCombinationRef_Rule1Glottal(t *testing.T) {
+	cases := []struct {
+		word string
+		want g.Case
+	}{
+		// Rule 1, after the vowel-form.
+		{"sa'xinļ", g.PRN},   // a+' , case 37
+		{"mmia'xinļ", g.LOC}, // ia -> i'a, case 53
+		// Rule 3's epenthetic spelling of the same slot, which arrives
+		// merged into the vowel conjunct instead.
+		{"mma'oxinļ", g.CNR}, // a'o, case 61
+		// No glottal at all: the plain case. ie is series-3 form 2.
+		{"mmiexinļ", g.PUR},
+	}
+	for _, c := range cases {
+		w := ClassifyWord(c.word)
+		cr, ok := w.(CombinationRefWord)
+		if !ok {
+			t.Errorf("ClassifyWord(%q) = %T, want CombinationRefWord", c.word, w)
+			continue
+		}
+		if cr.Combination.Case != c.want {
+			t.Errorf("%s: case = %v, want %v", c.word, cr.Combination.Case, c.want)
+		}
+	}
+}

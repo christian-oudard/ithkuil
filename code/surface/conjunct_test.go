@@ -107,3 +107,27 @@ func TestIsConsonantConjunct(t *testing.T) {
 		}
 	}
 }
+
+// §1.7 Rule 3: a single vowel reduplicates around the glottal-stop and a
+// diphthong takes it intervocalically. These are the spellings a
+// word-final vowel-form is forced into, and the ones the case tables are
+// keyed on. Expectations come from the rule text, not from the tables.
+func TestGlottalizeVowel(t *testing.T) {
+	cases := []struct{ in, want string }{
+		{"a", "a'a"},  // Rule 3, single vowel: PRN
+		{"ä", "ä'ä"},  // DSP
+		{"u", "u'u"},  // RLT
+		{"ai", "a'i"}, // Rule 3, diphthong: ACT
+		{"ui", "u'i"}, // VOC
+		{"ëi", "ë'i"}, // COM
+		{"ia", "i'a"}, // Rule 2, disyllabic: LOC
+		{"ua", "u'a"}, // NAV
+		{"uä", "u'ä"}, // the series-3 alternate of NAV
+		{"", ""},
+	}
+	for _, c := range cases {
+		if got := GlottalizeVowel(c.in); got != c.want {
+			t.Errorf("GlottalizeVowel(%q) = %q, want %q", c.in, got, c.want)
+		}
+	}
+}

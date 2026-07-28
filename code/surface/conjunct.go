@@ -115,3 +115,29 @@ func MergeGlottalVowels(conjs []string) []string {
 	}
 	return out
 }
+
+// GlottalizeVowel places a glottal-stop inside a vowel-form, the way
+// §1.7 Rule 3 does when Rule 1 will not serve.
+//
+// §1.7 offers two placements for a glottal-stop inserted into a
+// vowel-form V. Rule 1 puts it after the form (a → a', ai → ai'), and
+// Rule 2 puts it between the syllables of a disyllabic conjunct
+// (ua → u'a). Rule 3 overrides Rule 1 whenever its output would be
+// phonotactically impermissible or would leave the glottal word-final:
+// a single vowel then reduplicates around the glottal (a → a'a) and a
+// diphthong takes it intervocalically instead (ai → a'i).
+//
+// The Rule 3 form is the one the lookup tables are keyed on, because a
+// word-final V_C always reaches it. This function converts a bare
+// vowel-form to that spelling, so a Rule 1 glottal seen mid-word can be
+// looked up as the same value.
+func GlottalizeVowel(v string) string {
+	rs := []rune(v)
+	switch len(rs) {
+	case 0:
+		return v
+	case 1:
+		return string(rs[0]) + "'" + string(rs[0])
+	}
+	return string(rs[0]) + "'" + string(rs[1:])
+}

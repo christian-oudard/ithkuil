@@ -13,6 +13,7 @@ package fullparse
 
 import (
 	"errors"
+	"strings"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
@@ -162,6 +163,17 @@ func CombinationReferential(text string) (g.CombinationReferential, error) {
 	if !surface.IsConsonantConjunct(c1) || !surface.IsVowelConjunct(vc) {
 		return g.CombinationReferential{}, errNotReferential
 	}
+	// The Spec consonant straight after the V_C is the one place a V_C
+	// is not word-final, so §1.7 Rule 1 applies and the glottal-stop
+	// stays after the vowel-form, where SplitConjuncts hands it to us on
+	// the front of that consonant ("sa'xinļ" splits as s / a / 'x / i /
+	// nļ). Rule 3's epenthetic spelling of the same case arrives merged
+	// into the vowel conjunct instead, handled above.
+	vcLookup := vc
+	if strings.HasPrefix(specSurface, "'") {
+		specSurface = specSurface[1:]
+		vcLookup = surface.GlottalizeVowel(vc)
+	}
 	spec, specOK := parseCombinationSpec(specSurface)
 	if !specOK {
 		return g.CombinationReferential{}, errNotReferential
@@ -177,7 +189,7 @@ func CombinationReferential(text string) (g.CombinationReferential, error) {
 		}
 		head = g.PersonalHead{Refs: refs, Category: cat}
 	}
-	caseVal, caseOk := parse.ParseCase(vc)
+	caseVal, caseOk := parse.ParseCase(vcLookup)
 	if !caseOk {
 		return g.CombinationReferential{}, errNotReferential
 	}

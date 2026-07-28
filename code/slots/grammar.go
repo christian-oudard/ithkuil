@@ -216,19 +216,9 @@ func affixesVxCs(chunks []AffixChunk) ([]g.Affix, error) {
 }
 
 // restoreMovedGlottal re-inserts the glottal stop that the §3.9.1
-// SPECIAL NOTE shortening rule shifted off the Vc. Per §1.7: a single
-// vowel reduplicates around the glottal (a → a'a), and a multi-rune
-// disyllabic conjunct takes an intervocalic glottal (ai → a'i, uä → u'ä).
-func restoreMovedGlottal(vc string) string {
-	rs := []rune(vc)
-	switch len(rs) {
-	case 0:
-		return vc
-	case 1:
-		return string(rs[0]) + "'" + string(rs[0])
-	}
-	return string(rs[0]) + "'" + string(rs[1:])
-}
+// SPECIAL NOTE shortening rule shifted off the Vc, in the §1.7 Rule 3
+// placement that a word-final Vc always takes.
+func restoreMovedGlottal(vc string) string { return surface.GlottalizeVowel(vc) }
 
 // finalFromVc builds the Final variant from the trailing Slot IX
 // vowel (may be empty) and the observed stress.

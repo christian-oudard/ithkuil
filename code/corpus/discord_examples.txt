@@ -124,14 +124,20 @@ correct | yevtleölwaňiyá | §3.9.2 | Column-4 "eö" on "lw": case-stacking af
 correct | uţtälireölweölá | §3.9.2 | two Column-4 vowels, one on the "lw" increment.
 
 # The second-largest group is the same feature seen from the other
-# side. A combination referential whose case vowel carries a glottal,
-# or which takes a -w/-y Perspective increment, falls through to the
-# formative parser, which then reports the Spec marker x or the
-# increment w as an unrecognised Ca. 84 words fail this way.
-# "mmiexinļ" and "mma'oxinļ" parse, so the shape is partly handled;
-# these differ in where the glottal sits.
-!correct | mmia'xinļ | §4.6.2 | combination referential; glottal ends the Vc.
-!correct | sa'xinļ | §4.6.2 | combination referential read as a formative with Ca "x".
+# side: a combination referential that falls through to the formative
+# parser, which then reports the §4.6.2 Spec marker x, or a Perspective
+# increment w, as an unrecognised Ca.
+#
+# The glottal half of that group is handled. §4.6.2 puts the Spec
+# consonant right after the V_C, so a case in 37-68 takes its
+# glottal-stop in the §1.7 Rule 1 position, after the vowel-form, where
+# SplitConjuncts hands it to us on the front of the Spec. Only Rule 3's
+# epenthetic spelling ("mma'oxinļ") used to be read.
+#
+# What is left is the -w/-y Perspective increment, which §4.6.2's Spec
+# slot does not admit.
+correct | mmia'xinļ | §4.6.2 | combination referential; glottal ends the Vc.
+correct | sa'xinļ | §4.6.2 | combination referential read as a formative with Ca "x".
 !correct | lai'wiš | §4.6 | -w Perspective increment read as a Ca.
 
 # ── correctly rejected, for contrast ────────────────────────────────
