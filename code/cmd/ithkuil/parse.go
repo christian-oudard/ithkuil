@@ -172,7 +172,9 @@ func renderUnknown(w io.Writer, word string) {
 
 	layout, err := slots.Parse(word)
 	if err != nil {
-		fmt.Fprintf(iw, "shape: %v\n", err)
+		// slots.Parse errors already name their own package; a second
+		// label here just reads as "shape: slots: ...".
+		fmt.Fprintf(iw, "%v\n", err)
 		return
 	}
 	if _, err := slots.ToGrammar(layout); err != nil {
