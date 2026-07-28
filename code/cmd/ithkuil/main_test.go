@@ -45,7 +45,7 @@ func TestRun_Help(t *testing.T) {
 		if code != 0 {
 			t.Fatalf("%q exit %d", flag, code)
 		}
-		for _, want := range []string{"analyze", "compose", "grammar", "lexicon", "validate"} {
+		for _, want := range []string{"parse", "compose", "search", "define"} {
 			if !strings.Contains(out, want) {
 				t.Errorf("%q missing %q", flag, want)
 			}
@@ -53,12 +53,12 @@ func TestRun_Help(t *testing.T) {
 	}
 }
 
-// ---- analyze ----
+// ---- parse ----
 
-func TestAnalyze_Detailed(t *testing.T) {
-	out, _, code := runCLI("-data", dataFile(), "analyze", "malëuţřait")
+func TestParse_Detailed(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "parse", "malëuţřait")
 	if code != 0 {
-		t.Fatalf("analyze exit %d", code)
+		t.Fatalf("parse exit %d", code)
 	}
 	for _, want := range []string{
 		"PHONETIC", "SLOT", "ENCODES",
@@ -68,19 +68,19 @@ func TestAnalyze_Detailed(t *testing.T) {
 		"linguistic utterance",
 	} {
 		if !strings.Contains(out, want) {
-			t.Errorf("analyze output missing %q; got %q", want, out)
+			t.Errorf("parse output missing %q; got %q", want, out)
 		}
 	}
 }
 
-func TestAnalyze_ConcatenatedChainLabels(t *testing.T) {
+func TestParse_ConcatenatedChainLabels(t *testing.T) {
 	// A chain lists its dependents first and the parent last
 	// (§3.1.7), so the leading formative must be labelled a
 	// dependent, not a head. Keying the label off position instead
 	// of the Cc marker labelled every member "[head]".
-	out, _, code := runCLI("-data", dataFile(), "analyze", "hakšal-uḑfarf")
+	out, _, code := runCLI("-data", dataFile(), "parse", "hakšal-uḑfarf")
 	if code != 0 {
-		t.Fatalf("analyze exit %d; got %q", code, out)
+		t.Fatalf("parse exit %d; got %q", code, out)
 	}
 	if !strings.Contains(out, "[Type1 dependent]") {
 		t.Errorf("chain missing dependent label; got %q", out)
@@ -90,15 +90,15 @@ func TestAnalyze_ConcatenatedChainLabels(t *testing.T) {
 	}
 }
 
-func TestAnalyze_UnclassifiedShowsDiagnostic(t *testing.T) {
+func TestParse_UnclassifiedShowsDiagnostic(t *testing.T) {
 	// An unreadable word used to print only "?mavẓorf". The shape
 	// split survives even when the grammatical decode fails, so both
 	// the decoder's complaint and the slot split are available and
 	// worth showing. "mavẓorf" is "mavẓorff" with the §3.6.1 Ca
 	// gemination removed, which forces "vẓ" to be read as the Ca.
-	out, _, code := runCLI("-data", dataFile(), "analyze", "mavẓorf")
+	out, _, code := runCLI("-data", dataFile(), "parse", "mavẓorf")
 	if code != 0 {
-		t.Fatalf("analyze exit %d; got %q", code, out)
+		t.Fatalf("parse exit %d; got %q", code, out)
 	}
 	for _, want := range []string{
 		"(unclassified)",
@@ -117,64 +117,88 @@ func TestAnalyze_UnclassifiedShowsDiagnostic(t *testing.T) {
 	}
 }
 
-func TestAnalyze_ASCIIInput(t *testing.T) {
+func TestParse_ASCIIInput(t *testing.T) {
 	// ASCII typing convention: "maleeut,rqait" must normalize to
 	// "malëuţřait" before parsing, so the slot breakdown shows the
 	// right affixes (ţř → SYS at degree 5, not literal "t,rq").
-	out, _, code := runCLI("-data", dataFile(), "analyze", "maleeut,rqait")
+	out, _, code := runCLI("-data", dataFile(), "parse", "maleeut,rqait")
 	if code != 0 {
-		t.Fatalf("analyze exit %d", code)
+		t.Fatalf("parse exit %d", code)
 	}
 	for _, want := range []string{"malëuţřait", "SYS", "DEG5"} {
 		if !strings.Contains(out, want) {
-			t.Errorf("ASCII analyze missing %q; got %q", want, out)
+			t.Errorf("ASCII parse missing %q; got %q", want, out)
 		}
 	}
 	for _, bad := range []string{"t,rq", "DEG0"} {
 		if strings.Contains(out, bad) {
-			t.Errorf("ASCII analyze should not contain %q; got %q", bad, out)
+			t.Errorf("ASCII parse should not contain %q; got %q", bad, out)
 		}
 	}
 }
 
-func TestAnalyze_InvalidWord(t *testing.T) {
+func TestParse_InvalidWord(t *testing.T) {
 	// Phonotactically invalid input must fail loudly instead of
 	// rendering a garbage slot breakdown.
-	out, errOut, code := runCLI("analyze", "akxq")
+	out, errOut, code := runCLI("parse", "akxq")
 	if code != 1 {
-		t.Fatalf("analyze invalid exit = %d, want 1; out=%q err=%q", code, out, errOut)
+		t.Fatalf("parse invalid exit = %d, want 1; out=%q err=%q", code, out, errOut)
 	}
 	if !strings.Contains(errOut, "non-Ithkuil characters") {
 		t.Errorf("expected non-Ithkuil error; got stderr=%q", errOut)
 	}
 }
 
-func TestAnalyze_Short(t *testing.T) {
-	out, _, code := runCLI("analyze", "--short", "malëuţřait")
+func TestParse_ReportsTheRuleBroken(t *testing.T) {
+	// Parsing is also the validation command, so it has to name the
+	// rule the word breaks, not merely refuse the word.
+	_, errOut, code := runCLI("parse", "akx")
+	if code != 1 {
+		t.Fatalf("parse akx exit = %d, want 1", code)
+	}
+	if !strings.Contains(errOut, "2.3") {
+		t.Errorf("expected rule 2.3 in stderr; got %q", errOut)
+	}
+}
+
+func TestParse_ShortValidates(t *testing.T) {
+	// The one-line view runs the same phonotactic check; an invalid
+	// word must not slip through as a gloss line.
+	out, errOut, code := runCLI("parse", "--short", "akx")
+	if code != 1 {
+		t.Fatalf("parse --short akx exit = %d, want 1; out=%q", code, out)
+	}
+	if !strings.Contains(errOut, "2.3") {
+		t.Errorf("expected rule 2.3 in stderr; got %q", errOut)
+	}
+}
+
+func TestParse_Short(t *testing.T) {
+	out, _, code := runCLI("parse", "--short", "malëuţřait")
 	if code != 0 {
-		t.Fatalf("analyze --short exit %d", code)
+		t.Fatalf("parse --short exit %d", code)
 	}
 	if !strings.Contains(out, "Form") {
 		t.Errorf("--short should include type tag; got %q", out)
 	}
 }
 
-func TestAnalyze_ShortFlag(t *testing.T) {
+func TestParse_ShortFlag(t *testing.T) {
 	// -s should behave the same as --short.
-	out, _, code := runCLI("analyze", "-s", "malëuţřait")
+	out, _, code := runCLI("parse", "-s", "malëuţřait")
 	if code != 0 {
-		t.Fatalf("analyze -s exit %d", code)
+		t.Fatalf("parse -s exit %d", code)
 	}
 	if !strings.Contains(out, "Form") {
 		t.Errorf("-s should include type tag; got %q", out)
 	}
 }
 
-func TestAnalyze_Stdin(t *testing.T) {
+func TestParse_Stdin(t *testing.T) {
 	var stdout, stderr bytes.Buffer
-	code := run([]string{"analyze", "--short"}, strings.NewReader("amlala\n"), &stdout, &stderr)
+	code := run([]string{"parse", "--short"}, strings.NewReader("amlala\n"), &stdout, &stderr)
 	if code != 0 {
-		t.Fatalf("analyze (stdin) exit %d; stderr=%s", code, stderr.String())
+		t.Fatalf("parse (stdin) exit %d; stderr=%s", code, stderr.String())
 	}
 	if !strings.Contains(stdout.String(), "amlala") {
 		t.Errorf("stdin path missing word; got %q", stdout.String())
@@ -231,12 +255,12 @@ func TestCompose_NoArg(t *testing.T) {
 	}
 }
 
-// ---- grammar ----
+// ---- search ----
 
-func TestGrammar_ListCategories(t *testing.T) {
-	out, _, code := runCLI("grammar")
+func TestSearch_ListCategories(t *testing.T) {
+	out, _, code := runCLI("search")
 	if code != 0 {
-		t.Fatalf("grammar exit %d", code)
+		t.Fatalf("search exit %d", code)
 	}
 	for _, want := range []string{"categories:", "Case", "Bias", "Aspect"} {
 		if !strings.Contains(out, want) {
@@ -245,30 +269,47 @@ func TestGrammar_ListCategories(t *testing.T) {
 	}
 }
 
-func TestGrammar_QueryExact(t *testing.T) {
-	out, _, code := runCLI("grammar", "THM", "--exact")
+func TestSearch_QueryExact(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "search", "THM", "--exact")
 	if code != 0 {
-		t.Fatalf("grammar --exact exit %d", code)
+		t.Fatalf("search --exact exit %d", code)
 	}
 	if !strings.Contains(out, "THM") {
 		t.Errorf("--exact missing THM; got %q", out)
 	}
 }
 
-func TestGrammar_FormMode(t *testing.T) {
-	out, _, code := runCLI("grammar", "a", "--form")
+func TestSearch_FormMode(t *testing.T) {
+	out, _, code := runCLI("search", "--form", "a")
 	if code != 0 {
-		t.Fatalf("grammar --form exit %d", code)
+		t.Fatalf("search --form exit %d", code)
 	}
 	if !strings.Contains(out, "THM") {
 		t.Errorf("--form a should mention THM; got %q", out)
 	}
+	// A surface form is a grammar question; the lexicon has no
+	// answer to "what does this vowel encode".
+	if strings.Contains(out, "Roots:") {
+		t.Errorf("--form should not search the lexicon; got %q", out)
+	}
 }
 
-func TestGrammar_Category(t *testing.T) {
-	out, _, code := runCLI("grammar", "--category", "Bias")
+func TestSearch_FlagAfterQuery(t *testing.T) {
+	// Flags are accepted in any position. Go's flag package stops at
+	// the first positional, which used to drop the flag in silence.
+	out, _, code := runCLI("-data", dataFile(), "search", "a", "--form")
 	if code != 0 {
-		t.Fatalf("grammar --category Bias exit %d", code)
+		t.Fatalf("search a --form exit %d", code)
+	}
+	if strings.Contains(out, "Roots:") {
+		t.Errorf("--form after the query was ignored; got %q", out)
+	}
+}
+
+func TestSearch_Category(t *testing.T) {
+	out, _, code := runCLI("search", "--category", "Bias")
+	if code != 0 {
+		t.Fatalf("search --category Bias exit %d", code)
 	}
 	// At least 60 biases.
 	count := strings.Count(out, "\nBias")
@@ -277,69 +318,70 @@ func TestGrammar_Category(t *testing.T) {
 	}
 }
 
-func TestGrammar_CategoryQuery(t *testing.T) {
-	out, _, code := runCLI("grammar", "please", "--category", "Bias")
+func TestSearch_CategoryQuery(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "search", "please", "--category", "Bias")
 	if code != 0 {
-		t.Fatalf("grammar bias please exit %d", code)
+		t.Fatalf("search bias please exit %d", code)
 	}
 	if !strings.Contains(out, "SOL") {
 		t.Errorf("expected SOL for 'please' bias; got %q", out)
 	}
 }
 
-// ---- lexicon ----
-
-func TestLexicon_Root(t *testing.T) {
-	out, _, code := runCLI("-data", dataFile(), "lexicon", "yellow", "--kind", "root")
+func TestSearch_GrammarBeforeLexicon(t *testing.T) {
+	// A short query is more often an abbreviation than a root, so the
+	// grammar half is answered first.
+	out, _, code := runCLI("-data", dataFile(), "search", "ERG")
 	if code != 0 {
-		t.Fatalf("lexicon exit %d", code)
+		t.Fatalf("search ERG exit %d", code)
+	}
+	gram := strings.Index(out, "Ergative")
+	lex := strings.Index(out, "Roots:")
+	if gram < 0 {
+		t.Fatalf("search ERG missing the Ergative case; got %q", out)
+	}
+	if lex >= 0 && lex < gram {
+		t.Errorf("lexicon hits printed before grammar hits; got %q", out)
+	}
+}
+
+func TestSearch_LexiconRoot(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "search", "yellow")
+	if code != 0 {
+		t.Fatalf("search exit %d", code)
 	}
 	if !strings.Contains(out, "Roots:") || !strings.Contains(out, "-ml-") {
-		t.Errorf("lexicon yellow root missing -ml-; got %q", out)
+		t.Errorf("search yellow missing root -ml-; got %q", out)
 	}
 }
 
-func TestLexicon_Affix(t *testing.T) {
-	out, _, code := runCLI("-data", dataFile(), "lexicon", "negation", "--kind", "affix")
+func TestSearch_LexiconAffix(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "search", "negation")
 	if code != 0 {
-		t.Fatalf("lexicon --kind=affix exit %d", code)
+		t.Fatalf("search negation exit %d", code)
 	}
-	if !strings.Contains(out, "NEG") {
-		t.Errorf("lexicon negation should find NEG; got %q", out)
+	if !strings.Contains(out, "Affixes:") || !strings.Contains(out, "NEG") {
+		t.Errorf("search negation should find affix NEG; got %q", out)
 	}
 }
 
-func TestLexicon_Both(t *testing.T) {
-	out, _, code := runCLI("-data", dataFile(), "lexicon", "yellow")
+func TestSearch_NoMatches(t *testing.T) {
+	// An empty section is noise; nothing found says so once.
+	out, _, code := runCLI("-data", dataFile(), "search", "zzzznotaword")
 	if code != 0 {
-		t.Fatalf("lexicon both exit %d", code)
+		t.Fatalf("search exit %d", code)
 	}
-	if !strings.Contains(out, "Roots:") || !strings.Contains(out, "Affixes:") {
-		t.Errorf("lexicon both sections missing; got %q", out)
+	if !strings.Contains(out, "no matches") {
+		t.Errorf("expected 'no matches'; got %q", out)
 	}
-}
-
-// ---- validate ----
-
-func TestValidate_Good(t *testing.T) {
-	out, _, code := runCLI("validate", "amlala")
-	if code != 0 {
-		t.Fatalf("validate exit %d", code)
-	}
-	if !strings.Contains(out, "OK") {
-		t.Errorf("expected OK on good word; got %q", out)
+	for _, bad := range []string{"Roots:", "Affixes:", "CATEGORY"} {
+		if strings.Contains(out, bad) {
+			t.Errorf("empty section %q should not print; got %q", bad, out)
+		}
 	}
 }
 
-func TestValidate_Bad(t *testing.T) {
-	out, _, code := runCLI("validate", "akx")
-	if code != 1 {
-		t.Errorf("expected exit 1 on bad word, got %d", code)
-	}
-	if !strings.Contains(out, "2.3") {
-		t.Errorf("expected rule 2.3 in output; got %q", out)
-	}
-}
+// ---- define ----
 
 func TestDefine_Found(t *testing.T) {
 	out, _, code := runCLI("-data", dataFile(), "define", "crisis")

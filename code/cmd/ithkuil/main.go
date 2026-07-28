@@ -1,17 +1,15 @@
 // Command ithkuil is the command-line interface for working with the
-// Ithkuil V4 language: parse text, compose words, look up the grammar
-// inventory, search the lexicon, validate phonotactics.
+// Ithkuil V4 language: parse text, compose words, search the grammar
+// inventory and the lexicon.
 //
 // Usage: ithkuil [-data FILE] <subcommand> [args...]
 //
-// Subcommands (mirror the ithkuil-mcp tools one-for-one):
+// Subcommands:
 //
-//	analyze TEXT...   Tokenize, parse, and gloss each word.
-//	compose ROOT ...  Build a surface formative from grammar choices.
+//	parse TEXT...     Tokenize, parse, and gloss each word.
+//	compose EXPR      Build a surface formative from grammar choices.
+//	search [Q]        Look up a term in the grammar and the lexicon.
 //	define WORD...    Look up an English word as Ithkuil lexical cores.
-//	grammar [Q]       Look up the grammar inventory.
-//	lexicon Q         Substring search the root and/or affix lexicons.
-//	validate TEXT...  Phonotactic validation per word.
 //	help              Show this usage block.
 //
 // Run `ithkuil <sub> --help` for per-subcommand flags.
@@ -45,18 +43,14 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	case "help", "-h", "--help":
 		fmt.Fprint(stdout, usage)
 		return 0
-	case "analyze":
-		return cmdAnalyze(rest, stdin, stdout, stderr, dataFile)
+	case "parse":
+		return cmdParse(rest, stdin, stdout, stderr, dataFile)
 	case "compose":
 		return cmdCompose(rest, stdout, stderr, dataFile)
+	case "search":
+		return cmdSearch(rest, stdout, stderr, dataFile)
 	case "define":
 		return cmdDefine(rest, stdout, stderr, dataFile)
-	case "grammar":
-		return cmdGrammar(rest, stdout, stderr)
-	case "lexicon":
-		return cmdLexicon(rest, stdout, stderr, dataFile)
-	case "validate":
-		return cmdValidate(rest, stdout, stderr)
 	default:
 		fmt.Fprintf(stderr, "unknown subcommand %q\n\n%s", sub, usage)
 		return 2
@@ -66,7 +60,10 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 const usage = `usage: ithkuil [--data FILE] <subcommand> [args...]
 
 Subcommands:
-  analyze TEXT...    Tokenize, parse, and gloss each word (detailed).
+  parse TEXT...      Tokenize, parse, and gloss each word (detailed).
+                     Phonotactics are checked first: an unpronounceable
+                     word is reported with the rule it breaks, and the
+                     exit status is 1.
                        --short / -s        one-line surface/type/gloss
   compose EXPR       Build a surface formative from a gloss-style
                      expression. Slots separated by "-"; sub-fields
@@ -76,16 +73,15 @@ Subcommands:
                      Examples: "ml", "S2/CPT-ml-ERG",
                      "S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG",
                      "m-SYS/5_2-{Ca}-DCD/1_2".
-  define WORD...     Look up an English word as Ithkuil lexical cores.
-                       --limit / -n  N
-  grammar [Q]        Look up grammar inventory.
+  search [Q]         Look a term up in the grammar inventory and the
+                     lexicon at once, grammar hits first. With no
+                     query, lists the grammar categories.
                        --category / -c CAT
                        --exact    / -e
                        --form     / -f
-  lexicon Q          Search root and/or affix lexicons.
-                       --kind  / -k  root|affix|both
+                       --limit    / -n  N
+  define WORD...     Look up an English word as Ithkuil lexical cores.
                        --limit / -n  N
-  validate TEXT...   Phonotactic validation per word.
   help               Show this help.
 
 Global flags:

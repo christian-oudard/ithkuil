@@ -29,6 +29,50 @@ func newFlagSet(name string, out io.Writer) *flagSet {
 	return fs
 }
 
+// Parse accepts flags in any position. Go's flag package stops at the
+// first non-flag argument, which silently ignored the flag in
+// "ithkuil search THM --exact" rather than complaining about it.
+func (fs *flagSet) Parse(args []string) error {
+	flags, rest := fs.permute(args)
+	ordered := append(flags, "--")
+	return fs.FlagSet.Parse(append(ordered, rest...))
+}
+
+// permute splits args into flags (with their values) and positionals,
+// preserving the order within each group. A flag's value is only
+// consumed when the flag was declared to take one.
+func (fs *flagSet) permute(args []string) (flags, rest []string) {
+	takesValue := map[string]bool{}
+	for _, p := range fs.pairs {
+		if p.value == "" {
+			continue
+		}
+		for _, name := range []string{p.long, p.short} {
+			if name != "" {
+				takesValue["-"+name] = true
+				takesValue["--"+name] = true
+			}
+		}
+	}
+	for i := 0; i < len(args); i++ {
+		a := args[i]
+		if a == "--" {
+			rest = append(rest, args[i+1:]...)
+			break
+		}
+		if len(a) > 1 && a[0] == '-' {
+			flags = append(flags, a)
+			if takesValue[a] && i+1 < len(args) {
+				i++
+				flags = append(flags, args[i])
+			}
+			continue
+		}
+		rest = append(rest, a)
+	}
+	return flags, rest
+}
+
 func (fs *flagSet) describe(summary, args string) {
 	fs.summary = summary
 	fs.args = args

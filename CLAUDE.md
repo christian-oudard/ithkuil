@@ -79,7 +79,7 @@ relative to `code/`.
 - `referentials/` - Anaphoric references (11 referent categories x 3 effects, combinations).
 - `numbers/` - Centesimal/base-100 number system.
 - `compose/` - Builds formatives from grammatical specifications + lexicon search helpers.
-- `view/` - Presentation layer for parsed tokens: the per-token type tag (`view.Type`) plus the phonetic-segment + glossary breakdown (`view.Segments`, `view.Headword`, `view.Glossary`) consumed by the analyze CLI and MCP server.
+- `view/` - Presentation layer for parsed tokens: the per-token type tag (`view.Type`) plus the phonetic-segment + glossary breakdown (`view.Segments`, `view.Headword`, `view.Glossary`) consumed by the parse CLI and MCP server.
 - `store/` - Read-only SQLite access to `data/data.db` (roots, affixes, grammar tables).
 - `lexicon/` - Roots and affixes in memory. `LoadFromStore(*store.Store)` is the normal path; `Load(path)` reads the JSON source directly (used by tests).
 - `dictionary/` - The English index: reads the lexicon's English glosses backwards into a headword-to-lexical-core map. `english_doc_test.go` checks every claim made in `docs/dictionary/english.md` by composing it.
@@ -88,7 +88,7 @@ relative to `code/`.
 
 Command-line entrypoints under `cmd/`:
 
-- `cmd/ithkuil/` - The main CLI. Subcommands: analyze, compose, grammar, lexicon, validate. `main.go` dispatches; `flags.go` parses shared flags.
+- `cmd/ithkuil/` - The main CLI. Subcommands: parse, compose, search, define. `main.go` dispatches; `flags.go` parses shared flags, accepting them in any position.
 - `cmd/ithkuil-mcp/` - Model Context Protocol server exposing the parser/glosser/lexicon as MCP tools and resources.
 - `cmd/ithkuil-input/` - Raw-mode TUI that types Ithkuil Unicode from ASCII digraphs (aa→ä, t,→ţ, sq→š, dz→ẓ). Pending chars are shown dim. Backed by `surface.InputState`; `surface.FromASCII` / `ToASCII` provide the batch transforms.
 

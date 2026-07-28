@@ -54,12 +54,13 @@ func (iw *indentedWriter) Write(p []byte) (int, error) {
 	return total, nil
 }
 
-// cmdAnalyze tokenizes the input and renders a learner-oriented
+// cmdParse tokenizes the input and renders a learner-oriented
 // breakdown of each formative: phonetic segmentation paired with a
 // glossary that expands every code. --short collapses each word to a
-// single surface/type/gloss line.
-func cmdAnalyze(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile string) int {
-	fs := newFlagSet("analyze", stderr)
+// single surface/type/gloss line. Phonotactics are checked first, so
+// parsing a word is also how you validate it.
+func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile string) int {
+	fs := newFlagSet("parse", stderr)
 	fs.describe("Tokenize, parse, and gloss each word (detailed by default).", "TEXT...")
 	short := fs.Bool("short", "s", false, "one-line surface · type · gloss view")
 	color := fs.String("color", "", "auto", "MODE", "when to use ANSI color: auto|always|never")
@@ -79,7 +80,7 @@ func cmdAnalyze(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFi
 		text = s
 	}
 	if text == "" {
-		fmt.Fprintln(stderr, "usage: ithkuil analyze TEXT... (or pipe via stdin)")
+		fmt.Fprintln(stderr, "usage: ithkuil parse TEXT... (or pipe via stdin)")
 		return 2
 	}
 
@@ -102,15 +103,20 @@ func cmdAnalyze(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFi
 	lex := loadLex(dataFile, stderr)
 	glosser := gloss.Glosser{Lex: lex}
 
+	exit := 0
 	if *short {
 		for _, t := range tokens {
+			if res, bad := invalid[t.Surface()]; bad {
+				renderValidationError(stderr, t.Surface(), res)
+				exit = 1
+				continue
+			}
 			fmt.Fprintf(stdout, "%s  %s  %s\n", t.Surface(), view.Type(t), glosser.Token(t))
 		}
-		return 0
+		return exit
 	}
 
 	// Detailed view.
-	exit := 0
 	for i, t := range tokens {
 		if i > 0 {
 			fmt.Fprintln(stdout)
@@ -125,8 +131,9 @@ func cmdAnalyze(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFi
 	return exit
 }
 
-// renderValidationError reports a phonotactically invalid word in
-// the same shape as `ithkuil validate`.
+// renderValidationError reports a phonotactically invalid word: the
+// rule it breaks and the cluster that breaks it, in place of a slot
+// breakdown that would be nonsense.
 func renderValidationError(w io.Writer, word string, res validation.Result) {
 	for _, e := range res.Errors {
 		fmt.Fprintf(w, "%s  %s: %s", word, e.Rule, e.Reason)

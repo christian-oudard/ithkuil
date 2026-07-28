@@ -1,17 +1,18 @@
-# Ithkuil V4 Grammar Implementation
+# Ithkuil
 
-A Go implementation of the grammar of **New Ithkuil** (v1.3.1, 2023), the constructed language created by John Quijada. Ithkuil is a philosophical language designed to express deeper levels of human cognition with precision and conciseness. It features a highly regular morpho-phonological system.
-
-This project implements a parser, renderer, and glosser for Ithkuil formatives and adjuncts. The goal of this codebase is to serve as a canonical programmatic reference for the language's grammar.
-
-## Version History
+**Ithkuil** is a constructed language created by John Quijada, designed to
+express deeper levels of human cognition with precision and concision. Where a
+natural language leaves most of what a speaker means to context, Ithkuil makes
+it grammar: every word states its own aspect, its speaker's certainty, how the
+referent is bounded, and much else besides. The morphology is highly regular,
+which is what makes the language tractable to software at all.
 
 | Version | Year | Name | Description |
 |---------|------|------|-------------|
 | I | 2004 | Iţkuîl | Original grammar with consonant grades and biliteral roots |
 | II | 2007 | Ilákš | Revised with tonal vowel system |
 | III | 2011 | Iţkuil | Major redesign with Designation, Pattern, and Sanction |
-| **IV** | **2023** | **Iţkuil** | **Current version - implemented here (morphology v1.3.1)** |
+| **IV** | **2023** | **Iţkuil** | **Current version, implemented here (morphology v1.3.1)** |
 
 Quijada calls all four versions *Iţkuil*, disambiguating v3 and v4 in running
 text as *êpal Iţkuil* and *wiosaḑca Iţkuil*. The community nicknames *Elartkʰa*
@@ -24,70 +25,77 @@ words are the same morphemes: the SYS affix moved from Slot VII to Slot V, so
 it applies to the stem alone instead of having scope over the Ca complex, and
 the Ca geminates (`-l-` → `-ll-`) to mark that Slot V is filled.
 
+## What This Repo Is
 
-## What This Project Does
+A set of tools for working in Ithkuil, written in Go, covering three jobs.
 
-Given an Ithkuil word or sentence, the parser decomposes it into its morphological slots, looks up roots and affixes in the lexicon, and renders a learner-oriented breakdown.
+**Phonology**: typing the orthography from an ASCII keyboard, and checking that
+a word is pronounceable Ithkuil at all, that its clusters and vowel sequences
+and stress obey the phonotactics.
 
-- **Morphological parsing**: decomposition of formatives into their ten slots
-- **Word type classification**: formatives, referentials, bias adjuncts, register adjuncts, modular adjuncts, affixual adjuncts, carrier adjuncts, combination referentials
-- **Sentence glossing**: multi-word parsing with concatenation chain detection
-- **Composition**: building formatives from grammatical specifications
-- **Lexicon lookup**: 5,951 roots and 528 affixes, with keyword search and ranking
-- **Grammar search**: grammatical categories and values by name or abbreviation
-- **Phonotactic validation**: consonant cluster and vowel sequence constraints
-- **MCP server**: the same parser, composer, and lexicon as Model Context Protocol tools
+**Grammar**: taking a word apart into its slots and saying what each one
+encodes, building a word back up from a specification of what it should mean,
+and looking up the grammatical inventory and the lexicon behind both.
 
-## Building and Running
+**Agent translation**: the same parser, composer, and lexicon exposed over the
+Model Context Protocol, so an AI assistant translating into or out of Ithkuil
+works against the real grammar instead of guessing at it. The `ithkuil-mcp`
+binary is that server; see [Building and Running](#building-and-running).
 
-Requires Go 1.25+. The repo uses [Nix](https://nixos.org/) to pin the toolchain, but `go` from any source works.
+Everything below is one of the CLI's subcommands. `ithkuil <sub> --help` prints
+the flags for any of them.
 
-Install the CLIs to `$GOBIN` (typically `~/go/bin`, or `~/.local/bin` if you've set `GOBIN`):
+## Typing Phonetically
+
+The orthography uses diacritics that aren't on a keyboard, so every character
+that carries one also has a two-keystroke ASCII spelling. The notation is a
+pure recoding of the Unicode text, one character to one digraph, and reversible
+in both directions. Anything with no digraph, `'` (glottal stop) included,
+passes through untouched, so an already-Unicode word is left as it is.
+
+| | Char | ASCII | Char | ASCII | Char | ASCII | Char | ASCII | Char | ASCII |
+|----------|------|-------|------|-------|------|-------|------|-------|------|-------|
+| Umlaut   | ä | `aa` | ë | `ee` | ö | `oo` | ü | `uu` | | |
+| Cedilla  | ţ | `t,` | ḑ | `d,` | ļ | `l,` | ç | `c,` | | |
+| Háček    | š | `sq` | ž | `zq` | č | `cq` | ň | `nq` | ř | `rq` |
+| Underdot | ẓ | `dz` | | | | | | | | |
+| Stress   | á | `a/` | é | `e/` | í | `i/` | ó | `o/` | ú | `u/` |
+| Stress   | â | `aa/` | ê | `ee/` | ô | `oo/` | û | `uu/` | | |
+
+A trailing `/` stresses the vowel you just typed, umlaut included:
+`hala/` → *halá*, `malee/ut,rqait` → *malêuţřait*. A `/` that follows anything
+else is left as a literal `/`, so type it right after its vowel.
+
+The vowel `i` has no umlaut and so no doubling rule: `ii` stays `ii`. The other
+four group to the right when repeated, `eee` → *eë* and `eeee` → *ëë*, which is
+how you write an umlaut adjacent to its own plain vowel.
+
+`ithkuil-input` converts a whole line at a time. It runs as a raw-mode TUI that
+shows pending keystrokes dimmed until they resolve into a digraph or are broken
+by a different character, and as a pipe filter when stdin isn't a terminal:
 
 ```bash
-nix develop              # Enter dev shell with go on PATH
-go install ./cmd/ithkuil ./cmd/ithkuil-mcp ./cmd/ithkuil-input
+ithkuil-input                           # interactive
+echo 'Mat,rqeeullait' | ithkuil-input   # batch: ASCII in, Unicode out
 ```
 
-Then `ithkuil analyze Maţřëullait` works from anywhere on PATH.
-
-For development:
+The other subcommands don't need it. Every word argument to `ithkuil` is read
+through the notation, as are the root and affix clusters inside a `compose`
+expression, and it is what glosses print clusters in, so gloss output feeds
+straight back in:
 
 ```bash
-go build ./...                              # Build everything
-go test ./...                               # Run the test suite
-go run ./cmd/ithkuil analyze Maţřëullait     # Run without installing
+ithkuil parse mat,rqeeullait            # same word as Maţřëullait
 ```
 
-### CLI Subcommands
+## Analyzing Words
 
-```bash
-ithkuil analyze Maţřëullait             # full slot breakdown (below)
-ithkuil analyze --short Maţřëullait     # one-line surface / type / gloss
-
-ithkuil compose S2/CPT-ml-ERG           # build a formative → "wimlo"
-ithkuil compose 'm-SYS/5_2-{Ca}-DCD/1_2'  # → "maţřëullait"
-
-ithkuil grammar Ergative --exact        # look up by abbreviation
-ithkuil grammar please                  # substring search across all categories
-ithkuil grammar --category Case         # list every entry in a category
-
-ithkuil lexicon clown --kind=root       # search the root lexicon
-ithkuil lexicon -k=affix system         # search the affix lexicon
-
-ithkuil validate tttest                 # phonotactic checks per word
-```
-
-Pass `--data FILE` globally to read a data store other than the default `$XDG_DATA_HOME/ithkuil/data.db`. Pass `--color=auto|always|never` to `analyze` to control ANSI styling.
-
-### analyze
-
-`analyze` pairs a phonetic segmentation of each word with a glossary that
-expands every code it used, so nothing in the breakdown has to be looked up
-elsewhere:
+`parse` takes Ithkuil text apart. It pairs a phonetic segmentation of each word
+with a glossary that expands every code it used, so nothing in the breakdown
+has to be looked up elsewhere:
 
 ```
-$ ithkuil analyze Maţřëullait
+$ ithkuil parse Maţřëullait
 maţřëullait
   PHONETIC  SLOT  ENCODES
    ∅        Vv    S1 / PRC
@@ -115,59 +123,123 @@ maţřëullait
   case           THM    Thematic                inactive participant (CONTENT role)
 ```
 
-`--short` collapses each word to one line of surface, type, and gloss, which is
-the form to reach for when analyzing a whole sentence.
-
-## ASCII Notation
-
-The orthography uses diacritics that aren't on a keyboard, so every character
-that carries one also has a two-keystroke ASCII spelling. The notation is a
-pure recoding of the Unicode text, one character to one digraph, and reversible
-in both directions. Anything with no digraph, `'` (glottal stop) included,
-passes through untouched, so an already-Unicode word is left as it is.
-
-| | Char | ASCII | Char | ASCII | Char | ASCII | Char | ASCII | Char | ASCII |
-|----------|------|-------|------|-------|------|-------|------|-------|------|-------|
-| Umlaut   | ä | `aa` | ë | `ee` | ö | `oo` | ü | `uu` | | |
-| Cedilla  | ţ | `t,` | ḑ | `d,` | ļ | `l,` | ç | `c,` | | |
-| Háček    | š | `sq` | ž | `zq` | č | `cq` | ň | `nq` | ř | `rq` |
-| Underdot | ẓ | `dz` | | | | | | | | |
-| Stress   | á | `a/` | é | `e/` | í | `i/` | ó | `o/` | ú | `u/` |
-| Stress   | â | `aa/` | ê | `ee/` | ô | `oo/` | û | `uu/` | | |
-
-A trailing `/` stresses the vowel you just typed, umlaut included:
-`hala/` → *halá*, `malee/ut,rqait` → *malêuţřait*. A `/` that follows anything
-else is left as a literal `/`, so type it right after its vowel.
-
-The vowel `i` has no umlaut and so no doubling rule: `ii` stays `ii`. The other
-four group to the right when repeated, `eee` → *eë* and `eeee` → *ëë*, which is
-how you write an umlaut adjacent to its own plain vowel.
-
-Every word argument to `ithkuil` is read through the notation, as are the root
-and affix clusters inside a `compose` expression. It is also what glosses print
-clusters in, so gloss output feeds straight back into `compose`:
+Words are classified before they are parsed, so a sentence can mix formatives
+with referentials and the various adjuncts, and each is broken down as its own
+kind of word. `--short` collapses each one to a single line of surface, type,
+and gloss, which is the form to reach for on a whole sentence:
 
 ```bash
-ithkuil analyze mat,rqeeullait     # same word as Maţřëullait
-ithkuil compose 'm-SYS/5_2-{Ca}-DCD/1_2'
+ithkuil parse --short 'Maţřëullait wimlo'
 ```
 
-`ithkuil-input` applies the same notation for typing into anything else. It
-runs as a raw-mode TUI that shows pending keystrokes dimmed until they resolve
-into a digraph or are broken by a different character, and as a pipe filter
-when stdin isn't a terminal:
+Phonotactics are checked first, and a word that isn't pronounceable Ithkuil is
+reported with the rule it breaks instead of being forced into a slot breakdown:
+
+```
+$ ithkuil parse tttest
+tttest  1.7: triple consonant (cluster ttt)
+tttest  6.2: not permissible word-initially (cluster ttt)
+```
+
+That check is why there is no separate validation command; parsing a word
+validates it. The exit status is 1 if any word failed.
+
+## Building Words
+
+`compose` runs the other direction: give it what the word should mean and it
+prints the word. The expression is the same gloss syntax `parse` prints, so the
+two are inverses. Slots are separated by `-`, sub-fields by `/`, and the Ca
+complex by `.`:
+
+```
+$ ithkuil compose ml
+mlala
+-ml-'yellow'
+
+$ ithkuil compose S2/CPT-ml-ERG
+wimlo
+S2/CPT--ml-'gold (color)'-ERG
+
+$ ithkuil compose 'S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG'
+imlötrebo
+S2/CPT--ml-'gold (color)'-DYN/OBJ/EXS-MSS.G-DEV/3-ERG
+```
+
+The root is a consonant cluster, `(ABBREV)/degree` for an affix used as a root,
+or `(1m+2p)` for a referential root. An affix is written `Cs/degree` or
+`ABBREV/degree`, with an optional `_2` or `_3` type tag. Position carries
+meaning: an affix written before the Ca applies to the stem alone, one written
+after it has scope over the Ca. Write `{Ca}` for an all-default Ca that still
+has to mark that boundary, as *maţřëullait* does:
 
 ```bash
-ithkuil-input                           # interactive
-echo 'Mat,rqeeullait' | ithkuil-input   # batch: ASCII in, Unicode out
+ithkuil compose 'm-SYS/5_2-{Ca}-DCD/1_2'   # → maţřëullait
 ```
+
+Every slot you leave out takes its default, and the surface printed is
+canonical: one Formative has exactly one spelling here, even where the grammar
+would permit several. See [SPEC.md](SPEC.md) for what canonical means and which
+optional shortenings it decides between.
+
+## Grammar Lookup
+
+`search` looks a term up in the grammar inventory and in the lexicon at once,
+grammar hits first, since a three-letter query is far more often a grammatical
+abbreviation than a root:
+
+```bash
+ithkuil search ERG               # the Ergative case, then roots and affixes matching
+ithkuil search --category Case   # every entry in one category
+ithkuil search --exact THM       # exact abbreviation only
+ithkuil search --form ëu         # what a surface vowel or cluster can encode
+```
+
+With no arguments it lists the categories available to `--category`. A section
+with no hits isn't printed, and `--form` skips the lexicon half, since asking
+what a vowel encodes is a question only the grammar answers.
+
+`define` reads the lexicon backwards, from English to Ithkuil. It answers with
+lexical cores, a root plus the stem and version and specification that select
+the sense, not with whole words, because case and illocution belong to the
+sentence rather than to a dictionary entry:
+
+```
+$ ithkuil define crisis
+crisis
+  ojḑal            S0/PRC-jd,           predicament/crisis/dilemma
+```
+
+Coverage of English is partial by nature: the index says what the lexicon
+already happens to name in English, and is not a dictionary of English.
+
+## Building and Running
+
+Requires Go 1.25+. The repo uses [Nix](https://nixos.org/) to pin the
+toolchain, but `go` from any source works. The Go module is `code/`.
+
+```bash
+nix develop                     # dev shell with go and python3 on PATH
+python3 tools/build_db.py       # build the data store the CLI reads
+cd code
+go install ./cmd/...            # ithkuil, ithkuil-mcp, ithkuil-input → $GOBIN
+```
+
+Pass `--data FILE` to read a data store other than the default
+`$XDG_DATA_HOME/ithkuil/data.db`, and `--color=auto|always|never` to control
+ANSI styling.
+
+`ithkuil-mcp` speaks the Model Context Protocol over stdio, exposing the same
+parser, composer, and lookups as tools. Point an MCP client at the installed
+binary; it takes the same `--data` flag.
 
 ## References
 
-- **Morphology v1.3.1** (2023-02-11): The primary reference document
+- **Morphology v1.3.1** (2023-02-11): the primary reference document
 - **Official website**: [ithkuil.net](http://ithkuil.net)
 - **Community archive**: [ithkuil.place](https://ithkuil.place)
 
+The transcribed grammar lives in [docs/reference/](docs/reference/), and
+[SPEC.md](SPEC.md) describes the formats this project converts between.
 
 ## Acknowledgments
 

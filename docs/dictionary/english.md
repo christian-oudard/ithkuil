@@ -32,7 +32,7 @@ what `ithkuil compose` reads, so every line here can be checked.
     elal   S2/PRC--l-'human child'
 
 Every form below was composed that way, and every phrase was read back
-with `ithkuil analyze` to confirm it parses to what it claims. The gloss
+with `ithkuil parse` to confirm it parses to what it claims. The gloss
 expression, not the English word, is the identity of an entry: when
 other languages arrive they attach to the same expression, and English
 becomes one label among several rather than the key everything hangs
