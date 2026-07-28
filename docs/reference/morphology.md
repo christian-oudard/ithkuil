@@ -1880,14 +1880,111 @@ Whole numbers are full formatives signifying a set containing the particular num
 
 Numbers from 11 through 99 are formed utilizing the **TNX** affix. Beginning with the number 101, numbers are formed as in Ithkuil-2011 using the COMITATIVE case and the **COO** affix. Having no multiples, the roots for 'ZERO' and 'ONE' have a different Stem & Specification pattern.
 
+**-Z-** ‘THREE / TRINARY’  ·  Associated Affix: 3XX
+
+| | Stem 1 | Stem 2 | Stem 3 |
+|---|---|---|---|
+| **BSC** | (to be a) set or group of three entities; (to be) a trio | (to be) something manifesting three aspects / facets; to manifest trinariness; be trinary | (to be) the third entity/party in a group or sequence |
+| **CTE** | (to be) a party/entity of whom/which there are three | (to be) the state of having three aspects/facets; to be trinary; to be tri-fold or tri-faceted | (to be) the state of being third in a sequence/group/pattern |
+| **CSV** | (to be) a process which determines/identifies a set as being three in number; to count out to three; to determine that there are three of something | (to be) a process which determines/identifies an entity as having three aspects/facets; identify/determine that something is trinary/tri-fold/tri-faceted | (to be) a process which determines/identifies an entity’s sequential place in a sequence or group/pattern to be third |
+| **OBJ** | (to be) one in a group or sequence of 3; to be one of 3 | (to be) one of the aspects/facets of a trinary, tri-fold, tri- faceted entity | (to be) the entity/party whose numerical place in a sequence/group/pattern is third |
+
+**-VR-** ‘ZERO / NULL’
+
+| | Stem 1 | Stem 2 | Stem 3 |
+|---|---|---|---|
+| **BSC** | (to be) zero as the empty-set / a set having no members; to have no quantity or amount | (to be) the zero-dimension; to have geometrically no length, area or volume | (to be) the baseline “zero”-state or null-state in a sequence, hierarchy, gradient, pattern, etc. |
+| **CTE** | (to be) a party/entity of whom/which there are no members | (to be) the state of having no substance/tangibility due to being zero-dimensional | (to be) the state of being the baseline “zero”-state or null- state |
+| **CSV** | (to be) a set having no members; to have no (i.e., zero) members in a set | (to be) the process/act of determining/identifying zero-dimensionality | (to be) a process which determines/identifies an entity’s being the baseline “zero”-state or null-state |
+| **OBJ** | (to be) a null value / a value for a parameter that is undefined and/or for which the expected or standard value(s) is/are inapplicable | (to be) an entity having zero-dimensionality; (to be) a Euclidean point; to have geometrically no length, area or volume, i.e., to be a Euclidean point | (to be) the entity/party in the baseline “zero”-state or null- state in a sequence, hierarchy, gradient, pattern, etc. |
+
+**-LL-** ‘ONE / UNITY’
+
+| | Stem 1 | Stem 2 | Stem 3 |
+|---|---|---|---|
+| **BSC** | (to be) a set or group of one; to have one member | (to be) something (quasi-)indivisible, (quasi-)inseparable, unified, unitary, united, a union, a unit | (to be) the first entity/party in a group or sequence |
+| **CTE** | (to be) a party/entity of whom/which there is only one | (to be) the state of having only one functional aspect/facet; to function/manifest as a unified whole or unit | (to be) the state of being first in a sequence/group/pattern |
+| **CSV** | (to be) a process which determines/identifies a set as being one in number; to count out to one; to determine that there is only one of something | (to be) a process which determines/identifies an entity as having only one functional aspect/facet; to determine that an entity is a (quasi-)indivisible whole/unit | (to be) a process which determines/identifies an entity’s sequential place in a sequence or group/pattern to be first |
+| **OBJ** | [same as CTE] | (to be) the party/entity having only one functional aspect/facet; to be an entity which functions/manifests as single unit | (to be) the entity/party whose numerical place in a sequence/group/pattern is first |
+
 ### 8.2 Other Mathematical Roots
 
-| Root | Meaning |
+**-TF-** ‘ADDITION / SUBTRACTION’
+
+| | Stem 1 | Stem 2 | Stem 3 |
+|---|---|---|---|
+| **BSC** | (to be) an act/instance of changing the number of something via addition or subtraction | (to be) an act/instance of adding the number of something; to add something | (to be) an act/instance of subtracting the number of something; to subtract something |
+| **CTE** | (to be) the party/entity that performs/initiates an act of adding or subtracting | (to be) the party/entity that performs/initiates an act of addition | (to be) the party/entity that performs/initiates an act of subtraction |
+| **CSV** | (to be) a process of adding or subtracting | (to be) a process of addition | (to be) a process of subtraction |
+| **OBJ** | (to be) the party/entity whose number is changed via addition or subtraction | (to be) the party/entity whose number is added to | (to be) the party/entity whose number is subtracted |
+
+**-ẒV-** ‘MULTIPLICATION / DIVISION’
+
+| | Stem 1 | Stem 2 | Stem 3 |
+|---|---|---|---|
+| **BSC** | (to be) an act/instance of changing the number of something via multiplication or division; to multiply either by iteration or by division | (to be) an act/instance of multiplying the number of something; to multiply something | (to be) an act/instance of dividing the number of something; to divide something |
+| **CTE** | (to be) the party/entity that performs/initiates an act of multiplying or dividing something | (to be) the party/entity that performs/initiates an act of multiplying something | (to be) the party/entity that performs/initiates an act of dividing something |
+| **CSV** | (to be) a process of increasing via multiplication or division | (to be) a process of multiplication | (to be) a process of division |
+| **OBJ** | (to be) the party/entity whose number is multiplied or divided | (to be) the party/entity whose number is multiplied | (to be) the party/entity whose number is divided |
+
+**-NT-** ‘COUNTING / TALLYING / SEQUENTIAL ENUMERATION’  ·  Associated Affix: SEQ
+
+- **Stem 1:** (to be) a sequential numerical count(ing) of entities by natural numbers (i.e., positive integers) to determine the numerical quantity thereof; to count a set of entities, to tally the number of entities
+- **Stem 2:** (to be) a sequential numerical labeling [of entities by natural numbers] for purpose of identification, individuation, arrangement, etc.
+- **Stem 3:** (to be) a numerical(ly-based) pattern/arrangement; to enumerate
+
+| | |
 |---|---|
-| -**TF**- | ADDITION / SUBTRACTION |
-| -**ẒV**- | MULTIPLICATION / DIVISION |
-| -**NT**- | COUNTING / TALLYING / SEQUENTIAL ENUMERATION |
-| -**NTH**- | NUMBER / INTEGER / RATIONAL NUMBER |
-| -**RNT**- | REAL NUMBER / IRRATIONAL NUMBER / IMAGINARY NUMBER |
-| -**NTHW**- | VARIABLE / COEFFICIENT / CONSTANT |
-| -**ŇZX**- | ABSTRACT OBJECT / ABSTRACT STRUCTURE / ABSTRACT OPERATION |
+| **BSC** | as above, per Stem |
+| **CTE** | (to be) the [natural] number of entities counted; the count; to count (up)/tally using natural numbers [ = focusing on the accrual/addition of numbers in anticipation of the total/tally] |
+| **CSV** | (to be) the process of counting/tallying; to count (up)/tally [ = focusing on the counting process itself irrespective of the eventual total] |
+| **OBJ** | (to be) the entity/entities so counted |
+
+**-NTH-** ‘NUMBER / INTEGER / RATIONAL NUMBER’
+
+- **Stem 1:** (to be) a number; to express numerically
+- **Stem 2:** (to be) an integer, express via integers \*
+- **Stem 3:** (to be) a rational number, express via rational numbers \* (i.e., expressable as a ratio of two integers)
+
+| | |
+|---|---|
+| **CTE** | (to be) a state of being expressed/expressable numerically |
+| **CSV** | (to be) an act of performing something by expressing it numerically, do something by using numbers |
+| **OBJ** | (to be) a numerical expression |
+
+\* Concatenate an appropriate stem from the root -**TVY**- with this stem to indicate positive or negative numbers.
+
+**-RNT-** ‘REAL NUMBER / IRRATIONAL NUMBER / IMAGINARY NUMBER’
+
+- **Stem 1:** (to be) a real number
+- **Stem 2:** (to be) an irrational number (i.e., not expressable as a ratio of two integers)
+- **Stem 3:** (to be) an imaginary/complex number [i.e., a multiple of i]
+
+| | |
+|---|---|
+| **CTE** | (to be) a state of being expressed/expressable as a real number |
+| **CSV** | (to be) an act of performing something by expressing it as a real number, do something by using real numbers |
+| **OBJ** | (to be) a real number expression |
+
+**-NTHW-** ‘VARIABLE / COEFFICIENT / CONSTANT’
+
+- **Stem 1:** (to be) a mathematical variable; to express as a mathematical variable
+- **Stem 2:** (to be) a mathematical coefficient; to express as a mathematical coefficient
+- **Stem 3:** (to be) a mathematical constant; to express as a mathematical constant
+
+| | |
+|---|---|
+| **CTE** | (to be) a state of being expressed/expressable as a mathematical variable |
+| **CSV** | (to be) an act of performing something by expressing it as a mathematical variable, do something by using a mathematical variable |
+| **OBJ** | (to be) a mathematical function, a mathematical expression using a variable or variables |
+
+**-ŇZX-** ‘ABSTRACT OBJECT / ABSTRACT STRUCTURE / ABSTRACT OPERATION’
+
+| | Stem 1 | Stem 2 | Stem 3 |
+|---|---|---|---|
+| **BSC** | (to be) an abstract object; to operate/function as an abstract object [i.e., an abstract entity governed by abstract rules] | (to be) an abstract structure; to operate/function as an abstract structure [i.e., a grouping of abstract objects that displays certain predetermined qualities and supports certain operations, e.g., an algebraic structure] | (to be) an operation performed upon an abstract object or structure; to perform such an operation [i.e., a rule-based transformation of abstract objects] |
+| **CTE** | (to be) a defining property (or set of defining properties) of an abstract object | (to be) a component of such a structure | (to be) the underlying rule that forms the basis for an abstract operation |
+| **CSV** | (to be) the specific identity of an abstract object; to identify an abstract object | (to be) the defining purpose/function of such a structure; to define the purpose/function of such a structure | (to be) an act/process of performing/carrying out such an operation; to peform/carry out/apply an abstract operation |
+| **OBJ** | (to be) a property/attribute peculiar to a particular abstract object | (to be) a property/operation manifested or supported by such a structure | (to be) the (desired) transformation precipitated by performance/application of an abstract operation |
+
+NOTE: Use an appropriate degree of the **OAU** affix with the stems of the above root to generate a term for "argument" or "abstract entity" meaning a logical participant or referenced entity within a logical argument.

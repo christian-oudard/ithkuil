@@ -54,6 +54,11 @@ formed as in Ithkuil-2011 using the COMITATIVE case and the COO affix",
 and refers the construction back there. `numbers` still implements it
 and now cites ch. 13 for the parts that only ch. 13 states.
 
+§8 carries §6.4 in full: the two root tables, the ten Stem and
+Specification tables (-Z- as the pattern for 2 and up, -VR-, -LL-, and
+the seven operation and number-theory roots), and the notes on -TVY-
+concatenation and the OAU affix.
+
 **Audited:** every table in `morphology.md` §3 has now been checked
 against the PDF — the 68 cases positionally and against the vowel-form
 table, the 32 V_N and 36 aspect cells, V_V, V_R, the 17 V_K values, and
