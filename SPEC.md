@@ -5,18 +5,18 @@ The system supports several representations of an Ithkuil word, with an in-memor
 A formative is the richest of the word classes and `Formative` the largest of the types, but it is one of several: a referential, a bias adjunct, a register marker and the rest each have a type of their own in the grammar layer, and the same four arms. Nothing in the centre records how a word was spelled.
 
 ```
-                    Unicode phonetic  ⇄  ASCII phonetic
+                     romanization  ⇄  ASCII digraphs
                           ↕
-                    canonical gloss  ⇄  Formative  ⇄  serialized bytes
+                  canonical gloss  ⇄  grammar value  ⇄  serialized bytes
 ```
 
-The ASCII phonetic form is a notation-only codec on top of the Unicode form (no grammar knowledge involved). It's one step further out on the phonetic arm.
+The ASCII digraphs are a notation-only codec on top of the romanization, with no grammar knowledge involved. That is why they hang off it rather than off the centre: one step further out on the same arm, not an arm of their own.
 
 ## Formats
 
 - **In-memory grammar value**. The canonical form. Every conversion routes through it. One type per word class, with `Formative` the largest; sum types cover the variation within a class, so a value that the language cannot express should not be constructible.
-- **Unicode phonetic surface**. The romanization, e.g. `Maţřëullait`. Carries diacritics for stress and non-Latin consonants. Phonetic in the sense that it writes the word's sound, which is what separates it from the other two arms; Ithkuil's own script is morpho-phonemic and writes morphemes instead, so this is a romanization of the language rather than its natural orthography.
-- **ASCII phonetic surface**. Digraph notation, e.g. `aa` for `ä`, `t,` for `ţ`, `sq` for `š`, with a postfix `/` for stress: `ee/` for `ê`. A pure recoding of the Unicode form, one-to-one with characters. The full table is in the README.
+- **Romanization**. The Latin-alphabet form, e.g. `Maţřëullait`. Carries diacritics for stress and non-Latin consonants. It writes how a word sounds, which is what separates this arm from the gloss and the bytes. Ithkuil's own script is morpho-phonemic and writes morphemes rather than sounds, so this is a romanization of the language, not its natural orthography.
+- **ASCII digraphs**. A keyboard encoding of the romanization, e.g. `aa` for `ä`, `t,` for `ţ`, `sq` for `š`, with a postfix `/` for stress: `ee/` for `ê`. One-to-one with characters. The full table is in the README.
 - **Canonical gloss**. Hyphen-separated morphological breakdown, e.g. `S2.PRC-ml-DYN.OBJ-MSS.G-ERG`. Both the human-readable rendering and a strict authoring syntax. Slot order carries meaning: affixes before the Ca complex apply to the stem alone, affixes after it have scope over the Ca. A Ca holding nothing but defaults is normally suppressed, but is written `{Ca}` when it must stay visible as that boundary. The gloss is entirely ASCII, including the root, which is written in the digraph notation: it has to be typable on an ordinary keyboard, since it is an authoring syntax and not only an output format. Its punctuation follows the rule below.
 - **Serialized bytes**. Binary form for storing text as parsed structure rather than as pronunciation. It writes what a word means, not how it sounds, so nothing in it depends on orthography or phonotactics. It carries no lexicon version and no lexicon indices, so a stored file survives lexicon updates. Slots at their grammatical default cost nothing, and a field narrower than a byte is spent in bits where that saves a whole byte, which together make it about 40% smaller than the romanized text. Raw size is what it optimises; compressing the result is a separate concern, and the layout is not shaped to suit a compressor. Grammatical states the language cannot express are not encodable: a concatenation chain costs no framing because a dependent's own concatenation marker delimits it, which in turn means a lone formative may not carry one.
 
