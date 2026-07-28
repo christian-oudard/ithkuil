@@ -45,3 +45,33 @@ func TestNormalize_Idempotent(t *testing.T) {
 		}
 	}
 }
+
+// TestNormalize_Variants covers the look-alike spellings. Almost
+// nothing types a plain apostrophe for the glottal stop: keyboards and
+// chat clients rewrite it, so the parser has to accept what they emit.
+func TestNormalize_Variants(t *testing.T) {
+	for _, c := range []struct{ in, want string }{
+		{"wala’na", "wala'na"},           // ’ right single quotation mark
+		{"wala‘na", "wala'na"},           // ‘ left single quotation mark
+		{"walaʼna", "wala'na"},           // ʼ modifier letter apostrophe
+		{"wala'na", "wala'na"},           // already plain
+		{"hlamëuțřaitä", "hlamëuţřaitä"}, // ț t-comma to ţ t-cedilla
+		{"HlamëuȚřaitä", "hlamëuţřaitä"}, // folded after lowercasing
+	} {
+		if got := Normalize(c.in); got != c.want {
+			t.Errorf("Normalize(%q) = %q, want %q", c.in, got, c.want)
+		}
+	}
+}
+
+// TestNormalize_LeavesPreV4Letters pins the other half of the rule.
+// The pre-v4 alphabet had letters v4 dropped, and a word using one is
+// not v4 text. Folding it to something that parses would turn a word
+// we should reject into a wrong answer.
+func TestNormalize_LeavesPreV4Letters(t *testing.T) {
+	for _, w := range []string{"ëıtfoıgyaölw", "iţkuîl", "đaka", "ìku"} {
+		if got := Normalize(w); got != w {
+			t.Errorf("Normalize(%q) = %q, want it left alone", w, got)
+		}
+	}
+}
