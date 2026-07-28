@@ -224,11 +224,18 @@ func tryParseRoot(tok string, affixes map[string]lexicon.AffixEntry) (g.Root, bo
 // and the parser applies §2 as written, so "cskava", "wiosadca" and
 // "Adcsuleuha" all fail there.
 func validateRootCluster(cluster string) error {
+	return validateCluster("root", cluster)
+}
+
+// validateCluster applies the two rules to a Cr or a Cs. kind names
+// which, for the message. Neither fires on any of the 5946 lexicon
+// roots or 528 affixes, so nothing attested is at risk.
+func validateCluster(kind, cluster string) error {
 	if r := validation.ValidateChars(cluster); !r.Valid {
-		return fmt.Errorf("root %q: %s", cluster, r.Errors[0].Reason)
+		return fmt.Errorf("%s %q: %s", kind, cluster, r.Errors[0].Reason)
 	}
 	if validation.HasTripleConsonant(cluster) {
-		return fmt.Errorf("root %q: 1.7: triple consonant", cluster)
+		return fmt.Errorf("%s %q: 1.7: triple consonant", kind, cluster)
 	}
 	return nil
 }
@@ -511,6 +518,14 @@ func appendAffix(f *g.Formative, csOrAbbrev, degreeStr, typeStr string, affixes 
 	if cs == "" {
 		return fmt.Errorf("unknown affix %q", csOrAbbrev)
 	}
+	// resolveAffixCs hands back anything it cannot look up, which is
+	// how "zzzz/3" composed to "malezzzza" (a triple consonant) and,
+	// with no lexicon to resolve abbreviations against, "DEV/3" to
+	// "maleDEV" — literal Latin capitals in an Ithkuil word, which
+	// read back as an unrelated SCS/3-P08/3.
+	if err := validateCluster("affix", cs); err != nil {
+		return err
+	}
 	appendToAffixSlot(f, g.Affix{Type: atype, Degree: degree, Consonant: cs}, slotV)
 	return nil
 }
@@ -524,6 +539,16 @@ func appendAffix(f *g.Formative, csOrAbbrev, degreeStr, typeStr string, affixes 
 // so that it stays typable, and this is what reads that back.
 func resolveAffixCs(id string, affixes map[string]lexicon.AffixEntry) string {
 	if affixes == nil {
+		// Only the lexicon can turn an abbreviation into a Cs, so an
+		// all-uppercase identifier has to fail here rather than be
+		// folded to a literal cluster. "DEV/3" without a lexicon
+		// composed to "maleDEV" — Latin capitals inside an Ithkuil
+		// word — which reads back as an unrelated SCS/3-P08/3. The
+		// lexicon path already rejects an unknown abbreviation; this
+		// makes the no-lexicon path agree.
+		if id == strings.ToUpper(id) && id != strings.ToLower(id) {
+			return ""
+		}
 		return surface.FromASCII(id)
 	}
 	if _, ok := affixes[id]; ok {

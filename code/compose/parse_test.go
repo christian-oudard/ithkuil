@@ -147,6 +147,10 @@ func TestFormative_Errors(t *testing.T) {
 		// spelled in the alphabet and does not round-trip.
 		{"triple-consonant root", "zzzz"},
 		{"root outside the alphabet", "S1-qqq"},
+		// resolveAffixCs hands back anything it cannot look up, so a
+		// Cs got no more checking than a Cr did: "zzzz/3" composed to
+		// "malezzzza", a triple consonant.
+		{"triple-consonant affix", "m-zzzz/3"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -154,6 +158,25 @@ func TestFormative_Errors(t *testing.T) {
 				t.Errorf("Formative(%q) succeeded, want error", c.in)
 			}
 		})
+	}
+}
+
+// TestFormative_AbbrevNeedsLexicon checks that an abbreviation fails
+// without a lexicon instead of being read as a literal Cs. Passing nil
+// affixes used to fold "DEV" straight through, composing "maleDEV" —
+// Latin capitals inside an Ithkuil word — which reads back as an
+// unrelated SCS/3-P08/3. A bare Cs must still work on the same path,
+// since that is what nil affixes is for.
+func TestFormative_AbbrevNeedsLexicon(t *testing.T) {
+	if _, err := Formative("m-DEV/3", nil); err == nil {
+		t.Error(`Formative("m-DEV/3", nil) succeeded, want error`)
+	}
+	f, err := Formative("m-b/3", nil)
+	if err != nil {
+		t.Fatalf(`Formative("m-b/3", nil) = %v, want success`, err)
+	}
+	if got := render.Formative(f); got != "maleb" {
+		t.Errorf("bare Cs on the nil-lexicon path = %q, want %q", got, "maleb")
 	}
 }
 
