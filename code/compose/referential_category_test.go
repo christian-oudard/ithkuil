@@ -62,11 +62,13 @@ func TestReferentialCategory_EveryCategory(t *testing.T) {
 
 	for _, cat := range []g.RefCategory{g.Agglomerative, g.Nomic, g.Abstract} {
 		c := cat
-		want := tokenize.ReferentialWord{
-			Refs:     []g.PersonalRef{{Referent: g.R1m}},
-			Category: &c,
-			Case:     &erg,
-		}
+		want := tokenize.ReferentialWord{Referential: g.Referential{
+			Head: g.PersonalHead{
+				Refs:     []g.PersonalRef{{Referent: g.R1m}},
+				Category: &c,
+			},
+			Case: erg,
+		}}
 		s := gl.Token(want)
 		back, err := ParseToken(s, lex)
 		if err != nil {
@@ -78,44 +80,67 @@ func TestReferentialCategory_EveryCategory(t *testing.T) {
 			t.Errorf("%v: gloss %q parsed as %T", cat, s, back)
 			continue
 		}
-		if got.Category == nil || *got.Category != cat {
-			t.Errorf("%v: gloss %q lost the category (got %v)", cat, s, got.Category)
+		head, ok := got.Referential.Head.(g.PersonalHead)
+		if !ok || head.Category == nil || *head.Category != cat {
+			t.Errorf("%v: gloss %q lost the category (got %+v)", cat, s, got.Referential.Head)
 		}
 	}
 }
 
-// A combination referential carrying affixes loses them on the way
-// back: the gloss writes "1m-ERG-CTE-NEG/3", and parseReferentialToken
-// stops after the Specification, so re-glossing yields "1m-ERG-CTE".
+// A combination referential used to lose its affixes on the way back:
+// the gloss wrote "1m-ERG-CTE-NEG/3" and the parser stopped after the
+// Specification, so re-glossing gave "1m-ERG-CTE". Silent loss is the
+// part that mattered, a lossy round trip reporting success being worse
+// than one that fails.
 //
-// This is silent loss rather than an error, which is the part that
-// matters — a lossy round trip that reports success is worse than one
-// that fails. The fix is to keep reading the tail after the Spec slot,
-// where affixes and a second case may both appear; it is left undone
-// because the tail grammar there (§4.6.2) is shared with the bracketed
-// path in buildRefFromTail, and the two should grow one parser rather
-// than a second copy.
-func TestCombinationReferential_AffixesAreLost(t *testing.T) {
-	t.Skip("§4.6.2 combination-referential affix tail is not parsed; see the comment above")
-
+// The cause was two copies of the §4.6.2 tail grammar, one for
+// bracketed heads and one for bare ones, only the first of which read
+// past the Spec slot. They are now one parser.
+func TestCombinationReferential_KeepsItsTail(t *testing.T) {
 	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	gl := &gloss.Glosser{Lex: lex, Canonical: true}
+	dat := g.DAT
 
-	want := tokenize.CombinationRefWord{
-		Refs:    []g.PersonalRef{{Referent: g.R1m}},
-		Case:    g.ERG,
-		Spec:    g.CTE,
-		Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 3, Consonant: "r"}},
-	}
-	s := gl.Token(want)
-	back, err := ParseToken(s, lex)
-	if err != nil {
-		t.Fatalf("gloss %q does not parse: %v", s, err)
-	}
-	if again := gl.Token(back); again != s {
-		t.Errorf("round trip dropped part of %q, came back as %q", s, again)
+	for _, want := range []tokenize.CombinationRefWord{
+		// A bare head, which used to take the lossy path.
+		{Combination: g.CombinationReferential{
+			Head:    g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m}}},
+			Case:    g.ERG,
+			Spec:    g.CTE,
+			Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 3, Consonant: "r"}},
+		}},
+		// Affixes plus a stacked case, the full §4.6.2 tail.
+		{Combination: g.CombinationReferential{
+			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R2m, Effect: g.BEN}}},
+			Case: g.ERG,
+			Spec: g.OBJ,
+			Affixes: []g.Affix{
+				{Type: g.Type1Affix, Degree: 3, Consonant: "r"},
+				{Type: g.Type2Affix, Degree: 5, Consonant: "kt"},
+			},
+			Case2: &dat,
+		}},
+		// A bracketed multi-referent head reaches the same parser.
+		{Combination: g.CombinationReferential{
+			Head: g.PersonalHead{Refs: []g.PersonalRef{
+				{Referent: g.R1m}, {Referent: g.R2p},
+			}},
+			Case:    g.THM,
+			Spec:    g.BSC,
+			Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 3, Consonant: "r"}},
+		}},
+	} {
+		s := gl.Token(want)
+		back, err := ParseToken(s, lex)
+		if err != nil {
+			t.Errorf("gloss %q does not parse: %v", s, err)
+			continue
+		}
+		if again := gl.Token(back); again != s {
+			t.Errorf("round trip dropped part of %q, came back as %q", s, again)
+		}
 	}
 }

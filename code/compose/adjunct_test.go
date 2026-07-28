@@ -174,32 +174,47 @@ func TestParseToken_MultiAffix(t *testing.T) {
 
 func TestParseToken_Referential(t *testing.T) {
 	gl := canonicalGlosser(t)
-	thm := g.THM
-	erg := g.ERG
-	dat := g.DAT
+	nomicCat := g.Nomic
 	cases := []tokenize.ReferentialWord{
 		// Plain: single referent + case
-		{
-			Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}},
-			Case: &thm,
-		},
+		{Referential: g.Referential{
+			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
+			Case: g.THM,
+		}},
 		// Effect
-		{
-			Refs: []g.PersonalRef{{Referent: g.R2m, Effect: g.BEN}},
-			Case: &erg,
-		},
-		// Case2
-		{
-			Refs:  []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}},
-			Case:  &thm,
-			Case2: &erg,
-		},
+		{Referential: g.Referential{
+			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R2m, Effect: g.BEN}}},
+			Case: g.ERG,
+		}},
+		// A second case stacked onto the head
+		{Referential: g.Referential{
+			Head:   g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
+			Case:   g.THM,
+			Second: &g.SecondReferent{Case: g.ERG},
+		}},
+		// A second referent carrying its own case
+		{Referential: g.Referential{
+			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
+			Case: g.THM,
+			Second: &g.SecondReferent{
+				Case: g.IND,
+				Refs: []g.PersonalRef{{Referent: g.R2m, Effect: g.NEU}},
+			},
+		}},
 		// RpvEssence
-		{
-			Refs:       []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}},
-			Case:       &dat,
+		{Referential: g.Referential{
+			Head:       g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
+			Case:       g.DAT,
 			RpvEssence: true,
-		},
+		}},
+		// A category modifier on the head
+		{Referential: g.Referential{
+			Head: g.PersonalHead{
+				Refs:     []g.PersonalRef{{Referent: g.Rma, Effect: g.NEU}},
+				Category: &nomicCat,
+			},
+			Case: g.ERG,
+		}},
 	}
 	for i, want := range cases {
 		s := gl.Token(want)
@@ -273,14 +288,13 @@ func TestParseToken_Modular(t *testing.T) {
 
 func TestParseToken_MultiReferential(t *testing.T) {
 	gl := canonicalGlosser(t)
-	erg := g.ERG
-	want := tokenize.ReferentialWord{
-		Refs: []g.PersonalRef{
+	want := tokenize.ReferentialWord{Referential: g.Referential{
+		Head: g.PersonalHead{Refs: []g.PersonalRef{
 			{Referent: g.R1m, Effect: g.NEU},
 			{Referent: g.R2p, Effect: g.BEN},
-		},
-		Case: &erg,
-	}
+		}},
+		Case: g.ERG,
+	}}
 	s := gl.Token(want)
 	got, err := ParseToken(s, nil)
 	if err != nil {
@@ -290,9 +304,10 @@ func TestParseToken_MultiReferential(t *testing.T) {
 	if !ok {
 		t.Fatalf("got %T", got)
 	}
-	if len(rw.Refs) != 2 || rw.Refs[0].Referent != g.R1m ||
-		rw.Refs[1].Referent != g.R2p || rw.Refs[1].Effect != g.BEN {
-		t.Errorf("Refs = %+v", rw.Refs)
+	refs, _ := g.HeadRefs(rw.Referential.Head)
+	if len(refs) != 2 || refs[0].Referent != g.R1m ||
+		refs[1].Referent != g.R2p || refs[1].Effect != g.BEN {
+		t.Errorf("Refs = %+v", refs)
 	}
 	got2 := gl.Token(rw)
 	if got2 != s {
@@ -302,14 +317,11 @@ func TestParseToken_MultiReferential(t *testing.T) {
 
 func TestParseToken_CarrierHeadedReferential(t *testing.T) {
 	gl := canonicalGlosser(t)
-	carr := g.Quotative
-	erg := g.ERG
-	dat := g.DAT
-	want := tokenize.ReferentialWord{
-		Carrier: &carr,
-		Case:    &erg,
-		Case2:   &dat,
-	}
+	want := tokenize.ReferentialWord{Referential: g.Referential{
+		Head:   g.SuppletiveHead{Type: g.Quotative},
+		Case:   g.ERG,
+		Second: &g.SecondReferent{Case: g.DAT},
+	}}
 	s := gl.Token(want)
 	got, err := ParseToken(s, nil)
 	if err != nil {
@@ -319,14 +331,15 @@ func TestParseToken_CarrierHeadedReferential(t *testing.T) {
 	if !ok {
 		t.Fatalf("got %T (input %q)", got, s)
 	}
-	if rw.Carrier == nil || *rw.Carrier != g.Quotative {
-		t.Errorf("Carrier = %+v", rw.Carrier)
+	head, ok := rw.Referential.Head.(g.SuppletiveHead)
+	if !ok || head.Type != g.Quotative {
+		t.Errorf("Head = %+v", rw.Referential.Head)
 	}
-	if rw.Case == nil || *rw.Case != g.ERG {
-		t.Errorf("Case = %+v", rw.Case)
+	if rw.Referential.Case != g.ERG {
+		t.Errorf("Case = %+v", rw.Referential.Case)
 	}
-	if rw.Case2 == nil || *rw.Case2 != g.DAT {
-		t.Errorf("Case2 = %+v", rw.Case2)
+	if rw.Referential.Second == nil || rw.Referential.Second.Case != g.DAT {
+		t.Errorf("Second = %+v", rw.Referential.Second)
 	}
 	got2 := gl.Token(rw)
 	if got2 != s {
@@ -335,14 +348,21 @@ func TestParseToken_CarrierHeadedReferential(t *testing.T) {
 }
 
 func TestParseToken_CombinationRef(t *testing.T) {
-	gl := canonicalGlosser(t)
-	want := tokenize.CombinationRefWord{
-		Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}},
-		Case: g.ERG,
-		Spec: g.BSC,
+	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
+	if err != nil {
+		t.Fatalf("load lex: %v", err)
 	}
+	gl := &gloss.Glosser{Lex: lex, Canonical: true}
+	dative := g.DAT
+	want := tokenize.CombinationRefWord{Combination: g.CombinationReferential{
+		Head:    g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
+		Case:    g.ERG,
+		Spec:    g.BSC,
+		Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 3, Consonant: "r"}},
+		Case2:   &dative,
+	}}
 	s := gl.Token(want)
-	got, err := ParseToken(s, nil)
+	got, err := ParseToken(s, lex)
 	if err != nil {
 		t.Fatalf("ParseToken(%q): %v", s, err)
 	}
@@ -350,8 +370,19 @@ func TestParseToken_CombinationRef(t *testing.T) {
 	if !ok {
 		t.Fatalf("got %T, want CombinationRefWord", got)
 	}
-	if cw.Case != g.ERG || cw.Spec != g.BSC || len(cw.Refs) != 1 {
-		t.Errorf("got %+v", cw)
+	comb := cw.Combination
+	refs, _ := g.HeadRefs(comb.Head)
+	if comb.Case != g.ERG || comb.Spec != g.BSC || len(refs) != 1 {
+		t.Errorf("got %+v", comb)
+	}
+	// §4.6.2 puts affixes and a stacked case after the Specification.
+	// Both used to be dropped on the way back, silently.
+	if len(comb.Affixes) != 1 || comb.Affixes[0].Consonant != "r" ||
+		comb.Affixes[0].Degree != 3 {
+		t.Errorf("affixes = %+v, want one r/3", comb.Affixes)
+	}
+	if comb.Case2 == nil || *comb.Case2 != g.DAT {
+		t.Errorf("Case2 = %+v, want DAT", comb.Case2)
 	}
 }
 

@@ -108,27 +108,30 @@ func TestClassifyWord_ReferentialWithCase(t *testing.T) {
 	if !ok {
 		t.Fatalf("ClassifyWord(\"lü\") = %T, want ReferentialWord", w)
 	}
-	if len(r.Refs) != 1 || r.Refs[0].Referent.String() != "1m" {
-		t.Errorf("refs = %v, want [{1m, NEU}]", r.Refs)
+	refs, ok := g.HeadRefs(r.Referential.Head)
+	if !ok || len(refs) != 1 || refs[0].Referent.String() != "1m" {
+		t.Errorf("refs = %v, want [{1m, NEU}]", refs)
 	}
-	if r.Case == nil {
-		t.Fatal("Case = nil, want DAT")
-	}
-	if r.Case.String() != "DAT" {
-		t.Errorf("Case = %v, want DAT", *r.Case)
+	if r.Referential.Case.String() != "DAT" {
+		t.Errorf("Case = %v, want DAT", r.Referential.Case)
 	}
 }
 
-func TestClassifyWord_ReferentialWithoutCase(t *testing.T) {
-	// Plain "l" — single-conjunct, no case.
-	w := ClassifyWord("l")
-	r, ok := w.(ReferentialWord)
-	if !ok {
-		t.Fatalf("ClassifyWord(\"l\") = %T, want ReferentialWord", w)
+// §4.6.1 leaves V_C1 unparenthesized in its slot table and gives
+// "(ë)C(C)-V" as the shape to look for, so a referential always carries
+// a case. A bare consonant cluster is not one — nor is it a word at
+// all, having no vowel to pronounce.
+func TestClassifyWord_BareClusterIsNotAReferential(t *testing.T) {
+	for _, w := range []string{"l", "sml"} {
+		if got := ClassifyWord(w); !isUnknown(got) {
+			t.Errorf("ClassifyWord(%q) = %T, want UnknownWord", w, got)
+		}
 	}
-	if r.Case != nil {
-		t.Errorf("Case = %v, want nil", *r.Case)
-	}
+}
+
+func isUnknown(t WordToken) bool {
+	_, ok := t.(UnknownWord)
+	return ok
 }
 
 func TestClassifyWord_Concatenated(t *testing.T) {

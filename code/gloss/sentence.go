@@ -300,107 +300,86 @@ func modularReachSuffix(r g.ModularReach) string {
 	return "-{" + r.String() + "}"
 }
 
-// combinationRefLabel formats a combination-referential word.
+// combinationRefLabel formats a §4.6.2 combination referential.
 //
-// Display: "REF[<refs>]-<case>.<spec>(-<affix>...)(-<case2>)" with
-// "CARR[<type>]" when the C1 was a suppletive.
-//
-// Canonical (zsnout-aligned): "<refs>-<case>-<spec>(-<affix>...)(-<case2>)"
-// — head is a bare referent list (or "[a+b]" when more than one); the
-// Specification is shown as another hyphen-separated slot (always
-// emitted to disambiguate from a plain referential).
+// Display: "REF[<refs>]-<case>.<spec>(-<affix>...)(-<case2>)".
+// Canonical: "<refs>-<case>-<spec>(-<affix>...)(-<case2>)(-RPV)" — the
+// Specification is always emitted, which is what tells a combination
+// referential apart from a plain one.
 func (gl *Glosser) combinationRefLabel(c tokenize.CombinationRefWord) string {
-	head := gl.refHead(c.Carrier, c.Refs, nil)
-	if gl.Canonical {
-		out := head + "-" + c.Case.String() + "-" + c.Spec.String()
-		for _, a := range c.Affixes {
-			out += "-" + gl.affixPart(a)
-		}
-		if c.Case2 != nil {
-			out += "-" + c.Case2.String()
-		}
-		return out
+	comb := c.Combination
+	head := gl.refHead(comb.Head)
+	sep := "-"
+	if !gl.Canonical {
+		sep = "."
 	}
-	out := head + "-" + c.Case.String() + "." + c.Spec.String()
-	for _, a := range c.Affixes {
+	out := head + "-" + comb.Case.String() + sep + comb.Spec.String()
+	for _, a := range comb.Affixes {
 		out += "-" + gl.affixPart(a)
 	}
-	if c.Case2 != nil {
-		out += "-" + c.Case2.String()
+	if comb.Case2 != nil {
+		out += "-" + comb.Case2.String()
+	}
+	if comb.RpvEssence {
+		if gl.Canonical {
+			out += "-RPV"
+		} else {
+			out += "\\RPV"
+		}
 	}
 	return out
 }
 
-// refLabel formats a referential word.
+// refLabel formats a §4.6.1 referential.
 //
-// Display: "REF[<refs>]-<case>(-<case2>)(-[<refB>])(\RPV)" with
-// "CARR[<type>]" for suppletive C1.
+// Display: "REF[<refs>]-<case>(-[<refB>]/<case2>)(\RPV)".
+// Canonical: the same with a bare head and "-RPV".
 //
-// Canonical (zsnout-aligned): bare "<refs>" or "[a+b]" head; case
-// suffixed with "-"; RpvEssence trails as "-RPV".
-//
-// Carrier-headed referentials emit a leading "*" in canonical mode
-// (§4.6.3 epenthesis disambiguator): "*[CAR]-CASE" reads as "carrier
-// used as a referential head" — distinct from the bare CarrierWord
-// gloss "[CAR]-CASE".
+// The second referent binds its own case, so it reads "[2m]/IND" per
+// the gloss rule that a case attached to a head is written HEAD/CASE.
+// A second case with no referent of its own stacks onto the head
+// instead, and stays a plain slot.
 func (gl *Glosser) refLabel(r tokenize.ReferentialWord) string {
-	head := gl.refHead(r.Carrier, r.Refs, r.Category)
-	var label string
-	if gl.Canonical {
-		if r.Carrier != nil {
-			head = "*" + head
+	ref := r.Referential
+	label := gl.refHead(ref.Head) + "-" + ref.Case.String()
+	if s := ref.Second; s != nil {
+		if len(s.Refs) > 0 {
+			label += "-" + formatRefList(s.Refs, true) + "/" + s.Case.String()
+		} else {
+			label += "-" + s.Case.String()
 		}
-		label = head
-		if r.Case != nil {
-			label += "-" + r.Case.String()
-		}
-		if r.Case2 != nil {
-			label += "-" + r.Case2.String()
-		}
-		if len(r.RefB) > 0 {
-			label += "-" + formatRefList(r.RefB, true)
-		}
-		if r.RpvEssence {
+	}
+	if ref.RpvEssence {
+		if gl.Canonical {
 			label += "-RPV"
+		} else {
+			label += "\\RPV"
 		}
-		return label
-	}
-	label = head
-	if r.Case != nil {
-		label += "-" + r.Case.String()
-	}
-	if r.Case2 != nil {
-		label += "-" + r.Case2.String()
-	}
-	if len(r.RefB) > 0 {
-		label += "-" + formatRefList(r.RefB, true)
-	}
-	if r.RpvEssence {
-		label += "\\RPV"
 	}
 	return label
 }
 
-// refHead renders the head of a referential or combination-referential:
-// either a carrier suppletive "[QUO]" (canonical) / "CARR[Quotative]"
-// (display), or a referent list. The optional Category prefixes the
-// list with "X:" for non-personal categories (only used by
-// ReferentialWord; CombinationRefWord doesn't carry Category).
-func (gl *Glosser) refHead(carrier *g.CarrierType, refs []g.PersonalRef, category *g.RefCategory) string {
-	if carrier != nil {
+// refHead renders a referential head: a suppletive cluster as "[QUO]"
+// (canonical) or "CARR[Quotative]" (display), or a referent chain with
+// its optional category tag, as in "NOM:1m".
+func (gl *Glosser) refHead(head g.RefHead) string {
+	switch h := head.(type) {
+	case g.SuppletiveHead:
 		if gl.Canonical {
-			return "[" + carrierTypeAbbrev(*carrier) + "]"
+			return "[" + carrierTypeAbbrev(h.Type) + "]"
 		}
-		return "CARR[" + carrier.String() + "]"
+		return "CARR[" + h.Type.String() + "]"
+	case g.PersonalHead:
+		listed := formatRefList(h.Refs, len(h.Refs) > 1)
+		if h.Category != nil {
+			listed = h.Category.String() + ":" + listed
+		}
+		if gl.Canonical {
+			return listed
+		}
+		return "REF[" + strings.TrimPrefix(strings.TrimSuffix(listed, "]"), "[") + "]"
 	}
-	listed := formatRefList(refs, len(refs) > 1)
-	if category != nil {
-		listed = category.String() + ":" + listed
-	}
-	if gl.Canonical {
-		return listed
-	}
-	return "REF[" + strings.TrimPrefix(strings.TrimSuffix(listed, "]"), "[") + "]"
+	return "?"
 }
 
 // formatRefList renders a list of PersonalRefs as "a+b+c", optionally

@@ -47,10 +47,8 @@ func TestCluster_RoundTrip(t *testing.T) {
 }
 
 func TestMarshalWord_AllTokenTypes(t *testing.T) {
-	thm := g.THM
-	erg := g.ERG
+	nomic := g.Nomic
 	dat := g.DAT
-	carrType := g.Quotative
 	cases := []tokenize.WordToken{
 		// Formative — minimal.
 		tokenize.FormativeWord{Formative: g.MinimalFormative("m")},
@@ -85,23 +83,27 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 			RestScope:  g.ScopeVIIDom,
 		}},
 		// Referential — single ref.
-		tokenize.ReferentialWord{
-			Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}},
-			Case: &thm,
-		},
-		// Referential — full shape (carrier head + case2 + RpvEssence).
-		tokenize.ReferentialWord{
-			Carrier:    &carrType,
-			Case:       &erg,
-			Case2:      &dat,
+		tokenize.ReferentialWord{Referential: g.Referential{
+			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
+			Case: g.THM,
+		}},
+		// Referential — full shape: suppletive head, a second referent
+		// carrying its own case, and RPV essence.
+		tokenize.ReferentialWord{Referential: g.Referential{
+			Head: g.SuppletiveHead{Type: g.Quotative},
+			Case: g.ERG,
+			Second: &g.SecondReferent{
+				Case: g.DAT,
+				Refs: []g.PersonalRef{{Referent: g.R2p, Effect: g.DET}},
+			},
 			RpvEssence: true,
-		},
+		}},
 		// Combination ref.
-		tokenize.CombinationRefWord{
-			Refs: []g.PersonalRef{{Referent: g.R2m, Effect: g.BEN}},
+		tokenize.CombinationRefWord{Combination: g.CombinationReferential{
+			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R2m, Effect: g.BEN}}},
 			Case: g.ERG,
 			Spec: g.BSC,
-		},
+		}},
 		// Multi-affix with no Rest — the run holds only the head, so
 		// Rest must come back nil rather than an empty slice.
 		tokenize.MultipleAffixWord{Affixes: g.MultipleAffixAdjunct{
@@ -121,26 +123,44 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 				g.VnCnLevel{Level: g.MAX, MoodScope: g.FAC, Absolute: true},
 			},
 		}},
-		// Referential with no Refs at all.
-		tokenize.ReferentialWord{Case: &thm},
+		// A second case with no referent of its own, which §4.6.1
+		// stacks onto the head instead.
+		tokenize.ReferentialWord{Referential: g.Referential{
+			Head:   g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.Rma, Effect: g.NEU}}},
+			Case:   g.THM,
+			Second: &g.SecondReferent{Case: g.ABS},
+		}},
 		// Combination ref at its default Case and Spec, both elided.
-		tokenize.CombinationRefWord{
-			Refs: []g.PersonalRef{{Referent: g.Rpvs, Effect: g.DET}},
+		tokenize.CombinationRefWord{Combination: g.CombinationReferential{
+			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.Rpvs, Effect: g.DET}}},
 			Case: g.THM,
 			Spec: g.BSC,
-		},
+		}},
 		// Combination ref with no Refs, which the corpus contains and
 		// which used to write zero ref bytes but read one back,
 		// desynchronising every token after it in the stream.
-		tokenize.CombinationRefWord{Carrier: &carrType, Case: g.ERG, Spec: g.CTE},
+		tokenize.CombinationRefWord{Combination: g.CombinationReferential{
+			Head: g.SuppletiveHead{Type: g.Quotative},
+			Case: g.ERG,
+			Spec: g.CTE,
+		}},
+		// A category modifier on the head, which rides along with the
+		// referent chain rather than in a slot of its own.
+		tokenize.ReferentialWord{Referential: g.Referential{
+			Head: g.PersonalHead{
+				Refs:     []g.PersonalRef{{Referent: g.Rmi, Effect: g.NEU}},
+				Category: &nomic,
+			},
+			Case: g.ERG,
+		}},
 		// Combination ref with affixes + case2.
-		tokenize.CombinationRefWord{
-			Refs:    []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}},
+		tokenize.CombinationRefWord{Combination: g.CombinationReferential{
+			Head:    g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
 			Case:    g.ERG,
 			Spec:    g.OBJ,
 			Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}},
 			Case2:   &dat,
-		},
+		}},
 	}
 	for i, want := range cases {
 		b, err := MarshalWord(want)
@@ -163,14 +183,13 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 }
 
 func TestMarshalTokens_RoundTrip(t *testing.T) {
-	thm := g.THM
 	tokens := []tokenize.WordToken{
 		tokenize.BiasWord{Bias: g.DOL},
 		tokenize.FormativeWord{Formative: g.MinimalFormative("m")},
-		tokenize.ReferentialWord{
-			Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}},
-			Case: &thm,
-		},
+		tokenize.ReferentialWord{Referential: g.Referential{
+			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
+			Case: g.THM,
+		}},
 	}
 	b, err := MarshalTokens(tokens)
 	if err != nil {

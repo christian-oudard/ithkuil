@@ -24,6 +24,13 @@ func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
 	if s == "" {
 		return nil, fmt.Errorf("empty token")
 	}
+	// Affix names resolve through the lexicon when there is one. A nil
+	// lexicon still parses everything else, and affixes written as a
+	// raw Cs cluster rather than an abbreviation.
+	var affixes map[string]lexicon.AffixEntry
+	if lex != nil {
+		affixes = lex.Affixes
+	}
 
 	// Foreign word: double-quoted text.
 	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
@@ -44,16 +51,9 @@ func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
 		}
 	}
 
-	// "*[TYPE]-CASE..." is the explicit carrier-headed referential
-	// (§4.6.3 epenthesis disambiguator). Force the referential path
-	// regardless of how many tail fields are present.
-	if strings.HasPrefix(s, "*[") {
-		return parseCarrierHeadedReferential(s[1:])
-	}
-
 	// Carrier: "[TYPE]" or "[TYPE]-CASE"
 	if strings.HasPrefix(s, "[") {
-		if w, ok, err := parseCarrierOrReferential(s); ok || err != nil {
+		if w, ok, err := parseCarrierOrReferential(s, affixes); ok || err != nil {
 			return w, err
 		}
 	}
@@ -70,7 +70,7 @@ func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
 
 	// Referential or combination-referential with bare-referent head.
 	if looksLikeReferential(s) {
-		return parseReferentialToken(s)
+		return parseReferentialToken(s, affixes)
 	}
 
 	// Modular adjunct: dotted Vn.Cn shape or bare "MOD" with optional
@@ -134,23 +134,23 @@ func parseRegisterName(s string) (g.Register, bool) {
 }
 
 // parseCarrierOrReferential dispatches a "[...]"-leading token.
-// Carriers are "[CAR|QUO|NAM|PHR]" optionally followed by "-CASE".
-// A "[..]" leading a referent list (e.g. "[1m+2p]-ERG") is a multi-
-// referent referential, handled below.
-func parseCarrierOrReferential(s string) (tokenize.WordToken, bool, error) {
-	close := strings.Index(s, "]")
-	if close < 1 {
+//
+// "[TYPE]" and "[TYPE]-CASE" are a plain carrier adjunct. Anything
+// with more tail than that is a §4.6.3 suppletive-headed referential,
+// which carries grammar a CarrierAdjunct has no room for. The two need
+// no sigil to tell apart: a carrier adjunct holds one case and nothing
+// else, so the extra slots are themselves the signal.
+//
+// A leading referent list ("[1m+2p]-ERG") is a multi-referent
+// referential.
+func parseCarrierOrReferential(s string, affixes map[string]lexicon.AffixEntry) (tokenize.WordToken, bool, error) {
+	end := strings.Index(s, "]")
+	if end < 1 {
 		return nil, false, nil
 	}
-	inner := s[1:close]
-	tail := s[close+1:]
-	// Carrier short type names: CAR/QUO/NAM/PHR.
+	inner := s[1:end]
+	tail := s[end+1:]
 	if ct, ok := parseCarrierTypeAbbrev(inner); ok {
-		// A bare [TYPE](-CASE)? token with no further tail is a
-		// CarrierWord. If extra tail fields (CASE2, RefB, RPV, Spec)
-		// appear, the token must be a ReferentialWord/CombinationRefWord
-		// whose head is a carrier suppletive — those carry richer
-		// grammar that CarrierWord can't hold.
 		caseChunk, restTail := splitFirstHyphenChunk(tail)
 		if restTail == "" {
 			cv, err := caseFromCanonicalTail(tail)
@@ -162,11 +162,10 @@ func parseCarrierOrReferential(s string) (tokenize.WordToken, bool, error) {
 				Carrier: g.CarrierAdjunct{Type: ct, Case: cv},
 			}, true, nil
 		}
-		// Extra fields present — build a Referential/CombinationRef.
-		w, err := buildRefFromTail(s, &ct, nil, caseChunk, restTail)
+		w, err := buildReferential(s, g.SuppletiveHead{Type: ct},
+			append([]string{caseChunk}, strings.Split(restTail, "-")...), affixes)
 		return w, true, err
 	}
-	// Otherwise: bracketed referent list, e.g. [1m+2p] or [1m/BEN+2p].
 	refs, err := parseRefList(inner)
 	if err != nil {
 		return nil, true, fmt.Errorf("referential %q: %w", s, err)
@@ -175,31 +174,12 @@ func parseCarrierOrReferential(s string) (tokenize.WordToken, bool, error) {
 	if caseChunk == "" {
 		return nil, true, fmt.Errorf("referential %q: no case after referent list", s)
 	}
-	w, err := buildRefFromTail(s, nil, refs, caseChunk, restTail)
+	parts := []string{caseChunk}
+	if restTail != "" {
+		parts = append(parts, strings.Split(restTail, "-")...)
+	}
+	w, err := buildReferential(s, g.PersonalHead{Refs: refs}, parts, affixes)
 	return w, true, err
-}
-
-// parseCarrierHeadedReferential decodes the "[TYPE]-CASE..." form
-// stripped of its leading "*" sigil. The "*" was the explicit marker
-// that we're looking at a referential (not a bare CarrierWord), so
-// this path always builds a ReferentialWord/CombinationRefWord even
-// when the tail has only a case slot.
-func parseCarrierHeadedReferential(s string) (tokenize.WordToken, error) {
-	close := strings.Index(s, "]")
-	if close < 1 {
-		return nil, fmt.Errorf("carrier-headed ref %q: missing closing bracket", s)
-	}
-	inner := s[1:close]
-	tail := s[close+1:]
-	ct, ok := parseCarrierTypeAbbrev(inner)
-	if !ok {
-		return nil, fmt.Errorf("carrier-headed ref %q: unknown carrier type %q", s, inner)
-	}
-	caseChunk, restTail := splitFirstHyphenChunk(tail)
-	if caseChunk == "" {
-		return nil, fmt.Errorf("carrier-headed ref %q: missing case", s)
-	}
-	return buildRefFromTail(s, &ct, nil, caseChunk, restTail)
 }
 
 // splitFirstHyphenChunk takes a "-CASE-rest..." tail and returns
@@ -216,66 +196,107 @@ func splitFirstHyphenChunk(tail string) (first, rest string) {
 	return tail, ""
 }
 
-// buildRefFromTail constructs a ReferentialWord or CombinationRefWord
-// from the already-parsed head (carrier OR refs) and the slot tail
-// after the first case. Used by both bracketed-head paths.
-func buildRefFromTail(
+// buildReferential decodes the slot tail that §4.6.1 and §4.6.2
+// share, given an already-parsed head. parts starts at the case:
+//
+//	CASE [SPEC [affix...]] [CASE2] [[refs]/CASE] [RPV]
+//
+// A Specification in the second slot is what makes it a combination
+// referential; §4.6.2 lists x/xt/xp/xx as that shape's tell-tale sign,
+// and the four names are disjoint from every case name.
+//
+// The two shapes are parsed here together rather than in two places,
+// because their tails overlap: both may end in a stacked case and an
+// RPV marker, and a copy of that logic in each is what let the
+// combination referential silently drop its affixes.
+func buildReferential(
 	text string,
-	carrier *g.CarrierType,
-	refs []g.PersonalRef,
-	caseChunk string,
-	restTail string,
+	head g.RefHead,
+	parts []string,
+	affixes map[string]lexicon.AffixEntry,
 ) (tokenize.WordToken, error) {
-	c, ok := parseCaseName(caseChunk)
-	if !ok {
-		return nil, fmt.Errorf("referential %q: unknown case %q", text, caseChunk)
+	if len(parts) == 0 || parts[0] == "" {
+		return nil, fmt.Errorf("referential %q: missing case", text)
 	}
-	// Combination referential? Detect Specification name as next slot.
-	parts := strings.Split(restTail, "-")
-	if restTail != "" {
-		if spec, ok := parseSpecName(parts[0]); ok {
-			return tokenize.CombinationRefWord{
-				Text:    text,
-				Carrier: carrier,
-				Refs:    refs,
-				Case:    c,
-				Spec:    spec,
-			}, nil
+	c, ok := parseCaseName(parts[0])
+	if !ok {
+		return nil, fmt.Errorf("referential %q: unknown case %q", text, parts[0])
+	}
+	rest := parts[1:]
+	if len(rest) > 0 {
+		if spec, ok := parseSpecName(rest[0]); ok {
+			return buildCombinationRef(text, head, c, spec, rest[1:], affixes)
 		}
 	}
-	var case2 *g.Case
-	var refB []g.PersonalRef
-	rpv := false
-	if restTail != "" {
-		for _, p := range parts {
-			switch {
-			case p == "RPV":
-				rpv = true
-			case strings.HasPrefix(p, "[") && strings.HasSuffix(p, "]"):
-				inner := p[1 : len(p)-1]
-				rb, err := parseRefList(inner)
-				if err != nil {
-					return nil, fmt.Errorf("referential %q refB %q: %w", text, p, err)
-				}
-				refB = rb
-			default:
-				if cv, ok := parseCaseName(p); ok && case2 == nil {
-					case2 = &cv
-					continue
-				}
+	ref := g.Referential{Head: head, Case: c}
+	for _, p := range rest {
+		switch {
+		case p == "RPV":
+			ref.RpvEssence = true
+		case strings.HasPrefix(p, "["):
+			// "[refs]/CASE": a second referent carrying its own case.
+			end := strings.Index(p, "]")
+			if end < 1 || !strings.HasPrefix(p[end+1:], "/") {
+				return nil, fmt.Errorf("referential %q: %q is not [refs]/CASE", text, p)
+			}
+			refs, err := parseRefList(p[1:end])
+			if err != nil {
+				return nil, fmt.Errorf("referential %q second referent %q: %w", text, p, err)
+			}
+			cv, ok := parseCaseName(p[end+2:])
+			if !ok {
+				return nil, fmt.Errorf("referential %q: unknown case %q", text, p[end+2:])
+			}
+			if ref.Second != nil {
+				return nil, fmt.Errorf("referential %q: two second referents", text)
+			}
+			ref.Second = &g.SecondReferent{Case: cv, Refs: refs}
+		default:
+			// A bare case with no referent of its own stacks onto the head.
+			cv, ok := parseCaseName(p)
+			if !ok {
 				return nil, fmt.Errorf("referential %q: unexpected slot %q", text, p)
 			}
+			if ref.Second != nil {
+				return nil, fmt.Errorf("referential %q: two second cases", text)
+			}
+			ref.Second = &g.SecondReferent{Case: cv}
 		}
 	}
-	return tokenize.ReferentialWord{
-		Text:       text,
-		Carrier:    carrier,
-		Refs:       refs,
-		Case:       &c,
-		Case2:      case2,
-		RefB:       refB,
-		RpvEssence: rpv,
-	}, nil
+	return tokenize.ReferentialWord{Text: text, Referential: ref}, nil
+}
+
+// buildCombinationRef reads the §4.6.2 tail after the Specification:
+// any number of V_X C_S affixes, then an optional stacked case, then
+// an optional RPV marker.
+func buildCombinationRef(
+	text string,
+	head g.RefHead,
+	c g.Case,
+	spec g.Specification,
+	rest []string,
+	affixes map[string]lexicon.AffixEntry,
+) (tokenize.WordToken, error) {
+	comb := g.CombinationReferential{Head: head, Case: c, Spec: spec}
+	for _, p := range rest {
+		if p == "RPV" {
+			comb.RpvEssence = true
+			continue
+		}
+		if a, err := parseAffixField(p, affixes); err == nil {
+			comb.Affixes = append(comb.Affixes, a)
+			continue
+		}
+		cv, ok := parseCaseName(p)
+		if !ok {
+			return nil, fmt.Errorf("combination referential %q: unexpected slot %q", text, p)
+		}
+		if comb.Case2 != nil {
+			return nil, fmt.Errorf("combination referential %q: two stacked cases", text)
+		}
+		comb.Case2 = &cv
+	}
+	return tokenize.CombinationRefWord{Text: text, Combination: comb}, nil
 }
 
 // parseCarrierTypeAbbrev maps the 3-letter canonical form back to a
@@ -337,14 +358,13 @@ func looksLikeReferential(s string) bool {
 		return false
 	}
 	_, head := splitCategoryTag(s[:dash])
-	// Single-digit + lowercase letter: 1m, 2p, etc.
-	if len(head) >= 2 && head[0] >= '0' && head[0] <= '9' {
-		return true
-	}
-	// Two-letter personal-reference forms like "ma", "pu", "mi" — these
-	// also occur as referential heads (§4.6.4).
-	// TODO: refine this discriminator once the parser is built.
-	return false
+	// The head is a referent abbreviation, so ask the parser for one.
+	// None of the eleven can be mistaken for a formative's root: a root
+	// is written as a bare consonant cluster, and every abbreviation
+	// either starts with a digit ("1m"), carries a vowel ("ma"), or
+	// capitalises ("Mx", "Obv").
+	_, _, err := parseRefSpec(head)
+	return err == nil
 }
 
 // splitCategoryTag peels the "AGM:"/"NOM:"/"ABS:" tag §4.6 puts on a
@@ -607,15 +627,11 @@ func parseScopeName(s string) (g.AffixScope, bool) {
 	return 0, false
 }
 
-// parseReferentialToken decodes a canonical referential or combination
-// referential of the form "refs-CASE[-...]" — bare referent head
-// followed by hyphen-separated slot tails. The third chunk being one
-// of {BSC, CTE, CSV, OBJ} discriminates a combination referential.
-//
-// The head may carry a §4.6 category tag ("NOM:1m-ERG"). Multi-referent
-// heads are written "[a+b]" and reach the parser through the bracket
-// path instead, as do carrier-headed referentials ("*[CAR]-ERG").
-func parseReferentialToken(s string) (tokenize.WordToken, error) {
+// parseReferentialToken decodes a referential whose head is written
+// bare, as a single referent with an optional §4.6 category tag
+// ("NOM:1m-ERG"). Multi-referent and suppletive heads are bracketed
+// and reach the tail parser through parseCarrierOrReferential.
+func parseReferentialToken(s string, affixes map[string]lexicon.AffixEntry) (tokenize.WordToken, error) {
 	parts := strings.Split(s, "-")
 	if len(parts) < 2 {
 		return nil, fmt.Errorf("referential %q: need at least head and case", s)
@@ -625,59 +641,12 @@ func parseReferentialToken(s string) (tokenize.WordToken, error) {
 	if err != nil {
 		return nil, fmt.Errorf("referential %q head: %w", s, err)
 	}
-	caseName := parts[1]
-	c, ok := parseCaseName(caseName)
-	if !ok {
-		return nil, fmt.Errorf("referential %q: unknown case %q", s, caseName)
-	}
-	rest := parts[2:]
-	// Combination referential? Detect Specification name in next slot.
-	if len(rest) > 0 {
-		if spec, ok := parseSpecName(rest[0]); ok {
-			return tokenize.CombinationRefWord{
-				Text: s,
-				Refs: []g.PersonalRef{{Referent: ref, Effect: eff}},
-				Case: c,
-				Spec: spec,
-				// The affix and Case2 tail after the Spec slot is not
-				// read; see TestCombinationReferential_AffixesAreLost.
-			}, nil
-		}
-	}
-	// Plain referential. Parse optional Case2, [refB], and RPV trail.
-	var case2 *g.Case
-	var refB []g.PersonalRef
-	rpv := false
-	for _, p := range rest {
-		switch {
-		case p == "RPV":
-			rpv = true
-		case strings.HasPrefix(p, "[") && strings.HasSuffix(p, "]"):
-			inner := p[1 : len(p)-1]
-			refB, err = parseRefList(inner)
-			if err != nil {
-				return nil, fmt.Errorf("referential %q refB %q: %w", s, p, err)
-			}
-		default:
-			if cv, ok := parseCaseName(p); ok && case2 == nil {
-				case2 = &cv
-				continue
-			}
-			return nil, fmt.Errorf("referential %q: unexpected trailing slot %q", s, p)
-		}
-	}
-	return tokenize.ReferentialWord{
-		Text:       s,
-		Refs:       []g.PersonalRef{{Referent: ref, Effect: eff}},
-		Category:   category,
-		Case:       &c,
-		Case2:      case2,
-		RefB:       refB,
-		RpvEssence: rpv,
-	}, nil
+	return buildReferential(s, g.PersonalHead{
+		Refs:     []g.PersonalRef{{Referent: ref, Effect: eff}},
+		Category: category,
+	}, parts[1:], affixes)
 }
 
-// parseRefList decodes "a+b+c" into a slice of PersonalRefs.
 func parseRefList(s string) ([]g.PersonalRef, error) {
 	parts := strings.Split(s, "+")
 	out := make([]g.PersonalRef, 0, len(parts))

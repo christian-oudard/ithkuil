@@ -187,58 +187,97 @@ func getMultipleAffix(buf []byte) (g.MultipleAffixAdjunct, int, error) {
 	return m, 1 + n, nil
 }
 
-// ── referential ─────────────────────────────────────────────────────
+// ── referential ─────────────────────────────────────────────────
+
+// A head is either a referent chain or a suppletive cluster, so one
+// flag bit discriminates them and the payload that follows is whichever
+// the bit selected. Case needs no presence bit of its own: §4.6.1
+// requires one, so only a non-default value costs a byte.
+// refFlagSuppletive is written by putRefHead, which both referential
+// shapes share, so it has to mean the same bit in both flag bytes.
+// Their own flags start above it.
+const refFlagSuppletive = 1 << 0
 
 const (
-	refFlagCarrier = 1 << iota
-	refFlagCategory
+	refFlagCategory = 1 << (iota + 1)
 	refFlagCase
-	refFlagCase2
-	refFlagRefB
+	refFlagSecond
+	refFlagSecondRefs
 	refFlagRPV
-	refFlagRefs
 )
 
+func putRefHead(out []byte, head g.RefHead, flags *byte) ([]byte, error) {
+	switch h := head.(type) {
+	case g.SuppletiveHead:
+		*flags |= refFlagSuppletive
+		return append(out, byte(h.Type)), nil
+	case g.PersonalHead:
+		return putRefs(out, h.Refs)
+	}
+	return nil, fmt.Errorf("referential: unknown head %T", head)
+}
+
+func getRefHead(buf []byte, flags byte, cat *g.RefCategory) (g.RefHead, int, error) {
+	if flags&refFlagSuppletive != 0 {
+		if len(buf) == 0 {
+			return nil, 0, fmt.Errorf("referential head: short read")
+		}
+		return g.SuppletiveHead{Type: g.CarrierType(buf[0])}, 1, nil
+	}
+	refs, n, err := getRefs(buf)
+	if err != nil {
+		return nil, 0, err
+	}
+	return g.PersonalHead{Refs: refs, Category: cat}, n, nil
+}
+
+// headCategory returns the category a personal head carries, or nil.
+func headCategory(head g.RefHead) *g.RefCategory {
+	if p, ok := head.(g.PersonalHead); ok {
+		return p.Category
+	}
+	return nil
+}
+
 func putReferential(out []byte, r tokenize.ReferentialWord) ([]byte, error) {
+	ref := r.Referential
+	cat := headCategory(ref.Head)
 	flags := byte(0)
 	for _, f := range []struct {
 		set  bool
 		mask byte
 	}{
-		{r.Carrier != nil, refFlagCarrier},
-		{r.Category != nil, refFlagCategory},
-		{r.Case != nil, refFlagCase},
-		{r.Case2 != nil, refFlagCase2},
-		{len(r.RefB) > 0, refFlagRefB},
-		{r.RpvEssence, refFlagRPV},
-		{len(r.Refs) > 0, refFlagRefs},
+		{cat != nil, refFlagCategory},
+		{ref.Case != g.THM, refFlagCase},
+		{ref.Second != nil, refFlagSecond},
+		{ref.Second != nil && len(ref.Second.Refs) > 0, refFlagSecondRefs},
+		{ref.RpvEssence, refFlagRPV},
 	} {
 		if f.set {
 			flags |= f.mask
 		}
 	}
+	// The head is written into a scratch buffer first because encoding
+	// it is what decides the suppletive flag, and the flag byte leads.
+	var body []byte
+	body, err := putRefHead(body, ref.Head, &flags)
+	if err != nil {
+		return nil, err
+	}
 	out = append(out, flags)
-	if r.Carrier != nil {
-		out = append(out, byte(*r.Carrier))
+	if cat != nil {
+		out = append(out, byte(*cat))
 	}
-	if r.Category != nil {
-		out = append(out, byte(*r.Category))
+	out = append(out, body...)
+	if ref.Case != g.THM {
+		out = append(out, byte(ref.Case))
 	}
-	var err error
-	if len(r.Refs) > 0 {
-		if out, err = putRefs(out, r.Refs); err != nil {
-			return nil, err
-		}
-	}
-	if r.Case != nil {
-		out = append(out, byte(*r.Case))
-	}
-	if r.Case2 != nil {
-		out = append(out, byte(*r.Case2))
-	}
-	if len(r.RefB) > 0 {
-		if out, err = putRefs(out, r.RefB); err != nil {
-			return nil, err
+	if ref.Second != nil {
+		out = append(out, byte(ref.Second.Case))
+		if len(ref.Second.Refs) > 0 {
+			if out, err = putRefs(out, ref.Second.Refs); err != nil {
+				return nil, err
+			}
 		}
 	}
 	return out, nil
@@ -259,109 +298,101 @@ func getReferential(buf []byte) (tokenize.ReferentialWord, int, error) {
 		cur++
 		return b, nil
 	}
-	if flags&refFlagCarrier != 0 {
-		b, err := take("carrier")
-		if err != nil {
-			return r, 0, err
-		}
-		ct := g.CarrierType(b)
-		r.Carrier = &ct
-	}
+	var cat *g.RefCategory
 	if flags&refFlagCategory != 0 {
 		b, err := take("category")
 		if err != nil {
 			return r, 0, err
 		}
-		cat := g.RefCategory(b)
-		r.Category = &cat
+		c := g.RefCategory(b)
+		cat = &c
 	}
-	if flags&refFlagRefs != 0 {
-		refs, n, err := getRefs(buf[cur:])
-		if err != nil {
-			return r, 0, err
-		}
-		cur += n
-		r.Refs = refs
+	head, n, err := getRefHead(buf[cur:], flags, cat)
+	if err != nil {
+		return r, 0, err
 	}
+	cur += n
+	ref := g.Referential{Head: head, Case: g.THM, RpvEssence: flags&refFlagRPV != 0}
 	if flags&refFlagCase != 0 {
 		b, err := take("case")
 		if err != nil {
 			return r, 0, err
 		}
-		c := g.Case(b)
-		r.Case = &c
+		ref.Case = g.Case(b)
 	}
-	if flags&refFlagCase2 != 0 {
-		b, err := take("case2")
+	if flags&refFlagSecond != 0 {
+		b, err := take("second case")
 		if err != nil {
 			return r, 0, err
 		}
-		c := g.Case(b)
-		r.Case2 = &c
-	}
-	if flags&refFlagRefB != 0 {
-		refs, n, err := getRefs(buf[cur:])
-		if err != nil {
-			return r, 0, err
+		second := g.SecondReferent{Case: g.Case(b)}
+		if flags&refFlagSecondRefs != 0 {
+			refs, n, err := getRefs(buf[cur:])
+			if err != nil {
+				return r, 0, err
+			}
+			cur += n
+			second.Refs = refs
 		}
-		cur += n
-		r.RefB = refs
+		ref.Second = &second
 	}
-	r.RpvEssence = flags&refFlagRPV != 0
+	r.Referential = ref
 	return r, cur, nil
 }
 
-// ── combination referential ─────────────────────────────────────────
+// ── combination referential ───────────────────────────────────
 
 const (
-	combFlagCarrier = 1 << iota
+	combFlagCategory = 1 << (iota + 1) // bit 0 is refFlagSuppletive
 	combFlagCase
 	combFlagCase2
 	combFlagSpec
 	combFlagAffixes
-	combFlagRefs
+	combFlagRPV
 )
 
 func putCombinationRef(out []byte, c tokenize.CombinationRefWord) ([]byte, error) {
+	comb := c.Combination
+	cat := headCategory(comb.Head)
 	flags := byte(0)
 	for _, f := range []struct {
 		set  bool
 		mask byte
 	}{
-		{c.Carrier != nil, combFlagCarrier},
-		{c.Case != g.THM, combFlagCase},
-		{c.Case2 != nil, combFlagCase2},
-		{c.Spec != g.BSC, combFlagSpec},
-		{len(c.Affixes) > 0, combFlagAffixes},
-		{len(c.Refs) > 0, combFlagRefs},
+		{cat != nil, combFlagCategory},
+		{comb.Case != g.THM, combFlagCase},
+		{comb.Case2 != nil, combFlagCase2},
+		{comb.Spec != g.BSC, combFlagSpec},
+		{len(comb.Affixes) > 0, combFlagAffixes},
+		{comb.RpvEssence, combFlagRPV},
 	} {
 		if f.set {
 			flags |= f.mask
 		}
 	}
+	var body []byte
+	body, err := putRefHead(body, comb.Head, &flags)
+	if err != nil {
+		return nil, err
+	}
 	out = append(out, flags)
-	if c.Carrier != nil {
-		out = append(out, byte(*c.Carrier))
+	if cat != nil {
+		out = append(out, byte(*cat))
 	}
-	var err error
-	if len(c.Refs) > 0 {
-		if out, err = putRefs(out, c.Refs); err != nil {
+	out = append(out, body...)
+	if comb.Case != g.THM {
+		out = append(out, byte(comb.Case))
+	}
+	if comb.Spec != g.BSC {
+		out = append(out, byte(comb.Spec))
+	}
+	if len(comb.Affixes) > 0 {
+		if out, err = putAffixes(out, comb.Affixes); err != nil {
 			return nil, err
 		}
 	}
-	if c.Case != g.THM {
-		out = append(out, byte(c.Case))
-	}
-	if c.Spec != g.BSC {
-		out = append(out, byte(c.Spec))
-	}
-	if len(c.Affixes) > 0 {
-		if out, err = putAffixes(out, c.Affixes); err != nil {
-			return nil, err
-		}
-	}
-	if c.Case2 != nil {
-		out = append(out, byte(*c.Case2))
+	if comb.Case2 != nil {
+		out = append(out, byte(*comb.Case2))
 	}
 	return out, nil
 }
@@ -381,35 +412,39 @@ func getCombinationRef(buf []byte) (tokenize.CombinationRefWord, int, error) {
 		cur++
 		return b, nil
 	}
-	if flags&combFlagCarrier != 0 {
-		b, err := take("carrier")
+	var cat *g.RefCategory
+	if flags&combFlagCategory != 0 {
+		b, err := take("category")
 		if err != nil {
 			return c, 0, err
 		}
-		ct := g.CarrierType(b)
-		c.Carrier = &ct
+		v := g.RefCategory(b)
+		cat = &v
 	}
-	if flags&combFlagRefs != 0 {
-		refs, n, err := getRefs(buf[cur:])
-		if err != nil {
-			return c, 0, err
-		}
-		cur += n
-		c.Refs = refs
+	head, n, err := getRefHead(buf[cur:], flags, cat)
+	if err != nil {
+		return c, 0, err
+	}
+	cur += n
+	comb := g.CombinationReferential{
+		Head:       head,
+		Case:       g.THM,
+		Spec:       g.BSC,
+		RpvEssence: flags&combFlagRPV != 0,
 	}
 	if flags&combFlagCase != 0 {
 		b, err := take("case")
 		if err != nil {
 			return c, 0, err
 		}
-		c.Case = g.Case(b)
+		comb.Case = g.Case(b)
 	}
 	if flags&combFlagSpec != 0 {
 		b, err := take("specification")
 		if err != nil {
 			return c, 0, err
 		}
-		c.Spec = g.Specification(b)
+		comb.Spec = g.Specification(b)
 	}
 	if flags&combFlagAffixes != 0 {
 		as, n, err := getAffixes(buf[cur:])
@@ -417,7 +452,7 @@ func getCombinationRef(buf []byte) (tokenize.CombinationRefWord, int, error) {
 			return c, 0, err
 		}
 		cur += n
-		c.Affixes = as
+		comb.Affixes = as
 	}
 	if flags&combFlagCase2 != 0 {
 		b, err := take("case2")
@@ -425,8 +460,9 @@ func getCombinationRef(buf []byte) (tokenize.CombinationRefWord, int, error) {
 			return c, 0, err
 		}
 		cs := g.Case(b)
-		c.Case2 = &cs
+		comb.Case2 = &cs
 	}
+	c.Combination = comb
 	return c, cur, nil
 }
 

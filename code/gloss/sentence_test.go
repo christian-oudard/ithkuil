@@ -77,17 +77,18 @@ func TestToken_RegisterEnd(t *testing.T) {
 }
 
 func TestToken_Referential(t *testing.T) {
-	// "l" is the C1 for R1m/NEU (the speaker, "I").
-	tok := tokenize.ClassifyWord("l")
+	// "la" is the C1 for R1m/NEU (the speaker, "I") at the THM case,
+	// which §4.6.1 requires: the bare cluster "l" is not a word.
+	tok := tokenize.ClassifyWord("la")
 	got := (&Glosser{}).Token(tok)
-	if got != "REF[1m]" {
-		t.Errorf("Token(\"l\") = %q, want \"REF[1m]\"", got)
+	if got != "REF[1m]-THM" {
+		t.Errorf("Token(\"la\") = %q, want \"REF[1m]-THM\"", got)
 	}
-	// "r" is R1m/BEN — effect shown.
-	tok = tokenize.ClassifyWord("r")
+	// "ra" is R1m/BEN — effect shown.
+	tok = tokenize.ClassifyWord("ra")
 	got = (&Glosser{}).Token(tok)
-	if got != "REF[1m/BEN]" {
-		t.Errorf("Token(\"r\") = %q, want \"REF[1m/BEN]\"", got)
+	if got != "REF[1m/BEN]-THM" {
+		t.Errorf("Token(\"ra\") = %q, want \"REF[1m/BEN]-THM\"", got)
 	}
 }
 
@@ -472,37 +473,50 @@ func TestModularLabel_AllDefault(t *testing.T) {
 }
 
 func TestRefLabel_FullShape(t *testing.T) {
-	// Build a ReferentialWord covering Case2, Category, RefB, RpvEssence.
-	thm := g.THM
-	erg := g.ERG
 	cat := g.Nomic
-	r := tokenize.ReferentialWord{
-		Refs: []g.PersonalRef{
-			{Referent: g.R1m, Effect: g.BEN},
+	r := tokenize.ReferentialWord{Referential: g.Referential{
+		Head: g.PersonalHead{
+			Refs:     []g.PersonalRef{{Referent: g.R1m, Effect: g.BEN}},
+			Category: &cat,
 		},
-		Category:   &cat,
-		Case:       &thm,
-		Case2:      &erg,
-		RefB:       []g.PersonalRef{{Referent: g.R2m, Effect: g.NEU}},
+		Case: g.THM,
+		Second: &g.SecondReferent{
+			Case: g.ERG,
+			Refs: []g.PersonalRef{{Referent: g.R2m, Effect: g.NEU}},
+		},
 		RpvEssence: true,
+	}}
+	// The second referent carries its own case, so it reads as one
+	// bound pair rather than two adjacent slots.
+	want := "REF[NOM:1m/BEN]-THM-[2m]/ERG\\RPV"
+	if got := (&Glosser{}).refLabel(r); got != want {
+		t.Errorf("refLabel full shape = %q, want %q", got, want)
 	}
-	out := (&Glosser{}).refLabel(r)
-	if !strings.Contains(out, "ERG") || !strings.Contains(out, "RPV") {
-		t.Errorf("refLabel full shape = %q, missing ERG or RPV", out)
+}
+
+// A second case with no referent of its own stacks onto the head, so
+// it stays a plain slot with nothing to bind to.
+func TestRefLabel_StackedSecondCase(t *testing.T) {
+	r := tokenize.ReferentialWord{Referential: g.Referential{
+		Head:   g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m}}},
+		Case:   g.THM,
+		Second: &g.SecondReferent{Case: g.ERG},
+	}}
+	want := "1m-THM-ERG"
+	if got := (&Glosser{Canonical: true}).refLabel(r); got != want {
+		t.Errorf("refLabel stacked = %q, want %q", got, want)
 	}
 }
 
 func TestCombinationRefLabel_WithAffixes(t *testing.T) {
 	thm := g.THM
-	c := tokenize.CombinationRefWord{
-		Refs: []g.PersonalRef{
-			{Referent: g.R1m, Effect: g.BEN},
-		},
+	c := tokenize.CombinationRefWord{Combination: g.CombinationReferential{
+		Head:    g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.BEN}}},
 		Case:    thm,
 		Spec:    g.BSC,
 		Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}},
 		Case2:   &thm,
-	}
+	}}
 	out := (&Glosser{}).combinationRefLabel(c)
 	if !strings.Contains(out, "r/1") {
 		t.Errorf("combinationRefLabel = %q, want affix \"r/1\"", out)

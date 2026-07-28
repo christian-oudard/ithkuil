@@ -125,45 +125,16 @@ type CarrierWord struct {
 func (c CarrierWord) Surface() string { return c.Text }
 func (CarrierWord) word()             {}
 
-// ReferentialWord wraps one or more personal references parsed from
-// a single referential cluster, optionally followed by a Vc case vowel
-// that scopes the entire reference. Per §4.6.1, the full surface shape
-// is [ë]C1 [Vc1] [w/y Vc2 [C2 [ë]]] with ultimate stress flipping
-// Essence from NRM to RPV.
-//
-// Carrier is non-nil when C1 is a C_P suppletive cluster (§4.6.3); in
-// that case Refs is empty and the word reads as a carrier/quotative/
-// naming/phrasal adjunct extended with referential machinery. The
-// surface form starts with the epenthetic diphthong "üo-".
+// ReferentialWord wraps a §4.6.1 single- or dual-referential.
 type ReferentialWord struct {
-	Text       string
-	Category   *g.RefCategory // nil if no category modifier
-	Carrier    *g.CarrierType // §4.6.3: C_P in place of personal C1
-	Refs       []g.PersonalRef
-	Case       *g.Case // Vc1: case of Referential A; nil when no Vc at all
-	Case2      *g.Case // Vc2: case of Referential B, or stacked second case
-	RefB       []g.PersonalRef
-	RpvEssence bool // true when stress is ultimate (Representative Essence)
+	Text        string
+	Referential g.Referential
 }
 
-// CombinationRefWord is the richer referential shape that pairs a
-// referent chain with a case, a Specification marker, optional
-// VxCs affixes, and an optional second case:
-//
-//	[ë] C1 Vc Spec [VxCs...] [Vc2]
-//
-// The Spec field is the raw consonant cluster (one of x/xt/xp/xx);
-// the rest are decoded values. Carrier is non-nil when C1 is a C_P
-// suppletive cluster (§4.6.3, "a-" epenthetic prefix); Refs is empty
-// in that case.
+// CombinationRefWord wraps a §4.6.2 combination referential.
 type CombinationRefWord struct {
-	Text    string
-	Carrier *g.CarrierType
-	Refs    []g.PersonalRef
-	Case    g.Case
-	Spec    g.Specification
-	Affixes []g.Affix
-	Case2   *g.Case // optional second case
+	Text        string
+	Combination g.CombinationReferential
 }
 
 func (c CombinationRefWord) Surface() string { return c.Text }
@@ -318,7 +289,7 @@ func ClassifyWord(word string) WordToken {
 	}
 
 	// 5b. Combination referential: [ë] C1 Vc Spec [VxCs...] [Vc2].
-	if c, ok := tryCombinationRef(word, conjs); ok {
+	if c, ok := tryCombinationRef(word); ok {
 		return c
 	}
 
@@ -334,13 +305,11 @@ func ClassifyWord(word string) WordToken {
 		}
 	}
 
-	// 7. Referential without case: single consonant cluster that decomposes.
-	if len(conjs) == 1 && surface.IsConsonantConjunct(conjs[0]) {
-		if cat, refs, ok := parse.DecomposeRefWithCategory(conjs[0]); ok {
-			return ReferentialWord{Text: word, Category: cat, Refs: refs}
-		}
-	}
-
+	// A bare consonant cluster that decomposes as referents used to be
+	// accepted here as a caseless referential. §4.6.1 leaves V_C1
+	// unparenthesized in its slot table and gives "(ë)C(C)-V" as the
+	// tell-tale shape, so a referential always carries a case, and a
+	// word with no vowel in it at all is unpronounceable besides.
 	return UnknownWord{Text: orig}
 }
 
@@ -490,18 +459,16 @@ func tryReferential(word string) (ReferentialWord, bool) {
 	if !surface.IsConsonantConjunct(c1) {
 		return ReferentialWord{}, false
 	}
-	var cat *g.RefCategory
-	var refs []g.PersonalRef
-	var carrier *g.CarrierType
+	var head g.RefHead
 	if cpEpenthesis {
 		ct, _ := parse.ParseCarrierType(c1)
-		carrier = &ct
+		head = g.SuppletiveHead{Type: ct}
 	} else {
-		var ok bool
-		cat, refs, ok = parse.DecomposeRefWithCategory(c1)
+		cat, refs, ok := parse.DecomposeRefWithCategory(c1)
 		if !ok || len(refs) == 0 {
 			return ReferentialWord{}, false
 		}
+		head = g.PersonalHead{Refs: refs, Category: cat}
 	}
 	i++
 	if i >= len(conjs) || !surface.IsVowelConjunct(conjs[i]) {
@@ -513,8 +480,7 @@ func tryReferential(word string) (ReferentialWord, bool) {
 	}
 	i++
 
-	var case2 *g.Case
-	var refB []g.PersonalRef
+	var second *g.SecondReferent
 	if i < len(conjs) && (conjs[i] == "w" || conjs[i] == "y") {
 		i++
 		if i >= len(conjs) || !surface.IsVowelConjunct(conjs[i]) {
@@ -524,14 +490,14 @@ func tryReferential(word string) (ReferentialWord, bool) {
 		if !c2ok {
 			return ReferentialWord{}, false
 		}
-		case2 = &c2v
+		second = &g.SecondReferent{Case: c2v}
 		i++
 		if i < len(conjs) && surface.IsConsonantConjunct(conjs[i]) {
 			rs, dok := parse.DecomposeRefCluster(conjs[i])
 			if !dok || len(rs) == 0 {
 				return ReferentialWord{}, false
 			}
-			refB = rs
+			second.Refs = rs
 			i++
 			if i < len(conjs) && conjs[i] == "ë" {
 				i++
@@ -542,14 +508,13 @@ func tryReferential(word string) (ReferentialWord, bool) {
 		return ReferentialWord{}, false
 	}
 	return ReferentialWord{
-		Text:       word,
-		Category:   cat,
-		Carrier:    carrier,
-		Refs:       refs,
-		Case:       &caseA,
-		Case2:      case2,
-		RefB:       refB,
-		RpvEssence: stress == surface.Ultimate,
+		Text: word,
+		Referential: g.Referential{
+			Head:       head,
+			Case:       caseA,
+			Second:     second,
+			RpvEssence: stress == surface.Ultimate,
+		},
 	}, true
 }
 
@@ -557,11 +522,18 @@ func tryReferential(word string) (ReferentialWord, bool) {
 // [ë] C1 Vc Spec [VxCs...] [Vc2]. Returns ok=false if any constraint
 // fails. The Vc2 special form "üa" maps to THM and "a" alone means
 // "no second case".
-func tryCombinationRef(text string, conjs []string) (CombinationRefWord, bool) {
+func tryCombinationRef(text string) (CombinationRefWord, bool) {
+	// §4.6.2 slot 6: ultimate stress gives the adjunct RPV Essence.
+	// The diacritic has to come off before any vowel is looked up, or
+	// a stressed affix vowel decodes to the wrong degree.
+	bare, stress := surface.Strip(text)
+	if stress == surface.InvalidStress {
+		return CombinationRefWord{}, false
+	}
 	// Vc is looked up as a whole conjunct, so a glottalized case vowel
 	// ("a'o" in mma'oxinļ) has to be one conjunct rather than the three
 	// SplitConjuncts leaves it as.
-	conjs = surface.MergeGlottalVowels(conjs)
+	conjs := surface.MergeGlottalVowels(surface.SplitConjuncts(bare))
 	// §4.6.3 epenthesis: "a-" lets a C_P suppletive cluster occupy C1
 	// instead of a personal-reference cluster. Otherwise "ë" is the
 	// only acceptable prefix.
@@ -585,17 +557,16 @@ func tryCombinationRef(text string, conjs []string) (CombinationRefWord, bool) {
 	if !specOK {
 		return CombinationRefWord{}, false
 	}
-	var refs []g.PersonalRef
-	var carrier *g.CarrierType
+	var head g.RefHead
 	if cpEpenthesis {
 		ct, _ := parse.ParseCarrierType(c1)
-		carrier = &ct
+		head = g.SuppletiveHead{Type: ct}
 	} else {
-		var refsOk bool
-		refs, refsOk = parse.DecomposeRefCluster(c1)
+		cat, refs, refsOk := parse.DecomposeRefWithCategory(c1)
 		if !refsOk || len(refs) == 0 {
 			return CombinationRefWord{}, false
 		}
+		head = g.PersonalHead{Refs: refs, Category: cat}
 	}
 	caseVal, caseOk := parse.ParseCase(vc)
 	if !caseOk {
@@ -641,13 +612,15 @@ func tryCombinationRef(text string, conjs []string) (CombinationRefWord, bool) {
 		return CombinationRefWord{}, false
 	}
 	return CombinationRefWord{
-		Text:    text,
-		Carrier: carrier,
-		Refs:    refs,
-		Case:    caseVal,
-		Spec:    spec,
-		Affixes: affixes,
-		Case2:   case2,
+		Text: text,
+		Combination: g.CombinationReferential{
+			Head:       head,
+			Case:       caseVal,
+			Spec:       spec,
+			Affixes:    affixes,
+			Case2:      case2,
+			RpvEssence: stress == surface.Ultimate,
+		},
 	}, true
 }
 
