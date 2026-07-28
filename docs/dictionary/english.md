@@ -597,3 +597,276 @@ child is undersized.
 of `-šh-` and `-ňf-`. `ithkuil compose "T2-šh"` produces **hrašha**, but
 `ithkuil parse "hrašha"` cannot read it back, so no chain is written into
 this file yet. Every form here round-trips, and that one does not.
+
+---
+
+## two
+
+`-ks-`.
+
+- two → **oksal** `S0-ks`
+- set/group of two entities → **ksala** `S1-ks`
+- something with two aspects/facets → **eksal** `S2-ks`
+- second entity in a sequence → **uksal** `S3-ks`
+
+## three
+
+`-z-`.
+
+- three → **ozal** `S0-z`
+- set/group of three entities → **zala** `S1-z`
+- something with three aspects/facets → **ezal** `S2-z`
+- third entity in a sequence → **uzal** `S3-z`
+
+## four
+
+`-pš-`.
+
+- four → **opšal** `S0-pš`
+- set/group of four entities → **pšala** `S1-pš`
+- something with four aspects/facets → **epšal** `S2-pš`
+- fourth entity in a sequence → **upšal** `S3-pš`
+
+## five
+
+`-st-`.
+
+- five → **ostal** `S0-st`
+- set/group of five entities → **stala** `S1-st`
+- something with five aspects/facets → **estal** `S2-st`
+- fifth entity in a sequence → **ustal** `S3-st`
+
+## six
+
+`-cp-`.
+
+- six → **ocpal** `S0-cp`
+- set/group of six entities → **cpala** `S1-cp`
+- something with six aspects/facets → **ecpal** `S2-cp`
+- sixth entity in a sequence → **ucpal** `S3-cp`
+
+## way
+
+`-žw-`.
+
+- categorization/genre/manner/mode → **ožwal** `S0-žw`
+- category → **žwala** `S1-žw`
+- genre/style → **ežwal** `S2-žw`
+- way/manner/mode → **užwal** `S3-žw`
+
+## back
+
+`-kf-`.
+
+- back/rear → **okfal** `S0-kf`
+- back → **kfala** `S1-kf`
+- built-in back → **ekfal** `S2-kf`
+- separable back → **ukfal** `S3-kf`
+
+## good
+
+`-žv-`.
+
+- good/beneficial → **ožval** `S0-žv`
+- beneficial → **žvala** `S1-žv`
+- morally good → **ežval** `S2-žv`
+- advantageous/effective → **užval** `S3-žv`
+
+## party
+
+`-ppļ-`.
+
+- celebration/party/fête → **oppļal** `S0-ppļ`
+- celebration → **appļal** `S1-ppļ`
+- party → **eppļal** `S2-ppļ`
+- fête → **uppļal** `S3-ppļ`
+
+## hand
+
+`-nl-`.
+
+- hand → **onlal** `S0-nl`
+- hand as fine manipulatory body part → **nlala** `S1-nl`
+- hand as holder/grasper/striker → **enlal** `S2-nl`
+- hand as primary tactile-sensory interface → **unlal** `S3-nl`
+
+## side
+
+`-fḑ-`.
+
+- side/flank → **ofḑal** `S0-fḑ`
+- side/flank → **afḑal** `S1-fḑ`
+- built-in side/flank → **efḑal** `S2-fḑ`
+- separable side/flank → **ufḑal** `S3-fḑ`
+
+## development
+
+`-kţ-`.
+
+- development/maturation/decline → **okţal** `S0-kţ`
+- developmental stage → **kţala** `S1-kţ`
+- maturation/growth → **ekţal** `S2-kţ`
+- decline/age → **ukţal** `S3-kţ`
+
+## head
+
+`-ty-`.
+
+- head → **otyal** `S0-ty`
+- head as interaction hub → **tyala** `S1-ty`
+- head as seat of consciousness → **etyal** `S2-ty`
+- head as top of body → **utyal** `S3-ty`
+
+## country
+
+`-ksm-`.
+
+- country/land/territory/region → **oksmal** `S0-ksm`
+- country/territory → **ksmala** `S1-ksm`
+- province → **eksmal** `S2-ksm`
+- cultural region → **uksmal** `S3-ksm`
+
+## power
+
+`-mč-`.
+
+- power/efficacy/potency → **omčal** `S0-mč`
+- empower/energize → **amčal** `S1-mč`
+- efficacy/effectiveness → **emčal** `S2-mč`
+- potency/power → **umčal** `S3-mč`
+
+## room
+
+`-sř-`.
+
+- room/chamber/compartment → **osřal** `S0-sř`
+- room/chamber → **sřala** `S1-sř`
+- compartment → **esřal** `S2-sř`
+- cubicle/partitioned section of a larger room → **usřal** `S3-sř`
+
+## problem
+
+`-ňf-`.
+
+- problem/mystery → **oňfal** `S0-ňf`
+- problem/issue → **aňfal** `S1-ňf`
+- mystery/puzzling situation → **eňfal** `S2-ňf`
+- irksome/annoying → **uňfal** `S3-ňf`
+
+## war
+
+`-jth-`.
+
+- violence/fighting/war → **ojthal** `S0-jth`
+- violence → **ajthal** `S1-jth`
+- fighting → **ejthal** `S2-jth`
+- war/enmity → **ujthal** `S3-jth`
+
+## police
+
+`-ţkh-`.
+
+- armed security/police/armed forces → **oţkhal** `S0-ţkh`
+- armed security → **aţkhal** `S1-ţkh`
+- police → **eţkhal** `S2-ţkh`
+- armed forces → **uţkhal** `S3-ţkh`
+
+## interest
+
+`-ļc-`.
+
+- curiosity/interest → **oļcal** `S0-ļc`
+- feeling curiosity → **ļcala** `S1-ļc`
+- feeling interest → **eļcal** `S2-ļc`
+- feeling intrigue → **uļcal** `S3-ļc`
+
+## policy
+
+`-rcx-`.
+
+- method/procedure/policy/plan → **orcxal** `S0-rcx`
+- method/procedure → **arcxal** `S1-rcx`
+- policy/practice → **ercxal** `S2-rcx`
+- plan → **urcxal** `S3-rcx`
+
+## face
+
+`-lž-`.
+
+- face/visage → **olžal** `S0-lž`
+- face → **alžal** `S1-lž`
+- face → **elžal** `S2-lž`
+- face/visage → **ulžal** `S3-lž`
+
+## mistake
+
+`-cc-`.
+
+- mistake/error/misconception/miscalculation → **occal** `S0-cc`
+- mistake/error → **ccala** `S1-cc`
+- misconception → **eccal** `S2-cc`
+- miscalculation/misjudgement → **uccal** `S3-cc`
+
+## city
+
+`-lz-`.
+
+- body of fresh water → **olzal** `S0-lz`
+- pond/lake → **alzal** `S1-lz`
+- stream/river → **elzal** `S2-lz`
+- freshwater inland sea → **ulzal** `S3-lz`
+
+## tree
+
+`-lḑ-`.
+
+- tree/shrub/bush → **olḑal** `S0-lḑ`
+- tree → **alḑal** `S1-lḑ`
+- shrub → **elḑal** `S2-lḑ`
+- bush → **ulḑal** `S3-lḑ`
+
+## dog
+
+`-zv-`.
+
+- common canine → **ozval** `S0-zv`
+- 🐕 domestic dog, dingo → **zvala** `S1-zv`
+- 🐺 gray wolf → **ezval** `S2-zv`
+- coyote/american jackal → **uzval** `S3-zv`
+
+## fire
+
+`-žx-`.
+
+- fire/burning/melting/calefaction → **ožxal** `S0-žx`
+- burning → **ažxal** `S1-žx`
+- heating up → **ežxal** `S2-žx`
+- melting → **užxal** `S3-žx`
+
+## mountain
+
+`-jl-`.
+
+- mountainous topography → **ojlal** `S0-jl`
+- elevated land, a hill/mountain → **jlala** `S1-jl`
+- peak, single elevated upwelling → **ejlal** `S2-jl`
+- plateau/butte/mesa → **ujlal** `S3-jl`
+
+## idea
+
+`-ksl-`.
+
+- idea/analysis/abstraction/concept → **okslal** `S0-ksl`
+- idea → **kslala** `S1-ksl`
+- analysis → **ekslal** `S2-ksl`
+- abstraction/concept → **ukslal** `S3-ksl`
+
+## food
+
+`-lks-`.
+
+- foodstuff/beverage → **olksal** `S0-lks`
+- food/beverage for consumption → **alksal** `S1-lks`
+- preparing a food/beverage → **elksal** `S2-lks`
+- sourcing/raising material for foodstuff → **ulksal** `S3-lks`
+
