@@ -333,6 +333,57 @@ func TestCompare_UnsplittableWord(t *testing.T) {
 	}
 }
 
+func TestCompare_ChainAgainstSingleWord(t *testing.T) {
+	// A chain's parent comes last (§3.1.7), so it, not the leading
+	// dependent, is what a standalone word is the counterpart of.
+	// Pairing runs from the parent end and the spare dependent is
+	// reported rather than silently dropped.
+	out, _, code := runCLI("-data", dataFile(), "compare", "hakšal-uḑfarf", "marcat")
+	if code != 0 {
+		t.Fatalf("compare exit %d; got %q", code, out)
+	}
+	for _, want := range []string{
+		"uḑfarf [head]", "marcat",
+		"UNPAIRED", "hakšal", "Type1 dependent of hakšal-uḑfarf",
+	} {
+		if !strings.Contains(out, want) {
+			t.Errorf("compare output missing %q; got %q", want, out)
+		}
+	}
+	// Only the parent is compared, so the dependent's own slots must
+	// not appear in a table.
+	if strings.Contains(out, "Type1 concat") {
+		t.Errorf("unpaired dependent should not get a slot table; got %q", out)
+	}
+	if n := strings.Count(out, "SLOT"); n != 1 {
+		t.Errorf("want one slot table, got %d; output %q", n, out)
+	}
+}
+
+func TestCompare_ChainAgainstChain(t *testing.T) {
+	// Equal-length chains pair member for member, each with its own
+	// table. Only the dependent differs here, so the parent's table
+	// must come out clean.
+	out, _, code := runCLI("-data", dataFile(), "compare", "hakšal-uḑfarf", "hakšol-uḑfarf")
+	if code != 0 {
+		t.Fatalf("compare exit %d; got %q", code, out)
+	}
+	if n := strings.Count(out, "SLOT"); n != 2 {
+		t.Errorf("want a table per member, got %d; output %q", n, out)
+	}
+	for _, want := range []string{
+		"hakšal [Type1 dependent]", "hakšol [Type1 dependent]",
+		"uḑfarf [head]", "function", "STA", "DYN", "identical",
+	} {
+		if !strings.Contains(out, want) {
+			t.Errorf("compare output missing %q; got %q", want, out)
+		}
+	}
+	if strings.Contains(out, "UNPAIRED") {
+		t.Errorf("equal-length chains leave nothing unpaired; got %q", out)
+	}
+}
+
 func TestCompare_WrongArgCount(t *testing.T) {
 	for _, args := range [][]string{{"compare", "marcat"}, {"compare"}, {"compare", "a", "b", "c"}} {
 		_, errOut, code := runCLI(args...)

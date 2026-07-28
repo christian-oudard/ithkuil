@@ -5,6 +5,7 @@ import (
 	"io"
 	"strings"
 
+	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/slots"
 	"github.com/christian-oudard/ithkuil/tokenize"
@@ -20,17 +21,36 @@ const diffMark = "≠"
 // the one-rune diff marker plus the two-space column separator.
 const indent = "   "
 
-// side is one word's parsed breakdown, in the same three pieces the
-// detailed analyze view uses. An unclassified word fills in segs from
-// the shape split alone: decoded is false, gloss and head are empty,
-// and note carries the decoder's complaint.
-type side struct {
+// block is one formative's parsed breakdown, in the same three pieces
+// the detailed analyze view uses. An unclassified word fills in segs
+// from the shape split alone: decoded is false, gloss and head are
+// empty, and note carries the decoder's complaint. role names a chain
+// member's part ("head", "Type1 dependent") and is empty otherwise.
+type block struct {
 	word    string
+	role    string
 	segs    []view.Segment
 	gloss   []view.GlossaryEntry
 	head    view.RootHead
 	decoded bool
 	note    string
+}
+
+// header is how a block titles its column: the surface, plus the part
+// it plays when it is one member of a chain.
+func (b block) header() string {
+	if b.role == "" {
+		return b.word
+	}
+	return b.word + " [" + b.role + "]"
+}
+
+// side is one command-line argument: a single formative or adjunct is
+// one block, a concatenation chain is one block per member, in surface
+// order (dependents first, parent last, §3.1.7).
+type side struct {
+	word   string
+	blocks []block
 }
 
 // cmdCompare parses two words and lays their slot breakdowns side by
@@ -65,9 +85,10 @@ func cmdCompare(args []string, stdout, stderr io.Writer, dataFile string) int {
 }
 
 // buildSide validates, tokenizes, and analyzes one word. Formatives
-// and modular adjuncts give a full breakdown; an unclassified word
-// gives the shape split, which is what makes a good word comparable to
-// a bad one. Referentials and the rest have no slot structure at all.
+// and modular adjuncts give a full breakdown; a chain gives one per
+// member; an unclassified word gives the shape split, which is what
+// makes a good word comparable to a bad one. Referentials and the rest
+// have no slot structure at all.
 func buildSide(word string, lex *lexicon.Lexicon, stderr io.Writer) (side, bool) {
 	if r := validation.ValidateWord(word); !r.Valid {
 		renderValidationError(stderr, word, r)
@@ -78,55 +99,137 @@ func buildSide(word string, lex *lexicon.Lexicon, stderr io.Writer) (side, bool)
 		fmt.Fprintf(stderr, "%s: expected one word, got %d tokens\n", word, len(tokens))
 		return side{}, false
 	}
+	surface := strings.ToLower(tokens[0].Surface())
 	switch t := tokens[0].(type) {
 	case tokenize.FormativeWord:
-		segs := view.Segments(t.Text, t.Formative, lex)
-		return side{
-			word:    strings.ToLower(t.Text),
-			segs:    segs,
-			gloss:   view.Glossary(t.Text, t.Formative, segs, lex),
-			head:    view.Headword(t.Formative, lex),
-			decoded: true,
-		}, true
+		return side{surface, []block{formativeBlock(t.Text, t.Formative, "", lex)}}, true
 	case tokenize.ModularWord:
 		segs := view.SegmentsModular(t.Text, t.Modular, t.MarksMood)
-		return side{
+		return side{surface, []block{{
 			word:    strings.ToLower(t.Text),
 			segs:    segs,
 			gloss:   view.GlossaryModular(segs),
 			decoded: true,
-		}, true
+		}}}, true
+	case tokenize.ConcatenatedFormativeWord:
+		return side{surface, chainBlocks(t, lex)}, true
 	case tokenize.UnknownWord:
-		return unknownSide(t.Text, stderr)
+		bl, ok := unknownBlock(t.Text, stderr)
+		return side{surface, []block{bl}}, ok
 	default:
 		fmt.Fprintf(stderr, "%s: %s has no slot breakdown to compare\n", word, view.Type(tokens[0]))
 		return side{}, false
 	}
 }
 
-// unknownSide builds a side from the shape split of a word no
+func formativeBlock(text string, f g.Formative, role string, lex *lexicon.Lexicon) block {
+	segs := view.Segments(text, f, lex)
+	return block{
+		word:    strings.ToLower(text),
+		role:    role,
+		segs:    segs,
+		gloss:   view.Glossary(text, f, segs, lex),
+		head:    view.Headword(f, lex),
+		decoded: true,
+	}
+}
+
+// chainBlocks splits a concatenation chain into one block per member.
+// The chain's surface is hyphen-joined, so splitting on "-" recovers
+// each member's own surface. Dependents lead and the parent comes last
+// (§3.1.7), but the Cc marker is what tells them apart, not position.
+func chainBlocks(cw tokenize.ConcatenatedFormativeWord, lex *lexicon.Lexicon) []block {
+	parts := strings.Split(cw.Text, "-")
+	formatives := cw.Chain.Formatives()
+	blocks := make([]block, 0, len(formatives))
+	for i, f := range formatives {
+		role := "head"
+		if f.Concat != g.ConcatNone {
+			role = f.Concat.String() + " dependent"
+		}
+		surface := ""
+		if i < len(parts) {
+			surface = parts[i]
+		}
+		blocks = append(blocks, formativeBlock(surface, f, role, lex))
+	}
+	return blocks
+}
+
+// unknownBlock builds a block from the shape split of a word no
 // classifier claimed. slots.Parse assigns conjuncts to slots by shape
 // alone, so it still succeeds where ToGrammar rejects a value, and the
 // formative decoder's complaint says which value that was. Only a word
 // whose shape won't split at all is beyond comparing.
-func unknownSide(word string, stderr io.Writer) (side, bool) {
+func unknownBlock(word string, stderr io.Writer) (block, bool) {
 	layout, err := slots.Parse(word)
 	if err != nil {
 		fmt.Fprintf(stderr, "%s: %v\n", word, err)
-		return side{}, false
+		return block{}, false
 	}
 	note := ""
 	if _, err := slots.ToGrammar(layout); err != nil {
 		note = fmt.Sprintf("as a formative: %v", err)
 	}
-	return side{
+	return block{
 		word: strings.ToLower(word),
 		segs: view.LayoutSegments(layout),
 		note: note,
 	}, true
 }
 
+// renderCompare pairs the two sides' formatives off from the parent
+// end and lays each pair out in turn. A chain's parent is its last
+// member (§3.1.7), so that is what a standalone word is the
+// counterpart of; a longer chain's leading dependents go unpaired.
 func renderCompare(w io.Writer, a, b side) {
+	n := min(len(a.blocks), len(b.blocks))
+	if len(a.blocks) > 1 || len(b.blocks) > 1 {
+		fmt.Fprintln(w, indent+stylize(ansiBold, a.word)+stylize(ansiDim, " vs ")+stylize(ansiBold, b.word))
+		fmt.Fprintln(w)
+	}
+	for i := range n {
+		if i > 0 {
+			fmt.Fprintln(w)
+		}
+		renderPair(w, a.blocks[len(a.blocks)-n+i], b.blocks[len(b.blocks)-n+i])
+	}
+
+	var extra []unpaired
+	for _, bl := range a.blocks[:len(a.blocks)-n] {
+		extra = append(extra, unpaired{bl, a.word})
+	}
+	for _, bl := range b.blocks[:len(b.blocks)-n] {
+		extra = append(extra, unpaired{bl, b.word})
+	}
+	if len(extra) > 0 {
+		fmt.Fprintln(w)
+		renderUnpaired(w, extra)
+	}
+}
+
+// unpaired is a chain member with nothing on the other side to compare
+// it against, and the word it came from.
+type unpaired struct {
+	block block
+	owner string
+}
+
+func renderUnpaired(w io.Writer, extra []unpaired) {
+	fmt.Fprintln(w, indent+stylize(ansiDim, "UNPAIRED"))
+	wordW := 0
+	for _, e := range extra {
+		wordW = max(wordW, runeWidth(e.block.word))
+	}
+	for _, e := range extra {
+		fmt.Fprintln(w, line(
+			cell{"", 1, ""},
+			cell{e.block.word, wordW, ansiBold},
+			cell{fmt.Sprintf("%s of %s", e.block.role, e.owner), 0, ansiDim}))
+	}
+}
+
+func renderPair(w io.Writer, a, b block) {
 	// A shape split lists only the conjuncts that are there, with no
 	// placeholder for a slot the surface elides. Drop the other side's
 	// placeholders too, or every elision reads as a difference.
@@ -144,7 +247,7 @@ func renderCompare(w io.Writer, a, b side) {
 		renderRootDiff(w, a, b)
 	}
 
-	if notes := notedSides(a, b); len(notes) > 0 {
+	if notes := notedBlocks(a, b); len(notes) > 0 {
 		fmt.Fprintln(w)
 		renderNotes(w, notes)
 	}
@@ -165,10 +268,10 @@ func renderCompare(w io.Writer, a, b side) {
 	}
 }
 
-// notedSides returns the sides that carry a decoder complaint.
-func notedSides(sides ...side) []side {
-	var out []side
-	for _, s := range sides {
+// notedBlocks returns the blocks that carry a decoder complaint.
+func notedBlocks(blocks ...block) []block {
+	var out []block
+	for _, s := range blocks {
 		if s.note != "" {
 			out = append(out, s)
 		}
@@ -178,16 +281,16 @@ func notedSides(sides ...side) []side {
 
 // renderNotes prints why a word wouldn't decode, under the shape table
 // that is all we could show for it.
-func renderNotes(w io.Writer, notes []side) {
+func renderNotes(w io.Writer, notes []block) {
 	fmt.Fprintln(w, indent+stylize(ansiDim, "UNCLASSIFIED"))
 	wordW := 0
 	for _, s := range notes {
-		wordW = max(wordW, runeWidth(s.word))
+		wordW = max(wordW, runeWidth(s.header()))
 	}
 	for _, s := range notes {
 		fmt.Fprintln(w, line(
 			cell{"", 1, ""},
-			cell{s.word, wordW, ansiBold},
+			cell{s.header(), wordW, ansiBold},
 			cell{s.note, 0, ansiDim}))
 	}
 }
@@ -196,7 +299,7 @@ func renderNotes(w io.Writer, notes []side) {
 // their own column groups; the phonetic columns share a width so the
 // groups line up under them.
 // Returns whether any row differed.
-func renderSlotTable(w io.Writer, a, b side, rows [][2]int) bool {
+func renderSlotTable(w io.Writer, a, b block, rows [][2]int) bool {
 	slotW, phW, encW := len("SLOT"), 0, 0
 	for _, r := range rows {
 		sa, sb := segAt(a.segs, r[0]), segAt(b.segs, r[1])
@@ -209,8 +312,8 @@ func renderSlotTable(w io.Writer, a, b side, rows [][2]int) bool {
 	fmt.Fprintln(w, line(
 		cell{"", 1, ""},
 		cell{"SLOT", slotW, ansiDim},
-		cell{a.word, groupW, ansiBold},
-		cell{b.word, 0, ansiBold}))
+		cell{a.header(), groupW, ansiBold},
+		cell{b.header(), 0, ansiBold}))
 
 	// One undecoded word means one side has no codes at all, so the
 	// shape is the only thing the two have in common to diff on.
@@ -245,11 +348,11 @@ func renderSlotTable(w io.Writer, a, b side, rows [][2]int) bool {
 
 // renderRootDiff prints the two headwords when the words don't share a
 // lexical identity — different root, stem, or specification.
-func renderRootDiff(w io.Writer, a, b side) {
+func renderRootDiff(w io.Writer, a, b block) {
 	fmt.Fprintln(w, indent+stylize(ansiDim, "ROOT"))
-	wordW := max(runeWidth(a.word), runeWidth(b.word))
-	for _, s := range []side{a, b} {
-		fmt.Fprintf(w, "%s%s  %s", indent, stylize(ansiBold, padRunes(s.word, wordW)), styleHeadwordCode(s.head.Code))
+	wordW := max(runeWidth(a.header()), runeWidth(b.header()))
+	for _, s := range []block{a, b} {
+		fmt.Fprintf(w, "%s%s  %s", indent, stylize(ansiBold, padRunes(s.header(), wordW)), styleHeadwordCode(s.head.Code))
 		if s.head.Meaning != "" {
 			fmt.Fprintf(w, " — %s", stylize(ansiDim, s.head.Meaning))
 		}
@@ -266,7 +369,7 @@ type diffRow struct {
 
 // glossDiffs aligns the two glossaries by category and keeps only the
 // rows where the code changed.
-func glossDiffs(a, b side) []diffRow {
+func glossDiffs(a, b block) []diffRow {
 	var diffs []diffRow
 	for _, r := range alignByKey(glossKeys(a.gloss), glossKeys(b.gloss)) {
 		ea, eb := glossAt(a.gloss, r[0]), glossAt(b.gloss, r[1])
@@ -284,7 +387,7 @@ func glossDiffs(a, b side) []diffRow {
 
 // renderGlossaryDiff prints one row per category whose code changed,
 // with each side's code and name.
-func renderGlossaryDiff(w io.Writer, a, b side, diffs []diffRow) {
+func renderGlossaryDiff(w io.Writer, a, b block, diffs []diffRow) {
 	fmt.Fprintln(w, indent+stylize(ansiDim, "DIFFERENCES"))
 
 	catW, codeW, nameW := len("CATEGORY"), 0, 0
@@ -298,8 +401,8 @@ func renderGlossaryDiff(w io.Writer, a, b side, diffs []diffRow) {
 	fmt.Fprintln(w, line(
 		cell{"", 1, ""},
 		cell{"CATEGORY", catW, ansiDim},
-		cell{a.word, groupW, ansiBold},
-		cell{b.word, 0, ansiBold}))
+		cell{a.header(), groupW, ansiBold},
+		cell{b.header(), 0, ansiBold}))
 	for _, d := range diffs {
 		fmt.Fprintln(w, line(
 			cell{"", 1, ""},
