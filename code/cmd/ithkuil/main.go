@@ -25,7 +25,6 @@ import (
 
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/store"
-	"github.com/christian-oudard/ithkuil/surface"
 )
 
 func main() {
@@ -144,19 +143,6 @@ func loadLex(dataFile string, stderr io.Writer) *lexicon.Lexicon {
 		return nil
 	}
 	return lex
-}
-
-// normalizeASCII applies the ASCII input method per whitespace-
-// separated token in text. Lets users type "maleeut,rqait" on the
-// command line and have it parsed as "malëuţřait". FromASCII is
-// idempotent on Unicode Ithkuil text, so Unicode input passes
-// through unchanged.
-func normalizeASCII(text string) string {
-	fields := strings.Fields(text)
-	for i, f := range fields {
-		fields[i] = surface.FromASCII(f)
-	}
-	return strings.Join(fields, " ")
 }
 
 // readStdin returns the trimmed contents of r.

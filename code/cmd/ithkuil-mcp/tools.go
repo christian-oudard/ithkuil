@@ -8,27 +8,32 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
 	"github.com/christian-oudard/ithkuil/compose"
+	"github.com/christian-oudard/ithkuil/dictionary"
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/render"
 	"github.com/christian-oudard/ithkuil/slots"
+	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/tokenize"
 	"github.com/christian-oudard/ithkuil/validation"
 	"github.com/christian-oudard/ithkuil/view"
 )
 
-// registerTools wires every tool to its handler.
+// registerTools wires every tool to its handler. The set mirrors the
+// ithkuil CLI subcommands one-for-one: parse, compose, search, define.
 func (s *server) registerTools(srv *mcp.Server) {
 	mcp.AddTool(srv, &mcp.Tool{
-		Name: "analyze",
+		Name: "parse",
 		Description: "Tokenize, parse, and gloss every word in the given Ithkuil text. " +
 			"Returns surface, type (Form/Ref/Bias/...), one-line gloss, slot segments, " +
-			"and per-word phonotactic validation. By default (verbose=false) descriptions " +
-			"are omitted; use grammar/lexicon tools for separate lookups. Set verbose=true " +
-			"to include inline category names, meanings, and root definition. " +
-			"Example: text=\"Maţřëullait\".",
-	}, s.analyze)
+			"and per-word phonotactic validation, so parsing a word is also how you " +
+			"check that it is pronounceable Ithkuil. Text may be written in the ASCII " +
+			"digraph notation (aa→ä, t,→ţ, sq→š, e/→é); it is converted before parsing. " +
+			"By default (verbose=false) descriptions are omitted; use the search tool " +
+			"for separate lookups. Set verbose=true to include inline category names, " +
+			"meanings, and root definition. Example: text=\"Maţřëullait\".",
+	}, s.parse)
 
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "compose",
@@ -48,38 +53,35 @@ func (s *server) registerTools(srv *mcp.Server) {
 	}, s.compose)
 
 	mcp.AddTool(srv, &mcp.Tool{
-		Name: "grammar",
-		Description: "Look up the grammar inventory. With no args, lists every category " +
-			"name. With abbrevs, batch-resolves a list of abbreviations in one call " +
-			"(e.g. abbrevs=[\"THM\",\"STA\",\"BSC\"]). With category, lists all entries " +
-			"in that category (Case, Aspect, Bias, Mood, ...). With query, substring " +
-			"matches against abbreviation / category / surface form / description. With " +
-			"exact=true, exact abbrev match. With form=true, treats query as a surface " +
-			"form (vowel or consonant). Example: category=\"Case\"; abbrevs=[\"ERG\",\"ABS\"].",
-	}, s.grammar)
+		Name: "search",
+		Description: "Look a term up in the grammar inventory and in the root and affix " +
+			"lexicons at once. Grammar hits (entries) come back before lexicon hits " +
+			"(roots, affixes), since a short query is more often a grammatical " +
+			"abbreviation than a root. With no query and no category, returns the list " +
+			"of category names. With category, lists all entries in that category (Case, " +
+			"Aspect, Bias, Mood, ...). With exact=true, the query must equal an " +
+			"abbreviation. With form=true, treats the query as a surface form (vowel or " +
+			"consonant) and answers from the grammar only. limit caps lexicon hits per " +
+			"kind (default 20). Example: query=\"ERG\"; category=\"Case\"; " +
+			"query=\"ëu\", form=true.",
+	}, s.search)
 
 	mcp.AddTool(srv, &mcp.Tool{
-		Name: "lexicon",
-		Description: "Substring search the root and/or affix lexicons. Pass kind=\"root\", " +
-			"\"affix\", or \"both\" (default both). Returns ranked hits with surface " +
-			"clusters and meaning text. Use queries=[...] to search multiple terms in one " +
-			"call, deduplicating results by cluster. " +
-			"Example: query=\"speak\"; queries=[\"ml\",\"ţř\"], kind=\"root\".",
-	}, s.lexicon)
-
-	mcp.AddTool(srv, &mcp.Tool{
-		Name: "validate",
-		Description: "Run phonotactic validation per word. Returns valid=true when every " +
-			"word passes; otherwise per-word violations with rule ID, offending cluster, " +
-			"and reason. Example: text=\"tttest\" → rule 1.7 (triple consonant).",
-	}, s.validate)
+		Name: "define",
+		Description: "Look an English word up as the Ithkuil lexical cores that name it: " +
+			"a root plus the stem, version, and specification selecting that sense, " +
+			"rendered as a bare thematic formative. Case and illocution belong to the " +
+			"sentence, not to a dictionary entry, so they are absent. Coverage of " +
+			"English is partial: this reads the lexicon's own glosses backwards. " +
+			"Example: word=\"crisis\".",
+	}, s.define)
 }
 
 // --------------------------------------------------------------------
-// analyze
+// parse
 // --------------------------------------------------------------------
 
-type analyzeIn struct {
+type parseIn struct {
 	Text    string `json:"text" jsonschema:"one or more Ithkuil words"`
 	Verbose bool   `json:"verbose,omitempty" jsonschema:"include category names, meanings, and root definition (default false)"`
 }
@@ -111,7 +113,7 @@ type rootHead struct {
 	Meaning string `json:"meaning,omitempty"` // stem-selected lexicon entry
 }
 
-type analyzeWord struct {
+type parseWord struct {
 	Surface    string          `json:"surface"`
 	Type       string          `json:"type"`
 	Gloss      string          `json:"gloss"`
@@ -123,21 +125,22 @@ type analyzeWord struct {
 	Violations []validationOut `json:"violations,omitempty"`
 }
 
-type analyzeOut struct {
-	Words []analyzeWord `json:"words"`
+type parseOut struct {
+	Words []parseWord `json:"words"`
 }
 
-func (s *server) analyze(_ context.Context, _ *mcp.CallToolRequest, in analyzeIn) (*mcp.CallToolResult, analyzeOut, error) {
+func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*mcp.CallToolResult, parseOut, error) {
 	text := strings.TrimSpace(in.Text)
 	if text == "" {
-		return nil, analyzeOut{}, fmt.Errorf("text is required")
+		return nil, parseOut{}, fmt.Errorf("text is required")
 	}
+	text = surface.FromASCII(text)
 	tokens := tokenize.Tokenize(text)
 	glosser := gloss.Glosser{Lex: s.lex}
 
-	out := make([]analyzeWord, len(tokens))
+	out := make([]parseWord, len(tokens))
 	for i, t := range tokens {
-		w := analyzeWord{
+		w := parseWord{
 			Surface: t.Surface(),
 			Type:    view.Type(t),
 			Gloss:   glosser.Token(t),
@@ -207,7 +210,7 @@ func (s *server) analyze(_ context.Context, _ *mcp.CallToolRequest, in analyzeIn
 		}
 		out[i] = w
 	}
-	return nil, analyzeOut{Words: out}, nil
+	return nil, parseOut{Words: out}, nil
 }
 
 // --------------------------------------------------------------------
@@ -273,15 +276,15 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 }
 
 // --------------------------------------------------------------------
-// grammar
+// search
 // --------------------------------------------------------------------
 
-type grammarIn struct {
-	Abbrevs  []string `json:"abbrevs,omitempty" jsonschema:"batch list of abbreviations to resolve (e.g. [\"THM\",\"STA\",\"BSC\"])"`
-	Query    string   `json:"query,omitempty" jsonschema:"abbreviation, category, form, or description substring"`
-	Category string   `json:"category,omitempty" jsonschema:"restrict to one category (Case, Aspect, Bias, ...)"`
-	Exact    bool     `json:"exact,omitempty" jsonschema:"if true, query must equal Abbrev exactly"`
-	Form     bool     `json:"form,omitempty" jsonschema:"if true, treat query as a surface form (vowel or consonant)"`
+type searchIn struct {
+	Query    string `json:"query,omitempty" jsonschema:"abbreviation, category, surface form, or meaning substring"`
+	Category string `json:"category,omitempty" jsonschema:"restrict grammar hits to one category (Case, Aspect, Bias, ...)"`
+	Exact    bool   `json:"exact,omitempty" jsonschema:"if true, query must equal an abbreviation exactly"`
+	Form     bool   `json:"form,omitempty" jsonschema:"if true, treat query as a surface form (vowel or consonant); grammar only"`
+	Limit    int    `json:"limit,omitempty" jsonschema:"maximum lexicon hits per kind (default 20)"`
 }
 
 type grammarEntryOut struct {
@@ -293,37 +296,102 @@ type grammarEntryOut struct {
 	Description string `json:"description,omitempty"` // Bias expression text only
 }
 
-type grammarOut struct {
-	Categories []string          `json:"categories,omitempty"`
-	Entries    []grammarEntryOut `json:"entries,omitempty"`
+type rootHitOut struct {
+	Cr           string   `json:"cr"`
+	Stem0        string   `json:"stem0,omitempty"`
+	Stem1        string   `json:"stem1,omitempty"`
+	Stem2        string   `json:"stem2,omitempty"`
+	Stem3        string   `json:"stem3,omitempty"`
+	Contential   string   `json:"contential,omitempty"`
+	Constitutive string   `json:"constitutive,omitempty"`
+	Objective    []string `json:"objective,omitempty"`
+	Completive   []string `json:"completive,omitempty"`
+	Dynamic      string   `json:"dynamic,omitempty"`
+	Wikidata     []string `json:"wikidata,omitempty"`
 }
 
-func (s *server) grammar(_ context.Context, _ *mcp.CallToolRequest, in grammarIn) (*mcp.CallToolResult, grammarOut, error) {
-	// Batch abbreviation lookup.
-	if len(in.Abbrevs) > 0 {
-		var hits []compose.Entry
-		for _, a := range in.Abbrevs {
-			hits = append(hits, compose.Filter("", a, true)...)
-		}
-		return nil, grammarOut{Entries: toGrammarEntries(hits)}, nil
+type affixHitOut struct {
+	Cs          string   `json:"cs"`
+	Abbrev      string   `json:"abbrev"`
+	Description string   `json:"description"`
+	Type        string   `json:"type"`
+	Degrees     []string `json:"degrees"`
+}
+
+// searchOut lists grammar hits before lexicon hits, the order the CLI
+// prints them in and the order a short query is most often meant in.
+type searchOut struct {
+	Categories []string          `json:"categories,omitempty"`
+	Entries    []grammarEntryOut `json:"entries,omitempty"`
+	Roots      []rootHitOut      `json:"roots,omitempty"`
+	Affixes    []affixHitOut     `json:"affixes,omitempty"`
+}
+
+func (s *server) search(_ context.Context, _ *mcp.CallToolRequest, in searchIn) (*mcp.CallToolResult, searchOut, error) {
+	query := strings.TrimSpace(in.Query)
+	if query == "" && in.Category == "" {
+		return nil, searchOut{Categories: compose.Categories()}, nil
 	}
-	// No filters at all → return category list.
-	if in.Query == "" && in.Category == "" && !in.Form {
-		return nil, grammarOut{Categories: compose.Categories()}, nil
+	if in.Form && query == "" {
+		return nil, searchOut{}, fmt.Errorf("form=true requires a query")
 	}
-	var hits []compose.Entry
+
+	var out searchOut
 	if in.Form {
-		if in.Query == "" {
-			return nil, grammarOut{}, fmt.Errorf("form=true requires a query")
-		}
-		hits = compose.LookupForm(in.Query)
+		hits := compose.LookupForm(query)
 		if in.Category != "" {
 			hits = filterEntriesByCategory(hits, in.Category)
 		}
-	} else {
-		hits = compose.Filter(in.Category, in.Query, in.Exact)
+		out.Entries = toGrammarEntries(hits)
+		// A surface form is a grammar question; the lexicon has no
+		// answer to what a vowel encodes.
+		return nil, out, nil
 	}
-	return nil, grammarOut{Entries: toGrammarEntries(hits)}, nil
+	out.Entries = toGrammarEntries(compose.Filter(in.Category, query, in.Exact))
+
+	if query == "" {
+		return nil, out, nil
+	}
+	if s.st == nil {
+		return nil, out, fmt.Errorf("data store not available")
+	}
+	limit := in.Limit
+	if limit <= 0 {
+		limit = 20
+	}
+	roots, err := s.st.SearchRoots(query, limit)
+	if err != nil {
+		return nil, searchOut{}, fmt.Errorf("root search: %w", err)
+	}
+	for _, h := range roots {
+		out.Roots = append(out.Roots, rootHitOut{
+			Cr:           h.Cr,
+			Stem0:        h.Stem0,
+			Stem1:        h.Stem1,
+			Stem2:        h.Stem2,
+			Stem3:        h.Stem3,
+			Contential:   h.Contential,
+			Constitutive: h.Constitutive,
+			Objective:    h.Objective,
+			Completive:   h.Completive,
+			Dynamic:      h.Dynamic,
+			Wikidata:     h.Wikidata,
+		})
+	}
+	affixes, err := s.st.SearchAffixes(query, limit)
+	if err != nil {
+		return nil, searchOut{}, fmt.Errorf("affix search: %w", err)
+	}
+	for _, a := range affixes {
+		out.Affixes = append(out.Affixes, affixHitOut{
+			Cs:          a.Cs,
+			Abbrev:      a.Abbrev,
+			Description: a.Description,
+			Type:        a.Type,
+			Degrees:     a.Degrees,
+		})
+	}
+	return nil, out, nil
 }
 
 func toGrammarEntries(hits []compose.Entry) []grammarEntryOut {
@@ -357,151 +425,55 @@ func filterEntriesByCategory(in []compose.Entry, cat string) []compose.Entry {
 }
 
 // --------------------------------------------------------------------
-// lexicon
+// define
 // --------------------------------------------------------------------
 
-type lexiconIn struct {
-	Query   string   `json:"query,omitempty" jsonschema:"substring across surface clusters and meaning text"`
-	Queries []string `json:"queries,omitempty" jsonschema:"batch: list of substrings; results deduplicated by cluster"`
-	Kind    string   `json:"kind,omitempty" jsonschema:"root|affix|both (default both)"`
-	Limit   int      `json:"limit,omitempty" jsonschema:"maximum hits per kind per query (default 20)"`
+type defineIn struct {
+	Word  string `json:"word" jsonschema:"an English word to look up"`
+	Limit int    `json:"limit,omitempty" jsonschema:"maximum senses returned (default 20)"`
 }
 
-type rootHitOut struct {
-	Cr           string   `json:"cr"`
-	Score        int      `json:"score"`
-	Stem0        string   `json:"stem0,omitempty"`
-	Stem1        string   `json:"stem1,omitempty"`
-	Stem2        string   `json:"stem2,omitempty"`
-	Stem3        string   `json:"stem3,omitempty"`
-	Contential   string   `json:"contential,omitempty"`
-	Constitutive string   `json:"constitutive,omitempty"`
-	Objective    []string `json:"objective,omitempty"`
-	Completive   []string `json:"completive,omitempty"`
-	Dynamic      string   `json:"dynamic,omitempty"`
-	Wikidata     []string `json:"wikidata,omitempty"`
+// senseOut is one lexical core naming the English word: the bare
+// thematic formative, its canonical gloss, and the lexicon cell the
+// headword was read out of.
+type senseOut struct {
+	Surface string `json:"surface"`
+	Gloss   string `json:"gloss"`
+	Meaning string `json:"meaning"`
 }
 
-type affixHitOut struct {
-	Cs          string   `json:"cs"`
-	Abbrev      string   `json:"abbrev"`
-	Description string   `json:"description"`
-	Type        string   `json:"type"`
-	Degrees     []string `json:"degrees"`
+type defineOut struct {
+	Word   string     `json:"word"`
+	Senses []senseOut `json:"senses,omitempty"`
+	More   int        `json:"more,omitempty"` // senses past the limit
 }
 
-type lexiconOut struct {
-	Roots   []rootHitOut  `json:"roots,omitempty"`
-	Affixes []affixHitOut `json:"affixes,omitempty"`
-}
-
-func (s *server) lexicon(_ context.Context, _ *mcp.CallToolRequest, in lexiconIn) (*mcp.CallToolResult, lexiconOut, error) {
-	queries := in.Queries
-	if q := strings.TrimSpace(in.Query); q != "" {
-		queries = append(queries, q)
+func (s *server) define(_ context.Context, _ *mcp.CallToolRequest, in defineIn) (*mcp.CallToolResult, defineOut, error) {
+	word := strings.TrimSpace(in.Word)
+	if word == "" {
+		return nil, defineOut{}, fmt.Errorf("word is required")
 	}
-	if len(queries) == 0 {
-		return nil, lexiconOut{}, fmt.Errorf("query or queries is required")
+	if s.lex == nil {
+		return nil, defineOut{}, fmt.Errorf("lexicon not available")
 	}
 	limit := in.Limit
 	if limit <= 0 {
 		limit = 20
 	}
-	kind := in.Kind
-	if kind == "" {
-		kind = "both"
-	}
-	if s.st == nil {
-		return nil, lexiconOut{}, fmt.Errorf("data store not available")
-	}
-	seenRoot := make(map[string]struct{})
-	seenAffix := make(map[string]struct{})
-	out := lexiconOut{}
-	for _, q := range queries {
-		if kind == "root" || kind == "both" {
-			hits, err := s.st.SearchRoots(q, limit)
-			if err != nil {
-				return nil, lexiconOut{}, fmt.Errorf("root search: %w", err)
-			}
-			for _, h := range hits {
-				if _, seen := seenRoot[h.Cr]; seen {
-					continue
-				}
-				seenRoot[h.Cr] = struct{}{}
-				out.Roots = append(out.Roots, rootHitOut{
-					Cr:           h.Cr,
-					Stem0:        h.Stem0,
-					Stem1:        h.Stem1,
-					Stem2:        h.Stem2,
-					Stem3:        h.Stem3,
-					Contential:   h.Contential,
-					Constitutive: h.Constitutive,
-					Objective:    h.Objective,
-					Completive:   h.Completive,
-					Dynamic:      h.Dynamic,
-					Wikidata:     h.Wikidata,
-				})
-			}
+	senses := dictionary.Build(s.lex.Roots).Lookup(word)
+	out := defineOut{Word: word}
+	glosser := &gloss.Glosser{Canonical: true}
+	for i, sense := range senses {
+		if i == limit {
+			out.More = len(senses) - limit
+			break
 		}
-		if kind == "affix" || kind == "both" {
-			hits, err := s.st.SearchAffixes(q, limit)
-			if err != nil {
-				return nil, lexiconOut{}, fmt.Errorf("affix search: %w", err)
-			}
-			for _, a := range hits {
-				if _, seen := seenAffix[a.Cs]; seen {
-					continue
-				}
-				seenAffix[a.Cs] = struct{}{}
-				out.Affixes = append(out.Affixes, affixHitOut{
-					Cs:          a.Cs,
-					Abbrev:      a.Abbrev,
-					Description: a.Description,
-					Type:        a.Type,
-					Degrees:     a.Degrees,
-				})
-			}
-		}
+		f := sense.Formative()
+		out.Senses = append(out.Senses, senseOut{
+			Surface: render.Formative(f),
+			Gloss:   glosser.Formative(f),
+			Meaning: sense.Gloss,
+		})
 	}
 	return nil, out, nil
-}
-
-// --------------------------------------------------------------------
-// validate
-// --------------------------------------------------------------------
-
-type validateIn struct {
-	Text string `json:"text" jsonschema:"one or more space-separated Ithkuil words"`
-}
-
-type validateErrorOut struct {
-	Word    string `json:"word"`
-	Rule    string `json:"rule"`
-	Cluster string `json:"cluster"`
-	Reason  string `json:"reason"`
-}
-
-type validateOut struct {
-	Valid  bool               `json:"valid"`
-	Errors []validateErrorOut `json:"errors,omitempty"`
-}
-
-func (s *server) validate(_ context.Context, _ *mcp.CallToolRequest, in validateIn) (*mcp.CallToolResult, validateOut, error) {
-	text := strings.TrimSpace(in.Text)
-	if text == "" {
-		return nil, validateOut{}, fmt.Errorf("text is required")
-	}
-	var allErrors []validateErrorOut
-	for _, word := range strings.Fields(text) {
-		res := validation.ValidateWord(word)
-		for _, e := range res.Errors {
-			allErrors = append(allErrors, validateErrorOut{
-				Word: word, Rule: e.Rule, Cluster: e.Cluster, Reason: e.Reason,
-			})
-		}
-	}
-	return nil, validateOut{
-		Valid:  len(allErrors) == 0,
-		Errors: allErrors,
-	}, nil
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/slots"
+	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/tokenize"
 	"github.com/christian-oudard/ithkuil/validation"
 	"github.com/christian-oudard/ithkuil/view"
@@ -85,13 +86,14 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 	}
 
 	typed := text
-	text = normalizeASCII(text)
+	// Accept the ASCII digraph notation everywhere a word is taken.
+	text = surface.FromASCII(text)
 
 	// What the user typed, keyed by the surface a token will carry, so
 	// an error can name their input rather than a form only we ever
 	// saw: "aaaa" normalizes to "ää", and reporting the rule against
-	// "ää" describes a word they never wrote. normalizeASCII works one
-	// whitespace-separated word at a time, so the two agree in length.
+	// "ää" describes a word they never wrote. FromASCII never adds or
+	// drops whitespace, so the two agree word for word.
 	asTyped := map[string]string{}
 	if o, n := strings.Fields(typed), strings.Fields(text); len(o) == len(n) {
 		for i := range n {

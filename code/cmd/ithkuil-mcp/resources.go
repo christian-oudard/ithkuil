@@ -35,7 +35,7 @@ var grammarResources = []grammarResource{
 		URI:         "grammar://phonotactics",
 		File:        "phonotactics.md",
 		Title:       "Ithkuil V4 Phonotactics",
-		Description: "Detailed consonant cluster rules used by validate_phonotactics.",
+		Description: "Detailed consonant cluster rules, the ones the parse tool checks a word against.",
 	},
 }
 
