@@ -384,6 +384,8 @@ func TestValidateVowelSequence(t *testing.T) {
 		{"ia", true},   // disyllabic conjunct (Series 3)
 		{"ao", true},   // disyllabic conjunct (Series 4)
 		{"ae", true},   // reference-root marker
+		{"üo", true},   // Type-3 degree 0
+		{"üö", true},   // AMG degree 0, and the Ca-stacking Vx
 		{"aa", false},  // not a permissible diphthong
 		{"abc", false}, // too long
 	}

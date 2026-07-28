@@ -22,8 +22,6 @@ var corpusUnclassified = []string{
 
 	// Concatenation chains that tryConcatenation rejects.
 	"hakšilaölwie-addyëubzattuo",
-	"hlaçköé-yeřdö'e",
-	"hlurmiô-igulotruxröxḑuökfái",
 
 	// Unexplained.
 	"zëmse",   // §9.1, a three-referent referential

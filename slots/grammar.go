@@ -26,7 +26,7 @@ func ToGrammar(l Layout) (g.Formative, error) {
 	if l.MovedGlottal {
 		vcLookup = restoreMovedGlottal(l.Vc)
 	}
-	final, err := finalFromVc(vcLookup, l.Stress)
+	final, err := finalFromVc(vcLookup, l.Stress, concat)
 	if err != nil {
 		return g.Formative{}, err
 	}
@@ -223,7 +223,10 @@ func restoreMovedGlottal(vc string) string {
 
 // finalFromVc builds the Final variant from the trailing Slot IX
 // vowel (may be empty) and the observed stress.
-func finalFromVc(vc string, stress surface.Stress) (g.Final, error) {
+func finalFromVc(vc string, stress surface.Stress, concat g.ConcatenationStatus) (g.Final, error) {
+	if concat != g.ConcatNone {
+		return formatFromVf(vc, stress)
+	}
 	switch stress {
 	case surface.Ultimate, surface.Monosyllabic:
 		if vc == "" {
@@ -256,6 +259,57 @@ func finalFromVc(vc string, stress surface.Stress) (g.Final, error) {
 		return g.UnframedNominal{Case: c}, nil
 	}
 	return nil, fmt.Errorf("unknown stress %v", stress)
+}
+
+// formatFromVf decodes the Slot IX vowel of a concatenated formative.
+//
+// §3.1.3: a dependent's Slot IX is a V_F Format, never a V_K, so
+// stress does not choose between a nominal and a verbal reading here.
+// It chooses the case group instead. The glottal stop that marks cases
+// 37-68 elsewhere is not written on a dependent, because Slot I
+// already spends a glottal on the no-concatenation C_C; ultimate
+// stress stands in for it, and the vowel is the plain 1-36 form of the
+// case 36 places below. Reinstating the glottal per §1.7 is exactly
+// what restoreMovedGlottal does, so the promotion is a lookup, not a
+// second table.
+//
+// A dependent is therefore always an UnframedNominal. Antepenultimate
+// stress has no reading at all: §3.1.3 gives ultimate one job already,
+// and the spec never frames a dependent.
+func formatFromVf(vc string, stress surface.Stress) (g.Final, error) {
+	switch stress {
+	case surface.Ultimate:
+		// §3.1.3: PRN, like THM, may elide its -a-, but only on a
+		// polysyllable, so that the stress it depends on is audible.
+		if vc == "" {
+			return g.UnframedNominal{Case: g.PRN}, nil
+		}
+		c, ok := parse.ParseCase(restoreMovedGlottal(vc))
+		if !ok {
+			return nil, fmt.Errorf("invalid Vf %q: no case 37-68 is written %q under ultimate stress", vc, vc)
+		}
+		return g.UnframedNominal{Case: c}, nil
+	case surface.Penultimate, surface.Monosyllabic:
+		// §3.1.3: a monosyllabic dependent is an unframed nominal in
+		// THM, not the verbal reading a monosyllable would get anywhere
+		// else.
+		c := g.THM
+		if vc != "" {
+			cs, ok := parse.ParseCase(vc)
+			if !ok {
+				return nil, fmt.Errorf("invalid Vf %q", vc)
+			}
+			// §3.1.6: cases 37-68 are spelled without their glottal on a
+			// dependent, so a glottal here is not a higher case, it is a
+			// word that does not parse.
+			if cs > g.SIT {
+				return nil, fmt.Errorf("Vf %q is case %v; a concatenated formative writes cases 37-68 without the glottal, under ultimate stress", vc, cs)
+			}
+			c = cs
+		}
+		return g.UnframedNominal{Case: c}, nil
+	}
+	return nil, fmt.Errorf("concatenated formative under %v stress; §3.1.3 allows only penultimate or ultimate", stress)
 }
 
 // FromGrammar converts a grammar.Formative into a Layout — Layer D
@@ -412,7 +466,7 @@ func layoutFor(f g.Formative, e encoding) Layout {
 		l.Vn, l.Cn = vnCnFromSlotVIII(f.SlotVIII)
 	}
 
-	l.Vc, l.Stress = slotIXFromFinal(f.Final)
+	l.Vc, l.Stress = slotIXFromFinal(f)
 
 	// §3.8.1.2 shortcut is decided before default-value elision so the
 	// shortcut's freed-up syllable isn't claimed by elision first — that
@@ -705,9 +759,20 @@ func moodCnP1(m g.Mood) string { return moodCnP1Table[m] }
 func moodCnP2(m g.Mood) string { return moodCnP2Table[m] }
 
 // slotIXFromFinal picks the trailing vowel and the stress diacritic to
-// apply based on the formative's grammatical category.
-func slotIXFromFinal(f g.Final) (string, surface.Stress) {
-	switch v := f.(type) {
+// apply based on the formative's grammatical category. The inverse of
+// finalFromVc.
+func slotIXFromFinal(f g.Formative) (string, surface.Stress) {
+	if f.Concat != g.ConcatNone {
+		n, ok := f.Final.(g.UnframedNominal)
+		if !ok {
+			panic(fmt.Sprintf("slots: concatenated formative with %T final; §3.1.3 gives a dependent a Vf Format, so it is always nominal", f.Final))
+		}
+		if n.Case > g.SIT {
+			return stripVfGlottal(g.CaseToVc(n.Case)), surface.Ultimate
+		}
+		return g.CaseToVc(n.Case), surface.Penultimate
+	}
+	switch v := f.Final.(type) {
 	case g.UnframedNominal:
 		return g.CaseToVc(v.Case), surface.Penultimate
 	case g.FramedVerbal:
@@ -716,6 +781,17 @@ func slotIXFromFinal(f g.Final) (string, surface.Stress) {
 		return vkVowel(v.Vk), surface.Ultimate
 	}
 	return "", surface.Penultimate
+}
+
+// stripVfGlottal is the inverse of restoreMovedGlottal: it takes the
+// canonical Vc of a case in the 37-68 range and returns the vowel a
+// concatenated formative writes instead (§3.1.6).
+func stripVfGlottal(vc string) string {
+	rs := []rune(vc)
+	if len(rs) == 3 && rs[0] == rs[2] {
+		return string(rs[0])
+	}
+	return strings.Replace(vc, "'", "", 1)
 }
 
 // vkVowel renders a Vk variant as its surface vowel.
@@ -883,7 +959,12 @@ func canElideTrailingTHMVc(l *Layout, f g.Formative) bool {
 	default:
 		return false
 	}
-	if c != g.THM {
+	// §3.1.3 lets PRN elide its -a- as well as THM, on a concatenated
+	// formative. Both are written "a" there — PRN drops its glottal per
+	// §3.1.6 — so the two are told apart by the ultimate stress that
+	// stays behind, which is why the elision is barred on a monosyllable
+	// and why requiredSyllables keeps two vowels in the word.
+	if c != g.THM && !(c == g.PRN && f.Concat != g.ConcatNone) {
 		return false
 	}
 	return l.Vc == "a"

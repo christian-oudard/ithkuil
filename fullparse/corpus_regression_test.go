@@ -6,6 +6,7 @@ import (
 
 	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/gloss"
+	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/render"
 	"github.com/christian-oudard/ithkuil/validation"
 )
@@ -148,15 +149,50 @@ func TestFormative_RejectsChain(t *testing.T) {
 }
 
 // TestCorpus_UltimateStressVf covers §3.1.3: a concatenated formative
-// under ultimate stress ends in an alternate Vf, not a Vk. We read it
-// as a Vk and reject the word.
+// under ultimate stress ends in an alternate Vf, not a Vk. The stress
+// promotes the Format vowel into the 37-68 range instead of switching
+// the word to a verbal reading.
 func TestCorpus_UltimateStressVf(t *testing.T) {
-	t.Skip("known defect: ultimate stress on a concatenated formative is a Vf")
 	for _, w := range []string{
 		"hliařţiá-wa'aňsätļi'jva",
 		"hliařţiá-wa'aňsätļijva'řga",
 	} {
 		roundTrips(t, w)
+	}
+}
+
+// TestFormat_EveryCase walks the whole V_F table rather than the two
+// words that exposed it. Cases 1-36 keep penultimate stress on a
+// dependent; 37-68 lose their glottal and take ultimate stress
+// instead. The parent of each pair is a standalone formative and must
+// not move, which is the half a one-sided fix would break.
+func TestFormat_EveryCase(t *testing.T) {
+	for _, c := range g.AllCases {
+		for _, concat := range []g.ConcatenationStatus{g.Type1, g.Type2, g.ConcatNone} {
+			f := g.MinimalFormative("l")
+			f.Concat = concat
+			f.Final = g.UnframedNominal{Case: c}
+			out := render.Formative(f)
+			back, err := fullparse.Formative(out)
+			if err != nil {
+				t.Errorf("%v %v renders to %q: %v", concat, c, out, err)
+				continue
+			}
+			if back.Concat != concat {
+				t.Errorf("%v %v -> %q: Concat = %v", concat, c, out, back.Concat)
+			}
+			n, ok := back.Final.(g.UnframedNominal)
+			if !ok {
+				t.Errorf("%v %v -> %q: Final = %T, want UnframedNominal", concat, c, out, back.Final)
+				continue
+			}
+			if n.Case != c {
+				t.Errorf("%v %v -> %q: read back as %v", concat, c, out, n.Case)
+			}
+			if concat != g.ConcatNone && strings.Contains(out, "'") {
+				t.Errorf("%v %v -> %q: §3.1.6 bars a glottal in a dependent's Vf", concat, c, out)
+			}
+		}
 	}
 }
 
