@@ -147,9 +147,10 @@ so nothing here has to carry it to keep a document whole.
 
 ## Open Work
 
-There is no TODO list, deliberately. Known defects live as skipped tests next to
-the code they concern, each carrying the section it rests on and why the obvious
-fix is wrong; `go test ./... -v | grep SKIP` is the list. Words we cannot read
-live in the drift guards (`tokenize/corpus_test.go`,
-`corpus/discord_examples.txt`), which fail when the set changes in either
-direction. Defects in the published sources go in `docs/reference/issues.md`.
+`BUGS.md` indexes the open defects in this code. It holds a pointer per bug and
+nothing more: the record itself is a skipped test next to the code it concerns,
+carrying the section it rests on and why the obvious fix is wrong, and
+`go test ./... -v | grep SKIP` lists those directly. Words we cannot read live
+in the drift guards (`tokenize/corpus_test.go`, `corpus/discord_examples.txt`),
+which fail when the set changes in either direction. Defects in the published
+sources go in `docs/reference/issues.md`.
