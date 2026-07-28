@@ -20,14 +20,17 @@ var caseFromVc = func() map[string]grammar.Case {
 	m["öä"] = grammar.CMM
 	m["ië"] = grammar.CMP
 	m["iä"] = grammar.CSD
-	// Series 3 alternates + glottal stop (Spatio-Temporal I)
+	// Series 3 alternates + glottal stop (Spatio-Temporal I). Cases 53-60
+	// are §3.9.1's series-3 forms minus vowel-tier 8, so the tier-8
+	// alternate ië has no case here and NAV, being form 9 (ua / iä),
+	// takes i'ä.
 	m["u'ä"] = grammar.LOC
 	m["u'ë"] = grammar.ATD
 	m["ü'ä"] = grammar.ALL
 	m["ü'ë"] = grammar.ABL
 	m["ö'ë"] = grammar.IRL
 	m["ö'ä"] = grammar.INV
-	m["i'ë"] = grammar.NAV
+	m["i'ä"] = grammar.NAV
 	return m
 }()
 

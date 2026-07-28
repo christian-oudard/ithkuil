@@ -279,9 +279,11 @@ No C_S form can contain a glottal-stop or begin with **h**-, nor can the followi
 
 #### 3.5.0.1 Affix Gradient Types
 
-Each affix's nine degrees follow one of seven "gradient types" determined by the phonological shape of the C_S consonant form:
+Each of the V_XC_S affixes falls into one of seven gradient types, referring to the pattern (or lack thereof) of hierarchical meanings associated with the nine degrees of the affix. Each of the seven gradient types has a particular phonological signature associated with the affix's consonant-form as a mnemonic aid in learning the affixes. The gradient types have been color-coded for ease of recognition.
 
-**Gradient Type 0 (Zero):** C_S is a single sibilant or affricate (e.g., -s, -č), or begins with a sibilant followed by a stop or non-sibilant fricative (e.g., -sk, -gz, -jd, -sf), or is a bi-consonantal form ending in a sibilant. The nine degrees represent an arbitrary list of nine related but non-graduated concepts (no inherent gradient from Degree 1 to 9). Some Type-0 affixes are marked **0\***, indicating an associated Cr root form.
+Note: Those affixes whose three-letter abbreviations are followed by an asterisk (e.g., **DNG\***) have an associated C_R root.
+
+**Gradient Type 0 (Zero):** No gradient pattern. The nine degrees of the affix do not manifest any particular hierarchical semantic gradient. Affixes of Gradient Type 0 are either a single sibilant (whether a fricative or affricate), a sibilant + stop, a sibilant + fricative (other than -**ç**-, -**x**-, or -**h**-), or a bi-consonantal form ending in a sibilant, e.g., -**s**, -**č**, -**sk**, -**gz**, -**jd**.
 
 | Cs | Abbr | Affix Name |
 |---|---|---|
@@ -299,7 +301,7 @@ Each affix's nine degrees follow one of seven "gradient types" determined by the
 | 8 | new/other/different = different, not seen/used before within current context |
 | 9 | new/other/different = different + new |
 
-**Gradient Type A1:** C_S begins with -r or -ř (e.g., -rt, -řn, -rks). The nine degrees represent a gradient from zero/none (Degree 1) to maximum (Degree 9).
+**Gradient Type A1:** A bivalent zero-to-one gradient. Degree 1 signifies one extreme of a gradient spectrum/range of meaning (whether minimal or maximal) while Degree 9 signifies the other extreme (whether minimal or maximal). Degrees 2 through 8 cumulatively add (or subtract) an amount of the concept associated with the affix. Gradient Type A1 affixes consist of a bi- or tri-consonantal form beginning with -**r** or -**ř**, e.g., -**rt**, -**řn**, -**rks**.
 
 | Cs | Abbr | Affix Name |
 |---|---|---|
@@ -317,7 +319,7 @@ Each affix's nine degrees follow one of seven "gradient types" determined by the
 | 8 | well-known / utterly familiar with / ingrained |
 | 9 | intimate with; intimately involved with / intimately accustomed to |
 
-**Gradient Type A2:** C_S ends in -h (except -rh and -řh, which are Type A1). The nine degrees represent a gradient from insufficient (Degree 1) through optimal (Degree 5) to excessive (Degree 9).
+**Gradient Type A2:** A bivalent “zero-to-one” spectrum-like gradient like Type A1 where Degrees 1 and 9 convey sufficiency connotations of “too little X” and “too much X”. Gradient Type A2 affixes end in -**h** (except -**rh** and -**řh**, which are Type A1).
 
 | Cs | Abbr | Affix Name |
 |---|---|---|
@@ -335,7 +337,7 @@ Each affix's nine degrees follow one of seven "gradient types" determined by the
 | 8 | complete lack of fluctuation or instability; highly stable, steadfast |
 | 9 | too stable |
 
-**Gradient Type B:** C_S contains -ç- (e.g., -çţ, -çx). The nine degrees represent two contrasting states (positive vs. negative, active vs. passive, etc.) with a neutral midpoint.
+**Gradient Type B:** A “three-by-three” gradient pattern. Degrees 1 through 3 signify a spectrum or range involving one sub-parameter, Degrees 4 through 6 signify the same spectrum/range under a different sub-parameter, and Degrees 7 through 9 signify the same spectrum/range under a third sub-parameter. Gradient Type B affixes consist of at least two consonants and always begin or end with -**ç**-.
 
 | Cs | Abbr | Affix Name |
 |---|---|---|
@@ -353,7 +355,7 @@ Each affix's nine degrees follow one of seven "gradient types" determined by the
 | 8 | fast-paced repetition at irregular intervals |
 | 9 | fast-paced repetition at regular intervals |
 
-**Gradient Type C:** C_S ends in -ř (e.g., -nř, -lř). The nine degrees represent a scale of anticipated-to-unanticipated effect.
+**Gradient Type C:** A “one-by-two” or “oscillating” gradient. Degree 1 represents one extreme of a spectrum/range which increases/decreases to the other extreme of the spectrum/range usually represented by Degree 4, while Degrees 6 through 9 cycle back through the same values but with a different sub-parameter operating orthogonally to Degrees 1 through 4. Degree 5 usually represents a neutral or meta-level value associated with the semantic concept of the affix. Gradient Type C affixes consist of or end in -**ř**.
 
 | Cs | Abbr | Affix Name |
 |---|---|---|
@@ -371,9 +373,9 @@ Each affix's nine degrees follow one of seven "gradient types" determined by the
 | 8 | with the resulting effect to a high degree, unanticipated |
 | 9 | with the max. resulting effect possible, unanticipated |
 
-**Gradient Type D1:** The default gradient type for C_S forms not matching any of the above patterns. The nine degrees represent a standard spectrum from one extreme through a midpoint to the opposite extreme.
+**Gradient Type D1:** A trivalent “-1 to 0 to +1” gradient. Degrees 1 and 9 represent opposite (or complementary) extremes of a spectrum/range while Degree 5 (sometimes Degree 4 or 6) represents a “mid-point” signifying a standard, normal, commonplace, neutral, zero, or baseline value. This is the most common type of affix. Any consonant-form that does not phonologically conform to the other types is a Gradient Type D1 affix.
 
-**Gradient Type D2:** C_S ends in -x, or consists of two or more consonants ending in -m (e.g., -km). Complementary to D1.
+**Gradient Type D2:** A trivalent “-1 to 0 to +1” gradient like Type D1 where Degrees 1 and 9 convey sufficiency connotations of “too little X” and “too much X”, where the operating sufficiency parameter is excessivesness (or the lack thereof). Gradient Type D2 affixes either end in (or consist of) -**x**, or consist of two or more consonants ending in -**m**.
 
 #### 3.5.0.2 Affix Type Descriptions
 
@@ -851,6 +853,8 @@ Illocution refers to the type of "speech act" being made by a speaker, i.e., the
 
 Validation refers to the evidential basis for a statement in ASSERTIVE illocution. Note that Validation applies only to formatives with ASSERTIVE illocution; it does not apply to the other eight illocutions, as they are not making a truth claim about the world. There are nine Validations: **OBSERVATIONAL, RECOLLECTIVE, PURPORTIVE, REPORTIVE, UNSPECIFIED, IMAGINARY, CONVENTIONAL, INTUITIVE,** and **INFERENTIAL**, explained below:
 
+#### 3.9.3.3 Slot IX V_K Affix Values Denoting Illocution and Validation
+
 | Illocution | | Validation | Meaning of Validation | V_K |
 |-----------|---|-----------|----------------------|-----|
 | | **OBS** | OBSERVATIONAL | present sensory knowledge or present sensory experience: "I perceive... / I know..." | (á) |
@@ -874,9 +878,7 @@ Validation refers to the evidential basis for a statement in ASSERTIVE illocutio
 | **HOR** | HORTATIVE Illocution | íu |
 | **CNJ** | CONJECTURAL Illocution | úi |
 
-##### 3.9.3.3 If desired to show V_K information on a FRAMED formative or a concatenated formative
-
-Since Slot IX of a FRAMED formative is already taken up by the V_C case affix, and by V_F Format on a concatenated formative, the equivalent to V_K information can be shown by the V_X C_S affix shown below:
+If desired to show V_K information on a FRAMED formative or a concatenated formative: since Slot IX of a FRAMED formative is already taken up by the V_C case affix, and by V_F Format on a concatenated formative, the equivalent to V_K information can be shown by the V_X C_S affix shown below:
 
 **-nļ IVL Illocution + Validation:**
 

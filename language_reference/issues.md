@@ -34,6 +34,7 @@ in the transcription.
 | File | Source | Fidelity |
 |---|---|---|
 | `morphology.md` §§1-7 | New Ithkuil: Grammar Design, v1.3.2 (Feb. 15, 2023), 67 pp. | transcription |
+| `morphology.md` §3.5.0.1-2 | V_XC_S Affixes for New Ithkuil v1.1, merged in | transcription under our own section numbers |
 | `morphology.md` §8 | Chapter 13 of the *2011* grammar, `ithkuil.net/newithkuil_13_numbers.htm` | condensed, in our words |
 | `phonotactics.md` | Phonotactic Rules for the Ithkuil Successor Language, v0.5.4, 24 pp. | transcription |
 | `affixes_reference.md` | `data/data.json`, reconciled against V_XC_S Affixes for New Ithkuil v1.1 | generated content |
@@ -57,8 +58,13 @@ document of Quijada's, not a chapter of the grammar, and belongs with
 the script work rather than with the grammar; the material is on the
 `writing` branch, bound for its own repository.
 
-**Unaudited:** the Slot tables in `morphology.md` §3 have not been read
-against the PDF cell by cell. `phonotactics.md` §§8-11 summarise
+**Audited:** every table in `morphology.md` §3 has now been checked
+against the PDF — the 68 cases positionally and against the vowel-form
+table, the 32 V_N and 36 aspect cells, V_V, V_R, the 17 V_K values, and
+every section number. One transcription defect came out of it (G38),
+one misplaced heading (§3.9.3.3 had lost its title and its table), and
+one code defect (`parse` read the NAV alternate as `i'ë` where the
+vowel-form table gives `i'ä`). `phonotactics.md` §§8-11 summarise
 Quijada's combinatorial tables — 679, 5183, 15034 and 12271 permissible
 forms — rather than reproducing them; the totals match the document but
 the forms themselves are not here.
@@ -68,8 +74,9 @@ the forms themselves are not here.
 Ten findings have been withdrawn in whole or in part. Eight were
 defects in **our markdown** rather than in Quijada — G3, G4, G14, G17,
 G19, G27, G31, G32 — and one, A2, was a spreadsheet transposition.
-G34 and G37 are two more of the same kind, found by auditing the
-transcriptions rather than by chasing a finding.
+G34, G37 and G38 are three more of the same kind, found by auditing the
+transcriptions rather than by chasing a finding. G38 in turn forced a
+rewrite of G16 and a correction to G29.
 They are kept below, marked WITHDRAWN, with what the source actually
 says, because the transcription and the data still need fixing even
 where the language does not.
@@ -674,34 +681,40 @@ formative's Relation in Slot X.
 Every other "Sec. N.N" reference in the document resolves to a heading
 that exists.
 
-### G16. Gradient type is not determined by C_S shape, though it nearly is
+### G16. The gradient-type shape rules are a mnemonic, not a function
 
-§3.5.0.1 opens: "Each affix's nine degrees follow one of seven
-'gradient types' **determined by the phonological shape of the C_S
-consonant form**", and then gives a shape description for each type.
-Classifying all 527 affixes by those descriptions and comparing against
-their declared types, 512 of the 526 typed affixes sit in a shape-class
-that maps to more than one type. Taken literally the claim is false —
-but the way it fails is specific, and three separate things have to be
-supplied before it comes right.
+*Rewritten. The earlier version of this entry quoted our paraphrase of
+the affix document rather than the document, and two of its three
+counterexamples were artifacts of that paraphrase. See G38.*
+
+Quijada does not claim the shape rules decide the type. He says each
+type "has a particular phonological signature associated with the
+affix's consonant-form **as a mnemonic aid in learning the affixes**".
+Read that way the section is sound, and this entry is only about how
+far the mnemonic actually reaches.
+
+Classifying all 527 affixes by the seven shape descriptions and
+comparing against their declared types, 512 of the 526 typed affixes
+sit in a shape-class that maps to more than one type. Three things
+have to be supplied before the rules resolve:
 
 **Type 0 is not a shape class.** Its own text gives the game away:
-"The nine degrees represent an arbitrary list of nine related but
-non-graduated concepts". That is a semantic property, and it is
-assigned to 221 affixes spread across *every* shape class — 27 that
-begin with r/ř (A1's shape), 9 ending in -m or -x (D2's), 4 containing
-ç (B's), 3 ending in -ř (C's), 2 ending in -h (A2's), and 33 matching
-no shape rule at all. Its stated shape covers only 171 of the 221.
-Setting Type 0 aside as semantically assigned leaves 271 affixes for
-the shape rules to determine.
+"No gradient pattern. The nine degrees of the affix do not manifest
+any particular hierarchical semantic gradient." That is a semantic
+property, and it is assigned to 221 affixes spread across *every*
+shape class — 27 that begin with r/ř (A1's shape), 9 ending in -m or
+-x (D2's), 4 containing ç (B's), 3 ending in -ř (C's), 2 ending in -h
+(A2's), and 33 matching no shape rule at all. Its stated shape covers
+only 171 of the 221. Setting Type 0 aside as semantically assigned
+leaves 271 affixes for the shape rules to determine.
 
-**Type 0's third clause overreaches.** It reads "or is a bi-consonantal
+**Type 0's last clause overreaches.** It reads "or a bi-consonantal
 form ending in a sibilant", which catches sibilant + sibilant pairs and
 so claims 14 affixes that are declared D1 — `šč`, `cj`, `žč`, `sc`,
-`sj`, `zj` and their like. The preceding clause already covers a
-sibilant followed by a stop or non-sibilant fricative, so the third is
-evidently meant for a *non*-sibilant followed by a sibilant. Read that
-way, the 14 stop being misclaimed.
+`sj`, `zj` and their like. The preceding clauses already cover a
+sibilant + stop and a sibilant + fricative, so the last is evidently
+meant for a *non*-sibilant followed by a sibilant. Read that way, the
+14 stop being misclaimed.
 
 **The rules need a priority order, and none is given.** Thirty-seven
 C_S forms match two or more shape rules: `rř` is both A1 and C, `rx`
@@ -710,27 +723,35 @@ D2, and 16 forms are both Type 0 and A1. Only A2 states a precedence
 ("except -rh and -řh, which are Type A1"). The declared types imply
 C > A1 > B > D2 consistently, but the document never says so.
 
-With those three supplied, the shape rules become a function on 268 of
-the remaining 271 affixes. The three that stay out:
+With those three supplied, the shape rules land 268 of the remaining
+271. The three exceptions are all shape, not semantics — each affix's
+nine degrees fit its declared type exactly:
 
-- **AUT** `pč`, declared **B**. Type B is "two contrasting states …
-  with a neutral midpoint"; AUT's nine degrees are nine unrelated
-  grounds of authorization — personal privilege, natural right,
-  statute, custom, favour, threat, rank, class, governing entity — with
-  no contrast and no midpoint. And `pč` contains no ç, which is B's
-  entire shape condition. Both shape and semantics say Type 0.
-- **COO** `ň`, declared **C**. Type C requires C_S to end in -ř and
-  means "a scale of anticipated-to-unanticipated effect". COO's degrees
-  are nine flavours of "and" — shared topic, shared participant, in
-  sequence, at the same time — which is neither a scale nor about
-  anticipation, and `ň` does not end in -ř.
-- **NEG** `r`, declared **D1**. Here the declaration is right and the
-  rule is wrong: NEG runs from relative negation (1-4) through
-  "neither the preceding nor X" (5) to absolute negation (6-9), which
-  is exactly D1's "standard spectrum from one extreme through a
-  midpoint to the opposite extreme" and not A1's "gradient from
-  zero/none to maximum". `r` is the one affix where A1's shape rule
-  demonstrably picks the wrong type.
+| Affix | C_S | Declared | Shape says | Semantics |
+|-------|-----|----------|-----------|-----------|
+| AUT | `pč` | B | Type 0 — no ç | fits B |
+| COO | `ň` | C | no rule matches | fits C |
+| NEG | `r` | D1 | A1 — begins with r | fits D1 |
+
+COO is the clearest. Type C wants Degree 1 at one extreme running to
+the other by Degree 4, Degree 5 neutral or meta-level, and Degrees 6
+through 9 cycling back through the same values under an orthogonal
+sub-parameter. COO gives shared topic, shared morphology, shared
+participant, in sequence (1-4); plain "and" (5); then at the same time,
+at the same time with shared participant, with shared morphology, with
+shared topic (6-9) — the same three values again, mirrored, under the
+orthogonal parameter "at the same time". Only `ň` not ending in -ř is
+out of place.
+
+AUT's nine degrees group three by three as Type B requires: grounds of
+entitlement (privilege, natural right, statute), grounds of exchange
+(custom, favour, threat), grounds of office (own rank, social class,
+governing entity). Only `pč` containing no ç is out of place.
+
+NEG runs from relative negation (1-4) through "neither the preceding
+nor X" (5) to absolute negation (6-9), which is D1's trivalent "-1 to
+0 to +1" with a midpoint, not A1's bivalent extreme-to-extreme. `r` is
+the one affix where the A1 shape rule points at the wrong type.
 
 ### G17. WITHDRAWN — the PDF publishes all fourteen increments
 
@@ -1003,12 +1024,18 @@ in the document and checking the vowel that precedes its C_S in the
 accompanying Ithkuil word, 40 of the 45 that could be aligned are
 exactly right; the five failures are these.
 
-### G29. The 0* marker cannot mean what §3.5.0.1 says it means
+### G29. The asterisk does not distinguish what it says it does
 
-§3.5.0.1 introduces the marker in one clause: "Some Type-0 affixes are
-marked **0\***, indicating an associated C_R root form." Read as an
-existence claim it is uninformative, because it is true of almost every
-affix:
+*The framing of this entry was corrected: the marker belongs to the
+abbreviation, not to Type 0. Our §3.5.0.1 had it as a type marker
+("Some Type-0 affixes are marked 0*"), which is why the entry
+originally asked what "0*" could mean and why a stray "D1*" looked
+anomalous. Quijada writes: "Those affixes whose three-letter
+abbreviations are followed by an asterisk (e.g., DNG*) have an
+associated C_R root." Any type can carry it. See G38.*
+
+The claim itself still does not hold. Read as an existence claim it is
+uninformative, because it is true of almost every affix:
 
 | | affixes | whose C_S is also a root C_R |
 |---|---|---|
@@ -1036,11 +1063,10 @@ four of them point at a root with no relation to the affix at all:
 Either the star on these four is wrong, or it points at a root the
 tables never name.
 
-Separately, the marker **D1\*** occurs once, on NEW (`sp`,
-Newness/Revision), and is defined nowhere. §3.5.0.1 attaches the star
-to Type 0 alone. NEW's root at `sp` is "degree of newness", so the star
-is evidently doing the same work on a D1 affix — work the document does
-not sanction.
+The marker **D1\*** on NEW (`sp`, Newness/Revision) is not itself an
+anomaly: Quijada attaches the asterisk to the abbreviation, so a D1
+affix may carry one, and NEW's root at `sp` is "degree of newness".
+It only looked anomalous while our §3.5.0.1 tied the star to Type 0.
 
 ### G30. PHS degree 4 is coded IMT where the category is ITM
 
@@ -1318,3 +1344,41 @@ is defensible — they are combinatorial tables of 679, 5183, 15034 and
 679, printed twice, and a clause was added to Quijada's sentence about
 -ç- and -ļ- saying their geminates "are not permitted as roots", which
 is the same unsourced claim as 2.24. Both corrected.
+
+### G38. §3.5.0's gradient-type descriptions were ours, and four were wrong
+
+*A transcription defect, in layer 3.* §3.5.0.1 and §3.5.0.2 have no
+counterpart in any Quijada document — the section numbers are ours, and
+the content was added to `morphology.md` in March 2026 by a commit whose
+message says it came "from website ch07". It did not. Chapter 7 of the
+2011 grammar carries the same descriptions as the V4 affix document,
+word for word; the descriptions that landed in §3.5.0.1 match neither.
+Four of the seven describe a different system from the source's:
+
+| Type | Quijada | Our paraphrase |
+|------|---------|----------------|
+| B | a "three-by-three" pattern: degrees 1-3 under one sub-parameter, 4-6 under a second, 7-9 under a third | "two contrasting states (positive vs. negative, active vs. passive) with a neutral midpoint" |
+| C | a "one-by-two" or oscillating gradient; degree 5 neutral, 6-9 cycling back under an orthogonal sub-parameter | "a scale of anticipated-to-unanticipated effect" |
+| A2 | degrees 1 and 9 convey "too little X" and "too much X" | "insufficient (1) through optimal (5)" |
+| D2 | like D1, with 1 and 9 conveying sufficiency, the parameter being excessiveness | "complementary default: paired with a D1 affix" |
+
+B and C are not loose restatements; they describe different systems.
+Both sources — the V4 affix document and 2011's chapter 7 — say
+"three-by-three" for B and "one-by-two or oscillating" for C.
+The preamble had also been strengthened, from Quijada's "a particular
+phonological signature ... **as a mnemonic aid in learning the
+affixes**" to "seven gradient types **determined by** the phonological
+shape of the C_S consonant form", and the asterisk note had moved from
+the abbreviation to the type.
+
+This cost two findings. **G16** was built on the "determined by"
+reading and reported AUT and COO as affixes whose semantics contradict
+their declared type. Against Quijada's actual definitions both fit
+exactly — COO is a model Type C, with degree 5 neutral and 6-9
+mirroring 1-4 under an orthogonal parameter. **G29** asked what a "0*"
+type marker could mean, and treated a lone "D1*" as unsanctioned; the
+asterisk was never a type marker.
+
+All seven descriptions are now Quijada's, in `morphology.md` §3.5.0.1
+and in `affixes_reference.md`. The section numbers remain ours, since
+the source has none.

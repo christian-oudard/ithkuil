@@ -6,23 +6,24 @@ type, and 9 degrees of meaning.
 Unlike the other documents here, this is not a transcription of a
 single source. The entries come from the community spreadsheet, kept in
 step with `data/data.json`, and are reconciled against Quijada's affix
-document (version 1.1, Feb. 11, 2023) where the two differ. The
-gradient-type descriptions below are summaries, not Quijada's wording.
+document (version 1.1, Feb. 11, 2023) where the two differ.
 `issues.md` records where the sources disagree.
 
 ## Gradient Types
 
+Quijada's own descriptions, from the affix document's "The Seven
+Gradient Types". A trailing asterisk on the three-letter abbreviation,
+not on the type, marks an affix with an associated C_R root.
+
 | Type | Description |
 |------|-------------|
-| 0 | Unidimensional: degrees form a single semantic scale |
-| 0* | Same as 0 but with an associated Cr root form |
-| A1 | Zero-to-one gradient (degree 1 = none/zero, degree 9 = maximum) |
-| A2 | Insufficient-to-sufficient gradient |
-| B | Binary/Dichotomous: two contrasting states |
-| C | Coordinative/Connective: logical or syntactic coordination |
-| D1 | Default: standard nine-degree semantic spectrum |
-| D1* | Same as D1 but with an associated Cr root form |
-| D2 | Complementary default: paired with a D1 affix |
+| 0 | No gradient pattern. The nine degrees do not manifest any particular hierarchical semantic gradient. Either a single sibilant (fricative or affricate), a sibilant + stop, a sibilant + fricative (other than -ç-, -x-, -h-), or a bi-consonantal form ending in a sibilant. |
+| A1 | A bivalent zero-to-one gradient. Degree 1 is one extreme (minimal or maximal), Degree 9 the other; 2 through 8 cumulatively add or subtract. Bi- or tri-consonantal, beginning with -r or -ř. |
+| A2 | Like A1, but Degrees 1 and 9 convey sufficiency: "too little X" and "too much X". Ends in -h, except -rh and -řh, which are A1. |
+| B | A "three-by-three" pattern. Degrees 1-3 span a range under one sub-parameter, 4-6 the same range under a second, 7-9 under a third. At least two consonants, beginning or ending with -ç-. |
+| C | A "one-by-two" or oscillating gradient. Degree 1 is one extreme, running to the other at Degree 4; 6 through 9 cycle back under a sub-parameter orthogonal to 1-4. Degree 5 is usually neutral or meta-level. Consists of or ends in -ř. |
+| D1 | A trivalent "-1 to 0 to +1" gradient. Degrees 1 and 9 are opposite extremes, Degree 5 (sometimes 4 or 6) a standard, normal, neutral or baseline mid-point. The most common type; any form not conforming to the others is D1. |
+| D2 | Like D1, but Degrees 1 and 9 convey sufficiency, the parameter being excessiveness. Ends in or consists of -x, or is two or more consonants ending in -m. |
 
 ## Demonstrative, Determinative & Deictic
 
