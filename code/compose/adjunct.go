@@ -16,9 +16,10 @@ import (
 // unit) into a tokenize.WordToken. Inverse of gloss.Glosser.Token when
 // Canonical=true.
 //
-// Dispatch is structural — each adjunct type has a distinctive shape
-// (leading bracket, embedded colon, bare uppercase, etc.) — see the
-// canonical-gloss memory for the full table.
+// Dispatch is structural: each adjunct type has a distinctive shape
+// (leading bracket, trailing colon, bare uppercase, and so on), which
+// is what the one-job-per-mark rule in SPEC.md buys. No lookup is
+// needed to decide which kind of word a token is.
 func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
@@ -136,7 +137,7 @@ func parseRegisterName(s string) (g.Register, bool) {
 // parseCarrierOrReferential dispatches a "[...]"-leading token.
 // Carriers are "[CAR|QUO|NAM|PHR]" optionally followed by "-CASE".
 // A "[..]" leading a referent list (e.g. "[1m+2p]-ERG") is a multi-
-// referent referential — deferred for now.
+// referent referential, handled below.
 func parseCarrierOrReferential(s string) (tokenize.WordToken, bool, error) {
 	close := strings.Index(s, "]")
 	if close < 1 {
@@ -328,14 +329,15 @@ func isBareUppercase(s string) bool {
 }
 
 // looksLikeReferential reports whether s starts with a single referent
-// symbol followed by "-" (e.g. "1m-ERG", "ma-AFF-DAT-2m"). Multi-ref
-// forms like "[1m+2p]-..." are detected by the "[" prefix instead.
+// symbol followed by "-" (e.g. "1m-ERG", "ma-AFF-DAT-2m"), optionally
+// behind a "CAT:" category tag ("NOM:1m-ERG"). Multi-ref forms like
+// "[1m+2p]-..." are detected by the "[" prefix instead.
 func looksLikeReferential(s string) bool {
 	dash := strings.Index(s, "-")
 	if dash < 1 {
 		return false
 	}
-	head := s[:dash]
+	_, head := splitCategoryTag(s[:dash])
 	// Single-digit + lowercase letter: 1m, 2p, etc.
 	if len(head) >= 2 && head[0] >= '0' && head[0] <= '9' {
 		return true
@@ -344,6 +346,24 @@ func looksLikeReferential(s string) bool {
 	// also occur as referential heads (§4.6.4).
 	// TODO: refine this discriminator once the parser is built.
 	return false
+}
+
+// splitCategoryTag peels the "AGM:"/"NOM:"/"ABS:" tag §4.6 puts on a
+// referent list, returning the category (nil when absent) and the rest.
+func splitCategoryTag(s string) (*referentials.Category, string) {
+	name, rest, found := strings.Cut(s, ":")
+	if !found {
+		return nil, s
+	}
+	for _, c := range []referentials.Category{
+		referentials.Agglomerative, referentials.Nomic, referentials.Abstract,
+	} {
+		if c.String() == name {
+			cat := c
+			return &cat, rest
+		}
+	}
+	return nil, s
 }
 
 // looksLikeModular reports whether s has the shape of a modular
@@ -593,16 +613,16 @@ func parseScopeName(s string) (g.AffixScope, bool) {
 // followed by hyphen-separated slot tails. The third chunk being one
 // of {BSC, CTE, CSV, OBJ} discriminates a combination referential.
 //
-// MVP: single-referent head only (no "[a+b]" multi-ref lists or
-// Category prefix). Carrier-headed referentials are also deferred
-// here (they share the "[TYPE]" shape with CarrierWord and need
-// further disambiguation).
+// The head may carry a §4.6 category tag ("NOM:1m-ERG"). Multi-referent
+// heads are written "[a+b]" and reach the parser through the bracket
+// path instead, as do carrier-headed referentials ("*[CAR]-ERG").
 func parseReferentialToken(s string) (tokenize.WordToken, error) {
 	parts := strings.Split(s, "-")
 	if len(parts) < 2 {
 		return nil, fmt.Errorf("referential %q: need at least head and case", s)
 	}
-	ref, eff, err := parseRefSpec(parts[0])
+	category, head := splitCategoryTag(parts[0])
+	ref, eff, err := parseRefSpec(head)
 	if err != nil {
 		return nil, fmt.Errorf("referential %q head: %w", s, err)
 	}
@@ -620,8 +640,8 @@ func parseReferentialToken(s string) (tokenize.WordToken, error) {
 				Refs: []referentials.PersonalRef{{Referent: ref, Effect: eff}},
 				Case: c,
 				Spec: spec,
-				// Trailing affixes / Case2 parsing deferred — common
-				// simple cases just have Spec.
+				// The affix and Case2 tail after the Spec slot is not
+				// read; see TestCombinationReferential_AffixesAreLost.
 			}, nil
 		}
 	}
@@ -650,6 +670,7 @@ func parseReferentialToken(s string) (tokenize.WordToken, error) {
 	return tokenize.ReferentialWord{
 		Text:       s,
 		Refs:       []referentials.PersonalRef{{Referent: ref, Effect: eff}},
+		Category:   category,
 		Case:       &c,
 		Case2:      case2,
 		RefB:       refB,
@@ -704,8 +725,8 @@ func parseSpecName(s string) (g.Specification, bool) {
 //	RTR.SUB-{parent}          — with non-default application scope
 //	MOD-{concat}              — empty body with scope
 //
-// Returns a tokenize.ModularWord. Reach scope (V_H, §4.3 Slot 4) is
-// not yet representable in our data model and falls out of round-trip.
+// Returns a tokenize.ModularWord. Reach scope (V_H, §4.3 Slot 4)
+// rides the trailing "-{formative}"-style marker and round-trips.
 func parseModularToken(s string) (tokenize.WordToken, error) {
 	// The reach suffix comes after the application-scope suffix in
 	// canonical output, so peel it first.

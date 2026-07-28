@@ -11,7 +11,7 @@
 //	"."  joins category values within one slot
 //	"/"  binds an argument, a degree or a case, to a head
 //	"_"  trails a modifier, currently the affix Type
-//	":"  tags a structured body, currently only "Ca:"
+//	":"  tags a structured body ("Ca:MSS.G", "NOM:1m")
 //	"()" wraps a head built from referents or a Cs
 //	"+"  joins referents
 //	"{}" marks something structural rather than a morpheme
@@ -313,9 +313,9 @@ func slotIV(s g.SlotIV) string {
 // caStackPrefix tags a §3.5/§3.7 Ca-stacking affix in the gloss. The
 // body after it is the same component list slotVI writes, so a stacked
 // Ca and the Slot VI Ca read alike and only the tag distinguishes
-// them. ":" does this one job in the canonical gloss and no other, so
-// the tag is unmistakable: nothing else in a formative token carries a
-// colon.
+// them. ":" does one job in the canonical gloss, introducing a tagged
+// body, and this is its only use inside a formative; the referent
+// category tag ("NOM:1m") is the same sense at word level.
 const caStackPrefix = "Ca:"
 
 // stackedCaBody renders a stacked Ca cluster as its components. An

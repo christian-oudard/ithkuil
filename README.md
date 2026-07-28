@@ -274,7 +274,7 @@ The gloss is both the output of `analyze` and the input to `compose`. Every mark
 | `.` | joins category values in one slot | `DYN.OBJ.FNC`, `MSS.G`, `ASR.RPR` |
 | `/` | binds a degree or a case to a head | `DEV/3`, `ACC/INS`, `(1m)/AFF` |
 | `_` | trails the affix Type | `t/1_2`, `IAC/PRP_3` |
-| `:` | tags a stacked Ca | `Ca:MSS.G`, `Ca:{Ca}` |
+| `:` | tags a structured body | `Ca:MSS.G`, `NOM:1m` |
 | `()` | a head built from referents or a Cs | `(1m+2p/BEN)`, `(CTR)/1` |
 | `+` | joins referents | `1m+2p` |
 | `{}` | structural, not a morpheme | `{Ca}`, `{parent}` |

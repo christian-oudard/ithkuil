@@ -26,7 +26,7 @@ Each mark in the canonical gloss has exactly one job. A token's kind therefore f
 - `.` joins category values inside one slot: `S2.CPT`, `DYN.OBJ.FNC`, `MSS.G`, `RCP.HYP`, `ASR.RPR`
 - `/` binds an argument, a degree or a case, to a head: `DEV/3`, `ACC/INS`, `(1m)/AFF`, `1m/BEN`
 - `_` trails a modifier, currently only the affix Type: `t/1_2`, `IAC/PRP_3`, `DSV_END`
-- `:` tags a structured body, currently only the stacked Ca: `Ca:MSS.G`, `Ca:{Ca}`
+- `:` tags a structured body: `Ca:MSS.G` and `Ca:{Ca}` for a stacked Ca, `NOM:1m` for a referent category
 - `()` wraps a head built from referents or from a Cs: `(1m+2p/BEN)`, `(CTR)/1`
 - `+` joins referents: `1m+2p`
 - `{}` marks something structural rather than a morpheme: `{Ca}`, `{parent}`

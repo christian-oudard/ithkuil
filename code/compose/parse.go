@@ -41,10 +41,6 @@ import (
 //
 // Lexicon-aware affix resolution requires passing an AffixMap; pass
 // nil to accept only the bare Cs form.
-//
-// The MVP does not yet handle CsRoot/RefRoot, Ca complex spelled out
-// in the slot, or concatenation. Those return an error so callers can
-// detect when the input is beyond current coverage.
 func Formative(s string, affixes map[string]lexicon.AffixEntry) (g.Formative, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
@@ -519,8 +515,9 @@ func isClusterToken(tok string) (string, bool) {
 	if tok == "" || tok == caMarker || strings.ContainsAny(tok, "/:") {
 		return "", false
 	}
-	// Special: a CsRoot is written "(b)" in some glossing variants;
-	// not supported in this MVP.
+	// Other toolkits write a CsRoot as a bare "(b)". Ours always
+	// carries the degree, "(ABBREV)/N", so a parenthesised token is
+	// never a plain cluster and the foreign variant is not accepted.
 	if strings.ContainsAny(tok, "()") {
 		return "", false
 	}
