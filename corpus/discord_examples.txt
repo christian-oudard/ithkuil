@@ -104,3 +104,47 @@ incorrect | yaivļiwáaaa | §1.2 | "áaaa" is a held vowel for emphasis, not a 
 correct | maţřëullait | §3 | the community name for v4; parses and round-trips.
 correct | mmiexinļ | §5.6 | PVS referential + IVL affix: "Why?".
 correct | amálawëi | §3.2.9 | leading Vv elides here, since m- is a legal word onset.
+
+# ── §4.6 case-accessor shortcuts (audit finding) ────────────────────
+# The largest group of words we cannot read, and one missing feature
+# rather than scattered noise. §4.6 lets a Slot V or VII affix vowel be
+# a Column-4 form from the Standard Vowel Sequence — ao aö eo eö oë öe
+# oe öa oa — marking a Transrelative case, and says so explicitly:
+# usable "regardless of other V_X C_S affixes being present in the same
+# Slot". The same section gives the Type-3 referential shortcut degrees
+# (ia/uä, ie/uë, …) for a lone Type-3 affix.
+#
+# parse.AffixVowel's three tables hold none of the Column-4 forms, so
+# every one of these fails with "affix vowel eö on Cs r is not a Vx
+# form" and the word falls through unclassified. 121 corpus words fail
+# this way; 351 contain a Column-4 vowel form somewhere.
+!correct | vļaveörá | §4.6 | Slot VII affix vowel "eö", the AFFECTIVE case shortcut.
+!correct | ekřadeöříyoa | §4.6 | Slot VII affix vowel "eö" on Cs "ř".
+!correct | yevtleölwaňiyá | §4.6 | Slot VII affix vowel "eö" on Cs "lw".
+!correct | uţtälireölweölá | §4.6 | two Column-4 affix vowels, "eö" twice.
+
+# The second-largest group is the same feature seen from the other
+# side. A combination referential whose case vowel carries a glottal,
+# or which takes a -w/-y Perspective increment, falls through to the
+# formative parser, which then reports the Spec marker x or the
+# increment w as an unrecognised Ca. 84 words fail this way.
+# "mmiexinļ" and "mma'oxinļ" parse, so the shape is partly handled;
+# these differ in where the glottal sits.
+!correct | mmia'xinļ | §4.6.2 | combination referential; glottal ends the Vc.
+!correct | sa'xinļ | §4.6.2 | combination referential read as a formative with Ca "x".
+!correct | lai'wiš | §4.6 | -w Perspective increment read as a Ca.
+
+# ── correctly rejected, for contrast ────────────────────────────────
+# Hyphens in this group join things that are not §3.1.7 chains: place
+# names and an English prefix bolted onto an Ithkuil word. The parser
+# is right to refuse them, and they are here so the "slots" bucket is
+# not mistaken for a defect.
+incorrect | tokyo-lëndën | §3.1.7 | two foreign place names joined by a hyphen.
+incorrect | non-maţřëullait | §1 | English "non-" prefixed to an Ithkuil word.
+incorrect | maţreüllait | §1.2 | misspelling of maţřëullait: "eü" for "ëu", no ř.
+
+# Bare fragments: an affix, a cluster, or a vowel quoted on its own
+# while discussing the grammar. Each is a piece of a word, not a word.
+incorrect | ëinļ | §3.5 | the IVL affix quoted bare, without its formative.
+incorrect | kçp | §2 | a bare consonant cluster, no vowels.
+incorrect | ë'i | §1.2 | two vowels and a glottal; no root.
