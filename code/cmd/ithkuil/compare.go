@@ -74,7 +74,7 @@ func cmdCompare(args []string, stdout, stderr io.Writer, dataFile string) int {
 	lex := loadLex(dataFile, stderr)
 	sides := make([]side, 2)
 	for i, arg := range rest {
-		s, ok := buildSide(normalizeASCII(arg), lex, stderr)
+		s, ok := buildSide(normalizeASCII(arg), arg, lex, stderr)
 		if !ok {
 			return 1
 		}
@@ -89,9 +89,11 @@ func cmdCompare(args []string, stdout, stderr io.Writer, dataFile string) int {
 // member; an unclassified word gives the shape split, which is what
 // makes a good word comparable to a bad one. Referentials and the rest
 // have no slot structure at all.
-func buildSide(word string, lex *lexicon.Lexicon, stderr io.Writer) (side, bool) {
+// typed is the argument as the user wrote it, before the ASCII input
+// method rewrote it, so a rule broken by "aaaa" names "aaaa".
+func buildSide(word, typed string, lex *lexicon.Lexicon, stderr io.Writer) (side, bool) {
 	if r := validation.ValidateWord(word); !r.Valid {
-		renderValidationError(stderr, word, r)
+		renderValidationError(stderr, word, typed, r)
 		return side{}, false
 	}
 	tokens := tokenize.Tokenize(word)

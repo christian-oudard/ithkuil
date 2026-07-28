@@ -84,30 +84,39 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 		return 2
 	}
 
+	typed := text
 	text = normalizeASCII(text)
 
-	// Validate each word's phonotactics before parsing so we fail
-	// loudly on garbage input instead of synthesizing nonsense slot
-	// breakdowns from a Cs cluster like "t,rq".
-	invalid := make(map[string]validation.Result)
-	for _, w := range strings.Fields(text) {
-		if r := validation.ValidateWord(w); !r.Valid {
-			invalid[w] = r
+	// What the user typed, keyed by the surface a token will carry, so
+	// an error can name their input rather than a form only we ever
+	// saw: "aaaa" normalizes to "ää", and reporting the rule against
+	// "ää" describes a word they never wrote. normalizeASCII works one
+	// whitespace-separated word at a time, so the two agree in length.
+	asTyped := map[string]string{}
+	if o, n := strings.Fields(typed), strings.Fields(text); len(o) == len(n) {
+		for i := range n {
+			asTyped[strings.ToLower(n[i])] = o[i]
 		}
 	}
 
 	tokens := tokenize.Tokenize(text)
-	if len(tokens) == 0 && len(invalid) == 0 {
+	if len(tokens) == 0 {
 		return 0
 	}
 	lex := loadLex(dataFile, stderr)
 	glosser := gloss.Glosser{Lex: lex}
 
+	// Phonotactics are checked per token rather than through a map
+	// built from strings.Fields. The map was keyed by the raw word but
+	// read back with t.Surface(), which is lower-cased, so every
+	// capitalized word missed the lookup and skipped validation in
+	// silence — "cskava" was rejected while "Cskava" sailed through,
+	// and sentences start with a capital.
 	exit := 0
 	if *short {
 		for _, t := range tokens {
-			if res, bad := invalid[t.Surface()]; bad {
-				renderValidationError(stderr, t.Surface(), res)
+			if res := validation.ValidateWord(t.Surface()); !res.Valid {
+				renderValidationError(stderr, t.Surface(), asTyped[t.Surface()], res)
 				exit = 1
 				continue
 			}
@@ -121,8 +130,8 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 		if i > 0 {
 			fmt.Fprintln(stdout)
 		}
-		if res, bad := invalid[t.Surface()]; bad {
-			renderValidationError(stderr, t.Surface(), res)
+		if res := validation.ValidateWord(t.Surface()); !res.Valid {
+			renderValidationError(stderr, t.Surface(), asTyped[t.Surface()], res)
 			exit = 1
 			continue
 		}
@@ -134,9 +143,18 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 // renderValidationError reports a phonotactically invalid word: the
 // rule it breaks and the cluster that breaks it, in place of a slot
 // breakdown that would be nonsense.
-func renderValidationError(w io.Writer, word string, res validation.Result) {
+//
+// typed is what the user actually wrote. When the ASCII input method
+// rewrote it — "aaaa" into "ää" — both are shown, so the message names
+// their input and shows what we read it as instead of silently
+// substituting a word they never typed.
+func renderValidationError(w io.Writer, word, typed string, res validation.Result) {
+	subject := word
+	if typed != "" && typed != word {
+		subject = fmt.Sprintf("%s → %s", typed, word)
+	}
 	for _, e := range res.Errors {
-		fmt.Fprintf(w, "%s  %s: %s", word, e.Rule, e.Reason)
+		fmt.Fprintf(w, "%s  %s: %s", subject, e.Rule, e.Reason)
 		if e.Cluster != "" {
 			fmt.Fprintf(w, " (cluster %s)", e.Cluster)
 		}
