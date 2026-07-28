@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/christian-oudard/ithkuil/allomorph"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/referentials"
@@ -293,6 +294,12 @@ func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntr
 	if strings.HasPrefix(tok, "(") {
 		return appendType3Affix(f, tok, slotV)
 	}
+	// Ca-stacking affix: "Ca:" plus the same component list the Slot VI
+	// Ca uses. Checked before the generic slash-split path, which would
+	// otherwise not know what to do with the tag.
+	if strings.HasPrefix(tok, caStackPrefix) {
+		return appendCaStack(f, strings.TrimPrefix(tok, caStackPrefix), slotV)
+	}
 	// Affix form takes precedence over the generic slash-split path:
 	// "DEV/3" must mean affix DEV degree 3, not flag DEV plus flag 3.
 	if m := affixToken.FindStringSubmatch(tok); m != nil {
@@ -316,6 +323,39 @@ func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntr
 		return nil
 	}
 	return ApplyFlag(f, tok)
+}
+
+// caStackPrefix is the gloss tag for a §3.5/§3.7 Ca-stacking affix.
+// Kept in sync with gloss.caStackPrefix; the two packages cannot share
+// it without one importing the other, and gloss already imports far
+// more than this constant is worth.
+const caStackPrefix = "Ca:"
+
+// appendCaStack builds a Ca-stacking affix from the component list
+// after "Ca:". The body is spelled exactly as a Slot VI Ca, so it is
+// applied to a scratch Formative and its SlotVI read back — that way
+// one set of component-name tables serves both, and a stacked Ca can
+// never drift from the Slot VI spelling of the same complex.
+func appendCaStack(f *g.Formative, body string, slotV bool) error {
+	if body == "" {
+		return fmt.Errorf("Ca-stacking affix has no Ca after %q", caStackPrefix)
+	}
+	scratch := g.MinimalFormative("l")
+	if body != caMarker {
+		for _, part := range strings.Split(body, ".") {
+			if part == "" {
+				continue
+			}
+			if err := ApplyFlag(&scratch, part); err != nil {
+				return fmt.Errorf("Ca-stacking affix: %w", err)
+			}
+		}
+	}
+	appendToAffixSlot(f, g.Affix{
+		Type:      g.CaStackAffix,
+		Consonant: allomorph.ConstructCa(scratch.SlotVI),
+	}, slotV)
+	return nil
 }
 
 // type3AffixToken matches "(refs)/degree" — Type-3 referential affix.

@@ -34,6 +34,11 @@ var type1Vowels = [...]string{"ae", "a", "ä", "e", "i", "ëi", "ö", "o", "ü",
 var type2Vowels = [...]string{"ea", "ai", "au", "ei", "eu", "ëu", "ou", "oi", "iu", "ui"}
 var type3Vowels = [...]string{"üo", "ia", "ie", "io", "iö", "eë", "uö", "uo", "ue", "ua"}
 
+// CaStackVowel is §3.5/§3.7's specialized Vx marking the following Cs
+// as a Ca complex stacked on the Slot VI Ca. It carries no degree, so
+// it sits outside the three degree tables above.
+const CaStackVowel = "üö"
+
 // AffixVowel returns the canonical surface vowel for an affix of the
 // given Type and Degree (0-9). For Type-3, the canonical (non-alternate)
 // form is returned.
@@ -46,6 +51,9 @@ var type3Vowels = [...]string{"üo", "ia", "ie", "io", "iö", "eë", "uö", "uo"
 // splice an affix with no vowel into the output and yield a different,
 // well-formed word with no complaint.
 func AffixVowel(t grammar.AffixType, degree int) string {
+	if t == grammar.CaStackAffix {
+		return CaStackVowel
+	}
 	if degree < 0 || degree > 9 {
 		panic(fmt.Sprintf("parse.AffixVowel: degree %d outside 0-9", degree))
 	}
@@ -71,6 +79,9 @@ func Type2DegreeToVowel(degree int) string {
 // whole inventory: anything outside it is not an affix vowel, and a
 // caller building a Formative has to say so rather than pick a degree.
 func AffixVowelDegree(v string) (grammar.AffixType, int, bool) {
+	if v == CaStackVowel {
+		return grammar.CaStackAffix, 0, true
+	}
 	if d, ok := type1Degrees[v]; ok {
 		return grammar.Type1Affix, d, true
 	}

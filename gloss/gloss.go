@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/christian-oudard/ithkuil/allomorph"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/numbers"
@@ -295,6 +296,31 @@ func slotIV(s g.SlotIV) string {
 	return fmt.Sprintf("%s/%s/%s", s.Function, s.Specification, s.Context)
 }
 
+// caStackPrefix tags a §3.5/§3.7 Ca-stacking affix in the gloss. The
+// body after it is the same component list slotVI writes, so a stacked
+// Ca and the Slot VI Ca read alike and only the tag distinguishes
+// them. "Ca:" reuses the tag-introduces-a-value sense ":" already has
+// for category-valued affixes, and cannot be mistaken for one: affix
+// abbreviations are three-letter uppercase.
+const caStackPrefix = "Ca:"
+
+// stackedCaBody renders a stacked Ca cluster as its components. An
+// all-default stack writes "{Ca}", the same marker Slot VI uses,
+// because the notation already says exactly that and the two compose
+// unambiguously — the tag is Ca, the body is {Ca}.
+//
+// Whether an all-default stacked Ca means anything is a question about
+// the language that §3.7 does not answer. It is spelled rather than
+// elided so that the gloss stays lossless either way; if it turns out
+// to be vacuous, canonicalization can drop it later at no cost.
+func stackedCaBody(cluster string) string {
+	s, ok := allomorph.ParseCa(cluster)
+	if !ok {
+		return cluster
+	}
+	return slotVI(s, true)
+}
+
 // slotVI renders the Ca complex, suppressing components at their
 // default value. slotVFilled forces a "{Ca}" placeholder for an
 // all-default Ca: Slot V affixes apply to the stem without scope over
@@ -360,6 +386,9 @@ func (gl *Glosser) affixes(as []g.Affix) string {
 }
 
 func (gl *Glosser) affix(a g.Affix) string {
+	if a.IsCaStack() {
+		return caStackPrefix + stackedCaBody(a.Consonant)
+	}
 	if gl.Lex != nil {
 		if entry, ok := gl.Lex.Affixes[a.Consonant]; ok {
 			// Category-valued affixes (MCS, PHS, AP1-4, IVL, LVL,
