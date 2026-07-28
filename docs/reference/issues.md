@@ -355,19 +355,33 @@ copy; §4.5.2 should not be treated as a second attestation of anything.
 
 ## Grammar
 
-### G1. §2.24 bars çç and ļļ, and the morphology builds both
+### G1. WITHDRAWN — there is no §2.24, and this entry is the proof
 
-§2.24 prohibits the geminates **çç** and **ļļ**. §3.6.1 rule 4 then
-geminates a sibilant "in any position" and gives **çkl → ççkl** as its
-own worked example; rule 6 gives **tçkl → tççkl**. The bias-adjunct
-table holds **pļļ** (CMD) and **kçç** (EXA). Thirty-nine words across
-the official examples and the community corpus use one or the other,
-including formatives whose geminated Ca marks the end of Slot V.
+This reported a contradiction between §2.24, which bars the geminates
+**çç** and **ļļ**, and a grammar that builds both. G37 found the
+simpler explanation: §2.24 is not Quijada's. Phonotaxis v0.5.4 ends at
+2.22, and the rule appears in no published document.
 
-The narrowest reading that survives all of this is that §2 constrains
-root and affix conjuncts, not forms the grammar itself derives — but
-§2 opens by saying its restrictions hold "whether within the same
-syllable or across adjacent syllables", with no such carve-out.
+What this entry gathered is the strongest evidence for that. Nothing in
+Quijada's material behaves as though the rule exists:
+
+- §3.6.1 rule 4 geminates a sibilant "in any position" and gives
+  **çkl → ççkl** as its own worked example; rule 6 gives
+  **tçkl → tççkl**.
+- The bias-adjunct table holds **pļļ** (CMD) and **kçç** (EXA).
+- Thirty-nine words across the official examples and the community
+  corpus use one or the other, among them formatives whose geminated
+  C_A marks the end of Slot V.
+
+A rule invented in transcription would leave exactly this trace: a
+prohibition contradicted by the source's own worked examples, its
+tables, and its corpus, with no carve-out anywhere. The reading this
+entry settled on — that §2 constrains root and affix conjuncts, not
+forms the grammar derives — was a way to keep a sentence that was never
+there.
+
+`validation` never enforced it, which is why those thirty-nine words
+parse.
 
 ### G2. The §3.6 bn-substitution cannot cover both configurations that need it
 

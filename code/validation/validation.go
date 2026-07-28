@@ -198,6 +198,10 @@ func CheckProhibitedPair(a, b rune) (rule, reason string) {
 		return "2.22", string(a) + " not at end of conjunct"
 	}
 
+	// "2.23" is likewise unsourced (G37), but unlike the çç/ļļ rule its
+	// content is corroborated: none of ḑs, ḑš, ḑz, ḑž or nň occurs in
+	// any root or affix Cs in the lexicon. Kept, under its invented
+	// number, until the rule is found or the constraint is disproved.
 	// 2.23: ḑ + sibilant; n + ň
 	if a == 'ḑ' && strings.ContainsRune("sšzž", b) {
 		return "2.23", "ḑ + sibilant"
@@ -206,17 +210,16 @@ func CheckProhibitedPair(a, b rune) (rule, reason string) {
 		return "2.23", "n + ň"
 	}
 
-	// §2.24 bars çç and ļļ, but the morphology generates both and the
-	// spec contradicts itself on this point. §3.6.1 rule 4 geminates a
-	// sibilant "in any position" and gives çkl → ççkl as its own
-	// worked example; rule 6 gives tçkl → tççkl. The bias-adjunct
-	// table holds pļļ (CMD) and kçç (EXA). The Discord corpus has 40
-	// words with çç or ļļ, among them formatives whose geminated Ca
-	// marks the end of Slot V: wiapļļalká, hamphelsuirççaité.
-	//
-	// So §2.24 constrains the root and affix conjuncts that are §2's
-	// subject; it does not reach a form the grammar itself builds.
-	// Enforcing it here rejected every one of those words.
+	// Nothing bars çç or ļļ. Our phonotactics markdown carried a
+	// "§2.24" prohibiting them, but Quijada's §2 ends at 2.22 and the
+	// rule appears in no published document — see G37 and G1 in
+	// issues.md. His own material never behaves as though it exists:
+	// §3.6.1 rule 4 geminates a sibilant "in any position" and gives
+	// çkl → ççkl as its worked example, rule 6 gives tçkl → tççkl, the
+	// bias-adjunct table holds pļļ (CMD) and kçç (EXA), and 39 corpus
+	// words use one or the other — among them formatives whose
+	// geminated Ca marks the end of Slot V: wiapļļalká,
+	// hamphelsuirççaité. Enforcing it rejected every one of them.
 
 	return "", ""
 }
