@@ -219,7 +219,7 @@ func ClassifyWord(word string) WordToken {
 	// Compose and lowercase before any classifier reads the letters;
 	// see surface.Normalize. Words we fail to classify keep their
 	// original text: a carrier adjunct scopes over a following foreign
-	// name ("hnas John"), where capitalization is meaningful.
+	// name ("hna John"), where capitalization is meaningful.
 	orig := word
 	word = surface.Normalize(word)
 	if r := validation.ValidateChars(word); !r.Valid {
@@ -260,7 +260,7 @@ func ClassifyWord(word string) WordToken {
 
 	// 3. Carrier adjunct: word starting with a carrier consonant
 	// (hl/hm/hn/hň) followed by trailing content. Tried before
-	// formative parsing so that "hnas" is a Naming carrier rather
+	// formative parsing so that "hna" is a Naming carrier rather
 	// than a formative with Cr=hn.
 	if len(conjs) >= 2 && surface.IsConsonantConjunct(conjs[0]) {
 		if c, err := parse.ParseCarrier(word); err == nil {
@@ -323,9 +323,16 @@ func ClassifyWord(word string) WordToken {
 		return c
 	}
 
-	// 6. Formative.
+	// 6. Formative. A Slot I C_C marker means another formative
+	// follows, and §3.1.8 joins the two with a hyphen — which the
+	// hyphenated branch above already claimed. So a C_C on a word with
+	// no hyphen is not a chain, and the leading h-cluster is something
+	// else: a foreign name approximated in Ithkuil letters, or a
+	// dependent someone quoted without its parent.
 	if f, err := fullparse.Formative(word); err == nil {
-		return FormativeWord{Text: word, Formative: f}
+		if f.Concat == g.ConcatNone {
+			return FormativeWord{Text: word, Formative: f}
+		}
 	}
 
 	// 7. Referential without case: single consonant cluster that decomposes.

@@ -1,0 +1,106 @@
+# Words from the community Discord archive, each looked at and marked
+# correct or incorrect, with the reason.
+#
+# The archive is usage, not authority. Some of it is careful work by
+# people who know the grammar; some is a first draft, a typo, a bot, a
+# foreign name, or correct Ithkuil in a version we do not implement.
+# Counting words in it and treating the count as evidence goes wrong
+# quietly, so a word cited as evidence should appear here first.
+#
+# The verdict is about the WORD, not about our handling of it:
+#
+#   correct     well-formed under v1.3.1
+#   incorrect   not well-formed; the rule column says what it breaks
+#
+# A leading "!" marks a word we currently disagree with: "!correct" is
+# a well-formed word we fail to read. Those are filed defects, and the
+# test reports them rather than failing, so the list stays honest about
+# the difference between "the corpus is wrong" and "we are wrong".
+#
+# Provenance decides some of these. words.py drops messages from before
+# 2023, because v1.3.1 was published that year and the older material
+# scores 36-56% against our parser versus 61-80% after.
+#
+# Verdict | Word | Rule | Reason
+
+# ── foreign names ───────────────────────────────────────────────────
+# Not Ithkuil at all. A speaker writing a place name approximates it
+# with Ithkuil letters, and the result does not have to obey Ithkuil
+# phonotactics; §4.4 and §4.5 exist to carry exactly this. Both are
+# "Hong Kong", one message using it in "hli'o hoňkoň", to Hong Kong.
+# A 2022 thread says so outright: "höňkoň is normally impermissible but
+# isn't here due to lax phonotactic rules".
+incorrect | hoňkoň | §4.5 | foreign name (Hong Kong), not an Ithkuil word.
+incorrect | höňkoň | §4.5 | foreign name (Hong Kong), not an Ithkuil word.
+
+# ── chains quoted as fragments ──────────────────────────────────────
+# §3.1.8 joins a chain with a hyphen, so a Slot I C_C marker always has
+# a parent formative after it. Each of these is the dependent half of a
+# chain that appears whole elsewhere in the same conversation, posted
+# alone as a bot query or a truncated retype. The word is fine inside
+# its chain and is not a word by itself.
+incorrect | hläxëinļa | §3.1.8 | dependent of hläxëinļa-epsil, quoted alone.
+incorrect | hanļkakceilliu | §3.1.8 | dependent of hanļkakceilliu-abkaţria, quoted alone.
+incorrect | haeřalei | §3.1.8 | dependent of haeřalei-avzalu, quoted alone.
+incorrect | hliamžá | §3.1.8 | dependent of hliamžá-wiafçnuţkusvunëi, quoted alone.
+incorrect | hafçäxeuppëu | §3.1.8 | dependent of hafçäxeuppëu-aḑgwappü, quoted alone.
+incorrect | hmaxanļa | §3.1.8 | lone Type-1+Y C_C; no parent anywhere in the archive.
+incorrect | hwëivholüpsao | §3.1.8 | lone Type-2 C_C, posted once with no context.
+
+# The chains those came from. Two we cannot read yet, and for
+# hlamëuţřaitä-madwëužoár the author posted a bot gloss confirming the
+# intended reading, so the word is right and we are wrong.
+correct | hläxëinļa-epsil | §3.1.7 | Type-1 dependent, hyphen, parent with no C_C.
+correct | hanļkakceilliu-abkaţria | §3.1.7 | Type-1 dependent, hyphen, parent with no C_C.
+correct | haeřalei-avzalu | §3.1.7 | Type-1 dependent, hyphen, parent with no C_C.
+correct | hliamžá-wiafçnuţkusvunëi | §3.1.7 | Type-1 dependent, hyphen, parent with no C_C.
+correct | hrabtü'lksí-čpwasa | §3.1.7 | Type-2 chain; the author glossed it in-thread.
+!correct | hafçäxeuppëu-aḑgwappü | §3.1.7 | Type-1 chain the author glossed in-thread.
+!correct | hlamëuţřaitä-madwëužoár | §3.1.7 | Type-1 chain; author's gloss posted in-thread.
+
+# ── modular adjunct slot structure ──────────────────────────────────
+# §4.3 has four slots: an optional w/y prefix, two (V_N C) pairs, and a
+# mandatory final vowel. These carry three pairs. All five are pre-2023
+# and none survives into the post-2023 corpus, so they are evidence
+# about an earlier draft rather than about v1.3.1. We accepted them
+# until the pair limit was corrected from three to two.
+incorrect | euwëiwohlëu | §4.3 | three (V_N C) pairs; the adjunct has two pair slots. Pre-2023.
+incorrect | ohlëuheuwëi | §4.3 | three (V_N C) pairs; the adjunct has two pair slots. Pre-2023.
+incorrect | uahuehuohuö | §4.3 | three (V_N C) pairs; the adjunct has two pair slots. Pre-2023.
+incorrect | aiwiuhayô | §4.3 | three (V_N C) pairs; the adjunct has two pair slots. Pre-2023.
+incorrect | eëyueyoaya | §4.3 | three (V_N C) pairs; the adjunct has two pair slots. Pre-2023.
+
+# The grammar's own worked examples for §4.3, not Discord words. They
+# are here because they settle the question above: they fill all four
+# slots, and their Slot 3 consonant is the C_M "n" or "ň" the table
+# calls for. Every second-position consonant in the pre-2023 Discord
+# modulars is a C_N instead, which is what made the limit look
+# uncertain until the era of that evidence was checked.
+correct | uhlaini | §4.3 | Slot 2 "u"+"hl", Slot 3 "ai"+"n", Slot 4 "i". Grammar example.
+correct | öhwoňó | §4.3 | Slot 2 "ö"+"hw", Slot 3 "o"+"ň", Slot 4 "ó". Grammar example.
+
+# ── root shape ──────────────────────────────────────────────────────
+# §3 forbids a root beginning with h-, w- or y-. These parsed into a
+# Formative with Cr = "w" and rendered back into a different word.
+incorrect | awaçmas | §3 | root would be "w"; a root may not begin with w-.
+incorrect | awaçmasá | §3 | root would be "w"; a root may not begin with w-.
+incorrect | awaçmüsúi | §3 | root would be "w"; a root may not begin with w-.
+incorrect | awáçmaisa | §3 | root would be "w"; a root may not begin with w-.
+
+# ── letters v4 does not have ────────────────────────────────────────
+# The pre-v4 drafts used a wider alphabet. A word spelled with one of
+# those letters is not v4 text, whatever else is true of it. Compare
+# the spelling variants words.py now folds (’ and ʼ for the glottal
+# stop, ț for ţ): those are the same letter typed differently, and
+# leaving them unfolded manufactured fragments.
+incorrect | iţkuîl | §1 | "î" is not a v4 letter; the v4 spelling is "iţkuil".
+incorrect | ëıtfoıgyaölw | §1 | dotless "ı" is not a v4 letter.
+
+# ── typing slips ────────────────────────────────────────────────────
+incorrect | yaivļiwáaaa | §1.2 | "áaaa" is a held vowel for emphasis, not a vowel form.
+
+# ── plain attested formatives ───────────────────────────────────────
+# Ordinary correct usage, kept so the list is not only about failures.
+correct | maţřëullait | §3 | the community name for v4; parses and round-trips.
+correct | mmiexinļ | §5.6 | PVS referential + IVL affix: "Why?".
+correct | amálawëi | §3.2.9 | leading Vv elides here, since m- is a legal word onset.

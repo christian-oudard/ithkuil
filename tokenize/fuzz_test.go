@@ -75,7 +75,7 @@ func FuzzClassifyWord(f *testing.F) {
 func FuzzTokenize(f *testing.F) {
 	seeds := []string{
 		"malëuţřait", "ah amlala", "ah amlalú", "ah řřx",
-		"hnas John malá", "çëhamala-lala ha",
+		"hna John malá", "çëhamala-lala ha",
 		"üohla pļļ", "",
 	}
 	for _, s := range seeds {

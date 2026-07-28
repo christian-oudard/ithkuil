@@ -77,7 +77,7 @@ Go packages at the repo root:
 - `store/` - Read-only SQLite access to `data/data.db` (roots, affixes, grammar tables).
 - `lexicon/` - Roots and affixes in memory. `LoadFromStore(*store.Store)` is the normal path; `Load(path)` reads the JSON source directly (used by tests).
 - `corpus/` - The 384 official example sentences from the grammar, with Quijada's English translations, embedded as test data. `corpus.Examples()` and `corpus.Words()`. `tokenize/corpus_test.go` guards the set of words we still fail to classify.
-  `judged.txt` + `corpus.Judged()` hold curated verdicts on words from the community Discord archive: `ok`, `bad`, or `unsure`, each with the rule it rests on. The archive is usage, not authority, so a word cited as evidence should be judged first. `fullparse/judged_test.go` checks we agree with each verdict.
+  `discord_examples.txt` + `corpus.DiscordExamples()` hold curated words from the community Discord archive, each marked `correct` or `incorrect` with the rule it rests on. The archive is usage, not authority, so a word cited as evidence should appear there first. A leading `!` marks a word we currently disagree with (a filed defect). `fullparse/discord_examples_test.go` checks we agree.
 
 Command-line entrypoints under `cmd/`:
 

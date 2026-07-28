@@ -70,58 +70,63 @@ func isSeparator(r rune) bool {
 	return false
 }
 
-//go:embed judged.txt
-var judgedFile string
+//go:embed discord_examples.txt
+var discordFile string
 
-// Verdict is a judgment about a word taken from the community Discord
-// archive: whether the word itself is well-formed, not whether we
-// currently handle it.
+// Verdict says whether a word from the community Discord archive is
+// well-formed Ithkuil. It is a judgment about the word, not about
+// whether we can currently read it.
 type Verdict string
 
 const (
-	// OK marks a word that is well-formed under v1.3.1.
-	OK Verdict = "ok"
-	// Bad marks a word that is not, with Rule naming what it breaks.
-	Bad Verdict = "bad"
-	// Unsure marks a word that has been looked at and not settled.
-	// It is a result, not a placeholder: the archive is usage rather
-	// than authority, and a word we cannot judge is worth recording
-	// as such so that later work does not count it as evidence.
-	Unsure Verdict = "unsure"
+	// Correct marks a word that is well-formed under v1.3.1.
+	Correct Verdict = "correct"
+	// Incorrect marks a word that is not, with Rule naming what it
+	// breaks: a foreign name, a fragment, a typing slip, or correct
+	// Ithkuil in a version we do not implement.
+	Incorrect Verdict = "incorrect"
 )
 
-// Judgment is one curated verdict. See judged.txt for the reasoning
-// behind each entry and for why provenance is tracked at all.
-type Judgment struct {
+// DiscordExample is one curated word from the archive. See
+// discord_examples.txt for the reasoning behind each entry and for why
+// the archive is treated as usage rather than authority.
+type DiscordExample struct {
 	Verdict Verdict
 	Word    string
 	Rule    string // the spec section the verdict rests on
 	Reason  string
+	// Defect is set when we currently disagree with the verdict: a
+	// Correct word we fail to read, or an Incorrect one we accept.
+	// Written as a leading "!" on the verdict column.
+	Defect bool
 }
 
-// Judged returns every curated verdict in file order.
-func Judged() []Judgment {
-	var out []Judgment
-	for _, line := range strings.Split(judgedFile, "\n") {
+// DiscordExamples returns every curated word in file order.
+func DiscordExamples() []DiscordExample {
+	var out []DiscordExample
+	for _, line := range strings.Split(discordFile, "\n") {
 		line = strings.TrimSpace(line)
 		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
 		f := strings.SplitN(line, "|", 4)
 		if len(f) != 4 {
-			panic("corpus: malformed judged.txt line: " + line)
+			panic("corpus: malformed discord_examples.txt line: " + line)
 		}
-		v := Verdict(strings.TrimSpace(f[0]))
-		switch v {
-		case OK, Bad, Unsure:
+		v := strings.TrimSpace(f[0])
+		defect := strings.HasPrefix(v, "!")
+		v = strings.TrimPrefix(v, "!")
+		switch Verdict(v) {
+		case Correct, Incorrect:
 		default:
-			panic("corpus: unknown verdict " + string(v) + " in: " + line)
+			panic("corpus: unknown verdict " + v + " in: " + line)
 		}
-		out = append(out, Judgment{
-			Verdict: v,
+		out = append(out, DiscordExample{
+			Verdict: Verdict(v),
 			Word:    strings.TrimSpace(f[1]),
 			Rule:    strings.TrimSpace(f[2]),
 			Reason:  strings.TrimSpace(f[3]),
+			Defect:  defect,
 		})
 	}
 	return out
