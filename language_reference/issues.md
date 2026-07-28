@@ -23,11 +23,20 @@ belong to any of them.
 3. **`language_reference/*.md`** — our markdown transcriptions of layer 1.
 4. **`data/data.json`, `data/*.tsv`** — layer 2 plus local supplements.
 
+Two parts of `morphology.md` have no layer-1 source at all. Chapter 8,
+the number system, is condensed from Chapter 13 of the *2011* grammar,
+because no V4 document covers numbers. Chapter 12, the writing system,
+is a structural summary of a slide deck whose content is mostly glyph
+artwork. Both carry a provenance note in the document, and neither is
+a transcription; findings drawn from them are findings about our own
+prose unless checked against the page they came from. G19 is the
+cautionary case.
+
 ### What checking against layer 1 changed
 
-Seven findings were withdrawn. Six were defects in **our markdown**
-rather than in Quijada — G3, G4, G14, G27, G31, G32 — and one, A2, was
-a spreadsheet transposition. They are kept below, marked WITHDRAWN,
+Ten findings have been withdrawn in whole or in part. Eight were
+defects in **our markdown** rather than in Quijada — G3, G4, G14, G17,
+G19, G27, G31, G32 — and one, A2, was a spreadsheet transposition. They are kept below, marked WITHDRAWN,
 with what the source actually says, because the transcription and the
 data still need fixing even where the language does not.
 
@@ -46,8 +55,8 @@ two C_S forms for one degree list) and A5 (the six blank
 functional-group affixes are populated in Quijada, so the gap is
 recoverable).
 
-**Not yet re-checked against layer 1:** G1, G2, G5-G13, G15-G26,
-G28-G30, and the Lexicon and Corpus sections. These are structural —
+**Not yet re-checked against layer 1:** G1, G2, G5-G13, G15, G16,
+G18, G20-G26, G28-G30, and the Lexicon and Corpus sections. These are structural —
 missing rules, uncovered cases, tables that cannot be functions — and
 do not turn on single characters, so a transcription slip is unlikely
 to explain them away. But G3 and G4 looked structural too. Treat them
@@ -722,46 +731,42 @@ blocked; but nothing says whether a slot boundary interrupts
 adjacency. Since the 33 collisions include such common affixes as NEG,
 DCD, SWR, COO and SEX, which reading holds decides a great many words.
 
-### G19. §8's three sections disagree about how numbers are built
+### G19. MOSTLY WITHDRAWN — three of the four claims were ours
 
-**§8.1 against §8.2.** §8.1 says "The numbers from zero to 100 are
-considered autonomous units represented by **single stems**". §8.2 then
-gives fifteen number roots — 0-10, 100, 100², 100⁴, 100⁸ — and builds
-everything between 11 and 99 as a root plus the TNX affix (-rs), whose
-nine degrees are +10 through +90. So 89 of the 101 numbers §8.1 calls
-single stems are a stem plus an affix, and §8.3's own examples show it:
-*wallärsa* is `ll` (one) with TNX degree 2 (+20), i.e. 21.
+*Re-read against the source.* §8 is not a V4 document at all: Quijada's
+grammar ends at Chapter 7 and says nothing about numbers. The chapter
+is our condensation of Chapter 13 of the 2011 grammar,
+`ithkuil.net/newithkuil_13_numbers.htm`. Three of the four
+disagreements this entry reported were introduced by that
+condensation, not found in the source.
 
-**§8.2 against itself, two lines apart.** Its opening sentence reads
-"The roots for numbers **1 to 99** are based on roots for **0 through
-10**, to which the nine degrees of the TNX affix (-rs) are added". The
-affix's own note says "Used with roots **0-9** to create numbers
-**11-99**". Both differences matter. Numbers 1-9 take no affix at all,
-and 10 has its own root `-J-`; and admitting root 10 to the
-construction would generate 20, 30 … 100 a second way, with the last of
-them colliding with the dedicated root for 100, `-GZ-`. Only the affix
-note's version works. (Even it leaves one redundancy the document does
-not mention: root 0 with TNX degree 1 is "0 plus 10", which is 10
-again.)
+**Withdrawn: the coordinative affix's label.** The entry read our
+"-iň (COO/1)" as COO degree 1 and observed that `-iň` is degree 4. The
+source writes it `-Vň/1 (= -iň)`. The V is a placeholder for the
+degree vowel, so the /1 is the affix *type*, not the degree — the two
+notations cannot both be degrees. The source is consistent, and our
+rewrite created the mismatch by resolving V to i while keeping the /1.
 
-**§8.3's coordinative affix does not match its label, and appears in
-none of its examples.** The rule reads "plus the coordinative affix
-**-iň** (COO/1)". COO is `ň` and the Type-1 V_X series runs a, ä, e, i,
-ëi, ö, o, ü, u — so `-iň` is COO degree **4**, "and in sequence", while
-COO/1 would be `-aň`, "and w/shared topic". For enumerating digits the
-degree-4 sense is the apt one, which suggests the form is right and the
-label wrong, but the document states both.
+**Withdrawn: the affix appears in no example.** It appears in the
+source's longest example, twice — *walẓorsiň* and *zalëirsiň* in
+727,903,533,460. We dropped that example when condensing to four, and
+the entry then reported the absence as the source's.
 
-Either way the affix is never exercised. §8.3 gives four worked
-examples and `ň` occurs in none of them — including 4,229 =
-*ksalirsa (gzalui) walẓärs*, which is 42 hundreds plus 29 and so is
-exactly the case the rule describes: "Single units (1-99) connect with
-the coordinative affix when part of hundreds or higher". The single
-unit there, *walẓärs*, carries no coordinative affix. `-iň` occurs
-once in the entire document, in the sentence that introduces it.
+**Withdrawn in part: §8.2 against itself.** Our text said the roots for
+1 to 99 are based on "roots for 0 through 10"; the source says "1
+through 10". A narrower disagreement does survive: "1 through 10"
+against the TNX note's "used with the number roots 0 thru 9 to create
+the numbers 11 through 99". Only the affix note's version works, since
+admitting root 10 would generate 20, 30 ... 100 a second way, with the
+last colliding with the dedicated root for 100, `-GZ-`.
+
+**Stands: §8.1 against §8.2.** §8.1 calls the numbers from zero to 100
+"autonomous units represented by single stems", and §8.2 builds
+everything from 11 to 99 as a root plus the TNX affix. 89 of the 101
+are not single stems.
 
 Everything else in §8 checks out. All twenty number roots match the
-lexicon (`vr` zero, `ll` one … `čg` ten-quadrillion, plus `cg` `jd`
+lexicon (`vr` zero, `ll` one ... `čg` ten-quadrillion, plus `cg` `jd`
 `ļj` `bc` `ţẓ` for bases 11-15); the powers are right (100² = 10,000,
 100⁴ = 10⁸, 100⁸ = 10¹⁶); TNX's nine degrees are +10 to +90 as stated;
 and the examples' case marking follows the rule, with PARTITIVE `-ui`

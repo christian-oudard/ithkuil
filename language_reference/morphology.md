@@ -1858,6 +1858,15 @@ The ten specialized names listed immediately above utilize stems from the follow
 
 ## 8.0 THE NUMBER SYSTEM
 
+> **Provenance.** Quijada's V4 grammar document ends at Chapter 7 and
+> says nothing about numbers; none of the four V4 documents does. This
+> chapter is condensed from `ithkuil.net/newithkuil_13_numbers.htm`,
+> Chapter 13 of the 2011 grammar, renumbered 13 to 8. It is a summary
+> in our own words, not a transcription, and the section numbering is
+> ours. Its twenty number roots all match the V4 lexicon exactly, which
+> is the evidence that the system carries over unchanged; nothing else
+> here is corroborated by a V4 source.
+
 ### 8.1 Features of a Centesimal Number System
 
 New Ithkuil uses a centesimal (base one hundred) system of enumeration, as opposed to decimal (base ten). The numbers from zero to 100 are considered autonomous units represented by single stems. Beginning with 101, numbers are referred to by the number of hundreds plus the number of units.
@@ -1873,7 +1882,7 @@ After ten-quadrillion, numbers are referred to as multiples of lower sets.
 
 ### 8.2 Semantic Designations for Numerical Stems
 
-The roots for numbers 1 to 99 are based on roots for 0 through 10, to which the nine degrees of the **TNX** affix (-rs) are added:
+The roots for numbers 1 to 99 are based on roots for 1 through 10, to which the nine degrees of the **TNX** affix (-rs) are added:
 
 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 100 | 100^2 | 100^4 | 100^8 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -1908,7 +1917,7 @@ Whole numbers are full formatives signifying a set containing the particular num
 
 ### 8.3 Spoken Numbers
 
-Spoken numbers are formed using the PARTITIVE and COMITATIVE cases, plus the coordinative affix -iň (COO/1):
+Spoken numbers are formed using the PARTITIVE and COMITATIVE cases, plus the coordinative affix -**V**ň/1 (= -**i**ň):
 
 - The number of largest base units is in the PARTITIVE
 - Smaller base units connect with the COMITATIVE case, again in PARTITIVE
@@ -1924,6 +1933,8 @@ When pronouncing numbers greater than 199, it is normal to omit the word *gzalui
 
 *wallärsa gzalui wapcui* = "21 of hundred of ten-thousands" = **21,000,000** (Note: *gzalui* is required here)
 
+*ksalorsa gzalui walẓorsiň wakẓui za'lëi gzalui zalëirsiň wapcui pša'lersëi vralörs* = "72 of hundreds and 79 of hundred-millions with 3 of hundreds and 53 of ten-thousands with 3460" = **727,903,533,460**
+
 For dates and times of day using the SPT affix with number roots, see Sec. 6.0.
 
 ---
@@ -1934,6 +1945,12 @@ For dates and times of day using the SPT affix with number roots, see Sec. 6.0.
 **Writing System for New Ithkuil** — Version 1.0, December 2022
 
 The Ithkuil writing system is **morpho-phonemic**: characters convey both phonological and morphological (grammatical) information. The reader constructs the intended words based on their knowledge of the grammar.
+
+> **Provenance.** Condensed from Quijada's separate script document, a
+> 23-page slide deck with no section numbering; the 12.x numbers are
+> ours, as is the chapter number. Much of that document is glyph
+> artwork, which does not transcribe, so this chapter is a structural
+> description rather than a full reading of the source.
 
 > **Note:** Character glyph images are in `images/script/` and `images/numbers/`. Handwritten forms (shown in blue) have diagonal segments curved inward or outward so that there are no diagonal end-points, only vertical or horizontal end-points.
 
