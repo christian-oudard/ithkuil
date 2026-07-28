@@ -8,6 +8,7 @@
 //
 //	analyze TEXT...   Tokenize, parse, and gloss each word.
 //	compose ROOT ...  Build a surface formative from grammar choices.
+//	define WORD...    Look up an English word as Ithkuil lexical cores.
 //	grammar [Q]       Look up the grammar inventory.
 //	lexicon Q         Substring search the root and/or affix lexicons.
 //	validate TEXT...  Phonotactic validation per word.
@@ -48,6 +49,8 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return cmdAnalyze(rest, stdin, stdout, stderr, dataFile)
 	case "compose":
 		return cmdCompose(rest, stdout, stderr, dataFile)
+	case "define":
+		return cmdDefine(rest, stdout, stderr, dataFile)
 	case "grammar":
 		return cmdGrammar(rest, stdout, stderr)
 	case "lexicon":
@@ -73,6 +76,8 @@ Subcommands:
                      Examples: "ml", "S2/CPT-ml-ERG",
                      "S2/CPT-ml-DYN/OBJ-MSS.G-DEV/3-ERG",
                      "m-SYS/5_2-{Ca}-DCD/1_2".
+  define WORD...     Look up an English word as Ithkuil lexical cores.
+                       --limit / -n  N
   grammar [Q]        Look up grammar inventory.
                        --category / -c CAT
                        --exact    / -e

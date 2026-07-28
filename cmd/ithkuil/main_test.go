@@ -340,3 +340,33 @@ func TestValidate_Bad(t *testing.T) {
 		t.Errorf("expected rule 2.3 in output; got %q", out)
 	}
 }
+
+func TestDefine_Found(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "define", "crisis")
+	if code != 0 {
+		t.Fatalf("define exit %d", code)
+	}
+	if !strings.Contains(out, "jd,") {
+		t.Errorf("define crisis should reach root -jḑ-; got %q", out)
+	}
+}
+
+func TestDefine_Missing(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "define", "zzzznotaword")
+	if code != 1 {
+		t.Errorf("expected exit 1 for an unnamed word, got %d", code)
+	}
+	if !strings.Contains(out, "no root names this") {
+		t.Errorf("got %q", out)
+	}
+}
+
+func TestDefine_NoArg(t *testing.T) {
+	_, errOut, code := runCLI("define")
+	if code != 2 {
+		t.Errorf("expected exit 2 with no word, got %d", code)
+	}
+	if !strings.Contains(errOut, "usage") {
+		t.Errorf("got %q", errOut)
+	}
+}

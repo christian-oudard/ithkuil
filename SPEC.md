@@ -40,6 +40,16 @@ no meaning in Ithkuil — and re-render composed and lowercase. The one exceptio
 is a foreign word following a carrier adjunct: that is passthrough text, not
 Ithkuil, and keeps whatever the writer typed.
 
+## English index
+
+The lexicon writes root meanings in English, so it can be read backwards: an English word looks up the Ithkuil lexical cores that express it. This arm is deliberately not a round trip. One English word yields zero, one, or many senses, and a sense reads back as a whole gloss phrase rather than as the word looked up.
+
+A sense is a lexical core only: root, stem, version, function, specification, context. Case, illocution, and the rest of what a formative carries belong to the sentence, not to a dictionary entry.
+
+Headwords are read out of the gloss text by a fixed rule. A semicolon separates distinct senses within one gloss; a slash separates interchangeable wordings of a single sense; parenthesised and bracketed material is explanation and not part of the headword; a leading "to" or "to be" is an infinitive marker; a trailing footnote mark is not part of the word. Commas do not separate senses, because in these glosses they almost always separate modifiers inside one sense. Matching is case-insensitive against the whole headword, not a substring.
+
+Coverage of English is partial and stays that way. The index says what the lexicon already happens to name in English; it is a measurement of that, not a claim to be a dictionary of English.
+
 ## Cross-format conversion
 
 Any format-to-format trip (e.g. gloss → Unicode surface) is the composition of two single-arm trips through the in-memory center. There is no direct format-to-format converter and no need for one. N arms give N² round-trip pairs from N converter pairs.
