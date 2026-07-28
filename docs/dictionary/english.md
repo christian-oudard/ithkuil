@@ -870,3 +870,211 @@ this file yet. Every form here round-trips, and that one does not.
 - preparing a food/beverage → **elksal** `S2-lks`
 - sourcing/raising material for foodstuff → **ulksal** `S3-lks`
 
+
+---
+
+## voice
+
+`-ḑx-`.
+
+- voice/vocal utterance → **oḑxal** `S0-ḑx`
+- making a sound vocally, vocalizing → **aḑxal** `S1-ḑx`
+- making a typical vocalization → **eḑxal** `S2-ḑx`
+- making a less common sound made by an entity → **uḑxal** `S3-ḑx`
+
+## name
+
+`-dn-`.
+
+- name/designation/title → **odnal** `S0-dn`
+- name → **adnal** `S1-dn`
+- designation/reference → **ednal** `S2-dn`
+- label → **udnal** `S3-dn`
+
+## health
+
+`-žf-`.
+
+- healthiness/physical condition/fitness/sanity → **ožfal** `S0-žf`
+- physical and mental healthiness → **ažfal** `S1-žf`
+- mental health → **ežfal** `S2-žf`
+- health/physical condition/fitness → **užfal** `S3-žf`
+
+## law
+
+`-ẓt-`.
+
+- law/statute/legal compliance → **oẓtal** `S0-ẓt`
+- law/statute → **aẓtal** `S1-ẓt`
+- legal compliance → **eẓtal** `S2-ẓt`
+- rule of law → **uẓtal** `S3-ẓt`
+
+## question, answer
+
+`-nd-`.
+
+- question/answer/inquiry → **ondal** `S0-nd`
+- question & answer → **andal** `S1-nd`
+- questioning/querying → **endal** `S2-nd`
+- answering/responding → **undal** `S3-nd`
+
+## job, duty
+
+`-šj-`.
+
+- being busy/occupy oneself/activity/duty/job/obligation → **ošjal** `S0-šj`
+- being busy/occupy oneself → **ašjal** `S1-šj`
+- activity → **ešjal** `S2-šj`
+- duty/job/obligation → **ušjal** `S3-šj`
+
+## process, step
+
+`-rš-`.
+
+- stage/step/phase of a process → **oršal** `S0-rš`
+- step/stage/phase in a process → **aršal** `S1-rš`
+- degree/grade on a progressive/scalar gradient → **eršal** `S2-rš`
+- section/sub-unit/discernible potion of a structured entity → **uršal** `S3-rš`
+
+## moment
+
+`-rv-`.
+
+- temporary duration → **orval** `S0-rv`
+- moment/instant → **arval** `S1-rv`
+- “while” → **erval** `S2-rv`
+- portion of a day → **urval** `S3-rv`
+
+## action
+
+`-psm-`.
+
+- step/action/phenomenon/incident → **opsmal** `S0-psm`
+- step/action → **psmala** `S1-psm`
+- phenomenon → **epsmal** `S2-psm`
+- incident → **upsmal** `S3-psm`
+
+## age
+
+`-mt-`.
+
+- age/life-stage/phase → **omtal** `S0-mt`
+- aging → **amtal** `S1-mt`
+- stage/phase in life → **emtal** `S2-mt`
+- birthday celebration → **umtal** `S3-mt`
+
+## report
+
+`-ţrr-`.
+
+- announcement/declaration/proclamation → **oţrral** `S0-ţrr`
+- announcement → **ţrrala** `S1-ţrr`
+- report → **eţrral** `S2-ţrr`
+- declaration/pronouncement/proclamation → **uţrral** `S3-ţrr`
+
+## word
+
+`-mpř-`.
+
+- lexical component → **ompřal** `S0-mpř`
+- lexeme → **ampřal** `S1-mpř`
+- potential root/affix → **empřal** `S2-mpř`
+- allolex → **umpřal** `S3-mpř`
+
+## start, origin
+
+`-çn-`.
+
+- source/origin → **oçnal** `S0-çn`
+- origin/source of something → **açnal** `S1-çn`
+- beginning/start point of something → **eçnal** `S2-çn`
+- direct/primary cause → **uçnal** `S3-çn`
+
+## learn, study
+
+`-rţt-`.
+
+- study/learn/knowledge source → **orţtal** `S0-rţt`
+- studying → **arţtal** `S1-rţt`
+- practice → **erţtal** `S2-rţt`
+- source of knowledge → **urţtal** `S3-rţt`
+
+## read
+
+`-pç-`.
+
+- read/recite/erudition → **opçal** `S0-pç`
+- reading, gathering information through writing → **pçala** `S1-pç`
+- reading aloud/reciting → **epçal** `S2-pç`
+- acquiring knowledge/expertise via reading → **upçal** `S3-pç`
+
+## write
+
+`-ň-`.
+
+- write/inscribe/document → **oňal** `S0-ň`
+- writing down → **ňala** `S1-ň`
+- composing in writing → **eňal** `S2-ň`
+- written character/glyph/symbol → **uňal** `S3-ň`
+
+## love
+
+`-rkw-`.
+
+- love → **orkwal** `S0-rkw`
+- romantic love → **arkwal** `S1-rkw`
+- filial love → **erkwal** `S2-rkw`
+- abstract love → **urkwal** `S3-rkw`
+
+## river, lake
+
+`-lz-`.
+
+- body of fresh water → **olzal** `S0-lz`
+- pond/lake → **alzal** `S1-lz`
+- stream/river → **elzal** `S2-lz`
+- freshwater inland sea → **ulzal** `S3-lz`
+
+## effort
+
+`-tm-`.
+
+- power/effort/operation/functioning → **otmal** `S0-tm`
+- energy expenditure → **atmal** `S1-tm`
+- action/effort → **etmal** `S2-tm`
+- functioning/operation → **utmal** `S3-tm`
+
+## mother, father, son, daughter
+
+Sex again, on the kinship root `-mp-` from *family* above. English has
+four words where Ithkuil has one root, one stem choice, and one degree
+of the **SEX** affix.
+
+- a mother → **wampaš** `S1-mp-SEX/1`
+- a father → **wampeš** `S1-mp-SEX/3`
+- a daughter → **wempaš** `S2-mp-SEX/1`
+- a son → **wempeš** `S2-mp-SEX/3`
+
+The parent stem takes the sex of the parent; the offspring stem takes
+the sex of the offspring. Nothing obliges the affix: **ampal** is a
+parent whose sex is not at issue, and there is no English word for that.
+
+## car, vehicle
+
+`-ddl-`, and the stems sort vehicles by how they are enclosed rather
+than by what they are called.
+
+- travelling in an open-air wheeled vehicle → **addlal** `S1-ddl`
+- travelling in an enclosed wheeled vehicle → **eddlal** `S2-ddl`
+- travelling in a non-wheeled vehicle → **uddlal** `S3-ddl`
+
+A car, a bus, and a train carriage are the same stem. A cart, a
+wheelchair, and a bicycle are the same stem as each other. The
+distinction Ithkuil draws is not the one English draws, and there is no
+word that picks out *car* alone.
+
+## kind, type
+
+The same root as *way* above, at a different stem.
+
+- a category, a kind → **žwala** `S1-žw`
