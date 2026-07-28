@@ -59,6 +59,10 @@ func TestDocumentedSyntaxExamples(t *testing.T) {
 		"[1m+2p]-ERG",      // "[]" around a multi-referent head
 		"RCP.HYP-{parent}", // "{}" around a scope marker
 		"DSV_END",          // "_" as a word-level modifier
+		"NOM:1m-ERG",       // ":" tags a §4.6 referent category
+		"1m/BEN-ERG",       // "/" binds an effect to a referent
+		"1m-THM-[2m]/IND",  // "/" binds the second referent's own case
+		"1m-THM-ERG",       // a stacked second case, which binds to nothing
 	} {
 		if _, err := compose.ParseToken(in, lex); err != nil {
 			t.Errorf("documented example %q does not parse: %v", in, err)

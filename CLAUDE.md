@@ -61,20 +61,20 @@ place Go lives), `data/`, `docs/`, and `tools/`. Package paths below are
 relative to `code/`.
 
 - `phonology/` - 31 consonants, 9 vowels, vowel form table (4 series x 9 forms)
-- `grammar/` - All morphological types. `Formative` is the central struct (Concat, Root, SlotV, SlotVI, SlotVII, SlotVIII, Final). `Root` and `Final` are sum-type interfaces; see `root.go` and `final.go`.
+- `grammar/` - All morphological types, one per word class. `Formative` is the largest (Concat, Root, SlotV, SlotVI, SlotVII, SlotVIII, Final); `Referential` and `CombinationReferential` cover §4.6, and `Bias`, `Register`, `ModularAdjunct`, `CarrierAdjunct`, `ParsingAdjunct` and the two affixual adjuncts the rest. Variation within a class is a sealed sum type: `Root`, `Final`, `SlotVIII`, `Vk`, `RefHead`.
 - `surface/` - Pure rune-level work, no grammatical knowledge: `Strip`/`Apply` for stress diacritics, `SplitConjuncts`/`JoinConjuncts` for vowel/consonant runs, `MergeGlottalVowels`, vowel classification. Also `InputState` and `FromASCII`/`ToASCII` for the digraph notation.
 - `slots/` - `Layout` is the slot-labelled surface form: one raw conjunct per string field (Cc, Vv, Cr, Vr, Ca, Vn, Cn, Vc), plus affix pairs and observed stress. `Parse`/`Render` convert between surface text and `Layout` by shape alone; `ToGrammar`/`FromGrammar` translate `Layout` ↔ `Formative` through the lookup tables. All canonical-form choices (which shortcut wins, moved-glottal, default elisions) live in `FromGrammar`.
 - `parse/` - Grammatical decoders for individual slot positions, plus all lookup tables (Vv, Vr, Vc, Vn, Cn). Nothing text-level.
 - `allomorph/` - Slot VI Ca complex construction and parsing. Pre-generates all Ca forms from component tables with allomorphic substitutions, stores bidirectional lookup.
 - `semantics/` - Context-dependent labels derived from grammar values: Mood vs CaseScope, V_N vs V_H, the Vn category for a given Cn. Never looks at surface text.
-- `fullparse/` - Turns surface text into a `grammar.Formative` (handles stress detection, returns errors). This is `slots.Parse` ∘ `slots.ToGrammar`.
-- `render/` - Renders a `grammar.Formative` back to surface text: `slots.FromGrammar` ∘ `slots.Render`.
+- `fullparse/` - Turns surface text into a grammar value, handling stress and returning errors. `Formative` is `slots.Parse` ∘ `slots.ToGrammar`; `Referential` and `CombinationReferential` decode §4.6 and run the phonotactic checks, so a word the validator rejects is not classified as one.
+- `render/` - Renders a grammar value back to surface text. `Formative` is `slots.FromGrammar` ∘ `slots.Render`; `Referential` and `CombinationReferential` mirror the fullparse entry points. `tokenize.Render` dispatches over the whole word-class sum (it lives there, not here, because the sum type does).
 - `serialize/` - Binary encoding of parsed tokens. Default-eliding and
   byte-aligned; no lexicon indices, so files outlive lexicon updates.
   `formative.go` documents why the layout is shaped the way it is.
 - `gloss/` - Human-readable morphological glossing.
 - `validation/` - Phonotactic constraint checking (cluster lengths, vowel sequences, stress).
-- `tokenize/` - Classifies words in a sentence into formatives, referentials, bias adjuncts, etc.
+- `tokenize/` - Classifies words in a sentence into formatives, referentials, bias adjuncts, etc. Each `WordToken` variant is a thin `{Text, payload}` wrapper over the grammar type for its class; `Text` records what was typed and is empty on a synthesized token, so derive the surface with `tokenize.Render` rather than reading it.
 - `concatenation/` - Type 1/2 compound formative chains.
 - `numbers/` - Centesimal/base-100 number system.
 - `compose/` - Builds formatives from grammatical specifications + lexicon search helpers.
@@ -95,6 +95,7 @@ Command-line entrypoints under `cmd/`:
 
 - `Formative` lives in `grammar/formative.go`. Invariants: `Root` and `Final` must be non-nil; the zero value is not valid. Use `MinimalFormative(cluster)` as a starting point. `render` and `gloss` panic on nil Root or Final.
 - `Root` is a sum-type interface with three variants (`CrRoot`, `CsRoot`, `RefRoot`); it consolidates the lexical identity that the spec splits across Slots II/III/IV.
+- A referential is not a kind of formative. §4.6 makes it its own word class, so `grammar.Referential` is a peer of `Formative`, not a `Root` variant. Do not confuse it with `RefRoot`, which is a *formative* whose root is a personal reference (§5.3).
 - `Final` is a sum-type interface covering the various case/illocution endings (UnframedNominal, UnframedVerbal, FramedVerbal, etc.).
 - `Affix` stores `(Type, Degree)` plus the consonant cluster; never the surface vowel string.
 - Grammatical values use standard Ithkuil abbreviations (3-letter uppercase): THM, INS, ABS, STA, DYN, BSC, CTE, etc.

@@ -266,18 +266,19 @@ binary; it takes the same `--data` flag.
 
 ### Gloss Syntax
 
-The gloss is both the output of `analyze` and the input to `compose`. Every mark in it has exactly one job, so what a token is follows from its shape:
+The gloss is both the output of `parse` and the input to `compose`. Every mark in it has exactly one job, so what a token is follows from its shape:
 
 | Mark | Job | Example |
 |------|-----|---------|
 | `-` | separates slots | `S2.CPT-ml-ERG` |
 | `.` | joins category values in one slot | `DYN.OBJ.FNC`, `MSS.G`, `ASR.RPR` |
-| `/` | binds a degree or a case to a head | `DEV/3`, `ACC/INS`, `(1m)/AFF` |
+| `/` | binds a degree or a case to a head | `DEV/3`, `ACC/INS`, `[2m]/IND` |
 | `_` | trails the affix Type | `t/1_2`, `IAC/PRP_3` |
 | `:` | tags a structured body | `Ca:MSS.G`, `NOM:1m` |
 | `()` | a head built from referents or a Cs | `(1m+2p/BEN)`, `(CTR)/1` |
 | `+` | joins referents | `1m+2p` |
 | `{}` | structural, not a morpheme | `{Ca}`, `{parent}` |
+| `[]` | a word-level head that is not a root | `[QUO]`, `[1m+2p]` |
 
 The whole gloss is ASCII, including the root, which uses the digraph notation from the table above. It has to be typable on an ordinary keyboard, since it is an authoring syntax and not only an output format.
 

@@ -1390,3 +1390,51 @@ same role `-GZ-` plays for base-100.
 The same sentence with the same off-by-one appears in Chapter 13 of the
 2011 grammar, so the count has been wrong across both versions rather
 than introduced in the V4 rewrite. The word is wrong, not the table.
+
+### G40. §4.6 does not say which spelling of a category affix to use
+
+§4.6 marks the Agglomerative, Nomic and Abstract categories on a
+referential by adding an affix "immediately preceding or following one
+of the affixes above (as phonotactically permissible)", and gives two
+spellings for each:
+
+| Category | Forms | Written |
+|---|---|---|
+| Agglomerative | ļ, tļ | `-ļ-` / `-tļ-` |
+| Nomic | ç, x | `-ç-` / `-x-` |
+| Abstract | w, y | `-w` / `-y` |
+
+Two things are left open. Which of the two forms, and which side.
+
+The phonotactics settle most cases on their own. Of `lça`, `lxa`,
+`çla` and `xla` — the Nomic category on the 1m referent — only the two
+prefixed forms are clusters a word may open with, so the affix has to
+precede. On the 2m referent it is the other way round: `çsa` and `sça`
+break the rules about ç beside a sibilant, and `xsa` breaks §2.17, so
+only the suffixed `sxa` survives. This is presumably what "as
+phonotactically permissible" is doing.
+
+It does not always narrow to one. `çla` and `xla` are both legal, as
+are `tļma`, `mtļa` and `ļma`, and the Abstract `lwa` and `lya`. The
+section offers no way to choose, and Ithkuil generally avoids free
+variation, so something is probably missing rather than genuinely
+free.
+
+The hyphens are the one hint the source gives. Agglomerative and Nomic
+are written with a hyphen on both sides, its notation elsewhere for an
+affix that may attach either way; Abstract is written `-w` / `-y`,
+with a leading hyphen only, which reads as suffix-only. §4.6.5 repeats
+Abstract in that form ("cannot add the ABSTRACT Perspective increments
+-**w** or -**y**"), so it is consistent rather than a typo. We take it
+as meaningful.
+
+Where more than one spelling still survives, our renderer takes the
+first the section lists. That ranking is ours, not Quijada's: the
+canonicalization heuristics in SPEC.md rank optional shortenings and
+have nothing to say here, the candidates being identical in syllable
+count, glottal count and length. Recorded so the choice is not later
+mistaken for something the source decided.
+
+**Related:** §4.6.4 bars all three categories from a specialized
+personal-reference root, where the Slot VI Perspective carries the
+same distinctions instead. That much the source is explicit about.

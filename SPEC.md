@@ -1,6 +1,8 @@
 # Ithkuil Round-Trip Model
 
-The system supports several representations of an Ithkuil formative, with the in-memory `Formative` value at the center. Each peripheral format has a deterministic encode and decode pairing it with the center.
+The system supports several representations of an Ithkuil word, with an in-memory grammar value at the center. Each peripheral format has a deterministic encode and decode pairing it with the center.
+
+A formative is the richest of the word classes and `Formative` the largest of the types, but it is one of several: a referential, a bias adjunct, a register marker and the rest each have a type of their own in the grammar layer, and the same four arms. Nothing in the centre records how a word was spelled.
 
 ```
                     Unicode phonetic  ⇄  ASCII phonetic
@@ -12,7 +14,7 @@ The ASCII phonetic form is a notation-only codec on top of the Unicode form (no 
 
 ## Formats
 
-- **In-memory Formative**. The canonical value type. Every conversion routes through it.
+- **In-memory grammar value**. The canonical form. Every conversion routes through it. One type per word class, with `Formative` the largest; sum types cover the variation within a class, so a value that the language cannot express should not be constructible.
 - **Unicode phonetic surface**. The natural orthography, e.g. `Maţřëullait`. Carries diacritics for stress and non-Latin consonants.
 - **ASCII phonetic surface**. Digraph notation, e.g. `aa` for `ä`, `t,` for `ţ`, `sq` for `š`, with a postfix `/` for stress: `ee/` for `ê`. A pure recoding of the Unicode form, one-to-one with characters. The full table is in the README.
 - **Canonical gloss**. Hyphen-separated morphological breakdown, e.g. `S2.PRC-ml-DYN.OBJ-MSS.G-ERG`. Both the human-readable rendering and a strict authoring syntax. Slot order carries meaning: affixes before the Ca complex apply to the stem alone, affixes after it have scope over the Ca. A Ca holding nothing but defaults is normally suppressed, but is written `{Ca}` when it must stay visible as that boundary. The gloss is entirely ASCII, including the root, which is written in the digraph notation: it has to be typable on an ordinary keyboard, since it is an authoring syntax and not only an output format. Its punctuation follows the rule below.
@@ -24,7 +26,7 @@ Each mark in the canonical gloss has exactly one job. A token's kind therefore f
 
 - `-` separates slots: `S2.CPT-ml-ERG`
 - `.` joins category values inside one slot: `S2.CPT`, `DYN.OBJ.FNC`, `MSS.G`, `RCP.HYP`, `ASR.RPR`
-- `/` binds an argument, a degree or a case, to a head: `DEV/3`, `ACC/INS`, `(1m)/AFF`, `1m/BEN`
+- `/` binds an argument, a degree or a case, to a head: `DEV/3`, `ACC/INS`, `(1m)/AFF`, `1m/BEN`, `[2m]/IND`
 - `_` trails a modifier, currently only the affix Type: `t/1_2`, `IAC/PRP_3`, `DSV_END`
 - `:` tags a structured body: `Ca:MSS.G` and `Ca:{Ca}` for a stacked Ca, `NOM:1m` for a referent category
 - `()` wraps a head built from referents or from a Cs: `(1m+2p/BEN)`, `(CTR)/1`
@@ -32,7 +34,9 @@ Each mark in the canonical gloss has exactly one job. A token's kind therefore f
 - `{}` marks something structural rather than a morpheme: `{Ca}`, `{parent}`
 - `[]` marks a word-level head that is not a root: `[QUO]`, `[1m+2p]`
 
-The rule is what keeps the syntax extensible. Anything that binds a case to a head reads `HEAD/CASE`, whether it comes from §3.9.2 or §4.6.5, so the two do not have to be told apart by name. A construct that would need a new sense of an existing mark needs a new mark instead.
+The rule is what keeps the syntax extensible. Anything that binds a case to a head reads `HEAD/CASE`, whether it comes from §3.9.2, §4.6.5, or the second referent of a §4.6.1 referential, so the three do not have to be told apart by name. A construct that would need a new sense of an existing mark needs a new mark instead.
+
+The same rule decides when a construct gets no mark at all. A §4.6.1 second case with no referent of its own stacks onto the head rather than binding to anything, so it stays a plain slot: `1m-THM-ERG` stacks, `1m-THM-[2m]/IND` binds. And a §4.6.3 suppletive-headed referential needs no sigil to tell it from the carrier adjunct it resembles, because a carrier adjunct holds one case and nothing else — the extra slots are themselves the signal.
 
 Grammatical values that carry no punctuation of their own follow from this: the reach and scope markers inside `{}` are single words for that reason, since a `/` or `.` there would claim a job it does not have and a `-` would split the token.
 
