@@ -38,7 +38,7 @@ in the transcription.
 | `morphology.md` §8 | Chapter 13 of the *2011* grammar, `ithkuil.net/newithkuil_13_numbers.htm` | condensed, in our words |
 | `phonotactics.md` | Phonotactic Rules for the Ithkuil Successor Language, v0.5.4, 24 pp. | transcription |
 | `affixes_reference.md` | `data/data.json`, reconciled against V_XC_S Affixes for New Ithkuil v1.1 | generated content |
-| `CHANGELOG.md` | the version histories of the above | transcription |
+| `source_versions.md` | the version histories of the above | transcription |
 
 One chapter of `morphology.md` has no layer-1 source at all.
 
@@ -902,7 +902,7 @@ third entry is `hňo`, whose V_C is `o`, ERG. The paradigm calls for
 
 ### G22. §4.2's lead-in was not updated when its table was
 
-The version history for v1.3 (see `CHANGELOG.md`) records the change:
+The version history for v1.3 (see `source_versions.md`) records the change:
 
 > **Sec. 4.2:** The Slot IV V_R Values for the Specialized C_S-Root now
 > show Degree plus Context, instead of Degree plus Specification, as it

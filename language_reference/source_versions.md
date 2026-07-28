@@ -1,4 +1,4 @@
-# Changelog of the source documents
+# Published versions of the source documents
 
 Version history as published by Quijada. The reference documents in
 this directory carry only the current version; the superseded wording

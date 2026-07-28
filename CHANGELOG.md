@@ -8,6 +8,18 @@ reads a word as.
 
 ## 2026-07-28
 
+### Read the NAV case-accessor alternate as i'ä, not i'ë
+
+Cases 53-60 are §3.9.1's series-3 vowel forms minus vowel-tier 8, each
+with a glottal-stop. Form 9 is `ua / iä`, so NAV takes `u'a` with the
+alternate `i'ä` — the form used after a w- glide. Tier 8's alternate
+`ië` drops out of the range entirely.
+
+`parse` had `i'ë` for NAV, so `i'ä` was rejected and `i'ë` accepted as
+a case that cannot be written that way. The test asserting it cited no
+source; it is replaced by one covering all fifteen series-3 alternates
+and the negative case.
+
 ### Read a corpus word against the grammar of its own date
 
 Eight archive words parse into an affix whose C_S holds a glottal stop,
