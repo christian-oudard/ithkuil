@@ -1,10 +1,10 @@
 # Issues in the V4 Source Material
 
 Defects in the published grammar, the affix tables and the community
-lexicon — not in this repository's code. `TODO.md` at the repo root is
-the inverse list: what is wrong with, or missing from, our own
-implementation. Anything we cannot implement because the sources
-disagree belongs in both.
+lexicon — not in this repository's code. Defects in our own handling
+are tracked as skipped tests beside the code they concern, not in a
+list; anything we cannot implement because the sources disagree gets an
+entry here and a test there.
 
 ## Provenance
 
@@ -234,6 +234,13 @@ The other rule-violating roots in the lexicon are all retired:
 `mps` 'relative clause head †', `mpš` 'framed relation †', `mpm`, `mpn`
 and `mpx` violate §2.13, and every one of them is daggered. The rule
 and the vocabulary agree everywhere except at L2.
+
+Retired is not removed: the daggered entries are still in `data.db`,
+so anything that walks the whole lexicon still meets them.
+`fullparse/lexicon_sweep_test.go` builds a formative on every root and
+checks the result is a legal word, and carries these four as a named
+exclusion — which also means the list fails if one of them ever starts
+validating, or leaves the lexicon.
 
 ## Corpus
 

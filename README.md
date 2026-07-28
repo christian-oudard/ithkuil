@@ -113,8 +113,6 @@ This tool provides:
 
 - **Morpho-phonemic script** (Ch. 12). The writing system and its reference
   material live on the `writing` branch, not here.
-- **Case-accessor, inverse case-accessor and case-stacking affixes** (Sec.
-  3.9.2), and the `üö` Ca-stacking affix (Secs. 3.5, 3.7). See `TODO.md`.
 
 
 ## Building and Running

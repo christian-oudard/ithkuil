@@ -114,7 +114,7 @@ Everything under `tools/` is non-Go tooling. Go tools stay with the code they be
 - `language_reference/morphology.md` - Canonical V4 grammar reference (phonology, morphology, slots, cases, adjuncts, syntax, numbers)
 - `language_reference/affixes_reference.md` - All 528 affixes with gradient types and 9 degrees
 - `language_reference/phonotactics.md` - Detailed consonant cluster rules
-- `language_reference/issues.md` - Defects in the published sources, not in this code. See `TODO.md` for the inverse.
+- `language_reference/issues.md` - Defects in the published sources, not in this code.
 - Source PDFs and any intermediate extraction output (html, per-page pdf) go outside the repo, under `$XDG_DATA_HOME/ithkuil/reference/`.
 
 The writing system is not implemented on `main`, and its reference material does
@@ -125,6 +125,9 @@ one chapter of a document kept whole.
 
 ## Open Work
 
-`TODO.md` tracks known defects and unimplemented features in this repository,
-with the evidence for each. Add to it rather than leaving a bare `TODO` comment
-in the code, so that one list stays the whole picture.
+There is no TODO list, deliberately. Known defects live as skipped tests next to
+the code they concern, each carrying the section it rests on and why the obvious
+fix is wrong; `go test ./... -v | grep SKIP` is the list. Words we cannot read
+live in the drift guards (`tokenize/corpus_test.go`,
+`corpus/discord_examples.txt`), which fail when the set changes in either
+direction. Defects in the published sources go in `language_reference/issues.md`.
