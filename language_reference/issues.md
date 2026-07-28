@@ -1119,3 +1119,34 @@ So the footnote has to govern the column, and the marker belongs on all
 five rows. This is the residue of the old G3: the conditions were never
 swapped, but the ¹ is under-applied.
 
+
+### G34. Our markdown lost three of the seven case-accessor affixes
+
+*A transcription defect, in layer 3 rather than in Quijada.* §3.9.2
+names "two separate C_S increments for each of the seven types of
+affix", and the PDF's table gives all fourteen. Our markdown carried
+four of the seven columns and eight of the fourteen increments:
+
+| Affix | Quijada, cases 1-36 | Our markdown |
+|---|---|---|
+| Case-Accessor, Type-1 | sw | sw |
+| Case-Accessor, Type-2 | **zw** | *lost* |
+| Case-Accessor, Type-3 | čw | čw, mislabelled Inverse Type-1 |
+| Inverse Case-Accessor, Type-1 | šw | šw, mislabelled Type-3 |
+| Inverse Case-Accessor, Type-2 | **žw** | *lost* |
+| Inverse Case-Accessor, Type-3 | **jw** | *lost* |
+| Case-Stacking | lw | lw |
+
+Same for the -y series: `zy`, `žy` and `jy` were missing and the
+remaining labels were shifted. The header spans seven affix kinds over
+merged cells, and the markdown conversion collapsed the merges, so the
+four surviving C_S values were re-dealt across the wrong columns.
+
+The prose said "seven" the whole time, which is what makes the table
+self-evidently short — a count in the text against a count in the
+table is the cheapest check there is, and it was available without
+consulting the source at all.
+
+**Fixed** in `language_reference/morphology.md`, which now lists the
+fourteen increments as a flat table plus a separate series-to-case-group
+table, rather than reproducing the merged-cell layout that caused this.

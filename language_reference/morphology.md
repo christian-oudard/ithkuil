@@ -810,18 +810,27 @@ The phonological structure of case-accessor, inverse-case accessor, and case-sta
 
 V_X for the first 36 cases is the first four standard-vowel form series (i.e., the same as their corresponding V_C case-affixes). Cases 37-68 utilize the same four vowel-form series (i.e., no glottal-stop is added to the V_X increment), the distinction from the first 36 cases being indicated by their different C_S increment. This structure allows case-accessor and case-stacking affixes to appear in formative Slots V or VII or in affixual adjuncts. See Sec. 5.7 as to how using the case-stacking affix on UNFRAMED verbal formatives can function as a substitute for case-frames.
 
-| | Case-Accessor Affix | | | Inverse Case-Accessor Affix | | | Case-Stacking Affix |
-|---|---|---|---|---|---|---|---|
-| | Type-1 | Type-2 | Type-3 | Type-1 | Type-2 | Type-3 | |
-| | V_X = Series No. | C_S = | V_X = Series No. | C_S = | V_X = Series No. | C_S = | V_X = Series No. | C_S = |
-| **Cases 1 thru 9** | 1 | | 1 | | 1 | | 1 | |
-| **Cases 10 thru 18** | 2 | **sw** | 2 | **čw** | 2 | **šw** | 2 | **lw** |
-| **Cases 19 thru 27** | 3 | | 3 | | 3 | | 3 | |
-| **Cases 28 thru 36** | 4 | | 4 | | 4 | | 4 | |
-| **Cases 37 thru 44** | 1 | | 1 | | 1 | | 1 | |
-| **Cases 45 thru 52** | 2 | **sy** | 2 | **čy** | 2 | **šy** | 2 | **ly** |
-| **Cases 53 thru 60** | 3 | | 3 | | 3 | | 3 | |
-| **Cases 61 thru 68** | 4 | | 4 | | 4 | | 4 | |
+Seven kinds of affix, each with two C_S increments: the first for
+Cases 1-36, the second for Cases 37-68. Within a range, the V_X series
+(1-4) picks the group of nine and the V_X degree picks the case inside
+it.
+
+| Affix | C_S, Cases 1-36 | C_S, Cases 37-68 |
+|---|---|---|
+| Case-Accessor, Type-1 | **sw** | **sy** |
+| Case-Accessor, Type-2 | **zw** | **zy** |
+| Case-Accessor, Type-3 | **čw** | **čy** |
+| Inverse Case-Accessor, Type-1 | **šw** | **šy** |
+| Inverse Case-Accessor, Type-2 | **žw** | **žy** |
+| Inverse Case-Accessor, Type-3 | **jw** | **jy** |
+| Case-Stacking | **lw** | **ly** |
+
+| V_X Series | Cases 1-36 | Cases 37-68 |
+|---|---|---|
+| 1 | Cases 1 thru 9 | Cases 37 thru 44 |
+| 2 | Cases 10 thru 18 | Cases 45 thru 52 |
+| 3 | Cases 19 thru 27 | Cases 53 thru 60 |
+| 4 | Cases 28 thru 36 | Cases 61 thru 68 |
 
 \* For Cases 37 through 68: since these four case-groups each contain only eight cases rather than nine and Vowel-Form No. 8 (the **ü**-tier) for each group is not used, similarly the eighth tier of vowel-forms are not used for these case-accessor or case-stacking affixes.
 
