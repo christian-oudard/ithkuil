@@ -170,14 +170,101 @@ SHIFTED_DEGREES = {
 }
 
 
+# GPB through GPG carry a C_S, an abbreviation and a description upstream
+# and nine empty degree cells apiece. They are not empty in Quijada: his
+# affix document populates all six, and these are extracted from it by
+# column geometry (see language_reference/issues.md, A5).
+#
+# The extraction was checked against the three groups the sheet does
+# carry. GPJ came back identical in all nine degrees; GPA and GPH differ
+# only in that the sheet's versions are shortened — "alkyl halide" for
+# the PDF's "halo-, alkyl halide" — so the reading is faithful and
+# fuller than what upstream has.
+#
+# The "..." in several entries is Quijada's own placeholder for the
+# elided stem, kept as printed rather than reworded.
+RECOVERED_DEGREES = {
+    "GPB": [
+        "hydroxil, hydroxy-, -ol",
+        "carbonyl, oxo-, -oyl-, -one",
+        "aldehyde, -formyl-, -al",
+        "haloformyl, carbono...oyl-, -oyl halide",
+        "carbonate ester, alkoxycarbonyloxy-, alkyl carbonate",
+        "carboxylate, carboxylato-, -oate",
+        "carboxyl, carboxy-, -oic acid",
+        "carboalcoxy, alkanoyloxy-, alkyl alkanoate",
+        "methoxy, methoxy-",
+    ],
+    "GPC": [
+        "hydroperoxy-, alkyl hydroperoxide",
+        "peroxy-, alkyl peroxide",
+        "ether, alkoxy-, alkyl ether",
+        "hemiacetal, alkoxy -ol, -al alkyl hemiacetal",
+        "hemiketal, alxoxy -ol, -one alkyl hemiketal",
+        "acetal, dialkoxy-, -al dialkyl acetal",
+        "ketal, dialcoxy-, -one dialkyl ketal",
+        "orthoester, -trialkoxy",
+        "orthocarbonate ester, tetralkoxy-, tetraalkyl orthocarbonate",
+    ],
+    "GPD": [
+        "methylenedioxy-, -dioxole",
+        "carboxylic anhydride, anhydride",
+        "carboxamide, carboxamido-, carbamoyl-, -amide",
+        "primary amine, amino-, -amine",
+        "secondary amine, amino-, -amine",
+        "tertiary amine, amino-, -amine",
+        "ammonio-, -ammonium",
+        "imide, imido-, -imide",
+        "azide, azido-, alkyl azide",
+    ],
+    "GPE": [
+        "primary ketimine, imino-, imine",
+        "secondary ketimine, imino-, -imine",
+        "primary aldimine, imino-, imine",
+        "secondary aldimine, imino-, -imine",
+        "azo diimide, azo-, -diazene",
+        "cyanate, cyanato-, alkyl cyanate",
+        "isocyanate, isocyanato-, alkyl isocyanate",
+        "nitrate, nitrooxy-, nitroxy-, alkyl nitrate",
+        "nitrite, nitrosooxy-, alkyl nitrite",
+    ],
+    "GPF": [
+        "nitrile, cyano-, alkanenitrile, alkyl cyanide",
+        "isonitrile, isocyano-, alkaneisonitrile, alkyl isocyanide",
+        "nitro compound, nitro-",
+        "nitroso compound, nitroso-, nitrosyl-",
+        "oxime",
+        "pyridyl, 4-pyridyl, 3-pyridyl, 2-pyridyl, -pyridine",
+        "carbamate, -carbamoyloxy-, -carbamate",
+        "phosphine, phosphanyl-, -phosphane",
+        "phosphonic acid, phosphono-, -phosphonic acid",
+    ],
+    "GPG": [
+        "phosphate, phosphonooxy-, O-phospono-, ... phosphate",
+        "phosphodiester, hydroxyphosphoryloxy-, di...hydrogen phosphate",
+        "boronic acid, borono-, ... boronic acid",
+        "boronate, O-alkylboronyl-, ... boronic acid di... ester",
+        "borinic acid, hydroxyborino-, di... borinic acid",
+        "borinate, O-alkoxydialkylboronyl-, di... borinic acid ... ester",
+        "alkyllithium, -lithium",
+        "alkylmagnesium halide, -magnesium halide",
+        "alkylaluminium, -aluminium / -aluminum",
+    ],
+}
+
 def merge_affixes(upstream: list[dict], existing_path: Path) -> list[dict]:
     """Preserve local description/type when upstream is blank, and undo
-    the three-row degree shift described at SHIFTED_DEGREES.
+    the three-row degree shift described at SHIFTED_DEGREES, and fill
+    the degree lists upstream leaves blank from RECOVERED_DEGREES.
 
     Match on (cs, abbrev) since the same Cs cluster can carry two
     affixes (e.g. ḑg = MDI and ḑg = S07 are both in upstream).
     """
     for a in upstream:
+        blank = RECOVERED_DEGREES.get(a["abbrev"])
+        if blank and not any(d.strip() for d in a["degrees"]):
+            print(f"  filling blank degrees for {a['abbrev']} ({a['cs']}) from the PDF")
+            a["degrees"] = list(blank)
         fixed = SHIFTED_DEGREES.get(a["abbrev"])
         if fixed and a["degrees"] != fixed:
             print(f"  restoring shifted degrees for {a['abbrev']} ({a['cs']})")

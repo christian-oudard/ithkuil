@@ -150,28 +150,30 @@ degrees, while the stray text orders them arc-seconds, arc-minutes,
 mils, grads, degrees, points, hour angles, radians, sextants. Which
 ordering was meant is not recoverable from either source.
 
-### A5. Fifty-four functional-group degrees are missing from the lexicon
+### A5. RESOLVED — fifty-four functional-group degrees recovered
 
 GPB (`sļ`), GPC (`šḑ`), GPD (`šļ`), GPE (`zḑ`), GPF (`zļ`) and GPG
 (`žḑ`) carry a C_S, an abbreviation and a description in the
-spreadsheet, and nine empty degree cells apiece.
+spreadsheet, and nine empty degree cells apiece. They are not empty in
+Quijada — his affix document populates all six — so this was a
+transcription gap upstream, not a hole in the language.
 
-*They are not empty in Quijada.* His affix document populates all six:
-GPB runs hydroxil, carbonyl, aldehyde, haloformyl, carbonate ester,
-carboxylate, carboxyl, carboalcoxy, methoxy; GPC runs hydroperoxy,
-peroxy, ether, hemiacetal, hemiketal, acetal, ketal, orthoester,
-orthocarbonate ester; and so on through GPG.
+All 54 are now extracted from the PDF by column geometry and written
+into `data/data.json`, with a `RECOVERED_DEGREES` table in
+`tools/sync_lexicon.py` that refills them whenever upstream is still
+blank. No affix in the table has an empty degree list any more.
 
-So this is a recoverable gap rather than a hole in the language: 54
-degrees of organic-chemistry vocabulary exist in the source and are
-absent from our lexicon because the community sheet never transcribed
-them. GPA, GPH and GPJ, which the sheet does carry, show what the rest
-should look like.
+The extraction was validated against the three groups the sheet does
+carry. **GPJ came back identical in all nine degrees.** GPA and GPH
+differ only in that the sheet's versions are shortened — "alkyl halide"
+against the PDF's "halo-, alkyl halide" — so the reading is faithful,
+and fuller than what upstream holds. Quijada's own "..." placeholder
+for the elided stem is kept as printed.
 
-Recovering them means extracting nine degrees apiece from a two-column
-PDF layout, which is worth doing carefully rather than quickly — the
-columns interleave on each text line and several entries are long
-enough to wrap. Not yet done.
+That leaves an inconsistency worth knowing about: GPA and GPH are still
+the sheet's abbreviated forms while the other seven are now the PDF's
+full ones. Replacing them is a one-line change to the same table if the
+fuller wording is wanted throughout.
 
 ### A6. XCL is absent from the community spreadsheet
 

@@ -50202,15 +50202,15 @@
       "description": "Functional Group C",
       "type": "0",
       "degrees": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "hydroperoxy-, alkyl hydroperoxide",
+        "peroxy-, alkyl peroxide",
+        "ether, alkoxy-, alkyl ether",
+        "hemiacetal, alkoxy -ol, -al alkyl hemiacetal",
+        "hemiketal, alxoxy -ol, -one alkyl hemiketal",
+        "acetal, dialkoxy-, -al dialkyl acetal",
+        "ketal, dialcoxy-, -one dialkyl ketal",
+        "orthoester, -trialkoxy",
+        "orthocarbonate ester, tetralkoxy-, tetraalkyl orthocarbonate"
       ]
     },
     {
@@ -50372,15 +50372,15 @@
       "description": "Functional Group B",
       "type": "0",
       "degrees": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "hydroxil, hydroxy-, -ol",
+        "carbonyl, oxo-, -oyl-, -one",
+        "aldehyde, -formyl-, -al",
+        "haloformyl, carbono...oyl-, -oyl halide",
+        "carbonate ester, alkoxycarbonyloxy-, alkyl carbonate",
+        "carboxylate, carboxylato-, -oate",
+        "carboxyl, carboxy-, -oic acid",
+        "carboalcoxy, alkanoyloxy-, alkyl alkanoate",
+        "methoxy, methoxy-"
       ]
     },
     {
@@ -50389,15 +50389,15 @@
       "description": "Functional Group D",
       "type": "0",
       "degrees": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "methylenedioxy-, -dioxole",
+        "carboxylic anhydride, anhydride",
+        "carboxamide, carboxamido-, carbamoyl-, -amide",
+        "primary amine, amino-, -amine",
+        "secondary amine, amino-, -amine",
+        "tertiary amine, amino-, -amine",
+        "ammonio-, -ammonium",
+        "imide, imido-, -imide",
+        "azide, azido-, alkyl azide"
       ]
     },
     {
@@ -52140,15 +52140,15 @@
       "description": "Functional Group E",
       "type": "0",
       "degrees": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "primary ketimine, imino-, imine",
+        "secondary ketimine, imino-, -imine",
+        "primary aldimine, imino-, imine",
+        "secondary aldimine, imino-, -imine",
+        "azo diimide, azo-, -diazene",
+        "cyanate, cyanato-, alkyl cyanate",
+        "isocyanate, isocyanato-, alkyl isocyanate",
+        "nitrate, nitrooxy-, nitroxy-, alkyl nitrate",
+        "nitrite, nitrosooxy-, alkyl nitrite"
       ]
     },
     {
@@ -52174,15 +52174,15 @@
       "description": "Functional Group G",
       "type": "0",
       "degrees": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "phosphate, phosphonooxy-, O-phospono-, ... phosphate",
+        "phosphodiester, hydroxyphosphoryloxy-, di...hydrogen phosphate",
+        "boronic acid, borono-, ... boronic acid",
+        "boronate, O-alkylboronyl-, ... boronic acid di... ester",
+        "borinic acid, hydroxyborino-, di... borinic acid",
+        "borinate, O-alkoxydialkylboronyl-, di... borinic acid ... ester",
+        "alkyllithium, -lithium",
+        "alkylmagnesium halide, -magnesium halide",
+        "alkylaluminium, -aluminium / -aluminum"
       ]
     },
     {
@@ -52446,15 +52446,15 @@
       "description": "Functional Group F",
       "type": "0",
       "degrees": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "nitrile, cyano-, alkanenitrile, alkyl cyanide",
+        "isonitrile, isocyano-, alkaneisonitrile, alkyl isocyanide",
+        "nitro compound, nitro-",
+        "nitroso compound, nitroso-, nitrosyl-",
+        "oxime",
+        "pyridyl, 4-pyridyl, 3-pyridyl, 2-pyridyl, -pyridine",
+        "carbamate, -carbamoyloxy-, -carbamate",
+        "phosphine, phosphanyl-, -phosphane",
+        "phosphonic acid, phosphono-, -phosphonic acid"
       ]
     },
     {
