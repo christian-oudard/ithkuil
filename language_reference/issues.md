@@ -35,12 +35,11 @@ in the transcription.
 |---|---|---|
 | `morphology.md` §§1-7 | New Ithkuil: Grammar Design, v1.3.2 (Feb. 15, 2023), 67 pp. | transcription |
 | `morphology.md` §8 | Chapter 13 of the *2011* grammar, `ithkuil.net/newithkuil_13_numbers.htm` | condensed, in our words |
-| `morphology.md` §12 | Writing System for New Ithkuil, v1.0 (Dec. 2022), 23 pp. | structural summary |
 | `phonotactics.md` | Phonotactic Rules for the Ithkuil Successor Language, v0.5.4, 24 pp. | transcription |
 | `affixes_reference.md` | `data/data.json`, reconciled against V_XC_S Affixes for New Ithkuil v1.1 | generated content |
 | `CHANGELOG.md` | the version histories of the above | transcription |
 
-Two chapters of `morphology.md` have no layer-1 source at all.
+One chapter of `morphology.md` has no layer-1 source at all.
 
 **§8, the number system.** No V4 document covers numbers: the grammar
 document ends at Chapter 7, and none of the four so much as mentions
@@ -50,15 +49,13 @@ numbers are both ours. Its twenty number roots all match the V4
 lexicon exactly, which is the evidence that the system carries over
 unchanged. Nothing else in it is corroborated by a V4 source.
 
-**§12, the writing system.** The script document is a slide deck with
-no section numbering, so the 12.x numbers are ours, as is the chapter
-number. Most of it is glyph artwork, which does not transcribe, so §12
-describes structure and refers to figures. Those figures point at
-`images/script/` and `images/numbers/`, which are not on `main`; the
-images and the fuller script material are on the `writing` branch.
-
-A finding drawn from the wording of either chapter is a finding about
+A finding drawn from the wording of that chapter is a finding about
 our own prose. G19 is the cautionary case.
+
+The writing system is not covered here at all. It is a separate
+document of Quijada's, not a chapter of the grammar, and belongs with
+the script work rather than with the grammar; the material is on the
+`writing` branch, bound for its own repository.
 
 **Unaudited:** the cluster tables in `phonotactics.md` §§8-11 and the
 Slot tables in `morphology.md` §3 have not been read against the PDFs
@@ -1040,6 +1037,9 @@ occurs. **Fixed** in `data/data.json`.
 
 ### G32. WITHDRAWN — the script document tabulates 28, as it says
 
+*Concerns the writing system, which is no longer covered here; kept for
+the record.*
+
 Quijada's script document says "The 28 forms below are the 'core'
 characters" and then lists exactly 28: p b f v s z c ż / t d ţ ḍ š ž č
 j / k g x l r ļ ř / m n ň ç h. The two consonants missing against the
@@ -1058,7 +1058,7 @@ has no sanctioned variant. The documents use one anyway:
 
 | | ẓ (U+1E93, dot below) | ż (U+017C, dot above) |
 |---|---|---|
-| morphology.md | 8 | 1 |
+| morphology.md | 10 | 0 |
 | phonotactics.md | 0 | 23 |
 | affixes_reference.md | 31 | 0 |
 | data.json | 162 | 0 |
@@ -1066,8 +1066,8 @@ has no sanctioned variant. The documents use one anyway:
 Every ẓ in the phonotactics document is written ż, including in §2.2's
 roster of the sibilants and in §2.5's list of prohibited conjuncts —
 the places a reader goes to learn which characters the language has.
-morphology.md keeps ẓ throughout except once, in §12.2.1's table of
-core script characters.
+morphology.md keeps ẓ throughout. (It held one ż, in the script
+chapter's table of core characters; that chapter is no longer here.)
 
 ḑ has the same problem in miniature, and there the variant is at least
 sanctioned: the §4.6 referential table gives the mi/DETRIMENTAL form as

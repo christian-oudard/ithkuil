@@ -10,8 +10,8 @@ package grammar
 // following Cs as a Ca complex stacked on the Slot VI Ca. It belongs
 // here rather than in a separate type because the surface treats it as
 // one more value of the Vx that otherwise carries Type and Degree —
-// Chapter 12 lists it in the affix degree row, between degree 9 and
-// degree 0. A CaStackAffix carries no Degree.
+// the script document lists it in the affix degree row, between degree
+// 9 and degree 0. A CaStackAffix carries no Degree.
 type AffixType int
 
 // Column4Affix is §4.6.5's shortcut for the Transrelative cases: a

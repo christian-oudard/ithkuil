@@ -23,7 +23,7 @@ var grammarResources = []grammarResource{
 		URI:         "grammar://morphology",
 		File:        "morphology.md",
 		Title:       "Ithkuil V4 Morphology",
-		Description: "Canonical reference for phonology, slot structure, cases, adjuncts, syntax, script, and numbers.",
+		Description: "Canonical reference for phonology, slot structure, cases, adjuncts, syntax, and numbers.",
 	},
 	{
 		URI:         "grammar://affixes",

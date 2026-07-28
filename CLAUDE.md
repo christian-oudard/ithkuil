@@ -125,11 +125,11 @@ the transcription. `affixes_reference.md` is not a transcription: it
 tracks `data/data.json`, which merges the community spreadsheet with the
 affix document.
 
-The writing system is not implemented on `main`, and its reference material does
-not live here either: `v4_script.md`, `v4_script_pdf.md`, the extracted figures,
-and the earlier Python attempts are all on the `writing` branch. Chapter 12 of
-`morphology.md` is the only script material on `main`, and only because it is
-one chapter of a document kept whole.
+The writing system is not covered on `main` at all, neither implementation nor
+reference material: `v4_script.md`, `v4_script_pdf.md`, the extracted figures,
+and the earlier Python attempts are all on the `writing` branch, bound for their
+own repository. Quijada's script document is separate from the grammar document,
+so nothing here has to carry it to keep a document whole.
 
 ## Open Work
 
