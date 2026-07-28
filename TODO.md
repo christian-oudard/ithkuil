@@ -72,6 +72,17 @@ corpus, so usage cannot settle it.
 
 ## Known defects
 
+### 0. `üö` is missing from the vowel-conjunct table
+
+`validation.validDisyllabicConjuncts` holds `üo` but not `üö`, so
+`ValidateWord` rejects any word containing it. The Slot IV table gives
+both (`| 0 | ae | ea | üo | üö |`), and `üö` is legal in two places:
+the AMG degree-0 V_R of a specialized C_S-root, and the Ca-stacking
+V_X. We therefore reject a degree-0 AMG C_S-root word today.
+
+Found by hand-assembling a Ca-stacking word and running it through our
+own validator. One-line fix, and a prerequisite for item 2.
+
 ### 5. Ultimate stress on a concatenated formative
 
 §3.1.3: it ends in an alternate V_F, not a V_K. We read a V_K and

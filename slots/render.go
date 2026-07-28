@@ -17,7 +17,6 @@ import (
 //   - re-applies §3.6.1 Ca gemination when len(SlotV) ≥ 1
 //   - reverses Slot V to its Cs+Vx surface order
 //   - applies the stress diacritic via surface.Apply
-//   - prepends the sentence-start ç prefix when requested
 func Render(l Layout) string {
 	var b strings.Builder
 	b.WriteString(l.Cc)

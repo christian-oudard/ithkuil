@@ -55,7 +55,7 @@ The canonical test word is "Maţřëullait", the community nickname for v4 (not 
 Go packages at the repo root:
 
 - `phonology/` - 31 consonants, 9 vowels, vowel form table (4 series x 9 forms)
-- `grammar/` - All morphological types. `Formative` is the central struct (Concat, Root, SlotV, SlotVI, SlotVII, SlotVIII, Final, SentenceStarter). `Root` and `Final` are sum-type interfaces; see `root.go` and `final.go`.
+- `grammar/` - All morphological types. `Formative` is the central struct (Concat, Root, SlotV, SlotVI, SlotVII, SlotVIII, Final). `Root` and `Final` are sum-type interfaces; see `root.go` and `final.go`.
 - `surface/` - Pure rune-level work, no grammatical knowledge: `Strip`/`Apply` for stress diacritics, `SplitConjuncts`/`JoinConjuncts` for vowel/consonant runs, `MergeGlottalVowels`, vowel classification. Also `InputState` and `FromASCII`/`ToASCII` for the digraph notation.
 - `slots/` - `Layout` is the slot-labelled surface form: one raw conjunct per string field (Cc, Vv, Cr, Vr, Ca, Vn, Cn, Vc), plus affix pairs and observed stress. `Parse`/`Render` convert between surface text and `Layout` by shape alone; `ToGrammar`/`FromGrammar` translate `Layout` ↔ `Formative` through the lookup tables. All canonical-form choices (which shortcut wins, moved-glottal, default elisions) live in `FromGrammar`.
 - `parse/` - Grammatical decoders for individual slot positions, plus all lookup tables (Vv, Vr, Vc, Vn, Cn). Nothing text-level.

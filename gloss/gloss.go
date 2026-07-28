@@ -35,12 +35,11 @@ type Glosser struct {
 }
 
 // Formative renders a one-line gloss of f. Components at their default
-// values are suppressed. Stress is shown explicitly as a trailing tag
-// (MONO/ULT/ANT); penultimate stress is the unmarked default and stays
-// off the gloss. A leading "§" marks a sentence-starter formative (one
-// that carried a ç prefix in the surface form). Cs-root formatives
-// render their root as "(Cs)/degree" to distinguish them from regular
-// roots.
+// values are suppressed. Stress is shown explicitly as a trailing tag,
+// ULT for an unframed verbal and ANT for a framed one; penultimate
+// stress is the unmarked default and stays off the gloss. Cs-root
+// formatives render their root as "(Cs)/degree" to distinguish them
+// from regular roots.
 func (gl *Glosser) Formative(f g.Formative) string {
 	if f.Root == nil {
 		panic("gloss: Formative.Root is nil")
@@ -230,13 +229,7 @@ func stemTriple(ss []string, stem int) string {
 }
 
 func (gl *Glosser) csRootLabel(x g.CsRoot) string {
-	abbr := x.Cs
-	if gl.Lex != nil {
-		if entry, ok := gl.Lex.Affixes[x.Cs]; ok {
-			abbr = entry.Abbrev
-		}
-	}
-	return fmt.Sprintf("(%s)/%d", abbr, x.Degree)
+	return fmt.Sprintf("(%s)/%d", gl.affixLabel(x.Cs), x.Degree)
 }
 
 // isVerbalFinal reports whether the formative's Slot VIII C_N should be
@@ -378,7 +371,7 @@ func (gl *Glosser) affix(a g.Affix) string {
 			return fmt.Sprintf("%s/%d%s", entry.Abbrev, a.Degree, gl.affixTypeSuffix(a.Type))
 		}
 	}
-	return fmt.Sprintf("%s/%d%s", a.Consonant, a.Degree, gl.affixTypeSuffix(a.Type))
+	return fmt.Sprintf("%s/%d%s", gl.affixLabel(a.Consonant), a.Degree, gl.affixTypeSuffix(a.Type))
 }
 
 func slotVIII(s g.SlotVIII, isVerbal bool) string {

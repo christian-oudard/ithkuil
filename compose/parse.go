@@ -372,12 +372,14 @@ func appendAffix(f *g.Formative, csOrAbbrev, degreeStr, typeStr string, affixes 
 
 // resolveAffixCs returns the Cs cluster for a Slot VII affix
 // identifier. Accepts the cluster itself, the all-caps abbreviation
-// (looked up by .Abbrev), or any unknown lowercase cluster (returned
-// as-is — the lexicon is a named subset, not the authoritative list
-// of legal Cs clusters).
+// (looked up by .Abbrev), or any unknown lowercase cluster (the
+// lexicon is a named subset, not the authoritative list of legal Cs
+// clusters). An unknown cluster is folded through surface.FromASCII,
+// mirroring the root: the canonical gloss writes it in ASCII digraphs
+// so that it stays typable, and this is what reads that back.
 func resolveAffixCs(id string, affixes map[string]lexicon.AffixEntry) string {
 	if affixes == nil {
-		return id
+		return surface.FromASCII(id)
 	}
 	if _, ok := affixes[id]; ok {
 		return id
@@ -391,8 +393,9 @@ func resolveAffixCs(id string, affixes map[string]lexicon.AffixEntry) string {
 		}
 		return ""
 	}
-	// Lowercase/mixed cluster not in the lexicon — accept as-is.
-	return id
+	// Lowercase/mixed cluster not in the lexicon — accept it, folding
+	// any ASCII digraphs back to their Ithkuil glyphs.
+	return surface.FromASCII(id)
 }
 
 // isClusterToken returns (cluster, true) if tok looks like an Ithkuil

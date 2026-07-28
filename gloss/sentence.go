@@ -143,12 +143,19 @@ func (gl *Glosser) affixPart(a g.Affix) string {
 }
 
 // affixLabel returns the abbreviation for an affix Cs when the lexicon
-// is set and has an entry; otherwise the raw cluster.
+// is set and has an entry; otherwise the raw cluster. Canonical mode
+// spells that fallback in ASCII digraphs, the same way the root is
+// spelled, since the canonical gloss has to stay typable. The lexicon
+// is a named subset rather than the list of legal Cs clusters, so the
+// fallback is reachable for any well-formed affix outside it.
 func (gl *Glosser) affixLabel(cs string) string {
 	if gl.Lex != nil {
 		if entry, ok := gl.Lex.Affixes[cs]; ok && entry.Abbrev != "" {
 			return entry.Abbrev
 		}
+	}
+	if gl.Canonical {
+		return surface.ToASCII(cs)
 	}
 	return cs
 }
