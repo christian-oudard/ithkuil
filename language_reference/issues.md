@@ -23,22 +23,55 @@ belong to any of them.
 3. **`language_reference/*.md`** — our markdown transcriptions of layer 1.
 4. **`data/data.json`, `data/*.tsv`** — layer 2 plus local supplements.
 
-Two parts of `morphology.md` have no layer-1 source at all. Chapter 8,
-the number system, is condensed from Chapter 13 of the *2011* grammar,
-because no V4 document covers numbers. Chapter 12, the writing system,
-is a structural summary of a slide deck whose content is mostly glyph
-artwork. Both carry a provenance note in the document, and neither is
-a transcription; findings drawn from them are findings about our own
-prose unless checked against the page they came from. G19 is the
-cautionary case.
+The reference documents carry the source and only the source,
+including where the source is wrong: a defect is recorded here, not
+corrected in place, so that the two can be compared. Provenance,
+commentary and open questions belong in this file rather than inline
+in the transcription.
+
+### What each reference document is
+
+| File | Source | Fidelity |
+|---|---|---|
+| `morphology.md` §§1-7 | New Ithkuil: Grammar Design, v1.3.2 (Feb. 15, 2023), 67 pp. | transcription |
+| `morphology.md` §8 | Chapter 13 of the *2011* grammar, `ithkuil.net/newithkuil_13_numbers.htm` | condensed, in our words |
+| `morphology.md` §12 | Writing System for New Ithkuil, v1.0 (Dec. 2022), 23 pp. | structural summary |
+| `phonotactics.md` | Phonotactic Rules for the Ithkuil Successor Language, v0.5.4, 24 pp. | transcription |
+| `affixes_reference.md` | `data/data.json`, reconciled against V_XC_S Affixes for New Ithkuil v1.1 | generated content |
+| `CHANGELOG.md` | the version histories of the above | transcription |
+
+Two chapters of `morphology.md` have no layer-1 source at all.
+
+**§8, the number system.** No V4 document covers numbers: the grammar
+document ends at Chapter 7, and none of the four so much as mentions
+the centesimal system. §8 is condensed from Chapter 13 of the 2011
+grammar and renumbered 13 to 8; the chapter number and the subsection
+numbers are both ours. Its twenty number roots all match the V4
+lexicon exactly, which is the evidence that the system carries over
+unchanged. Nothing else in it is corroborated by a V4 source.
+
+**§12, the writing system.** The script document is a slide deck with
+no section numbering, so the 12.x numbers are ours, as is the chapter
+number. Most of it is glyph artwork, which does not transcribe, so §12
+describes structure and refers to figures. Those figures point at
+`images/script/` and `images/numbers/`, which are not on `main`; the
+images and the fuller script material are on the `writing` branch.
+
+A finding drawn from the wording of either chapter is a finding about
+our own prose. G19 is the cautionary case.
+
+**Unaudited:** the cluster tables in `phonotactics.md` §§8-11 and the
+Slot tables in `morphology.md` §3 have not been read against the PDFs
+cell by cell.
 
 ### What checking against layer 1 changed
 
 Ten findings have been withdrawn in whole or in part. Eight were
 defects in **our markdown** rather than in Quijada — G3, G4, G14, G17,
-G19, G27, G31, G32 — and one, A2, was a spreadsheet transposition. They are kept below, marked WITHDRAWN,
-with what the source actually says, because the transcription and the
-data still need fixing even where the language does not.
+G19, G27, G31, G32 — and one, A2, was a spreadsheet transposition.
+They are kept below, marked WITHDRAWN, with what the source actually
+says, because the transcription and the data still need fixing even
+where the language does not.
 
 The largest was G3. Quijada's Ca table binds its two alternate-form
 rules with superscript footnote markers: Extension entries carry ¹
@@ -55,9 +88,10 @@ two C_S forms for one degree list) and A5 (the six blank
 functional-group affixes are populated in Quijada, so the gap is
 recoverable).
 
-**Not yet re-checked against layer 1:** G1, G2, G5-G13, G15, G16,
-G18, G20-G26, G28-G30, and the Lexicon and Corpus sections. These are structural —
-missing rules, uncovered cases, tables that cannot be functions — and
+**Not yet re-checked against layer 1:** G1, G2, G5-G13, G15, G16, G18,
+G20-G26, G28-G30, and the Lexicon and Corpus sections. These are
+structural — missing rules, uncovered cases, tables that cannot be
+functions — and
 do not turn on single characters, so a transcription slip is unlikely
 to explain them away. But G3 and G4 looked structural too. Treat them
 as provisional until each is read against the PDF.
