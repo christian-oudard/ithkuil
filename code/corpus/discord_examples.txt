@@ -134,11 +134,11 @@ correct | uţtälireölweölá | §3.9.2 | two Column-4 vowels, one on the "lw" 
 # SplitConjuncts hands it to us on the front of the Spec. Only Rule 3's
 # epenthetic spelling ("mma'oxinļ") used to be read.
 #
-# What is left is the -w/-y Perspective increment, which §4.6.2's Spec
-# slot does not admit.
+# §4.6.1 needed the same treatment: its Slot 3 is w/y + V_C2, so a
+# glottal on V_C1 lands on the front of that w or y.
 correct | mmia'xinļ | §4.6.2 | combination referential; glottal ends the Vc.
 correct | sa'xinļ | §4.6.2 | combination referential read as a formative with Ca "x".
-!correct | lai'wiš | §4.6 | -w Perspective increment read as a Ca.
+correct | lai'wiš | §4.6.1 | Slot 3 w+V_C2 case-stacking; glottal ends V_C1.
 
 # ── correctly rejected, for contrast ────────────────────────────────
 # Hyphens in this group join things that are not §3.1.7 chains: place

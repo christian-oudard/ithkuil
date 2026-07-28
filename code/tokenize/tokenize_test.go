@@ -416,3 +416,37 @@ func TestCombinationRef_Rule1Glottal(t *testing.T) {
 		}
 	}
 }
+
+// §4.6.1 Slot 3 is w/y + V_C2, so a glottal-stop on V_C1 lands on the
+// front of that w or y rather than word-finally. fo'we'is is the
+// grammar's own example and carries one glottal in each case slot, one
+// per §1.7 placement: V_C1 takes Rule 1 ("o'") and V_C2 takes Rule 3
+// ("e'i").
+func TestReferential_Rule1Glottal(t *testing.T) {
+	cases := []struct {
+		word        string
+		want, want2 g.Case
+	}{
+		{"lai'wiš", g.ACT, g.AFF},  // ai+' , case 45
+		{"fo'we'is", g.PRD, g.ESS}, // o+' , case 43; ei+' -> e'i, case 47
+	}
+	for _, c := range cases {
+		w := ClassifyWord(c.word)
+		r, ok := w.(ReferentialWord)
+		if !ok {
+			t.Errorf("ClassifyWord(%q) = %T, want ReferentialWord", c.word, w)
+			continue
+		}
+		if r.Referential.Case != c.want {
+			t.Errorf("%s: V_C1 = %v, want %v", c.word, r.Referential.Case, c.want)
+		}
+		second := r.Referential.Second
+		if second == nil || second.Case != c.want2 {
+			t.Errorf("%s: V_C2 = %v, want %v", c.word, second, c.want2)
+		}
+	}
+	// Without the glottal it is a different case, not the same word.
+	if r, ok := ClassifyWord("laiwiš").(ReferentialWord); !ok || r.Referential.Case != g.POS {
+		t.Errorf("laiwiš: V_C1 = %v, want POS", r.Referential.Case)
+	}
+}

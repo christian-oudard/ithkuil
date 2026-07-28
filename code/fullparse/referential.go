@@ -46,7 +46,7 @@ func Referential(word string) (g.Referential, error) {
 	if stress == surface.InvalidStress {
 		return g.Referential{}, errNotReferential
 	}
-	conjs := surface.MergeGlottalVowels(surface.SplitConjuncts(bare))
+	conjs := absorbRule1Glottals(surface.MergeGlottalVowels(surface.SplitConjuncts(bare)))
 	if len(conjs) < 2 {
 		return g.Referential{}, errNotReferential
 	}
@@ -143,7 +143,7 @@ func CombinationReferential(text string) (g.CombinationReferential, error) {
 	// Vc is looked up as a whole conjunct, so a glottalized case vowel
 	// ("a'o" in mma'oxinļ) has to be one conjunct rather than the three
 	// SplitConjuncts leaves it as.
-	conjs := surface.MergeGlottalVowels(surface.SplitConjuncts(bare))
+	conjs := absorbRule1Glottals(surface.MergeGlottalVowels(surface.SplitConjuncts(bare)))
 	// §4.6.3 epenthesis: "a-" lets a C_P suppletive cluster occupy C1
 	// instead of a personal-reference cluster. Otherwise "ë" is the
 	// only acceptable prefix.
@@ -163,17 +163,6 @@ func CombinationReferential(text string) (g.CombinationReferential, error) {
 	if !surface.IsConsonantConjunct(c1) || !surface.IsVowelConjunct(vc) {
 		return g.CombinationReferential{}, errNotReferential
 	}
-	// The Spec consonant straight after the V_C is the one place a V_C
-	// is not word-final, so §1.7 Rule 1 applies and the glottal-stop
-	// stays after the vowel-form, where SplitConjuncts hands it to us on
-	// the front of that consonant ("sa'xinļ" splits as s / a / 'x / i /
-	// nļ). Rule 3's epenthetic spelling of the same case arrives merged
-	// into the vowel conjunct instead, handled above.
-	vcLookup := vc
-	if strings.HasPrefix(specSurface, "'") {
-		specSurface = specSurface[1:]
-		vcLookup = surface.GlottalizeVowel(vc)
-	}
 	spec, specOK := parseCombinationSpec(specSurface)
 	if !specOK {
 		return g.CombinationReferential{}, errNotReferential
@@ -189,7 +178,7 @@ func CombinationReferential(text string) (g.CombinationReferential, error) {
 		}
 		head = g.PersonalHead{Refs: refs, Category: cat}
 	}
-	caseVal, caseOk := parse.ParseCase(vcLookup)
+	caseVal, caseOk := parse.ParseCase(vc)
 	if !caseOk {
 		return g.CombinationReferential{}, errNotReferential
 	}
@@ -240,6 +229,40 @@ func CombinationReferential(text string) (g.CombinationReferential, error) {
 		Case2:      case2,
 		RpvEssence: stress == surface.Ultimate,
 	}, nil
+}
+
+// absorbRule1Glottals moves a §1.7 Rule 1 glottal-stop back onto the
+// vowel-form it was inserted into.
+//
+// §1.7 offers two placements. Rule 1 leaves the glottal after the
+// vowel-form (a → a'), and SplitConjuncts then hands it to us on the
+// front of the consonant that follows. Rule 3's epenthetic spelling
+// (a → a'a, ai → a'i) is forced only where Rule 1 will not do, notably
+// word-finally, and reaches us already merged into the vowel conjunct.
+// The case tables are keyed on the Rule 3 spelling because a formative's
+// word-final V_C always lands there, so a Rule 1 glottal has to be put
+// back before the case can be looked up.
+//
+// Only referentials need this. Their vowel slots are all cases (§4.6.1
+// V_C1 and V_C2, §4.6.2 V_C), and they have no Slot V, so a glottal in
+// this position cannot be a §3.6.2 end-of-slot marker the way it can in
+// a formative.
+func absorbRule1Glottals(conjs []string) []string {
+	out := make([]string, len(conjs))
+	copy(out, conjs)
+	for i := 1; i < len(out); i++ {
+		// A bare "'" is a word-final glottal, which Rule 3 forbids;
+		// leave it to be rejected rather than absorbing it.
+		if out[i] == "'" || !strings.HasPrefix(out[i], "'") {
+			continue
+		}
+		if !surface.IsVowelConjunct(out[i-1]) {
+			continue
+		}
+		out[i] = strings.TrimPrefix(out[i], "'")
+		out[i-1] = surface.GlottalizeVowel(out[i-1])
+	}
+	return out
 }
 
 // parseCombinationSpec decodes a Specification consonant marker

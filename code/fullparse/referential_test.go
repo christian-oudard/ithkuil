@@ -152,12 +152,12 @@ func TestReferential_EpentheticVowelWithinC1(t *testing.T) {
 // §4.6.1 notes that "Sec. 1.7, Rule 3, applies to Slot 2 V_C1 and
 // Slot 3 V_C2 for Cases 37 through 52", and prints "fo'we'is" among
 // its examples. Both vowels there carry a glottal stop marking the
-// higher case group. MergeGlottalVowels rejoins V_C1 as "o'", but the
-// V_C2 "e'i" sits after the w/y separator, where the merge has already
-// stopped, so the tail fails to consume.
+// higher case group, and the word shows one §1.7 placement each: V_C1
+// is not word-final, so Rule 1 leaves its glottal after the vowel-form
+// and against the Slot 3 w, which absorbRule1Glottals puts back; V_C2
+// is word-final and takes Rule 3's epenthetic "e'i", which
+// MergeGlottalVowels rejoins.
 func TestReferential_GlottalInBothCaseVowels(t *testing.T) {
-	t.Skip("§4.6.1 glottal-stop case vowel in V_C2 is not read; see the comment above")
-
 	if _, err := Referential("fo'we'is"); err != nil {
 		t.Errorf("Referential(fo'we'is): %v", err)
 	}
