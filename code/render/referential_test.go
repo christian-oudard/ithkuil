@@ -238,3 +238,59 @@ func TestReferential_MonosyllabicCannotCarryRPV(t *testing.T) {
 		t.Errorf("disyllabic RPV referential: %v", err)
 	}
 }
+
+// §4.6.1's own example "ëztewim" parses and cannot be written back.
+//
+// The word needs the epenthetic -ë-: its head cluster "zt" cannot open
+// a word without it. But Referential validates the w/y separator
+// against the prefix-less body, and only finishReferential adds the
+// prefix afterwards. So both candidates it weighs, "ztewim" and
+// "zteyim", are unpronounceable for a reason the prefix would have
+// fixed, and the render fails outright rather than choosing.
+//
+// The fix is not to reorder the two steps: the separator and the
+// prefix are not independent, since which separator is sayable depends
+// on the cluster the prefix leaves behind. They have to be one search
+// over the four combinations, which means pickValid stops being a
+// single-axis helper.
+func TestReferential_EpentheticPrefixWithSecondReferent(t *testing.T) {
+	t.Skip("§4.6.1 epenthetic -ë- is never tried alongside the w/y choice; see the comment above")
+
+	r, err := fullparse.Referential("ëztewim")
+	if err != nil {
+		t.Fatalf("Referential(ëztewim): %v", err)
+	}
+	if _, err := Referential(r); err != nil {
+		t.Errorf("Referential(%+v): %v", r, err)
+	}
+}
+
+// §1.7 gives two placements for a case vowel's glottal stop, and the
+// renderer only ever writes one. Rule 3's epenthetic spelling (o → o'o)
+// is licensed "where Rule 1 will not do", which §4.6.1 spells out as
+// word-final position; a V_C1 followed by the Slot 3 w/y is not final,
+// so Rule 1 applies and the glottal stays after the vowel-form.
+//
+// fullparse reads both placements. The renderer writes Rule 3 in every
+// slot, so §4.6.1's printed example "fo'we'is" comes back "fo'owe'is"
+// and "lai'wiš" comes back "la'iwiš". Both re-parse to the right value,
+// so the round-trip closes and nothing else catches this — but the
+// document spells its own example the other way, and Rule 3 is not
+// licensed in a slot Rule 1 can serve.
+func TestReferential_Rule1GlottalPlacement(t *testing.T) {
+	t.Skip("§1.7 Rule 1 placement is never written; see the comment above")
+
+	for _, w := range []string{"fo'we'is", "lai'wiš"} {
+		r, err := fullparse.Referential(w)
+		if err != nil {
+			t.Fatalf("Referential(%s): %v", w, err)
+		}
+		out, err := Referential(r)
+		if err != nil {
+			t.Fatalf("Referential(%+v): %v", r, err)
+		}
+		if out != w {
+			t.Errorf("%s rendered as %s", w, out)
+		}
+	}
+}

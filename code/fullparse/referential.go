@@ -55,7 +55,7 @@ func Referential(word string) (g.Referential, error) {
 	// C1 instead of a personal-reference cluster. We track that and
 	// route the C_P through ParseCarrierType below.
 	cpEpenthesis := false
-	if conjs[i] == "ë" || conjs[i] == "äi" {
+	if conjs[i] == "ë" {
 		i++
 		if i+1 >= len(conjs) {
 			return g.Referential{}, errNotReferential

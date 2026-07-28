@@ -1319,12 +1319,9 @@ The content of the two rules stands differently:
   so on. All are community coinages rather than Quijada's, so they do
   not settle whether the rule exists, but nothing enforces it either.
 
-Both are removed from the transcription. **`validation` still enforces
-them**, citing §2.23 and §2.24 by number: see the awkward-set entries
-in `spec_examples_test.go` and the `çç`/`ļļ` exception in
-`validation.go`, and the substitution in `allomorph/substitutions.go`
-that exists to avoid producing `nň`. That behaviour now rests on no
-published rule and needs a decision.
+Both are removed from the transcription. What our code does about them
+is a question about our code, and is recorded where the repo keeps
+those: as a skipped test beside the constraint, in `validation`.
 
 The same import summarised §§8-11 rather than transcribing them, which
 is defensible — they are combinatorial tables of 679, 5183, 15034 and
