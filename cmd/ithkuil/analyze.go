@@ -198,8 +198,10 @@ func renderConcatenated(w io.Writer, cw tokenize.ConcatenatedFormativeWord, glos
 	parts := strings.Split(cw.Text, "-")
 	for i, f := range cw.Chain.Formatives() {
 		fmt.Fprintln(iw)
+		// Dependents lead and the parent comes last (§3.1.7), so the
+		// Cc marker alone tells them apart; position does not.
 		label := "[head]"
-		if i > 0 && f.Concat != g.ConcatNone {
+		if f.Concat != g.ConcatNone {
 			label = fmt.Sprintf("[%s dependent]", f.Concat.String())
 		}
 		fmt.Fprintln(iw, label)

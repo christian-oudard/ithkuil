@@ -73,6 +73,23 @@ func TestAnalyze_Detailed(t *testing.T) {
 	}
 }
 
+func TestAnalyze_ConcatenatedChainLabels(t *testing.T) {
+	// A chain lists its dependents first and the parent last
+	// (§3.1.7), so the leading formative must be labelled a
+	// dependent, not a head. Keying the label off position instead
+	// of the Cc marker labelled every member "[head]".
+	out, _, code := runCLI("-data", dataFile(), "analyze", "hakšal-uḑfarf")
+	if code != 0 {
+		t.Fatalf("analyze exit %d; got %q", code, out)
+	}
+	if !strings.Contains(out, "[Type1 dependent]") {
+		t.Errorf("chain missing dependent label; got %q", out)
+	}
+	if strings.Count(out, "[head]") != 1 {
+		t.Errorf("want exactly one [head] in chain; got %q", out)
+	}
+}
+
 func TestAnalyze_ASCIIInput(t *testing.T) {
 	// ASCII typing convention: "maleeut,rqait" must normalize to
 	// "malëuţřait" before parsing, so the slot breakdown shows the
