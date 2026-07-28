@@ -11,6 +11,7 @@ import (
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // Formative builds a grammar.Formative from a gloss-style authoring
@@ -67,6 +68,9 @@ func Formative(s string, affixes map[string]lexicon.AffixEntry) (g.Formative, er
 		if rootIdx >= 0 {
 			return g.Formative{}, fmt.Errorf("multiple root candidates: %q and %q",
 				tokens[rootIdx], tok)
+		}
+		if err := validateRootCluster(cluster); err != nil {
+			return g.Formative{}, err
 		}
 		rootIdx = i
 		root = g.DefaultCrRoot(cluster)
@@ -189,9 +193,36 @@ func tryParseRoot(tok string, affixes map[string]lexicon.AffixEntry) (g.Root, bo
 	}
 	// Bare cluster: CrRoot.
 	if cluster, ok := isClusterToken(tok); ok {
+		if err := validateRootCluster(cluster); err != nil {
+			return nil, false, err
+		}
 		return g.DefaultCrRoot(cluster), true, nil
 	}
 	return nil, false, nil
+}
+
+// validateRootCluster rejects a Cr no root could be. isClusterToken
+// accepts any token carrying a lowercase letter, so without this
+// "qqq" composed to "aqqqal", which is not spelled in Ithkuil at all
+// and does not round-trip, and "zzzz" to "azzzzal", which our own
+// validator rejects for a triple consonant.
+//
+// Only these two rules are applied, because only these two are free
+// of false positives: run over all 5946 lexicon roots, neither fires
+// once. The §2 pair rules fire on two — "csk" and "dcs" are Quijada's
+// own roots, attested as "cskava" and "Adcsuleuha" — so a Cr cannot
+// be held to them, and validating the rendered word instead fails the
+// same two. Whether §2 or the corpus is wrong is open; see G37 and
+// the §2 audit in issues.md. Until it is settled, compose rejects
+// only what is certain.
+func validateRootCluster(cluster string) error {
+	if r := validation.ValidateChars(cluster); !r.Valid {
+		return fmt.Errorf("root %q: %s", cluster, r.Errors[0].Reason)
+	}
+	if validation.HasTripleConsonant(cluster) {
+		return fmt.Errorf("root %q: 1.7: triple consonant", cluster)
+	}
+	return nil
 }
 
 // csRootToken matches "(ABBREV)/degree" where ABBREV is the

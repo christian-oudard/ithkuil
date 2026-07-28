@@ -141,11 +141,34 @@ func TestFormative_Errors(t *testing.T) {
 		{"multiple roots", "ml-foo"},
 		{"unknown abbrev", "ml-ZZZ"},
 		{"unknown affix abbrev", "ml-ZZZ/3"},
+		// A root is any lowercase token, so these used to compose:
+		// "zzzz" to "azzzzal", which our validator rejects for a
+		// triple consonant, and "qqq" to "aqqqal", which is not
+		// spelled in the alphabet and does not round-trip.
+		{"triple-consonant root", "zzzz"},
+		{"root outside the alphabet", "S1-qqq"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			if _, err := Formative(c.in, lex.Affixes); err == nil {
 				t.Errorf("Formative(%q) succeeded, want error", c.in)
+			}
+		})
+	}
+}
+
+// TestFormative_AttestedAwkwardRoots guards the other side of the
+// root check. "csk" and "dcs" break the §2 sibilant and dental-stop
+// pair rules, but they are Quijada's own roots — the morphology
+// corpus attests "cskava" and "Adcsuleuha" — so compose must still
+// accept them. Holding a Cr to §2, or validating the rendered word,
+// rejects all three.
+func TestFormative_AttestedAwkwardRoots(t *testing.T) {
+	lex := mustLex(t)
+	for _, in := range []string{"csk-N", "dcs-DYN.BSC.EXS-ITM"} {
+		t.Run(in, func(t *testing.T) {
+			if _, err := Formative(in, lex.Affixes); err != nil {
+				t.Errorf("Formative(%q) = %v, want success", in, err)
 			}
 		})
 	}
