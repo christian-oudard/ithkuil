@@ -20,9 +20,13 @@ var corpusUnclassified = []string{
 	// with no carrier adjunct in front of it to mark it as foreign.
 	"espanya",
 
-	// A garbled copy of the §4.4.7 sentence, which does classify. The
-	// dependent's Slot IV V_R and its Slot V V_X are swapped, putting
-	// "ëu" in Slot IV, where no V_R is. Filed as issues.md C2.
+	// §4.5.2, a garbled copy of the §4.4.7 sentence, which does
+	// classify. Both carry the same English, and the dependent's Slot
+	// IV V_R and its Slot V V_X are swapped, putting "ëu" in Slot IV
+	// where no V_R is: Slot IV needs eight values, so it uses forms 1-4
+	// and 6-9 and skips form 5. The case label moved too — the gloss
+	// names TSP (uö) where the word ends in uo, which is CMM. §4.4.7 is
+	// the sound copy.
 	"hakšilaölwie-addyëubzattuo",
 
 	// Unexplained.

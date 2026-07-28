@@ -16,7 +16,13 @@ import (
 // list of prohibited nasal-stop-sibilant conjuncts, and §2.16 bars ň
 // before k and before y. No formative built on these can be a legal
 // word, whatever else it holds, so they are excluded from the sweep
-// rather than allowed to bury a real regression. See issues.md L2.
+// rather than allowed to bury a real regression.
+//
+// mps and mpš are daggered upstream, the sheet's mark for a retired
+// word, and every other §2.13 violator in the lexicon is daggered too.
+// ňkhw and řẓňy are not, so those two read as typos rather than as
+// deliberate exceptions. Removing a root from this map is the test that
+// the lexicon has been repaired.
 var unpronounceableRoots = map[string]bool{
 	"mps":  true, // §2.13, named in the spec as \*mps; retired but still shipped
 	"mpš":  true, // §2.13, named in the spec as \*mpš; retired but still shipped

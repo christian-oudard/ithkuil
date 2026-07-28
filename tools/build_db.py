@@ -14,6 +14,7 @@ import argparse
 import json
 import os
 import sqlite3
+from collections import Counter
 from pathlib import Path
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -69,6 +70,39 @@ CREATE VIRTUAL TABLE affixes_fts USING fts5(
 """
 
 
+# Five C_R clusters carry two unrelated meanings in the community
+# lexicon, and the roots table is keyed on C_R, so one meaning of each
+# pair cannot be stored. Only ksmy resolves: its "oven" entry is
+# daggered, the sheet's mark for a retired word, so the live "jagged
+# line" is the one to keep. The other four are live homonyms with
+# nothing to choose between them, and the entry kept is simply the
+# first.
+#
+# Listed rather than tolerated so the loss is deliberate. A new
+# collision, or one of these being repaired upstream, fails the build.
+KNOWN_DUPLICATE_ROOTS = {"cfw", "ksmy", "lzbḑ", "nļt", "rţnw"}
+
+
+def dedupe_roots(roots: list[dict]) -> list[dict]:
+    kept: dict[str, dict] = {}
+    for r in roots:
+        prior = kept.get(r["cr"])
+        if prior is None or prior.get("stem0", "").endswith("†"):
+            kept[r["cr"]] = r
+    seen = Counter(r["cr"] for r in roots)
+    collisions = {cr for cr, n in seen.items() if n > 1}
+    if collisions != KNOWN_DUPLICATE_ROOTS:
+        raise ValueError(
+            f"duplicate C_R set changed: {sorted(collisions)} "
+            f"!= {sorted(KNOWN_DUPLICATE_ROOTS)}"
+        )
+    for cr in sorted(collisions):
+        dropped = [r for r in roots if r["cr"] == cr and r is not kept[cr]]
+        for d in dropped:
+            print(f"  duplicate C_R {cr}: dropping {d.get('stem0', '')!r}")
+    return list(kept.values())
+
+
 def build(data_path: Path, db_path: Path) -> None:
     with open(data_path, encoding="utf-8") as f:
         data = json.load(f)
@@ -95,7 +129,7 @@ def build(data_path: Path, db_path: Path) -> None:
     )
 
     conn.executemany(
-        "INSERT OR REPLACE INTO roots VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        "INSERT INTO roots VALUES (?,?,?,?,?,?,?,?,?,?,?)",
         [
             (
                 r["cr"],
@@ -110,7 +144,7 @@ def build(data_path: Path, db_path: Path) -> None:
                 json.dumps(r.get("completive", []), ensure_ascii=False),
                 json.dumps(r.get("wikidata", []), ensure_ascii=False),
             )
-            for r in data["roots"]
+            for r in dedupe_roots(data["roots"])
         ],
     )
     conn.execute('INSERT INTO roots_fts(roots_fts) VALUES ("rebuild")')
@@ -130,13 +164,16 @@ def build(data_path: Path, db_path: Path) -> None:
     )
     conn.execute('INSERT INTO affixes_fts(affixes_fts) VALUES ("rebuild")')
 
+    counts = {
+        t: conn.execute(f"SELECT count(*) FROM {t}").fetchone()[0]
+        for t in ("grammar", "roots", "affixes")
+    }
     conn.commit()
     conn.close()
 
     print(f"Built {db_path} ({db_path.stat().st_size // 1024} KB)")
-    print(f"  grammar: {len(data['grammar'])} entries")
-    print(f"  roots:   {len(data['roots'])} entries")
-    print(f"  affixes: {len(data['affixes'])} entries")
+    for t, n in counts.items():
+        print(f"  {t + ':':9}{n} entries")
 
 
 def main() -> None:
