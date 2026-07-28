@@ -44204,7 +44204,7 @@
         "(PCT) Punctual",
         "(ITR) Iterative",
         "(REP) Repetitive",
-        "(IMT) Intermittent",
+        "(ITM) Intermittent",
         "(RCT) Recurrent",
         "(FRE) Frequentative",
         "(FRG) Fragmentative",
@@ -45233,7 +45233,7 @@
       ]
     },
     {
-      "cs": "ḑg",
+      "cs": "gḑ",
       "abbrev": "MDI",
       "description": "Modification",
       "type": "D1",
@@ -49800,7 +49800,7 @@
         "X times per age (10⁶ years)",
         "X times per epoch (10⁷ years)",
         "X times per era (10⁸ years)",
-        "Eight",
+        "X times per eon [5 x 10⁸ years]",
         "X times per billion (10⁹) year period",
         "X times per universe-lifespan"
       ]

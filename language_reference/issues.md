@@ -6,41 +6,54 @@ the inverse list: what is wrong with, or missing from, our own
 implementation. Anything we cannot implement because the sources
 disagree belongs in both.
 
-## Provenance, and what each finding rests on
+## Provenance
 
 Four layers sit between Quijada and this repository, and a defect can
-belong to any of them. Every entry below says which layer its evidence
-comes from.
+belong to any of them.
 
-1. **Quijada's V4 documents** — the grammar PDF (v1.3.2, Feb 2023) and
-   the affix reference. *Not available to this audit.* ithkuil.net
-   serves the 2011 material; the V4 PDFs are not linked from any page
-   reachable here. **No finding below is verified against Quijada
-   directly.**
+1. **Quijada's V4 design documents.** *Obtained and checked.*
+   `New_Ithkuil_design_doc_v_1_3.pdf` from ithkuil.net is Grammar
+   Design v1.3.2 (Feb 15 2023), the version our markdown transcribes.
+   `ithkuil.place/4/archive/latest/` supplies the affix, phonotactics
+   and script documents. Local copies live in
+   `$XDG_DATA_HOME/ithkuil/reference/`, outside the repo.
 2. **The Collaborative Ithkuil IV Roots and Affixes Spreadsheet**
-   (Google Sheets `1JdaG1PaSQJRE2LpILvdzthbzz1k_a0VT86XSXouwGy8`), a
-   community artifact that `tools/sync_lexicon.py` mirrors. *Fetched
-   live and checked directly.* Every entry in the Affix table and
-   Lexicon sections below was confirmed against it, so those are
-   defects in the community data, not in our copy of it — though
-   whether the community introduced them or inherited them from
-   Quijada is not something this audit can say.
-3. **`language_reference/*.md`** — our markdown transcriptions of layer
-   1. *Fidelity unverified.* Everything in the Grammar section rests on
-   these.
-4. **`data/data.json`, `data/*.tsv`** — derived from layer 2 plus local
-   supplements.
+   (Google Sheets `1JdaG1PaSQJRE2LpILvdzthbzz1k_a0VT86XSXouwGy8`),
+   which `tools/sync_lexicon.py` mirrors. *Fetched live and checked.*
+3. **`language_reference/*.md`** — our markdown transcriptions of layer 1.
+4. **`data/data.json`, `data/*.tsv`** — layer 2 plus local supplements.
 
-The practical consequence is a split in how much weight the Grammar
-findings carry. A missing rule, an uncovered case, a table that cannot
-be a function — these survive any plausible transcription error, and
-are reported as findings. A single wrong character, on the other hand,
-is exactly what a PDF extraction gets wrong, and cannot be attributed
-without layer 1. Those are collected at the end under "Single-character
-differences" rather than argued as defects in the language.
+### What checking against layer 1 changed
+
+Seven findings were withdrawn. Six were defects in **our markdown**
+rather than in Quijada — G3, G4, G14, G27, G31, G32 — and one, A2, was
+a spreadsheet transposition. They are kept below, marked WITHDRAWN,
+with what the source actually says, because the transcription and the
+data still need fixing even where the language does not.
+
+The largest was G3. Quijada's Ca table binds its two alternate-form
+rules with superscript footnote markers: Extension entries carry ¹
+("if the Configuration of the word is UPX") and the RPV Perspective
+entries carry ² ("when preceded by [C]t-, [C]k-, or [C]p-"). Our
+markdown dropped the superscripts and rendered the footnotes as
+free-standing sentences, which made the conditions look swapped. The
+binding in the PDF is the one the 3840-value bijection test had already
+identified as the only workable reading — the computation was right and
+the source was never wrong.
+
+Two entries changed shape rather than falling: A3 (SPT really does have
+two C_S forms for one degree list) and A5 (the six blank
+functional-group affixes are populated in Quijada, so the gap is
+recoverable).
+
+**Not yet re-checked against layer 1:** G1, G2, G5-G13, G15-G26,
+G28-G30, and the Lexicon and Corpus sections. These are structural —
+missing rules, uncovered cases, tables that cannot be functions — and
+do not turn on single characters, so a transcription slip is unlikely
+to explain them away. But G3 and G4 looked structural too. Treat them
+as provisional until each is read against the PDF.
 
 ## Affix table
-
 ### A1. Three affixes' degree lists are shifted by one row
 
 *Confirmed in the live spreadsheet (layer 2), not an artifact of our
@@ -73,56 +86,51 @@ The reference document is the only place ENS's nine meanings survive.
 override that restores all three from there on every sync, and
 `data/data.json` has been corrected.
 
-### A2. Two different affixes share the Cs cluster -ḑg-
+### A2. WITHDRAWN — the ḑg collision is a spreadsheet transposition
 
-- **MDI**, Modification, D1: "entity used to stop X", "entity used to
-  lessen/mitigate X", …
-- **S07**, Position/state intertwined in 3D volume, D1: "interior
-  movement through integrated 3D midst", …
+The live spreadsheet has `ḑg` twice, for MDI and S07, and it is the
+only duplicated C_S among its 527 rows. Quijada's affix document does
+not:
 
-*Confirmed in the live spreadsheet, where `ḑg` is the only duplicated
-C_S among all 527 rows.* `language_reference/affixes_reference.md`
-carries both entries too.
+| | Quijada | Spreadsheet |
+|---|---------|-------------|
+| S07 Position/state intertwined in 3-D volume | **-ḑg** | ḑg |
+| MDI Modification | **-gḑ** | ḑg |
 
-The two are unrelated in meaning and identical in surface form, and
-both are ordinary V_X C_S affixes occupying the same slots — nothing in
-a formative can distinguish them. Any lookup keyed on C_S has to pick
-one and lose the other.
+MDI's cluster is `gḑ`, reversed upstream into `ḑg`, which manufactured
+the clash. There is no collision in the language, and `gḑ` is free.
 
-Whether Quijada's own affix document has the collision, or the
-community introduced it, cannot be settled from layer 2 alone.
+**Fixed** in `data/data.json`. It should also go upstream, where a
+duplicate-key check would catch it.
 
-### A3. The ry row of SPT holds rw's degrees; its own are missing
+### A3. SPT has two C_S forms and no rule for choosing between them
 
-§6.0 introduces the affix as "**SPT -- Specified Points in Calendrical
-Time** (form: -**rw**/-**ry**)", and the spreadsheet carries two SPT
-rows, at `rw` and at `ry`, with identical degree lists — seconds,
-minutes, hours, weekday, day, week of month, month, year, century.
+Quijada's affix document gives the entry as **-rw/-ry SPT Specified
+Points in Calendrical Time**, with a single degree list: second(s) of
+the minute, minute(s) of the hour, hour of the day, day of the week,
+day of the month, week of the month, month of the year, year, century.
+§6.0 of the grammar repeats the same pairing. The spreadsheet's two
+identical SPT rows mirror that faithfully; they are not a duplication
+error, as an earlier version of this entry supposed.
 
-The -w/-y alternation is not unexplained, as an earlier version of this
-entry claimed. It is systematic across the affix inventory: fourteen
-C_S forms differ only in a final -w against -y, and in every case the
-two are *different affixes*, with -w the nearer or shorter member of a
-paired scale and -y the farther or longer one.
+So the affix really does have two consonant forms for one meaning set,
+and nothing anywhere says which to use.
+
+What makes the silence odd is that the surrounding family uses the same
+alternation to separate *different* affixes. Fourteen C_S forms differ
+only in a final -w against -y, and in every other case the two are
+distinct entries, -w the nearer member of a paired scale and -y the
+farther:
 
 | -w form | | -y form | |
 |---------|---|---------|---|
-| rkw | CYC Cyclic Recurrence (every second … every century) | rky | CYL Cyclic Recurrence **(Long-Term)** (every millennium … lifespan of the universe) |
-| rţw | ITE Iterations Per Time-Period (per second … per century) | rţy | ILT Iterations Per **Long-Term** (per millennium … per universe-lifespan) |
+| rkw | CYC Cyclic Recurrence (every second … every century) | rky | CYL Cyclic Recurrence **[Long-Term]** |
+| rţw | ITE Iterations Per Time-Period | rţy | ILT Iterations Per **Long-Term** |
 | řw | VMA Volumetric Measurement **A** | řy | VMB Volumetric Measurement **B** |
 | ţw | P04 Position at 0 / 0 / **-Z** | ţy | P03 Position at 0 / 0 / **+Z** |
 
-and ten more positional pairs on the same -Z/+Z contrast.
-
-SPT sits in that family — `r`, `rk`, `rţ` each with a -w and a -y form
-— and its degrees are the ordinary calendrical scale, matching CYC's
-and ITE's -w members exactly. So `ry` should carry a long-term
-counterpart, millennia to universe-lifespan, parallel to CYL and ILT.
-Instead it repeats the `rw` degrees verbatim.
-
-What is missing, then, is not a rule for choosing between the forms but
-one of the two degree sets. The affix that `ry` names has never been
-written.
+plus ten more positional pairs on the -Z/+Z contrast. SPT is the one
+member of that family where -w and -y do not distinguish anything.
 
 ### A4. ANG's Type cell holds a spilled degree list
 
@@ -142,15 +150,28 @@ degrees, while the stray text orders them arc-seconds, arc-minutes,
 mils, grads, degrees, points, hour angles, radians, sextants. Which
 ordering was meant is not recoverable from either source.
 
-### A5. Six functional-group affixes have no meanings at all
+### A5. Fifty-four functional-group degrees are missing from the lexicon
 
 GPB (`sļ`), GPC (`šḑ`), GPD (`šļ`), GPE (`zḑ`), GPF (`zļ`) and GPG
-(`žḑ`) carry a Cs, an abbreviation and a description, and nine empty
-degree cells — in both sources, and *confirmed live upstream*. GPA, GPH
-and GPJ around them are fully populated. Fifty-four degrees of the chemistry vocabulary were reserved
-and never written.
+(`žḑ`) carry a C_S, an abbreviation and a description in the
+spreadsheet, and nine empty degree cells apiece.
 
-(The series also skips GPI, presumably to keep I and J apart.)
+*They are not empty in Quijada.* His affix document populates all six:
+GPB runs hydroxil, carbonyl, aldehyde, haloformyl, carbonate ester,
+carboxylate, carboxyl, carboalcoxy, methoxy; GPC runs hydroperoxy,
+peroxy, ether, hemiacetal, hemiketal, acetal, ketal, orthoester,
+orthocarbonate ester; and so on through GPG.
+
+So this is a recoverable gap rather than a hole in the language: 54
+degrees of organic-chemistry vocabulary exist in the source and are
+absent from our lexicon because the community sheet never transcribed
+them. GPA, GPH and GPJ, which the sheet does carry, show what the rest
+should look like.
+
+Recovering them means extracting nine degrees apiece from a two-column
+PDF layout, which is worth doing carefully rather than quickly — the
+columns interleave on each text line and several entries are long
+enough to wrap. Not yet done.
 
 ### A6. XCL is absent from the community spreadsheet
 
@@ -176,6 +197,9 @@ resumes with "X times per billion (10⁹) year period".
 CYL, its sibling on the same scale (see A3), gives "occuring every 500
 million years" at degree 7, which is where the 10⁸-to-10⁹ gap wants
 filling. A stray cell has overwritten the entry.
+
+Quijada's degree 7 is "X times per eon [5 x 10⁸ yrs.]". **Fixed** in
+`data/data.json`.
 
 ## Lexicon
 
@@ -278,75 +302,45 @@ The neighbouring rule **fbm → (fv) → vw** is parallel to the `ţbn`
 reading — a fricative before bm/bn in both — which argues for the input
 side. That still leaves MSS/A/DPL/RPV stranded.
 
-### G3. §3.6's two alternate-form rules have their conditions swapped
+### G3. WITHDRAWN — the conditions are footnotes, and our markdown lost them
 
-The Ca table prints two components with a primary and an alternate
-form — Extension (`t / d`, `k / g`, `p / b`, `g / gz`, `b / bz`) and
-the RPV column of Perspective+Essence (`m / h` for N, `n / ç` for A) —
-and two rules for choosing between them:
-
-> Use the alternate Extension form when preceded by [C]**t**-, [C]**k**-,
-> or [C]**p**-.
->
-> Use the alternate Perspective+Essence RPV form (for N and A) when the
-> Configuration of the word is UPX.
-
-Composing all 3840 Ca values four ways — the two rules as printed, with
-their conditions exchanged, and with both conditions the same — gives:
-
-| Reading | Distinct forms | Colliding | Phonotactically illegal |
-|---------|---------------|-----------|------------------------|
-| As printed (Ext ← t/k/p, RPV ← UPX) | 3767 | 73 | 100 |
-| **Conditions exchanged** | **3840** | **0** | **4** |
-| Both on t/k/p | 3744 | 96 | 100 |
-| Both on UPX | 3839 | 1 | 12 |
-
-Only the exchanged reading is a bijection. As printed, 73 clusters
-carry two or more meanings and the Ca complex stops being decodable:
-`rt` is both UPX/COA/M/PRX/NRM and MSS/COA/M/DEL/NRM, `py` is both
-UPX/CSL/A/ATV/NRM and MSF/CSL/A/DEL/NRM, and so on for 71 more.
-
-The exchanged reading is also the one the forms themselves argue for.
-UPX contributes no Configuration consonant, so a UPX Extension would
-sit alone where a Configuration consonant would otherwise be — `t` for
-UPX/PRX against `t` for MSS/DEL. The voiced alternate `d` is what keeps
-those apart, which is exactly the collision the printed reading
-produces. Likewise the RPV alternates `h` and `ç` avoid a stop plus
-nasal, which is what "preceded by [C]t-, [C]k-, [C]p-" describes.
-
-(The four remaining illegal forms under the exchanged reading are the
-single `ţḑ` configuration of G2 above, with its three Affiliation
-prefixes.)
-
-### G4. The Ca substitution list is missing a character and a rule
-
-The §3.6 substitution list reads, in its third column:
+Quijada's Ca table attaches its two alternate-form rules with
+superscript markers:
 
 ```
-rr → ns
-ř  → nš
-řr → ňs
+GRA  GRADUATIVE   g / gz ¹        A  ABSTRACT   y (j)   n/ç²
+DPL  DEPLETIVE    b / bz ¹
+          ¹ Use the alternate form if the Configuration of the word is UPX
+          ² Use the alternate form when preceded by [C]t-, [C]k-, or [C]p-
 ```
 
-*A dropped leading character is exactly what layer 3 gets wrong, so
-this half of the entry may be ours rather than the grammar's; the
-missing `řř` rule below is not, since no single character restores it.*
+The Extension alternate is conditioned on UPX and the RPV Perspective
+alternate on a preceding t/k/p — exactly the binding that composing all
+3840 Ca values showed to be the only bijection. The source is correct.
 
-Applied literally, `ř → nš` rewrites every ř in every Ca — including
-the VAR Affiliation prefix and the G/RPV Perspective suffix, neither of
-which is part of a cluster the rule could be about. The result is 385
-phonotactically illegal Ca forms (`cḑš`, `fḑš`, `kḑš` … all violating
-§2.23) and 48 that contain a geminate. The entry has to be **rř → nš**:
-that completes the r/ř matrix the other two entries start, and it is
-the only reading under which the list works at all.
+`language_reference/morphology.md` dropped the superscripts and rendered
+the two footnotes as free-standing sentences in page order, which reads
+as though the Extension rule owns the t/k/p condition. The
+transcription needs fixing; the language does not.
 
-Even repaired, the matrix is missing its fourth cell. `rr`, `rř` and
-`řr` are given; `řř` is not. It arises — UPX/VAR/G/DEL/RPV composes the
-VAR prefix `ř` with the G/RPV suffix `ř` — and with no rule to rewrite
-it, that configuration's bare Ca is the geminate `řř`, which §3.6.1
-reserves for marking the end of Slot V. The pattern of the other three
-entries (r→n/ř→ň in first position, r→s/ř→š in second) supplies the
-missing value `ňš` unambiguously, but the document never states it.
+### G4. WITHDRAWN — the substitution list is complete in the source
+
+The §3.6 list in the PDF reads, in full:
+
+```
+pp mp    pb mb    rr ns    [C]gm [C]x    [C]bm [C]v
+tt nt    kg ng    rř nš    [C]gn [C]ň    [C]bn [C]ḑ
+kk nk    çy nd    řr ňs    ngn ňn        fbm (fv) vw
+ll pļ             řř ňš    [C]çx [C]xw   ţbn (tḑ) ḑy
+```
+
+All four cells of the r/ř matrix are present — `rr ns`, `rř nš`,
+`řr ňs`, `řř ňš` — so neither half of the old entry survives. Our
+markdown lost the leading `r` of `rř` and dropped the `řř ňš` line.
+
+It also has `cy nd` where the source has **`çy nd`**, which settles a
+question left open in the code: `allomorph/substitutions.go` is right
+to substitute `çy`, and the markdown is what was wrong.
 
 ### G5. The gemination rules leave 115 of the 3840 Ca forms with no geminated form
 
@@ -998,35 +992,19 @@ and the name "Intermittent" is right, so `IMT` is a transposition of
 `ITM`. The grammar document uses ITM throughout — in the Slot VIII
 Pattern-1 table and in the writing-system chapter — and IMT appears
 nowhere in it. The affix table is the only place the transposed form
-occurs.
+occurs. **Fixed** in `data/data.json`.
 
 
-### G32. §12.2 counts 28 core script characters and tabulates 30
+### G32. WITHDRAWN — the script document tabulates 28, as it says
 
-§12.2.1 introduces the core secondary characters with "The **28** core
-forms each have a 'top' and 'bottom' end that take extensions", and
-§12.2.2 opens "For each of the **28** consonants, there are three
-extension orientations". The table between the two sentences lists
-thirty:
+Quijada's script document says "The 28 forms below are the 'core'
+characters" and then lists exactly 28: p b f v s z c ż / t d ţ ḍ š ž č
+j / k g x l r ļ ř / m n ň ç h. The two consonants missing against the
+§1.1 inventory of 30 are **w** and **y**, the semiconsonants, which the
+script handles elsewhere.
 
-> p b f v t d ţ ḑ k g s z x š ž c ż č j ç h l r ļ ř m n ň w y
-
-That is exactly §1.1's consonant inventory — all thirty letters, with
-nothing missing and nothing extra — leaving out only the glottal stop,
-which is the one consonant with no secondary character. The table is
-right and complete; the count in the prose on either side of it is not.
-
-## Single-character differences
-
-Each of these is one character away from a form that works, which is
-exactly what a PDF extraction gets wrong. Layer 1 would settle every
-one of them in a minute, and without it none can be attributed. They
-are recorded so that whoever reaches Quijada's originals knows where to
-look — not argued as defects in the language.
-
-The one exception is the ż/ẓ split, which is too large and too
-systematic to be an accident of extraction: an entire document uses one
-character and its neighbours use the other.
+Our markdown's version of the table added w and y, making it disagree
+with the count printed beside it.
 
 ### G13. The documents disagree on how to write ẓ and ḑ
 
@@ -1057,47 +1035,21 @@ nowhere else and is absent from §1.1 as printed.
 Either way a machine reader checking the phonotactic rules against the
 phoneme inventory sees an unknown codepoint twenty-three times.
 
-### G14. The V_K table marks two of its eleven forms wrongly
+### G14. WITHDRAWN — the V_K diacritics are correct in the source
 
-§3.9.3 states that "the V_K affix for verbs uses the same vowel-forms
-as the V_C case affix", and V_K is by definition the ultimate-stressed
-Slot IX, so every V_K form should carry a stress diacritic placed by
-§1.3.1: an undiacriticked vowel takes the acute, a vowel with dieresis
-takes the circumflex instead.
+Quijada's Validation table gives REC as **â** and USP as **êi** — the
+forms §1.3.1's rules require, and the ones this entry predicted. Our
+markdown has `à` (a-grave) and a bare `ëi`.
 
-Nine of the eleven follow that exactly — á, é, í, ô, ó, û, ú for the
-Validations and ái, áu, éi, éu, óu, ói, íu, úi for the non-Assertive
-Illocutions, each marked on the prominent first member. Two do not:
+Both values were derived from the vowel-form series and the
+acute/circumflex convention before the PDF was available, and both
+turned out to match it.
 
-- **REC** is printed **à**, a grave on plain `a`. The Validations run
-  down the standard vowel sequence, so REC is form 2, `ä` — the V_C
-  table gives `ä` for case 2, and IMA `ö → ô` and ITU `ü → û` in the
-  same column confirm the series and the convention. REC should be
-  **â**. As printed it is the only grave accent in the table, and
-  §1.3.1 reserves the grave for an *unstressed* -i- (or -u-) as the
-  first member of a vocalic conjunct — never for a stressed vowel and
-  never on `a`.
-- **USP** is printed **ëi**, with no mark at all, where §1.3.1 would
-  give **êi**. Unmarked means penultimate stress, which contradicts
-  V_K's own definition.
+### G27. WITHDRAWN — CLG is -ḑc in the source
 
-### G27. §7.0 gives CLG a form that no affix bears and §2.2 prohibits
-
-§7.0 introduces "**CLG -- Cultural or Geo-Demographic Association**
-(form: -**dc**)". The affix table has CLG at **ḑc**, and `dc` is
-assigned to no affix at all.
-
-The cited form is not merely unassigned, it is unpronounceable: §2.2
-says "The dental stops (**t**, **d**) cannot be immediately followed by
-any sibilant (s, z, š, ž, c, ż, č, j)", and `c` is a sibilant
-affricate. `ḑ` is an interdental fricative, not a dental stop, so `ḑc`
-is unaffected — §2.23's bar on ḑ before a sibilant names only the
-fricatives s, š, z, ž. A missing cedilla turns a legal cluster into a
-prohibited one.
-
-Every other affix form cited in the body checks out against the affix
-table: PTN `sv`, CHC `rz`, SEQ `nt`, OGC `dn`, POR `ft`, TNX `rs`,
-SIZ `x`, and SPT `rw`/`ry` per A3.
+The affix document and §7.0 of the grammar both give **-ḑc**. Our
+markdown lost the cedilla, producing `-dc-`, which is what §2.2
+prohibits. `data/data.json` already had `ḑc`.
 
 ### G28. §7.2 writes OCG for OGC
 
@@ -1120,21 +1072,10 @@ And *usarcsaidna amerika* / *usarcsuidna amerika* use OGC at Type-2
 degrees 1 and 9 — `ai` and `ui` — which is northern and southern, as
 North and South America require.
 
-### G31. The DES bias is printed mřr, which §2.21 forbids; the form is mřř
+### G31. WITHDRAWN — the DES bias is mřř in the source
 
-§4.7's table gives the DESPERATIVE bias as **mřr**. §2.21 is
-unambiguous — "The uvular approximant -**ř**- cannot be followed by
--**r**-" — so as printed the form is unpronounceable in any position,
-not merely word-initially.
-
-The geminate `mřř` is what the language actually uses. It stands alone
-as a word 42 times in the community corpus against a single instance of
-`mřr`, `data/data.json` records it as `mřř`, and unlike `mřr` it is
-legal: §6.4.1 admits a word-initial #C₁C₂C₂- whenever #C₁C₂- is
-permitted, and §3.2.8 permits a word-initial nasal before the
-approximant ř.
-
-A dropped diacritic, then — but one that turns a legal word into a
-prohibited one, the same shape of error as §7.0's `dc` for `ḑc` in
-G27 just above.
+§4.7 of the PDF reads `DES DESPERATIVE mřř`. Our markdown has `mřr`,
+which §2.21 forbids. The corpus evidence that pointed this way — 42
+standalone `mřř` against one `mřr` — was right, and the source
+confirms it.
 
