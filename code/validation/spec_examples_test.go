@@ -8,8 +8,9 @@ import "testing"
 //
 // The permitted cases carry the weight here. Every validator defect
 // found so far has been over-rejection — mp and mb under §2.12, çç and
-// ļļ under §2.24 — and in each one the document named the permitted
-// forms within a few words of the prohibition. A rule read as "m
+// ļļ under a rule that turned out not to exist — and in each one the
+// document named the permitted forms within a few words of the
+// prohibition. A rule read as "m
 // cannot precede a labial stop" and a rule read as "m + labial stop +
 // fricative is indistinct from m + fricative" reject exactly the same
 // starred examples. Only the contrasting permitted forms tell the two
@@ -30,7 +31,8 @@ type clusterCase struct {
 }
 
 // section2 covers the general prohibitions, which hold in any
-// position. Every numbered rule from §2.2 to §2.24 appears.
+// position. Every numbered rule from §2.2 to §2.22 appears, plus the
+// unsourced "2.23" the validator still enforces (G37 in issues.md).
 var section2 = []clusterCase{
 	// §2.2 dental stop + any sibilant, and + its own fricative
 	// counterpart.
@@ -259,14 +261,22 @@ var section2 = []clusterCase{
 	{"2.23", Medial, "ḑž", false},
 	{"2.23", Medial, "nň", false},
 
-	// §2.24 bars çç and ļļ, but the morphology builds both and the
-	// document contradicts itself: §3.6.1 rule 4 gives çkl → ççkl as
-	// its own worked example and rule 6 gives tçkl → tççkl, the
-	// bias-adjunct table holds pļļ (CMD) and kçç (EXA), and 40 corpus
-	// words use them. The rule governs the root and affix conjuncts
-	// that are §2's subject, not forms the grammar itself generates.
-	{"2.24", Medial, "çç", true},
-	{"2.24", Medial, "ļļ", true},
+}
+
+// derived covers clusters the morphology itself builds. They are not
+// §2's subject and no §2 rule reaches them, but a validator that
+// over-rejects breaks the words that carry them, so the guard belongs
+// with the section that generates them.
+var derived = []clusterCase{
+	// §3.6.1 rule 4 geminates a sibilant "in any position" and gives
+	// çkl → ççkl as its own worked example; rule 6 gives tçkl → tççkl.
+	// The bias-adjunct table holds pļļ (CMD) and kçç (EXA), and 39
+	// corpus words use one or the other, among them formatives whose
+	// geminated Ca marks the end of Slot V: wiapļļalká,
+	// hamphelsuirççaité. Our markdown once carried a "§2.24" barring
+	// both; it is in no published document (G1, G37 in issues.md).
+	{"3.6.1", Medial, "çç", true},
+	{"3.6.1", Medial, "ļļ", true},
 }
 
 // section34 covers the position-specific rules — the cases a
@@ -357,3 +367,5 @@ func runClusterCases(t *testing.T, cases []clusterCase) {
 func TestSpec_GeneralProhibitions(t *testing.T) { runClusterCases(t, section2) }
 
 func TestSpec_PositionalForms(t *testing.T) { runClusterCases(t, section34) }
+
+func TestSpec_DerivedClusters(t *testing.T) { runClusterCases(t, derived) }

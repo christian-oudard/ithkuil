@@ -166,12 +166,12 @@ func TestCheckProhibitedPair_Rule222(t *testing.T) {
 	}
 }
 
-func TestCheckProhibitedPair_Rule224_GeminatesAreAllowed(t *testing.T) {
-	// §2.24 bars çç and ļļ, but §3.6.1 gemination builds both — its
-	// own worked examples are çkl → ççkl and tçkl → tççkl — and the
-	// corpus attests them (wiapļļalká, hamphelsuirççaité). The rule
-	// governs root and affix conjuncts, not forms the morphology
-	// itself generates.
+func TestCheckProhibitedPair_GeminatesAreAllowed(t *testing.T) {
+	// Nothing bars çç or ļļ. §3.6.1 gemination builds both — its own
+	// worked examples are çkl → ççkl and tçkl → tççkl — and the corpus
+	// attests them (wiapļļalká, hamphelsuirççaité). The "§2.24" that
+	// prohibited them was ours, not Quijada's: see G1 and G37 in
+	// issues.md.
 	for _, r := range []rune{'ç', 'ļ'} {
 		if rule, _ := CheckProhibitedPair(r, r); rule != "" {
 			t.Errorf("%c%c should be allowed, got %s", r, r, rule)
