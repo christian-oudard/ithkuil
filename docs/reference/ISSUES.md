@@ -377,21 +377,6 @@ permitted nor prohibited.
 Four more — CMD `pļļ`, EXA `kçç`, OPT `ççk` and STU `ļļč` — are the
 §2.24 geminates of G1 above.
 
-### G11. §4.7's stated design principle contradicts its own table
-
-§4.7 says each bias adjunct is "phonologically structured to contain
-continuant and sonorant consonants so that … they may be pronounced in
-an exaggerated, prolonged fashion". Thirty-five of the 61 forms contain
-a stop or an affricate, and seventeen *begin* with one — ANN `drr`,
-CMD `pļļ`, CRP `gžž`, CTP `kšš`, CTV `gvv`, DCC `gzj`, DFD `cč`,
-DIS `kff`, DLC `ẓmm`, DRS `pfc`, EUH `gzz`, EXA `kçç`, MNF `pss`,
-IDG `pšš`, PES `ksp`, RAC `kll`, VEX `ksk`. An onset of `drr` or `ksk`
-is the one thing that cannot be prolonged.
-
-The very next sentence concedes the point in passing — "those ending in
-a voiceless stop or voiceless affricate may aspirate or even
-ejectivize" — without reconciling it with the claim it follows.
-
 ### G12. §1.2.1's vowel inventory does not cover the conjuncts the morphology uses
 
 §1.2.1 gives ten permissible diphthongs — ai, ei, ëi, oi, ui, au, eu,
@@ -402,23 +387,6 @@ ejectivize" — without reconciling it with the claim it follows.
 diphthong, and the tables never say how many syllables these forms
 carry — which matters, because syllable count is what selects the
 formative's Relation in Slot X.
-
-### G15. Three cross-references point at the wrong section
-
-- §3.9.3 closes by saying "Sec. 3.9.3.4 below provides the Slot IX V_K
-  affix values denoting these categories". There is no §3.9.3.4; the
-  subsections stop at 3.9.3.3. The V_K values are in fact in §3.9.3.2,
-  the section the same sentence has just described as covering
-  Validation.
-- §3.9.1 says "The phonological structure of case-accessor affixes is
-  shown in Sec. 3.9.3". §3.9.3 is V_K — Illocution and Validation. The
-  case-accessor affixes are §3.9.2.
-- §4.9 says "adherence to the parsing rules in Sec. 2.1". §2.1 is the
-  slot-structure table for a formative without a Slot IV/VI shortcut;
-  the parsing rules are §2.3.
-
-Every other "Sec. N.N" reference in the document resolves to a heading
-that exists.
 
 ### G16. The gradient-type shape rules are a mnemonic, not a function
 
@@ -556,94 +524,6 @@ the specialized-scope value, only "if the adjunct has ultimate stress",
 so penultimate stress already means "this is a V_N" and cannot also
 encode which V_N.
 
-### G21. The PHR adjunct's example list breaks its own paradigm
-
-§4.5's four suppletive adjuncts are given identical example lists,
-differing only in the C_P:
-
-| | | | | | | |
-|---|---|---|---|---|---|---|
-| CAR `hl` | hla | hlei | **hloa** | hle'e | hla'u | hli'a |
-| QUO `hm` | hma | hmei | **hmoa** | hme'e | hma'u | hmi'a |
-| NAM `hn` | hna | hnei | **hnoa** | hne'e | hna'u | hni'a |
-| PHR `hň` | hňa | hňei | **hňo** | hňe'e | hňa'u | hňi'a |
-
-The six V_C values are THM `a`, GEN `ei`, SIT `oa`, COR `e'e`, ASI
-`a'u` and LOC `i'a` — chosen to exercise one case from each of §1.7's
-insertion patterns, which is why the same six recur four times. PHR's
-third entry is `hňo`, whose V_C is `o`, ERG. The paradigm calls for
-`hňoa`.
-
-### G22. §4.2's lead-in was not updated when its table was
-
-The version history for v1.3 (see `source_versions.md`) records the change:
-
-> **Sec. 4.2:** The Slot IV V_R Values for the Specialized C_S-Root now
-> show Degree plus Context, instead of Degree plus Specification, as it
-> did not make sense for these Specialized C_S-Roots to show any
-> Specification other than BSC given that Specification does not apply
-> to V_X C_S affixes.
-
-The table was updated — its header reads "showing Affix-degree for the
-Slot III C_S-form plus Context" and its four columns are EXS, FNC, RPS
-and AMG — and so was the closing note, "these Specialized C_S-roots are
-considered to have BSC Specification only". The sentence that
-introduces the table was not:
-
-> The Affix-Degree and **Specification** of the Specialized C_S-root is
-> shown by the V_R value in Slot IV:
-
-A reader who takes that sentence at face value will look for
-Specification in a table that does not encode it.
-
-### G23. §4.4 still refers to a "CAR adjunct hü" that no longer exists
-
-v1.3 relabelled the Carrier-End Register Adjunct from **CAR** to
-**END**, and reassigned **CAR** to the Carrier Suppletive Adjunct of
-§4.5.1. §4.4's table reflects that: the END row reads "CARRIER-END: end
-of term/phrase governed by carrier stem/adjunct", with no initial
-adjunct and a final adjunct of `hüi`. The note directly beneath it does
-not:
-
-> Since Sec. 1.5 external juncture rules do not apply to foreign
-> names/words, insert a pause after uttering the name/words prior to
-> the **CAR** adjunct *hü*, or pronounce the last word of the proper
-> name/phrase with low tone.
-
-Both halves are stale. **CAR** now names §4.5.1's adjunct, which is
-`hl` + V_C and never `hü`; and `hü` itself occurs exactly once in the
-document, in this sentence. What the note describes — pausing before
-the marker that closes a carrier phrase — is the END adjunct `hüi`.
-
-### G24. Every version-history pointer into §3.9.3 is one subsection off
-
-Three changelog entries name a §3.9.3 subsection that does not contain
-what they describe:
-
-| Entry | Says | Actually in |
-|-------|------|-------------|
-| v1.3 | "**Sec. 3.9.3.3:** The presentation of V_K Illocution and Validation phonological values has been simplified" | §3.9.3.2 |
-| v1.3.1 | "**Sec. 3.9.3.1:** The table providing descriptions of the nine validations has been reinstated" | §3.9.3.2 |
-| v1.3.2 | "**Sec. 3.9.3.3:** The 3-letter abbreviation for VERIFICATIVE Illocution has been changed to **VER**" | §3.9.3.1 |
-
-§3.9.3.1 is Illocution, §3.9.3.2 is Validation and carries both V_K
-tables, and §3.9.3.3 is "If desired to show V_K information on a FRAMED
-formative or a concatenated formative".
-
-Read with G15 — where §3.9.3's own closing sentence promises that
-"Sec. 3.9.3.4 below provides the Slot IX V_K affix values" and no such
-subsection exists — the pattern suggests §3.9.3 once had four
-subsections, that the V_K value tables had one of their own, and that
-it was merged into the Validation section without any of the four
-pointers into the range being renumbered.
-
-Every other version-history entry checks out: MTH is gone from §4.4's
-register table and END is there; §4.5's four adjuncts carry the labels
-CAR, QUO, NAM and PHR; the Mood/Case-Scope adjunct is gone and MCS
-exists as an affix (`bẓ`, "Mood and Case-Scoping"); and §4.7 has ADS,
-MNF MANIFESTIVE and RSG RESIGNATIVE with no EXPERIENTIAL or
-RENUNCIATIVE bias remaining.
-
 ### G25. Both specialized root types drop Stem from Slot II without saying so
 
 Slot II of a standard formative encodes Stem and Version — eight
@@ -666,131 +546,6 @@ of **each stem** of the Specialized Personal-Reference Root changes
 depending on its Perspective", and the table below it is headed "Stem 1
 Nominal meaning" and "Stem 1 Verbal meaning" — a label that only means
 something if Stems 2 and 3 can also be expressed.
-
-### G26. Five CHC examples label a degree-1 vowel as degree 2
-
-§5.8's worked sentences insert the CHC affix (C_S = **rz**) at four
-different degrees, and the Type-1 V_X series is a, ä, e, i, ëi, ö, o,
-ü, u. Three of the four degrees are written correctly:
-
-| Label | Vowel used | Vowel required | |
-|-------|-----------|----------------|---|
-| CHC1/3 | e | e | *Ellyulerza*, *Ellyalerza*, *welacerzooe* |
-| CHC1/7 | o | o | *welacorzooe* |
-| CHC1/9 | u | u | *welacurzu* (twice) |
-| **CHC1/2** | **a** | **ä** | *welacarzulwu*, *welacarzu*, *Etxularza*, *welecarzu*, *Adcsularzeuha* |
-
-`a` is degree 1, not degree 2. All five CHC1/2 examples use it.
-
-The English gloss suggests the labels are what slipped rather than the
-forms. Degree 1 is "can do nothing to stop it, initiation is
-inevitable"; degree 2 is "chooses to acquiesce due to being okay with,
-or indifferent as to outcome". Three of the five sentences are *The boy
-is made to jump*, *Someone's being made to jump* and *Being made to eat
-is taking place* — compulsion, which is degree 1. Reading them as
-CHC1/1 makes form and meaning agree at once.
-
-This survived two rounds of correction: v1.3 revised §5.8's examples
-and v1.3.1 corrected "a few typos in the example sentences".
-
-The notation is otherwise dependable. Sweeping every affix degree label
-in the document and checking the vowel that precedes its C_S in the
-accompanying Ithkuil word, 40 of the 45 that could be aligned are
-exactly right; the five failures are these.
-
-### G29. The asterisk does not distinguish what it says it does
-
-*The framing of this entry was corrected: the marker belongs to the
-abbreviation, not to Type 0. Our §3.5.0.1 had it as a type marker
-("Some Type-0 affixes are marked 0*"), which is why the entry
-originally asked what "0*" could mean and why a stray "D1*" looked
-anomalous. Quijada writes: "Those affixes whose three-letter
-abbreviations are followed by an asterisk (e.g., DNG*) have an
-associated C_R root." Any type can carry it. See G38.*
-
-The claim itself still does not hold. Read as an existence claim it is
-uninformative, because it is true of almost every affix:
-
-| | affixes | whose C_S is also a root C_R |
-|---|---|---|
-| marked with a star | 36 | 34 (94%) |
-| unmarked | 491 | 468 (95%) |
-
-The root lexicon has 5946 entries over the same short consonant
-clusters the affixes use, so a same-cluster root nearly always exists.
-Whatever the star distinguishes, it is not that.
-
-Read instead as a claim about a *semantically* associated root, it
-holds for most of the marked affixes — CNQ `řv` "Degree of
-Consequentiality" beside the root "consequence/outcome/result", EXT
-`řḑ` "Exactness of Identity" beside "exactitude", FLS `mh` "Degree of
-Fluctuation/Stability" beside "change/stability/fluctuation" — but
-four of them point at a root with no relation to the affix at all:
-
-| Affix | C_S | Affix meaning | Root at that C_S |
-|-------|-----|---------------|------------------|
-| ANG | dg | Angular Measurement | weight/mass |
-| GID | c | Gender Identity | hearing/sound |
-| PCM | bḑ | Primary Construction Material | cucumis 1 |
-| TNX | rs | Multiples of Ten | sincerity/honesty/guilelessness |
-
-Either the star on these four is wrong, or it points at a root the
-tables never name.
-
-The marker **D1\*** on NEW (`sp`, Newness/Revision) is not itself an
-anomaly: Quijada attaches the asterisk to the abbreviation, so a D1
-affix may carry one, and NEW's root at `sp` is "degree of newness".
-It only looked anomalous while our §3.5.0.1 tied the star to Type 0.
-
-### G13. The documents disagree on how to write ẓ and ḑ
-
-§1.1's phoneme chart gives the affricates as **c ẓ č j**, and §1.3 lists
-the sanctioned alternate spellings: ţ may be written ṭ or ŧ, ḑ as ḍ or
-đ, ň as ṇ or ŋ, ř as ṛ or ṙ, ļ as ł or ḷ. **ẓ is not on that list** — it
-has no sanctioned variant. The documents use one anyway:
-
-| | ẓ (U+1E93, dot below) | ż (U+017C, dot above) |
-|---|---|---|
-| morphology.md | 10 | 0 |
-| phonotactics.md | 0 | 23 |
-| affixes_reference.md | 31 | 0 |
-| data.json | 162 | 0 |
-
-Every ẓ in the phonotactics document is written ż, including in §2.2's
-roster of the sibilants and in §2.5's list of prohibited conjuncts —
-the places a reader goes to learn which characters the language has.
-morphology.md keeps ẓ throughout. (It held one ż, in the script
-chapter's table of core characters; that chapter is no longer here.)
-
-ḑ has the same problem in miniature, and there the variant is at least
-sanctioned: the §4.6 referential table gives the mi/DETRIMENTAL form as
-**đ**, the only place in the document that exercises §1.3's alternate,
-and a reader working through the tables meets a character that appears
-nowhere else and is absent from §1.1 as printed.
-
-Either way a machine reader checking the phonotactic rules against the
-phoneme inventory sees an unknown codepoint twenty-three times.
-
-### G28. §7.2 writes OCG for OGC
-
-§7.0 defines the affix as **OGC**, Orientation relative to a
-Geographic Central point, and the affix table agrees. §7.2 refers to
-"the Type-2 **OCG**" when explaining that the Southern Ocean takes the
-affix directly rather than a carrier stem. The two letters are
-transposed; OCG is not an affix.
-
-Otherwise §7 holds up. All 489 romanized forms in §7.1 through §7.7 use
-only characters from the §1.1 inventory, which is what §7.0 requires of
-them — it waives the phonotactic rules for proper names ("Ithkuil
-phonotactic restraints do not apply as long as the name is
-pronounceable") but not the phoneme inventory. OGC's nine degrees match
-the affix table exactly and form the antipodal arrangement its D1
-gradient type calls for: 1 northern against 9 southern, 2 northwestern
-against 8 southeastern, 3 western against 7 eastern, 4 northeastern
-against 6 southwestern, with 5 geographically central at the midpoint.
-And *usarcsaidna amerika* / *usarcsuidna amerika* use OGC at Type-2
-degrees 1 and 9 — `ai` and `ui` — which is northern and southern, as
-North and South America require.
 
 ### G33. The UPX footnote is marked on two of the five Extension rows
 
@@ -882,68 +637,6 @@ sibilant fricatives.
 So the opening paragraph is wrong in both clauses, and §3.3.4 wrong
 with it. `validation` reads `ç` as neither a sibilant nor a sibilant
 fricative, which the corpus test corroborates.
-
-### G37. Two prohibited-conjunct rules in our markdown have no source
-
-*A transcription defect, in layer 3.* `phonotactics.md` carried
-twenty-four numbered rules in §2. Quijada's document has twenty-two:
-it ends at 2.22, "the semiconsonants -w- and -y- can only appear as
-the last member of the conjunct". Our 2.23 and 2.24 were:
-
-> **2.23.** The following combinations are considered phonetically
-> awkward and are not permitted: -ḑs-, -ḑš-, -ḑz-, -ḑž-, and -nň-.
->
-> **2.24.** Because the consonant forms -ç- and -hl- (pronounceable as
-> -ļ-) figure so prominently in the language in terms of morphology,
-> to avoid any confusion the geminated forms -çç- and -ļļ- are not
-> permitted.
-
-Neither appears in phonotaxis v0.5.4, which is the newest version
-published — the ithkuil.place archive lists v0.3, v0.4, v0.5.0, v0.5.2
-and v0.5.4, and nothing since 2021. Neither appears in the grammar,
-affix or script documents, nor in the 2011 phonology chapter. The
-strings `ḑs`, `nň`, `çç`, `ļļ` and the phrases "phonetically awkward"
-and "so prominently" are absent from all of them.
-
-The content of the two rules stands differently:
-
-- **2.23 is corroborated.** None of `ḑs`, `ḑš`, `ḑz`, `ḑž` or `nň`
-  occurs in any root or affix C_S in the lexicon.
-- **2.24 is contradicted.** Twenty-four lexicon roots contain `çç` or
-  `ļļ` — `ççk` "maximum", `pļļ` "humor", `ļļtļ` "heaven/paradise" and
-  so on. All are community coinages rather than Quijada's, so they do
-  not settle whether the rule exists, but nothing enforces it either.
-
-Both are removed from the transcription. What our code does about them
-is a question about our code, and is recorded where the repo keeps
-those: as a skipped test beside the constraint, in `validation`.
-
-The same import summarised §§8-11 rather than transcribing them, which
-is defensible — they are combinatorial tables of 679, 5183, 15034 and
-12271 forms. But §8's total was given as 682 against the document's
-679, printed twice, and a clause was added to Quijada's sentence about
--ç- and -ļ- saying their geminates "are not permitted as roots", which
-is the same unsourced claim as 2.24. Both corrected.
-
-### G39. The lexicon promises six extra number roots and prints five
-
-§6.4.1 gives the basic roots for 0 through 10 and the powers of 100,
-then introduces a second set:
-
-> The following **six** number roots are used when needed to designate
-> numbers beyond ten when needed for counting and mathematical
-> operations involving non-decimal number bases up to base-16.
-
-The table beneath it holds five: 11 `-CG-`, 12 `-JD-`, 13 `-ĻJ-`,
-14 `-BC-`, 15 `-ŢẒ-`. Nothing in the lexicon supplies a sixth, and no
-sixth is needed — the stated purpose is bases up to 16, and a base-16
-system needs digits for 0 through 15, which 0-10 plus 11-15 already
-covers. A root for 16 would be the first digit of the *next* place, the
-same role `-GZ-` plays for base-100.
-
-The same sentence with the same off-by-one appears in Chapter 13 of the
-2011 grammar, so the count has been wrong across both versions rather
-than introduced in the V4 rewrite. The word is wrong, not the table.
 
 ### G40. §4.6 does not say which spelling of a category affix to use
 

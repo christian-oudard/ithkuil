@@ -37,14 +37,25 @@ ITHKUIL_ONLY = set("ţřšžňļḑçëüöäẓ")
 # "wala’na" into "wala" and "na" and feed both to the audit as words.
 #
 # Only letters v4 already has are folded. The pre-v4 ones — dotless ı,
-# grave ì and ù, đ — stay unrecognised on purpose, so a word carrying
-# one is dropped whole rather than rewritten into something that parses.
+# grave ì and ù — stay unrecognised on purpose, so a word carrying one
+# is dropped whole rather than rewritten into something that parses.
 VARIANTS = str.maketrans({
     "’": "'",  # ’ right single quotation mark
     "‘": "'",  # ‘ left single quotation mark
     "ʼ": "'",  # ʼ modifier letter apostrophe
     "ț": "ţ",  # ț t-comma → ţ t-cedilla
     "Ț": "Ţ",
+    "ṭ": "ţ",  # §1.3 alternates
+    "ŧ": "ţ",
+    "ḍ": "ḑ",
+    "đ": "ḑ",
+    "ṇ": "ň",
+    "ŋ": "ň",
+    "ṛ": "ř",
+    "ṙ": "ř",
+    "ł": "ļ",
+    "ḷ": "ļ",
+    "ż": "ẓ",  # unsanctioned, but the phonotactics document uses it throughout
 })
 
 

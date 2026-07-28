@@ -15,8 +15,20 @@ import (
 // guesses the wrong side of a quotation. ț is t-with-comma, which most
 // fonts draw identically to the t-with-cedilla ţ that v4 uses.
 //
+// §1.3 sanctions two further spellings apiece for ţ, ḑ, ň, ř and ļ, and
+// the documents exercise them: the §4.6 referential table gives the
+// mi/DETRIMENTAL form as đ, which occurs nowhere else and is absent
+// from §1.1 as printed. A reader copying that row would otherwise get a
+// word we reject.
+//
+// ż is the same case without the sanction. §1.3 grants ẓ no alternate,
+// but the phonotactics document writes every one of its ẓ as ż,
+// including in its roster of the sibilants and its list of prohibited
+// conjuncts. Both are folded onto §1.1's characters, which are what
+// data.json and the tables here use throughout.
+//
 // Only letters v4 already has are folded. The pre-v4 alphabet had
-// others — dotless ı, grave ì and ù, đ — and those stay unrecognised,
+// others — dotless ı, grave ì and ù — and those stay unrecognised,
 // because a word spelled with one is not v4 text and should fail
 // rather than be quietly rewritten into something that parses.
 //
@@ -30,6 +42,17 @@ var variants = strings.NewReplacer(
 	"ʼ", "'", // ʼ modifier letter apostrophe
 	"ț", "ţ", // ț t-comma
 	"Ț", "Ţ",
+	"ṭ", "ţ", // §1.3 alternates
+	"ŧ", "ţ",
+	"ḍ", "ḑ",
+	"đ", "ḑ",
+	"ṇ", "ň",
+	"ŋ", "ň",
+	"ṛ", "ř",
+	"ṙ", "ř",
+	"ł", "ļ",
+	"ḷ", "ļ",
+	"ż", "ẓ", // unsanctioned, but the phonotactics document uses it throughout
 )
 
 // Normalize puts surface text in the form the rest of the stack expects:
