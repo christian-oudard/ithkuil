@@ -24,19 +24,23 @@ readings to take.
 
 ## How to read an entry
 
-Each line gives the gloss expression, the word it composes to, and the
-English reading. The gloss expression is the authoritative half: it is
-what `ithkuil compose` reads, so every line here can be checked.
+English comes first, since that is the side you arrive from. Each line
+reads: the English, the Ithkuil word, and the gloss expression that
+builds it.
+
+    - a child → **elal** `S2-l`
+
+The gloss expression is the authoritative part. It is what
+`ithkuil compose` reads, so every line here can be checked:
 
     $ ithkuil compose "S2-l"
     elal   S2/PRC--l-'human child'
 
 Every form below was composed that way, and every phrase was read back
 with `ithkuil parse` to confirm it parses to what it claims. The gloss
-expression, not the English word, is the identity of an entry: when
-other languages arrive they attach to the same expression, and English
-becomes one label among several rather than the key everything hangs
-off.
+expression, not the English, is the identity of an entry: when other
+languages arrive they attach to the same expression, and English becomes
+one label among several rather than the key everything hangs off.
 
 Stems are written S1, S2, S3, and S0 for the general reading that covers
 all three. `DYN` makes the word verb-like, an act rather than an entity.
@@ -50,21 +54,21 @@ perspective, which is where English mass nouns live.
 `-l-` is the human being. The stem carries the age, which English splits
 across separate words.
 
-- `S0-l` → **olal** — a human being, age not at issue
-- `S1-l` → **lala** — an adult
-- `S2-l` → **elal** — a child
-- `S3-l` → **ulal** — an adolescent
+- a human being, age not at issue → **olal** `S0-l`
+- an adult → **lala** `S1-l`
+- a child → **elal** `S2-l`
+- an adolescent → **ulal** `S3-l`
 
 English *people* is not a word here, and it is worth being careful about
 which sense is meant. For "one or more humans, the number being beside
 the point", use Agglomerative perspective:
 
-- `S1-l-G` → **lara** — adults, any number of them
+- adults, any number of them → **lara** `S1-l-G`
 
 For a true plural, "two or more", §3.6 is explicit that Agglomerative
 does not do it and the **XX2** affix at degree 6 does:
 
-- `S1-l-XX2/6` → **lalöks** — two or more adults
+- two or more adults → **lalöks** `S1-l-XX2/6`
 
 *Man* and *woman* are not stems of this root. Sex is not part of the
 lexical identity of a human in Ithkuil, and asking for *man* the way one
@@ -74,16 +78,16 @@ asks for *child* is the wrong shape of question.
 
 `-ţr-` water. The stems separate the sources.
 
-- `S1-ţr` → **ţrala** — water
-- `S2-ţr` → **eţral** — natural fresh water
-- `S3-ţr` → **uţral** — artificial fresh water
+- water → **ţrala** `S1-ţr`
+- natural fresh water → **eţral** `S2-ţr`
+- artificial fresh water → **uţral** `S3-ţr`
 
 The important thing for an English speaker is that the plain form is a
 count noun. §3.6 uses this exact word as its example: Monadic **ţrala**
 is *a drop of water*, a single unit of it, and the mass noun English
 reaches for by default is the Agglomerative.
 
-- `S1-ţr-G` → **ţrara** — water, some water, an amount of water
+- water, some water, an amount of water → **ţrara** `S1-ţr-G`
 
 Wanting *water* and writing **ţrala** gets *a drop*. This trap is
 general: rice, hair, sand, money all behave the same way.
@@ -92,14 +96,14 @@ general: rice, hair, sand, money all behave the same way.
 
 `-tx-` is nutritional consumption, one root where English has two verbs.
 
-- `S1-tx` → **txala** — consuming
-- `S2-tx` → **etxal** — eating food
-- `S3-tx` → **utxal** — drinking liquid
+- consuming → **txala** `S1-tx`
+- eating food → **etxal** `S2-tx`
+- drinking liquid → **utxal** `S3-tx`
 
 As verbs:
 
-- `S2-tx-DYN-ASR` → **etxulá** — eats, is eating
-- `S3-tx-DYN-ASR` → **utxulá** — drinks, is drinking
+- eats, is eating → **etxulá** `S2-tx-DYN-ASR`
+- drinks, is drinking → **utxulá** `S3-tx-DYN-ASR`
 
 In use, with the drinker as Ergative and what is drunk as Absolutive:
 
@@ -112,14 +116,14 @@ In use, with the drinker as Ergative and what is drunk as Absolutive:
 because it names the transfer from each end; Ithkuil names the transfer
 and lets the stem pick the end.
 
-- `S1-n` → **nala** — a transfer of possession
-- `S2-n` → **enal** — giving
-- `S3-n` → **unal** — receiving
+- a transfer of possession → **nala** `S1-n`
+- giving → **enal** `S2-n`
+- receiving → **unal** `S3-n`
 
 As verbs:
 
-- `S2-n-DYN-ASR` → **enulá** — gives
-- `S3-n-DYN-ASR` → **unulá** — receives
+- gives → **enulá** `S2-n-DYN-ASR`
+- receives → **unulá** `S3-n-DYN-ASR`
 
 This is the shape to expect for many English verb pairs. *Buy* and
 *sell*, *teach* and *learn*, *lend* and *borrow* are each one event seen
@@ -129,11 +133,11 @@ from two ends, and the language treats them that way.
 
 `-ẓ-` vision.
 
-- `S0-ẓ` → **oẓal** — sight, vision
-- `S1-ẓ` → **ẓala** — sight, the sense
-- `S2-ẓ` → **eẓal** — an eye, the organ
-- `S3-ẓ` → **uẓal** — one's visual faculty
-- `S1-ẓ-DYN-ASR` → **ẓul** — sees
+- sight, vision → **oẓal** `S0-ẓ`
+- sight, the sense → **ẓala** `S1-ẓ`
+- an eye, the organ → **eẓal** `S2-ẓ`
+- one's visual faculty → **uẓal** `S3-ẓ`
+- sees → **ẓul** `S1-ẓ-DYN-ASR`
 
 Note that the organ is a stem of the same root as the sense. Ithkuil
 groups faculty, organ, and capacity under one lexical identity where
@@ -143,29 +147,29 @@ English has *sight* and *eye* as unrelated words.
 
 `-m-` is linguistic utterance for communication.
 
-- `S1-m` → **mala** — an utterance
-- `S1-m-DYN-ASR` → **mul** — speaks, says something
+- an utterance → **mala** `S1-m`
+- speaks, says something → **mul** `S1-m-DYN-ASR`
 
 ## know
 
 `-ţt-` knowing, and the stems sort it by how the knowledge was got, a
 distinction English does not mark at all.
 
-- `S0-ţt` → **oţtal** — fact, knowing
-- `S1-ţt` → **ţtala** — knowing an ontological fact, that something is so
-- `S2-ţt` → **eţtal** — knowing an epistemological fact, knowing it as knowledge
-- `S3-ţt` → **uţtal** — knowing from experience
-- `S1-ţt-DYN-ASR` → **ţtul** — knows
+- fact, knowing → **oţtal** `S0-ţt`
+- knowing an ontological fact, that something is so → **ţtala** `S1-ţt`
+- knowing an epistemological fact, knowing it as knowledge → **eţtal** `S2-ţt`
+- knowing from experience → **uţtal** `S3-ţt`
+- knows → **ţtul** `S1-ţt-DYN-ASR`
 
 ## think
 
 `-sl-` thought.
 
-- `S0-sl` → **oslal** — thought, idea, concept
-- `S1-sl` → **slala** — thinking, cogitation
-- `S2-sl` → **eslal** — consideration, mulling
-- `S3-sl` → **uslal** — reasoning
-- `S1-sl-DYN-ASR` → **slul** — thinks
+- thought, idea, concept → **oslal** `S0-sl`
+- thinking, cogitation → **slala** `S1-sl`
+- consideration, mulling → **eslal** `S2-sl`
+- reasoning → **uslal** `S3-sl`
+- thinks → **slul** `S1-sl-DYN-ASR`
 
 English *think* also carries "believe" and "have an opinion", which is a
 different notion and does not belong to this root.
@@ -174,19 +178,19 @@ different notion and does not belong to this root.
 
 `-ţk-` making, and the stems distinguish how the thing is made.
 
-- `S0-ţk` → **oţkal** — make, construct, form
-- `S1-ţk` → **ţkala** — making, construction
-- `S2-ţk` → **eţkal** — forming by combining ingredients
-- `S3-ţk` → **uţkal** — organizing disparate parts into a whole
-- `S1-ţk-DYN-ASR` → **ţkul** — makes
+- make, construct, form → **oţkal** `S0-ţk`
+- making, construction → **ţkala** `S1-ţk`
+- forming by combining ingredients → **eţkal** `S2-ţk`
+- organizing disparate parts into a whole → **uţkal** `S3-ţk`
+- makes → **ţkul** `S1-ţk-DYN-ASR`
 
 ## work
 
 `-rtm-` work, labor.
 
-- `S0-rtm` → **ortmal** — work, labor, job
-- `S1-rtm` → **artmal** — work, labor
-- `S1-rtm-DYN-ASR` → **artmulá** — works
+- work, labor, job → **ortmal** `S0-rtm`
+- work, labor → **artmal** `S1-rtm`
+- works → **artmulá** `S1-rtm-DYN-ASR`
 
 ## time
 
@@ -195,14 +199,14 @@ roots.
 
 Elapsed time, duration:
 
-- `S0-gẓ` → **ogẓal** — a temporal interval
-- `S1-gẓ` → **gẓala** — a degree of elapsed time
+- a temporal interval → **ogẓal** `S0-gẓ`
+- a degree of elapsed time → **gẓala** `S1-gẓ`
 
 Time of day:
 
-- `S1-ln` → **alnal** — daytime
-- `S2-ln` → **elnal** — nighttime
-- `S3-ln` → **ulnal** — o'clock time, the time on a clock
+- daytime → **alnal** `S1-ln`
+- nighttime → **elnal** `S2-ln`
+- o'clock time, the time on a clock → **ulnal** `S3-ln`
 
 Asking for "the word for time" has no answer. Which of these is meant
 has to be settled before the sentence can be built, and that is the
@@ -215,15 +219,15 @@ Two roots carry the calendar between them, split at the year.
 `-ř-` is the conventionalized time period, the ones a body or a moon
 gives you.
 
-- `S1-ř` → **řala** — a day, a 24-hour period
-- `S2-ř` → **eřal** — a week
-- `S3-ř` → **uřal** — a month, a lunar period
+- a day, a 24-hour period → **řala** `S1-ř`
+- a week → **eřal** `S2-ř`
+- a month, a lunar period → **uřal** `S3-ř`
 
 `-rn-` is the longer periods.
 
-- `S1-rn` → **arnal** — a calendar year
-- `S2-rn` → **ernal** — a decade
-- `S3-rn` → **urnal** — a lifetime, an expected span
+- a calendar year → **arnal** `S1-rn`
+- a decade → **ernal** `S2-rn`
+- a lifetime, an expected span → **urnal** `S3-rn`
 
 *Day* meaning the 24-hour unit and *day* meaning the daylight hours are
 different roots, and English runs them together. Daytime is `-ln-`,
@@ -234,15 +238,15 @@ particular day on a calendar rather than a day as a span.
 
 ## night
 
-- `S2-ln` → **elnal** — nighttime
+- nighttime → **elnal** `S2-ln`
 
 ## place
 
 `-ţkl-` place.
 
-- `S0-ţkl` → **oţklal** — setting, place, site, venue
-- `S1-ţkl` → **aţklal** — a setting
-- `S2-ţkl` → **eţklal** — a place, a site
+- setting, place, site, venue → **oţklal** `S0-ţkl`
+- a setting → **aţklal** `S1-ţkl`
+- a place, a site → **eţklal** `S2-ţkl`
 
 ## house, home
 
@@ -250,16 +254,16 @@ Two roots, and English blurs them.
 
 `-rm-` is the physical dwelling.
 
-- `S1-rm` → **armal** — a dwelling, where an entity lives
-- `S2-rm` → **ermal** — a domicile, an artificial dwelling for protection
-- `S3-rm` → **urmal** — a house, a constructed residence with conveniences
+- a dwelling, where an entity lives → **armal** `S1-rm`
+- a domicile, an artificial dwelling for protection → **ermal** `S2-rm`
+- a house, a constructed residence with conveniences → **urmal** `S3-rm`
 
 `-nkr-` is one's surroundings, and *home* in the sense of where one
 belongs.
 
-- `S1-nkr` → **ankral** — home
-- `S2-nkr` → **enkral** — environmental circumstances
-- `S3-nkr` → **unkral** — the world
+- home → **ankral** `S1-nkr`
+- environmental circumstances → **enkral** `S2-nkr`
+- the world → **unkral** `S3-nkr`
 
 ## world
 
@@ -270,10 +274,10 @@ root, the outermost ring of *home*. There is no separate word for it.
 
 `-šw-` the living.
 
-- `S0-šw` → **ošwal** — a lifeform
-- `S1-šw` → **šwala** — a living being, a lifeform
-- `S2-šw` → **ešwal** — vitality, activity consistent with being alive
-- `S3-šw` → **ušwal** — being brought to life, biological reproduction
+- a lifeform → **ošwal** `S0-šw`
+- a living being, a lifeform → **šwala** `S1-šw`
+- vitality, activity consistent with being alive → **ešwal** `S2-šw`
+- being brought to life, biological reproduction → **ušwal** `S3-šw`
 
 English *life* also means "a lifetime" (`S3-rn` → **urnal**) and "the
 way one lives", which is a different root again. The three are not
@@ -283,10 +287,10 @@ interchangeable.
 
 `-šč-` money and financial transaction.
 
-- `S0-šč` → **oščal** — money, financial transaction, banking
-- `S1-šč` → **ščala** — a medium of exchange
-- `S2-šč` → **eščal** — money, currency
-- `S3-šč` → **uščal** — a quasi-contractual document
+- money, financial transaction, banking → **oščal** `S0-šč`
+- a medium of exchange → **ščala** `S1-šč`
+- money, currency → **eščal** `S2-šč`
+- a quasi-contractual document → **uščal** `S3-šč`
 
 Money is a mass noun in English, so `S2-šč-G` is usually wanted over the
 bare **eščal**, on the same grounds as *water*.
@@ -306,8 +310,8 @@ worked entry of its own under *big, large* below.
 **QUA** `-th-`, degree of quality, effectiveness, or adequacy. English
 *good* and *bad* are two points on it.
 
-- `S1-l-QUA/6` → **lalöth** — a good adult, one who is effective at it
-- `S1-l-QUA/3` → **laleth** — a bad, poor, inadequate one
+- a good adult, one who is effective at it → **lalöth** `S1-l-QUA/6`
+- a bad, poor, inadequate one → **laleth** `S1-l-QUA/3`
 
 Degree 5 is *not bad, adequate*; degree 8 is *excellent*; degree 9 is
 *too good*. Choosing among nine degrees is the normal cost of saying
@@ -317,13 +321,13 @@ Degree 5 is *not bad, adequate*; degree 8 is *excellent*; degree 9 is
 English does not draw. Degree 1 is never before seen at all; degree 2 is
 new only within the present context, the sense in *a new student*.
 
-- `S1-l-NEW/1` → **lalasp** — an adult never before seen
-- `S1-l-NEW/2` → **laläsp** — an adult new to this setting
+- an adult never before seen → **lalasp** `S1-l-NEW/1`
+- an adult new to this setting → **laläsp** `S1-l-NEW/2`
 
 **MDN** `-nţ-`, degree of age or modernity, covers *old* in the sense of
 era: degree 3 ancient, 4 old as in first, 5 old as in former, 6 modern.
 
-- `S1-l-MDN/3` → **lalenţ** — an ancient adult
+- an ancient adult → **lalenţ** `S1-l-MDN/3`
 
 *Old* meaning aged is not this affix. A person's age is carried by the
 stems of `-l-` under *person* above, and old age proper is `-dç-`.
@@ -333,10 +337,10 @@ stems of `-l-` under *person* above, and old age proper is `-dç-`.
 Sex is the **SEX** affix `-š-`, not a stem and not a root. Degree 1 is
 female, degree 3 male; 5 is intersex, 6 unknown, 9 sex-neutral.
 
-- `S1-l-SEX/3` → **laleš** — a man
-- `S1-l-SEX/1` → **lalaš** — a woman
-- `S2-l-SEX/3` → **weleš** — a boy
-- `S2-l-SEX/1` → **welaš** — a girl
+- a man → **laleš** `S1-l-SEX/3`
+- a woman → **lalaš** `S1-l-SEX/1`
+- a boy → **weleš** `S2-l-SEX/3`
+- a girl → **welaš** `S2-l-SEX/1`
 
 The four English words are one root, one stem choice, and one affix
 degree. Note that nothing forces the affix: **lala** is an adult whose
@@ -352,11 +356,11 @@ sex is explicitly beside the point.
 *go* is not here at all: it says that motion happened without saying how,
 which this root will not do.
 
-- `S0-g` → **ogal** — ambulation
-- `S1-g` → **gala** — natural ambulation, walking or crawling
-- `S2-g` → **egal** — rapid ambulation, running or galloping
-- `S3-g` → **ugal** — unnatural ambulation, limping or staggering
-- `S1-g-DYN-ASR` → **gul** — walks
+- ambulation → **ogal** `S0-g`
+- natural ambulation, walking or crawling → **gala** `S1-g`
+- rapid ambulation, running or galloping → **egal** `S2-g`
+- unnatural ambulation, limping or staggering → **ugal** `S3-g`
+- walks → **gul** `S1-g-DYN-ASR`
 
 Whether it is walking or crawling depends on the creature, not on the
 word. The stem names the relation of the gait to the body that has it.
@@ -365,21 +369,21 @@ word. The stem names the relation of the gait to the body that has it.
 
 `-gv-` desire.
 
-- `S0-gv` → **ogval** — desire, wanting
-- `S1-gv` → **gvala** — wanting, desiring
-- `S2-gv` → **egval** — wishing, hoping
-- `S3-gv` → **ugval** — aspiration
-- `S1-gv-DYN-ASR` → **gvul** — wants
+- desire, wanting → **ogval** `S0-gv`
+- wanting, desiring → **gvala** `S1-gv`
+- wishing, hoping → **egval** `S2-gv`
+- aspiration → **ugval** `S3-gv`
+- wants → **gvul** `S1-gv-DYN-ASR`
 
 ## use
 
 `-ksf-` use.
 
-- `S0-ksf` → **oksfal** — use, utilization, expenditure
-- `S1-ksf` → **ksfala** — using, utilizing
-- `S2-ksf` → **eksfal** — serving as, functioning as
-- `S3-ksf` → **uksfal** — consumption, using up
-- `S1-ksf-DYN-ASR` → **ksful** — uses
+- use, utilization, expenditure → **oksfal** `S0-ksf`
+- using, utilizing → **ksfala** `S1-ksf`
+- serving as, functioning as → **eksfal** `S2-ksf`
+- consumption, using up → **uksfal** `S3-ksf`
+- uses → **ksful** `S1-ksf-DYN-ASR`
 
 S2 is worth noticing. *This serves as a door* and *I use the door* are
 the same root in Ithkuil, seen from the thing and from the user.
@@ -388,11 +392,11 @@ the same root in Ithkuil, seen from the thing and from the user.
 
 `-fh-` is finding, and every stem of it is by chance.
 
-- `S0-fh` → **ofhal** — finding, encountering, meeting
-- `S1-fh` → **afhal** — finding, discovering by chance
-- `S2-fh` → **efhal** — encountering, coming across by chance
-- `S3-fh` → **ufhal** — meeting by chance
-- `S1-fh-DYN-ASR` → **afhulá** — finds
+- finding, encountering, meeting → **ofhal** `S0-fh`
+- finding, discovering by chance → **afhal** `S1-fh`
+- encountering, coming across by chance → **efhal** `S2-fh`
+- meeting by chance → **ufhal** `S3-fh`
+- finds → **afhulá** `S1-fh-DYN-ASR`
 
 Deliberate finding is not this root. English *find* covers both the
 accident and the result of searching, and only the accident is here.
@@ -401,21 +405,21 @@ accident and the result of searching, and only the accident is here.
 
 `-nn-` help.
 
-- `S0-nn` → **onnal** — help, assistance, support
-- `S1-nn` → **nnala** — aiding, helping
-- `S2-nn` → **ennal** — assisting, lending a hand
-- `S3-nn` → **unnal** — supporting, advocating
-- `S1-nn-DYN-ASR` → **nnul** — helps
+- help, assistance, support → **onnal** `S0-nn`
+- aiding, helping → **nnala** `S1-nn`
+- assisting, lending a hand → **ennal** `S2-nn`
+- supporting, advocating → **unnal** `S3-nn`
+- helps → **nnul** `S1-nn-DYN-ASR`
 
 ## government
 
 `-ḑf-` government.
 
-- `S0-ḑf` → **oḑfal** — government
-- `S1-ḑf` → **aḑfal** — governing, governance
-- `S2-ḑf` → **eḑfal** — being political
-- `S3-ḑf` → **uḑfal** — a group of authorities recognized as a government
-- `S1-ḑf-DYN-ASR` → **aḑfulá** — governs
+- government → **oḑfal** `S0-ḑf`
+- governing, governance → **aḑfal** `S1-ḑf`
+- being political → **eḑfal** `S2-ḑf`
+- a group of authorities recognized as a government → **uḑfal** `S3-ḑf`
+- governs → **aḑfulá** `S1-ḑf-DYN-ASR`
 
 The English noun is S3; the activity is S1. Forms of government are
 separate roots: `-ḑt-` for representative ones, `-llk-` for monarchal,
@@ -425,11 +429,11 @@ totalitarian, and oligarchical.
 
 `-d-` is the act of grouping, not the group.
 
-- `S0-d` → **odal** — a group
-- `S1-d` → **dala** — assembling, gathering into a group
-- `S2-d` → **edal** — congregating, meeting together
-- `S3-d` → **udal** — convening for a conference or congress
-- `S1-d-DYN-ASR` → **dul** — gathers
+- a group → **odal** `S0-d`
+- assembling, gathering into a group → **dala** `S1-d`
+- congregating, meeting together → **edal** `S2-d`
+- convening for a conference or congress → **udal** `S3-d`
+- gathers → **dul** `S1-d-DYN-ASR`
 
 For "a group of X" as a plurality of some particular thing, this root is
 usually the wrong tool. That is Configuration and Perspective on X
@@ -439,10 +443,10 @@ itself, the same machinery as *people* under *person* above.
 
 `-nth-` number.
 
-- `S0-nth` → **onthal** — number, integer, rational number
-- `S1-nth` → **anthal** — a number, expressing numerically
-- `S2-nth` → **enthal** — an integer
-- `S3-nth` → **unthal** — a rational number
+- number, integer, rational number → **onthal** `S0-nth`
+- a number, expressing numerically → **anthal** `S1-nth`
+- an integer → **enthal** `S2-nth`
+- a rational number → **unthal** `S3-nth`
 
 Real, irrational, and imaginary numbers are `-rnt-`. English *number*
 meaning "a quantity of" is not this root; that is the PTW affix.
@@ -451,10 +455,10 @@ meaning "a quantity of" is not this root; that is the PTW affix.
 
 `-thw-` component.
 
-- `S0-thw` → **othwal** — component, part, ingredient
-- `S1-thw` → **thwala** — a component, part, piece
-- `S2-thw` → **ethwal** — an ingredient
-- `S3-thw` → **uthwal** — an instruction
+- component, part, ingredient → **othwal** `S0-thw`
+- a component, part, piece → **thwala** `S1-thw`
+- an ingredient → **ethwal** `S2-thw`
+- an instruction → **uthwal** `S3-thw`
 
 `-ţf-` is the positionally-defined sense: `S1-ţf` a part or section of
 something, `S3-ţf` a separable part.
@@ -463,29 +467,29 @@ something, `S3-ţf` a separable part.
 
 Two roots. `-mp-` is the nuclear family member.
 
-- `S0-mp` → **ompal** — a nuclear family member
-- `S1-mp` → **ampal** — a parent
-- `S2-mp` → **empal** — a child, in the sense of offspring
-- `S3-mp` → **umpal** — a grandparent
+- a nuclear family member → **ompal** `S0-mp`
+- a parent → **ampal** `S1-mp`
+- a child, in the sense of offspring → **empal** `S2-mp`
+- a grandparent → **umpal** `S3-mp`
 
 *Child* here is the kin relation. *Child* meaning a young human is
 `S2-l` → **elal**, a different root, and English uses one word for both.
 
 `-bč-` is the wider kin relation.
 
-- `S0-bč` → **občal** — kin, extended family relation
-- `S1-bč` → **abčal** — a family relation
-- `S2-bč` → **ebčal** — a genetic or marital relation
-- `S3-bč` → **ubčal** — an adoptive relation
+- kin, extended family relation → **občal** `S0-bč`
+- a family relation → **abčal** `S1-bč`
+- a genetic or marital relation → **ebčal** `S2-bč`
+- an adoptive relation → **ubčal** `S3-bč`
 
 ## business
 
 `-dň-` commercial enterprise.
 
-- `S0-dň` → **odňal** — a commercial enterprise, business, industry
-- `S1-dň` → **adňal** — conducting business as a commercial enterprise
-- `S2-dň` → **edňal** — making a product available for purchase
-- `S3-dň` → **udňal** — an industrial enterprise
+- a commercial enterprise, business, industry → **odňal** `S0-dň`
+- conducting business as a commercial enterprise → **adňal** `S1-dň`
+- making a product available for purchase → **edňal** `S2-dň`
+- an industrial enterprise → **udňal** `S3-dň`
 
 ---
 
@@ -500,20 +504,20 @@ material and only the first is an affix for size.
 **SIZ** `-x-` at degree 7. There is no separate word: the affix goes
 inside the word for the thing that is big.
 
-- `S3-rm-SIZ/7` → **wurmox** — a big house
-- `S1-l-SIZ/7` → **lalox** — a big adult
-- `S2-l-SIZ/7` → **welox** — a big child
-- `S1-lḑ-SIZ/7` → **walḑox** — a big tree
-- `S1-jl-SIZ/7` → **jlalox** — a big mountain
-- `S2-lz-SIZ/7` → **welzox** — a big river
-- `S1-zv-SIZ/7` → **zvalox** — a big dog
-- `S1-žx-SIZ/7` → **wažxox** — a big fire
-- `S1-lks-SIZ/7` → **walksox** — a big meal
-- `S1-d-SIZ/7` → **dalox** — a big gathering
-- `S1-bč-SIZ/7` → **wabčox** — a big family
-- `S1-nth-SIZ/7` → **wanthox** — a big number
-- `S1-thw-SIZ/7` → **thwalox** — a big part
-- `S1-ţr-G-SIZ/7` → **ţrarox** — a big amount of water
+- a big house → **wurmox** `S3-rm-SIZ/7`
+- a big adult → **lalox** `S1-l-SIZ/7`
+- a big child → **welox** `S2-l-SIZ/7`
+- a big tree → **walḑox** `S1-lḑ-SIZ/7`
+- a big mountain → **jlalox** `S1-jl-SIZ/7`
+- a big river → **welzox** `S2-lz-SIZ/7`
+- a big dog → **zvalox** `S1-zv-SIZ/7`
+- a big fire → **wažxox** `S1-žx-SIZ/7`
+- a big meal → **walksox** `S1-lks-SIZ/7`
+- a big gathering → **dalox** `S1-d-SIZ/7`
+- a big family → **wabčox** `S1-bč-SIZ/7`
+- a big number → **wanthox** `S1-nth-SIZ/7`
+- a big part → **thwalox** `S1-thw-SIZ/7`
+- a big amount of water → **ţrarox** `S1-ţr-G-SIZ/7`
 
 The scale runs 1 to 9 and is anchored in the middle at *the right size*,
 so degree 7 is big for that kind of thing: a big mouse and a big house
@@ -529,10 +533,10 @@ extent, and putting SIZ on them says the thing is physically large.
 
 Importance is the root `-šh-`.
 
-- `S0-šh` → **ošhal** — importance, significance
-- `S1-šh` → **ašhal** — importance, significance
-- `S2-šh` → **ešhal** — prevalence
-- `S3-šh` → **ušhal** — salience, prominence
+- importance, significance → **ošhal** `S0-šh`
+- importance, significance → **ašhal** `S1-šh`
+- prevalence → **ešhal** `S2-šh`
+- salience, prominence → **ušhal** `S3-šh`
 
 There is no importance affix in the affix inventory, so an important
 problem is not one word. It is this root and that root in a
@@ -545,10 +549,10 @@ compose and parse sides agree on one (see the note at the end).
 how much, not how large, and that is **EXN** `-g-`, degree or extent, at
 degree 7.
 
-- `S3-tx-EXN/7` → **wutxog** — a big drinker, one who drinks a great deal
-- `S2-tx-EXN/7` → **wetxog** — a big eater
-- `S1-šč-EXN/7` → **ščalog** — a big spender
-- `S1-rňf-EXN/7` → **warňfog** — big trouble
+- a big drinker, one who drinks a great deal → **wutxog** `S3-tx-EXN/7`
+- a big eater → **wetxog** `S2-tx-EXN/7`
+- a big spender → **ščalog** `S1-šč-EXN/7`
+- big trouble → **warňfog** `S1-rňf-EXN/7`
 
 ### 4. Senior, elder
 
@@ -562,11 +566,11 @@ which is a different and often wrong claim.
 These are not *big* plus a noun at all. The English phrase is a single
 lexical item and it translates as whatever it means, not as its parts.
 
-- `S1-ẓdr` → **ẓdrala** — the big house, jail, incarceration
-- `S2-lxm` → **elxmal** — Mr. Big, the boss, the one in charge
-- `S1-vsk` → **avskal** — Big Brother, surveillance
-- `S3-mfl` → **umflal** — the big day, a wedding
-- `S3-šh` → **ušhal** — a big shot, a big name, a prominent one
+- the big house, jail, incarceration → **ẓdrala** `S1-ẓdr`
+- Mr. Big, the boss, the one in charge → **elxmal** `S2-lxm`
+- Big Brother, surveillance → **avskal** `S1-vsk`
+- the big day, a wedding → **umflal** `S3-mfl`
+- a big shot, a big name, a prominent one → **ušhal** `S3-šh`
 
 Note that *big house* has both readings and they share nothing.
 **wurmox** is a large dwelling. **ẓdrala** is a prison. An English
@@ -577,11 +581,11 @@ a small error of degree; they have said an unrelated thing.
 
 The same affix, low degrees. Everything above applies unchanged.
 
-- `S3-rm-SIZ/3` → **wurmex** — a small house
-- `S1-l-SIZ/3` → **lalex** — a small adult
-- `S2-l-SIZ/3` → **welex** — a small child
-- `S1-lḑ-SIZ/3` → **walḑex** — a small tree
-- `S1-zv-SIZ/3` → **zvalex** — a small dog
+- a small house → **wurmex** `S3-rm-SIZ/3`
+- a small adult → **lalex** `S1-l-SIZ/3`
+- a small child → **welex** `S2-l-SIZ/3`
+- a small tree → **walḑex** `S1-lḑ-SIZ/3`
+- a small dog → **zvalex** `S1-zv-SIZ/3`
 
 English *little* often carries affection rather than size, as in *the
 little ones*. That is not SIZ, and putting degree 3 on a child says the

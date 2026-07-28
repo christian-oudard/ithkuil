@@ -18,8 +18,8 @@ import (
 	"github.com/christian-oudard/ithkuil/render"
 )
 
-// An entry line: - `S2-l` → **elal** — a child
-var entryLine = regexp.MustCompile("^- `([^`]+)` → \\*\\*([^*]+)\\*\\*")
+// An entry line, English first: - a child → **elal** `S2-l`
+var entryLine = regexp.MustCompile("^- .+ → \\*\\*([^*]+)\\*\\* `([^`]+)`$")
 
 func loadDoc(t *testing.T) (string, *lexicon.Lexicon) {
 	t.Helper()
@@ -42,7 +42,7 @@ func TestEnglishDocEntriesCompose(t *testing.T) {
 		if m == nil {
 			continue
 		}
-		expr, want := m[1], m[2]
+		want, expr := m[1], m[2]
 		f, err := compose.Formative(expr, lex.Affixes)
 		if err != nil {
 			t.Errorf("compose(%q): %v", expr, err)
