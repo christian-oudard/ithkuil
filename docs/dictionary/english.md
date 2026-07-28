@@ -208,20 +208,33 @@ Asking for "the word for time" has no answer. Which of these is meant
 has to be settled before the sentence can be built, and that is the
 normal condition of translating into Ithkuil.
 
-## day, night, year
+## day, week, month, year
+
+Two roots carry the calendar between them, split at the year.
+
+`-ř-` is the conventionalized time period, the ones a body or a moon
+gives you.
 
 - `S1-ř` → **řala** — a day, a 24-hour period
-- `S1-ln` → **alnal** — daytime, the light part
-- `S2-ln` → **elnal** — nighttime
+- `S2-ř` → **eřal** — a week
+- `S3-ř` → **uřal** — a month, a lunar period
 
-`-rn-` covers the longer calendrical periods.
+`-rn-` is the longer periods.
 
 - `S1-rn` → **arnal** — a calendar year
 - `S2-rn` → **ernal** — a decade
 - `S3-rn` → **urnal** — a lifetime, an expected span
 
 *Day* meaning the 24-hour unit and *day* meaning the daylight hours are
-different roots, and English runs them together.
+different roots, and English runs them together. Daytime is `-ln-`,
+under *time* above.
+
+`-rḑ-` is the same series again but designated: `S1-rḑ` → **arḑal**, a
+particular day on a calendar rather than a day as a span.
+
+## night
+
+- `S2-ln` → **elnal** — nighttime
 
 ## place
 
@@ -277,3 +290,205 @@ interchangeable.
 
 Money is a mass noun in English, so `S2-šč-G` is usually wanted over the
 bare **eščal**, on the same grounds as *water*.
+
+---
+
+## Adjectives are usually affixes
+
+Most of the English adjectives near the top of the frequency list are
+not roots at all. They are degrees on a nine-point affix scale, attached
+to whatever they describe. Looking for a root meaning *big* is looking
+for the wrong thing.
+
+**SIZ** `-x-`, degree of size, is the clearest case. Degree 5 is the
+right size, and the scale runs out from there in both directions.
+
+- `S1-l-SIZ/3` → **lalex** — a small adult
+- `S1-l-SIZ/7` → **lalox** — a big adult
+
+Degrees 2 and 8 are *tiny* and *enormous*; 1 and 9 are *too small* and
+*too big*, which English needs an extra word for and Ithkuil does not.
+
+**QUA** `-th-`, degree of quality, effectiveness, or adequacy. English
+*good* and *bad* are two points on it.
+
+- `S1-l-QUA/6` → **lalöth** — a good adult, one who is effective at it
+- `S1-l-QUA/3` → **laleth** — a bad, poor, inadequate one
+
+Degree 5 is *not bad, adequate*; degree 8 is *excellent*; degree 9 is
+*too good*. Choosing among nine degrees is the normal cost of saying
+*good* in Ithkuil.
+
+**NEW** `-sp-`, newness and revision, and the degrees are distinctions
+English does not draw. Degree 1 is never before seen at all; degree 2 is
+new only within the present context, the sense in *a new student*.
+
+- `S1-l-NEW/1` → **lalasp** — an adult never before seen
+- `S1-l-NEW/2` → **laläsp** — an adult new to this setting
+
+**MDN** `-nţ-`, degree of age or modernity, covers *old* in the sense of
+era: degree 3 ancient, 4 old as in first, 5 old as in former, 6 modern.
+
+- `S1-l-MDN/3` → **lalenţ** — an ancient adult
+
+*Old* meaning aged is not this affix. A person's age is carried by the
+stems of `-l-` under *person* above, and old age proper is `-dç-`.
+
+## man, woman, boy, girl
+
+Sex is the **SEX** affix `-š-`, not a stem and not a root. Degree 1 is
+female, degree 3 male; 5 is intersex, 6 unknown, 9 sex-neutral.
+
+- `S1-l-SEX/3` → **laleš** — a man
+- `S1-l-SEX/1` → **lalaš** — a woman
+- `S2-l-SEX/3` → **weleš** — a boy
+- `S2-l-SEX/1` → **welaš** — a girl
+
+The four English words are one root, one stem choice, and one affix
+degree. Note that nothing forces the affix: **lala** is an adult whose
+sex is not at issue, which is not the same as degree 9, an adult whose
+sex is explicitly beside the point.
+
+`-š-` is also a root in its own right, where sex itself is the subject:
+`S1-š` → **šala**, biological sex.
+
+## walk, run, go
+
+`-g-` is ambulation, sorted by manner rather than by direction. English
+*go* is not here at all: it says that motion happened without saying how,
+which this root will not do.
+
+- `S0-g` → **ogal** — ambulation
+- `S1-g` → **gala** — natural ambulation, walking or crawling
+- `S2-g` → **egal** — rapid ambulation, running or galloping
+- `S3-g` → **ugal** — unnatural ambulation, limping or staggering
+- `S1-g-DYN-ASR` → **gul** — walks
+
+Whether it is walking or crawling depends on the creature, not on the
+word. The stem names the relation of the gait to the body that has it.
+
+## want
+
+`-gv-` desire.
+
+- `S0-gv` → **ogval** — desire, wanting
+- `S1-gv` → **gvala** — wanting, desiring
+- `S2-gv` → **egval** — wishing, hoping
+- `S3-gv` → **ugval** — aspiration
+- `S1-gv-DYN-ASR` → **gvul** — wants
+
+## use
+
+`-ksf-` use.
+
+- `S0-ksf` → **oksfal** — use, utilization, expenditure
+- `S1-ksf` → **ksfala** — using, utilizing
+- `S2-ksf` → **eksfal** — serving as, functioning as
+- `S3-ksf` → **uksfal** — consumption, using up
+- `S1-ksf-DYN-ASR` → **ksful** — uses
+
+S2 is worth noticing. *This serves as a door* and *I use the door* are
+the same root in Ithkuil, seen from the thing and from the user.
+
+## find, meet
+
+`-fh-` is finding, and every stem of it is by chance.
+
+- `S0-fh` → **ofhal** — finding, encountering, meeting
+- `S1-fh` → **afhal** — finding, discovering by chance
+- `S2-fh` → **efhal** — encountering, coming across by chance
+- `S3-fh` → **ufhal** — meeting by chance
+- `S1-fh-DYN-ASR` → **afhulá** — finds
+
+Deliberate finding is not this root. English *find* covers both the
+accident and the result of searching, and only the accident is here.
+
+## help
+
+`-nn-` help.
+
+- `S0-nn` → **onnal** — help, assistance, support
+- `S1-nn` → **nnala** — aiding, helping
+- `S2-nn` → **ennal** — assisting, lending a hand
+- `S3-nn` → **unnal** — supporting, advocating
+- `S1-nn-DYN-ASR` → **nnul** — helps
+
+## government
+
+`-ḑf-` government.
+
+- `S0-ḑf` → **oḑfal** — government
+- `S1-ḑf` → **aḑfal** — governing, governance
+- `S2-ḑf` → **eḑfal** — being political
+- `S3-ḑf` → **uḑfal** — a group of authorities recognized as a government
+- `S1-ḑf-DYN-ASR` → **aḑfulá** — governs
+
+The English noun is S3; the activity is S1. Forms of government are
+separate roots: `-ḑt-` for representative ones, `-llk-` for monarchal,
+totalitarian, and oligarchical.
+
+## group
+
+`-d-` is the act of grouping, not the group.
+
+- `S0-d` → **odal** — a group
+- `S1-d` → **dala** — assembling, gathering into a group
+- `S2-d` → **edal** — congregating, meeting together
+- `S3-d` → **udal** — convening for a conference or congress
+- `S1-d-DYN-ASR` → **dul** — gathers
+
+For "a group of X" as a plurality of some particular thing, this root is
+usually the wrong tool. That is Configuration and Perspective on X
+itself, the same machinery as *people* under *person* above.
+
+## number
+
+`-nth-` number.
+
+- `S0-nth` → **onthal** — number, integer, rational number
+- `S1-nth` → **anthal** — a number, expressing numerically
+- `S2-nth` → **enthal** — an integer
+- `S3-nth` → **unthal** — a rational number
+
+Real, irrational, and imaginary numbers are `-rnt-`. English *number*
+meaning "a quantity of" is not this root; that is the PTW affix.
+
+## part
+
+`-thw-` component.
+
+- `S0-thw` → **othwal** — component, part, ingredient
+- `S1-thw` → **thwala** — a component, part, piece
+- `S2-thw` → **ethwal** — an ingredient
+- `S3-thw` → **uthwal** — an instruction
+
+`-ţf-` is the positionally-defined sense: `S1-ţf` a part or section of
+something, `S3-ţf` a separable part.
+
+## family, parent, child
+
+Two roots. `-mp-` is the nuclear family member.
+
+- `S0-mp` → **ompal** — a nuclear family member
+- `S1-mp` → **ampal** — a parent
+- `S2-mp` → **empal** — a child, in the sense of offspring
+- `S3-mp` → **umpal** — a grandparent
+
+*Child* here is the kin relation. *Child* meaning a young human is
+`S2-l` → **elal**, a different root, and English uses one word for both.
+
+`-bč-` is the wider kin relation.
+
+- `S0-bč` → **občal** — kin, extended family relation
+- `S1-bč` → **abčal** — a family relation
+- `S2-bč` → **ebčal** — a genetic or marital relation
+- `S3-bč` → **ubčal** — an adoptive relation
+
+## business
+
+`-dň-` commercial enterprise.
+
+- `S0-dň` → **odňal** — a commercial enterprise, business, industry
+- `S1-dň` → **adňal** — conducting business as a commercial enterprise
+- `S2-dň` → **edňal** — making a product available for purchase
+- `S3-dň` → **udňal** — an industrial enterprise
