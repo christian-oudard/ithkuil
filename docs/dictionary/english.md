@@ -491,92 +491,87 @@ Two roots. `-mp-` is the nuclear family member.
 
 ## big, large
 
-There is no word for *big*. **SIZ** `-x-` is an affix, and it goes inside
-the word for the thing that is big. Nothing can be placed next to a noun
-the way English places an adjective.
+English *big* is not one concept. Before anything else, decide which of
+these is meant, because they are built out of entirely different
+material and only the first is an affix for size.
 
-### The scale
+### 1. Physically large — the common case
 
-All nine degrees, on one noun, so the shape is visible. The noun is
-`S3-rm`, a house.
+**SIZ** `-x-` at degree 7. There is no separate word: the affix goes
+inside the word for the thing that is big.
 
-- `S3-rm-SIZ/1` → **wurmax** — too small a house
-- `S3-rm-SIZ/2` → **wurmäx** — a tiny house
-- `S3-rm-SIZ/3` → **wurmex** — a small house
-- `S3-rm-SIZ/4` → **wurmix** — an undersized house
-- `S3-rm-SIZ/5` → **wurmëix** — a house of the right size
-- `S3-rm-SIZ/6` → **wurmöx** — an oversized house
 - `S3-rm-SIZ/7` → **wurmox** — a big house
-- `S3-rm-SIZ/8` → **wurmüx** — an enormous house
-- `S3-rm-SIZ/9` → **wurmux** — too big a house
-
-The scale is anchored in the middle at *the right size*, so it measures
-against the norm for that kind of thing rather than against anything
-absolute. A big mouse and a big house are both degree 7 and are not the
-same number of metres. Degrees 1 and 9 carry a judgement English needs a
-separate word for: **wurmux** is not "very big", it is *too* big.
-
-### Big things
-
-The same degree on the common nouns, so the pattern can be read off
-rather than derived each time.
-
 - `S1-l-SIZ/7` → **lalox** — a big adult
 - `S2-l-SIZ/7` → **welox** — a big child
-- `S3-rm-SIZ/7` → **wurmox** — a big house
 - `S1-lḑ-SIZ/7` → **walḑox** — a big tree
 - `S1-jl-SIZ/7` → **jlalox** — a big mountain
 - `S2-lz-SIZ/7` → **welzox** — a big river
 - `S1-zv-SIZ/7` → **zvalox** — a big dog
 - `S1-žx-SIZ/7` → **wažxox** — a big fire
 - `S1-lks-SIZ/7` → **walksox** — a big meal
-- `S1-ř-SIZ/7` → **řalox** — a big day
 - `S1-d-SIZ/7` → **dalox** — a big gathering
 - `S1-bč-SIZ/7` → **wabčox** — a big family
-- `S3-ḑf-SIZ/7` → **wuḑfox** — a big government
-- `S0-dň-SIZ/7` → **wodňox** — a big business
 - `S1-nth-SIZ/7` → **wanthox** — a big number
 - `S1-thw-SIZ/7` → **thwalox** — a big part
-- `S1-rtm-SIZ/7` → **wartmox** — a big job
 - `S1-ţr-G-SIZ/7` → **ţrarox** — a big amount of water
 
-Two of these are traps. `S1-ksl-SIZ/7` → **kslalox** is an idea that is
-physically large, which is not what *a big idea* means, and
-`S1-ňf-SIZ/7` → **waňfox** is a problem of great physical extent, not an
-important one. English *big* slides into "important" and SIZ does not
-follow it there. Which affix does carry importance is not settled here
-yet.
+The scale runs 1 to 9 and is anchored in the middle at *the right size*,
+so degree 7 is big for that kind of thing: a big mouse and a big house
+are both degree 7 and are not the same number of metres. The other
+degrees are in the affix table under SIZ; degree 9 is worth knowing
+because it means *too* big rather than very big.
 
-*A big drinker* and *a big brother* are not this affix either. The first
-is degree of extent, the second is seniority.
+### 2. Important, significant
 
-### Where the affix sits, and why it matters
+Not SIZ. *A big decision*, *a big problem*, *big news* say nothing about
+extent, and putting SIZ on them says the thing is physically large.
+`S1-ňf-SIZ/7` → **waňfox** is a problem that takes up space.
 
-With one house it makes no difference. With more than one it decides the
-meaning, and this is the choice English gives no practice in.
+Importance is the root `-šh-`.
 
-- `S3-rm-SIZ/7-MSS.G` → **urmaxottr** — a set of big houses
-- `S3-rm-MSS.G-SIZ/7` → **urmatrox** — a big set of houses
+- `S0-šh` → **ošhal** — importance, significance
+- `S1-šh` → **ašhal** — importance, significance
+- `S2-šh` → **ešhal** — prevalence
+- `S3-šh` → **ušhal** — salience, prominence
 
-§3.7 is the rule: Slot VII affixes have scope over the C_A complex in
-Slot VI, and Slot V affixes do not. Written before the C_A, SIZ applies
-to the stem, so each house is big. Written after it, SIZ applies to the
-whole configured set, so the set is big and the houses may be any size.
+There is no importance affix in the affix inventory, so an important
+problem is not one word. It is this root and that root in a
+concatenation chain, and the chain is left unwritten here until the
+compose and parse sides agree on one (see the note at the end).
 
-### Which type of affix
+### 3. Great in degree or extent
 
-The three affix types change what the size does to the meaning.
+*A big drinker*, *big trouble*, *a big spender*. English is describing
+how much, not how large, and that is **EXN** `-g-`, degree or extent, at
+degree 7.
 
-- `S3-rm-SIZ/7` → **wurmox** — Type 1: this house happens to be big
-- `S3-rm-SIZ/7_2` → **wurmoix** — Type 2: derivational, a big-house as
-  its own kind of thing, the way English derives *mansion* rather than
-  describing a house
-- `S3-rm-SIZ/7_3` → **wurmuox** — Type 3: the size applies to the
-  neighbouring affix rather than to the house
+- `S3-tx-EXN/7` → **wutxog** — a big drinker, one who drinks a great deal
+- `S2-tx-EXN/7` → **wetxog** — a big eater
+- `S1-šč-EXN/7` → **ščalog** — a big spender
+- `S1-rňf-EXN/7` → **warňfog** — big trouble
 
-Type 1 is the default and is what an English adjective usually means.
-Reach for Type 2 only when the result is a distinct concept rather than
-a description.
+### 4. Senior, elder
+
+*Big brother*, *big sister* in the family sense are about age, not size.
+That is the stem of the kinship root, or the age stems of `-l-` under
+*person*. Putting SIZ/7 on a sibling says they are physically large,
+which is a different and often wrong claim.
+
+### 5. Idioms, where the whole phrase is one concept
+
+These are not *big* plus a noun at all. The English phrase is a single
+lexical item and it translates as whatever it means, not as its parts.
+
+- `S1-ẓdr` → **ẓdrala** — the big house, jail, incarceration
+- `S2-lxm` → **elxmal** — Mr. Big, the boss, the one in charge
+- `S1-vsk` → **avskal** — Big Brother, surveillance
+- `S3-mfl` → **umflal** — the big day, a wedding
+- `S3-šh` → **ušhal** — a big shot, a big name, a prominent one
+
+Note that *big house* has both readings and they share nothing.
+**wurmox** is a large dwelling. **ẓdrala** is a prison. An English
+speaker who reaches for the first when they mean the second has not made
+a small error of degree; they have said an unrelated thing.
 
 ## small, little
 
@@ -591,3 +586,10 @@ The same affix, low degrees. Everything above applies unchanged.
 English *little* often carries affection rather than size, as in *the
 little ones*. That is not SIZ, and putting degree 3 on a child says the
 child is undersized.
+
+### A note on the concatenation gap
+
+*An important problem* should be a Type-1 or Type-2 concatenation chain
+of `-šh-` and `-ňf-`. `ithkuil compose "T2-šh"` produces **hrašha**, but
+`ithkuil parse "hrašha"` cannot read it back, so no chain is written into
+this file yet. Every form here round-trips, and that one does not.
