@@ -1438,3 +1438,48 @@ mistaken for something the source decided.
 **Related:** §4.6.4 bars all three categories from a specialized
 personal-reference root, where the Slot VI Perspective carries the
 same distinctions instead. That much the source is explicit about.
+
+### G41. §2's prohibited conjuncts rule out three of Quijada's own examples
+
+Two §2 rules bar conjuncts that the morphology document then uses in
+worked examples of its own.
+
+**2.2** bars a dental stop before any sibilant, "as these would be
+homophonic with the various sibilant affixes ... or their geminated
+forms". **2.9** bars a sibilant affricate before a sibilant fricative,
+"e.g., \***čs**, \***cz**, \***żz**, \***čž**, \***żs**, \***js**,
+\***jz**, \***jš**".
+
+The examples that break them, all in `morphology.md`:
+
+| Word | Line | Conjunct | Rule |
+|---|---|---|---|
+| **Tladatra cskava.** *Disease is rampant there.* | 1352 | `cs` | 2.9 |
+| **Mala welu wiosadca espanya.** *The child is speaking (in) Spanish.* | 1355 | `dc` | 2.2 |
+| **Adcsuleuha.** 'jump'-DYN-RCT-OBS | 1515 | `dcs` | 2.2 |
+
+Two roots are involved, `-csk-` and `-dcs-`, and both are in the
+lexicon as well, so the disagreement is not confined to the prose.
+
+The rules are transcribed correctly and our implementation applies
+them as written; this is the source disagreeing with itself, not a
+defect in the transcription or the code. It is also narrow. Of the 105
+worked-example words the corpus tests cover, these are the only
+failures, and of 5946 lexicon roots only those two break a §2 pair
+rule.
+
+Which side is wrong is open. 2.2's own justification argues against
+the examples — `dc` really would be hard to tell from `cc` — which
+suggests the roots are the error. Against that, they are Quijada's own
+roots used in his own glossed sentences, in three separate places, and
+a typo repeated three times across two documents is a stretch.
+
+Nothing has been changed either way. `validate` and `parse` reject all
+three words today. Recorded because fixing an unrelated bug made it
+visible: `parse` had been skipping validation for any capitalized
+word, so `Adcsuleuha` used to pass while its two lower-case siblings
+failed, which read like an inconsistency in the parser rather than a
+question about the grammar.
+
+**Related:** G37 records two prohibited-conjunct rules in the same
+section that have no source at all.
