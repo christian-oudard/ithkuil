@@ -36,6 +36,17 @@ func (s *server) registerTools(srv *mcp.Server) {
 	}, s.parse)
 
 	mcp.AddTool(srv, &mcp.Tool{
+		Name: "compare",
+		Description: "Lay two Ithkuil words' slot breakdowns side by side and report " +
+			"what differs: one row per slot with each side's surface chunk and codes " +
+			"and whether they disagree, then the glossary categories whose code " +
+			"changed. Answers what one letter is doing without diffing two parse " +
+			"results by hand. A concatenation chain is compared member by member from " +
+			"the parent end. Either word may use the ASCII digraph notation. " +
+			"Example: a=\"mar\u00e7at\", b=\"marcat\".",
+	}, s.compare)
+
+	mcp.AddTool(srv, &mcp.Tool{
 		Name: "compose",
 		Description: "Build a surface Ithkuil formative from a gloss-style expression. " +
 			"Each punctuation mark has one job: '-' separates slots, '.' joins category " +
@@ -211,6 +222,135 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 		out[i] = w
 	}
 	return nil, parseOut{Words: out}, nil
+}
+
+// --------------------------------------------------------------------
+// compare
+// --------------------------------------------------------------------
+
+type compareIn struct {
+	A string `json:"a" jsonschema:"the first word"`
+	B string `json:"b" jsonschema:"the second word"`
+}
+
+// slotRowOut is one slot lined up across both words. A side with no
+// such slot has an empty chunk and no codes.
+type slotRowOut struct {
+	Slot     string   `json:"slot"`
+	AChunk   string   `json:"a_chunk,omitempty"`
+	AEncodes []string `json:"a_encodes,omitempty"`
+	BChunk   string   `json:"b_chunk,omitempty"`
+	BEncodes []string `json:"b_encodes,omitempty"`
+	Differs  bool     `json:"differs,omitempty"`
+}
+
+type glossDiffOut struct {
+	Category string `json:"category"`
+	ACode    string `json:"a_code,omitempty"`
+	AName    string `json:"a_name,omitempty"`
+	BCode    string `json:"b_code,omitempty"`
+	BName    string `json:"b_name,omitempty"`
+}
+
+// comparePairOut is one pair of formatives compared. Words that are not
+// chains give exactly one pair.
+type comparePairOut struct {
+	A           string         `json:"a"` // header: surface, plus chain role
+	B           string         `json:"b"`
+	Slots       []slotRowOut   `json:"slots"`
+	Differences []glossDiffOut `json:"differences,omitempty"`
+	RootDiffers bool           `json:"root_differs,omitempty"`
+	ARoot       *rootHead      `json:"a_root,omitempty"`
+	BRoot       *rootHead      `json:"b_root,omitempty"`
+	ANote       string         `json:"a_note,omitempty"` // why it would not decode
+	BNote       string         `json:"b_note,omitempty"`
+	Identical   bool           `json:"identical,omitempty"`
+}
+
+// unpairedOut is a chain member the other word had no counterpart for.
+type unpairedOut struct {
+	Word  string `json:"word"`
+	Role  string `json:"role,omitempty"`
+	Owner string `json:"owner"`
+}
+
+type compareOut struct {
+	A        string           `json:"a"`
+	B        string           `json:"b"`
+	Pairs    []comparePairOut `json:"pairs"`
+	Unpaired []unpairedOut    `json:"unpaired,omitempty"`
+}
+
+func (s *server) compare(_ context.Context, _ *mcp.CallToolRequest, in compareIn) (*mcp.CallToolResult, compareOut, error) {
+	a, err := compareSide(in.A, s.lex)
+	if err != nil {
+		return nil, compareOut{}, err
+	}
+	b, err := compareSide(in.B, s.lex)
+	if err != nil {
+		return nil, compareOut{}, err
+	}
+
+	pairs, extra := view.PairSides(a, b)
+	out := compareOut{A: a.Word, B: b.Word}
+	for _, p := range pairs {
+		pair := comparePairOut{
+			A:           p.A.Header(),
+			B:           p.B.Header(),
+			RootDiffers: view.RootDiffers(p.A, p.B),
+			ANote:       p.A.Note,
+			BNote:       p.B.Note,
+		}
+		changed := false
+		for _, r := range view.SlotDiff(p.A, p.B) {
+			changed = changed || r.Differs
+			pair.Slots = append(pair.Slots, slotRowOut{
+				Slot:     r.Slot,
+				AChunk:   r.A.Chunk,
+				AEncodes: r.A.Encodes,
+				BChunk:   r.B.Chunk,
+				BEncodes: r.B.Encodes,
+				Differs:  r.Differs,
+			})
+		}
+		for _, d := range view.GlossDiff(p.A, p.B) {
+			pair.Differences = append(pair.Differences, glossDiffOut{
+				Category: d.Category,
+				ACode:    d.A.Code, AName: d.A.Name,
+				BCode: d.B.Code, BName: d.B.Name,
+			})
+		}
+		if pair.RootDiffers {
+			pair.ARoot = &rootHead{Code: p.A.Head.Code, Meaning: p.A.Head.Meaning}
+			pair.BRoot = &rootHead{Code: p.B.Head.Code, Meaning: p.B.Head.Meaning}
+		}
+		pair.Identical = p.A.Decoded && p.B.Decoded && !changed && !pair.RootDiffers && len(pair.Differences) == 0
+		out.Pairs = append(out.Pairs, pair)
+	}
+	for _, e := range extra {
+		out.Unpaired = append(out.Unpaired, unpairedOut{
+			Word: e.Block.Word, Role: e.Block.Role, Owner: e.Owner,
+		})
+	}
+	return nil, out, nil
+}
+
+// compareSide validates one word and breaks it down. An unpronounceable
+// word is an error here, naming the rule it breaks, the same refusal
+// the CLI makes before it compares anything.
+func compareSide(word string, lex *lexicon.Lexicon) (view.Side, error) {
+	word = surface.FromASCII(strings.TrimSpace(word))
+	if word == "" {
+		return view.Side{}, fmt.Errorf("both a and b are required")
+	}
+	if r := validation.ValidateWord(word); !r.Valid {
+		var reasons []string
+		for _, e := range r.Errors {
+			reasons = append(reasons, fmt.Sprintf("%s: %s", e.Rule, e.Reason))
+		}
+		return view.Side{}, fmt.Errorf("%s is not pronounceable Ithkuil (%s)", word, strings.Join(reasons, "; "))
+	}
+	return view.BuildSide(word, lex)
 }
 
 // --------------------------------------------------------------------

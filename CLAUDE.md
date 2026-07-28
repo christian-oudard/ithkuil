@@ -78,7 +78,7 @@ relative to `code/`.
 - `concatenation/` - Type 1/2 compound formative chains.
 - `numbers/` - Centesimal/base-100 number system.
 - `compose/` - Builds formatives from grammatical specifications + lexicon search helpers.
-- `view/` - Presentation layer for parsed tokens: the per-token type tag (`view.Type`) plus the phonetic-segment + glossary breakdown (`view.Segments`, `view.Headword`, `view.Glossary`) consumed by the parse CLI and MCP server.
+- `view/` - Presentation layer for parsed tokens: the per-token type tag (`view.Type`), the phonetic-segment + glossary breakdown (`view.Segments`, `view.Headword`, `view.Glossary`), and the two-word comparison model (`view.BuildSide`, `view.PairSides`, `view.SlotDiff`, `view.GlossDiff`). Both the CLI and the MCP server build on it; only the table drawing lives in `cmd/ithkuil/compare.go`.
 - `store/` - Read-only SQLite access to `data/data.db` (roots, affixes, grammar tables).
 - `lexicon/` - Roots and affixes in memory. `LoadFromStore(*store.Store)` is the normal path; `Load(path)` reads the JSON source directly (used by tests).
 - `dictionary/` - The English index: reads the lexicon's English glosses backwards into a headword-to-lexical-core map. `english_doc_test.go` checks every claim made in `docs/dictionary/english.md` by composing it.
