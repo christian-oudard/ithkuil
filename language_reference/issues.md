@@ -320,8 +320,8 @@ alternate on a preceding t/k/p — exactly the binding that composing all
 
 `language_reference/morphology.md` dropped the superscripts and rendered
 the two footnotes as free-standing sentences in page order, which reads
-as though the Extension rule owns the t/k/p condition. The
-transcription needs fixing; the language does not.
+as though the Extension rule owns the t/k/p condition. The transcription has been fixed: `morphology.md` now carries the
+footnote markers. See G33 for what the corrected table then shows.
 
 ### G4. WITHDRAWN — the substitution list is complete in the source
 
@@ -337,6 +337,7 @@ ll pļ             řř ňš    [C]çx [C]xw   ţbn (tḑ) ḑy
 All four cells of the r/ř matrix are present — `rr ns`, `rř nš`,
 `řr ňs`, `řř ňš` — so neither half of the old entry survives. Our
 markdown lost the leading `r` of `rř` and dropped the `řř ňš` line.
+Both are now restored, along with `çy`.
 
 It also has `cy nd` where the source has **`çy nd`**, which settles a
 question left open in the code: `allomorph/substitutions.go` is right
@@ -1003,8 +1004,8 @@ j / k g x l r ļ ř / m n ň ç h. The two consonants missing against the
 §1.1 inventory of 30 are **w** and **y**, the semiconsonants, which the
 script handles elsewhere.
 
-Our markdown's version of the table added w and y, making it disagree
-with the count printed beside it.
+Our markdown's table had added w and y, making it disagree with the
+count printed beside it. It now lists 28.
 
 ### G13. The documents disagree on how to write ẓ and ḑ
 
@@ -1039,7 +1040,7 @@ phoneme inventory sees an unknown codepoint twenty-three times.
 
 Quijada's Validation table gives REC as **â** and USP as **êi** — the
 forms §1.3.1's rules require, and the ones this entry predicted. Our
-markdown has `à` (a-grave) and a bare `ëi`.
+markdown had `à` (a-grave) and a bare `ëi`; both are now corrected.
 
 Both values were derived from the vowel-form series and the
 acute/circumflex convention before the PDF was available, and both
@@ -1049,7 +1050,8 @@ turned out to match it.
 
 The affix document and §7.0 of the grammar both give **-ḑc**. Our
 markdown lost the cedilla, producing `-dc-`, which is what §2.2
-prohibits. `data/data.json` already had `ḑc`.
+prohibits. `data/data.json` already had `ḑc`; the markdown is now
+corrected too.
 
 ### G28. §7.2 writes OCG for OGC
 
@@ -1077,5 +1079,43 @@ North and South America require.
 §4.7 of the PDF reads `DES DESPERATIVE mřř`. Our markdown has `mřr`,
 which §2.21 forbids. The corpus evidence that pointed this way — 42
 standalone `mřř` against one `mřr` — was right, and the source
-confirms it.
+confirms it. The markdown is now corrected.
+
+### G33. The UPX footnote is marked on two of the five Extension rows
+
+Quijada's Ca table conditions its alternate forms with two footnotes,
+and the ¹ marker sits on only two Extension entries:
+
+```
+PRX  PROXIMAL     t/d              M  MONADIC        — (l)   l (tļ)
+ICP  INCEPTIVE    k/g              G  AGGLOMERATIVE  r       ř
+ATV  ATTENUATIVE  p/b              N  NOMIC          w (v)   m/h²
+GRA  GRADUATIVE   g / gz¹          A  ABSTRACT       y (j)   n/ç²
+DPL  DEPLETIVE    b / bz¹
+       ¹ Use the alternate form if the Configuration of the word is UPX
+       ² Use the alternate form when preceded by [C]t-, [C]k-, or [C]p-
+```
+
+PRX, ICP and ATV carry no marker. The ² is on both rows that need it,
+and it is captured on the same text lines as the unmarked Extensions,
+so this is not an artifact of reading the PDF — where a superscript
+exists on those lines it comes through.
+
+Read literally, only GRA and DPL take their alternate under UPX. That
+costs 96 distinctions:
+
+| Reading | Distinct Ca forms | Colliding |
+|---------|------------------|-----------|
+| ¹ governs the whole Extension column | **3840** | **0** |
+| ¹ governs GRA and DPL only, as printed | 3744 | 96 |
+
+The collisions are exactly what the alternate exists to prevent. UPX
+contributes no Configuration consonant, so UPX/PRX composes a bare `t`
+— which is already MSS/DEL. Likewise `k` is both UPX/ICP and MSC/DEL,
+and `p` is both UPX/ATV and MSF/DEL, across every Affiliation and
+Perspective.
+
+So the footnote has to govern the column, and the marker belongs on all
+five rows. This is the residue of the old G3: the conditions were never
+swapped, but the ¹ is under-applied.
 

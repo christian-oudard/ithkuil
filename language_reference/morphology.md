@@ -427,9 +427,9 @@ The nine Configuration categories of Ithkuil 2011 have been revised/expanded int
 | **CSL** | CONSOLIDATIVE | — | | | **DEL** | DELIMITIVE | — | | **NRM** | **RPV** |
 | **ASO** | ASSOCIATIVE | l (nļ) | **(U/D)PX** UNIPLEX/DUPLEX | | **PRX** | PROXIMAL | t / d | **M** MONADIC | — (l) | l (tļ) |
 | **COA** | COALESCENT | r (rļ) | **M/D** MULTIPLEX/DUPLEX SIMILAR | **SS** SEPARATE | **ICP** | INCEPTIVE | k / g | **G** AGGLOMERATIVE | r | ř |
-| **VAR** | VARIATIVE | ř (ň) | | **SC** CONNECTED | **ATV** | ATTENUATIVE | p / b | **N** NOMIC | w (v) | m / h |
-| | | | | **SF** FUSED | **GRA** | GRADUATIVE | g / gz | **A** ABSTRACT | y (j) | n / ç |
-| | | | **M/D** MULTIPLEX/DUPLEX DISSIMILAR | **DS** SEPARATE | **DPL** | DEPLETIVE | b / bz | | | |
+| **VAR** | VARIATIVE | ř (ň) | | **SC** CONNECTED | **ATV** | ATTENUATIVE | p / b | **N** NOMIC | w (v) | m / h² |
+| | | | | **SF** FUSED | **GRA** | GRADUATIVE | g / gz¹ | **A** ABSTRACT | y (j) | n / ç² |
+| | | | **M/D** MULTIPLEX/DUPLEX DISSIMILAR | **DS** SEPARATE | **DPL** | DEPLETIVE | b / bz¹ | | | |
 | | | | | **DC** CONNECTED | | | | | | |
 | | | | | **DF** FUSED | | | | | | |
 | | | | **M/D** MULTIPLEX/DUPLEX FUZZY | **FS** SEPARATE | | | | | | |
@@ -440,14 +440,15 @@ Forms in parentheses are standalone forms.
 
 Configuration forms (with -DPX and +DPX columns): (U/D)PX = — / s; SS = t / c; SC = k / ks; SF = p / ps; DS = ţ / ţs; DC = f / fs; DF = ç / š; FS = z / č; FC = ž / kš; FF = ẓ / pš
 
-Use the alternate Extension form when preceded by [C]t-, [C]k-, or [C]p-.
-Use the alternate Perspective+Essence RPV form (for N and A) when the Configuration of the word is UPX.
+¹ Use the alternate form if the Configuration of the word is UPX
+² Use the alternate form when preceded by [C]t-, [C]k-, or [C]p-
 
 **Allomorphic Substitutions:**
 
     pp → mp       pb → mb       rr → ns       ll → pļ
-    tt → nt       kg → ng       ř → nš        cy → nd
+    tt → nt       kg → ng       rř → nš       çy → nd
     kk → nk       řr → ňs
+                  řř → ňš
 
     [C]gm → [C]x       [C]gn → [C]ň       ngn → ňn
     [C]bm → [C]v       [C]bn → [C]ḑ       fbm → (fv) → vw
@@ -869,10 +870,10 @@ Validation refers to the evidential basis for a statement in ASSERTIVE illocutio
 | Illocution | | Validation | Meaning of Validation | V_K |
 |-----------|---|-----------|----------------------|-----|
 | | **OBS** | OBSERVATIONAL | present sensory knowledge or present sensory experience: "I perceive... / I know..." | (á) |
-| | **REC** | RECOLLECTIVE | past sensory knowledge or past sensory experience – "I remember... / I know (from memory)..." | à |
+| | **REC** | RECOLLECTIVE | past sensory knowledge or past sensory experience – "I remember... / I know (from memory)..." | â |
 | | **PUP** | PURPORTIVE | knowledge from a definitive/(quasi-)verifiable 3rd party source: "I've read... / (an expert) has said..." | é |
 | **ASR** | **RPR** | REPORTIVE | knowledge from a 3rd party: "I heard (from someone)... / someone has said..." | í |
-| ASSERTIVE | **USP** | UNSPECIFIED | [Validation deliberately unspecified] | ëi |
+| ASSERTIVE | **USP** | UNSPECIFIED | [Validation deliberately unspecified] | êi |
 | Illocution | **IMA** | IMAGINARY | unreal statement, not intended as true, based on whim, imagination, dream, altered mental state, etc. | ô |
 | | **CVN** | CONVENTIONAL | cultural/conventional (i.e., collectively agreed-upon) knowledge: "They say... / It is said..." | ó |
 | | **ITU** | INTUITIVE | intuition, hunch, subjective feeling, past experiences, etc. – "I feel... / I have a hunch... / something tells me..." | û |
@@ -1214,7 +1215,7 @@ Each Bias adjunct has the same consonant-form as an associated lexico-semantic r
 | **CTV** | CONTEMPLATIVE | gvv | *'I wonder how…,' 'that's odd…,' 'I don't get it…,' or a quizzical 'hmmmm.'* |
 | **DCC** | DISCONCERTIVE | gzj | *'I'm not sure about this.' 'I don't feel comfortable about this.' 'I'm feeling out of my element here.'* |
 | **DEJ** | DEJECTIVE | žžg | *'(sigh)' [of dejection/disillusionment]* |
-| **DES** | DESPERATIVE | mřr | *'I don't know how to say this, but…' 'I'm afraid that….' 'I'm sorry to have to tell you, but...'* |
+| **DES** | DESPERATIVE | mřř | *'I don't know how to say this, but…' 'I'm afraid that….' 'I'm sorry to have to tell you, but...'* |
 | **DFD** | DIFFIDENT | cč | *'sorry, but…' 'It's nothing. It's just…'* |
 | **DIS** | DISMISSIVE | kff | *'Is that it?' 'Big deal!' 'So what!?'* |
 | **DLC** | DELECTATIVE | ẓmm | *'Whee!'* |
@@ -1618,7 +1619,7 @@ Name the first 4 months is via Degrees 1 through 4 of the Type-2 **SEQ** affix (
 
 Toponyms, demonyms and other proper names are a phonetic rendering of the native name, to the extent Ithkuil's phoneme inventory allows. Ithkuil phonotactic restraints do not apply as long as the name is pronounceable. The two new affixes below are available for use as appropriate.
 
-**CLG -- Cultural or Geo-Demographic Association** (form: -**dc**)
+**CLG -- Cultural or Geo-Demographic Association** (form: -**ḑc**)
 
 | Degree | Description |
 |---|---|
@@ -2070,7 +2071,7 @@ Consonantal characters used for displaying C_R and C_S. The C_R character follow
 
 ![Core Secondary Characters](images/script/12_2_secondary_chars_core.png)
 
-The 28 core forms each have a "top" and "bottom" end that take extensions for consonant clusters. Each consonant has both a print and handwritten form.
+The 28 core forms each have a "top" and "bottom" end that take extensions for consonant clusters. The semiconsonants w and y have no core character. Each consonant has both a print and handwritten form.
 
 | Voiceless | Voiced | Voiceless | Voiced |
 |---|---|---|---|
@@ -2083,7 +2084,6 @@ The 28 core forms each have a "top" and "bottom" end that take extensions for co
 | — | — | ç | h |
 | l | r | ļ | ř |
 | m | n | ň | — |
-| w | y | — | — |
 
 ### 12.2.2 Consonantal Extensions to Secondary Characters
 
