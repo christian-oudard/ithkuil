@@ -1,4 +1,4 @@
-package surface
+package phonology
 
 import "testing"
 

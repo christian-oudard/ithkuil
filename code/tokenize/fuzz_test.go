@@ -5,7 +5,7 @@ import (
 	"testing"
 	"unicode/utf8"
 
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/validation"
 )
 
@@ -105,6 +105,6 @@ func FuzzTokenize(f *testing.F) {
 					in, i, tok.Surface(), fields[i])
 			}
 		}
-		_ = surface.SplitConjuncts(in) // ensure Layer B doesn't panic either
+		_ = phonology.SplitConjuncts(in) // ensure Layer B doesn't panic either
 	})
 }

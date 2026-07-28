@@ -3,18 +3,18 @@ package parse
 import (
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 func TestParseParsingAdjunct(t *testing.T) {
 	cases := []struct {
 		in   string
-		want surface.Stress
+		want phonology.Stress
 	}{
-		{"'a'", surface.Monosyllabic},
-		{"'e'", surface.Ultimate},
-		{"'o'", surface.Penultimate},
-		{"'u'", surface.Antepenultimate},
+		{"'a'", phonology.Monosyllabic},
+		{"'e'", phonology.Ultimate},
+		{"'o'", phonology.Penultimate},
+		{"'u'", phonology.Antepenultimate},
 	}
 	for _, c := range cases {
 		got, err := ParseParsingAdjunct(c.in)

@@ -10,7 +10,7 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/validation"
 )
 
@@ -534,7 +534,7 @@ func appendAffix(f *g.Formative, csOrAbbrev, degreeStr, typeStr string, affixes 
 // identifier. Accepts the cluster itself, the all-caps abbreviation
 // (looked up by .Abbrev), or any unknown lowercase cluster (the
 // lexicon is a named subset, not the authoritative list of legal Cs
-// clusters). An unknown cluster is folded through surface.FromASCII,
+// clusters). An unknown cluster is folded through phonology.FromASCII,
 // mirroring the root: the canonical gloss writes it in ASCII digraphs
 // so that it stays typable, and this is what reads that back.
 func resolveAffixCs(id string, affixes map[string]lexicon.AffixEntry) string {
@@ -549,7 +549,7 @@ func resolveAffixCs(id string, affixes map[string]lexicon.AffixEntry) string {
 		if id == strings.ToUpper(id) && id != strings.ToLower(id) {
 			return ""
 		}
-		return surface.FromASCII(id)
+		return phonology.FromASCII(id)
 	}
 	if _, ok := affixes[id]; ok {
 		return id
@@ -580,13 +580,13 @@ func resolveAffixCs(id string, affixes map[string]lexicon.AffixEntry) string {
 	}
 	// Lowercase/mixed cluster not in the lexicon — accept it, folding
 	// any ASCII digraphs back to their Ithkuil glyphs.
-	return surface.FromASCII(id)
+	return phonology.FromASCII(id)
 }
 
 // isClusterToken returns (cluster, true) if tok looks like an Ithkuil
 // root cluster — that is, a single token (no "/" or ":"), at least
 // one character is a lowercase ASCII letter or an Ithkuil special
-// orthographic glyph. ASCII digraphs are folded via surface.FromASCII.
+// orthographic glyph. ASCII digraphs are folded via phonology.FromASCII.
 //
 // All-caps tokens (with optional digits) are treated as abbreviations
 // and rejected here so they flow through ApplyFlag instead.
@@ -616,5 +616,5 @@ func isClusterToken(tok string) (string, bool) {
 	if !hasLower {
 		return "", false
 	}
-	return surface.FromASCII(tok), true
+	return phonology.FromASCII(tok), true
 }

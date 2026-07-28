@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/semantics"
-	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -81,13 +81,13 @@ func (gl *Glosser) Token(t tokenize.WordToken) string {
 // Display: same — there's no useful display elaboration for these.
 func (gl *Glosser) parsingAdjunctLabel(p g.ParsingAdjunct) string {
 	switch p.Stress {
-	case surface.Monosyllabic:
+	case phonology.Monosyllabic:
 		return "mono:"
-	case surface.Ultimate:
+	case phonology.Ultimate:
 		return "ulti:"
-	case surface.Penultimate:
+	case phonology.Penultimate:
 		return "penu:"
-	case surface.Antepenultimate:
+	case phonology.Antepenultimate:
 		return "ante:"
 	}
 	return "?:"
@@ -154,7 +154,7 @@ func (gl *Glosser) affixLabel(cs string) string {
 		}
 	}
 	if gl.Canonical {
-		return surface.ToASCII(cs)
+		return phonology.ToASCII(cs)
 	}
 	return cs
 }

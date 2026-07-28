@@ -17,7 +17,7 @@ import (
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/validation"
 )
 
@@ -42,11 +42,11 @@ func Referential(word string) (g.Referential, error) {
 	if err := phonotactic(word); err != nil {
 		return g.Referential{}, err
 	}
-	bare, stress := surface.Strip(word)
-	if stress == surface.InvalidStress {
+	bare, stress := phonology.Strip(word)
+	if stress == phonology.InvalidStress {
 		return g.Referential{}, errNotReferential
 	}
-	conjs := absorbRule1Glottals(surface.MergeGlottalVowels(surface.SplitConjuncts(bare)))
+	conjs := absorbRule1Glottals(phonology.MergeGlottalVowels(phonology.SplitConjuncts(bare)))
 	if len(conjs) < 2 {
 		return g.Referential{}, errNotReferential
 	}
@@ -67,7 +67,7 @@ func Referential(word string) (g.Referential, error) {
 		}
 	}
 	c1 := conjs[i]
-	if !surface.IsConsonantConjunct(c1) {
+	if !phonology.IsConsonantConjunct(c1) {
 		return g.Referential{}, errNotReferential
 	}
 	var head g.RefHead
@@ -82,7 +82,7 @@ func Referential(word string) (g.Referential, error) {
 		head = g.PersonalHead{Refs: refs, Category: cat}
 	}
 	i++
-	if i >= len(conjs) || !surface.IsVowelConjunct(conjs[i]) {
+	if i >= len(conjs) || !phonology.IsVowelConjunct(conjs[i]) {
 		return g.Referential{}, errNotReferential
 	}
 	caseA, caseAok := parse.ParseCase(conjs[i])
@@ -94,7 +94,7 @@ func Referential(word string) (g.Referential, error) {
 	var second *g.SecondReferent
 	if i < len(conjs) && (conjs[i] == "w" || conjs[i] == "y") {
 		i++
-		if i >= len(conjs) || !surface.IsVowelConjunct(conjs[i]) {
+		if i >= len(conjs) || !phonology.IsVowelConjunct(conjs[i]) {
 			return g.Referential{}, errNotReferential
 		}
 		c2v, c2ok := parse.ParseCase(conjs[i])
@@ -103,7 +103,7 @@ func Referential(word string) (g.Referential, error) {
 		}
 		second = &g.SecondReferent{Case: c2v}
 		i++
-		if i < len(conjs) && surface.IsConsonantConjunct(conjs[i]) {
+		if i < len(conjs) && phonology.IsConsonantConjunct(conjs[i]) {
 			rs, dok := parse.DecomposeRefCluster(conjs[i])
 			if !dok || len(rs) == 0 {
 				return g.Referential{}, errNotReferential
@@ -122,7 +122,7 @@ func Referential(word string) (g.Referential, error) {
 		Head:       head,
 		Case:       caseA,
 		Second:     second,
-		RpvEssence: stress == surface.Ultimate,
+		RpvEssence: stress == phonology.Ultimate,
 	}, nil
 }
 
@@ -136,14 +136,14 @@ func CombinationReferential(text string) (g.CombinationReferential, error) {
 	// §4.6.2 slot 6: ultimate stress gives the adjunct RPV Essence.
 	// The diacritic has to come off before any vowel is looked up, or
 	// a stressed affix vowel decodes to the wrong degree.
-	bare, stress := surface.Strip(text)
-	if stress == surface.InvalidStress {
+	bare, stress := phonology.Strip(text)
+	if stress == phonology.InvalidStress {
 		return g.CombinationReferential{}, errNotReferential
 	}
 	// Vc is looked up as a whole conjunct, so a glottalized case vowel
 	// ("a'o" in mma'oxinļ) has to be one conjunct rather than the three
 	// SplitConjuncts leaves it as.
-	conjs := absorbRule1Glottals(surface.MergeGlottalVowels(surface.SplitConjuncts(bare)))
+	conjs := absorbRule1Glottals(phonology.MergeGlottalVowels(phonology.SplitConjuncts(bare)))
 	// §4.6.3 epenthesis: "a-" lets a C_P suppletive cluster occupy C1
 	// instead of a personal-reference cluster. Otherwise "ë" is the
 	// only acceptable prefix.
@@ -160,7 +160,7 @@ func CombinationReferential(text string) (g.CombinationReferential, error) {
 		return g.CombinationReferential{}, errNotReferential
 	}
 	c1, vc, specSurface := conjs[0], conjs[1], conjs[2]
-	if !surface.IsConsonantConjunct(c1) || !surface.IsVowelConjunct(vc) {
+	if !phonology.IsConsonantConjunct(c1) || !phonology.IsVowelConjunct(vc) {
 		return g.CombinationReferential{}, errNotReferential
 	}
 	spec, specOK := parseCombinationSpec(specSurface)
@@ -188,7 +188,7 @@ func CombinationReferential(text string) (g.CombinationReferential, error) {
 	// signals this is actually a formative with a Slot V boundary,
 	// not a combination referential.
 	for _, c := range rest {
-		if surface.IsConsonantConjunct(c) && hasDoubledLetter(c) {
+		if phonology.IsConsonantConjunct(c) && hasDoubledLetter(c) {
 			return g.CombinationReferential{}, errNotReferential
 		}
 	}
@@ -196,14 +196,14 @@ func CombinationReferential(text string) (g.CombinationReferential, error) {
 	var case2 *g.Case
 	for i := 0; i < len(rest); {
 		if i+1 < len(rest) &&
-			surface.IsVowelConjunct(rest[i]) &&
-			surface.IsConsonantConjunct(rest[i+1]) {
+			phonology.IsVowelConjunct(rest[i]) &&
+			phonology.IsConsonantConjunct(rest[i+1]) {
 			t, d := parse.ClassifyAffixVowel(rest[i])
 			affixes = append(affixes, g.Affix{Type: t, Degree: d, Consonant: rest[i+1]})
 			i += 2
 			continue
 		}
-		if i == len(rest)-1 && surface.IsVowelConjunct(rest[i]) {
+		if i == len(rest)-1 && phonology.IsVowelConjunct(rest[i]) {
 			// Final Vc2: special-case "a" (no case) and "üa" → THM.
 			switch rest[i] {
 			case "a":
@@ -227,7 +227,7 @@ func CombinationReferential(text string) (g.CombinationReferential, error) {
 		Spec:       spec,
 		Affixes:    affixes,
 		Case2:      case2,
-		RpvEssence: stress == surface.Ultimate,
+		RpvEssence: stress == phonology.Ultimate,
 	}, nil
 }
 
@@ -256,11 +256,11 @@ func absorbRule1Glottals(conjs []string) []string {
 		if out[i] == "'" || !strings.HasPrefix(out[i], "'") {
 			continue
 		}
-		if !surface.IsVowelConjunct(out[i-1]) {
+		if !phonology.IsVowelConjunct(out[i-1]) {
 			continue
 		}
 		out[i] = strings.TrimPrefix(out[i], "'")
-		out[i-1] = surface.GlottalizeVowel(out[i-1])
+		out[i-1] = phonology.GlottalizeVowel(out[i-1])
 	}
 	return out
 }

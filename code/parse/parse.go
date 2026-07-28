@@ -1,5 +1,5 @@
 // Package parse contains the primitives for segmenting Ithkuil text into
-// morphological pieces. surface.SplitConjuncts is the entry point that every higher
+// morphological pieces. phonology.SplitConjuncts is the entry point that every higher
 // layer of parsing builds on; per-slot parsers (ParseSlotII, …) decode
 // individual vowel/consonant conjuncts into grammar values.
 package parse

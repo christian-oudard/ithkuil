@@ -1,20 +1,4 @@
-// Package surface is Layer A of the parse/render stack: pure
-// transformations between raw surface text and a (normalized text +
-// stress position) pair. It has no grammatical knowledge — it works
-// at the level of letters, accents, and syllable count only.
-//
-// The two public functions form an inverse pair on well-formed input:
-//
-//	Apply(Strip(w)) == w
-//	Strip(Apply(n, s)) == (n, s)
-//
-// "Well-formed" here means input that follows the spec's convention
-// that penultimate and monosyllabic stress are orthographically
-// unmarked (§3.10). Input that explicitly marks penultimate stress
-// (a stray acute on the penultimate vowel) will round-trip as the
-// unmarked form; that's a correction of invalid input rather than a
-// faithful preservation.
-package surface
+package phonology
 
 import (
 	"strings"
@@ -22,9 +6,21 @@ import (
 )
 
 // Stress is the orthographic stress position of a word. Equivalent to
-// parse.Stress; lives here because layer A is where the bytes of the
-// stress mark are interpreted. Higher layers map this to grammar
+// parse.Stress; lives here because this is where the bytes of the
+// stress mark are interpreted. Higher layers map it to grammar
 // categories (UnframedVerbal, FramedVerbal, etc.).
+//
+// Strip and Apply form an inverse pair on well-formed input:
+//
+//	Apply(Strip(w)) == w
+//	Strip(Apply(n, s)) == (n, s)
+//
+// "Well-formed" means input that follows the spec's convention that
+// penultimate and monosyllabic stress are orthographically unmarked
+// (§3.10). Input that explicitly marks penultimate stress (a stray
+// acute on the penultimate vowel) round-trips as the unmarked form;
+// that is a correction of invalid input rather than a faithful
+// preservation.
 type Stress int
 
 const (

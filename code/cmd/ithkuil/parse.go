@@ -8,8 +8,8 @@ import (
 
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/slots"
-	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/tokenize"
 	"github.com/christian-oudard/ithkuil/validation"
 	"github.com/christian-oudard/ithkuil/view"
@@ -87,7 +87,7 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 
 	typed := text
 	// Accept the ASCII digraph notation everywhere a word is taken.
-	text = surface.FromASCII(text)
+	text = phonology.FromASCII(text)
 
 	// What the user typed, keyed by the surface a token will carry, so
 	// an error can name their input rather than a form only we ever

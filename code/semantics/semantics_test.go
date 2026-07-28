@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 func TestMoodOrCaseScope(t *testing.T) {
@@ -54,15 +54,15 @@ func TestSlotVIIICnLabel(t *testing.T) {
 
 func TestIsVH(t *testing.T) {
 	cases := []struct {
-		stress    surface.Stress
+		stress    phonology.Stress
 		pairCount int
 		want      bool
 	}{
-		{surface.Ultimate, 1, true},
-		{surface.Ultimate, 3, true},
-		{surface.Ultimate, 0, false}, // no pairs → V_N
-		{surface.Penultimate, 1, false},
-		{surface.Monosyllabic, 0, false},
+		{phonology.Ultimate, 1, true},
+		{phonology.Ultimate, 3, true},
+		{phonology.Ultimate, 0, false}, // no pairs → V_N
+		{phonology.Penultimate, 1, false},
+		{phonology.Monosyllabic, 0, false},
 	}
 	for _, c := range cases {
 		if got := IsVH(c.stress, c.pairCount); got != c.want {

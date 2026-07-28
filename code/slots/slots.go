@@ -2,12 +2,12 @@
 // surface conjuncts with the slot positions they occupy, without
 // decoding any grammar values. Both parse and render lean on it:
 //
-//	surface text  ──(surface.Strip/SplitConjuncts)──▶  conjuncts + Stress
+//	surface text  ──(phonology.Strip/SplitConjuncts)──▶  conjuncts + Stress
 //	conjuncts     ──(slots.Parse)──▶                  Layout
 //	Layout        ──(slots.ToGrammar)──▶              grammar.Formative
 //	Layout        ──(slots.FromGrammar)──◀            grammar.Formative
 //	Layout        ──(slots.Render)──▶                 conjuncts
-//	conjuncts     ──(surface.Apply/JoinConjuncts)──▶   surface text
+//	conjuncts     ──(phonology.Apply/JoinConjuncts)──▶   surface text
 //
 // Storing the slot-labelled surface form as its own value means the
 // shape-detection logic (consonant-initial vs vowel-initial, shortcut
@@ -17,7 +17,7 @@
 package slots
 
 import (
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // RootKind discriminates the three formative shapes that the spec
@@ -112,5 +112,5 @@ type Layout struct {
 	CnInCa bool
 
 	// Stress is the prosodic stress observed (or to apply).
-	Stress surface.Stress
+	Stress phonology.Stress
 }

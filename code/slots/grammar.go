@@ -9,7 +9,6 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/validation"
 )
 
@@ -218,16 +217,16 @@ func affixesVxCs(chunks []AffixChunk) ([]g.Affix, error) {
 // restoreMovedGlottal re-inserts the glottal stop that the §3.9.1
 // SPECIAL NOTE shortening rule shifted off the Vc, in the §1.7 Rule 3
 // placement that a word-final Vc always takes.
-func restoreMovedGlottal(vc string) string { return surface.GlottalizeVowel(vc) }
+func restoreMovedGlottal(vc string) string { return phonology.GlottalizeVowel(vc) }
 
 // finalFromVc builds the Final variant from the trailing Slot IX
 // vowel (may be empty) and the observed stress.
-func finalFromVc(vc string, stress surface.Stress, concat g.ConcatenationStatus) (g.Final, error) {
+func finalFromVc(vc string, stress phonology.Stress, concat g.ConcatenationStatus) (g.Final, error) {
 	if concat != g.ConcatNone {
 		return formatFromVf(vc, stress)
 	}
 	switch stress {
-	case surface.Ultimate, surface.Monosyllabic:
+	case phonology.Ultimate, phonology.Monosyllabic:
 		if vc == "" {
 			return g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}, nil
 		}
@@ -236,7 +235,7 @@ func finalFromVc(vc string, stress surface.Stress, concat g.ConcatenationStatus)
 			return nil, fmt.Errorf("invalid Vk %q", vc)
 		}
 		return g.UnframedVerbal{Vk: vk}, nil
-	case surface.Antepenultimate:
+	case phonology.Antepenultimate:
 		c := g.THM
 		if vc != "" {
 			cs, ok := parse.ParseCase(vc)
@@ -246,7 +245,7 @@ func finalFromVc(vc string, stress surface.Stress, concat g.ConcatenationStatus)
 			c = cs
 		}
 		return g.FramedVerbal{Case: c}, nil
-	case surface.Penultimate:
+	case phonology.Penultimate:
 		c := g.THM
 		if vc != "" {
 			cs, ok := parse.ParseCase(vc)
@@ -275,9 +274,9 @@ func finalFromVc(vc string, stress surface.Stress, concat g.ConcatenationStatus)
 // A dependent is therefore always an UnframedNominal. Antepenultimate
 // stress has no reading at all: §3.1.3 gives ultimate one job already,
 // and the spec never frames a dependent.
-func formatFromVf(vc string, stress surface.Stress) (g.Final, error) {
+func formatFromVf(vc string, stress phonology.Stress) (g.Final, error) {
 	switch stress {
-	case surface.Ultimate:
+	case phonology.Ultimate:
 		// §3.1.3: PRN, like THM, may elide its -a-, but only on a
 		// polysyllable, so that the stress it depends on is audible.
 		if vc == "" {
@@ -288,7 +287,7 @@ func formatFromVf(vc string, stress surface.Stress) (g.Final, error) {
 			return nil, fmt.Errorf("invalid Vf %q: no case 37-68 is written %q under ultimate stress", vc, vc)
 		}
 		return g.UnframedNominal{Case: c}, nil
-	case surface.Penultimate, surface.Monosyllabic:
+	case phonology.Penultimate, phonology.Monosyllabic:
 		// §3.1.3: a monosyllabic dependent is an unframed nominal in
 		// THM, not the verbal reading a monosyllable would get anywhere
 		// else.
@@ -405,8 +404,8 @@ func (c cost) better(than cost) bool {
 func surfaceCost(l Layout, e encoding) cost {
 	s := Render(l)
 	c := cost{runes: len([]rune(s)), shortcuts: e.count(), surface: s}
-	for _, conj := range surface.SplitConjuncts(s) {
-		if surface.IsVowelConjunct(conj) {
+	for _, conj := range phonology.SplitConjuncts(s) {
+		if phonology.IsVowelConjunct(conj) {
 			c.syllables++
 		}
 	}
@@ -772,26 +771,26 @@ func moodCnP2(m g.Mood) string { return moodCnP2Table[m] }
 // slotIXFromFinal picks the trailing vowel and the stress diacritic to
 // apply based on the formative's grammatical category. The inverse of
 // finalFromVc.
-func slotIXFromFinal(f g.Formative) (string, surface.Stress) {
+func slotIXFromFinal(f g.Formative) (string, phonology.Stress) {
 	if f.Concat != g.ConcatNone {
 		n, ok := f.Final.(g.UnframedNominal)
 		if !ok {
 			panic(fmt.Sprintf("slots: concatenated formative with %T final; §3.1.3 gives a dependent a Vf Format, so it is always nominal", f.Final))
 		}
 		if n.Case > g.SIT {
-			return stripVfGlottal(g.CaseToVc(n.Case)), surface.Ultimate
+			return stripVfGlottal(g.CaseToVc(n.Case)), phonology.Ultimate
 		}
-		return g.CaseToVc(n.Case), surface.Penultimate
+		return g.CaseToVc(n.Case), phonology.Penultimate
 	}
 	switch v := f.Final.(type) {
 	case g.UnframedNominal:
-		return g.CaseToVc(v.Case), surface.Penultimate
+		return g.CaseToVc(v.Case), phonology.Penultimate
 	case g.FramedVerbal:
-		return g.CaseToVc(v.Case), surface.Antepenultimate
+		return g.CaseToVc(v.Case), phonology.Antepenultimate
 	case g.UnframedVerbal:
-		return vkVowel(v.Vk), surface.Ultimate
+		return vkVowel(v.Vk), phonology.Ultimate
 	}
-	return "", surface.Penultimate
+	return "", phonology.Penultimate
 }
 
 // stripVfGlottal is the inverse of restoreMovedGlottal: it takes the
@@ -949,12 +948,12 @@ func validWordFinalAfterVcElision(l *Layout) bool {
 	// what actually came last.
 	probe := *l
 	probe.Vc = ""
-	conjs := surface.SplitConjuncts(Render(probe))
+	conjs := phonology.SplitConjuncts(Render(probe))
 	if len(conjs) == 0 {
 		return true
 	}
 	last := conjs[len(conjs)-1]
-	if r, _ := utf8.DecodeRuneInString(last); surface.IsVowel(r) {
+	if r, _ := utf8.DecodeRuneInString(last); phonology.IsVowel(r) {
 		return true
 	}
 	return validation.ValidateClusterAt(validation.Final, last).Valid

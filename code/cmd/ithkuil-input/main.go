@@ -16,7 +16,7 @@ import (
 
 	"golang.org/x/term"
 
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 const (
@@ -59,7 +59,7 @@ func batch(r io.Reader, w io.Writer) {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	fmt.Fprint(w, surface.FromASCII(string(b)))
+	fmt.Fprint(w, phonology.FromASCII(string(b)))
 }
 
 // tui runs the interactive raw-mode loop. Each Enter finalizes the
@@ -67,7 +67,7 @@ func batch(r io.Reader, w io.Writer) {
 // buffer exits.
 func tui(in io.Reader, out io.Writer) error {
 	r := bufio.NewReader(in)
-	var s surface.InputState
+	var s phonology.InputState
 	draw(out, &s)
 	for {
 		c, _, err := r.ReadRune()
@@ -102,7 +102,7 @@ func tui(in io.Reader, out io.Writer) error {
 
 // draw repaints the current line: prompt + committed (bright) +
 // pending (dim).
-func draw(out io.Writer, s *surface.InputState) {
+func draw(out io.Writer, s *phonology.InputState) {
 	fmt.Fprintf(out, "\r%s%s%s%s%s%s",
 		ansiClear, prompt, s.Committed(), ansiDim, s.Pending(), ansiReset)
 }

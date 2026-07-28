@@ -7,7 +7,7 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -102,13 +102,13 @@ func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
 func parseParsingAdjunct(s string) (g.ParsingAdjunct, bool) {
 	switch s {
 	case "mono:":
-		return g.ParsingAdjunct{Stress: surface.Monosyllabic}, true
+		return g.ParsingAdjunct{Stress: phonology.Monosyllabic}, true
 	case "ulti:":
-		return g.ParsingAdjunct{Stress: surface.Ultimate}, true
+		return g.ParsingAdjunct{Stress: phonology.Ultimate}, true
 	case "penu:":
-		return g.ParsingAdjunct{Stress: surface.Penultimate}, true
+		return g.ParsingAdjunct{Stress: phonology.Penultimate}, true
 	case "ante:":
-		return g.ParsingAdjunct{Stress: surface.Antepenultimate}, true
+		return g.ParsingAdjunct{Stress: phonology.Antepenultimate}, true
 	}
 	return g.ParsingAdjunct{}, false
 }

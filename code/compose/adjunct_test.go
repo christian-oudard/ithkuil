@@ -7,7 +7,7 @@ import (
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -78,8 +78,8 @@ func TestParseToken_RegisterEnd(t *testing.T) {
 
 func TestParseToken_ParsingAdjunct(t *testing.T) {
 	gl := canonicalGlosser(t)
-	cases := []surface.Stress{
-		surface.Monosyllabic, surface.Ultimate, surface.Penultimate, surface.Antepenultimate,
+	cases := []phonology.Stress{
+		phonology.Monosyllabic, phonology.Ultimate, phonology.Penultimate, phonology.Antepenultimate,
 	}
 	for _, st := range cases {
 		want := tokenize.ParsingAdjunctWord{Adjunct: g.ParsingAdjunct{Stress: st}}

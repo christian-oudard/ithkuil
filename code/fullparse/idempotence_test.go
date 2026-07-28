@@ -8,8 +8,8 @@ import (
 
 	"github.com/christian-oudard/ithkuil/corpus"
 	"github.com/christian-oudard/ithkuil/fullparse"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/render"
-	"github.com/christian-oudard/ithkuil/surface"
 )
 
 // Canonicalization has to be a fixed point. render(parse(w)) picks one
@@ -58,7 +58,7 @@ func assertIdempotent(t *testing.T, word string) {
 // example sentences through.
 func TestIdempotent_OfficialCorpus(t *testing.T) {
 	for _, w := range corpus.Words() {
-		assertIdempotent(t, surface.Normalize(w))
+		assertIdempotent(t, phonology.Normalize(w))
 	}
 }
 
@@ -83,7 +83,7 @@ func TestIdempotent_DiscordCorpus(t *testing.T) {
 
 	sc := bufio.NewScanner(f)
 	for sc.Scan() {
-		w := surface.Normalize(strings.TrimSpace(sc.Text()))
+		w := phonology.Normalize(strings.TrimSpace(sc.Text()))
 		if w != "" {
 			assertIdempotent(t, w)
 		}

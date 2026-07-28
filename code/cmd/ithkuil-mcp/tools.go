@@ -12,9 +12,9 @@ import (
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/render"
 	"github.com/christian-oudard/ithkuil/slots"
-	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/tokenize"
 	"github.com/christian-oudard/ithkuil/validation"
 	"github.com/christian-oudard/ithkuil/view"
@@ -145,7 +145,7 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 	if text == "" {
 		return nil, parseOut{}, fmt.Errorf("text is required")
 	}
-	text = surface.FromASCII(text)
+	text = phonology.FromASCII(text)
 	tokens := tokenize.Tokenize(text)
 	glosser := gloss.Glosser{Lex: s.lex}
 
@@ -339,7 +339,7 @@ func (s *server) compare(_ context.Context, _ *mcp.CallToolRequest, in compareIn
 // word is an error here, naming the rule it breaks, the same refusal
 // the CLI makes before it compares anything.
 func compareSide(word string, lex *lexicon.Lexicon) (view.Side, error) {
-	word = surface.FromASCII(strings.TrimSpace(word))
+	word = phonology.FromASCII(strings.TrimSpace(word))
 	if word == "" {
 		return view.Side{}, fmt.Errorf("both a and b are required")
 	}

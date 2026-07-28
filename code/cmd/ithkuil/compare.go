@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/validation"
 	"github.com/christian-oudard/ithkuil/view"
 )
@@ -40,7 +40,7 @@ func cmdCompare(args []string, stdout, stderr io.Writer, dataFile string) int {
 	lex := loadLex(dataFile, stderr)
 	sides := make([]view.Side, 2)
 	for i, arg := range rest {
-		s, ok := buildSide(surface.FromASCII(arg), arg, lex, stderr)
+		s, ok := buildSide(phonology.FromASCII(arg), arg, lex, stderr)
 		if !ok {
 			return 1
 		}

@@ -4,16 +4,16 @@ import (
 	"fmt"
 
 	"github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // parsingAdjunctVowels maps the four vowels recognized by §2.3 ¶5 to the
 // stress they signal for the following word.
-var parsingAdjunctVowels = map[string]surface.Stress{
-	"a": surface.Monosyllabic,
-	"e": surface.Ultimate,
-	"o": surface.Penultimate,
-	"u": surface.Antepenultimate,
+var parsingAdjunctVowels = map[string]phonology.Stress{
+	"a": phonology.Monosyllabic,
+	"e": phonology.Ultimate,
+	"o": phonology.Penultimate,
+	"u": phonology.Antepenultimate,
 }
 
 // ParseParsingAdjunct decodes a §4.8 parsing adjunct word of the shape

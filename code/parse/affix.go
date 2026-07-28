@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // type1Degrees maps Series-1 vowels to degree (1-9, plus 0 for "ae").
@@ -138,7 +138,7 @@ func ParseAffixes(text string) []grammar.Affix {
 	if text == "" {
 		return nil
 	}
-	return pairConjunctAffixes(surface.SplitConjuncts(text))
+	return pairConjunctAffixes(phonology.SplitConjuncts(text))
 }
 
 func pairConjunctAffixes(parts []string) []grammar.Affix {
@@ -147,11 +147,11 @@ func pairConjunctAffixes(parts []string) []grammar.Affix {
 	for i+1 < len(parts) {
 		a, b := parts[i], parts[i+1]
 		switch {
-		case surface.IsVowelConjunct(a) && surface.IsConsonantConjunct(b):
+		case phonology.IsVowelConjunct(a) && phonology.IsConsonantConjunct(b):
 			t, d := ClassifyAffixVowel(a)
 			out = append(out, grammar.Affix{Type: t, Degree: d, Consonant: b})
 			i += 2
-		case surface.IsConsonantConjunct(a) && surface.IsVowelConjunct(b):
+		case phonology.IsConsonantConjunct(a) && phonology.IsVowelConjunct(b):
 			t, d := ClassifyAffixVowel(b)
 			out = append(out, grammar.Affix{Type: t, Degree: d, Consonant: a})
 			i += 2

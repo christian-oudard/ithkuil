@@ -8,7 +8,7 @@ import (
 	"github.com/christian-oudard/ithkuil/allomorph"
 	"github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/validation"
 )
 
@@ -20,10 +20,10 @@ func Parse(word string) (Layout, error) {
 		return Layout{}, fmt.Errorf("slots: empty word")
 	}
 	// Compose and lowercase early so every slot- and shortcut-detection
-	// rule sees one spelling; see surface.Normalize.
-	word = surface.Normalize(word)
+	// rule sees one spelling; see phonology.Normalize.
+	word = phonology.Normalize(word)
 	// Reject anything outside the alphabet up front. Downstream code
-	// treats a parsed Layout as well-formed Ithkuil — surface.ToASCII,
+	// treats a parsed Layout as well-formed Ithkuil — phonology.ToASCII,
 	// for one, panics on a rune it has no mapping for — so a stray 'ı'
 	// or Latin 'q' has to stop here rather than ride along in a root.
 	if r := validation.ValidateChars(word); !r.Valid {
@@ -35,12 +35,12 @@ func Parse(word string) (Layout, error) {
 	if strings.Contains(word, "-") {
 		return Layout{}, fmt.Errorf("slots: %q is a concatenated chain, not one formative", word)
 	}
-	bare, stress := surface.Strip(word)
-	if stress == surface.InvalidStress {
+	bare, stress := phonology.Strip(word)
+	if stress == phonology.InvalidStress {
 		return Layout{}, fmt.Errorf("word %q has more than one stress mark", word)
 	}
 	body := stripSentencePrefix(bare)
-	conjs := surface.MergeGlottalVowels(surface.SplitConjuncts(body))
+	conjs := phonology.MergeGlottalVowels(phonology.SplitConjuncts(body))
 	if len(conjs) < 3 {
 		return Layout{}, fmt.Errorf("word %q too short (got %d conjuncts, need at least 3)", word, len(conjs))
 	}
@@ -51,7 +51,7 @@ func Parse(word string) (Layout, error) {
 
 	// Slot I: optional Cc consonant carrying concat status and/or
 	// shortcut indicator.
-	if surface.IsConsonantConjunct(conjs[0]) {
+	if phonology.IsConsonantConjunct(conjs[0]) {
 		if r := parse.ParseCc(conjs[0]); r.Concat != grammar.ConcatNone || r.Shortcut != parse.ShortcutNone {
 			l.Cc = conjs[0]
 			i++
@@ -67,7 +67,7 @@ func Parse(word string) (Layout, error) {
 	// §3.9.1 shortens V_C for cases 37-52; an ultimate-stress formative
 	// carries V_K instead, and V_K has no glottalized forms, so any
 	// glottal in one of those is marking something else.
-	if !isShortcutCc(l.Cc) && stress != surface.Ultimate && stress != surface.Monosyllabic {
+	if !isShortcutCc(l.Cc) && stress != phonology.Ultimate && stress != phonology.Monosyllabic {
 		var movedGlottal bool
 		conjs, movedGlottal = stripMovedGlottal(conjs, i)
 		l.MovedGlottal = movedGlottal
@@ -75,7 +75,7 @@ func Parse(word string) (Layout, error) {
 
 	// Identify the shape by what's at position i.
 	switch {
-	case i < len(conjs) && surface.IsVowelConjunct(conjs[i]):
+	case i < len(conjs) && phonology.IsVowelConjunct(conjs[i]):
 		// Vowel-initial: Vv-Cr-Vr-…-Ca-… (possibly special-Vv).
 		if err := parseVowelInitial(&l, conjs, i); err != nil {
 			return Layout{}, fmt.Errorf("%v (word %q)", err, word)
@@ -151,7 +151,7 @@ func stripSentencePrefix(word string) string {
 		// have matched (the "cse-" branch above handles the consonant
 		// case explicitly).
 		r2, _ := utf8.DecodeRuneInString(rest)
-		if !surface.IsVowel(r2) {
+		if !phonology.IsVowel(r2) {
 			return word
 		}
 		return rest
@@ -238,7 +238,7 @@ func parseVowelInitial(l *Layout, conjs []string, i int) error {
 	if i >= len(conjs) {
 		return fmt.Errorf("missing Vr after Cr")
 	}
-	if !surface.IsVowelConjunct(conjs[i]) {
+	if !phonology.IsVowelConjunct(conjs[i]) {
 		return fmt.Errorf("expected Vr vowel after Cr, got %q", conjs[i])
 	}
 	l.Vr = conjs[i]
@@ -255,7 +255,7 @@ func parseConsonantInitial(l *Layout, conjs []string, i int) error {
 	if i >= len(conjs) {
 		return fmt.Errorf("missing Vr after Cr")
 	}
-	if !surface.IsVowelConjunct(conjs[i]) {
+	if !phonology.IsVowelConjunct(conjs[i]) {
 		return fmt.Errorf("expected Vr vowel after Cr, got %q", conjs[i])
 	}
 	l.Vr = conjs[i]
@@ -277,7 +277,7 @@ func parseFromCa(l *Layout, conjs []string, i int, allowSlotV bool) error {
 		geminatedAt := -1
 		var bareCa string
 		for j := i; j < len(conjs); j += 2 {
-			if !surface.IsConsonantConjunct(conjs[j]) {
+			if !phonology.IsConsonantConjunct(conjs[j]) {
 				break
 			}
 			if bare, ok := allomorph.CaUngeminate[conjs[j]]; ok {
@@ -303,7 +303,7 @@ func parseFromCa(l *Layout, conjs []string, i int, allowSlotV bool) error {
 	}
 
 	// No Slot V — the conjunct at i is the bare Ca.
-	if !surface.IsConsonantConjunct(conjs[i]) {
+	if !phonology.IsConsonantConjunct(conjs[i]) {
 		return fmt.Errorf("expected Ca consonant cluster, got %q", conjs[i])
 	}
 	// §3.8.1.2 shortcut: a Pattern-1 Cn cluster in the Ca slot
@@ -338,7 +338,7 @@ func parseShortcutSlotV(l *Layout, conjs []string, i int) ([]string, int, error)
 	j := i
 	for j+1 < len(conjs) {
 		vx, cs := conjs[j], conjs[j+1]
-		if !surface.IsVowelConjunct(vx) || !surface.IsConsonantConjunct(cs) {
+		if !phonology.IsVowelConjunct(vx) || !phonology.IsConsonantConjunct(cs) {
 			break
 		}
 		// §3.6.2 marks the end of Slot V with a glottal-stop infixed
@@ -395,7 +395,7 @@ func parseAfterCa(l *Layout, conjs []string, i int) error {
 	var pairs []vcPair
 	for i+1 < len(conjs) {
 		v, c := conjs[i], conjs[i+1]
-		if !surface.IsVowelConjunct(v) || !surface.IsConsonantConjunct(c) {
+		if !phonology.IsVowelConjunct(v) || !phonology.IsConsonantConjunct(c) {
 			break
 		}
 		pairs = append(pairs, vcPair{v: v, c: c})
@@ -406,7 +406,7 @@ func parseAfterCa(l *Layout, conjs []string, i int) error {
 		return fmt.Errorf("unexpected trailing conjuncts after Ca: %v", trailing)
 	}
 	if len(trailing) == 1 {
-		if !surface.IsVowelConjunct(trailing[0]) {
+		if !phonology.IsVowelConjunct(trailing[0]) {
 			return fmt.Errorf("expected trailing vowel for Slot IX, got %q", trailing[0])
 		}
 		l.Vc = trailing[0]
@@ -438,7 +438,7 @@ func stripMovedGlottal(conjs []string, vvIdx int) ([]string, bool) {
 	// an earlier one can be a §3.9.1 shortening.
 	lastVowel := -1
 	for i, c := range conjs {
-		if surface.IsVowelConjunct(c) {
+		if phonology.IsVowelConjunct(c) {
 			lastVowel = i
 		}
 	}
@@ -448,7 +448,7 @@ func stripMovedGlottal(conjs []string, vvIdx int) ([]string, bool) {
 	// the Vv itself ("i'i"), and on the head of the following conjunct
 	// ("a'rt"), which is where §1.7's first placement puts it.
 	skipA, skipB := -1, -1
-	if vvIdx >= 0 && vvIdx < len(conjs) && surface.IsVowelConjunct(conjs[vvIdx]) {
+	if vvIdx >= 0 && vvIdx < len(conjs) && phonology.IsVowelConjunct(conjs[vvIdx]) {
 		skipA, skipB = vvIdx, vvIdx+1
 	}
 	moved := false
@@ -456,12 +456,12 @@ func stripMovedGlottal(conjs []string, vvIdx int) ([]string, bool) {
 	for i, c := range conjs {
 		switch {
 		case moved || i == skipA || i == skipB:
-		case i > 0 && surface.IsVowelConjunct(conjs[i-1]) && len(c) > 1 && c[0] == '\'':
+		case i > 0 && phonology.IsVowelConjunct(conjs[i-1]) && len(c) > 1 && c[0] == '\'':
 			// Glottal at the head of a consonant conjunct ("la'la").
 			moved = true
 			out = append(out, c[1:])
 			continue
-		case i < lastVowel && surface.IsVowelConjunct(c) && strings.Contains(c, "'"):
+		case i < lastVowel && phonology.IsVowelConjunct(c) && strings.Contains(c, "'"):
 			// Glottal intervocalic within a vowel conjunct, which is
 			// how MergeGlottalVowels leaves a Vr-borne one ("přa'ölua").
 			moved = true

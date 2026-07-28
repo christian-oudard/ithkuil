@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // carrierByForm is the reverse index from consonant cluster to
@@ -30,7 +30,7 @@ func ParseCarrierType(s string) (grammar.CarrierType, bool) {
 // at parse time so the in-memory model carries the typed Case rather
 // than the raw surface vowel.
 func ParseCarrier(word string) (grammar.CarrierAdjunct, error) {
-	conjs := surface.SplitConjuncts(word)
+	conjs := phonology.SplitConjuncts(word)
 	if len(conjs) < 2 {
 		return grammar.CarrierAdjunct{}, fmt.Errorf("carrier adjunct: expected ≥2 conjuncts, got %d", len(conjs))
 	}

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // Direct coverage of the small slot helpers — error paths and shape
@@ -97,7 +97,7 @@ func TestToGrammar_ErrorPaths(t *testing.T) {
 		Vr:     "a",
 		Ca:     "l",
 		Vc:     "zzz",
-		Stress: surface.Penultimate,
+		Stress: phonology.Penultimate,
 	}
 	if _, err := ToGrammar(l); err == nil {
 		t.Error("ToGrammar(bad Vc): expected error")
@@ -110,48 +110,48 @@ func TestToGrammar_ErrorPaths(t *testing.T) {
 		Vr:     "a",
 		Ca:     "l",
 		Vc:     "zzz",
-		Stress: surface.Ultimate,
+		Stress: phonology.Ultimate,
 	}
 	if _, err := ToGrammar(l); err == nil {
 		t.Error("ToGrammar(bad Vk): expected error")
 	}
 	// Invalid stress.
-	l = Layout{Kind: CrFormative, Cr: "ml", Vv: "a", Vr: "a", Ca: "l", Stress: surface.Stress(99)}
+	l = Layout{Kind: CrFormative, Cr: "ml", Vv: "a", Vr: "a", Ca: "l", Stress: phonology.Stress(99)}
 	if _, err := ToGrammar(l); err == nil {
 		t.Error("ToGrammar(bad stress): expected error")
 	}
 	// Bad Vv under CrFormative.
-	l = Layout{Kind: CrFormative, Cr: "ml", Vv: "zzz", Vr: "a", Ca: "l", Stress: surface.Penultimate}
+	l = Layout{Kind: CrFormative, Cr: "ml", Vv: "zzz", Vr: "a", Ca: "l", Stress: phonology.Penultimate}
 	if _, err := ToGrammar(l); err == nil {
 		t.Error("ToGrammar(bad Cr Vv): expected error")
 	}
 	// Bad Vr under CrFormative.
-	l = Layout{Kind: CrFormative, Cr: "ml", Vv: "a", Vr: "zzz", Ca: "l", Stress: surface.Penultimate}
+	l = Layout{Kind: CrFormative, Cr: "ml", Vv: "a", Vr: "zzz", Ca: "l", Stress: phonology.Penultimate}
 	if _, err := ToGrammar(l); err == nil {
 		t.Error("ToGrammar(bad Cr Vr): expected error")
 	}
 	// Bad Ca under CrFormative.
-	l = Layout{Kind: CrFormative, Cr: "ml", Vv: "a", Vr: "a", Ca: "zzz", Stress: surface.Penultimate}
+	l = Layout{Kind: CrFormative, Cr: "ml", Vv: "a", Vr: "a", Ca: "zzz", Stress: phonology.Penultimate}
 	if _, err := ToGrammar(l); err == nil {
 		t.Error("ToGrammar(bad Ca): expected error")
 	}
 	// Bad Vv under CsRootFormative.
-	l = Layout{Kind: CsRootFormative, Cr: "r", Vv: "zzz", Vr: "a", Ca: "l", Stress: surface.Penultimate}
+	l = Layout{Kind: CsRootFormative, Cr: "r", Vv: "zzz", Vr: "a", Ca: "l", Stress: phonology.Penultimate}
 	if _, err := ToGrammar(l); err == nil {
 		t.Error("ToGrammar(bad Cs Vv): expected error")
 	}
 	// Bad Vr under CsRootFormative.
-	l = Layout{Kind: CsRootFormative, Cr: "r", Vv: "ëi", Vr: "zzz", Ca: "l", Stress: surface.Penultimate}
+	l = Layout{Kind: CsRootFormative, Cr: "r", Vv: "ëi", Vr: "zzz", Ca: "l", Stress: phonology.Penultimate}
 	if _, err := ToGrammar(l); err == nil {
 		t.Error("ToGrammar(bad Cs Vr): expected error")
 	}
 	// Bad Vv under RefRootFormative.
-	l = Layout{Kind: RefRootFormative, Cr: "l", Vv: "zzz", Vr: "a", Ca: "l", Stress: surface.Penultimate}
+	l = Layout{Kind: RefRootFormative, Cr: "l", Vv: "zzz", Vr: "a", Ca: "l", Stress: phonology.Penultimate}
 	if _, err := ToGrammar(l); err == nil {
 		t.Error("ToGrammar(bad Ref Vv): expected error")
 	}
 	// Unknown kind.
-	l = Layout{Kind: RootKind(99), Cr: "ml", Vv: "a", Vr: "a", Ca: "l", Stress: surface.Penultimate}
+	l = Layout{Kind: RootKind(99), Cr: "ml", Vv: "a", Vr: "a", Ca: "l", Stress: phonology.Penultimate}
 	if _, err := ToGrammar(l); err == nil {
 		t.Error("ToGrammar(unknown kind): expected error")
 	}
@@ -166,7 +166,7 @@ func TestToGrammar_DefaultsOnEmptyVvVrVc(t *testing.T) {
 		Vr:     "",
 		Ca:     "l",
 		Vc:     "",
-		Stress: surface.Penultimate,
+		Stress: phonology.Penultimate,
 	}
 	f, err := ToGrammar(l)
 	if err != nil {
@@ -186,7 +186,7 @@ func TestToGrammar_DefaultsOnEmptyVvVrVc(t *testing.T) {
 
 func TestFinalFromVc_UltimateEmpty(t *testing.T) {
 	// Ultimate stress with empty Vc → default OBS Assertive.
-	f, err := finalFromVc("", surface.Ultimate, g.ConcatNone)
+	f, err := finalFromVc("", phonology.Ultimate, g.ConcatNone)
 	if err != nil {
 		t.Fatalf("finalFromVc(ultimate, empty): %v", err)
 	}

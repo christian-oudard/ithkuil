@@ -23,7 +23,7 @@ import (
 	"github.com/christian-oudard/ithkuil/fullparse"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/validation"
 )
 
@@ -202,11 +202,11 @@ func ClassifyWord(word string) WordToken {
 		return UnknownWord{Text: word}
 	}
 	// Compose and lowercase before any classifier reads the letters;
-	// see surface.Normalize. Words we fail to classify keep their
+	// see phonology.Normalize. Words we fail to classify keep their
 	// original text: a carrier adjunct scopes over a following foreign
 	// name ("hna John"), where capitalization is meaningful.
 	orig := word
-	word = surface.Normalize(word)
+	word = phonology.Normalize(word)
 	if r := validation.ValidateChars(word); !r.Valid {
 		return UnknownWord{Text: orig}
 	}
@@ -226,10 +226,10 @@ func ClassifyWord(word string) WordToken {
 		}
 		return UnknownWord{Text: orig}
 	}
-	conjs := surface.SplitConjuncts(word)
+	conjs := phonology.SplitConjuncts(word)
 
 	// 1. Single consonant cluster → Bias.
-	if len(conjs) == 1 && surface.IsConsonantConjunct(conjs[0]) {
+	if len(conjs) == 1 && phonology.IsConsonantConjunct(conjs[0]) {
 		if b, ok := parse.ParseBias(conjs[0]); ok {
 			return BiasWord{Text: word, Bias: b}
 		}
@@ -247,7 +247,7 @@ func ClassifyWord(word string) WordToken {
 	// (hl/hm/hn/hň) followed by trailing content. Tried before
 	// formative parsing so that "hna" is a Naming carrier rather
 	// than a formative with Cr=hn.
-	if len(conjs) >= 2 && surface.IsConsonantConjunct(conjs[0]) {
+	if len(conjs) >= 2 && phonology.IsConsonantConjunct(conjs[0]) {
 		if c, err := parse.ParseCarrier(word); err == nil {
 			return CarrierWord{Text: word, Carrier: c}
 		}
@@ -281,7 +281,7 @@ func ClassifyWord(word string) WordToken {
 	//     means this is a §4.6.4 / §4.2 specialised root formative,
 	//     not an affix — skip and let the formative recogniser handle it.
 	if len(conjs) >= 2 && len(conjs) <= 3 &&
-		surface.IsVowelConjunct(conjs[0]) && conjs[0] != "ë" &&
+		phonology.IsVowelConjunct(conjs[0]) && conjs[0] != "ë" &&
 		!parse.IsSpecialVv(conjs[0]) {
 		if a, err := parse.ParseSingleAffix(word); err == nil {
 			return SingleAffixWord{Text: word, Affix: a}

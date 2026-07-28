@@ -5,7 +5,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // ithkuilRunes is the set of characters that may appear in well-formed
@@ -120,7 +120,7 @@ func ValidateWord(word string) Result {
 	// one of the nine. ValidateStress above has read it, so take it off
 	// before any cluster or vowel-sequence lookup, which all key on the
 	// bare letters.
-	word, _ = surface.Strip(word)
+	word, _ = phonology.Strip(word)
 
 	// Single-consonant-conjunct words are stand-alone Bias adjuncts;
 	// their cluster table is authoritative and may legitimately contain
@@ -149,10 +149,10 @@ func ValidateWord(word string) Result {
 	// data.json has ļţ, the corpus uses both — and neither is licensed.
 	// ARB xtļ is neither permitted nor prohibited: §3.2.3 licenses xt
 	// word-initially but §3.3 grants no triple beginning with x-.
-	conjs := surface.SplitConjuncts(word)
+	conjs := phonology.SplitConjuncts(word)
 	if len(conjs) == 1 {
 		firstRune, _ := utf8.DecodeRuneInString(conjs[0])
-		if !surface.IsVowel(firstRune) {
+		if !phonology.IsVowel(firstRune) {
 			if len(errs) == 0 {
 				return Result{Valid: true}
 			}
@@ -167,7 +167,7 @@ func ValidateWord(word string) Result {
 			continue
 		}
 		firstRune, _ := utf8.DecodeRuneInString(c)
-		if surface.IsVowel(firstRune) {
+		if phonology.IsVowel(firstRune) {
 			res := ValidateVowelSequence(c)
 			if !res.Valid {
 				errs = append(errs, res.Errors...)

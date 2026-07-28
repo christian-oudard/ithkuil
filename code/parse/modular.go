@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // isCn reports whether c is a §4.3 Slot 2 C_N: the h-prefixed set
@@ -54,7 +54,7 @@ func parseCmPair(vn, cm string) (grammar.SlotVIII, bool) {
 //   - "w V" / "y V" — scope prefix + aspect-only modular (no VnCn).
 //   - "[w/y] Vn Cn [Vn Cm] V" — full form.
 func ParseModular(word string) (grammar.ModularAdjunct, error) {
-	conjs := surface.SplitConjuncts(word)
+	conjs := phonology.SplitConjuncts(word)
 	if len(conjs) == 0 {
 		return grammar.ModularAdjunct{}, fmt.Errorf("modular adjunct: empty input")
 	}
@@ -80,7 +80,7 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 	var pairs []rawPair
 	var final string
 	for i := 0; i < len(conjs); {
-		if i+1 < len(conjs) && surface.IsVowelConjunct(conjs[i]) {
+		if i+1 < len(conjs) && phonology.IsVowelConjunct(conjs[i]) {
 			c := conjs[i+1]
 			slot := len(pairs) + 2
 			ok := false
@@ -98,7 +98,7 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 			i += 2
 			continue
 		}
-		if i == len(conjs)-1 && surface.IsVowelConjunct(conjs[i]) {
+		if i == len(conjs)-1 && phonology.IsVowelConjunct(conjs[i]) {
 			final = conjs[i]
 			i++
 			continue
@@ -114,8 +114,8 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 	// scope marker rather than another Vn. Decode it into Reach; the
 	// vowel is consumed by Reach and doesn't enter Content.
 	reach := grammar.ModularReachNone
-	_, stress := surface.Strip(word)
-	if stress == surface.Ultimate && len(pairs) > 0 && final != "" {
+	_, stress := phonology.Strip(word)
+	if stress == phonology.Ultimate && len(pairs) > 0 && final != "" {
 		if r, ok := decodeVH(final); ok {
 			reach = r
 			final = ""

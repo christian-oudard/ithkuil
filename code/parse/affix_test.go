@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 func TestClassifyAffixVowel(t *testing.T) {
@@ -140,16 +140,16 @@ func TestParseAffixes_OddTrailing(t *testing.T) {
 }
 
 func TestIsVowelConjunctIsConsonantConjunct(t *testing.T) {
-	if !surface.IsVowelConjunct("ai") {
-		t.Error("surface.IsVowelConjunct(\"ai\") = false")
+	if !phonology.IsVowelConjunct("ai") {
+		t.Error("phonology.IsVowelConjunct(\"ai\") = false")
 	}
-	if surface.IsVowelConjunct("") {
-		t.Error("surface.IsVowelConjunct(\"\") = true")
+	if phonology.IsVowelConjunct("") {
+		t.Error("phonology.IsVowelConjunct(\"\") = true")
 	}
-	if !surface.IsConsonantConjunct("ţř") {
-		t.Error("surface.IsConsonantConjunct(\"ţř\") = false")
+	if !phonology.IsConsonantConjunct("ţř") {
+		t.Error("phonology.IsConsonantConjunct(\"ţř\") = false")
 	}
-	if surface.IsConsonantConjunct("") {
-		t.Error("surface.IsConsonantConjunct(\"\") = true")
+	if phonology.IsConsonantConjunct("") {
+		t.Error("phonology.IsConsonantConjunct(\"\") = true")
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/christian-oudard/ithkuil/allomorph"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // Render produces the surface word that this Layout describes. It is
@@ -16,7 +16,7 @@ import (
 //   - re-inserts the §3.5.1 Vv glottal-stop when len(SlotV) ≥ 2
 //   - re-applies §3.6.1 Ca gemination when len(SlotV) ≥ 1
 //   - reverses Slot V to its Cs+Vx surface order
-//   - applies the stress diacritic via surface.Apply
+//   - applies the stress diacritic via phonology.Apply
 func Render(l Layout) string {
 	var b strings.Builder
 	b.WriteString(l.Cc)
@@ -75,7 +75,7 @@ func Render(l Layout) string {
 	}
 	b.WriteString(l.Vc)
 
-	return surface.Apply(b.String(), l.Stress)
+	return phonology.Apply(b.String(), l.Stress)
 }
 
 // applyVvGlottal re-inserts the §3.5.1 glottal-stop into Vv when the

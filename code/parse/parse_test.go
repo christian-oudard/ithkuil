@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 func TestSplitConjuncts(t *testing.T) {
@@ -20,9 +20,9 @@ func TestSplitConjuncts(t *testing.T) {
 		{"Maţřëullait", []string{"M", "a", "ţř", "ëu", "ll", "ai", "t"}},
 	}
 	for _, c := range cases {
-		got := surface.SplitConjuncts(c.in)
+		got := phonology.SplitConjuncts(c.in)
 		if !reflect.DeepEqual(got, c.want) {
-			t.Errorf("surface.SplitConjuncts(%q) = %#v, want %#v", c.in, got, c.want)
+			t.Errorf("phonology.SplitConjuncts(%q) = %#v, want %#v", c.in, got, c.want)
 		}
 	}
 }
@@ -112,13 +112,13 @@ func TestParseSlotIV(t *testing.T) {
 
 func TestIsVowelChar(t *testing.T) {
 	for _, r := range "aäeëioöuü" {
-		if !surface.IsVowel(r) {
-			t.Errorf("surface.IsVowel(%q) = false, want true", r)
+		if !phonology.IsVowel(r) {
+			t.Errorf("phonology.IsVowel(%q) = false, want true", r)
 		}
 	}
 	for _, r := range "mtkpřţ'" {
-		if surface.IsVowel(r) {
-			t.Errorf("surface.IsVowel(%q) = true, want false", r)
+		if phonology.IsVowel(r) {
+			t.Errorf("phonology.IsVowel(%q) = true, want false", r)
 		}
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -466,7 +466,7 @@ func getCombinationRef(buf []byte) (tokenize.CombinationRefWord, int, error) {
 	return c, cur, nil
 }
 
-func stressFromByte(b byte) surface.Stress { return surface.Stress(b) }
+func stressFromByte(b byte) phonology.Stress { return phonology.Stress(b) }
 
 // ── foreign text ────────────────────────────────────────────────────
 //

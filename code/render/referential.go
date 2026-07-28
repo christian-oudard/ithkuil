@@ -6,7 +6,7 @@ import (
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/validation"
 )
 
@@ -104,7 +104,7 @@ func finishReferential(body string, head g.RefHead, suppletivePrefix string, rpv
 		// syllable is already the unmarked case, and Apply has nowhere
 		// to put the mark. Say so rather than return a word that means
 		// something else.
-		marked := surface.Apply(word, surface.Ultimate)
+		marked := phonology.Apply(word, phonology.Ultimate)
 		if marked == word {
 			return "", fmt.Errorf(
 				"%q is monosyllabic, so it cannot carry the ultimate stress §4.6.1 reads as RPV Essence", word)

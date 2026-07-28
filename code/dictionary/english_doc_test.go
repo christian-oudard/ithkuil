@@ -16,7 +16,7 @@ import (
 	"github.com/christian-oudard/ithkuil/fullparse"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 func loadLexicon(t *testing.T) *lexicon.Lexicon {
@@ -55,7 +55,7 @@ func TestEnglishDocWords(t *testing.T) {
 	n := 0
 	for i, line := range doc(t) {
 		if m := rootLine.FindStringSubmatch(line); m != nil {
-			cr, cs = surface.FromASCII(m[1]), ""
+			cr, cs = phonology.FromASCII(m[1]), ""
 			prev = "root"
 			continue
 		}
@@ -65,7 +65,7 @@ func TestEnglishDocWords(t *testing.T) {
 			if prev != "root" {
 				cr = ""
 			}
-			cs = surface.FromASCII(m[1])
+			cs = phonology.FromASCII(m[1])
 			prev = "affix"
 			continue
 		}
@@ -128,7 +128,7 @@ func TestEnglishDocAffixes(t *testing.T) {
 		if m == nil {
 			continue
 		}
-		cs, abbrev := surface.FromASCII(m[1]), m[2]
+		cs, abbrev := phonology.FromASCII(m[1]), m[2]
 		entry, ok := lex.Affixes[cs]
 		if !ok {
 			t.Errorf("line %d: no affix -%s-", i+1, cs)

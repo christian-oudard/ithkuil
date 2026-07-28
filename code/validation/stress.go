@@ -2,7 +2,7 @@ package validation
 
 import (
 	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // StressError categorizes ways a stress mark can be wrong.
@@ -32,7 +32,7 @@ func (e StressError) Error() string {
 // ValidateStress decides which Stress a word is marked for, or
 // returns an error if the marking is ill-formed.
 func ValidateStress(word string) (parse.Stress, error) {
-	syllables, stressIdx, accentCount := surface.StressPosition(word)
+	syllables, stressIdx, accentCount := phonology.StressPosition(word)
 
 	if accentCount > 1 {
 		return 0, DoubleMarkedStress

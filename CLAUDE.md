@@ -60,9 +60,8 @@ The repo has four top-level folders: `code/` (the Go module, and the only
 place Go lives), `data/`, `docs/`, and `tools/`. Package paths below are
 relative to `code/`.
 
-- `phonology/` - 31 consonants, 9 vowels, vowel form table (4 series x 9 forms)
+- `phonology/` - §1 of the grammar, sounds and the letters that write them. `inventory.go` holds 31 consonants, 9 vowels, and the vowel form table (4 series x 9 forms); the rest is rune-level work with no grammatical knowledge: `Strip`/`Apply` for stress diacritics, `SplitConjuncts`/`JoinConjuncts` for vowel/consonant runs, `MergeGlottalVowels`, `Normalize`, vowel classification, and `InputState` + `FromASCII`/`ToASCII` for the digraph notation.
 - `grammar/` - All morphological types, one per word class. `Formative` is the largest (Concat, Root, SlotV, SlotVI, SlotVII, SlotVIII, Final); `Referential` and `CombinationReferential` cover §4.6, and `Bias`, `Register`, `ModularAdjunct`, `CarrierAdjunct`, `ParsingAdjunct` and the two affixual adjuncts the rest. Variation within a class is a sealed sum type: `Root`, `Final`, `SlotVIII`, `Vk`, `RefHead`.
-- `surface/` - Pure rune-level work, no grammatical knowledge: `Strip`/`Apply` for stress diacritics, `SplitConjuncts`/`JoinConjuncts` for vowel/consonant runs, `MergeGlottalVowels`, vowel classification. Also `InputState` and `FromASCII`/`ToASCII` for the digraph notation.
 - `slots/` - `Layout` is the slot-labelled surface form: one raw conjunct per string field (Cc, Vv, Cr, Vr, Ca, Vn, Cn, Vc), plus affix pairs and observed stress. `Parse`/`Render` convert between surface text and `Layout` by shape alone; `ToGrammar`/`FromGrammar` translate `Layout` ↔ `Formative` through the lookup tables. All canonical-form choices (which shortcut wins, moved-glottal, default elisions) live in `FromGrammar`.
 - `parse/` - Grammatical decoders for individual slot positions, plus all lookup tables (Vv, Vr, Vc, Vn, Cn). Nothing text-level.
 - `allomorph/` - Slot VI Ca complex construction and parsing. Pre-generates all Ca forms from component tables with allomorphic substitutions, stores bidirectional lookup.
@@ -89,7 +88,7 @@ Command-line entrypoints under `cmd/`:
 
 - `cmd/ithkuil/` - The main CLI. Subcommands: parse, compare, compose, search, define. `main.go` dispatches; `flags.go` parses shared flags, accepting them in any position.
 - `cmd/ithkuil-mcp/` - Model Context Protocol server exposing the parser/glosser/lexicon as MCP tools and resources.
-- `cmd/ithkuil-input/` - Raw-mode TUI that types Ithkuil Unicode from ASCII digraphs (aa→ä, t,→ţ, sq→š, dz→ẓ). Pending chars are shown dim. Backed by `surface.InputState`; `surface.FromASCII` / `ToASCII` provide the batch transforms.
+- `cmd/ithkuil-input/` - Raw-mode TUI that types Ithkuil Unicode from ASCII digraphs (aa→ä, t,→ţ, sq→š, dz→ẓ). Pending chars are shown dim. Backed by `phonology.InputState`; `phonology.FromASCII` / `ToASCII` provide the batch transforms.
 
 ## Key Conventions
 

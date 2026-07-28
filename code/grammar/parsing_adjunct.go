@@ -1,7 +1,7 @@
 package grammar
 
 import (
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // ParsingAdjunct (§4.8 / §2.3 ¶5) is a one-syllable adjunct of the
@@ -23,5 +23,5 @@ import (
 // The adjunct carries no grammatical content of its own — it is purely
 // a parsing aid for the next token.
 type ParsingAdjunct struct {
-	Stress surface.Stress
+	Stress phonology.Stress
 }

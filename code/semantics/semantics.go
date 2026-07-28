@@ -22,7 +22,7 @@ package semantics
 import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/surface"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // MoodOrCaseScope returns the verbal Mood label (FAC/SUB/…) when
@@ -50,8 +50,8 @@ func SlotVIIICnLabel(s g.SlotVIII, fin g.Final) string {
 // marker) rather than V_N (another aspect/valence/etc. position). Per
 // §4.3, V_H requires ultimate stress and at least one (Vn, Cn) pair
 // to scope over.
-func IsVH(stress surface.Stress, pairCount int) bool {
-	return stress == surface.Ultimate && pairCount > 0
+func IsVH(stress phonology.Stress, pairCount int) bool {
+	return stress == phonology.Ultimate && pairCount > 0
 }
 
 // ModularIsVerbal picks the verbal/nominal labelling for a modular

@@ -1,6 +1,17 @@
-// Package phonology implements the Ithkuil V4 phoneme inventory:
-// 9 vowels, 31 consonants, and the 4x9 vowel form table used to encode
-// grammatical categories.
+// Package phonology covers §1 of the grammar: what the sounds of
+// Ithkuil are, and what the letters that write them do. The two are one
+// subject here because the romanization is one-to-one with the
+// phonemes.
+//
+// It holds the phoneme inventory (9 vowels, 31 consonants, and the 4x9
+// vowel-form table that encodes grammatical categories) in
+// inventory.go, and the rune-level work on written words everywhere
+// else: normalization, splitting a word into vowel and consonant
+// conjuncts, reading and writing the stress diacritic, and the ASCII
+// digraph notation.
+//
+// Nothing here knows any grammar. It is letters, accents, and syllable
+// counts only, which is what lets every other package rest on it.
 package phonology
 
 type Voicing int

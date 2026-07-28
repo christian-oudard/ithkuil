@@ -30,8 +30,8 @@ import (
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/numbers"
 	"github.com/christian-oudard/ithkuil/parse"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/semantics"
-	"github.com/christian-oudard/ithkuil/surface"
 )
 
 // Glosser carries the optional lexicon used for enriching root and
@@ -168,7 +168,7 @@ func (gl *Glosser) crRootLabel(x g.CrRoot, f g.Formative) string {
 		// it by shape (no slashes, no parens) and the surrounding "-"
 		// from the slot join is enough. Display mode wraps with "-X-"
 		// to make the root visually prominent in human-read output.
-		return surface.ToASCII(cluster)
+		return phonology.ToASCII(cluster)
 	}
 	// Number roots are interpreted from the centesimal system table
 	// (§8.0), not from the lexicon. Decode reads Slot VII as well, so

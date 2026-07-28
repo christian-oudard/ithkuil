@@ -260,7 +260,6 @@ var section2 = []clusterCase{
 	{"2.23", Medial, "ḑz", false},
 	{"2.23", Medial, "ḑž", false},
 	{"2.23", Medial, "nň", false},
-
 }
 
 // derived covers clusters the morphology itself builds. They are not
