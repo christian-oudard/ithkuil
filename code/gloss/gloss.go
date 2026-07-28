@@ -429,10 +429,19 @@ func (gl *Glosser) affix(a g.Affix) string {
 	}
 	if gl.Lex != nil {
 		if entry, ok := gl.Lex.Affixes[a.Consonant]; ok {
-			// Category-valued affixes (MCS, PHS, AP1-4, IVL, LVL,
-			// VAL) carry the category code in the degree text. Show
-			// that code instead of the bare degree number.
-			if cat := entry.CategoryValue(a.Degree, int(a.Type)+1); cat != "" {
+			// Category-valued affixes (MCS, PHS, AP1-4, IVL, LVL, VAL)
+			// carry a category code in place of a degree meaning, and
+			// display mode shows that code: "MCS:SUB" rather than
+			// "MCS/1".
+			//
+			// Canonical mode keeps the degree. The code is derived from
+			// (Cs, degree, type) and adds nothing, while its "ABBREV:CAT"
+			// shape is indistinguishable from a §3.9.2 accessor's
+			// "KIND:CASE" — both are three uppercase letters either side
+			// of a colon, and only a lexicon lookup separates them. That
+			// ambiguity cost the round trip: compose read "MCS:SUB" as an
+			// accessor and rejected the whole word.
+			if cat := entry.CategoryValue(a.Degree, int(a.Type)+1); cat != "" && !gl.Canonical {
 				return fmt.Sprintf("%s:%s", entry.Abbrev, cat)
 			}
 			return fmt.Sprintf("%s/%d%s", entry.Abbrev, a.Degree, gl.affixTypeSuffix(a.Type))
