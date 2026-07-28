@@ -6,7 +6,7 @@
 //
 //	-data FILE     Path to data.db (default: $XDG_DATA_HOME/ithkuil/data.db).
 //	-grammar DIR   Directory holding grammar reference markdown
-//	               (default ./grammar_reference). Files are served as
+//	               (default ./language_reference). Files are served as
 //	               MCP resources.
 //
 // Run as a subprocess of any MCP client (Claude Desktop, Claude Code,
@@ -34,7 +34,7 @@ type server struct {
 
 func main() {
 	dataFile := flag.String("data", store.DefaultPath(), "path to data.db")
-	grammarDir := flag.String("grammar", "./grammar_reference", "directory with grammar reference markdown")
+	grammarDir := flag.String("grammar", "./language_reference", "directory with grammar reference markdown")
 	flag.Parse()
 
 	st, err := store.Open(*dataFile)

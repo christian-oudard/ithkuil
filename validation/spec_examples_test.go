@@ -2,7 +2,7 @@ package validation
 
 import "testing"
 
-// Cluster examples lifted from grammar_reference/phonotactics.md. Each
+// Cluster examples lifted from language_reference/phonotactics.md. Each
 // case names the section it came from, so a failure points back at the
 // spec text it covers.
 //

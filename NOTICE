@@ -19,7 +19,7 @@ code carries. Those website terms state:
 > purposes of review, commentary or analysis, provided you give full
 > attribution to the author and this website.
 
-Affected paths: `grammar_reference/`, `data/data.json`, `corpus/examples.txt`.
+Affected paths: `language_reference/`, `data/data.json`, `corpus/examples.txt`.
 
 These are larger than "brief portions", so the private-use clause is what
 covers them today. Publishing this repository needs Quijada's permission

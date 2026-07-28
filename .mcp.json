@@ -4,7 +4,7 @@
       "command": "/projects/ithkuil/bin/ithkuil-mcp",
       "args": [
         "-lex", "/projects/ithkuil/data",
-        "-grammar", "/projects/ithkuil/grammar_reference"
+        "-grammar", "/projects/ithkuil/language_reference"
       ]
     }
   }

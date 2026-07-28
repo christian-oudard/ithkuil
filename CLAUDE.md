@@ -108,14 +108,22 @@ Everything under `tools/` is non-Go tooling. Go tools stay with the code they be
 - `tools/test.sh` - Go test suite with a cross-package coverage summary. `COVERAGE_THRESHOLD=NN` fails below a floor; `SHOW_UNCOVERED=1` lists functions under 100%.
 - `tools/discord_archive/` - Scrapers for the community Discord. Output goes to `$XDG_DATA_HOME/ithkuil/discord/`; see its `paths.py`.
 
-## Grammar Reference
+## Language Reference
 
-- `grammar_reference/morphology.md` - Canonical V4 grammar reference (phonology, morphology, slots, cases, adjuncts, syntax, script, numbers)
-- `grammar_reference/affixes_reference.md` - All 528 affixes with gradient types and 9 degrees
-- `grammar_reference/phonotactics.md` - Detailed consonant cluster rules
-- `grammar_reference/v4_script.md`, `v4_script_pdf.md` - Writing system reference
+- `language_reference/morphology.md` - Canonical V4 grammar reference (phonology, morphology, slots, cases, adjuncts, syntax, numbers)
+- `language_reference/affixes_reference.md` - All 528 affixes with gradient types and 9 degrees
+- `language_reference/phonotactics.md` - Detailed consonant cluster rules
+- `language_reference/issues.md` - Defects in the published sources, not in this code. See `TODO.md` for the inverse.
 - Source PDFs and any intermediate extraction output (html, per-page pdf) go outside the repo, under `$XDG_DATA_HOME/ithkuil/reference/`.
 
-The Ithkuil writing system is documented but not implemented on `main`. The
-earlier Python attempts and the extracted reference figures they were checked
-against live on the `writing` branch.
+The writing system is not implemented on `main`, and its reference material does
+not live here either: `v4_script.md`, `v4_script_pdf.md`, the extracted figures,
+and the earlier Python attempts are all on the `writing` branch. Chapter 12 of
+`morphology.md` is the only script material on `main`, and only because it is
+one chapter of a document kept whole.
+
+## Open Work
+
+`TODO.md` tracks known defects and unimplemented features in this repository,
+with the evidence for each. Add to it rather than leaving a bare `TODO` comment
+in the code, so that one list stays the whole picture.

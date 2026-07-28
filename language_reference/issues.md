@@ -1,12 +1,17 @@
-# Errata in the V4 Source Material
+# Issues in the V4 Source Material
 
 Defects in the published grammar, the affix tables and the community
-lexicon — not in this repository's code. Each entry states what the
-sources say, how the conflict was established, and what it costs a
-reader trying to implement the language.
+lexicon — not in this repository's code. `TODO.md` at the repo root is
+the inverse list: what is wrong with, or missing from, our own
+implementation. Anything we cannot implement because the sources
+disagree belongs in both.
+
+Each entry states what the sources say, how the conflict was
+established, and what it costs a reader trying to implement the
+language.
 
 Two independent renderings of the affix table are available and are
-compared throughout: `grammar_reference/affixes_reference.md`, which
+compared throughout: `language_reference/affixes_reference.md`, which
 predates the spreadsheet sync, and `data/affixes.tsv`, mirrored from
 the community spreadsheet. Where they agree, the defect is Quijada's.
 Where they disagree, the defect belongs to whichever one is
@@ -58,7 +63,7 @@ on Cs has to pick one and lose the other.
 §6.0 introduces the affix as "**SPT -- Specified Points in Calendrical
 Time** (form: -**rw**/-**ry**)" — two consonant forms, one entry. The
 spreadsheet accordingly carries two SPT rows, at `rw` and at `ry`, with
-identical degree lists. `grammar_reference/affixes_reference.md` has
+identical degree lists. `language_reference/affixes_reference.md` has
 only `ry` and assigns nothing to `rw`, so it is the reference document
 that is incomplete here, not the spreadsheet that is duplicated.
 

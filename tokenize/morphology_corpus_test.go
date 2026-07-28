@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// Worked-example forms lifted from grammar_reference/morphology.md.
+// Worked-example forms lifted from language_reference/morphology.md.
 // Each subtest names the section it came from so a future failure
 // points back to the spec text it covers.
 //
