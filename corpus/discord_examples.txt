@@ -56,7 +56,7 @@ correct | haeřalei-avzalu | §3.1.7 | Type-1 dependent, hyphen, parent with no 
 correct | hliamžá-wiafçnuţkusvunëi | §3.1.7 | Type-1 dependent, hyphen, parent with no C_C.
 correct | hrabtü'lksí-čpwasa | §3.1.7 | Type-2 chain; the author glossed it in-thread.
 !correct | hafçäxeuppëu-aḑgwappü | §3.1.7 | Type-1 chain the author glossed in-thread.
-!correct | hlamëuţřaitä-madwëužoár | §3.1.7 | Type-1 chain; author's gloss posted in-thread.
+correct | hlamëuţřaitä-madwëužoár | §3.1.7 | Type-1 chain; author's gloss posted in-thread.
 
 # ── modular adjunct slot structure ──────────────────────────────────
 # §4.3 has four slots: an optional w/y prefix, two (V_N C) pairs, and a
@@ -118,10 +118,10 @@ correct | amálawëi | §3.2.9 | leading Vv elides here, since m- is a legal wor
 # every one of these fails with "affix vowel eö on Cs r is not a Vx
 # form" and the word falls through unclassified. 121 corpus words fail
 # this way; 351 contain a Column-4 vowel form somewhere.
-!correct | vļaveörá | §4.6 | Slot VII affix vowel "eö", the AFFECTIVE case shortcut.
-!correct | ekřadeöříyoa | §4.6 | Slot VII affix vowel "eö" on Cs "ř".
-!correct | yevtleölwaňiyá | §4.6 | Slot VII affix vowel "eö" on Cs "lw".
-!correct | uţtälireölweölá | §4.6 | two Column-4 affix vowels, "eö" twice.
+correct | vļaveörá | §4.6.5 | Column-4 "eö" on referential Cs "v": AFFECTIVE case.
+correct | ekřadeöříyoa | §4.6.5 | Column-4 "eö" on referential Cs "ř" (1m/DET).
+!correct | yevtleölwaňiyá | §3.9.2 | Column-4 "eö" on "lw", a case-stacking increment: unimplemented.
+!correct | uţtälireölweölá | §3.9.2 | two Column-4 vowels, one of them on the "lw" increment.
 
 # The second-largest group is the same feature seen from the other
 # side. A combination referential whose case vowel carries a glottal,

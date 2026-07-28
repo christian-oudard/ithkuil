@@ -9,6 +9,7 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
+	"github.com/christian-oudard/ithkuil/referentials"
 	"github.com/christian-oudard/ithkuil/surface"
 	"github.com/christian-oudard/ithkuil/validation"
 )
@@ -183,6 +184,21 @@ func affixesVxCs(chunks []AffixChunk) ([]g.Affix, error) {
 		t, d, ok := parse.AffixVowelDegree(c.Vx)
 		if !ok {
 			return nil, fmt.Errorf("affix vowel %q on Cs %q is not a Vx form", c.Vx, c.Cs)
+		}
+		// A Column-4 vowel is §4.6.5's Transrelative-case shortcut only
+		// when its Cs is a referential form. §4.6.5 bars a referential
+		// affix from taking the Abstract Perspective increments -w and
+		// -y precisely so that it cannot be confused with a §3.9.2
+		// case-accessor, whose Cs forms all end in one. So a Column-4
+		// vowel on any other Cs is an accessor, which we do not yet
+		// implement — say so rather than mis-glossing it as a
+		// referential.
+		if t == g.Column4Affix {
+			if _, ok := referentials.DecomposeRefCluster(c.Cs); !ok {
+				return nil, fmt.Errorf(
+					"Column-4 affix vowel %q on Cs %q: not a referential form, so this is a §3.9.2 case-accessor or case-stacking affix, which is unimplemented",
+					c.Vx, c.Cs)
+			}
 		}
 		out[i] = g.Affix{Type: t, Degree: d, Consonant: c.Cs}
 	}

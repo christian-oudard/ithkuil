@@ -39,6 +39,21 @@ var type3Vowels = [...]string{"üo", "ia", "ie", "io", "iö", "eë", "uö", "uo"
 // it sits outside the three degree tables above.
 const CaStackVowel = "üö"
 
+// column4Degrees maps Column-4 vowels to their §4.6.5 form number,
+// which selects one of the nine Transrelative cases. These are not
+// affix degrees: the Cs they sit on is a referential consonant form,
+// not an affix, and the pair is a case shortcut rather than a graded
+// affix. Ambiguity with a §3.9.2 Type-3 case-accessor is ruled out by
+// §4.6.5's own restriction that a referential affix may not add the
+// Abstract Perspective increments -w or -y, which is exactly what the
+// accessor Cs forms all end in.
+var column4Degrees = map[string]int{
+	"ao": 1, "aö": 2, "eo": 3, "eö": 4, "oë": 5,
+	"öe": 6, "oe": 7, "öa": 8, "oa": 9,
+}
+
+var column4Vowels = [...]string{"", "ao", "aö", "eo", "eö", "oë", "öe", "oe", "öa", "oa"}
+
 // AffixVowel returns the canonical surface vowel for an affix of the
 // given Type and Degree (0-9). For Type-3, the canonical (non-alternate)
 // form is returned.
@@ -53,6 +68,12 @@ const CaStackVowel = "üö"
 func AffixVowel(t grammar.AffixType, degree int) string {
 	if t == grammar.CaStackAffix {
 		return CaStackVowel
+	}
+	if t == grammar.Column4Affix {
+		if degree < 1 || degree > 9 {
+			panic(fmt.Sprintf("parse.AffixVowel: Column-4 form %d outside 1-9", degree))
+		}
+		return column4Vowels[degree]
 	}
 	if degree < 0 || degree > 9 {
 		panic(fmt.Sprintf("parse.AffixVowel: degree %d outside 0-9", degree))
@@ -81,6 +102,9 @@ func Type2DegreeToVowel(degree int) string {
 func AffixVowelDegree(v string) (grammar.AffixType, int, bool) {
 	if v == CaStackVowel {
 		return grammar.CaStackAffix, 0, true
+	}
+	if d, ok := column4Degrees[v]; ok {
+		return grammar.Column4Affix, d, true
 	}
 	if d, ok := type1Degrees[v]; ok {
 		return grammar.Type1Affix, d, true

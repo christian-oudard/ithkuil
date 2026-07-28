@@ -358,17 +358,40 @@ func appendCaStack(f *g.Formative, body string, slotV bool) error {
 	return nil
 }
 
+// column4AffixToken matches "(refs)/CASE" — §4.6.5's Column-4
+// shortcut, a referential in one of the nine Transrelative cases. A
+// case is three uppercase letters where a Type-3 degree is one digit,
+// so the two token shapes cannot overlap.
+var column4AffixToken = regexp.MustCompile(`^\(([^)]+)\)/([A-Z]{3})$`)
+
 // type3AffixToken matches "(refs)/degree" — Type-3 referential affix.
 var type3AffixToken = regexp.MustCompile(`^\(([^)]+)\)/([0-9])$`)
 
 func appendType3Affix(f *g.Formative, tok string, slotV bool) error {
-	m := type3AffixToken.FindStringSubmatch(tok)
-	if m == nil {
+	atype, refSpec, value := g.Type3Affix, "", ""
+	if m := type3AffixToken.FindStringSubmatch(tok); m != nil {
+		refSpec, value = m[1], m[2]
+	} else if m := column4AffixToken.FindStringSubmatch(tok); m != nil {
+		atype, refSpec, value = g.Column4Affix, m[1], m[2]
+	} else {
 		return fmt.Errorf("not a recognized Type-3 affix")
 	}
-	degree, _ := strconv.Atoi(m[2])
+
+	degree, _ := strconv.Atoi(value)
+	if atype == g.Column4Affix {
+		c, ok := parseCaseName(value)
+		if !ok {
+			return fmt.Errorf("unknown case %q", value)
+		}
+		d, ok := g.TransrelativeDegree(c)
+		if !ok {
+			return fmt.Errorf("%s is not a Transrelative case; §4.6.5's Column-4 shortcut reaches only the first nine", value)
+		}
+		degree = d
+	}
+
 	var c1 strings.Builder
-	for _, part := range strings.Split(m[1], "+") {
+	for _, part := range strings.Split(refSpec, "+") {
 		ref, eff, err := parseRefSpec(part)
 		if err != nil {
 			return err
@@ -376,7 +399,7 @@ func appendType3Affix(f *g.Formative, tok string, slotV bool) error {
 		c1.WriteString(referentials.RefC1(referentials.PersonalRef{Referent: ref, Effect: eff}))
 	}
 	appendToAffixSlot(f, g.Affix{
-		Type: g.Type3Affix, Degree: degree, Consonant: c1.String(),
+		Type: atype, Degree: degree, Consonant: c1.String(),
 	}, slotV)
 	return nil
 }

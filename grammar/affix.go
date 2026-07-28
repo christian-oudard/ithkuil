@@ -14,15 +14,44 @@ package grammar
 // degree 0. A CaStackAffix carries no Degree.
 type AffixType int
 
+// Column4Affix is §4.6.5's shortcut for the Transrelative cases: a
+// Column-4 vowel from the Standard Vowel Sequence on a referential Cs.
+// Unlike the Type-3 referential shortcut, which is triggered by being
+// alone in its slot, this one may be used "regardless of other V_X C_S
+// affixes being present in the same Slot". Its Degree is the 1-9
+// column-4 form number; TransrelativeCase turns that into the Case.
 const (
 	Type1Affix AffixType = iota
 	Type2Affix
 	Type3Affix
 	CaStackAffix
+	Column4Affix
 )
 
 func (a AffixType) String() string {
-	return [...]string{"Type1Affix", "Type2Affix", "Type3Affix", "CaStackAffix"}[a]
+	return [...]string{
+		"Type1Affix", "Type2Affix", "Type3Affix", "CaStackAffix", "Column4Affix",
+	}[a]
+}
+
+// TransrelativeCase maps a Column-4 form number (1-9) to the case it
+// marks. The nine Transrelative cases are the first nine of AllCases,
+// in the order §4.6.5 lists them, so the mapping is positional.
+func TransrelativeCase(degree int) (Case, bool) {
+	if degree < 1 || degree > 9 {
+		return THM, false
+	}
+	return Case(degree - 1), true
+}
+
+// TransrelativeDegree is the inverse of TransrelativeCase: the
+// Column-4 form number that marks c, or false if c is not one of the
+// nine Transrelative cases.
+func TransrelativeDegree(c Case) (int, bool) {
+	if c < THM || c > IND {
+		return 0, false
+	}
+	return int(c) + 1, true
 }
 
 // Affix is a single grammar-level affix. Vx degree (0-9) and Type are

@@ -27,10 +27,11 @@ var corpusUnclassified = []string{
 	"hlurmiô-igulotruxröxḑuökfái",
 	"hrelu-azčojhaillöelyá",
 
-	// A vowel in Vx position that isn't in the §3.5 Vx table. These
-	// used to read as degree-0 affixes because the Vx lookup defaulted
-	// silently; they now fail honestly.
-	"itriloalö",
+	// §3.9.2 case-accessor and case-stacking affixes, which we do not
+	// implement. Each holds a Column-4 vowel on one of the eight
+	// reserved Cs increments — "lw" here. §4.6.5's Column-4
+	// Transrelative-case shortcut takes the same vowels but only on a
+	// referential Cs, which is why "itriloalö" no longer sits here.
 	"kšölaölwáu",
 	"yamţröalwa'o",
 

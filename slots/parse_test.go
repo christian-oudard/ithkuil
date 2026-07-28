@@ -1,6 +1,10 @@
 package slots
 
-import "testing"
+import (
+	"testing"
+
+	g "github.com/christian-oudard/ithkuil/grammar"
+)
 
 // TestParse_SlotVGlottalBothPlacements pins §1.7's two landing spots
 // for the §3.6.2 end-of-Slot-V marker. Rule 1 puts the glottal after
@@ -63,18 +67,46 @@ func TestParse_RejectsWordFinalGlottal(t *testing.T) {
 	}
 }
 
-// TestToGrammar_RejectsNonVxVowel checks that a vowel outside the §3.5
+// TestToGrammar_RejectsNonVxVowel checks that a vowel outside every Vx
 // table is a parse error rather than a silently invented degree 0.
 func TestToGrammar_RejectsNonVxVowel(t *testing.T) {
-	l := Layout{
+	l := affixLayout("ëo", "r")
+	if _, err := ToGrammar(l); err == nil {
+		t.Error("ToGrammar accepted Vx \"ëo\", want an error")
+	}
+}
+
+// A Column-4 vowel is §4.6.5's Transrelative-case shortcut only on a
+// referential Cs. On any other Cs it is a §3.9.2 case-accessor, which
+// we do not implement; rejecting it beats glossing "lw" as a referent
+// it is not. §4.6.5 bars referential affixes from the -w and -y
+// increments for exactly this reason, so the two never overlap.
+func TestToGrammar_Column4(t *testing.T) {
+	// "r" is 1m/BEN, so this is a referential in the Thematic case.
+	f, err := ToGrammar(affixLayout("ao", "r"))
+	if err != nil {
+		t.Fatalf("ToGrammar rejected a Column-4 vowel on a referential Cs: %v", err)
+	}
+	if len(f.SlotVII) != 1 || f.SlotVII[0].Type != g.Column4Affix {
+		t.Fatalf("SlotVII = %+v, want one Column4Affix", f.SlotVII)
+	}
+	if c, _ := g.TransrelativeCase(f.SlotVII[0].Degree); c != g.THM {
+		t.Errorf("Column-4 form %d decoded as %v, want THM", f.SlotVII[0].Degree, c)
+	}
+
+	// "lw" is a §3.9.2 case-stacking increment, not a referential.
+	if _, err := ToGrammar(affixLayout("ao", "lw")); err == nil {
+		t.Error("ToGrammar accepted a Column-4 vowel on the accessor Cs \"lw\", want an error")
+	}
+}
+
+func affixLayout(vx, cs string) Layout {
+	return Layout{
 		Kind:    CrFormative,
 		Cr:      "ml",
 		Vr:      "a",
 		Ca:      "l",
-		SlotVII: []AffixChunk{{Vx: "ao", Cs: "r"}},
+		SlotVII: []AffixChunk{{Vx: vx, Cs: cs}},
 		Vc:      "a",
-	}
-	if _, err := ToGrammar(l); err == nil {
-		t.Error("ToGrammar accepted Vx \"ao\", want an error")
 	}
 }

@@ -366,16 +366,8 @@ func (gl *Glosser) affixes(as []g.Affix) string {
 		return ""
 	}
 	if len(as) == 1 && as[0].Type == g.Type3Affix {
-		if refs, ok := referentials.DecomposeRefCluster(as[0].Consonant); ok && len(refs) > 0 {
-			parts := make([]string, len(refs))
-			for i, pr := range refs {
-				s := pr.Referent.String()
-				if pr.Effect != referentials.NEU {
-					s += "/" + pr.Effect.String()
-				}
-				parts[i] = s
-			}
-			return fmt.Sprintf("(%s)/%d", strings.Join(parts, "+"), as[0].Degree)
+		if refs := refClusterLabel(as[0].Consonant); refs != "" {
+			return fmt.Sprintf("(%s)/%d", refs, as[0].Degree)
 		}
 	}
 	parts := make([]string, len(as))
@@ -385,9 +377,44 @@ func (gl *Glosser) affixes(as []g.Affix) string {
 	return strings.Join(parts, "-")
 }
 
+// refClusterLabel decomposes a referential consonant cluster into its
+// "1m+2p/BEN" form, or "" when the cluster is not one. Shared by the
+// two shortcuts that put a referential in an affix slot: the §4.6.5
+// Type-3 degree form and the §4.6.5 Column-4 case form.
+func refClusterLabel(cluster string) string {
+	refs, ok := referentials.DecomposeRefCluster(cluster)
+	if !ok || len(refs) == 0 {
+		return ""
+	}
+	parts := make([]string, len(refs))
+	for i, pr := range refs {
+		s := pr.Referent.String()
+		if pr.Effect != referentials.NEU {
+			s += "/" + pr.Effect.String()
+		}
+		parts[i] = s
+	}
+	return strings.Join(parts, "+")
+}
+
 func (gl *Glosser) affix(a g.Affix) string {
 	if a.IsCaStack() {
 		return caStackPrefix + stackedCaBody(a.Consonant)
+	}
+	// §4.6.5 Column-4 shortcut: a referential in a Transrelative case.
+	// Written "(refs)/CASE" against the Type-3 form's "(refs)/degree";
+	// a case is three uppercase letters and a degree is one digit, so
+	// the two never collide.
+	if a.Type == g.Column4Affix {
+		c, ok := g.TransrelativeCase(a.Degree)
+		if !ok {
+			return fmt.Sprintf("(%s)/?%d", a.Consonant, a.Degree)
+		}
+		refs := refClusterLabel(a.Consonant)
+		if refs == "" {
+			refs = gl.affixLabel(a.Consonant)
+		}
+		return fmt.Sprintf("(%s)/%s", refs, c)
 	}
 	if gl.Lex != nil {
 		if entry, ok := gl.Lex.Affixes[a.Consonant]; ok {
