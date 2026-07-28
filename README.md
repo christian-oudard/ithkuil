@@ -144,6 +144,38 @@ tttest  6.2: not permissible word-initially (cluster ttt)
 That check is why there is no separate validation command; parsing a word
 validates it. The exit status is 1 if any word failed.
 
+## Comparing Two Words
+
+`compare` answers what one letter is doing, by laying two breakdowns side by
+side and marking only the slots that disagree:
+
+```
+$ ithkuil compare marçat marcat
+   SLOT  marçat                           marcat
+   Vv     ∅    S1 / PRC                    ∅    S1 / PRC
+   Cr     m-   Root "m"                    m-   Root "m"
+   Vr    -a-   STA / BSC / EXS            -a-   STA / BSC / EXS
+≠  Ca    -rç-  MDF / COA / M / DEL / NRM  -rc-  DSS / COA / M / DEL / NRM
+   Vx₁   -a-   DEG1                       -a-   DEG1
+   Cs₁   -t    DCD                        -t    DCD
+   Vc     ∅    THM                         ∅    THM
+
+   DIFFERENCES
+   CATEGORY       marçat                           marcat
+   configuration  MDF  Multiplex Dissimilar Fused  DSS  Duplex Similar Separate
+```
+
+A word that won't decode is still comparable: the shape split outlives the
+grammatical read, so a word can be held up against the same word with one
+change that breaks it, and the marked rows show how the change re-split
+everything after it. With one such word in the pair, shape alone decides what
+is marked, and the differences table is dropped.
+
+For a concatenation chain the members pair off from the parent end, since the
+parent comes last and is what a standalone word is the counterpart of. Each
+pair gets its own table, and a longer chain's leading dependents are reported
+as unpaired rather than dropped.
+
 ## Building Words
 
 `compose` runs the other direction: give it what the word should mean and it
