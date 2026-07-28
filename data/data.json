@@ -474,7 +474,7 @@
       "abbrev": "PLM",
       "name": "Prolimitive",
       "category": "Case/SpatioTemporal2",
-      "form": "ö'a",
+      "form": "o'a",
       "description": "by X / within X (deadline)"
     },
     {
@@ -1636,7 +1636,7 @@
       "abbrev": "OPT",
       "name": "Optimal",
       "category": "Bias",
-      "form": "ččk",
+      "form": "ççk",
       "description": "\"so\" / \"totally\" — emphatic intensifier"
     },
     {
@@ -52191,23 +52191,6 @@
       "description": "Metonymic Categories",
       "type": "0",
       "degrees": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ]
-    },
-    {
-      "cs": "ẓḑ",
-      "abbrev": "GPJ",
-      "description": "Functional Group J",
-      "type": "0",
-      "degrees": [
         "part for whole",
         "producer for product",
         "object used or owned for user/owner",
@@ -52220,9 +52203,9 @@
       ]
     },
     {
-      "cs": "zf",
-      "abbrev": "ENS",
-      "description": "Environmental Niche",
+      "cs": "ẓḑ",
+      "abbrev": "GPJ",
+      "description": "Functional Group J",
       "type": "0",
       "degrees": [
         "thiocyanate, thocyanato-, -thiocyanate",
@@ -52234,6 +52217,23 @@
         "thionoester, O-alkyl-alkane-thioate",
         "carbodithioic acid, dithiocarboxy-, -dithioic acid",
         "dithiocarboxylic acid ester, -dithioate"
+      ]
+    },
+    {
+      "cs": "zf",
+      "abbrev": "ENS",
+      "description": "Environmental Niche",
+      "type": "0",
+      "degrees": [
+        "active at twilight/crepuscular",
+        "active at night/nocturnal",
+        "active around dawn",
+        "active during the morning",
+        "active during the day/diurnal",
+        "sessile, not motile -- adhering to a substrate by direct attachment (not via a stalk/stipe/pedicel/connecting medium)",
+        "attached to a substrate via a stalk/stipe/pedicel/connecting medium",
+        "motile in reaction to heat",
+        "motile in reaction to light"
       ]
     },
     {

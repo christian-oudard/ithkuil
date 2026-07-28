@@ -6,22 +6,45 @@ the inverse list: what is wrong with, or missing from, our own
 implementation. Anything we cannot implement because the sources
 disagree belongs in both.
 
-Each entry states what the sources say, how the conflict was
-established, and what it costs a reader trying to implement the
-language.
+## Provenance, and what each finding rests on
 
-Two independent renderings of the affix table are available and are
-compared throughout: `language_reference/affixes_reference.md`, which
-predates the spreadsheet sync, and `data/affixes.tsv`, mirrored from
-the community spreadsheet. Where they agree, the defect is Quijada's.
-Where they disagree, the defect belongs to whichever one is
-semantically incoherent.
+Four layers sit between Quijada and this repository, and a defect can
+belong to any of them. Every entry below says which layer its evidence
+comes from.
+
+1. **Quijada's V4 documents** — the grammar PDF (v1.3.2, Feb 2023) and
+   the affix reference. *Not available to this audit.* ithkuil.net
+   serves the 2011 material; the V4 PDFs are not linked from any page
+   reachable here. **No finding below is verified against Quijada
+   directly.**
+2. **The Collaborative Ithkuil IV Roots and Affixes Spreadsheet**
+   (Google Sheets `1JdaG1PaSQJRE2LpILvdzthbzz1k_a0VT86XSXouwGy8`), a
+   community artifact that `tools/sync_lexicon.py` mirrors. *Fetched
+   live and checked directly.* Every entry in the Affix table and
+   Lexicon sections below was confirmed against it, so those are
+   defects in the community data, not in our copy of it — though
+   whether the community introduced them or inherited them from
+   Quijada is not something this audit can say.
+3. **`language_reference/*.md`** — our markdown transcriptions of layer
+   1. *Fidelity unverified.* Everything in the Grammar section rests on
+   these.
+4. **`data/data.json`, `data/*.tsv`** — derived from layer 2 plus local
+   supplements.
+
+The practical consequence is a split in how much weight the Grammar
+findings carry. A missing rule, an uncovered case, a table that cannot
+be a function — these survive any plausible transcription error, and
+are reported as findings. A single wrong character, on the other hand,
+is exactly what a PDF extraction gets wrong, and cannot be attributed
+without layer 1. Those are collected at the end under "Single-character
+differences" rather than argued as defects in the language.
 
 ## Affix table
 
 ### A1. Three affixes' degree lists are shifted by one row
 
-`data/affixes.tsv` rows 487-489 hold the wrong meanings:
+*Confirmed in the live spreadsheet (layer 2), not an artifact of our
+mirror.* Rows 487-489 hold the wrong meanings:
 
 | Cs | Abbrev | Description | Degrees in the spreadsheet | Degrees in the reference |
 |----|--------|-------------|----------------------------|--------------------------|
@@ -41,9 +64,14 @@ contents move down one, and the third row's contents fall out of the
 selection and are lost. ENS's nine meanings appear nowhere in the
 spreadsheet; they survive only in the reference document.
 
-This one is live, not historical: `data/data.json` was built from the
-spreadsheet, so the shipped lexicon glosses MET as empty, GPJ as
-metonymy and ENS as thiocyanate chemistry.
+Upstream, MET's Degree 1 is empty, GPJ's is "part for whole" and ENS's
+is "thiocyanate, thocyanato-, -thiocyanate" — exactly as our mirror has
+them. `data/data.json` is built from that sheet, so the shipped lexicon
+glosses MET as empty, GPJ as metonymy and ENS as thiocyanate chemistry.
+The reference document is the only place ENS's nine meanings survive.
+**Fixed:** `tools/sync_lexicon.py` now carries a `SHIFTED_DEGREES`
+override that restores all three from there on every sync, and
+`data/data.json` has been corrected.
 
 ### A2. Two different affixes share the Cs cluster -ḑg-
 
@@ -52,32 +80,54 @@ metonymy and ENS as thiocyanate chemistry.
 - **S07**, Position/state intertwined in 3D volume, D1: "interior
   movement through integrated 3D midst", …
 
-Both sources carry both entries, so this is in the language, not in a
-mirror of it. The two are unrelated in meaning and identical in
-surface form, and both are ordinary Vx-Cs affixes occupying the same
-slots — nothing in a formative can distinguish them. Any lookup keyed
-on Cs has to pick one and lose the other.
+*Confirmed in the live spreadsheet, where `ḑg` is the only duplicated
+C_S among all 527 rows.* `language_reference/affixes_reference.md`
+carries both entries too.
 
-### A3. SPT has two C_S forms and no rule for choosing between them
+The two are unrelated in meaning and identical in surface form, and
+both are ordinary V_X C_S affixes occupying the same slots — nothing in
+a formative can distinguish them. Any lookup keyed on C_S has to pick
+one and lose the other.
+
+Whether Quijada's own affix document has the collision, or the
+community introduced it, cannot be settled from layer 2 alone.
+
+### A3. The ry row of SPT holds rw's degrees; its own are missing
 
 §6.0 introduces the affix as "**SPT -- Specified Points in Calendrical
-Time** (form: -**rw**/-**ry**)" — two consonant forms, one entry. The
-spreadsheet accordingly carries two SPT rows, at `rw` and at `ry`, with
-identical degree lists. `language_reference/affixes_reference.md` has
-only `ry` and assigns nothing to `rw`, so it is the reference document
-that is incomplete here, not the spreadsheet that is duplicated.
+Time** (form: -**rw**/-**ry**)", and the spreadsheet carries two SPT
+rows, at `rw` and at `ry`, with identical degree lists — seconds,
+minutes, hours, weekday, day, week of month, month, year, century.
 
-What no source supplies is a rule. `-rw-`/`-ry-` is stated once and
-never mentioned again; §6.0's degrees, examples and prose never
-distinguish the two. The case-accessor affixes of §3.9.2 split their
-increments the same way and do say which is which — w-forms for cases
-1-36, y-forms for 37-68 — so the machinery for stating such a rule
-exists and was not used here. Compare G7, where the Pattern-2 Mood FAC
-value is likewise written "w/y" with nothing to choose by.
+The -w/-y alternation is not unexplained, as an earlier version of this
+entry claimed. It is systematic across the affix inventory: fourteen
+C_S forms differ only in a final -w against -y, and in every case the
+two are *different affixes*, with -w the nearer or shorter member of a
+paired scale and -y the farther or longer one.
+
+| -w form | | -y form | |
+|---------|---|---------|---|
+| rkw | CYC Cyclic Recurrence (every second … every century) | rky | CYL Cyclic Recurrence **(Long-Term)** (every millennium … lifespan of the universe) |
+| rţw | ITE Iterations Per Time-Period (per second … per century) | rţy | ILT Iterations Per **Long-Term** (per millennium … per universe-lifespan) |
+| řw | VMA Volumetric Measurement **A** | řy | VMB Volumetric Measurement **B** |
+| ţw | P04 Position at 0 / 0 / **-Z** | ţy | P03 Position at 0 / 0 / **+Z** |
+
+and ten more positional pairs on the same -Z/+Z contrast.
+
+SPT sits in that family — `r`, `rk`, `rţ` each with a -w and a -y form
+— and its degrees are the ordinary calendrical scale, matching CYC's
+and ITE's -w members exactly. So `ry` should carry a long-term
+counterpart, millennia to universe-lifespan, parallel to CYL and ILT.
+Instead it repeats the `rw` degrees verbatim.
+
+What is missing, then, is not a rule for choosing between the forms but
+one of the two degree sets. The affix that `ry` names has never been
+written.
 
 ### A4. ANG's Type cell holds a spilled degree list
 
-The spreadsheet's Type column for ANG (`dg`, Angular Measurement) reads:
+*Confirmed live upstream, verbatim.* The Type column for ANG (`dg`,
+Angular Measurement) reads:
 
 ```
 0* 1 arc-seconds 2 arc-minutes 3 mils 4 grads 5 degrees 6 points
@@ -96,17 +146,36 @@ ordering was meant is not recoverable from either source.
 
 GPB (`sļ`), GPC (`šḑ`), GPD (`šļ`), GPE (`zḑ`), GPF (`zļ`) and GPG
 (`žḑ`) carry a Cs, an abbreviation and a description, and nine empty
-degree cells — in both sources. GPA, GPH and GPJ around them are fully
-populated. Fifty-four degrees of the chemistry vocabulary were reserved
+degree cells — in both sources, and *confirmed live upstream*. GPA, GPH
+and GPJ around them are fully populated. Fifty-four degrees of the chemistry vocabulary were reserved
 and never written.
 
 (The series also skips GPI, presumably to keep I and J apart.)
 
-### A6. XCL is absent from the spreadsheet
+### A6. XCL is absent from the community spreadsheet
 
 XCL (`çx`, External Standard for Comparison for Use with Levels) has a
-full entry in the reference document and no row in the spreadsheet. It
-had to be restored by hand.
+full entry in `language_reference/affixes_reference.md` and no row in
+the Collaborative Ithkuil IV Roots and Affixes Spreadsheet — *checked
+live: the sheet has 527 rows, no XCL, and no affix at all with C_S
+`çx`.* Commit 214744e restored it by hand, and `tools/sync_lexicon.py`
+preserves locally-supplemented fields where upstream is blank, so a
+re-sync will not drop it again.
+
+This is the one entry where the two sources disagree by presence rather
+than content, and the reference document is the fuller of the two.
+
+### A7. ILT degree 7 reads "Eight"
+
+*Confirmed live upstream.* ILT (`rţy`, Iterations Per Long-Term) runs
+"X times per millenium", "per 10000 year period", "per 10⁵ year
+period", "per age (10⁶ years)", "per epoch (10⁷ years)", "per era (10⁸
+years)" — and then degree 7 is the bare word **Eight**, before degree 8
+resumes with "X times per billion (10⁹) year period".
+
+CYL, its sibling on the same scale (see A3), gives "occuring every 500
+million years" at degree 7, which is where the 10⁸-to-10⁹ gap wants
+filling. A stray cell has overwritten the entry.
 
 ## Lexicon
 
@@ -120,7 +189,8 @@ had to be restored by hand.
 | rţnw | vitaceae 2 | rosoideae 7 |
 | cfw | magnoliaceae | myristicaceae |
 
-Only `ksmy` has a marker resolving the conflict: its first entry is
+*Confirmed live upstream: these are the only five duplicated C_R among
+5951 rows.* Only `ksmy` has a marker resolving the conflict: its first entry is
 daggered, and the dagger is used throughout the spreadsheet for retired
 words. The other four are two live homonyms apiece with no way to tell
 them apart.
@@ -131,7 +201,8 @@ them apart.
   before **k**.
 - `řẓňy` 'siphonapteran (flea) 2' — §2.16 bars **ň** before **y**.
 
-§2.16 gives its reasons in full (n already assimilates to [ŋ] before
+*Both confirmed live upstream.* §2.16 gives its reasons in full (n
+already assimilates to [ŋ] before
 velars; \*ňy is indistinguishable from ny), and neither root has a
 dagger, so these read as typos rather than as exceptions.
 
@@ -256,6 +327,10 @@ rr → ns
 ř  → nš
 řr → ňs
 ```
+
+*A dropped leading character is exactly what layer 3 gets wrong, so
+this half of the entry may be ours rather than the grammar's; the
+missing `řř` rule below is not, since no single character restores it.*
 
 Applied literally, `ř → nš` rewrites every ř in every Ca — including
 the VAR Affiliation prefix and the G/RPV Perspective suffix, neither of
@@ -508,59 +583,6 @@ ejectivize" — without reconciling it with the claim it follows.
 diphthong, and the tables never say how many syllables these forms
 carry — which matters, because syllable count is what selects the
 formative's Relation in Slot X.
-
-### G13. The documents disagree on how to write ẓ and ḑ
-
-§1.1's phoneme chart gives the affricates as **c ẓ č j**, and §1.3 lists
-the sanctioned alternate spellings: ţ may be written ṭ or ŧ, ḑ as ḍ or
-đ, ň as ṇ or ŋ, ř as ṛ or ṙ, ļ as ł or ḷ. **ẓ is not on that list** — it
-has no sanctioned variant. The documents use one anyway:
-
-| | ẓ (U+1E93, dot below) | ż (U+017C, dot above) |
-|---|---|---|
-| morphology.md | 8 | 1 |
-| phonotactics.md | 0 | 23 |
-| affixes_reference.md | 31 | 0 |
-| data.json | 162 | 0 |
-
-Every ẓ in the phonotactics document is written ż, including in §2.2's
-roster of the sibilants and in §2.5's list of prohibited conjuncts —
-the places a reader goes to learn which characters the language has.
-morphology.md keeps ẓ throughout except once, in §12.2.1's table of
-core script characters.
-
-ḑ has the same problem in miniature, and there the variant is at least
-sanctioned: the §4.6 referential table gives the mi/DETRIMENTAL form as
-**đ**, the only place in the document that exercises §1.3's alternate,
-and a reader working through the tables meets a character that appears
-nowhere else and is absent from §1.1 as printed.
-
-Either way a machine reader checking the phonotactic rules against the
-phoneme inventory sees an unknown codepoint twenty-three times.
-
-### G14. The V_K table marks two of its eleven forms wrongly
-
-§3.9.3 states that "the V_K affix for verbs uses the same vowel-forms
-as the V_C case affix", and V_K is by definition the ultimate-stressed
-Slot IX, so every V_K form should carry a stress diacritic placed by
-§1.3.1: an undiacriticked vowel takes the acute, a vowel with dieresis
-takes the circumflex instead.
-
-Nine of the eleven follow that exactly — á, é, í, ô, ó, û, ú for the
-Validations and ái, áu, éi, éu, óu, ói, íu, úi for the non-Assertive
-Illocutions, each marked on the prominent first member. Two do not:
-
-- **REC** is printed **à**, a grave on plain `a`. The Validations run
-  down the standard vowel sequence, so REC is form 2, `ä` — the V_C
-  table gives `ä` for case 2, and IMA `ö → ô` and ITU `ü → û` in the
-  same column confirm the series and the convention. REC should be
-  **â**. As printed it is the only grave accent in the table, and
-  §1.3.1 reserves the grave for an *unstressed* -i- (or -u-) as the
-  first member of a vocalic conjunct — never for a stressed vowel and
-  never on `a`.
-- **USP** is printed **ëi**, with no mark at all, where §1.3.1 would
-  give **êi**. Unmarked means penultimate stress, which contradicts
-  V_K's own definition.
 
 ### G15. Three cross-references point at the wrong section
 
@@ -918,45 +940,6 @@ in the document and checking the vowel that precedes its C_S in the
 accompanying Ithkuil word, 40 of the 45 that could be aligned are
 exactly right; the five failures are these.
 
-### G27. §7.0 gives CLG a form that no affix bears and §2.2 prohibits
-
-§7.0 introduces "**CLG -- Cultural or Geo-Demographic Association**
-(form: -**dc**)". The affix table has CLG at **ḑc**, and `dc` is
-assigned to no affix at all.
-
-The cited form is not merely unassigned, it is unpronounceable: §2.2
-says "The dental stops (**t**, **d**) cannot be immediately followed by
-any sibilant (s, z, š, ž, c, ż, č, j)", and `c` is a sibilant
-affricate. `ḑ` is an interdental fricative, not a dental stop, so `ḑc`
-is unaffected — §2.23's bar on ḑ before a sibilant names only the
-fricatives s, š, z, ž. A missing cedilla turns a legal cluster into a
-prohibited one.
-
-Every other affix form cited in the body checks out against the affix
-table: PTN `sv`, CHC `rz`, SEQ `nt`, OGC `dn`, POR `ft`, TNX `rs`,
-SIZ `x`, and SPT `rw`/`ry` per A3.
-
-### G28. §7.2 writes OCG for OGC
-
-§7.0 defines the affix as **OGC**, Orientation relative to a
-Geographic Central point, and the affix table agrees. §7.2 refers to
-"the Type-2 **OCG**" when explaining that the Southern Ocean takes the
-affix directly rather than a carrier stem. The two letters are
-transposed; OCG is not an affix.
-
-Otherwise §7 holds up. All 489 romanized forms in §7.1 through §7.7 use
-only characters from the §1.1 inventory, which is what §7.0 requires of
-them — it waives the phonotactic rules for proper names ("Ithkuil
-phonotactic restraints do not apply as long as the name is
-pronounceable") but not the phoneme inventory. OGC's nine degrees match
-the affix table exactly and form the antipodal arrangement its D1
-gradient type calls for: 1 northern against 9 southern, 2 northwestern
-against 8 southeastern, 3 western against 7 eastern, 4 northeastern
-against 6 southwestern, with 5 geographically central at the midpoint.
-And *usarcsaidna amerika* / *usarcsuidna amerika* use OGC at Type-2
-degrees 1 and 9 — `ai` and `ui` — which is northern and southern, as
-North and South America require.
-
 ### G29. The 0* marker cannot mean what §3.5.0.1 says it means
 
 §3.5.0.1 introduces the marker in one clause: "Some Type-0 affixes are
@@ -1018,6 +1001,125 @@ nowhere in it. The affix table is the only place the transposed form
 occurs.
 
 
+### G32. §12.2 counts 28 core script characters and tabulates 30
+
+§12.2.1 introduces the core secondary characters with "The **28** core
+forms each have a 'top' and 'bottom' end that take extensions", and
+§12.2.2 opens "For each of the **28** consonants, there are three
+extension orientations". The table between the two sentences lists
+thirty:
+
+> p b f v t d ţ ḑ k g s z x š ž c ż č j ç h l r ļ ř m n ň w y
+
+That is exactly §1.1's consonant inventory — all thirty letters, with
+nothing missing and nothing extra — leaving out only the glottal stop,
+which is the one consonant with no secondary character. The table is
+right and complete; the count in the prose on either side of it is not.
+
+## Single-character differences
+
+Each of these is one character away from a form that works, which is
+exactly what a PDF extraction gets wrong. Layer 1 would settle every
+one of them in a minute, and without it none can be attributed. They
+are recorded so that whoever reaches Quijada's originals knows where to
+look — not argued as defects in the language.
+
+The one exception is the ż/ẓ split, which is too large and too
+systematic to be an accident of extraction: an entire document uses one
+character and its neighbours use the other.
+
+### G13. The documents disagree on how to write ẓ and ḑ
+
+§1.1's phoneme chart gives the affricates as **c ẓ č j**, and §1.3 lists
+the sanctioned alternate spellings: ţ may be written ṭ or ŧ, ḑ as ḍ or
+đ, ň as ṇ or ŋ, ř as ṛ or ṙ, ļ as ł or ḷ. **ẓ is not on that list** — it
+has no sanctioned variant. The documents use one anyway:
+
+| | ẓ (U+1E93, dot below) | ż (U+017C, dot above) |
+|---|---|---|
+| morphology.md | 8 | 1 |
+| phonotactics.md | 0 | 23 |
+| affixes_reference.md | 31 | 0 |
+| data.json | 162 | 0 |
+
+Every ẓ in the phonotactics document is written ż, including in §2.2's
+roster of the sibilants and in §2.5's list of prohibited conjuncts —
+the places a reader goes to learn which characters the language has.
+morphology.md keeps ẓ throughout except once, in §12.2.1's table of
+core script characters.
+
+ḑ has the same problem in miniature, and there the variant is at least
+sanctioned: the §4.6 referential table gives the mi/DETRIMENTAL form as
+**đ**, the only place in the document that exercises §1.3's alternate,
+and a reader working through the tables meets a character that appears
+nowhere else and is absent from §1.1 as printed.
+
+Either way a machine reader checking the phonotactic rules against the
+phoneme inventory sees an unknown codepoint twenty-three times.
+
+### G14. The V_K table marks two of its eleven forms wrongly
+
+§3.9.3 states that "the V_K affix for verbs uses the same vowel-forms
+as the V_C case affix", and V_K is by definition the ultimate-stressed
+Slot IX, so every V_K form should carry a stress diacritic placed by
+§1.3.1: an undiacriticked vowel takes the acute, a vowel with dieresis
+takes the circumflex instead.
+
+Nine of the eleven follow that exactly — á, é, í, ô, ó, û, ú for the
+Validations and ái, áu, éi, éu, óu, ói, íu, úi for the non-Assertive
+Illocutions, each marked on the prominent first member. Two do not:
+
+- **REC** is printed **à**, a grave on plain `a`. The Validations run
+  down the standard vowel sequence, so REC is form 2, `ä` — the V_C
+  table gives `ä` for case 2, and IMA `ö → ô` and ITU `ü → û` in the
+  same column confirm the series and the convention. REC should be
+  **â**. As printed it is the only grave accent in the table, and
+  §1.3.1 reserves the grave for an *unstressed* -i- (or -u-) as the
+  first member of a vocalic conjunct — never for a stressed vowel and
+  never on `a`.
+- **USP** is printed **ëi**, with no mark at all, where §1.3.1 would
+  give **êi**. Unmarked means penultimate stress, which contradicts
+  V_K's own definition.
+
+### G27. §7.0 gives CLG a form that no affix bears and §2.2 prohibits
+
+§7.0 introduces "**CLG -- Cultural or Geo-Demographic Association**
+(form: -**dc**)". The affix table has CLG at **ḑc**, and `dc` is
+assigned to no affix at all.
+
+The cited form is not merely unassigned, it is unpronounceable: §2.2
+says "The dental stops (**t**, **d**) cannot be immediately followed by
+any sibilant (s, z, š, ž, c, ż, č, j)", and `c` is a sibilant
+affricate. `ḑ` is an interdental fricative, not a dental stop, so `ḑc`
+is unaffected — §2.23's bar on ḑ before a sibilant names only the
+fricatives s, š, z, ž. A missing cedilla turns a legal cluster into a
+prohibited one.
+
+Every other affix form cited in the body checks out against the affix
+table: PTN `sv`, CHC `rz`, SEQ `nt`, OGC `dn`, POR `ft`, TNX `rs`,
+SIZ `x`, and SPT `rw`/`ry` per A3.
+
+### G28. §7.2 writes OCG for OGC
+
+§7.0 defines the affix as **OGC**, Orientation relative to a
+Geographic Central point, and the affix table agrees. §7.2 refers to
+"the Type-2 **OCG**" when explaining that the Southern Ocean takes the
+affix directly rather than a carrier stem. The two letters are
+transposed; OCG is not an affix.
+
+Otherwise §7 holds up. All 489 romanized forms in §7.1 through §7.7 use
+only characters from the §1.1 inventory, which is what §7.0 requires of
+them — it waives the phonotactic rules for proper names ("Ithkuil
+phonotactic restraints do not apply as long as the name is
+pronounceable") but not the phoneme inventory. OGC's nine degrees match
+the affix table exactly and form the antipodal arrangement its D1
+gradient type calls for: 1 northern against 9 southern, 2 northwestern
+against 8 southeastern, 3 western against 7 eastern, 4 northeastern
+against 6 southwestern, with 5 geographically central at the midpoint.
+And *usarcsaidna amerika* / *usarcsuidna amerika* use OGC at Type-2
+degrees 1 and 9 — `ai` and `ui` — which is northern and southern, as
+North and South America require.
+
 ### G31. The DES bias is printed mřr, which §2.21 forbids; the form is mřř
 
 §4.7's table gives the DESPERATIVE bias as **mřr**. §2.21 is
@@ -1033,19 +1135,6 @@ permitted, and §3.2.8 permits a word-initial nasal before the
 approximant ř.
 
 A dropped diacritic, then — but one that turns a legal word into a
-prohibited one, the same shape of error as §7.0's `dc` for `ḑc` in G27.
+prohibited one, the same shape of error as §7.0's `dc` for `ḑc` in
+G27 just above.
 
-### G32. §12.2 counts 28 core script characters and tabulates 30
-
-§12.2.1 introduces the core secondary characters with "The **28** core
-forms each have a 'top' and 'bottom' end that take extensions", and
-§12.2.2 opens "For each of the **28** consonants, there are three
-extension orientations". The table between the two sentences lists
-thirty:
-
-> p b f v t d ţ ḑ k g s z x š ž c ż č j ç h l r ļ ř m n ň w y
-
-That is exactly §1.1's consonant inventory — all thirty letters, with
-nothing missing and nothing extra — leaving out only the glottal stop,
-which is the one consonant with no secondary character. The table is
-right and complete; the count in the prose on either side of it is not.

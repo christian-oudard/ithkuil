@@ -116,12 +116,73 @@ def parse_affixes(csv_text: str) -> list[dict]:
     return out
 
 
+# Three consecutive rows of the upstream Affixes sheet have their degree
+# cells shifted down by one: MET's nine meanings sit on GPJ's row, GPJ's
+# on ENS's, MET's own row is blank, and ENS's fall off the end and are
+# lost. The shape is what "insert cells, shift down" over a three-row
+# selection produces.
+#
+# Which reading is right is not a judgement call. MET is "Metonymic
+# Categories" and "part for whole" is metonymy; GPJ is "Functional Group
+# J" and thiocyanate is a functional group; ENS is "Environmental Niche"
+# and crepuscular/nocturnal is one. Upstream pairs each description with
+# the previous row's meanings.
+#
+# ENS's nine degrees survive only in grammar_reference/affixes_reference.md,
+# which predates the spreadsheet sync, so all three are restored from
+# there verbatim. merge_affixes reports when it overrides, so a sync that
+# stops printing these three has had the shift repaired upstream and the
+# table can go.
+SHIFTED_DEGREES = {
+    "MET": [
+        "part for whole",
+        "producer for product",
+        "object used or owned for user/owner",
+        "controller for controlled",
+        "institution for people responsible",
+        "place for inhabitants/occupants",
+        "place for event",
+        "place for institution",
+        "attribute or characteristic for owner",
+    ],
+    "GPJ": [
+        "thiocyanate, thocyanato-, -thiocyanate",
+        "isothiocyanate,  isothiocyanato-, -isothiocyanate",
+        "methanethioyl-, -thial",
+        "carbothioic S-acid, mercaptocarbonyl-, -thioic S-acid",
+        "carbothioic O-acid, hydroxythiocarbonyl-, -thioic O-acid",
+        "thioester, S-alkyl-alkane-thioate",
+        "thionoester, O-alkyl-alkane-thioate",
+        "carbodithioic acid, dithiocarboxy-, -dithioic acid",
+        "dithiocarboxylic acid ester, -dithioate",
+    ],
+    "ENS": [
+        "active at twilight/crepuscular",
+        "active at night/nocturnal",
+        "active around dawn",
+        "active during the morning",
+        "active during the day/diurnal",
+        "sessile, not motile -- adhering to a substrate by direct attachment (not via a stalk/stipe/pedicel/connecting medium)",
+        "attached to a substrate via a stalk/stipe/pedicel/connecting medium",
+        "motile in reaction to heat",
+        "motile in reaction to light",
+    ],
+}
+
+
 def merge_affixes(upstream: list[dict], existing_path: Path) -> list[dict]:
-    """Preserve local description/type when upstream is blank.
+    """Preserve local description/type when upstream is blank, and undo
+    the three-row degree shift described at SHIFTED_DEGREES.
 
     Match on (cs, abbrev) since the same Cs cluster can carry two
     affixes (e.g. ḑg = MDI and ḑg = S07 are both in upstream).
     """
+    for a in upstream:
+        fixed = SHIFTED_DEGREES.get(a["abbrev"])
+        if fixed and a["degrees"] != fixed:
+            print(f"  restoring shifted degrees for {a['abbrev']} ({a['cs']})")
+            a["degrees"] = list(fixed)
+
     if not existing_path.exists():
         return upstream
     with open(existing_path, encoding="utf-8") as f:
