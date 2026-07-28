@@ -1,1080 +1,844 @@
 # English to Ithkuil
 
-The mapping from English into Ithkuil, written as the definition
-language underneath English. Authored by hand rather than generated.
-Other languages get their own file beside this one.
+What an English word becomes in Ithkuil, and where it splits, merges, or
+disappears. Worked in frequency order from `common_words_50k`; the
+worklist is `tools/worklist.py`.
 
-## What earns an entry
+Each block names the root or affix it turns on, then lists what it
+builds. Every word here composes and parses; `code/dictionary` checks it.
 
-Words are worked through in frequency order, from
-`common_words_50k`. Two kinds are left out.
+    Root _Cr_=`-l-`: Human Being
+    - a person, a human being: **olal**
 
-Grammatical words are skipped. *The*, *of*, *not*, *a*, *any* are not
-lexical in Ithkuil at all: they are cases, affixes, or nothing. *The
-fruit* against *a fruit* against *any fruit* is one root under three
-grammatical settings, and explaining that belongs in a grammar guide
-rather than in a list of words. Words that look lexical but are
-grammatical in disguise, *thing* and *one* and *someone*, go with them.
+Closed-class words are left out. *The*, *of*, *not*, *any* are cases,
+affixes, or nothing, and belong to a grammar guide.
 
-Specialist vocabulary is also skipped. The lexicon already names some
-14,000 species and compounds in English, and `ithkuil define trout`
-finds them without help. This file is for the words common enough that
-the useful question is not whether a root exists but which of several
-readings to take.
+## person
 
-## How to read an entry
+Root _Cr_=`-l-`: Human Being
+- a person, a human being: **olal**
+- an adult: **lala**
+- a child: **elal**
+- an adolescent: **ulal**
+- people, any number of them: **lara**
+- two or more people: **lalöks**
+- a man: **laleš**
+- a woman: **lalaš**
 
-English comes first, since that is the side you arrive from. Each line
-reads: the English, the Ithkuil word, and the gloss expression that
-builds it.
+A good person, a bad person. The judgement is an affix on the person,
+or the root for moral goodness.
 
-    - a child → **elal** `S2-l`
+Root _Cr_=`-žv-`: Good
+- a morally good person: **ežval**
 
-The gloss expression is the authoritative part. It is what
-`ithkuil compose` reads, so every line here can be checked:
+Affix _Cs_=`-th-` QUA: Degree Of Quality
+- a good person, an effective one: **lalöth**
+- a bad person: **laleth**
 
-    $ ithkuil compose "S2-l"
-    elal   S2/PRC--l-'human child'
+The person who. Commonest use of the word in running English, and an
+affix on what the person does rather than a word for the person.
 
-Every form below was composed that way, and every phrase was read back
-with `ithkuil parse` to confirm it parses to what it claims. The gloss
-expression, not the English, is the identity of an entry: when other
-languages arrive they attach to the same expression, and English becomes
-one label among several rather than the key everything hangs off.
+Affix _Cs_=`-vẓ-` PSA: Personal Association
+- a lawyer, one whose profession is law: **waẓtavẓ**
+- a doctor, one whose profession is health: **wažfavẓ**
+- a writer: **ňalavẓ**
+- a reader, one who reads professionally: **pçalavẓ**
+- a builder, a maker: **ţkalavẓ**
+- a teacher, one whose profession is study: **warţtavẓ**
+- a cook: **walksavẓ**
+- a firefighter: **wažxavẓ**
+- a speaker, an orator: **malavẓ**
+- a forester: **walḑavẓ**
+- a mathematician: **wanthavẓ**
+- one who is interested in people: **lalävẓ**
+- one obsessed with love: **warkwivẓ**
 
-Stems are written S1, S2, S3, and S0 for the general reading that covers
-all three. `DYN` makes the word verb-like, an act rather than an entity.
-`ASR` makes it a verb proper, an assertion. `G` is Agglomerative
-perspective, which is where English mass nouns live.
-
----
-
-## person, people
-
-`-l-` is the human being. The stem carries the age, which English splits
-across separate words.
-
-- a human being, age not at issue → **olal** `S0-l`
-- an adult → **lala** `S1-l`
-- a child → **elal** `S2-l`
-- an adolescent → **ulal** `S3-l`
-
-English *people* is not a word here, and it is worth being careful about
-which sense is meant. For "one or more humans, the number being beside
-the point", use Agglomerative perspective:
-
-- adults, any number of them → **lara** `S1-l-G`
-
-For a true plural, "two or more", §3.6 is explicit that Agglomerative
-does not do it and the **XX2** affix at degree 6 does:
-
-- two or more adults → **lalöks** `S1-l-XX2/6`
-
-*Man* and *woman* are not stems of this root. Sex is not part of the
-lexical identity of a human in Ithkuil, and asking for *man* the way one
-asks for *child* is the wrong shape of question.
+Degree picks the relation: 1 profession, 2 interest, 3 hobby,
+4 obsession, 5 pursuit, 6 following, 7 responsibility, 8 stake in,
+9 subject to.
 
 ## water
 
-`-ţr-` water. The stems separate the sources.
-
-- water → **ţrala** `S1-ţr`
-- natural fresh water → **eţral** `S2-ţr`
-- artificial fresh water → **uţral** `S3-ţr`
-
-The important thing for an English speaker is that the plain form is a
-count noun. §3.6 uses this exact word as its example: Monadic **ţrala**
-is *a drop of water*, a single unit of it, and the mass noun English
-reaches for by default is the Agglomerative.
-
-- water, some water, an amount of water → **ţrara** `S1-ţr-G`
-
-Wanting *water* and writing **ţrala** gets *a drop*. This trap is
-general: rice, hair, sand, money all behave the same way.
+Root _Cr_=`-ţr-`: Water
+- water: **ţrala**
+- natural fresh water: **eţral**
+- artificial fresh water: **uţral**
+- water, some water, an amount of water: **ţrara**
 
 ## eat, drink
 
-`-tx-` is nutritional consumption, one root where English has two verbs.
-
-- consuming → **txala** `S1-tx`
-- eating food → **etxal** `S2-tx`
-- drinking liquid → **utxal** `S3-tx`
-
-As verbs:
-
-- eats, is eating → **etxulá** `S2-tx-DYN-ASR`
-- drinks, is drinking → **utxulá** `S3-tx-DYN-ASR`
-
-In use, with the drinker as Ergative and what is drunk as Absolutive:
-
-    utxulá welo ţrare
-    The child drinks water.
+Root _Cr_=`-tx-`: Eat
+- consuming: **txala**
+- eating food: **etxal**
+- drinking liquid: **utxal**
+- eats, is eating: **etxulá**
+- drinks, is drinking: **utxulá**
 
 ## give, receive
 
-`-n-` is the transfer of possession itself. English needs two verbs
-because it names the transfer from each end; Ithkuil names the transfer
-and lets the stem pick the end.
-
-- a transfer of possession → **nala** `S1-n`
-- giving → **enal** `S2-n`
-- receiving → **unal** `S3-n`
-
-As verbs:
-
-- gives → **enulá** `S2-n-DYN-ASR`
-- receives → **unulá** `S3-n-DYN-ASR`
-
-This is the shape to expect for many English verb pairs. *Buy* and
-*sell*, *teach* and *learn*, *lend* and *borrow* are each one event seen
-from two ends, and the language treats them that way.
+Root _Cr_=`-n-`: Transfer Of Possession
+- a transfer of possession: **nala**
+- giving: **enal**
+- receiving: **unal**
+- gives: **enulá**
+- receives: **unulá**
 
 ## see
 
-`-ẓ-` vision.
-
-- sight, vision → **oẓal** `S0-ẓ`
-- sight, the sense → **ẓala** `S1-ẓ`
-- an eye, the organ → **eẓal** `S2-ẓ`
-- one's visual faculty → **uẓal** `S3-ẓ`
-- sees → **ẓul** `S1-ẓ-DYN-ASR`
-
-Note that the organ is a stem of the same root as the sense. Ithkuil
-groups faculty, organ, and capacity under one lexical identity where
-English has *sight* and *eye* as unrelated words.
+Root _Cr_=`-ẓ-`: See
+- sight, vision: **oẓal**
+- sight, the sense: **ẓala**
+- an eye, the organ: **eẓal**
+- one's visual faculty: **uẓal**
+- sees: **ẓul**
 
 ## say, speak
 
-`-m-` is linguistic utterance for communication.
-
-- an utterance → **mala** `S1-m`
-- speaks, says something → **mul** `S1-m-DYN-ASR`
+Root _Cr_=`-m-`: Linguistic Communication
+- an utterance: **mala**
+- speaks, says something: **mul**
 
 ## know
 
-`-ţt-` knowing, and the stems sort it by how the knowledge was got, a
-distinction English does not mark at all.
-
-- fact, knowing → **oţtal** `S0-ţt`
-- knowing an ontological fact, that something is so → **ţtala** `S1-ţt`
-- knowing an epistemological fact, knowing it as knowledge → **eţtal** `S2-ţt`
-- knowing from experience → **uţtal** `S3-ţt`
-- knows → **ţtul** `S1-ţt-DYN-ASR`
+Root _Cr_=`-ţt-`: Fact
+- fact, knowing: **oţtal**
+- knowing an ontological fact, that something is so: **ţtala**
+- knowing an epistemological fact, knowing it as knowledge: **eţtal**
+- knowing from experience: **uţtal**
+- knows: **ţtul**
 
 ## think
 
-`-sl-` thought.
-
-- thought, idea, concept → **oslal** `S0-sl`
-- thinking, cogitation → **slala** `S1-sl`
-- consideration, mulling → **eslal** `S2-sl`
-- reasoning → **uslal** `S3-sl`
-- thinks → **slul** `S1-sl-DYN-ASR`
-
-English *think* also carries "believe" and "have an opinion", which is a
-different notion and does not belong to this root.
+Root _Cr_=`-sl-`: Thought
+- thought, idea, concept: **oslal**
+- thinking, cogitation: **slala**
+- consideration, mulling: **eslal**
+- reasoning: **uslal**
+- thinks: **slul**
 
 ## make
 
-`-ţk-` making, and the stems distinguish how the thing is made.
-
-- make, construct, form → **oţkal** `S0-ţk`
-- making, construction → **ţkala** `S1-ţk`
-- forming by combining ingredients → **eţkal** `S2-ţk`
-- organizing disparate parts into a whole → **uţkal** `S3-ţk`
-- makes → **ţkul** `S1-ţk-DYN-ASR`
+Root _Cr_=`-ţk-`: Make
+- make, construct, form: **oţkal**
+- making, construction: **ţkala**
+- forming by combining ingredients: **eţkal**
+- organizing disparate parts into a whole: **uţkal**
+- makes: **ţkul**
 
 ## work
 
-`-rtm-` work, labor.
-
-- work, labor, job → **ortmal** `S0-rtm`
-- work, labor → **artmal** `S1-rtm`
-- works → **artmulá** `S1-rtm-DYN-ASR`
+Root _Cr_=`-rtm-`: Work
+- work, labor, job: **ortmal**
+- work, labor: **artmal**
+- works: **artmulá**
 
 ## time
 
-English *time* is several unrelated notions, and they take different
-roots.
+Root _Cr_=`-gẓ-`: Temporal Interval
+- a temporal interval: **ogẓal**
+- a degree of elapsed time: **gẓala**
 
-Elapsed time, duration:
-
-- a temporal interval → **ogẓal** `S0-gẓ`
-- a degree of elapsed time → **gẓala** `S1-gẓ`
-
-Time of day:
-
-- daytime → **alnal** `S1-ln`
-- nighttime → **elnal** `S2-ln`
-- o'clock time, the time on a clock → **ulnal** `S3-ln`
-
-Asking for "the word for time" has no answer. Which of these is meant
-has to be settled before the sentence can be built, and that is the
-normal condition of translating into Ithkuil.
+Root _Cr_=`-ln-`: Time Of Day
+- daytime: **alnal**
+- nighttime: **elnal**
+- o'clock time, the time on a clock: **ulnal**
 
 ## day, week, month, year
 
-Two roots carry the calendar between them, split at the year.
+Root _Cr_=`-ř-`: Conventionalized Time Period
+- a day, a 24-hour period: **řala**
+- a week: **eřal**
+- a month, a lunar period: **uřal**
 
-`-ř-` is the conventionalized time period, the ones a body or a moon
-gives you.
-
-- a day, a 24-hour period → **řala** `S1-ř`
-- a week → **eřal** `S2-ř`
-- a month, a lunar period → **uřal** `S3-ř`
-
-`-rn-` is the longer periods.
-
-- a calendar year → **arnal** `S1-rn`
-- a decade → **ernal** `S2-rn`
-- a lifetime, an expected span → **urnal** `S3-rn`
-
-*Day* meaning the 24-hour unit and *day* meaning the daylight hours are
-different roots, and English runs them together. Daytime is `-ln-`,
-under *time* above.
-
-`-rḑ-` is the same series again but designated: `S1-rḑ` → **arḑal**, a
-particular day on a calendar rather than a day as a span.
+Root _Cr_=`-rn-`: Longer Time Periods
+- a calendar year: **arnal**
+- a decade: **ernal**
+- a lifetime, an expected span: **urnal**
 
 ## night
 
-- nighttime → **elnal** `S2-ln`
+Root _Cr_=`-ln-`: Time Of Day
+- nighttime: **elnal**
 
 ## place
 
-`-ţkl-` place.
-
-- setting, place, site, venue → **oţklal** `S0-ţkl`
-- a setting → **aţklal** `S1-ţkl`
-- a place, a site → **eţklal** `S2-ţkl`
+Root _Cr_=`-ţkl-`: Setting
+- setting, place, site, venue: **oţklal**
+- a setting: **aţklal**
+- a place, a site: **eţklal**
 
 ## house, home
 
-Two roots, and English blurs them.
+Root _Cr_=`-rm-`: Dwelling
+- a dwelling, where an entity lives: **armal**
+- a domicile, an artificial dwelling for protection: **ermal**
+- a house, a constructed residence with conveniences: **urmal**
 
-`-rm-` is the physical dwelling.
-
-- a dwelling, where an entity lives → **armal** `S1-rm`
-- a domicile, an artificial dwelling for protection → **ermal** `S2-rm`
-- a house, a constructed residence with conveniences → **urmal** `S3-rm`
-
-`-nkr-` is one's surroundings, and *home* in the sense of where one
-belongs.
-
-- home → **ankral** `S1-nkr`
-- environmental circumstances → **enkral** `S2-nkr`
-- the world → **unkral** `S3-nkr`
-
-## world
-
-`S3-nkr` → **unkral**. The world is the third stem of the surroundings
-root, the outermost ring of *home*. There is no separate word for it.
+Root _Cr_=`-nkr-`: One's Surroundings
+- home: **ankral**
+- environmental circumstances: **enkral**
+- the world: **unkral**
 
 ## life
 
-`-šw-` the living.
-
-- a lifeform → **ošwal** `S0-šw`
-- a living being, a lifeform → **šwala** `S1-šw`
-- vitality, activity consistent with being alive → **ešwal** `S2-šw`
-- being brought to life, biological reproduction → **ušwal** `S3-šw`
-
-English *life* also means "a lifetime" (`S3-rn` → **urnal**) and "the
-way one lives", which is a different root again. The three are not
-interchangeable.
+Root _Cr_=`-šw-`: Lifeform
+- a lifeform: **ošwal**
+- a living being, a lifeform: **šwala**
+- vitality, activity consistent with being alive: **ešwal**
+- being brought to life, biological reproduction: **ušwal**
 
 ## money
 
-`-šč-` money and financial transaction.
-
-- money, financial transaction, banking → **oščal** `S0-šč`
-- a medium of exchange → **ščala** `S1-šč`
-- money, currency → **eščal** `S2-šč`
-- a quasi-contractual document → **uščal** `S3-šč`
-
-Money is a mass noun in English, so `S2-šč-G` is usually wanted over the
-bare **eščal**, on the same grounds as *water*.
-
----
+Root _Cr_=`-šč-`: Money
+- money, financial transaction, banking: **oščal**
+- a medium of exchange: **ščala**
+- money, currency: **eščal**
+- a quasi-contractual document: **uščal**
 
 ## Adjectives are usually affixes
 
-Most of the English adjectives near the top of the frequency list are
-not roots at all. They are degrees on a nine-point affix scale, attached
-to whatever they describe. Looking for a root meaning *big* is looking
-for the wrong thing.
+Root _Cr_=`-l-`: Human Being
+Affix _Cs_=`-th-` QUA: Degree Of Quality, Effectiveness Or Adequacy
+- a good adult, one who is effective at it: **lalöth**
+- a bad, poor, inadequate one: **laleth**
 
-**SIZ** `-x-`, degree of size, is the clearest case, and it gets a
-worked entry of its own under *big, large* below.
+Root _Cr_=`-l-`: Human Being
+Affix _Cs_=`-sp-` NEW: Newness
+- an adult never before seen: **lalasp**
+- an adult new to this setting: **laläsp**
 
-**QUA** `-th-`, degree of quality, effectiveness, or adequacy. English
-*good* and *bad* are two points on it.
-
-- a good adult, one who is effective at it → **lalöth** `S1-l-QUA/6`
-- a bad, poor, inadequate one → **laleth** `S1-l-QUA/3`
-
-Degree 5 is *not bad, adequate*; degree 8 is *excellent*; degree 9 is
-*too good*. Choosing among nine degrees is the normal cost of saying
-*good* in Ithkuil.
-
-**NEW** `-sp-`, newness and revision, and the degrees are distinctions
-English does not draw. Degree 1 is never before seen at all; degree 2 is
-new only within the present context, the sense in *a new student*.
-
-- an adult never before seen → **lalasp** `S1-l-NEW/1`
-- an adult new to this setting → **laläsp** `S1-l-NEW/2`
-
-**MDN** `-nţ-`, degree of age or modernity, covers *old* in the sense of
-era: degree 3 ancient, 4 old as in first, 5 old as in former, 6 modern.
-
-- an ancient adult → **lalenţ** `S1-l-MDN/3`
-
-*Old* meaning aged is not this affix. A person's age is carried by the
-stems of `-l-` under *person* above, and old age proper is `-dç-`.
+Root _Cr_=`-l-`: Human Being
+Affix _Cs_=`-nţ-` MDN: Degree Of Age Or Modernity
+- an ancient adult: **lalenţ**
 
 ## man, woman, boy, girl
 
-Sex is the **SEX** affix `-š-`, not a stem and not a root. Degree 1 is
-female, degree 3 male; 5 is intersex, 6 unknown, 9 sex-neutral.
-
-- a man → **laleš** `S1-l-SEX/3`
-- a woman → **lalaš** `S1-l-SEX/1`
-- a boy → **weleš** `S2-l-SEX/3`
-- a girl → **welaš** `S2-l-SEX/1`
-
-The four English words are one root, one stem choice, and one affix
-degree. Note that nothing forces the affix: **lala** is an adult whose
-sex is not at issue, which is not the same as degree 9, an adult whose
-sex is explicitly beside the point.
-
-`-š-` is also a root in its own right, where sex itself is the subject:
-`S1-š` → **šala**, biological sex.
+Root _Cr_=`-l-`: Human Being
+Affix _Cs_=`-š-` SEX: Biological Sex
+- a man: **laleš**
+- a woman: **lalaš**
+- a boy: **weleš**
+- a girl: **welaš**
 
 ## walk, run, go
 
-`-g-` is ambulation, sorted by manner rather than by direction. English
-*go* is not here at all: it says that motion happened without saying how,
-which this root will not do.
-
-- ambulation → **ogal** `S0-g`
-- natural ambulation, walking or crawling → **gala** `S1-g`
-- rapid ambulation, running or galloping → **egal** `S2-g`
-- unnatural ambulation, limping or staggering → **ugal** `S3-g`
-- walks → **gul** `S1-g-DYN-ASR`
-
-Whether it is walking or crawling depends on the creature, not on the
-word. The stem names the relation of the gait to the body that has it.
+Root _Cr_=`-g-`: Ambulation
+- ambulation: **ogal**
+- natural ambulation, walking or crawling: **gala**
+- rapid ambulation, running or galloping: **egal**
+- unnatural ambulation, limping or staggering: **ugal**
+- walks: **gul**
 
 ## want
 
-`-gv-` desire.
-
-- desire, wanting → **ogval** `S0-gv`
-- wanting, desiring → **gvala** `S1-gv`
-- wishing, hoping → **egval** `S2-gv`
-- aspiration → **ugval** `S3-gv`
-- wants → **gvul** `S1-gv-DYN-ASR`
+Root _Cr_=`-gv-`: Desire
+- desire, wanting: **ogval**
+- wanting, desiring: **gvala**
+- wishing, hoping: **egval**
+- aspiration: **ugval**
+- wants: **gvul**
 
 ## use
 
-`-ksf-` use.
-
-- use, utilization, expenditure → **oksfal** `S0-ksf`
-- using, utilizing → **ksfala** `S1-ksf`
-- serving as, functioning as → **eksfal** `S2-ksf`
-- consumption, using up → **uksfal** `S3-ksf`
-- uses → **ksful** `S1-ksf-DYN-ASR`
-
-S2 is worth noticing. *This serves as a door* and *I use the door* are
-the same root in Ithkuil, seen from the thing and from the user.
+Root _Cr_=`-ksf-`: Use
+- use, utilization, expenditure: **oksfal**
+- using, utilizing: **ksfala**
+- serving as, functioning as: **eksfal**
+- consumption, using up: **uksfal**
+- uses: **ksful**
 
 ## find, meet
 
-`-fh-` is finding, and every stem of it is by chance.
-
-- finding, encountering, meeting → **ofhal** `S0-fh`
-- finding, discovering by chance → **afhal** `S1-fh`
-- encountering, coming across by chance → **efhal** `S2-fh`
-- meeting by chance → **ufhal** `S3-fh`
-- finds → **afhulá** `S1-fh-DYN-ASR`
-
-Deliberate finding is not this root. English *find* covers both the
-accident and the result of searching, and only the accident is here.
+Root _Cr_=`-fh-`: Find
+- finding, encountering, meeting: **ofhal**
+- finding, discovering by chance: **afhal**
+- encountering, coming across by chance: **efhal**
+- meeting by chance: **ufhal**
+- finds: **afhulá**
 
 ## help
 
-`-nn-` help.
-
-- help, assistance, support → **onnal** `S0-nn`
-- aiding, helping → **nnala** `S1-nn`
-- assisting, lending a hand → **ennal** `S2-nn`
-- supporting, advocating → **unnal** `S3-nn`
-- helps → **nnul** `S1-nn-DYN-ASR`
+Root _Cr_=`-nn-`: Help
+- help, assistance, support: **onnal**
+- aiding, helping: **nnala**
+- assisting, lending a hand: **ennal**
+- supporting, advocating: **unnal**
+- helps: **nnul**
 
 ## government
 
-`-ḑf-` government.
-
-- government → **oḑfal** `S0-ḑf`
-- governing, governance → **aḑfal** `S1-ḑf`
-- being political → **eḑfal** `S2-ḑf`
-- a group of authorities recognized as a government → **uḑfal** `S3-ḑf`
-- governs → **aḑfulá** `S1-ḑf-DYN-ASR`
-
-The English noun is S3; the activity is S1. Forms of government are
-separate roots: `-ḑt-` for representative ones, `-llk-` for monarchal,
-totalitarian, and oligarchical.
+Root _Cr_=`-ḑf-`: Government
+- government: **oḑfal**
+- governing, governance: **aḑfal**
+- being political: **eḑfal**
+- a group of authorities recognized as a government: **uḑfal**
+- governs: **aḑfulá**
 
 ## group
 
-`-d-` is the act of grouping, not the group.
-
-- a group → **odal** `S0-d`
-- assembling, gathering into a group → **dala** `S1-d`
-- congregating, meeting together → **edal** `S2-d`
-- convening for a conference or congress → **udal** `S3-d`
-- gathers → **dul** `S1-d-DYN-ASR`
-
-For "a group of X" as a plurality of some particular thing, this root is
-usually the wrong tool. That is Configuration and Perspective on X
-itself, the same machinery as *people* under *person* above.
+Root _Cr_=`-d-`: Group
+- a group: **odal**
+- assembling, gathering into a group: **dala**
+- congregating, meeting together: **edal**
+- convening for a conference or congress: **udal**
+- gathers: **dul**
 
 ## number
 
-`-nth-` number.
-
-- number, integer, rational number → **onthal** `S0-nth`
-- a number, expressing numerically → **anthal** `S1-nth`
-- an integer → **enthal** `S2-nth`
-- a rational number → **unthal** `S3-nth`
-
-Real, irrational, and imaginary numbers are `-rnt-`. English *number*
-meaning "a quantity of" is not this root; that is the PTW affix.
+Root _Cr_=`-nth-`: Number
+- number, integer, rational number: **onthal**
+- a number, expressing numerically: **anthal**
+- an integer: **enthal**
+- a rational number: **unthal**
 
 ## part
 
-`-thw-` component.
-
-- component, part, ingredient → **othwal** `S0-thw`
-- a component, part, piece → **thwala** `S1-thw`
-- an ingredient → **ethwal** `S2-thw`
-- an instruction → **uthwal** `S3-thw`
-
-`-ţf-` is the positionally-defined sense: `S1-ţf` a part or section of
-something, `S3-ţf` a separable part.
+Root _Cr_=`-thw-`: Component
+- component, part, ingredient: **othwal**
+- a component, part, piece: **thwala**
+- an ingredient: **ethwal**
+- an instruction: **uthwal**
 
 ## family, parent, child
 
-Two roots. `-mp-` is the nuclear family member.
+Root _Cr_=`-mp-`: Nuclear Family Member
+- a nuclear family member: **ompal**
+- a parent: **ampal**
+- a child, in the sense of offspring: **empal**
+- a grandparent: **umpal**
 
-- a nuclear family member → **ompal** `S0-mp`
-- a parent → **ampal** `S1-mp`
-- a child, in the sense of offspring → **empal** `S2-mp`
-- a grandparent → **umpal** `S3-mp`
-
-*Child* here is the kin relation. *Child* meaning a young human is
-`S2-l` → **elal**, a different root, and English uses one word for both.
-
-`-bč-` is the wider kin relation.
-
-- kin, extended family relation → **občal** `S0-bč`
-- a family relation → **abčal** `S1-bč`
-- a genetic or marital relation → **ebčal** `S2-bč`
-- an adoptive relation → **ubčal** `S3-bč`
+Root _Cr_=`-bč-`: Kin
+- kin, extended family relation: **občal**
+- a family relation: **abčal**
+- a genetic or marital relation: **ebčal**
+- an adoptive relation: **ubčal**
 
 ## business
 
-`-dň-` commercial enterprise.
-
-- a commercial enterprise, business, industry → **odňal** `S0-dň`
-- conducting business as a commercial enterprise → **adňal** `S1-dň`
-- making a product available for purchase → **edňal** `S2-dň`
-- an industrial enterprise → **udňal** `S3-dň`
-
----
+Root _Cr_=`-dň-`: Commercial Enterprise
+- a commercial enterprise, business, industry: **odňal**
+- conducting business as a commercial enterprise: **adňal**
+- making a product available for purchase: **edňal**
+- an industrial enterprise: **udňal**
 
 ## big, large
 
-English *big* is not one concept. Before anything else, decide which of
-these is meant, because they are built out of entirely different
-material and only the first is an affix for size.
+Root _Cr_=`-rm-`: Dwelling
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a big house: **wurmox**
 
-### 1. Physically large — the common case
+Root _Cr_=`-l-`: Human Being
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a big adult: **lalox**
+- a big child: **welox**
 
-**SIZ** `-x-` at degree 7. There is no separate word: the affix goes
-inside the word for the thing that is big.
+Root _Cr_=`-lḑ-`: Tree
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a big tree: **walḑox**
 
-- a big house → **wurmox** `S3-rm-SIZ/7`
-- a big adult → **lalox** `S1-l-SIZ/7`
-- a big child → **welox** `S2-l-SIZ/7`
-- a big tree → **walḑox** `S1-lḑ-SIZ/7`
-- a big mountain → **jlalox** `S1-jl-SIZ/7`
-- a big river → **welzox** `S2-lz-SIZ/7`
-- a big dog → **zvalox** `S1-zv-SIZ/7`
-- a big fire → **wažxox** `S1-žx-SIZ/7`
-- a big meal → **walksox** `S1-lks-SIZ/7`
-- a big gathering → **dalox** `S1-d-SIZ/7`
-- a big family → **wabčox** `S1-bč-SIZ/7`
-- a big number → **wanthox** `S1-nth-SIZ/7`
-- a big part → **thwalox** `S1-thw-SIZ/7`
-- a big amount of water → **ţrarox** `S1-ţr-G-SIZ/7`
+Root _Cr_=`-jl-`: Mountainous Topography
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a big mountain: **jlalox**
 
-The scale runs 1 to 9 and is anchored in the middle at *the right size*,
-so degree 7 is big for that kind of thing: a big mouse and a big house
-are both degree 7 and are not the same number of metres. The other
-degrees are in the affix table under SIZ; degree 9 is worth knowing
-because it means *too* big rather than very big.
+Root _Cr_=`-lz-`: Body Of Fresh Water
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a big river: **welzox**
 
-### 2. Important, significant
+Root _Cr_=`-zv-`: Common Canine
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a big dog: **zvalox**
 
-Not SIZ. *A big decision*, *a big problem*, *big news* say nothing about
-extent, and putting SIZ on them says the thing is physically large.
-`S1-ňf-SIZ/7` → **waňfox** is a problem that takes up space.
+Root _Cr_=`-žx-`: Fire
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a big fire: **wažxox**
 
-Importance is the root `-šh-`.
+Root _Cr_=`-lks-`: Foodstuff
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a big meal: **walksox**
 
-- importance, significance → **ošhal** `S0-šh`
-- importance, significance → **ašhal** `S1-šh`
-- prevalence → **ešhal** `S2-šh`
-- salience, prominence → **ušhal** `S3-šh`
+Root _Cr_=`-d-`: Group
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a big gathering: **dalox**
 
-There is no importance affix in the affix inventory, so an important
-problem is not one word. It is this root and that root in a
-concatenation chain, and the chain is left unwritten here until the
-compose and parse sides agree on one (see the note at the end).
+Root _Cr_=`-bč-`: Kin
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a big family: **wabčox**
 
-### 3. Great in degree or extent
+Root _Cr_=`-nth-`: Number
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a big number: **wanthox**
 
-*A big drinker*, *big trouble*, *a big spender*. English is describing
-how much, not how large, and that is **EXN** `-g-`, degree or extent, at
-degree 7.
+Root _Cr_=`-thw-`: Component
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a big part: **thwalox**
 
-- a big drinker, one who drinks a great deal → **wutxog** `S3-tx-EXN/7`
-- a big eater → **wetxog** `S2-tx-EXN/7`
-- a big spender → **ščalog** `S1-šč-EXN/7`
-- big trouble → **warňfog** `S1-rňf-EXN/7`
+Root _Cr_=`-ţr-`: Water
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a big amount of water: **ţrarox**
 
-### 4. Senior, elder
+Root _Cr_=`-šh-`: Importance
+- importance, significance: **ošhal**
+- importance, significance: **ašhal**
+- prevalence: **ešhal**
+- salience, prominence: **ušhal**
 
-*Big brother*, *big sister* in the family sense are about age, not size.
-That is the stem of the kinship root, or the age stems of `-l-` under
-*person*. Putting SIZ/7 on a sibling says they are physically large,
-which is a different and often wrong claim.
+Root _Cr_=`-tx-`: Eat
+Affix _Cs_=`-g-` EXN: Degree Or Extent
+- a big drinker, one who drinks a great deal: **wutxog**
+- a big eater: **wetxog**
 
-### 5. Idioms, where the whole phrase is one concept
+Root _Cr_=`-šč-`: Money
+Affix _Cs_=`-g-` EXN: Degree Or Extent
+- a big spender: **ščalog**
 
-These are not *big* plus a noun at all. The English phrase is a single
-lexical item and it translates as whatever it means, not as its parts.
+Root _Cr_=`-rňf-`: Trouble
+Affix _Cs_=`-g-` EXN: Degree Or Extent
+- big trouble: **warňfog**
 
-- the big house, jail, incarceration → **ẓdrala** `S1-ẓdr`
-- Mr. Big, the boss, the one in charge → **elxmal** `S2-lxm`
-- Big Brother, surveillance → **avskal** `S1-vsk`
-- the big day, a wedding → **umflal** `S3-mfl`
-- a big shot, a big name, a prominent one → **ušhal** `S3-šh`
+Root _Cr_=`-ẓdr-`: Incarceration
+- the big house, jail, incarceration: **ẓdrala**
 
-Note that *big house* has both readings and they share nothing.
-**wurmox** is a large dwelling. **ẓdrala** is a prison. An English
-speaker who reaches for the first when they mean the second has not made
-a small error of degree; they have said an unrelated thing.
+Root _Cr_=`-lxm-`: Supervisor
+- Mr. Big, the boss, the one in charge: **elxmal**
+
+Root _Cr_=`-vsk-`: Surveillance
+- Big Brother, surveillance: **avskal**
+
+Root _Cr_=`-mfl-`: Union
+- the big day, a wedding: **umflal**
+
+Root _Cr_=`-šh-`: Importance
+- a big shot, a big name, a prominent one: **ušhal**
 
 ## small, little
 
-The same affix, low degrees. Everything above applies unchanged.
+Root _Cr_=`-rm-`: Dwelling
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a small house: **wurmex**
 
-- a small house → **wurmex** `S3-rm-SIZ/3`
-- a small adult → **lalex** `S1-l-SIZ/3`
-- a small child → **welex** `S2-l-SIZ/3`
-- a small tree → **walḑex** `S1-lḑ-SIZ/3`
-- a small dog → **zvalex** `S1-zv-SIZ/3`
+Root _Cr_=`-l-`: Human Being
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a small adult: **lalex**
+- a small child: **welex**
 
-English *little* often carries affection rather than size, as in *the
-little ones*. That is not SIZ, and putting degree 3 on a child says the
-child is undersized.
+Root _Cr_=`-lḑ-`: Tree
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a small tree: **walḑex**
 
-### A note on the concatenation gap
-
-*An important problem* should be a Type-1 or Type-2 concatenation chain
-of `-šh-` and `-ňf-`. `ithkuil compose "T2-šh"` produces **hrašha**, but
-`ithkuil parse "hrašha"` cannot read it back, so no chain is written into
-this file yet. Every form here round-trips, and that one does not.
-
----
+Root _Cr_=`-zv-`: Common Canine
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a small dog: **zvalex**
 
 ## two
 
-`-ks-`.
-
-- two → **oksal** `S0-ks`
-- set/group of two entities → **ksala** `S1-ks`
-- something with two aspects/facets → **eksal** `S2-ks`
-- second entity in a sequence → **uksal** `S3-ks`
+Root _Cr_=`-ks-`: Two
+- two: **oksal**
+- set/group of two entities: **ksala**
+- something with two aspects/facets: **eksal**
+- second entity in a sequence: **uksal**
 
 ## three
 
-`-z-`.
-
-- three → **ozal** `S0-z`
-- set/group of three entities → **zala** `S1-z`
-- something with three aspects/facets → **ezal** `S2-z`
-- third entity in a sequence → **uzal** `S3-z`
+Root _Cr_=`-z-`: Three
+- three: **ozal**
+- set/group of three entities: **zala**
+- something with three aspects/facets: **ezal**
+- third entity in a sequence: **uzal**
 
 ## four
 
-`-pš-`.
-
-- four → **opšal** `S0-pš`
-- set/group of four entities → **pšala** `S1-pš`
-- something with four aspects/facets → **epšal** `S2-pš`
-- fourth entity in a sequence → **upšal** `S3-pš`
+Root _Cr_=`-pš-`: Four
+- four: **opšal**
+- set/group of four entities: **pšala**
+- something with four aspects/facets: **epšal**
+- fourth entity in a sequence: **upšal**
 
 ## five
 
-`-st-`.
-
-- five → **ostal** `S0-st`
-- set/group of five entities → **stala** `S1-st`
-- something with five aspects/facets → **estal** `S2-st`
-- fifth entity in a sequence → **ustal** `S3-st`
+Root _Cr_=`-st-`: Five
+- five: **ostal**
+- set/group of five entities: **stala**
+- something with five aspects/facets: **estal**
+- fifth entity in a sequence: **ustal**
 
 ## six
 
-`-cp-`.
-
-- six → **ocpal** `S0-cp`
-- set/group of six entities → **cpala** `S1-cp`
-- something with six aspects/facets → **ecpal** `S2-cp`
-- sixth entity in a sequence → **ucpal** `S3-cp`
+Root _Cr_=`-cp-`: Six
+- six: **ocpal**
+- set/group of six entities: **cpala**
+- something with six aspects/facets: **ecpal**
+- sixth entity in a sequence: **ucpal**
 
 ## way
 
-`-žw-`.
-
-- categorization/genre/manner/mode → **ožwal** `S0-žw`
-- category → **žwala** `S1-žw`
-- genre/style → **ežwal** `S2-žw`
-- way/manner/mode → **užwal** `S3-žw`
+Root _Cr_=`-žw-`: Categorization
+- categorization/genre/manner/mode: **ožwal**
+- category: **žwala**
+- genre/style: **ežwal**
+- way/manner/mode: **užwal**
 
 ## back
 
-`-kf-`.
-
-- back/rear → **okfal** `S0-kf`
-- back → **kfala** `S1-kf`
-- built-in back → **ekfal** `S2-kf`
-- separable back → **ukfal** `S3-kf`
+Root _Cr_=`-kf-`: Back
+- back/rear: **okfal**
+- back: **kfala**
+- built-in back: **ekfal**
+- separable back: **ukfal**
 
 ## good
 
-`-žv-`.
-
-- good/beneficial → **ožval** `S0-žv`
-- beneficial → **žvala** `S1-žv`
-- morally good → **ežval** `S2-žv`
-- advantageous/effective → **užval** `S3-žv`
+Root _Cr_=`-žv-`: Good
+- good/beneficial: **ožval**
+- beneficial: **žvala**
+- morally good: **ežval**
+- advantageous/effective: **užval**
 
 ## party
 
-`-ppļ-`.
-
-- celebration/party/fête → **oppļal** `S0-ppļ`
-- celebration → **appļal** `S1-ppļ`
-- party → **eppļal** `S2-ppļ`
-- fête → **uppļal** `S3-ppļ`
+Root _Cr_=`-ppļ-`: Celebration
+- celebration/party/fête: **oppļal**
+- celebration: **appļal**
+- party: **eppļal**
+- fête: **uppļal**
 
 ## hand
 
-`-nl-`.
-
-- hand → **onlal** `S0-nl`
-- hand as fine manipulatory body part → **nlala** `S1-nl`
-- hand as holder/grasper/striker → **enlal** `S2-nl`
-- hand as primary tactile-sensory interface → **unlal** `S3-nl`
+Root _Cr_=`-nl-`: Hand
+- hand: **onlal**
+- hand as fine manipulatory body part: **nlala**
+- hand as holder/grasper/striker: **enlal**
+- hand as primary tactile-sensory interface: **unlal**
 
 ## side
 
-`-fḑ-`.
-
-- side/flank → **ofḑal** `S0-fḑ`
-- side/flank → **afḑal** `S1-fḑ`
-- built-in side/flank → **efḑal** `S2-fḑ`
-- separable side/flank → **ufḑal** `S3-fḑ`
+Root _Cr_=`-fḑ-`: Side
+- side/flank: **ofḑal**
+- side/flank: **afḑal**
+- built-in side/flank: **efḑal**
+- separable side/flank: **ufḑal**
 
 ## development
 
-`-kţ-`.
-
-- development/maturation/decline → **okţal** `S0-kţ`
-- developmental stage → **kţala** `S1-kţ`
-- maturation/growth → **ekţal** `S2-kţ`
-- decline/age → **ukţal** `S3-kţ`
+Root _Cr_=`-kţ-`: Development
+- development/maturation/decline: **okţal**
+- developmental stage: **kţala**
+- maturation/growth: **ekţal**
+- decline/age: **ukţal**
 
 ## head
 
-`-ty-`.
-
-- head → **otyal** `S0-ty`
-- head as interaction hub → **tyala** `S1-ty`
-- head as seat of consciousness → **etyal** `S2-ty`
-- head as top of body → **utyal** `S3-ty`
+Root _Cr_=`-ty-`: Head
+- head: **otyal**
+- head as interaction hub: **tyala**
+- head as seat of consciousness: **etyal**
+- head as top of body: **utyal**
 
 ## country
 
-`-ksm-`.
-
-- country/land/territory/region → **oksmal** `S0-ksm`
-- country/territory → **ksmala** `S1-ksm`
-- province → **eksmal** `S2-ksm`
-- cultural region → **uksmal** `S3-ksm`
+Root _Cr_=`-ksm-`: Country
+- country/land/territory/region: **oksmal**
+- country/territory: **ksmala**
+- province: **eksmal**
+- cultural region: **uksmal**
 
 ## power
 
-`-mč-`.
-
-- power/efficacy/potency → **omčal** `S0-mč`
-- empower/energize → **amčal** `S1-mč`
-- efficacy/effectiveness → **emčal** `S2-mč`
-- potency/power → **umčal** `S3-mč`
+Root _Cr_=`-mč-`: Power
+- power/efficacy/potency: **omčal**
+- empower/energize: **amčal**
+- efficacy/effectiveness: **emčal**
+- potency/power: **umčal**
 
 ## room
 
-`-sř-`.
-
-- room/chamber/compartment → **osřal** `S0-sř`
-- room/chamber → **sřala** `S1-sř`
-- compartment → **esřal** `S2-sř`
-- cubicle/partitioned section of a larger room → **usřal** `S3-sř`
+Root _Cr_=`-sř-`: Room
+- room/chamber/compartment: **osřal**
+- room/chamber: **sřala**
+- compartment: **esřal**
+- cubicle/partitioned section of a larger room: **usřal**
 
 ## problem
 
-`-ňf-`.
-
-- problem/mystery → **oňfal** `S0-ňf`
-- problem/issue → **aňfal** `S1-ňf`
-- mystery/puzzling situation → **eňfal** `S2-ňf`
-- irksome/annoying → **uňfal** `S3-ňf`
+Root _Cr_=`-ňf-`: Problem
+- problem/mystery: **oňfal**
+- problem/issue: **aňfal**
+- mystery/puzzling situation: **eňfal**
+- irksome/annoying: **uňfal**
 
 ## war
 
-`-jth-`.
-
-- violence/fighting/war → **ojthal** `S0-jth`
-- violence → **ajthal** `S1-jth`
-- fighting → **ejthal** `S2-jth`
-- war/enmity → **ujthal** `S3-jth`
+Root _Cr_=`-jth-`: Violence
+- violence/fighting/war: **ojthal**
+- violence: **ajthal**
+- fighting: **ejthal**
+- war/enmity: **ujthal**
 
 ## police
 
-`-ţkh-`.
-
-- armed security/police/armed forces → **oţkhal** `S0-ţkh`
-- armed security → **aţkhal** `S1-ţkh`
-- police → **eţkhal** `S2-ţkh`
-- armed forces → **uţkhal** `S3-ţkh`
+Root _Cr_=`-ţkh-`: Armed Security
+- armed security/police/armed forces: **oţkhal**
+- armed security: **aţkhal**
+- police: **eţkhal**
+- armed forces: **uţkhal**
 
 ## interest
 
-`-ļc-`.
-
-- curiosity/interest → **oļcal** `S0-ļc`
-- feeling curiosity → **ļcala** `S1-ļc`
-- feeling interest → **eļcal** `S2-ļc`
-- feeling intrigue → **uļcal** `S3-ļc`
+Root _Cr_=`-ļc-`: Curiosity
+- curiosity/interest: **oļcal**
+- feeling curiosity: **ļcala**
+- feeling interest: **eļcal**
+- feeling intrigue: **uļcal**
 
 ## policy
 
-`-rcx-`.
-
-- method/procedure/policy/plan → **orcxal** `S0-rcx`
-- method/procedure → **arcxal** `S1-rcx`
-- policy/practice → **ercxal** `S2-rcx`
-- plan → **urcxal** `S3-rcx`
+Root _Cr_=`-rcx-`: Method
+- method/procedure/policy/plan: **orcxal**
+- method/procedure: **arcxal**
+- policy/practice: **ercxal**
+- plan: **urcxal**
 
 ## face
 
-`-lž-`.
-
-- face/visage → **olžal** `S0-lž`
-- face → **alžal** `S1-lž`
-- face → **elžal** `S2-lž`
-- face/visage → **ulžal** `S3-lž`
+Root _Cr_=`-lž-`: Face
+- face/visage: **olžal**
+- face: **alžal**
+- face: **elžal**
+- face/visage: **ulžal**
 
 ## mistake
 
-`-cc-`.
-
-- mistake/error/misconception/miscalculation → **occal** `S0-cc`
-- mistake/error → **ccala** `S1-cc`
-- misconception → **eccal** `S2-cc`
-- miscalculation/misjudgement → **uccal** `S3-cc`
+Root _Cr_=`-cc-`: Mistake
+- mistake/error/misconception/miscalculation: **occal**
+- mistake/error: **ccala**
+- misconception: **eccal**
+- miscalculation/misjudgement: **uccal**
 
 ## city
 
-`-lz-`.
-
-- body of fresh water → **olzal** `S0-lz`
-- pond/lake → **alzal** `S1-lz`
-- stream/river → **elzal** `S2-lz`
-- freshwater inland sea → **ulzal** `S3-lz`
+Root _Cr_=`-lz-`: Body Of Fresh Water
+- body of fresh water: **olzal**
+- pond/lake: **alzal**
+- stream/river: **elzal**
+- freshwater inland sea: **ulzal**
 
 ## tree
 
-`-lḑ-`.
-
-- tree/shrub/bush → **olḑal** `S0-lḑ`
-- tree → **alḑal** `S1-lḑ`
-- shrub → **elḑal** `S2-lḑ`
-- bush → **ulḑal** `S3-lḑ`
+Root _Cr_=`-lḑ-`: Tree
+- tree/shrub/bush: **olḑal**
+- tree: **alḑal**
+- shrub: **elḑal**
+- bush: **ulḑal**
 
 ## dog
 
-`-zv-`.
-
-- common canine → **ozval** `S0-zv`
-- 🐕 domestic dog, dingo → **zvala** `S1-zv`
-- 🐺 gray wolf → **ezval** `S2-zv`
-- coyote/american jackal → **uzval** `S3-zv`
+Root _Cr_=`-zv-`: Common Canine
+- common canine: **ozval**
+- 🐕 domestic dog, dingo: **zvala**
+- 🐺 gray wolf: **ezval**
+- coyote/american jackal: **uzval**
 
 ## fire
 
-`-žx-`.
-
-- fire/burning/melting/calefaction → **ožxal** `S0-žx`
-- burning → **ažxal** `S1-žx`
-- heating up → **ežxal** `S2-žx`
-- melting → **užxal** `S3-žx`
+Root _Cr_=`-žx-`: Fire
+- fire/burning/melting/calefaction: **ožxal**
+- burning: **ažxal**
+- heating up: **ežxal**
+- melting: **užxal**
 
 ## mountain
 
-`-jl-`.
-
-- mountainous topography → **ojlal** `S0-jl`
-- elevated land, a hill/mountain → **jlala** `S1-jl`
-- peak, single elevated upwelling → **ejlal** `S2-jl`
-- plateau/butte/mesa → **ujlal** `S3-jl`
+Root _Cr_=`-jl-`: Mountainous Topography
+- mountainous topography: **ojlal**
+- elevated land, a hill/mountain: **jlala**
+- peak, single elevated upwelling: **ejlal**
+- plateau/butte/mesa: **ujlal**
 
 ## idea
 
-`-ksl-`.
-
-- idea/analysis/abstraction/concept → **okslal** `S0-ksl`
-- idea → **kslala** `S1-ksl`
-- analysis → **ekslal** `S2-ksl`
-- abstraction/concept → **ukslal** `S3-ksl`
+Root _Cr_=`-ksl-`: Idea
+- idea/analysis/abstraction/concept: **okslal**
+- idea: **kslala**
+- analysis: **ekslal**
+- abstraction/concept: **ukslal**
 
 ## food
 
-`-lks-`.
-
-- foodstuff/beverage → **olksal** `S0-lks`
-- food/beverage for consumption → **alksal** `S1-lks`
-- preparing a food/beverage → **elksal** `S2-lks`
-- sourcing/raising material for foodstuff → **ulksal** `S3-lks`
-
-
----
+Root _Cr_=`-lks-`: Foodstuff
+- foodstuff/beverage: **olksal**
+- food/beverage for consumption: **alksal**
+- preparing a food/beverage: **elksal**
+- sourcing/raising material for foodstuff: **ulksal**
 
 ## voice
 
-`-ḑx-`.
-
-- voice/vocal utterance → **oḑxal** `S0-ḑx`
-- making a sound vocally, vocalizing → **aḑxal** `S1-ḑx`
-- making a typical vocalization → **eḑxal** `S2-ḑx`
-- making a less common sound made by an entity → **uḑxal** `S3-ḑx`
+Root _Cr_=`-ḑx-`: Voice
+- voice/vocal utterance: **oḑxal**
+- making a sound vocally, vocalizing: **aḑxal**
+- making a typical vocalization: **eḑxal**
+- making a less common sound made by an entity: **uḑxal**
 
 ## name
 
-`-dn-`.
-
-- name/designation/title → **odnal** `S0-dn`
-- name → **adnal** `S1-dn`
-- designation/reference → **ednal** `S2-dn`
-- label → **udnal** `S3-dn`
+Root _Cr_=`-dn-`: Name
+- name/designation/title: **odnal**
+- name: **adnal**
+- designation/reference: **ednal**
+- label: **udnal**
 
 ## health
 
-`-žf-`.
-
-- healthiness/physical condition/fitness/sanity → **ožfal** `S0-žf`
-- physical and mental healthiness → **ažfal** `S1-žf`
-- mental health → **ežfal** `S2-žf`
-- health/physical condition/fitness → **užfal** `S3-žf`
+Root _Cr_=`-žf-`: Healthiness
+- healthiness/physical condition/fitness/sanity: **ožfal**
+- physical and mental healthiness: **ažfal**
+- mental health: **ežfal**
+- health/physical condition/fitness: **užfal**
 
 ## law
 
-`-ẓt-`.
-
-- law/statute/legal compliance → **oẓtal** `S0-ẓt`
-- law/statute → **aẓtal** `S1-ẓt`
-- legal compliance → **eẓtal** `S2-ẓt`
-- rule of law → **uẓtal** `S3-ẓt`
+Root _Cr_=`-ẓt-`: Law
+- law/statute/legal compliance: **oẓtal**
+- law/statute: **aẓtal**
+- legal compliance: **eẓtal**
+- rule of law: **uẓtal**
 
 ## question, answer
 
-`-nd-`.
-
-- question/answer/inquiry → **ondal** `S0-nd`
-- question & answer → **andal** `S1-nd`
-- questioning/querying → **endal** `S2-nd`
-- answering/responding → **undal** `S3-nd`
+Root _Cr_=`-nd-`: Question
+- question/answer/inquiry: **ondal**
+- question & answer: **andal**
+- questioning/querying: **endal**
+- answering/responding: **undal**
 
 ## job, duty
 
-`-šj-`.
-
-- being busy/occupy oneself/activity/duty/job/obligation → **ošjal** `S0-šj`
-- being busy/occupy oneself → **ašjal** `S1-šj`
-- activity → **ešjal** `S2-šj`
-- duty/job/obligation → **ušjal** `S3-šj`
+Root _Cr_=`-šj-`: Being Busy
+- being busy/occupy oneself/activity/duty/job/obligation: **ošjal**
+- being busy/occupy oneself: **ašjal**
+- activity: **ešjal**
+- duty/job/obligation: **ušjal**
 
 ## process, step
 
-`-rš-`.
-
-- stage/step/phase of a process → **oršal** `S0-rš`
-- step/stage/phase in a process → **aršal** `S1-rš`
-- degree/grade on a progressive/scalar gradient → **eršal** `S2-rš`
-- section/sub-unit/discernible potion of a structured entity → **uršal** `S3-rš`
+Root _Cr_=`-rš-`: Stage
+- stage/step/phase of a process: **oršal**
+- step/stage/phase in a process: **aršal**
+- degree/grade on a progressive/scalar gradient: **eršal**
+- section/sub-unit/discernible potion of a structured entity: **uršal**
 
 ## moment
 
-`-rv-`.
-
-- temporary duration → **orval** `S0-rv`
-- moment/instant → **arval** `S1-rv`
-- “while” → **erval** `S2-rv`
-- portion of a day → **urval** `S3-rv`
+Root _Cr_=`-rv-`: Temporary Duration
+- temporary duration: **orval**
+- moment/instant: **arval**
+- “while”: **erval**
+- portion of a day: **urval**
 
 ## action
 
-`-psm-`.
-
-- step/action/phenomenon/incident → **opsmal** `S0-psm`
-- step/action → **psmala** `S1-psm`
-- phenomenon → **epsmal** `S2-psm`
-- incident → **upsmal** `S3-psm`
+Root _Cr_=`-psm-`: Step
+- step/action/phenomenon/incident: **opsmal**
+- step/action: **psmala**
+- phenomenon: **epsmal**
+- incident: **upsmal**
 
 ## age
 
-`-mt-`.
-
-- age/life-stage/phase → **omtal** `S0-mt`
-- aging → **amtal** `S1-mt`
-- stage/phase in life → **emtal** `S2-mt`
-- birthday celebration → **umtal** `S3-mt`
+Root _Cr_=`-mt-`: Age
+- age/life-stage/phase: **omtal**
+- aging: **amtal**
+- stage/phase in life: **emtal**
+- birthday celebration: **umtal**
 
 ## report
 
-`-ţrr-`.
-
-- announcement/declaration/proclamation → **oţrral** `S0-ţrr`
-- announcement → **ţrrala** `S1-ţrr`
-- report → **eţrral** `S2-ţrr`
-- declaration/pronouncement/proclamation → **uţrral** `S3-ţrr`
+Root _Cr_=`-ţrr-`: Announcement
+- announcement/declaration/proclamation: **oţrral**
+- announcement: **ţrrala**
+- report: **eţrral**
+- declaration/pronouncement/proclamation: **uţrral**
 
 ## word
 
-`-mpř-`.
-
-- lexical component → **ompřal** `S0-mpř`
-- lexeme → **ampřal** `S1-mpř`
-- potential root/affix → **empřal** `S2-mpř`
-- allolex → **umpřal** `S3-mpř`
+Root _Cr_=`-mpř-`: Lexical Component
+- lexical component: **ompřal**
+- lexeme: **ampřal**
+- potential root/affix: **empřal**
+- allolex: **umpřal**
 
 ## start, origin
 
-`-çn-`.
-
-- source/origin → **oçnal** `S0-çn`
-- origin/source of something → **açnal** `S1-çn`
-- beginning/start point of something → **eçnal** `S2-çn`
-- direct/primary cause → **uçnal** `S3-çn`
+Root _Cr_=`-çn-`: Source
+- source/origin: **oçnal**
+- origin/source of something: **açnal**
+- beginning/start point of something: **eçnal**
+- direct/primary cause: **uçnal**
 
 ## learn, study
 
-`-rţt-`.
-
-- study/learn/knowledge source → **orţtal** `S0-rţt`
-- studying → **arţtal** `S1-rţt`
-- practice → **erţtal** `S2-rţt`
-- source of knowledge → **urţtal** `S3-rţt`
+Root _Cr_=`-rţt-`: Study
+- study/learn/knowledge source: **orţtal**
+- studying: **arţtal**
+- practice: **erţtal**
+- source of knowledge: **urţtal**
 
 ## read
 
-`-pç-`.
-
-- read/recite/erudition → **opçal** `S0-pç`
-- reading, gathering information through writing → **pçala** `S1-pç`
-- reading aloud/reciting → **epçal** `S2-pç`
-- acquiring knowledge/expertise via reading → **upçal** `S3-pç`
+Root _Cr_=`-pç-`: Read
+- read/recite/erudition: **opçal**
+- reading, gathering information through writing: **pçala**
+- reading aloud/reciting: **epçal**
+- acquiring knowledge/expertise via reading: **upçal**
 
 ## write
 
-`-ň-`.
-
-- write/inscribe/document → **oňal** `S0-ň`
-- writing down → **ňala** `S1-ň`
-- composing in writing → **eňal** `S2-ň`
-- written character/glyph/symbol → **uňal** `S3-ň`
+Root _Cr_=`-ň-`: Write
+- write/inscribe/document: **oňal**
+- writing down: **ňala**
+- composing in writing: **eňal**
+- written character/glyph/symbol: **uňal**
 
 ## love
 
-`-rkw-`.
-
-- love → **orkwal** `S0-rkw`
-- romantic love → **arkwal** `S1-rkw`
-- filial love → **erkwal** `S2-rkw`
-- abstract love → **urkwal** `S3-rkw`
+Root _Cr_=`-rkw-`: Love
+- love: **orkwal**
+- romantic love: **arkwal**
+- filial love: **erkwal**
+- abstract love: **urkwal**
 
 ## river, lake
 
-`-lz-`.
-
-- body of fresh water → **olzal** `S0-lz`
-- pond/lake → **alzal** `S1-lz`
-- stream/river → **elzal** `S2-lz`
-- freshwater inland sea → **ulzal** `S3-lz`
+Root _Cr_=`-lz-`: Body Of Fresh Water
+- body of fresh water: **olzal**
+- pond/lake: **alzal**
+- stream/river: **elzal**
+- freshwater inland sea: **ulzal**
 
 ## effort
 
-`-tm-`.
-
-- power/effort/operation/functioning → **otmal** `S0-tm`
-- energy expenditure → **atmal** `S1-tm`
-- action/effort → **etmal** `S2-tm`
-- functioning/operation → **utmal** `S3-tm`
+Root _Cr_=`-tm-`: Power
+- power/effort/operation/functioning: **otmal**
+- energy expenditure: **atmal**
+- action/effort: **etmal**
+- functioning/operation: **utmal**
 
 ## mother, father, son, daughter
 
-Sex again, on the kinship root `-mp-` from *family* above. English has
-four words where Ithkuil has one root, one stem choice, and one degree
-of the **SEX** affix.
-
-- a mother → **wampaš** `S1-mp-SEX/1`
-- a father → **wampeš** `S1-mp-SEX/3`
-- a daughter → **wempaš** `S2-mp-SEX/1`
-- a son → **wempeš** `S2-mp-SEX/3`
-
-The parent stem takes the sex of the parent; the offspring stem takes
-the sex of the offspring. Nothing obliges the affix: **ampal** is a
-parent whose sex is not at issue, and there is no English word for that.
+Root _Cr_=`-mp-`: Nuclear Family Member
+Affix _Cs_=`-š-` SEX: Biological Sex
+- a mother: **wampaš**
+- a father: **wampeš**
+- a daughter: **wempaš**
+- a son: **wempeš**
 
 ## car, vehicle
 
-`-ddl-`, and the stems sort vehicles by how they are enclosed rather
-than by what they are called.
-
-- travelling in an open-air wheeled vehicle → **addlal** `S1-ddl`
-- travelling in an enclosed wheeled vehicle → **eddlal** `S2-ddl`
-- travelling in a non-wheeled vehicle → **uddlal** `S3-ddl`
-
-A car, a bus, and a train carriage are the same stem. A cart, a
-wheelchair, and a bicycle are the same stem as each other. The
-distinction Ithkuil draws is not the one English draws, and there is no
-word that picks out *car* alone.
+Root _Cr_=`-ddl-`: Conveying In Ground Vehicle
+- travelling in an open-air wheeled vehicle: **addlal**
+- travelling in an enclosed wheeled vehicle: **eddlal**
+- travelling in a non-wheeled vehicle: **uddlal**
 
 ## kind, type
 
-The same root as *way* above, at a different stem.
+Root _Cr_=`-žw-`: Categorization
+- a category, a kind: **žwala**
 
-- a category, a kind → **žwala** `S1-žw`

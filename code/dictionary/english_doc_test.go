@@ -1,9 +1,10 @@
 package dictionary_test
 
-// docs/dictionary/english.md claims that each gloss expression composes
-// to a particular word. Those claims are checked here, so an entry
-// cannot quietly go stale when the lexicon or the canonical surface
-// changes. The document is the source; this test is the proof.
+// docs/dictionary/english.md claims that a list of Ithkuil words is
+// built on the root or affix named above them. Those claims are checked
+// here, so an entry cannot quietly go stale when the lexicon or the
+// canonical surface changes. The document is the source; this test is
+// the proof.
 
 import (
 	"os"
@@ -12,84 +13,133 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/fullparse"
+	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/surface"
 )
 
-// An entry line, English first: - a child → **elal** `S2-l`
-var entryLine = regexp.MustCompile("^- .+ → \\*\\*([^*]+)\\*\\* `([^`]+)`$")
+func loadLexicon(t *testing.T) *lexicon.Lexicon {
+	t.Helper()
+	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
+	if err != nil {
+		t.Fatalf("load lexicon: %v", err)
+	}
+	return lex
+}
 
-func loadDoc(t *testing.T) (string, *lexicon.Lexicon) {
+var (
+	// Root _Cr_=`-l-`: Human Being
+	rootLine = regexp.MustCompile("^Root _Cr_=`-([^`-]+)-`")
+	// Affix _Cs_=`-vẓ-` PSA: Personal Association
+	affixLine = regexp.MustCompile("^Affix _Cs_=`-([^`-]+)-` ([A-Z0-9]+)")
+	// - a person, a human being: **olal**
+	entryLine = regexp.MustCompile(`^- .+: \*\*([^*]+)\*\*$`)
+)
+
+func doc(t *testing.T) []string {
 	t.Helper()
 	b, err := os.ReadFile(filepath.Join("..", "..", "docs", "dictionary", "english.md"))
 	if err != nil {
 		t.Fatalf("read english.md: %v", err)
 	}
-	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
-	if err != nil {
-		t.Fatalf("load lexicon: %v", err)
-	}
-	return string(b), lex
+	return strings.Split(string(b), "\n")
 }
 
-func TestEnglishDocEntriesCompose(t *testing.T) {
-	doc, lex := loadDoc(t)
+// Every word parses, and carries whatever its block header names: the
+// root, the affix, or both. A block that names only an affix leaves the
+// root free, since the point of such a block is that the affix attaches
+// to many different roots.
+func TestEnglishDocWords(t *testing.T) {
+	var cr, cs, prev string
 	n := 0
-	for _, line := range strings.Split(doc, "\n") {
+	for i, line := range doc(t) {
+		if m := rootLine.FindStringSubmatch(line); m != nil {
+			cr, cs = surface.FromASCII(m[1]), ""
+			prev = "root"
+			continue
+		}
+		if m := affixLine.FindStringSubmatch(line); m != nil {
+			// An affix header directly under a root header narrows
+			// that root; standing alone it governs no root at all.
+			if prev != "root" {
+				cr = ""
+			}
+			cs = surface.FromASCII(m[1])
+			prev = "affix"
+			continue
+		}
+		if strings.HasPrefix(line, "## ") {
+			cr, cs, prev = "", "", "head"
+			continue
+		}
 		m := entryLine.FindStringSubmatch(line)
+		if m == nil {
+			if strings.TrimSpace(line) != "" {
+				prev = "text"
+			}
+			continue
+		}
+		prev = "entry"
+		word := m[1]
+		f, err := fullparse.Formative(word)
+		if err != nil {
+			t.Errorf("line %d: %q does not parse: %v", i+1, word, err)
+			continue
+		}
+		n++
+		if cr != "" {
+			root, ok := f.Root.(g.CrRoot)
+			if !ok {
+				t.Errorf("line %d: %q is not a Cr-root formative", i+1, word)
+			} else if root.Cluster != cr {
+				t.Errorf("line %d: %q is built on -%s-, but the block claims -%s-",
+					i+1, word, root.Cluster, cr)
+			}
+		}
+		if cs != "" && !hasAffix(f, cs) {
+			t.Errorf("line %d: %q does not carry the affix -%s- its block claims",
+				i+1, word, cs)
+		}
+	}
+	if n < 300 {
+		t.Errorf("only %d words checked; the entry format has drifted", n)
+	}
+}
+
+func hasAffix(f g.Formative, cs string) bool {
+	for _, slot := range [][]g.Affix{f.SlotV, f.SlotVII} {
+		for _, a := range slot {
+			if a.Consonant == cs {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// Every affix named in a block header exists in the affix reference by
+// that abbreviation, so a header cannot invent one.
+func TestEnglishDocAffixes(t *testing.T) {
+	lex := loadLexicon(t)
+	n := 0
+	for i, line := range doc(t) {
+		m := affixLine.FindStringSubmatch(line)
 		if m == nil {
 			continue
 		}
-		want, expr := m[1], m[2]
-		f, err := compose.Formative(expr, lex.Affixes)
-		if err != nil {
-			t.Errorf("compose(%q): %v", expr, err)
+		cs, abbrev := surface.FromASCII(m[1]), m[2]
+		entry, ok := lex.Affixes[cs]
+		if !ok {
+			t.Errorf("line %d: no affix -%s-", i+1, cs)
 			continue
 		}
-		if got := render.Formative(f); got != want {
-			t.Errorf("compose(%q) = %q, doc claims %q", expr, got, want)
+		if entry.Abbrev != abbrev {
+			t.Errorf("line %d: affix -%s- is %s, not %s", i+1, cs, entry.Abbrev, abbrev)
 		}
 		n++
 	}
-	if n < 50 {
-		t.Errorf("only %d entry lines matched; the entry format has drifted", n)
-	}
-}
-
-// Worked phrases sit in indented blocks, the Ithkuil line followed by
-// its English. Every Ithkuil word in them must parse.
-func TestEnglishDocPhrasesParse(t *testing.T) {
-	doc, _ := loadDoc(t)
-	n := 0
-	for _, line := range strings.Split(doc, "\n") {
-		if !strings.HasPrefix(line, "    ") {
-			continue
-		}
-		line = strings.TrimSpace(line)
-		// Skip the English translation, shell transcripts, and the
-		// sample compose output.
-		if line == "" || strings.HasPrefix(line, "$") || !isIthkuil(line) {
-			continue
-		}
-		for _, w := range strings.Fields(strings.TrimRight(line, ".")) {
-			if _, err := fullparse.Formative(w); err != nil {
-				t.Errorf("phrase word %q does not parse: %v", w, err)
-				continue
-			}
-			n++
-		}
-	}
 	if n == 0 {
-		t.Error("no worked phrases found; the phrase format has drifted")
+		t.Error("no affix blocks found; the header format has drifted")
 	}
-}
-
-// isIthkuil reports whether an indented line is the Ithkuil half of a
-// worked phrase rather than its English translation. Ithkuil text in
-// this document is lowercase throughout, since a capital is a
-// sentence-position artifact that carries no meaning.
-func isIthkuil(line string) bool {
-	return line == strings.ToLower(line)
 }
