@@ -88,10 +88,6 @@ Due to difficulty/awkwardness in pronunciation, or because they are too phonetic
 
 **2.22.** In consonant conjuncts, the semiconsonants -**w**- and -**y**- can only appear as the last member of the conjunct and must be followed by a vowel-form.
 
-**2.23.** The following combinations are considered phonetically awkward and are not permitted: -**ḑs**-, -**ḑš**-, -**ḑz**-, -**ḑž**-, and -**nň**-.
-
-**2.24.** Because the consonant forms -**ç**- and -**hl**- (pronounceable as -**ļ**-) figure so prominently in the language in terms of morphology, to avoid any confusion the geminated forms -**çç**- and -**ļļ**- are not permitted.
-
 ## 3. Permissible Word-Initial Consonant Forms
 
 A word-initial consonant-form contains from one to four consonants, #C(C)(C)(C)-, and has the following structural rules (not including rules for geminated forms -- see Sec. 6):
@@ -275,13 +271,13 @@ Only one geminated consonant pair can occur within a single consonant conjunct. 
 
 ## 8. Permissible Bi-Consonantal Conjuncts Which Can Be Roots or Affixes
 
-Twenty-five of the 27 initial consonants can be a C_R root or C_S affix by themselves; note that Nos. 9 and 13, -**ç**- and -**ļ**- by themselves cannot be C_R roots or C_S affixes but can combine with other consonants to form C_R roots and C_S affixes (however, their geminate forms -**çç**- and -**ļļ**- are not permitted as roots).
+Twenty-five of the 27 initial consonants can be a C_R root or C_S affix by themselves; note that Nos. 9 and 13, -**ç**- and -**ļ**- by themselves cannot be C_R roots or C_S affixes but can combine with other consonants to form C_R roots and C_S affixes.
 
 Also: No C_R root or C_S affix can begin with **h**-, **w**-, or **y**-; no C_R root or C_S affix can contain a glottal stop.
 
 **NOTE:** In addition to the values in the table below, the following seven forms are permissible as mono-consonantal or bi-consonantal intervocalic forms, but cannot be a C_R root form or a C_S affix form: -**h**-, -**hl**-, -**hr**-, -**hm**-, -**hn**-, -**hw**-, -**hy**-.
 
-The permissible/impermissible bi-consonantal root/affix table (682 permissible forms total) is available in the PDF source. Blue squares indicate impermissible forms.
+Below is a chart showing the 25 permissible mono-consonantal C_R roots and the 679 permissible bi-consonantal conjuncts which can be C_R roots or C_S affixes. Blue squares are impermissible forms. *[The chart itself is not transcribed; see the PDF.]*
 
 ## 9. Permissible Tri-Consonantal Conjuncts Which Can Be Roots or Affixes
 

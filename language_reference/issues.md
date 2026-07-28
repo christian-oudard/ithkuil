@@ -57,15 +57,19 @@ document of Quijada's, not a chapter of the grammar, and belongs with
 the script work rather than with the grammar; the material is on the
 `writing` branch, bound for its own repository.
 
-**Unaudited:** the cluster tables in `phonotactics.md` §§8-11 and the
-Slot tables in `morphology.md` §3 have not been read against the PDFs
-cell by cell.
+**Unaudited:** the Slot tables in `morphology.md` §3 have not been read
+against the PDF cell by cell. `phonotactics.md` §§8-11 summarise
+Quijada's combinatorial tables — 679, 5183, 15034 and 12271 permissible
+forms — rather than reproducing them; the totals match the document but
+the forms themselves are not here.
 
 ### What checking against layer 1 changed
 
 Ten findings have been withdrawn in whole or in part. Eight were
 defects in **our markdown** rather than in Quijada — G3, G4, G14, G17,
 G19, G27, G31, G32 — and one, A2, was a spreadsheet transposition.
+G34 and G37 are two more of the same kind, found by auditing the
+transcriptions rather than by chasing a finding.
 They are kept below, marked WITHDRAWN, with what the source actually
 says, because the transcription and the data still need fixing even
 where the language does not.
@@ -1244,3 +1248,48 @@ sibilant fricatives.
 So the opening paragraph is wrong in both clauses, and §3.3.4 wrong
 with it. `validation` reads `ç` as neither a sibilant nor a sibilant
 fricative, which the corpus test corroborates.
+
+### G37. Two prohibited-conjunct rules in our markdown have no source
+
+*A transcription defect, in layer 3.* `phonotactics.md` carried
+twenty-four numbered rules in §2. Quijada's document has twenty-two:
+it ends at 2.22, "the semiconsonants -w- and -y- can only appear as
+the last member of the conjunct". Our 2.23 and 2.24 were:
+
+> **2.23.** The following combinations are considered phonetically
+> awkward and are not permitted: -ḑs-, -ḑš-, -ḑz-, -ḑž-, and -nň-.
+>
+> **2.24.** Because the consonant forms -ç- and -hl- (pronounceable as
+> -ļ-) figure so prominently in the language in terms of morphology,
+> to avoid any confusion the geminated forms -çç- and -ļļ- are not
+> permitted.
+
+Neither appears in phonotaxis v0.5.4, which is the newest version
+published — the ithkuil.place archive lists v0.3, v0.4, v0.5.0, v0.5.2
+and v0.5.4, and nothing since 2021. Neither appears in the grammar,
+affix or script documents, nor in the 2011 phonology chapter. The
+strings `ḑs`, `nň`, `çç`, `ļļ` and the phrases "phonetically awkward"
+and "so prominently" are absent from all of them.
+
+The content of the two rules stands differently:
+
+- **2.23 is corroborated.** None of `ḑs`, `ḑš`, `ḑz`, `ḑž` or `nň`
+  occurs in any root or affix C_S in the lexicon.
+- **2.24 is contradicted.** Twenty-four lexicon roots contain `çç` or
+  `ļļ` — `ççk` "maximum", `pļļ` "humor", `ļļtļ` "heaven/paradise" and
+  so on. All are community coinages rather than Quijada's, so they do
+  not settle whether the rule exists, but nothing enforces it either.
+
+Both are removed from the transcription. **`validation` still enforces
+them**, citing §2.23 and §2.24 by number: see the awkward-set entries
+in `spec_examples_test.go` and the `çç`/`ļļ` exception in
+`validation.go`, and the substitution in `allomorph/substitutions.go`
+that exists to avoid producing `nň`. That behaviour now rests on no
+published rule and needs a decision.
+
+The same import summarised §§8-11 rather than transcribing them, which
+is defensible — they are combinatorial tables of 679, 5183, 15034 and
+12271 forms. But §8's total was given as 682 against the document's
+679, printed twice, and a clause was added to Quijada's sentence about
+-ç- and -ļ- saying their geminates "are not permitted as roots", which
+is the same unsourced claim as 2.24. Both corrected.
