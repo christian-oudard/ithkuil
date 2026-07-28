@@ -522,13 +522,28 @@ func resolveAffixCs(id string, affixes map[string]lexicon.AffixEntry) string {
 		return id
 	}
 	// Abbreviation lookup only fires for all-uppercase identifiers.
+	//
+	// SPT is the one abbreviation two C_S forms answer to. Quijada's
+	// affix document gives the entry as "-rw/-ry SPT Specified Points
+	// in Calendrical Time" with a single degree list, and §6.0 repeats
+	// the pairing, so the affix really does have two consonant forms
+	// for one meaning and nothing anywhere says which to use. That is
+	// odd for its family — fourteen other C_S pairs differ only in a
+	// final -w against -y, and in every one the two are distinct
+	// affixes (CYC/CYL, ITE/ILT, VMA/VMB, and ten positional pairs on
+	// the -Z/+Z contrast) — but it is what both sources print.
+	//
+	// The lowest cluster wins, so composing SPT is deterministic. A map
+	// walk is not: Go randomizes it, so this returned rw or ry by
+	// coin-flip and one Formative had two canonical spellings.
 	if id == strings.ToUpper(id) {
+		best := ""
 		for cs, a := range affixes {
-			if a.Abbrev == id {
-				return cs
+			if a.Abbrev == id && (best == "" || cs < best) {
+				best = cs
 			}
 		}
-		return ""
+		return best
 	}
 	// Lowercase/mixed cluster not in the lexicon — accept it, folding
 	// any ASCII digraphs back to their Ithkuil glyphs.

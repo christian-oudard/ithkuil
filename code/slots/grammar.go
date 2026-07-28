@@ -752,6 +752,18 @@ var aspectVowels = [...]string{
 func aspectVowel(a g.Aspect) string { return aspectVowels[a] }
 
 var moodCnP1Table = [...]string{"h", "hl", "hr", "hm", "hn", "hň"}
+
+// The Pattern-2 FAC value is printed "w/y", with no rule anywhere in
+// the document for choosing between them, and none derivable from
+// usage: arţtuläwá and erčuläyá differ only in the glide, with the same
+// Ca, Vn and Vk. The official examples split 51 w to 12 y over 63
+// instances and the community corpus 415 to 30 over 445; both appear
+// after every plain vowel and several diphthongs, and -ou- inverts the
+// ratio outright at 12 y to 7 w. So nothing phonological conditions it
+// and the minority form is too common to be a slip.
+//
+// We render w, the majority form, and parse both. That is our choice,
+// not Quijada's: parse/slot_viii.go accepts y wherever it accepts w.
 var moodCnP2Table = [...]string{"w", "hw", "hrw", "hmw", "hnw", "hňw"}
 
 func moodCnP1(m g.Mood) string { return moodCnP1Table[m] }

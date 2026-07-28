@@ -117,35 +117,6 @@ a defect in the language.
 | G38 | §3.5.0's gradient-type descriptions were ours, and four were wrong |
 
 ## Affix table
-### A3. SPT has two C_S forms and no rule for choosing between them
-
-Quijada's affix document gives the entry as **-rw/-ry SPT Specified
-Points in Calendrical Time**, with a single degree list: second(s) of
-the minute, minute(s) of the hour, hour of the day, day of the week,
-day of the month, week of the month, month of the year, year, century.
-§6.0 of the grammar repeats the same pairing. The spreadsheet's two
-identical SPT rows mirror that faithfully; they are not a duplication
-error, as an earlier version of this entry supposed.
-
-So the affix really does have two consonant forms for one meaning set,
-and nothing anywhere says which to use.
-
-What makes the silence odd is that the surrounding family uses the same
-alternation to separate *different* affixes. Fourteen C_S forms differ
-only in a final -w against -y, and in every other case the two are
-distinct entries, -w the nearer member of a paired scale and -y the
-farther:
-
-| -w form | | -y form | |
-|---------|---|---------|---|
-| rkw | CYC Cyclic Recurrence (every second … every century) | rky | CYL Cyclic Recurrence **[Long-Term]** |
-| rţw | ITE Iterations Per Time-Period | rţy | ILT Iterations Per **Long-Term** |
-| řw | VMA Volumetric Measurement **A** | řy | VMB Volumetric Measurement **B** |
-| ţw | P04 Position at 0 / 0 / **-Z** | ţy | P03 Position at 0 / 0 / **+Z** |
-
-plus ten more positional pairs on the -Z/+Z contrast. SPT is the one
-member of that family where -w and -y do not distinguish anything.
-
 ## Grammar
 
 ### G2. The §3.6 bn-substitution cannot cover both configurations that need it
@@ -261,21 +232,6 @@ elsewhere — §3.9.1's Special Note suspends the V_C shortening rule when
 §3.8.1.2 has been applied — so the omission here is of a piece the
 author was otherwise tracking.
 
-### G7. The Pattern-2 Mood FAC value is written "w/y" with no selection rule
-
-The Pattern-2 Mood table gives FAC as `w/y` and says nothing about
-which to use. No rule elsewhere in the document conditions the choice.
-
-Attested usage does not settle it either. Both appear in identical
-environments — `arţtuläwá` and `erčuläyá` differ only in the glide,
-with the same Ca, the same Vn and the same Vk. Across the 63 instances
-in the official examples the split is 51 w / 12 y; across the 445
-instances in the community corpus it is 415 w / 30 y. Both forms are
-attested after every plain vowel (a, ä, e, i, o, ö, u) and after
-several diphthongs, so no phonological conditioning accounts for it.
-The minority form is not rare enough to dismiss as a slip, and -ou-
-inverts the ratio outright: 12 y against 7 w.
-
 ### G8. The NOMIC increment reproduces the Obv and PVS alternate forms
 
 §4.6 gives each of the eleven referential categories three Effect
@@ -376,17 +332,6 @@ permitted nor prohibited.
 
 Four more — CMD `pļļ`, EXA `kçç`, OPT `ççk` and STU `ļļč` — are the
 §2.24 geminates of G1 above.
-
-### G12. §1.2.1's vowel inventory does not cover the conjuncts the morphology uses
-
-§1.2.1 gives ten permissible diphthongs — ai, ei, ëi, oi, ui, au, eu,
-ëu, ou, iu — and describes every other two-vowel sequence as a
-"disyllabic conjunct". But the morphology's own vowel-form tables use
-**ae**, **ea**, **üo** and **üö** as form-0 values, and §4.6.3 calls
-**üo** a "word-initial diphthong" outright. Under §1.2.1 it is not a
-diphthong, and the tables never say how many syllables these forms
-carry — which matters, because syllable count is what selects the
-formative's Relation in Slot X.
 
 ### G18. Every referential consonant is also an ordinary affix C_S
 

@@ -68,6 +68,13 @@ func isStressMark(r rune) bool {
 // two-vowel conjunct (the Series 3 and 4 forms — ia, uo, ao, oë …) is
 // disyllabic, which is why §1.3.1 needs the grave accent to mark the
 // unstressed -i- of -Cìa-.
+//
+// Taken as closed against §4.6.3, which calls üo a "word-initial
+// diphthong" outright. The morphology's own vowel-form tables use ae,
+// ea, üo and üö as form-0 values and never say how many syllables any
+// of the four carries, so §1.2.1's list is the only statement on the
+// question and this follows it. It is not a free choice: syllable count
+// is what selects the formative's Relation in Slot X.
 var diphthongs = map[string]bool{
 	"ai": true, "ei": true, "ëi": true, "oi": true, "ui": true,
 	"au": true, "eu": true, "ëu": true, "ou": true, "iu": true,

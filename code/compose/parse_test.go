@@ -261,3 +261,21 @@ func TestFormative_MaţřëullaitRoundTrip(t *testing.T) {
 		}
 	}
 }
+
+// SPT is the one abbreviation two C_S forms answer to: Quijada gives
+// "-rw/-ry SPT Specified Points in Calendrical Time" with a single
+// degree list and no rule for choosing. The lookup used to walk a Go
+// map, so it returned rw or ry at random and one Formative had two
+// canonical spellings. Lowest cluster wins.
+func TestFormative_AmbiguousAbbrevIsDeterministic(t *testing.T) {
+	lex := mustLex(t)
+	for i := 0; i < 50; i++ {
+		f, err := Formative("ml-SPT/3", lex.Affixes)
+		if err != nil {
+			t.Fatalf("parse: %v", err)
+		}
+		if got := f.SlotVII[0].Consonant; got != "rw" {
+			t.Fatalf("Consonant = %q, want rw", got)
+		}
+	}
+}
