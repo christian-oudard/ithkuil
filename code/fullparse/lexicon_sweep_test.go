@@ -6,9 +6,9 @@ import (
 	"github.com/christian-oudard/ithkuil/fullparse"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/render"
 	"github.com/christian-oudard/ithkuil/store"
-	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // Four roots in the community lexicon cannot be pronounced. The spec
@@ -80,7 +80,7 @@ func TestLexiconSweep(t *testing.T) {
 				continue
 			}
 			f := g.MinimalFormative(cluster)
-			if r := validation.ValidateWord(render.Formative(f)); r.Valid {
+			if err := phonology.CheckText(render.Formative(f)); err == nil {
 				t.Errorf("%q now validates; drop it from unpronounceableRoots", cluster)
 			}
 		}
@@ -109,9 +109,9 @@ func sweep(t *testing.T, f g.Formative, label string, variant int) {
 	}()
 
 	w := render.Formative(f)
-	if r := validation.ValidateWord(w); !r.Valid {
+	if err := phonology.CheckText(w); err != nil {
 		t.Errorf("%s/%d renders to %q, which our own validator rejects: %v",
-			label, variant, w, r.Errors)
+			label, variant, w, err)
 		return
 	}
 	parsed, err := fullparse.Formative(w)

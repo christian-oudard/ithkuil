@@ -7,8 +7,8 @@ import (
 	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/render"
-	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // §3.9.2's seven case-bearing affixes. Each has two Cs increments, one
@@ -36,8 +36,8 @@ func TestAccessor_RoundTrip(t *testing.T) {
 			continue
 		}
 		w := render.Formative(f)
-		if r := validation.ValidateWord(w); !r.Valid {
-			t.Errorf("%q renders to %q, which our own validator rejects: %v", in, w, r.Errors)
+		if err := phonology.CheckText(w); err != nil {
+			t.Errorf("%q renders to %q, which our own phonotactics reject: %v", in, w, err)
 		}
 		back, err := fullparse.Formative(w)
 		if err != nil {

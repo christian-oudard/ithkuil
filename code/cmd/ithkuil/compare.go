@@ -1,13 +1,13 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"strings"
 
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/validation"
 	"github.com/christian-oudard/ithkuil/view"
 )
 
@@ -55,8 +55,9 @@ func cmdCompare(args []string, stdout, stderr io.Writer, dataFile string) int {
 // user wrote it, before the ASCII input method rewrote it, so a rule
 // broken by "aaaa" names "aaaa".
 func buildSide(word, typed string, lex *lexicon.Lexicon, stderr io.Writer) (view.Side, bool) {
-	if r := validation.ValidateWord(word); !r.Valid {
-		renderValidationError(stderr, word, typed, r)
+	var ill phonology.Illegal
+	if err := phonology.CheckText(word); errors.As(err, &ill) {
+		renderValidationError(stderr, word, typed, ill)
 		return view.Side{}, false
 	}
 	s, err := view.BuildSide(word, lex)

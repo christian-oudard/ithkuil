@@ -11,7 +11,6 @@ import (
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // Formative builds a grammar.Formative from a gloss-style authoring
@@ -231,10 +230,10 @@ func validateRootCluster(cluster string) error {
 // which, for the message. Neither fires on any of the 5946 lexicon
 // roots or 528 affixes, so nothing attested is at risk.
 func validateCluster(kind, cluster string) error {
-	if r := validation.ValidateChars(cluster); !r.Valid {
-		return fmt.Errorf("%s %q: %s", kind, cluster, r.Errors[0].Reason)
+	if v := phonology.CheckChars(cluster); len(v) > 0 {
+		return fmt.Errorf("%s %q: %s", kind, cluster, v[0].Reason)
 	}
-	if validation.HasTripleConsonant(cluster) {
+	if phonology.HasTripleConsonant(cluster) {
 		return fmt.Errorf("%s %q: 1.7: triple consonant", kind, cluster)
 	}
 	return nil

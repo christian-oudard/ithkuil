@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -16,7 +17,6 @@ import (
 	"github.com/christian-oudard/ithkuil/render"
 	"github.com/christian-oudard/ithkuil/slots"
 	"github.com/christian-oudard/ithkuil/tokenize"
-	"github.com/christian-oudard/ithkuil/validation"
 	"github.com/christian-oudard/ithkuil/view"
 )
 
@@ -212,12 +212,15 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 				}
 			}
 		}
-		res := validation.ValidateWord(t.Surface())
-		w.Valid = res.Valid
-		for _, e := range res.Errors {
-			w.Violations = append(w.Violations, validationOut{
-				Rule: e.Rule, Cluster: e.Cluster, Reason: e.Reason,
-			})
+		var ill phonology.Illegal
+		err := phonology.CheckText(t.Surface())
+		w.Valid = err == nil
+		if errors.As(err, &ill) {
+			for _, v := range ill.Violations {
+				w.Violations = append(w.Violations, validationOut{
+					Rule: v.Rule, Cluster: v.Cluster, Reason: v.Reason,
+				})
+			}
 		}
 		out[i] = w
 	}
@@ -343,12 +346,8 @@ func compareSide(word string, lex *lexicon.Lexicon) (view.Side, error) {
 	if word == "" {
 		return view.Side{}, fmt.Errorf("both a and b are required")
 	}
-	if r := validation.ValidateWord(word); !r.Valid {
-		var reasons []string
-		for _, e := range r.Errors {
-			reasons = append(reasons, fmt.Sprintf("%s: %s", e.Rule, e.Reason))
-		}
-		return view.Side{}, fmt.Errorf("%s is not pronounceable Ithkuil (%s)", word, strings.Join(reasons, "; "))
+	if err := phonology.CheckText(word); err != nil {
+		return view.Side{}, fmt.Errorf("%s is not pronounceable Ithkuil: %w", word, err)
 	}
 	return view.BuildSide(word, lex)
 }

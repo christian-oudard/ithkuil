@@ -7,7 +7,6 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // Referential renders a §4.6.1 single- or dual-referential to its
@@ -120,7 +119,7 @@ func pickValid(build func(string) string, options ...string) (string, error) {
 	var tried []string
 	for _, o := range options {
 		w := build(o)
-		if validation.ValidateWord(w).Valid {
+		if phonology.Legal(w) {
 			return w, nil
 		}
 		tried = append(tried, w)
@@ -187,7 +186,7 @@ func categoryForm(chain string, cat g.RefCategory) (string, error) {
 			// The category affix has to survive as a cluster on its
 			// own; whether the whole word says is settled later, once
 			// the case vowel is attached.
-			if validation.ValidateCluster(candidate.form).Valid {
+			if phonology.ClusterLegal(candidate.form) {
 				return candidate.form, nil
 			}
 			tried = append(tried, candidate.form)

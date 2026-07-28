@@ -1,9 +1,7 @@
-package validation
+package phonology
 
 import (
 	"testing"
-
-	"github.com/christian-oudard/ithkuil/parse"
 )
 
 func TestValidateStress_Monosyllabic(t *testing.T) {
@@ -11,7 +9,7 @@ func TestValidateStress_Monosyllabic(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if s != parse.Monosyllabic {
+	if s != Monosyllabic {
 		t.Errorf("got %v, want Monosyllabic", s)
 	}
 }
@@ -21,7 +19,7 @@ func TestValidateStress_Penultimate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if s != parse.Penultimate {
+	if s != Penultimate {
 		t.Errorf("got %v, want Penultimate", s)
 	}
 }
@@ -31,7 +29,7 @@ func TestValidateStress_Ultimate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if s != parse.Ultimate {
+	if s != Ultimate {
 		t.Errorf("got %v, want Ultimate", s)
 	}
 }
@@ -43,7 +41,7 @@ func TestValidateStress_Antepenultimate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if s != parse.Antepenultimate {
+	if s != Antepenultimate {
 		t.Errorf("got %v, want Antepenultimate", s)
 	}
 }

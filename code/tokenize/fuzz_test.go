@@ -6,12 +6,11 @@ import (
 	"unicode/utf8"
 
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // FuzzClassifyWord runs ClassifyWord on arbitrary strings and asserts
 // it never panics, never returns a token whose Surface() differs from
-// the input, and accepts only inputs that pass char validation. Seeded
+// the input, and accepts only inputs that parse as phonology. Seeded
 // with a representative corpus across word types.
 func FuzzClassifyWord(f *testing.F) {
 	seeds := []string{
@@ -59,9 +58,9 @@ func FuzzClassifyWord(f *testing.F) {
 
 		// Char-validation is now a hard precondition. Anything with a
 		// non-V4 rune must classify as UnknownWord; anything that
-		// classifies as something else must pass char validation.
+		// classifies as something else must parse as phonology.
 		_, isUnknown := tok.(UnknownWord)
-		charsOK := validation.ValidateChars(in).Valid
+		charsOK := func() bool { err := phonology.CheckText(in); return err == nil }()
 		if !charsOK && !isUnknown {
 			t.Fatalf("ClassifyWord(%q) = %T, want UnknownWord (non-V4 chars)", in, tok)
 		}

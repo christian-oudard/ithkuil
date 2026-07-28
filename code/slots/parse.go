@@ -9,38 +9,40 @@ import (
 	"github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/validation"
 )
 
-// Parse decodes a surface Ithkuil word into a Layout. It runs Layers A
-// (Strip), B (SplitConjuncts), and C (slot-by-slot classification) in
-// one pass, but does no grammar value decoding — see ToGrammar for that.
+// Parse decodes a surface Ithkuil word into a Layout, reading it as
+// phonology first. It is ParseWord composed with phonology.ParseWord,
+// for callers holding raw text; one that has parsed the word already
+// calls ParseWord instead of paying for the pass twice.
+//
+// A §3.1.7 chain is several words joined by a hyphen, so it is not a
+// formative and phonology.ParseWord turns it away.
 func Parse(word string) (Layout, error) {
-	if word == "" {
-		return Layout{}, fmt.Errorf("slots: empty word")
+	w, err := phonology.ParseWord(word)
+	if err != nil {
+		return Layout{}, fmt.Errorf("slots: %w", err)
 	}
-	// Compose and lowercase early so every slot- and shortcut-detection
-	// rule sees one spelling; see phonology.Normalize.
-	word = phonology.Normalize(word)
-	// Reject anything outside the alphabet up front. Downstream code
-	// treats a parsed Layout as well-formed Ithkuil — phonology.ToASCII,
-	// for one, panics on a rune it has no mapping for — so a stray 'ı'
-	// or Latin 'q' has to stop here rather than ride along in a root.
-	if r := validation.ValidateChars(word); !r.Valid {
-		return Layout{}, fmt.Errorf("slots: %s", r.Errors[0].Reason)
-	}
-	// A hyphen joins a §3.1.7 chain of formatives, so it is legal in a
-	// word but never inside one. Without this the hyphen segments as a
-	// consonant conjunct and becomes an affix Cs.
-	if strings.Contains(word, "-") {
-		return Layout{}, fmt.Errorf("slots: %q is a concatenated chain, not one formative", word)
-	}
-	bare, stress := phonology.Strip(word)
+	return ParseWord(w)
+}
+
+// ParseWord assigns a word's conjuncts to slots. It classifies, and
+// nothing else: normalization, the phonotactic rules, the stress
+// reading, and the conjunct split all happened in phonology.ParseWord
+// and arrive here as the Word. No grammar value decoding happens here
+// either — see ToGrammar for that.
+func ParseWord(w phonology.Word) (Layout, error) {
+	word := w.String()
+	stress := w.Stress()
 	if stress == phonology.InvalidStress {
 		return Layout{}, fmt.Errorf("word %q has more than one stress mark", word)
 	}
-	body := stripSentencePrefix(bare)
-	conjs := phonology.MergeGlottalVowels(phonology.SplitConjuncts(body))
+	// A sentence-initial word may carry a prefix that is no part of its
+	// slot structure; the conjuncts are re-split when it is dropped.
+	conjs := w.Conjuncts()
+	if body := stripSentencePrefix(w.Bare()); body != w.Bare() {
+		conjs = phonology.MergeGlottalVowels(phonology.SplitConjuncts(body))
+	}
 	if len(conjs) < 3 {
 		return Layout{}, fmt.Errorf("word %q too short (got %d conjuncts, need at least 3)", word, len(conjs))
 	}

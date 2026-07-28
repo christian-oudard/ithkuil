@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/fullparse"
-	"github.com/christian-oudard/ithkuil/validation"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // TestMalformed_GlottalPatterns asserts that inputs the parser
@@ -34,11 +34,11 @@ func TestMalformed_GlottalPatterns(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.in, func(t *testing.T) {
-			// Either fullparse returns an error, or the phonotactic
-			// validator reports a violation.
+			// Either fullparse returns an error, or the word does not
+			// read as phonology in the first place.
 			_, parseErr := fullparse.Formative(c.in)
-			res := validation.ValidateWord(c.in)
-			if parseErr == nil && res.Valid {
+			phonErr := phonology.CheckText(c.in)
+			if parseErr == nil && phonErr == nil {
 				t.Errorf("%q: expected parse error or phonotactic violation, got both clean", c.in)
 				return
 			}
@@ -46,8 +46,8 @@ func TestMalformed_GlottalPatterns(t *testing.T) {
 			if parseErr != nil {
 				combined += parseErr.Error()
 			}
-			for _, e := range res.Errors {
-				combined += " " + e.Reason
+			if phonErr != nil {
+				combined += " " + phonErr.Error()
 			}
 			if !strings.Contains(combined, c.expectErr) {
 				t.Errorf("%q: failure %q did not mention %q", c.in, combined, c.expectErr)

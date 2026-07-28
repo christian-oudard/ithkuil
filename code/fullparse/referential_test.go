@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/validation"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // The classifier used to accept a referential without checking its
@@ -21,7 +21,7 @@ func TestReferential_ObeysPhonotactics(t *testing.T) {
 		"lça", // the other NOMIC form, same problem
 		"ļla", // AGGLOMERATIVE prefixed as "ļ": "ļl" cannot either
 	} {
-		if validation.ValidateWord(w).Valid {
+		if err := phonology.CheckText(w); err == nil {
 			t.Fatalf("%q is valid after all; this test rests on it not being", w)
 		}
 		if _, err := Referential(w); err == nil {

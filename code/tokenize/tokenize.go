@@ -24,7 +24,6 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // WordToken is the sealed sum type for classified words. Each variant
@@ -207,7 +206,7 @@ func ClassifyWord(word string) WordToken {
 	// name ("hna John"), where capitalization is meaningful.
 	orig := word
 	word = phonology.Normalize(word)
-	if r := validation.ValidateChars(word); !r.Valid {
+	if _, err := phonology.ParseChain(word); err != nil {
 		return UnknownWord{Text: orig}
 	}
 	// §4.8 parsing adjunct: 'V' is a fixed three-character word; check

@@ -1,9 +1,6 @@
-package validation
+package phonology
 
-import (
-	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/phonology"
-)
+import ()
 
 // StressError categorizes ways a stress mark can be wrong.
 type StressError int
@@ -31,8 +28,8 @@ func (e StressError) Error() string {
 
 // ValidateStress decides which Stress a word is marked for, or
 // returns an error if the marking is ill-formed.
-func ValidateStress(word string) (parse.Stress, error) {
-	syllables, stressIdx, accentCount := phonology.StressPosition(word)
+func ValidateStress(word string) (Stress, error) {
+	syllables, stressIdx, accentCount := StressPosition(word)
 
 	if accentCount > 1 {
 		return 0, DoubleMarkedStress
@@ -42,19 +39,19 @@ func ValidateStress(word string) (parse.Stress, error) {
 		if hasAccent {
 			return 0, MarkedDefaultStress
 		}
-		return parse.Monosyllabic, nil
+		return Monosyllabic, nil
 	}
 	if !hasAccent {
-		return parse.Penultimate, nil
+		return Penultimate, nil
 	}
 	fromEnd := syllables - 1 - stressIdx
 	switch fromEnd {
 	case 0:
-		return parse.Ultimate, nil
+		return Ultimate, nil
 	case 1:
 		return 0, MarkedDefaultStress
 	case 2:
-		return parse.Antepenultimate, nil
+		return Antepenultimate, nil
 	}
 	return 0, UnrecognizedPlacement
 }

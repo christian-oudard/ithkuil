@@ -7,8 +7,8 @@ import (
 
 	"github.com/christian-oudard/ithkuil/allomorph"
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/render"
-	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // TestFuzz_FormativeRoundTrip generates pseudo-random Formatives and
@@ -32,9 +32,9 @@ func TestFuzz_FormativeRoundTrip(t *testing.T) {
 		// Anything we emit has to be a word by our own rules. A
 		// round-trip alone can't see this: a surface form both halves
 		// mis-handle the same way still comes back equal.
-		if r := validation.ValidateWord(surface); !r.Valid && !allomorph.UnresolvedCa(surface) {
+		if err := phonology.CheckText(surface); err != nil && !allomorph.UnresolvedCa(surface) {
 			t.Errorf("iter %d: render produced %q, which our own validator rejects: %v\n  formative: %+v",
-				i, surface, r.Errors, f)
+				i, surface, err, f)
 		}
 		parsed, err := Formative(surface)
 		if err != nil {

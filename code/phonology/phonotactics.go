@@ -1,36 +1,14 @@
-// Package validation implements phonotactic constraint checking for
-// Ithkuil V4. The rules follow "Phonotactic Rules for New Ithkuil,
-// v.1.0".
-//
-// Covers the most commonly violated rules from Section 2 (Prohibited
-// Consonantal Conjuncts) plus the triple-consonant check. Full coverage
-// of the cluster-level rules and stress validation can be layered on later.
-package validation
+// Phonotactics: which consonants may sit together and which vowel
+// sequences are pronounceable, following "Phonotactic Rules for New
+// Ithkuil, v.1.0". A word is checked against these on its way through
+// ParseWord; the exported predicates here answer the same questions
+// about a candidate cluster, for the generators that build one.
+package phonology
 
 import (
 	"fmt"
 	"strings"
 )
-
-// Result captures the outcome of a validation check.
-type Result struct {
-	Valid  bool
-	Errors []Error
-}
-
-// Error describes a single phonotactic violation.
-type Error struct {
-	Rule    string // short rule identifier ("2.1", "triple", …)
-	Cluster string // the offending pair or triple
-	Reason  string // human-readable explanation
-}
-
-func (e Error) String() string {
-	if e.Cluster == "" {
-		return e.Rule + ": " + e.Reason
-	}
-	return e.Rule + ": " + e.Reason + " (cluster " + e.Cluster + ")"
-}
 
 // CheckProhibitedPair returns a non-empty rule string and reason if
 // the rune pair (a, b) violates one of the cluster pair rules.
@@ -264,14 +242,25 @@ func HasProhibitedGeminate(s string) bool {
 	return false
 }
 
-// ValidateClusterAt checks a cluster at a known position. It runs the
-// pair checks plus length, triple-consonant, prohibited-geminate, and
-// position-specific rules.
-func ValidateClusterAt(p Position, cluster string) Result {
+// ClusterLegalAt reports whether a consonant cluster may stand at p.
+// A generator building a candidate cluster has no word to parse yet,
+// so this is the honest shape for it: the answer is the whole result.
+func ClusterLegalAt(p Position, cluster string) bool {
+	return len(ClusterViolationsAt(p, cluster)) == 0
+}
+
+// ClusterLegal reports whether every adjacent pair in s is permitted,
+// without regard to where in a word s would sit.
+func ClusterLegal(s string) bool { return len(ClusterViolations(s)) == 0 }
+
+// ClusterViolationsAt lists what a cluster at a known position breaks.
+// It runs the pair checks plus length, triple-consonant,
+// prohibited-geminate, and position-specific rules.
+func ClusterViolationsAt(p Position, cluster string) []Violation {
 	if cluster == "" {
-		return Result{Valid: true}
+		return nil
 	}
-	var errs []Error
+	var errs []Violation
 
 	// Length cap.
 	n := 0
@@ -279,7 +268,7 @@ func ValidateClusterAt(p Position, cluster string) Result {
 		n++
 	}
 	if max := MaxClusterLength(p); n > max {
-		errs = append(errs, Error{
+		errs = append(errs, Violation{
 			Rule:    "length",
 			Cluster: cluster,
 			Reason:  fmt.Sprintf("%s cluster exceeds %d runes (got %d)", p, max, n),
@@ -288,19 +277,16 @@ func ValidateClusterAt(p Position, cluster string) Result {
 
 	// Triple consonant.
 	if HasTripleConsonant(cluster) {
-		errs = append(errs, Error{Rule: "1.7", Cluster: cluster, Reason: "triple consonant"})
+		errs = append(errs, Violation{Rule: "1.7", Cluster: cluster, Reason: "triple consonant"})
 	}
 
 	// Prohibited geminates.
 	if HasProhibitedGeminate(cluster) {
-		errs = append(errs, Error{Rule: "1.7", Cluster: cluster, Reason: "prohibited geminate"})
+		errs = append(errs, Violation{Rule: "1.7", Cluster: cluster, Reason: "prohibited geminate"})
 	}
 
 	// Pair rules.
-	pairs := ValidateCluster(cluster)
-	if !pairs.Valid {
-		errs = append(errs, pairs.Errors...)
-	}
+	errs = append(errs, ClusterViolations(cluster)...)
 
 	// 3-consonant rules (windowed).
 	runes := []rune(cluster)
@@ -313,7 +299,7 @@ func ValidateClusterAt(p Position, cluster string) Result {
 		// under this rule as well. The spec lists both.
 		if isNasal(a) && isStop(b) && isSibilant(c) &&
 			(areHomologous(a, b) || (a == 'n' && (b == 'k' || b == 'g'))) {
-			errs = append(errs, Error{
+			errs = append(errs, Violation{
 				Rule:    "2.13",
 				Cluster: string([]rune{a, b, c}),
 				Reason:  "nasal + homologous stop + sibilant",
@@ -322,7 +308,7 @@ func ValidateClusterAt(p Position, cluster string) Result {
 		// 2.15: nf or nv followed by any consonant is prohibited —
 		// these clusters must be followed by a vowel.
 		if a == 'n' && (b == 'f' || b == 'v') && !isVowel(c) {
-			errs = append(errs, Error{
+			errs = append(errs, Violation{
 				Rule:    "2.15",
 				Cluster: string([]rune{a, b, c}),
 				Reason:  "nf/nv must be followed by vowel",
@@ -334,7 +320,7 @@ func ValidateClusterAt(p Position, cluster string) Result {
 		if a == 'm' {
 			if (b == 'p' && (c == 'f' || c == 'ţ')) ||
 				(b == 'b' && (c == 'v' || c == 'ḑ' || c == 'd')) {
-				errs = append(errs, Error{
+				errs = append(errs, Violation{
 					Rule:    "2.12",
 					Cluster: string([]rune{a, b, c}),
 					Reason:  "m + bilabial stop + indistinct follower",
@@ -344,7 +330,7 @@ func ValidateClusterAt(p Position, cluster string) Result {
 		// 2.12: ngḑ specifically called out alongside the m-cluster
 		// list; *nkţ* is explicitly permitted.
 		if a == 'n' && b == 'g' && c == 'ḑ' {
-			errs = append(errs, Error{Rule: "2.12", Cluster: "ngḑ", Reason: "ngḑ prohibited (vs. nkţ allowed)"})
+			errs = append(errs, Violation{Rule: "2.12", Cluster: "ngḑ", Reason: "ngḑ prohibited (vs. nkţ allowed)"})
 		}
 	}
 
@@ -352,7 +338,7 @@ func ValidateClusterAt(p Position, cluster string) Result {
 	switch p {
 	case Initial:
 		// §3.1 and §3.2 are an inventory of what may open a word, and
-		// ValidWordInitial already holds it. Consult it here so the
+		// WordInitialLegal already holds it. Consult it here so the
 		// two do not drift: without this, *pz, *kļ and *pm passed
 		// general validation while the elision guard rejected them.
 		//
@@ -365,7 +351,7 @@ func ValidateClusterAt(p Position, cluster string) Result {
 		// and §6.5 state exactly which conjuncts hold, so there is no
 		// approximation to be careful about.
 		if n := runeLen(cluster); n == 1 || n == 2 || hasGeminate(cluster) {
-			if !ValidWordInitial(cluster) {
+			if !WordInitialLegal(cluster) {
 				rule := "3.2"
 				switch {
 				case n == 1:
@@ -373,7 +359,7 @@ func ValidateClusterAt(p Position, cluster string) Result {
 				case hasGeminate(cluster):
 					rule = "6.2"
 				}
-				errs = append(errs, Error{
+				errs = append(errs, Violation{
 					Rule:    rule,
 					Cluster: cluster,
 					Reason:  "not permissible word-initially",
@@ -381,28 +367,25 @@ func ValidateClusterAt(p Position, cluster string) Result {
 			}
 		}
 		if runeLen(cluster) > 1 && firstRune(cluster) == '\'' {
-			errs = append(errs, Error{Rule: "1.5", Cluster: cluster, Reason: "glottal stop word-initial within cluster"})
+			errs = append(errs, Violation{Rule: "1.5", Cluster: cluster, Reason: "glottal stop word-initial within cluster"})
 		}
 	case Medial:
 		// 5.1: single intervocalic -ļ- is not permitted (collides
 		// with the allophonically-identical -hl-).
 		if cluster == "ļ" {
-			errs = append(errs, Error{Rule: "5.1", Cluster: cluster, Reason: "ļ alone not allowed intervocalically"})
+			errs = append(errs, Violation{Rule: "5.1", Cluster: cluster, Reason: "ļ alone not allowed intervocalically"})
 		}
 	case Final:
 		last := lastRune(cluster)
 		if last == 'w' || last == 'y' {
-			errs = append(errs, Error{Rule: "4.1", Cluster: cluster, Reason: string(last) + " word-finally"})
+			errs = append(errs, Violation{Rule: "4.1", Cluster: cluster, Reason: string(last) + " word-finally"})
 		}
 		if last == '\'' && runeLen(cluster) > 1 {
-			errs = append(errs, Error{Rule: "4.1", Cluster: cluster, Reason: "glottal stop word-finally"})
+			errs = append(errs, Violation{Rule: "4.1", Cluster: cluster, Reason: "glottal stop word-finally"})
 		}
 	}
 
-	if len(errs) == 0 {
-		return Result{Valid: true}
-	}
-	return Result{Valid: false, Errors: errs}
+	return errs
 }
 
 func runeLen(s string) int {
@@ -462,38 +445,38 @@ var validDisyllabicConjuncts = map[string]bool{
 // Single vowels are always valid; two-vowel sequences must be a
 // permissible diphthong or a valid disyllabic conjunct; longer
 // sequences are flagged.
-func ValidateVowelSequence(seq string) Result {
+func VowelSequenceViolations(seq string) []Violation {
 	n := runeLen(seq)
 	switch n {
 	case 0, 1:
-		return Result{Valid: true}
+		return nil
 	case 2:
 		if permissibleDiphthongs[seq] || validDisyllabicConjuncts[seq] {
-			return Result{Valid: true}
+			return nil
 		}
-		return Result{Valid: false, Errors: []Error{
+		return []Violation{
 			{Rule: "1.2", Cluster: seq, Reason: "not a permissible diphthong or disyllabic conjunct"},
-		}}
+		}
 	default:
 		// Three-vowel sequences may appear as glottalized cases (e.g.
 		// "a'a" with the apostrophe stripped to "aa"), but apostrophe
 		// glottalization isn't normalized here. Treat 3+ as invalid.
-		return Result{Valid: false, Errors: []Error{
+		return []Violation{
 			{Rule: "1.2", Cluster: seq, Reason: "vowel sequence too long"},
-		}}
+		}
 	}
 }
 
 // ValidateCluster checks every adjacent rune pair in s. A non-Valid
 // Result lists every violation found (not just the first).
-func ValidateCluster(s string) Result {
-	var errs []Error
+func ClusterViolations(s string) []Violation {
+	var errs []Violation
 	prev := rune(0)
 	first := true
 	for _, r := range s {
 		if !first {
 			if rule, reason := CheckProhibitedPair(prev, r); rule != "" {
-				errs = append(errs, Error{
+				errs = append(errs, Violation{
 					Rule:    rule,
 					Cluster: string([]rune{prev, r}),
 					Reason:  reason,
@@ -503,10 +486,7 @@ func ValidateCluster(s string) Result {
 		first = false
 		prev = r
 	}
-	if len(errs) == 0 {
-		return Result{Valid: true}
-	}
-	return Result{Valid: false, Errors: errs}
+	return errs
 }
 
 // HasTripleConsonant reports whether s contains three identical
@@ -641,7 +621,7 @@ func isVowel(r rune) bool {
 // sometimes need the predicate. (Kept thin to avoid leaking the rest.)
 func IsVoicedStop(c rune) bool { return isVoicedStop(c) }
 
-// ValidWordInitial reports whether cluster is permissible at the start
+// WordInitialLegal reports whether cluster is permissible at the start
 // of a word, per §3.1 (single consonant) and §3.2 (biconsonantal). It
 // matters because the renderer may elide a leading default Vv, which
 // moves the root cluster into word-initial position where a narrower
@@ -654,7 +634,7 @@ func IsVoicedStop(c rune) bool { return isVoicedStop(c) }
 //
 // §3 opens by exempting geminates ("not including rules for geminated
 // forms — see Sec. 6"), so those go to validInitialGeminate first.
-func ValidWordInitial(cluster string) bool {
+func WordInitialLegal(cluster string) bool {
 	rs := []rune(cluster)
 	if ok, handled := validInitialGeminate(rs); handled {
 		return ok

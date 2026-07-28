@@ -9,7 +9,6 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // ToGrammar converts a Layout into a grammar.Formative — Layer D
@@ -920,7 +919,7 @@ func canElideLeadingVv(l *Layout, f g.Formative) bool {
 	// permit a narrower set of clusters than medial position does.
 	// "amlala" can lose its Vv because m- takes a following liquid;
 	// "ardvilëilḑá" cannot, because word-initial r- takes only -w or -y.
-	if !validation.ValidWordInitial(l.Cr) {
+	if !phonology.WordInitialLegal(l.Cr) {
 		return false
 	}
 	// A root that starts with ç- or cs- can't go word-initial either:
@@ -956,7 +955,7 @@ func validWordFinalAfterVcElision(l *Layout) bool {
 	if r, _ := utf8.DecodeRuneInString(last); phonology.IsVowel(r) {
 		return true
 	}
-	return validation.ValidateClusterAt(validation.Final, last).Valid
+	return phonology.ClusterLegalAt(phonology.Final, last)
 }
 
 func canElideTrailingTHMVc(l *Layout, f g.Formative) bool {

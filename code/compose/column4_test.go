@@ -6,8 +6,8 @@ import (
 	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/gloss"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/render"
-	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // §4.6.5's Column-4 shortcut: a Column-4 vowel from the Standard Vowel
@@ -35,8 +35,8 @@ func TestColumn4_RoundTrip(t *testing.T) {
 			continue
 		}
 		w := render.Formative(f)
-		if r := validation.ValidateWord(w); !r.Valid {
-			t.Errorf("%q renders to %q, which our own validator rejects: %v", in, w, r.Errors)
+		if err := phonology.CheckText(w); err != nil {
+			t.Errorf("%q renders to %q, which our own phonotactics reject: %v", in, w, err)
 		}
 		back, err := fullparse.Formative(w)
 		if err != nil {

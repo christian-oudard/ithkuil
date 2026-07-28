@@ -6,8 +6,8 @@ import (
 	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/gloss"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/render"
-	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // §3.5/§3.7 Ca-stacking: the specialized Vx -üö- marks the following
@@ -40,9 +40,9 @@ func TestCaStack_RoundTrip(t *testing.T) {
 		if got != tc.want {
 			t.Errorf("render(compose(%q)) = %q, want %q", tc.in, got, tc.want)
 		}
-		if r := validation.ValidateWord(got); !r.Valid {
-			t.Errorf("%q renders to %q, which our own validator rejects: %v",
-				tc.in, got, r.Errors)
+		if err := phonology.CheckText(got); err != nil {
+			t.Errorf("%q renders to %q, which our own phonotactics reject: %v",
+				tc.in, got, err)
 		}
 		back, err := fullparse.Formative(got)
 		if err != nil {

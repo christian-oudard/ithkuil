@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/validation"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // allSlotVI enumerates the whole Ca space: 9 configurations x 4
@@ -41,9 +41,9 @@ func TestCa_EveryFormIsPronounceable(t *testing.T) {
 		if UnresolvedCa(ca) {
 			return
 		}
-		if r := validation.ValidateClusterAt(validation.Medial, ca); !r.Valid {
+		if v := phonology.ClusterViolationsAt(phonology.Medial, ca); len(v) > 0 {
 			t.Errorf("Ca %v composes to %q (raw %q): %v",
-				s, ca, ConstructCaRaw(s), r.Errors)
+				s, ca, ConstructCaRaw(s), v)
 		}
 	})
 }
@@ -57,8 +57,8 @@ func TestCa_EveryGeminateIsPronounceable(t *testing.T) {
 		if UnresolvedCa(gem) {
 			return
 		}
-		if r := validation.ValidateClusterAt(validation.Medial, gem); !r.Valid {
-			t.Errorf("Ca %v geminates %q to %q: %v", s, ca, gem, r.Errors)
+		if v := phonology.ClusterViolationsAt(phonology.Medial, gem); len(v) > 0 {
+			t.Errorf("Ca %v geminates %q to %q: %v", s, ca, gem, v)
 		}
 	})
 }

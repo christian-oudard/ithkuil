@@ -1,4 +1,4 @@
-package validation
+package phonology
 
 import "testing"
 
@@ -67,12 +67,12 @@ func TestCheckProhibitedPair_Allowed(t *testing.T) {
 }
 
 func TestValidateCluster(t *testing.T) {
-	r := ValidateCluster("ml")
-	if !r.Valid {
-		t.Errorf("ml should be valid, got %v", r.Errors)
+	r := ClusterViolations("ml")
+	if len(r) > 0 {
+		t.Errorf("ml should be valid, got %v", r)
 	}
-	r = ValidateCluster("kx")
-	if r.Valid {
+	r = ClusterViolations("kx")
+	if len(r) == 0 {
 		t.Error("kx should fail rule 2.3")
 	}
 }
@@ -241,15 +241,15 @@ func TestHasProhibitedGeminate(t *testing.T) {
 
 func TestValidateClusterAt_Length(t *testing.T) {
 	// Initial cluster max 4.
-	r := ValidateClusterAt(Initial, "mlnrs")
-	if r.Valid {
+	r := ClusterViolationsAt(Initial, "mlnrs")
+	if len(r) == 0 {
 		t.Error("5-rune initial cluster should fail length check")
 	}
 	// Medial cluster of 5 is OK.
-	r = ValidateClusterAt(Medial, "mlnrs")
+	r = ClusterViolationsAt(Medial, "mlnrs")
 	// (May still flag pair errors but length isn't the problem.)
 	var lengthErr bool
-	for _, e := range r.Errors {
+	for _, e := range r {
 		if e.Rule == "length" {
 			lengthErr = true
 		}
@@ -262,29 +262,29 @@ func TestValidateClusterAt_Length(t *testing.T) {
 func TestValidateClusterAt_Rule212_Triples(t *testing.T) {
 	// §2.12 triples — m + bilabial stop + indistinct follower.
 	for _, c := range []string{"mpf", "mpţ", "mbv", "mbḑ", "mbd"} {
-		r := ValidateClusterAt(Medial, c)
-		if r.Valid {
+		r := ClusterViolationsAt(Medial, c)
+		if len(r) == 0 {
 			t.Errorf("expected %q to fail rule 2.12", c)
 			continue
 		}
 		found := false
-		for _, e := range r.Errors {
+		for _, e := range r {
 			if e.Rule == "2.12" {
 				found = true
 				break
 			}
 		}
 		if !found {
-			t.Errorf("expected %q to flag rule 2.12, got %v", c, r.Errors)
+			t.Errorf("expected %q to flag rule 2.12, got %v", c, r)
 		}
 	}
 	// "ngḑ" specifically prohibited; "nkţ" allowed.
-	if r := ValidateClusterAt(Medial, "ngḑ"); r.Valid {
+	if r := ClusterViolationsAt(Medial, "ngḑ"); len(r) == 0 {
 		t.Error("ngḑ should fail rule 2.12")
 	}
 	// nkţ is fine — but our existing pair checks may complain about
 	// other things, so test only that 2.12 doesn't fire.
-	for _, e := range ValidateClusterAt(Medial, "nkţ").Errors {
+	for _, e := range ClusterViolationsAt(Medial, "nkţ") {
 		if e.Rule == "2.12" {
 			t.Errorf("nkţ should not trigger 2.12: %v", e)
 		}
@@ -310,12 +310,12 @@ func TestCheckProhibitedPair_Rule219(t *testing.T) {
 
 func TestValidateClusterAt_Rule51_IntervocalicLam(t *testing.T) {
 	// §5.1: bare intervocalic -ļ- prohibited.
-	r := ValidateClusterAt(Medial, "ļ")
-	if r.Valid {
+	r := ClusterViolationsAt(Medial, "ļ")
+	if len(r) == 0 {
 		t.Error("intervocalic ļ alone should fail rule 5.1")
 	}
 	// Same letter in cluster is fine if not alone.
-	for _, e := range ValidateClusterAt(Medial, "pļ").Errors {
+	for _, e := range ClusterViolationsAt(Medial, "pļ") {
 		if e.Rule == "5.1" {
 			t.Errorf("pļ should not trigger 5.1: %v", e)
 		}
@@ -324,13 +324,13 @@ func TestValidateClusterAt_Rule51_IntervocalicLam(t *testing.T) {
 
 func TestValidateClusterAt_Final(t *testing.T) {
 	// w word-final → rule 4.1.
-	r := ValidateClusterAt(Final, "aw")
-	if r.Valid {
+	r := ClusterViolationsAt(Final, "aw")
+	if len(r) == 0 {
 		t.Error("final w should fail rule 4.1")
 	}
 	// l word-final is fine.
-	r = ValidateClusterAt(Final, "ml")
-	for _, e := range r.Errors {
+	r = ClusterViolationsAt(Final, "ml")
+	for _, e := range r {
 		if e.Rule == "4.1" {
 			t.Errorf("final ml should not trigger 4.1, got %v", e)
 		}
@@ -367,41 +367,41 @@ func TestCheckProhibitedPair_Rule214(t *testing.T) {
 
 func TestValidateClusterAt_Rule213(t *testing.T) {
 	// Nasal + homologous stop + sibilant.
-	r := ValidateClusterAt(Medial, "mps")
-	if r.Valid {
+	r := ClusterViolationsAt(Medial, "mps")
+	if len(r) == 0 {
 		t.Error("expected 2.13 error for mps")
 	}
 	var hit bool
-	for _, e := range r.Errors {
+	for _, e := range r {
 		if e.Rule == "2.13" {
 			hit = true
 		}
 	}
 	if !hit {
-		t.Errorf("expected rule 2.13 in errors, got %v", r.Errors)
+		t.Errorf("expected rule 2.13 in errors, got %v", r)
 	}
 }
 
 func TestValidateClusterAt_Rule215(t *testing.T) {
 	// nf/nv must be followed by a vowel; nfp is invalid.
-	r := ValidateClusterAt(Medial, "nfp")
-	if r.Valid {
+	r := ClusterViolationsAt(Medial, "nfp")
+	if len(r) == 0 {
 		t.Error("expected 2.15 error for nfp")
 	}
 	var hit bool
-	for _, e := range r.Errors {
+	for _, e := range r {
 		if e.Rule == "2.15" {
 			hit = true
 		}
 	}
 	if !hit {
-		t.Errorf("expected rule 2.15 in errors, got %v", r.Errors)
+		t.Errorf("expected rule 2.15 in errors, got %v", r)
 	}
 }
 
 func TestValidateClusterAt_Initial_LoneL(t *testing.T) {
-	r := ValidateClusterAt(Initial, "ļ")
-	if r.Valid {
+	r := ClusterViolationsAt(Initial, "ļ")
+	if len(r) == 0 {
 		t.Error("lone ļ initial should fail rule 3.1")
 	}
 }
@@ -423,20 +423,20 @@ func TestValidateVowelSequence(t *testing.T) {
 		{"abc", false}, // too long
 	}
 	for _, c := range cases {
-		r := ValidateVowelSequence(c.in)
-		if r.Valid != c.valid {
-			t.Errorf("ValidateVowelSequence(%q).Valid = %v, want %v (%v)",
-				c.in, r.Valid, c.valid, r.Errors)
+		r := VowelSequenceViolations(c.in)
+		if (len(r) == 0) != c.valid {
+			t.Errorf("VowelSequenceViolations(%q).Valid = %v, want %v (%v)",
+				c.in, len(r) == 0, c.valid, r)
 		}
 	}
 }
 
 func TestError_String(t *testing.T) {
-	e := Error{Rule: "1.2", Cluster: "xy", Reason: "test reason"}
+	e := Violation{Rule: "1.2", Cluster: "xy", Reason: "test reason"}
 	if got := e.String(); got != "1.2: test reason (cluster xy)" {
 		t.Errorf("Error.String() = %q, want with cluster", got)
 	}
-	e = Error{Rule: "1.2", Reason: "test reason"}
+	e = Violation{Rule: "1.2", Reason: "test reason"}
 	if got := e.String(); got != "1.2: test reason" {
 		t.Errorf("Error.String() = %q, want without cluster", got)
 	}
@@ -504,34 +504,34 @@ func TestVoicedOf_AllPairs(t *testing.T) {
 
 func TestValidateClusterAt_InitialGlottal(t *testing.T) {
 	// 1.5: glottal stop word-initial within a multi-rune cluster.
-	r := ValidateClusterAt(Initial, "'l")
-	if r.Valid {
-		t.Error("ValidateClusterAt(initial, 'l): expected invalid")
+	r := ClusterViolationsAt(Initial, "'l")
+	if len(r) == 0 {
+		t.Error("ClusterViolationsAt(initial, 'l): expected invalid")
 	}
 }
 
 func TestValidateClusterAt_MTripleIndistinct(t *testing.T) {
 	for _, c := range []string{"mpf", "mpţ", "mbv", "mbḑ", "mbd"} {
-		r := ValidateClusterAt(Medial, c)
-		if r.Valid {
-			t.Errorf("ValidateClusterAt(medial, %q): expected invalid", c)
+		r := ClusterViolationsAt(Medial, c)
+		if len(r) == 0 {
+			t.Errorf("ClusterViolationsAt(medial, %q): expected invalid", c)
 		}
 	}
 }
 
 func TestValidateClusterAt_MedialProhibitedCluster(t *testing.T) {
-	r := ValidateClusterAt(Medial, "ngḑ")
-	if r.Valid {
-		t.Error("ValidateClusterAt(medial, ngḑ): expected invalid")
+	r := ClusterViolationsAt(Medial, "ngḑ")
+	if len(r) == 0 {
+		t.Error("ClusterViolationsAt(medial, ngḑ): expected invalid")
 	}
 }
 
 func TestValidateClusterAt_FinalGlottalAndYW(t *testing.T) {
-	if ValidateClusterAt(Final, "ly").Valid {
-		t.Error("ValidateClusterAt(final, ly): expected invalid")
+	if len(ClusterViolationsAt(Final, "ly")) == 0 {
+		t.Error("ClusterViolationsAt(final, ly): expected invalid")
 	}
-	if ValidateClusterAt(Final, "l'").Valid {
-		t.Error("ValidateClusterAt(final, l'): expected invalid")
+	if len(ClusterViolationsAt(Final, "l'")) == 0 {
+		t.Error("ClusterViolationsAt(final, l'): expected invalid")
 	}
 }
 
@@ -573,17 +573,17 @@ func TestCheckProhibitedPair_RemainingRules(t *testing.T) {
 }
 
 func TestValidateClusterAt_ProhibitedGeminate(t *testing.T) {
-	r := ValidateClusterAt(Medial, "''")
-	if r.Valid {
-		t.Error("ValidateClusterAt(medial, ''): expected invalid")
+	r := ClusterViolationsAt(Medial, "''")
+	if len(r) == 0 {
+		t.Error("ClusterViolationsAt(medial, ''): expected invalid")
 	}
 }
 
-// TestValidWordInitial checks the §3.1/§3.2 word-initial inventory
+// TestWordInitialLegal checks the §3.1/§3.2 word-initial inventory
 // against the clusters the spec itself names, in both directions. The
 // renderer consults this before eliding a leading default Vv, which is
 // what moves a root cluster into word-initial position.
-func TestValidWordInitial(t *testing.T) {
+func TestWordInitialLegal(t *testing.T) {
 	// Drawn from the example lists in §3.2 and its sub-rules.
 	legal := []string{
 		"m", "k", "h",
@@ -612,13 +612,13 @@ func TestValidWordInitial(t *testing.T) {
 		"kţgy", // §3.4: the tri-prefix "kţg" is itself illegal
 	}
 	for _, c := range legal {
-		if !ValidWordInitial(c) {
-			t.Errorf("ValidWordInitial(%q) = false, want true", c)
+		if !WordInitialLegal(c) {
+			t.Errorf("WordInitialLegal(%q) = false, want true", c)
 		}
 	}
 	for _, c := range illegal {
-		if ValidWordInitial(c) {
-			t.Errorf("ValidWordInitial(%q) = true, want false", c)
+		if WordInitialLegal(c) {
+			t.Errorf("WordInitialLegal(%q) = true, want false", c)
 		}
 	}
 }

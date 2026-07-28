@@ -1,4 +1,4 @@
-package validation
+package phonology
 
 import "testing"
 
@@ -351,12 +351,12 @@ var section34 = []clusterCase{
 func runClusterCases(t *testing.T, cases []clusterCase) {
 	t.Helper()
 	for _, c := range cases {
-		r := ValidateClusterAt(c.pos, c.cluster)
-		if c.legal && !r.Valid {
+		r := ClusterViolationsAt(c.pos, c.cluster)
+		if c.legal && len(r) > 0 {
 			t.Errorf("§%s: %q should be legal %v, rejected: %v",
-				c.section, c.cluster, c.pos, r.Errors)
+				c.section, c.cluster, c.pos, r)
 		}
-		if !c.legal && r.Valid {
+		if !c.legal && len(r) == 0 {
 			t.Errorf("§%s: %q should be rejected %v, but validates",
 				c.section, c.cluster, c.pos)
 		}

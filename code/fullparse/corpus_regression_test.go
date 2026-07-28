@@ -7,8 +7,8 @@ import (
 	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/render"
-	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // Words in this file come from the community Discord archive (see
@@ -299,8 +299,8 @@ func TestCorpus_NoWordFinalApproximant(t *testing.T) {
 			continue
 		}
 		out := render.Formative(f)
-		if r := validation.ValidateWord(out); !r.Valid {
-			t.Errorf("%s renders to %q, which our own validator rejects: %v", w, out, r.Errors)
+		if err := phonology.CheckText(out); err != nil {
+			t.Errorf("%s renders to %q, which our own phonotactics reject: %v", w, out, err)
 		}
 	}
 }

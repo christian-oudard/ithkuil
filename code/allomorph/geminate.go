@@ -1,6 +1,6 @@
 package allomorph
 
-import "github.com/christian-oudard/ithkuil/validation"
+import "github.com/christian-oudard/ithkuil/phonology"
 
 // GeminateCa applies the §3.6.1 gemination rules to a Ca cluster.
 // Gemination is required whenever Slot V has any affixes; it marks
@@ -30,7 +30,7 @@ func GeminateCa(cluster string) string {
 	if len(rs) > 1 && isLiquid(rs[0]) {
 		inner := geminateCore(string(rs[1:]))
 		candidate := string(rs[0]) + inner
-		if inner != string(rs[1:]) && validation.ValidateClusterAt(validation.Medial, candidate).Valid {
+		if inner != string(rs[1:]) && phonology.ClusterLegalAt(phonology.Medial, candidate) {
 			return candidate
 		}
 		return string(rs[0]) + string(rs[0]) + string(rs[1:])

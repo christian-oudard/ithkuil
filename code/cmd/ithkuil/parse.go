@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -11,7 +12,6 @@ import (
 	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/slots"
 	"github.com/christian-oudard/ithkuil/tokenize"
-	"github.com/christian-oudard/ithkuil/validation"
 	"github.com/christian-oudard/ithkuil/view"
 )
 
@@ -117,8 +117,9 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 	exit := 0
 	if *short {
 		for _, t := range tokens {
-			if res := validation.ValidateWord(t.Surface()); !res.Valid {
-				renderValidationError(stderr, t.Surface(), asTyped[t.Surface()], res)
+			var ill phonology.Illegal
+			if errors.As(phonology.CheckText(t.Surface()), &ill) {
+				renderValidationError(stderr, t.Surface(), asTyped[t.Surface()], ill)
 				exit = 1
 				continue
 			}
@@ -141,8 +142,9 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 		if i > 0 {
 			fmt.Fprintln(stdout)
 		}
-		if res := validation.ValidateWord(t.Surface()); !res.Valid {
-			renderValidationError(stderr, t.Surface(), asTyped[t.Surface()], res)
+		var ill phonology.Illegal
+		if errors.As(phonology.CheckText(t.Surface()), &ill) {
+			renderValidationError(stderr, t.Surface(), asTyped[t.Surface()], ill)
 			exit = 1
 			continue
 		}
@@ -159,15 +161,15 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 // rewrote it — "aaaa" into "ää" — both are shown, so the message names
 // their input and shows what we read it as instead of silently
 // substituting a word they never typed.
-func renderValidationError(w io.Writer, word, typed string, res validation.Result) {
+func renderValidationError(w io.Writer, word, typed string, ill phonology.Illegal) {
 	subject := word
 	if typed != "" && typed != word {
 		subject = fmt.Sprintf("%s → %s", typed, word)
 	}
-	for _, e := range res.Errors {
-		fmt.Fprintf(w, "%s  %s: %s", subject, e.Rule, e.Reason)
-		if e.Cluster != "" {
-			fmt.Fprintf(w, " (cluster %s)", e.Cluster)
+	for _, v := range ill.Violations {
+		fmt.Fprintf(w, "%s  %s: %s", subject, v.Rule, v.Reason)
+		if v.Cluster != "" {
+			fmt.Fprintf(w, " (cluster %s)", v.Cluster)
 		}
 		fmt.Fprintln(w)
 	}

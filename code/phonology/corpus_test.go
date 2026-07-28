@@ -1,10 +1,10 @@
-package validation_test
+package phonology_test
 
 import (
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/corpus"
-	"github.com/christian-oudard/ithkuil/validation"
+	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // Every word in the official example set was written by Quijada, so
@@ -23,8 +23,8 @@ func TestCorpus_EveryWordValidates(t *testing.T) {
 		t.Fatalf("corpus.Words() = %d words, expected the full corpus", len(words))
 	}
 	for _, w := range words {
-		if r := validation.ValidateWord(w); !r.Valid {
-			t.Errorf("%s rejected: %v", w, r.Errors)
+		if err := phonology.CheckText(w); err != nil {
+			t.Errorf("%s rejected: %v", w, err)
 		}
 	}
 }

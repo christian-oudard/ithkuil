@@ -18,19 +18,17 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // errNotReferential says the surface does not have the shape, which is
 // the ordinary outcome when the classifier is trying parsers in turn.
 var errNotReferential = errors.New("not a referential")
 
-// phonotactic reports the first phonotactic violation in word, if any.
+// phonotactic reads word as phonology, reporting what it breaks. The
+// referential decoders run it because a word the phonotactics reject
+// is not a referential either, whatever shape it has.
 func phonotactic(word string) error {
-	if r := validation.ValidateWord(word); !r.Valid {
-		return errors.New(r.Errors[0].Rule + ": " + r.Errors[0].Reason)
-	}
-	return nil
+	return phonology.CheckText(word)
 }
 
 // Referential decodes a §4.6.1 single- or dual-referential:

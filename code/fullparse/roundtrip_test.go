@@ -6,8 +6,8 @@ import (
 
 	"github.com/christian-oudard/ithkuil/allomorph"
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/render"
-	"github.com/christian-oudard/ithkuil/validation"
 )
 
 // assertRoundTrip renders f, parses the result, and asserts that the
@@ -15,9 +15,9 @@ import (
 func assertRoundTrip(t *testing.T, name string, f g.Formative) {
 	t.Helper()
 	surface := render.Formative(f)
-	if r := validation.ValidateWord(surface); !r.Valid && !allomorph.UnresolvedCa(surface) {
+	if err := phonology.CheckText(surface); err != nil && !allomorph.UnresolvedCa(surface) {
 		t.Errorf("%s: render produced %q, which our own validator rejects: %v",
-			name, surface, r.Errors)
+			name, surface, err)
 	}
 	parsed, err := Formative(surface)
 	if err != nil {
