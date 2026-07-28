@@ -93,11 +93,31 @@ Then, from the repo root:
 go run ./tools/discord_archive/fidelity ~/.local/share/ithkuil/discord/extracted/v4_words.txt
 ```
 
-`fidelity` is the audit. For each word it asks whether the round trip
-is lossless (parse, render, parse again must land on the same gloss),
-whether what we emit is a legal word at all, and whether our canonical
-spelling matches what a human wrote. Only the first is a defect; the
-last is a style difference, because the renderer canonicalizes.
+`fidelity` is the audit, and it asks two separate questions.
+
+Coverage: what fraction of the corpus do we understand at all? That
+goes through `tokenize.ClassifyWord`, the same entry point the CLI and
+the MCP server use, so a referential or a bias adjunct counts as
+understood. Asking `fullparse.Formative` directly instead, as this
+tool used to, scored every non-formative word as a parse failure: 372
+of them, over half of an apparent 696-word gap. A referential is not a
+broken formative.
+
+Fidelity: of the words that are formatives, is the round trip lossless
+(parse, render, parse again must land on the same gloss), is what we
+emit a legal word at all, and does our canonical spelling match what a
+human wrote? The first two are defects. The last is a style
+difference, because the renderer canonicalizes and the grammar permits
+several spellings of one word.
+
+Only formatives get the fidelity checks, because they are the only
+token kind with a renderer.
+
+What stays unclassified is printed as a triage list, grouped by the
+formative parse error that best describes the shape. Those errors are
+a diagnostic, not a claim that the word was meant to be a formative;
+the formative decoder simply gets furthest into a word of any of the
+classifiers.
 
 `words.py` has unit tests, because a tokenizer bug reads as an
 implementation bug: junk tokens land in the audit as parse failures
