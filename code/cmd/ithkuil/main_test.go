@@ -205,6 +205,110 @@ func TestParse_Stdin(t *testing.T) {
 	}
 }
 
+// ---- compare ----
+
+func TestCompare_OneSlotApart(t *testing.T) {
+	// marçat and marcat differ only in Ca configuration. Every other
+	// slot must come out unmarked, and the differences table must
+	// name just the one category that moved.
+	out, _, code := runCLI("-data", dataFile(), "compare", "marc,at", "marcat")
+	if code != 0 {
+		t.Fatalf("compare exit %d", code)
+	}
+	for _, want := range []string{
+		"marçat", "marcat", "DIFFERENCES",
+		"configuration", "MDF", "DSS",
+	} {
+		if !strings.Contains(out, want) {
+			t.Errorf("compare output missing %q; got %q", want, out)
+		}
+	}
+	if n := strings.Count(out, "≠"); n != 1 {
+		t.Errorf("expected exactly one marked row, got %d; output %q", n, out)
+	}
+	if strings.Contains(out, "affiliation") {
+		t.Errorf("unchanged categories should not be listed; got %q", out)
+	}
+	for _, l := range strings.Split(out, "\n") {
+		if l != strings.TrimRight(l, " ") {
+			t.Errorf("trailing whitespace on line %q", l)
+		}
+	}
+}
+
+func TestCompare_Identical(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "compare", "marcat", "marcat")
+	if code != 0 {
+		t.Fatalf("compare exit %d", code)
+	}
+	if !strings.Contains(out, "identical") {
+		t.Errorf("expected 'identical'; got %q", out)
+	}
+	if strings.Contains(out, "≠") {
+		t.Errorf("identical words should have no marked rows; got %q", out)
+	}
+}
+
+func TestCompare_DifferentRoots(t *testing.T) {
+	// Different Cr means different lexical entries, which belong in a
+	// ROOT block rather than the code-by-code differences table.
+	out, _, code := runCLI("-data", dataFile(), "compare", "marcat", "narcat")
+	if code != 0 {
+		t.Fatalf("compare exit %d", code)
+	}
+	for _, want := range []string{"ROOT", `"m" / S1 / BSC`, `"n" / S1 / BSC`} {
+		if !strings.Contains(out, want) {
+			t.Errorf("compare output missing %q; got %q", want, out)
+		}
+	}
+}
+
+func TestCompare_UnevenAffixes(t *testing.T) {
+	// malëuţřait carries two affixes to marçat's one, so the extra
+	// Vx₂/Cs₂ pair must get its own rows with the right side blank.
+	out, _, code := runCLI("-data", dataFile(), "compare", "malëuţřait", "marçat")
+	if code != 0 {
+		t.Fatalf("compare exit %d", code)
+	}
+	for _, want := range []string{"Vx₂", "Cs₂", "SYS"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("compare output missing %q; got %q", want, out)
+		}
+	}
+}
+
+func TestCompare_WrongArgCount(t *testing.T) {
+	for _, args := range [][]string{{"compare", "marcat"}, {"compare"}, {"compare", "a", "b", "c"}} {
+		_, errOut, code := runCLI(args...)
+		if code != 2 {
+			t.Errorf("%v: exit %d, want 2", args, code)
+		}
+		if !strings.Contains(errOut, "usage") {
+			t.Errorf("%v: expected usage in stderr; got %q", args, errOut)
+		}
+	}
+}
+
+func TestCompare_InvalidWord(t *testing.T) {
+	_, errOut, code := runCLI("-data", dataFile(), "compare", "tttest", "marcat")
+	if code != 1 {
+		t.Errorf("compare exit %d, want 1", code)
+	}
+	if !strings.Contains(errOut, "tttest") {
+		t.Errorf("expected the bad word in stderr; got %q", errOut)
+	}
+}
+
+func TestCompare_NoSlotBreakdown(t *testing.T) {
+	_, errOut, code := runCLI("-data", dataFile(), "compare", "ho", "ha")
+	if code != 1 {
+		t.Errorf("compare exit %d, want 1", code)
+	}
+	if !strings.Contains(errOut, "no slot breakdown") {
+		t.Errorf("expected refusal in stderr; got %q", errOut)
+	}
+}
+
 // ---- compose ----
 
 func TestCompose_Expression(t *testing.T) {

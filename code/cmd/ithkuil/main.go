@@ -7,6 +7,7 @@
 // Subcommands:
 //
 //	parse TEXT...     Tokenize, parse, and gloss each word.
+//	compare A B       Diff two words slot by slot.
 //	compose EXPR      Build a surface formative from grammar choices.
 //	search [Q]        Look up a term in the grammar and the lexicon.
 //	define WORD...    Look up an English word as Ithkuil lexical cores.
@@ -45,6 +46,8 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return 0
 	case "parse":
 		return cmdParse(rest, stdin, stdout, stderr, dataFile)
+	case "compare":
+		return cmdCompare(rest, stdout, stderr, dataFile)
 	case "compose":
 		return cmdCompose(rest, stdout, stderr, dataFile)
 	case "search":
@@ -65,6 +68,8 @@ Subcommands:
                      word is reported with the rule it breaks, and the
                      exit status is 1.
                        --short / -s        one-line surface/type/gloss
+  compare A B        Lay two words' slot breakdowns side by side and
+                     mark what differs.
   compose EXPR       Build a surface formative from a gloss-style
                      expression. Slots separated by "-"; sub-fields
                      by "/" or "." (for Ca). Affixes before the Ca
