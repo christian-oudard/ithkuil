@@ -300,6 +300,10 @@ func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntr
 	if strings.HasPrefix(tok, caStackPrefix) {
 		return appendCaStack(f, strings.TrimPrefix(tok, caStackPrefix), slotV)
 	}
+	// §3.9.2 case-accessor family: "KIND:CASE".
+	if m := accessorToken.FindStringSubmatch(tok); m != nil {
+		return appendAccessor(f, m[1], m[2], slotV)
+	}
 	// Affix form takes precedence over the generic slash-split path:
 	// "DEV/3" must mean affix DEV degree 3, not flag DEV plus flag 3.
 	if m := affixToken.FindStringSubmatch(tok); m != nil {
@@ -354,6 +358,46 @@ func appendCaStack(f *g.Formative, body string, slotV bool) error {
 	appendToAffixSlot(f, g.Affix{
 		Type:      g.CaStackAffix,
 		Consonant: allomorph.ConstructCa(scratch.SlotVI),
+	}, slotV)
+	return nil
+}
+
+// accessorToken matches "KIND:CASE" — a §3.9.2 case-accessor, inverse
+// case-accessor or case-stacking affix.
+var accessorToken = regexp.MustCompile(`^([A-Z]{3}[0-9]?):([A-Z]{3})$`)
+
+// appendAccessor builds a §3.9.2 affix. The kind chooses which of the
+// fourteen Cs increments to write, and the case decides which half of
+// the 68 it falls in and therefore which of the kind's two increments
+// applies; the Vx then carries the case within that half.
+func appendAccessor(f *g.Formative, kindName, caseName string, slotV bool) error {
+	var kind g.AccessorKind
+	found := false
+	for _, k := range g.AllAccessorKinds {
+		if k.String() == kindName {
+			kind, found = k, true
+			break
+		}
+	}
+	if !found {
+		return fmt.Errorf("unknown case-accessor kind %q", kindName)
+	}
+	c, ok := parseCaseName(caseName)
+	if !ok {
+		return fmt.Errorf("unknown case %q", caseName)
+	}
+	series, degree, high, ok := g.AccessorVx(c)
+	if !ok {
+		return fmt.Errorf("case %s has no case-accessor encoding", caseName)
+	}
+	atype, ok := g.SeriesAffixType(series)
+	if !ok {
+		return fmt.Errorf("case %s maps to vowel series %d", caseName, series)
+	}
+	appendToAffixSlot(f, g.Affix{
+		Type:      atype,
+		Degree:    degree,
+		Consonant: g.AccessorCs(kind, high),
 	}, slotV)
 	return nil
 }

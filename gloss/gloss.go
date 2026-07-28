@@ -401,6 +401,17 @@ func (gl *Glosser) affix(a g.Affix) string {
 	if a.IsCaStack() {
 		return caStackPrefix + stackedCaBody(a.Consonant)
 	}
+	// §3.9.2 case-accessor, inverse case-accessor or case-stacking
+	// affix. The Cs increment names the kind and which half of the 68
+	// cases it reaches; the Vx series and degree name the case within
+	// that half. Written "KIND:CASE".
+	if kind, high, ok := g.ParseAccessorCs(a.Consonant); ok {
+		if series, sok := g.VxSeries(a.Type); sok {
+			if c, cok := g.AccessorCase(series, a.Degree, high); cok {
+				return fmt.Sprintf("%s:%s", kind, c)
+			}
+		}
+	}
 	// §4.6.5 Column-4 shortcut: a referential in a Transrelative case.
 	// Written "(refs)/CASE" against the Type-3 form's "(refs)/degree";
 	// a case is three uppercase letters and a degree is one digit, so

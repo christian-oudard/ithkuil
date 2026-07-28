@@ -152,13 +152,13 @@ func TestMorphologyCorpus_Sec5_7_CaseStacking(t *testing.T) {
 			"A", "hrelu-azcoijhailloelya",
 			"Ksolaolwau",
 		},
-		// Ksolaolwau and hrelu-azcoijhailloelya are still unreadable.
-		// Both lost diacritics along with the rest of this block (the
-		// clown root is -kš-, not -ks-), but unlike the §5.8 words we
-		// can't recover the original spelling from the intralinear
-		// analysis alone, so they stay on the list until someone
-		// checks them against the source PDF.
-		unknown: []string{"Hre", "Ksolaolwau", "hrelu-azcoijhailloelya"},
+		// Ksolaolwau and hrelu-azcoijhailloelya now read, and they are
+		// the section's own subject matter: both carry §3.9.2
+		// case-stacking affixes on the -lw- increment. They were
+		// unreadable while that family was unimplemented, which the
+		// missing diacritics in this block (the clown root is -kš-,
+		// not -ks-) had disguised as an extraction problem.
+		unknown: []string{"Hre"},
 	})
 }
 

@@ -21,19 +21,9 @@ var corpusUnclassified = []string{
 	"espanya",
 
 	// Concatenation chains that tryConcatenation rejects.
-	"hakšilaölwie-addyabzëuttuo",
 	"hakšilaölwie-addyëubzattuo",
 	"hlaçköé-yeřdö'e",
 	"hlurmiô-igulotruxröxḑuökfái",
-	"hrelu-azčojhaillöelyá",
-
-	// §3.9.2 case-accessor and case-stacking affixes, which we do not
-	// implement. Each holds a Column-4 vowel on one of the eight
-	// reserved Cs increments — "lw" here. §4.6.5's Column-4
-	// Transrelative-case shortcut takes the same vowels but only on a
-	// referential Cs, which is why "itriloalö" no longer sits here.
-	"kšölaölwáu",
-	"yamţröalwa'o",
 
 	// Unexplained.
 	"zëmse",   // §9.1, a three-referent referential

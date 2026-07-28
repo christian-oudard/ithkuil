@@ -76,11 +76,11 @@ func TestToGrammar_RejectsNonVxVowel(t *testing.T) {
 	}
 }
 
-// A Column-4 vowel is §4.6.5's Transrelative-case shortcut only on a
-// referential Cs. On any other Cs it is a §3.9.2 case-accessor, which
-// we do not implement; rejecting it beats glossing "lw" as a referent
-// it is not. §4.6.5 bars referential affixes from the -w and -y
-// increments for exactly this reason, so the two never overlap.
+// A Column-4 vowel is §4.6.5's Transrelative-case shortcut on a
+// referential Cs, and a §3.9.2 case-accessor on one of that section's
+// fourteen increments. §4.6.5 bars referential affixes from the -w and
+// -y increments for exactly this reason, so the two never overlap, and
+// a Cs that is neither is an error rather than a guess.
 func TestToGrammar_Column4(t *testing.T) {
 	// "r" is 1m/BEN, so this is a referential in the Thematic case.
 	f, err := ToGrammar(affixLayout("ao", "r"))
@@ -94,9 +94,28 @@ func TestToGrammar_Column4(t *testing.T) {
 		t.Errorf("Column-4 form %d decoded as %v, want THM", f.SlotVII[0].Degree, c)
 	}
 
-	// "lw" is a §3.9.2 case-stacking increment, not a referential.
-	if _, err := ToGrammar(affixLayout("ao", "lw")); err == nil {
-		t.Error("ToGrammar accepted a Column-4 vowel on the accessor Cs \"lw\", want an error")
+	// "lw" is a §3.9.2 case-stacking increment, not a referential, so
+	// the same vowel names a case from the fourth series' group of
+	// nine — cases 28-36 — rather than a Transrelative shortcut.
+	f, err = ToGrammar(affixLayout("ao", "lw"))
+	if err != nil {
+		t.Fatalf("ToGrammar rejected a case-stacking affix: %v", err)
+	}
+	kind, high, ok := g.ParseAccessorCs(f.SlotVII[0].Consonant)
+	if !ok || kind != g.CaseStacking || high {
+		t.Fatalf("Cs %q decoded as (%v, high=%v, ok=%v), want case-stacking low",
+			f.SlotVII[0].Consonant, kind, high, ok)
+	}
+	series, _ := g.VxSeries(f.SlotVII[0].Type)
+	c, ok := g.AccessorCase(series, f.SlotVII[0].Degree, high)
+	if !ok || c != g.AllCases[27] {
+		t.Errorf("series %d degree %d decoded as %v, want case 28",
+			series, f.SlotVII[0].Degree, c)
+	}
+
+	// Neither a referential nor an accessor increment: still an error.
+	if _, err := ToGrammar(affixLayout("ao", "xt")); err == nil {
+		t.Error("ToGrammar accepted a Column-4 vowel on Cs \"xt\", want an error")
 	}
 }
 

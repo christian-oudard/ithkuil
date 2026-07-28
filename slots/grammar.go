@@ -189,14 +189,15 @@ func affixesVxCs(chunks []AffixChunk) ([]g.Affix, error) {
 		// when its Cs is a referential form. §4.6.5 bars a referential
 		// affix from taking the Abstract Perspective increments -w and
 		// -y precisely so that it cannot be confused with a §3.9.2
-		// case-accessor, whose Cs forms all end in one. So a Column-4
-		// vowel on any other Cs is an accessor, which we do not yet
-		// implement — say so rather than mis-glossing it as a
-		// referential.
+		// case-accessor, whose fourteen Cs increments all end in one.
+		// A Column-4 vowel on anything else is therefore an accessor,
+		// which decodes to a case rather than a referent.
 		if t == g.Column4Affix {
-			if _, ok := referentials.DecomposeRefCluster(c.Cs); !ok {
+			_, isRef := referentials.DecomposeRefCluster(c.Cs)
+			_, _, isAccessor := g.ParseAccessorCs(c.Cs)
+			if !isRef && !isAccessor {
 				return nil, fmt.Errorf(
-					"Column-4 affix vowel %q on Cs %q: not a referential form, so this is a §3.9.2 case-accessor or case-stacking affix, which is unimplemented",
+					"Column-4 affix vowel %q on Cs %q: neither a referential form (§4.6.5) nor a case-accessor increment (§3.9.2)",
 					c.Vx, c.Cs)
 			}
 		}

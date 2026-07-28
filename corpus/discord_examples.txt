@@ -120,8 +120,8 @@ correct | amálawëi | §3.2.9 | leading Vv elides here, since m- is a legal wor
 # this way; 351 contain a Column-4 vowel form somewhere.
 correct | vļaveörá | §4.6.5 | Column-4 "eö" on referential Cs "v": AFFECTIVE case.
 correct | ekřadeöříyoa | §4.6.5 | Column-4 "eö" on referential Cs "ř" (1m/DET).
-!correct | yevtleölwaňiyá | §3.9.2 | Column-4 "eö" on "lw", a case-stacking increment: unimplemented.
-!correct | uţtälireölweölá | §3.9.2 | two Column-4 vowels, one of them on the "lw" increment.
+correct | yevtleölwaňiyá | §3.9.2 | Column-4 "eö" on "lw": case-stacking affix.
+correct | uţtälireölweölá | §3.9.2 | two Column-4 vowels, one on the "lw" increment.
 
 # The second-largest group is the same feature seen from the other
 # side. A combination referential whose case vowel carries a glottal,
