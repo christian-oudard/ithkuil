@@ -41,6 +41,16 @@ type Store struct {
 
 // Open opens the SQLite database at path. Call Close when done.
 func Open(path string) (*Store, error) {
+	// The "mode=ro" below is not honoured: a missing file survives
+	// both sql.Open and Ping, and is created empty on the way through.
+	// A mistyped --data therefore left a stray database behind and
+	// reported "no such table: roots" from whichever query ran first,
+	// rather than saying the file was not there. Stat first, so the
+	// error names the real problem and a read-only store stops writing
+	// to disk.
+	if _, err := os.Stat(path); err != nil {
+		return nil, fmt.Errorf("store.Open %s: %w", path, err)
+	}
 	db, err := sql.Open("sqlite", path+"?mode=ro")
 	if err != nil {
 		return nil, fmt.Errorf("store.Open %s: %w", path, err)

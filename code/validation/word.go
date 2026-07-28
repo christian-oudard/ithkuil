@@ -50,12 +50,16 @@ func ValidateChars(word string) Result {
 	for _, r := range bad {
 		parts = append(parts, fmt.Sprintf("%q (U+%04X)", r, r))
 	}
+	// Cluster stays empty. This rule is about the whole word, not a
+	// conjunct in it, and filling the field made reports read
+	// "non-Ithkuil characters: 'q' (U+0071) (cluster akxq)" — calling
+	// the entire word a cluster. The offending runes are named in the
+	// reason already.
 	return Result{
 		Valid: false,
 		Errors: []Error{{
-			Rule:    "chars",
-			Cluster: word,
-			Reason:  "non-Ithkuil characters: " + strings.Join(parts, ", "),
+			Rule:   "chars",
+			Reason: "non-Ithkuil characters: " + strings.Join(parts, ", "),
 		}},
 	}
 }

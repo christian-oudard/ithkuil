@@ -1,11 +1,33 @@
 package store_test
 
 import (
+	"errors"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/store"
 )
+
+// TestOpen_Missing pins two things about a path that is not there.
+// The error must name the missing file, not surface later as "no such
+// table: roots" from the first query. And Open must not create it: the
+// DSN asks for mode=ro, but sqlite made the file anyway, so a mistyped
+// --data left a stray empty database behind.
+func TestOpen_Missing(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "absent.db")
+	s, err := store.Open(path)
+	if err == nil {
+		s.Close()
+		t.Fatal("Open on a missing file succeeded, want error")
+	}
+	if !errors.Is(err, os.ErrNotExist) {
+		t.Errorf("Open error = %v, want it to wrap os.ErrNotExist", err)
+	}
+	if _, err := os.Stat(path); err == nil {
+		t.Error("Open created the database file it was asked to read")
+	}
+}
 
 func TestOpen(t *testing.T) {
 	testDB := store.DefaultPath()
