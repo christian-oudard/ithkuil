@@ -2,7 +2,7 @@ package grammar
 
 // This file holds the canonical English name and a one-line meaning for
 // every grammatical abbreviation used in Ithkuil V4 formatives. Sourced
-// from language_reference/morphology.md.
+// from docs/reference/morphology.md.
 //
 // Used by the compose package (to make grammar searches respond to
 // "ergative", "solicitative", etc.) and by the inspect/analyze layer

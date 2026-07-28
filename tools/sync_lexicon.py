@@ -128,7 +128,7 @@ def parse_affixes(csv_text: str) -> list[dict]:
 # and crepuscular/nocturnal is one. Upstream pairs each description with
 # the previous row's meanings.
 #
-# ENS's nine degrees survive only in language_reference/affixes_reference.md,
+# ENS's nine degrees survive only in docs/reference/affixes_reference.md,
 # which predates the spreadsheet sync, so all three are restored from
 # there verbatim. merge_affixes reports when it overrides, so a sync that
 # stops printing these three has had the shift repaired upstream and the
@@ -173,7 +173,7 @@ SHIFTED_DEGREES = {
 # GPB through GPG carry a C_S, an abbreviation and a description upstream
 # and nine empty degree cells apiece. They are not empty in Quijada: his
 # affix document populates all six, and these are extracted from it by
-# column geometry (see language_reference/issues.md, A5).
+# column geometry (see docs/reference/issues.md, A5).
 #
 # The extraction was checked against the three groups the sheet does
 # carry. GPJ came back identical in all nine degrees; GPA and GPH differ

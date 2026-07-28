@@ -20,7 +20,7 @@ belong to any of them.
 2. **The Collaborative Ithkuil IV Roots and Affixes Spreadsheet**
    (Google Sheets `1JdaG1PaSQJRE2LpILvdzthbzz1k_a0VT86XSXouwGy8`),
    which `tools/sync_lexicon.py` mirrors. *Fetched live and checked.*
-3. **`language_reference/*.md`** — our markdown transcriptions of layer 1.
+3. **`docs/reference/*.md`** — our markdown transcriptions of layer 1.
 4. **`data/data.json`, `data/*.tsv`** — layer 2 plus local supplements.
 
 The reference documents carry the source and only the source,
@@ -229,7 +229,7 @@ fuller wording is wanted throughout.
 ### A6. XCL is absent from the community spreadsheet
 
 XCL (`çx`, External Standard for Comparison for Use with Levels) has a
-full entry in `language_reference/affixes_reference.md` and no row in
+full entry in `docs/reference/affixes_reference.md` and no row in
 the Collaborative Ithkuil IV Roots and Affixes Spreadsheet — *checked
 live: the sheet has 527 rows, no XCL, and no affix at all with C_S
 `çx`.* Commit 214744e restored it by hand, and `tools/sync_lexicon.py`
@@ -403,7 +403,7 @@ The Extension alternate is conditioned on UPX and the RPV Perspective
 alternate on a preceding t/k/p — exactly the binding that composing all
 3840 Ca values showed to be the only bijection. The source is correct.
 
-`language_reference/morphology.md` dropped the superscripts and rendered
+`docs/reference/morphology.md` dropped the superscripts and rendered
 the two footnotes as free-standing sentences in page order, which reads
 as though the Extension rule owns the t/k/p condition. The transcription has been fixed: `morphology.md` now carries the
 footnote markers. See G33 for what the corrected table then shows.
@@ -1243,7 +1243,7 @@ self-evidently short — a count in the text against a count in the
 table is the cheapest check there is, and it was available without
 consulting the source at all.
 
-**Fixed** in `language_reference/morphology.md`, which now lists the
+**Fixed** in `docs/reference/morphology.md`, which now lists the
 fourteen increments as a flat table plus a separate series-to-case-group
 table, rather than reproducing the merged-cell layout that caused this.
 

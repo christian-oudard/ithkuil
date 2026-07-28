@@ -109,13 +109,20 @@ Everything under `tools/` is non-Go tooling. Go tools stay with the code they be
 - `tools/test.sh` - Go test suite with a cross-package coverage summary. `COVERAGE_THRESHOLD=NN` fails below a floor; `SHOW_UNCOVERED=1` lists functions under 100%.
 - `tools/discord_archive/` - Scrapers for the community Discord. Output goes to `$XDG_DATA_HOME/ithkuil/discord/`; see its `paths.py`.
 
-## Language Reference
+## Documents
 
-- `language_reference/morphology.md` - Canonical V4 grammar reference (phonology, morphology, slots, cases, adjuncts, syntax, numbers)
-- `language_reference/affixes_reference.md` - All 528 affixes with gradient types and 9 degrees
-- `language_reference/phonotactics.md` - Detailed consonant cluster rules
-- `language_reference/issues.md` - Defects in the published sources, not in this code.
-- `language_reference/source_versions.md` - Quijada's published version history for the three documents. The documents themselves carry only the current version.
+All prose lives under `docs/`, and no Go package does. `docs/reference/`
+holds the language reference below; `docs/dictionary/` holds one file per
+natural language (`english.md` so far) mapping that language into
+Ithkuil, authored rather than derived — see the "English index" section
+of SPEC.md, and the head of `english.md` for what earns an entry.
+`README.md`, `SPEC.md`, and this file stay at the root by convention.
+
+- `docs/reference/morphology.md` - Canonical V4 grammar reference (phonology, morphology, slots, cases, adjuncts, syntax, numbers)
+- `docs/reference/affixes_reference.md` - All 528 affixes with gradient types and 9 degrees
+- `docs/reference/phonotactics.md` - Detailed consonant cluster rules
+- `docs/reference/issues.md` - Defects in the published sources, not in this code.
+- `docs/reference/source_versions.md` - Quijada's published version history for the three documents. The documents themselves carry only the current version.
 - Source PDFs and any intermediate extraction output (html, per-page pdf) go outside the repo, under `$XDG_DATA_HOME/ithkuil/reference/`.
 
 `morphology.md` and `phonotactics.md` are transcriptions of Quijada's
@@ -138,4 +145,4 @@ the code they concern, each carrying the section it rests on and why the obvious
 fix is wrong; `go test ./... -v | grep SKIP` is the list. Words we cannot read
 live in the drift guards (`tokenize/corpus_test.go`,
 `corpus/discord_examples.txt`), which fail when the set changes in either
-direction. Defects in the published sources go in `language_reference/issues.md`.
+direction. Defects in the published sources go in `docs/reference/issues.md`.
