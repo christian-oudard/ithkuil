@@ -1858,74 +1858,36 @@ The ten specialized names listed immediately above utilize stems from the follow
 
 ---
 
-## 8.0 THE NUMBER SYSTEM
+## 8.0 MATHEMATICAL CONCEPTS
 
-### 8.1 Features of a Centesimal Number System
+*Transcribed from §6.4 of Lexicon for New Ithkuil, v1.0 (Feb. 9, 2023).
+The chapter number is ours; the source numbers this §6.4 within the
+lexicon document.*
 
-New Ithkuil uses a centesimal (base one hundred) system of enumeration, as opposed to decimal (base ten). The numbers from zero to 100 are considered autonomous units represented by single stems. Beginning with 101, numbers are referred to by the number of hundreds plus the number of units.
+### 8.1 The Basic Number Roots
 
-Thus the number 3254, which in a decimal system is 3 thousands + 2 hundreds + 5 tens + 4 ones, in a centesimal system becomes 32 hundreds + 54 ones, and would be only two "digits" when written.
-
-After 100, separate unit numbers are assigned to:
-- 100^2 = 10,000 (ten-thousand)
-- 100^4 = 100,000,000 (hundred-million)
-- 100^8 = 10,000,000,000,000,000 (ten-quadrillion)
-
-After ten-quadrillion, numbers are referred to as multiples of lower sets.
-
-### 8.2 Semantic Designations for Numerical Stems
-
-The roots for numbers 1 to 99 are based on roots for 1 through 10, to which the nine degrees of the **TNX** affix (-rs) are added:
-
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 100 | 100^2 | 100^4 | 100^8 |
+| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 100 | 100² | 100⁴ | 100⁸ |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| -VR- | -LL- | -KS- | -Z- | -PŠ- | -ST- | -CP- | -NS- | -ČK- | -LẒ- | -J- | -GZ- | -PC- | -KẒ- | -ČG- |
+| -**VR**- | -**LL**- | -**KS**- | -**Z**- | -**PŠ**- | -**ST**- | -**CP**- | -**NS**- | -**ČK**- | -**LẒ**- | -**J**- | -**GZ**- | -**PC**- | -**KẒ**- | -**ČG**- |
 
-Additional roots for non-decimal number bases up to base-16:
+The following six number roots are used when needed to designate numbers beyond ten when needed for counting and mathematical operations involving non-decimal number bases up to base-16. They may also be used as "short-cut" substitutes for the standard decimal/centesimal forms using the **TNX** affix.
 
 | 11 | 12 | 13 | 14 | 15 |
 |---|---|---|---|---|
-| -CG- | -JD- | -ĻJ- | -BC- | -ŢẒ- |
+| -**CG**- | -**JD**- | -**ĻJ**- | -**BC**- | -**ŢẒ**- |
 
-**TNX affix** (-rs): Used with roots 0-9 to create numbers 11-99:
+Whole numbers are full formatives signifying a set containing the particular number of members. The "simple" everyday counting system is base-100 (the mathematical sub-language will utilize base-12). Beginning with 'two', the Stem & Specification pattern is illustrated by the root -**Z**- 'three'.
 
-| Degree | Meaning |
+Numbers from 11 through 99 are formed utilizing the **TNX** affix. Beginning with the number 101, numbers are formed as in Ithkuil-2011 using the COMITATIVE case and the **COO** affix. Having no multiples, the roots for 'ZERO' and 'ONE' have a different Stem & Specification pattern.
+
+### 8.2 Other Mathematical Roots
+
+| Root | Meaning |
 |---|---|
-| 1 | X plus 10 |
-| 2 | X plus 20 |
-| 3 | X plus 30 |
-| 4 | X plus 40 |
-| 5 | X plus 50 |
-| 6 | X plus 60 |
-| 7 | X plus 70 |
-| 8 | X plus 80 |
-| 9 | X plus 90 |
-
-Whole numbers are full formatives signifying a set containing the particular number of members. Each root has 4 Specifications across 3 Stems:
-
-- **BSC**: (to be) a set/group of N entities
-- **CTE**: (to be) a party/entity of whom/which there are N
-- **CSV**: (to be) a process which determines/identifies a set as being N in number
-- **OBJ**: (to be) one in a group/sequence of N
-
-### 8.3 Spoken Numbers
-
-Spoken numbers are formed using the PARTITIVE and COMITATIVE cases, plus the coordinative affix -**V**ň/1 (= -**i**ň):
-
-- The number of largest base units is in the PARTITIVE
-- Smaller base units connect with the COMITATIVE case, again in PARTITIVE
-- Single units (1-99) connect with the coordinative affix when part of hundreds or higher
-
-When pronouncing numbers greater than 199, it is normal to omit the word *gzalui* (the PARTITIVE of *gzal* "one hundred") as long as this does not cause ambiguity.
-
-**Examples:**
-
-*ksalirsa (gzalui) walẓärs* = "42 (of hundreds) 29" = **4,229**
-
-*cpalärsa wapcui wansorsë'i (gzalui) cpalörs* = "26 of ten-thousands with 97 (of hundreds) 66" = **269,766**
-
-*wallärsa gzalui wapcui* = "21 of hundred of ten-thousands" = **21,000,000** (Note: *gzalui* is required here)
-
-*ksalorsa gzalui walẓorsiň wakẓui za'lëi gzalui zalëirsiň wapcui pša'lersëi vralörs* = "72 of hundreds and 79 of hundred-millions with 3 of hundreds and 53 of ten-thousands with 3460" = **727,903,533,460**
-
-For dates and times of day using the SPT affix with number roots, see Sec. 6.0.
+| -**TF**- | ADDITION / SUBTRACTION |
+| -**ẒV**- | MULTIPLICATION / DIVISION |
+| -**NT**- | COUNTING / TALLYING / SEQUENTIAL ENUMERATION |
+| -**NTH**- | NUMBER / INTEGER / RATIONAL NUMBER |
+| -**RNT**- | REAL NUMBER / IRRATIONAL NUMBER / IMAGINARY NUMBER |
+| -**NTHW**- | VARIABLE / COEFFICIENT / CONSTANT |
+| -**ŇZX**- | ABSTRACT OBJECT / ABSTRACT STRUCTURE / ABSTRACT OPERATION |

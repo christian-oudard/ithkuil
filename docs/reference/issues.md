@@ -14,8 +14,8 @@ belong to any of them.
 1. **Quijada's V4 design documents.** *Obtained and checked.*
    `New_Ithkuil_design_doc_v_1_3.pdf` from ithkuil.net is Grammar
    Design v1.3.2 (Feb 15 2023), the version our markdown transcribes.
-   `ithkuil.place/4/archive/latest/` supplies the affix, phonotactics
-   and script documents. Local copies live in
+   `ithkuil.place/4/archive/latest/` supplies the affix, phonotactics,
+   lexicon and script documents — five in all. Local copies live in
    `$XDG_DATA_HOME/ithkuil/reference/`, outside the repo.
 2. **The Collaborative Ithkuil IV Roots and Affixes Spreadsheet**
    (Google Sheets `1JdaG1PaSQJRE2LpILvdzthbzz1k_a0VT86XSXouwGy8`),
@@ -35,28 +35,24 @@ in the transcription.
 |---|---|---|
 | `morphology.md` §§1-7 | New Ithkuil: Grammar Design, v1.3.2 (Feb. 15, 2023), 67 pp. | transcription |
 | `morphology.md` §3.5.0.1-2 | V_XC_S Affixes for New Ithkuil v1.1, merged in | transcription under our own section numbers |
-| `morphology.md` §8 | Chapter 13 of the *2011* grammar, `ithkuil.net/newithkuil_13_numbers.htm` | condensed, in our words |
+| `morphology.md` §8 | §6.4 of Lexicon for New Ithkuil, v1.0 (Feb. 9, 2023) | transcription under our own chapter number |
 | `phonotactics.md` | Phonotactic Rules for the Ithkuil Successor Language, v0.5.4, 24 pp. | transcription |
 | `affixes_reference.md` | `data/data.json`, reconciled against V_XC_S Affixes for New Ithkuil v1.1 | generated content |
 | `source_versions.md` | the version histories of the above | transcription |
 
-One chapter of `morphology.md` has no layer-1 source at all.
+Every chapter of `morphology.md` now has a layer-1 source. §8 did not
+until the lexicon document was obtained: the grammar document ends at
+Chapter 7 and says nothing about numbers, so §8 had been condensed from
+Chapter 13 of the 2011 grammar. Quijada does cover numbers, in §6.4 of
+the lexicon, and §8 is now a transcription of that. Only the chapter
+number is ours.
 
-**§8, the number system.** No V4 document covers numbers: the grammar
-document ends at Chapter 7, and none of the four so much as mentions
-the centesimal system. §8 is condensed from Chapter 13 of the 2011
-grammar and renumbered 13 to 8; the chapter number and the subsection
-numbers are both ours. Its twenty number roots all match the V4
-lexicon exactly, which is the evidence that the system carries over
-unchanged. Nothing else in it is corroborated by a V4 source.
-
-A finding drawn from the wording of that chapter is a finding about
-our own prose. G19 is the cautionary case.
-
-The writing system is not covered here at all. It is a separate
-document of Quijada's, not a chapter of the grammar, and belongs with
-the script work rather than with the grammar; the material is on the
-`writing` branch, bound for its own repository.
+The change is not cosmetic. The 2011 material carried spoken-number
+rules, worked examples and a Stem/Specification summary that the V4
+document does not repeat — it says only that numbers from 101 "are
+formed as in Ithkuil-2011 using the COMITATIVE case and the COO affix",
+and refers the construction back there. `numbers` still implements it
+and now cites ch. 13 for the parts that only ch. 13 states.
 
 **Audited:** every table in `morphology.md` §3 has now been checked
 against the PDF — the 68 cases positionally and against the vowel-form
@@ -812,46 +808,19 @@ blocked; but nothing says whether a slot boundary interrupts
 adjacency. Since the 33 collisions include such common affixes as NEG,
 DCD, SWR, COO and SEX, which reading holds decides a great many words.
 
-### G19. MOSTLY WITHDRAWN — three of the four claims were ours
+### G19. WITHDRAWN — §8 now transcribes Quijada, not the 2011 grammar
 
-*Re-read against the source.* §8 is not a V4 document at all: Quijada's
-grammar ends at Chapter 7 and says nothing about numbers. The chapter
-is our condensation of Chapter 13 of the 2011 grammar,
-`ithkuil.net/newithkuil_13_numbers.htm`. Three of the four
-disagreements this entry reported were introduced by that
-condensation, not found in the source.
+Every claim in this entry was about our condensation of Chapter 13 of
+the 2011 grammar, which stood in for §8 while no V4 source for numbers
+was known. §6.4 of the lexicon document is that source, and §8 is now a
+transcription of it. Nothing the entry reported survives the
+replacement: the "single stems" sentence, the "roots for 1 to 99"
+sentence and the spoken-number rules are all 2011 text that §8 no
+longer carries.
 
-**Withdrawn: the coordinative affix's label.** The entry read our
-"-iň (COO/1)" as COO degree 1 and observed that `-iň` is degree 4. The
-source writes it `-Vň/1 (= -iň)`. The V is a placeholder for the
-degree vowel, so the /1 is the affix *type*, not the degree — the two
-notations cannot both be degrees. The source is consistent, and our
-rewrite created the mismatch by resolving V to i while keeping the /1.
-
-**Withdrawn: the affix appears in no example.** It appears in the
-source's longest example, twice — *walẓorsiň* and *zalëirsiň* in
-727,903,533,460. We dropped that example when condensing to four, and
-the entry then reported the absence as the source's.
-
-**Withdrawn in part: §8.2 against itself.** Our text said the roots for
-1 to 99 are based on "roots for 0 through 10"; the source says "1
-through 10". A narrower disagreement does survive: "1 through 10"
-against the TNX note's "used with the number roots 0 thru 9 to create
-the numbers 11 through 99". Only the affix note's version works, since
-admitting root 10 would generate 20, 30 ... 100 a second way, with the
-last colliding with the dedicated root for 100, `-GZ-`.
-
-**Stands: §8.1 against §8.2.** §8.1 calls the numbers from zero to 100
-"autonomous units represented by single stems", and §8.2 builds
-everything from 11 to 99 as a root plus the TNX affix. 89 of the 101
-are not single stems.
-
-Everything else in §8 checks out. All twenty number roots match the
-lexicon (`vr` zero, `ll` one ... `čg` ten-quadrillion, plus `cg` `jd`
-`ļj` `bc` `ţẓ` for bases 11-15); the powers are right (100² = 10,000,
-100⁴ = 10⁸, 100⁸ = 10¹⁶); TNX's nine degrees are +10 to +90 as stated;
-and the examples' case marking follows the rule, with PARTITIVE `-ui`
-on *gzalui* and *wapcui* and COMITATIVE `-ë'i` on *wansorsë'i*.
+Three of its four claims were already withdrawn as artifacts of the
+condensation. See G39 for the one defect that is in Quijada's own
+number section.
 
 ### G20. The modular adjunct's mandatory Slot 4 has no way to say which category it is
 
@@ -1382,3 +1351,23 @@ asterisk was never a type marker.
 All seven descriptions are now Quijada's, in `morphology.md` §3.5.0.1
 and in `affixes_reference.md`. The section numbers remain ours, since
 the source has none.
+
+### G39. The lexicon promises six extra number roots and prints five
+
+§6.4.1 gives the basic roots for 0 through 10 and the powers of 100,
+then introduces a second set:
+
+> The following **six** number roots are used when needed to designate
+> numbers beyond ten when needed for counting and mathematical
+> operations involving non-decimal number bases up to base-16.
+
+The table beneath it holds five: 11 `-CG-`, 12 `-JD-`, 13 `-ĻJ-`,
+14 `-BC-`, 15 `-ŢẒ-`. Nothing in the lexicon supplies a sixth, and no
+sixth is needed — the stated purpose is bases up to 16, and a base-16
+system needs digits for 0 through 15, which 0-10 plus 11-15 already
+covers. A root for 16 would be the first digit of the *next* place, the
+same role `-GZ-` plays for base-100.
+
+The same sentence with the same off-by-one appears in Chapter 13 of the
+2011 grammar, so the count has been wrong across both versions rather
+than introduced in the V4 rewrite. The word is wrong, not the table.

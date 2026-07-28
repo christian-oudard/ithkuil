@@ -1,5 +1,5 @@
 // Package numbers implements the Ithkuil V4 centesimal (base-100)
-// number system per §8.0 of the reference grammar.
+// number system per §8 of the reference grammar.
 //
 // A number formative is a regular grammar.Formative whose Cr is one of
 // the dedicated number-root clusters. Slot II's (Stem, Version) is
@@ -7,10 +7,13 @@
 // 11-99 carries the TNX affix (-rs) at the tens degree in Slot VII.
 //
 // Compound numbers (≥100) are multi-word phrases that link smaller
-// base units to larger ones via the PARTITIVE case, as described in
-// §8.3. The simplest pattern, illustrated by *ksalirsa gzalui walẓärs*
-// = 4229, is a chain of [count, magnitude-in-PAR] pairs followed by a
-// trailing ones-block (0-99). The richer §8.3 patterns involving
+// base units to larger ones via the PARTITIVE case. §8.1 says only
+// that numbers from 101 "are formed as in Ithkuil-2011 using the
+// COMITATIVE case and the COO affix", so the construction itself is
+// documented in that grammar's ch. 13. The simplest pattern,
+// illustrated by *ksalirsa gzalui walẓärs* = 4229, is a chain of
+// [count, magnitude-in-PAR] pairs followed by a trailing ones-block
+// (0-99). The richer ch. 13 patterns involving
 // COMITATIVE linkers and the COO/1 coordinative affix are not yet
 // produced by the encoder, but the decoder accepts them.
 package numbers
@@ -110,7 +113,7 @@ type Number struct {
 }
 
 // slotIIForNumber maps a (Stem, Version) onto the regular SlotII
-// encoding so the resulting Vv vowel matches §8.2's 8-cell custom
+// encoding so the resulting Vv vowel matches §8.1's 8-cell custom
 // table. The Stem/Version names are reinterpreted by convention when
 // the formative's Cr is a number root.
 //
@@ -313,19 +316,19 @@ func Decode(f g.Formative) (Number, bool) {
 }
 
 // Phrase returns the spoken form of n as a sequence of surface words
-// per §8.3. For 0 ≤ n < 100 the slice has one element. For larger n
+// per ch. 13. For 0 ≤ n < 100 the slice has one element. For larger n
 // the encoding factors n recursively: at each level the largest fitting
 // magnitude p is extracted, the count n/p is itself expressed as a
 // phrase (which may chain multiple magnitudes when its value is ≥100),
 // and any remainder appends as its own phrase.
 //
-// Case assignment per §8.3 (as observed in the spec examples):
+// Case assignment per ch. 13 (as observed in the spec examples):
 //   - magnitude words are always PARTITIVE
 //   - the first count of the phrase is THM
 //   - a final ones-block (no magnitude follows it) is THM
 //   - any other count — one between two magnitudes — is COMITATIVE
 //
-// gzalui-omission (§8.3): a *gzalui* (the PARTITIVE of *gzal* = 100)
+// gzalui-omission (ch. 13): a *gzalui* (the PARTITIVE of *gzal* = 100)
 // that sits between two count words is dropped, since two adjacent
 // counts implicitly multiply by 100. *gzalui* between a count and any
 // other magnitude is kept, because dropping it would change the value
@@ -379,7 +382,7 @@ func Phrase(n int64, stem Stem, ver Version) ([]string, bool) {
 
 // omitRedundantGzalui drops any gz-magnitude term that sits between
 // two count terms. The implicit ×100 between adjacent counts makes
-// the gzalui recoverable by the parser, so per §8.3 it is normally
+// the gzalui recoverable by the parser, so per ch. 13 it is normally
 // omitted in speech.
 func omitRedundantGzalui(terms []phraseTerm) []phraseTerm {
 	out := make([]phraseTerm, 0, len(terms))

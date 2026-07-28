@@ -170,7 +170,7 @@ func TestPhrase_SingleFormative(t *testing.T) {
 
 func TestPhrase_FourThousandPlus(t *testing.T) {
 	// 4229 = 42 × 100 + 29. The gzalui (×100) sits between two counts
-	// and is omitted per §8.3, so the phrase is two words.
+	// and is omitted per Ithkuil-2011's ch. 13, so the phrase is two words.
 	words, ok := Phrase(4229, Cardinal, Concrete)
 	if !ok {
 		t.Fatal("Phrase(4229): ok=false")
