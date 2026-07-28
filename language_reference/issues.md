@@ -320,6 +320,31 @@ The two exceptions both involve the word for 'child', which is C_R
   for stem2/prc, C_R `l`, C_A `s` for DPX, V_C `u` for IND — with no
   shortcut and no default C_A.
 
+### C2. §4.5.2 is a garbled copy of §4.4.7
+
+The two entries carry the same sentence and the same English
+translation, "The parents paid for the child's clown lessons", and
+differ only in the second link of the concatenated chain:
+
+- §4.4.7 *hakšilaölwie-**addyabzëuttuo***, glossed
+  `'student.complementary.interaction'-FEA2-5-MSS-CMM`
+- §4.5.2 *hakšilaölwie-**addyëubzattuo***, glossed
+  `'student.complementary.interaction'-FEA2-5-MSS-TSP`
+
+§4.4.7 parses, and its parse is Quijada's gloss exactly: V_R `a` for
+STA/BSC/EXS, Slot V `bz` + `ëu` for FEA degree 5, the §3.6.1 geminate
+`tt` marking Slot V filled, and V_C `uo` for CMM.
+
+§4.5.2 has the V_R and the Slot V V_X swapped, which puts `ëu` in Slot
+IV. No V_R is `ëu`: Slot IV needs eight values for two Functions by
+four Specifications, so its table uses forms 1-4 and 6-9 of the
+standard sequence and skips form 5 entirely. The gloss disagrees with
+the word on its own terms too, naming TSP where the word ends in `uo`,
+which is CMM. TSP is `uö`.
+
+So the case label moved as well as the two vowels. §4.4.7 is the sound
+copy; §4.5.2 should not be treated as a second attestation of anything.
+
 ## Grammar
 
 ### G1. §2.24 bars çç and ļļ, and the morphology builds both

@@ -20,7 +20,9 @@ var corpusUnclassified = []string{
 	// with no carrier adjunct in front of it to mark it as foreign.
 	"espanya",
 
-	// Concatenation chains that tryConcatenation rejects.
+	// A garbled copy of the §4.4.7 sentence, which does classify. The
+	// dependent's Slot IV V_R and its Slot V V_X are swapped, putting
+	// "ëu" in Slot IV, where no V_R is. Filed as issues.md C2.
 	"hakšilaölwie-addyëubzattuo",
 
 	// Unexplained.
