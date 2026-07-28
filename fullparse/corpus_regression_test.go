@@ -198,11 +198,37 @@ func TestFormat_EveryCase(t *testing.T) {
 
 // TestCorpus_GlottalHeadedCs covers the last group in the audit. We
 // segment these into a Slot VII affix whose Cs begins with a glottal,
-// which §1.5 does not allow: a glottal between a vowel and a consonant
-// is syllable-final, so it belongs to the Vx before it. The renderer
-// then drops it, and the affix reappears in Slot V a degree off.
+// which §3.5 flatly forbids: "No C_S form can contain a glottal-stop
+// or begin with h-." Both halves are violated here, since the Cs we
+// build is "'h". §1.7 Rule 1 says where the glottal really belongs —
+// after a single vowel or diphthong — so it is the Vx in front that
+// carries it. The renderer cannot place it there, drops it, and the
+// affix comes back a degree off in a different slot.
+//
+// Enforcing the §3.5 rule is not the fix on its own. It also rejects
+// five words in TestCorpus_GlottalPlacement above, which round-trip
+// today only because render puts the illegal Cs back exactly where it
+// found it; a faithful round trip through an impossible affix is not
+// evidence of a correct reading. Whatever replaces the affix has to be
+// found first.
+//
+// What the intended reading is remains open. Two candidates were run
+// down and neither closes:
+//
+//   - §3.6.2's end-of-Slot-V glottal sits on the final Slot V Vx,
+//     which is exactly this surface. But the section applies only
+//     where the Ca has been elided, and these words have one. In
+//     uňňsozahé'kšš the trailing "kšš" is even a well-formed §3.6.1
+//     geminate of the affix cluster "kš", which is what a Ca marking
+//     a filled Slot V looks like.
+//   - §3.5.1 is the marker these words would need, a glottal in the
+//     Slot II Vv for two or more Slot V affixes. None of them has one.
+//
+// The corpus evidence is thin and one-sided: the words come from a
+// single author's translation project, so they may share one habit
+// rather than attest a rule.
 func TestCorpus_GlottalHeadedCs(t *testing.T) {
-	t.Skip("known defect: a Cs may not begin with a glottal")
+	t.Skip("known defect: a Cs may not contain a glottal, and the intended reading is undetermined")
 	for _, w := range []string{
 		"anţtaleu'há",
 		"anzvarönţiçřoi'há'kšš",
