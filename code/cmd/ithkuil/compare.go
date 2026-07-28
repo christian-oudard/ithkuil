@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/slots"
 	"github.com/christian-oudard/ithkuil/tokenize"
 	"github.com/christian-oudard/ithkuil/validation"
 	"github.com/christian-oudard/ithkuil/view"
@@ -20,12 +21,16 @@ const diffMark = "≠"
 const indent = "   "
 
 // side is one word's parsed breakdown, in the same three pieces the
-// detailed analyze view uses.
+// detailed analyze view uses. An unclassified word fills in segs from
+// the shape split alone: decoded is false, gloss and head are empty,
+// and note carries the decoder's complaint.
 type side struct {
-	word  string
-	segs  []view.Segment
-	gloss []view.GlossaryEntry
-	head  view.RootHead
+	word    string
+	segs    []view.Segment
+	gloss   []view.GlossaryEntry
+	head    view.RootHead
+	decoded bool
+	note    string
 }
 
 // cmdCompare parses two words and lays their slot breakdowns side by
@@ -59,9 +64,10 @@ func cmdCompare(args []string, stdout, stderr io.Writer, dataFile string) int {
 	return 0
 }
 
-// buildSide validates, tokenizes, and analyzes one word. The word must
-// be a single token with a slot breakdown: formatives and modular
-// adjuncts qualify, referentials and the rest don't.
+// buildSide validates, tokenizes, and analyzes one word. Formatives
+// and modular adjuncts give a full breakdown; an unclassified word
+// gives the shape split, which is what makes a good word comparable to
+// a bad one. Referentials and the rest have no slot structure at all.
 func buildSide(word string, lex *lexicon.Lexicon, stderr io.Writer) (side, bool) {
 	if r := validation.ValidateWord(word); !r.Valid {
 		renderValidationError(stderr, word, r)
@@ -76,25 +82,57 @@ func buildSide(word string, lex *lexicon.Lexicon, stderr io.Writer) (side, bool)
 	case tokenize.FormativeWord:
 		segs := view.Segments(t.Text, t.Formative, lex)
 		return side{
-			word:  strings.ToLower(t.Text),
-			segs:  segs,
-			gloss: view.Glossary(t.Text, t.Formative, segs, lex),
-			head:  view.Headword(t.Formative, lex),
+			word:    strings.ToLower(t.Text),
+			segs:    segs,
+			gloss:   view.Glossary(t.Text, t.Formative, segs, lex),
+			head:    view.Headword(t.Formative, lex),
+			decoded: true,
 		}, true
 	case tokenize.ModularWord:
 		segs := view.SegmentsModular(t.Text, t.Modular, t.MarksMood)
 		return side{
-			word:  strings.ToLower(t.Text),
-			segs:  segs,
-			gloss: view.GlossaryModular(segs),
+			word:    strings.ToLower(t.Text),
+			segs:    segs,
+			gloss:   view.GlossaryModular(segs),
+			decoded: true,
 		}, true
+	case tokenize.UnknownWord:
+		return unknownSide(t.Text, stderr)
 	default:
 		fmt.Fprintf(stderr, "%s: %s has no slot breakdown to compare\n", word, view.Type(tokens[0]))
 		return side{}, false
 	}
 }
 
+// unknownSide builds a side from the shape split of a word no
+// classifier claimed. slots.Parse assigns conjuncts to slots by shape
+// alone, so it still succeeds where ToGrammar rejects a value, and the
+// formative decoder's complaint says which value that was. Only a word
+// whose shape won't split at all is beyond comparing.
+func unknownSide(word string, stderr io.Writer) (side, bool) {
+	layout, err := slots.Parse(word)
+	if err != nil {
+		fmt.Fprintf(stderr, "%s: %v\n", word, err)
+		return side{}, false
+	}
+	note := ""
+	if _, err := slots.ToGrammar(layout); err != nil {
+		note = fmt.Sprintf("as a formative: %v", err)
+	}
+	return side{
+		word: strings.ToLower(word),
+		segs: view.LayoutSegments(layout),
+		note: note,
+	}, true
+}
+
 func renderCompare(w io.Writer, a, b side) {
+	// A shape split lists only the conjuncts that are there, with no
+	// placeholder for a slot the surface elides. Drop the other side's
+	// placeholders too, or every elision reads as a difference.
+	if !a.decoded || !b.decoded {
+		a.segs, b.segs = dropElided(a.segs), dropElided(b.segs)
+	}
 	rows := alignByKey(segKeys(a.segs), segKeys(b.segs))
 	changed := renderSlotTable(w, a, b, rows)
 
@@ -106,6 +144,16 @@ func renderCompare(w io.Writer, a, b side) {
 		renderRootDiff(w, a, b)
 	}
 
+	if notes := notedSides(a, b); len(notes) > 0 {
+		fmt.Fprintln(w)
+		renderNotes(w, notes)
+	}
+
+	// An undecoded word has no glossary, so every code on the other
+	// side would read as a difference. Nothing to say beyond the shape.
+	if !a.decoded || !b.decoded {
+		return
+	}
 	diffs := glossDiffs(a, b)
 	switch {
 	case len(diffs) > 0:
@@ -114,6 +162,33 @@ func renderCompare(w io.Writer, a, b side) {
 	case !changed && !rootChanged:
 		fmt.Fprintln(w)
 		fmt.Fprintln(w, indent+stylize(ansiDim, "identical"))
+	}
+}
+
+// notedSides returns the sides that carry a decoder complaint.
+func notedSides(sides ...side) []side {
+	var out []side
+	for _, s := range sides {
+		if s.note != "" {
+			out = append(out, s)
+		}
+	}
+	return out
+}
+
+// renderNotes prints why a word wouldn't decode, under the shape table
+// that is all we could show for it.
+func renderNotes(w io.Writer, notes []side) {
+	fmt.Fprintln(w, indent+stylize(ansiDim, "UNCLASSIFIED"))
+	wordW := 0
+	for _, s := range notes {
+		wordW = max(wordW, runeWidth(s.word))
+	}
+	for _, s := range notes {
+		fmt.Fprintln(w, line(
+			cell{"", 1, ""},
+			cell{s.word, wordW, ansiBold},
+			cell{s.note, 0, ansiDim}))
 	}
 }
 
@@ -137,10 +212,17 @@ func renderSlotTable(w io.Writer, a, b side, rows [][2]int) bool {
 		cell{a.word, groupW, ansiBold},
 		cell{b.word, 0, ansiBold}))
 
+	// One undecoded word means one side has no codes at all, so the
+	// shape is the only thing the two have in common to diff on.
+	byShape := !a.decoded || !b.decoded
+
 	changed := false
 	for _, r := range rows {
 		sa, sb := segAt(a.segs, r[0]), segAt(b.segs, r[1])
-		differs := r[0] < 0 || r[1] < 0 || sa.Chunk != sb.Chunk || encodes(sa) != encodes(sb)
+		differs := r[0] < 0 || r[1] < 0 || sa.Chunk != sb.Chunk
+		if !byShape {
+			differs = differs || encodes(sa) != encodes(sb)
+		}
 		slot := sa.Slot
 		if slot == "" {
 			slot = sb.Slot
@@ -262,6 +344,16 @@ func line(cells ...cell) string {
 }
 
 func encodes(s view.Segment) string { return strings.Join(s.Encodes, " / ") }
+
+func dropElided(segs []view.Segment) []view.Segment {
+	var out []view.Segment
+	for _, s := range segs {
+		if !s.Elided {
+			out = append(out, s)
+		}
+	}
+	return out
+}
 
 func segKeys(segs []view.Segment) []string {
 	keys := make([]string, len(segs))

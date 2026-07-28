@@ -277,6 +277,62 @@ func TestCompare_UnevenAffixes(t *testing.T) {
 	}
 }
 
+func TestCompare_AgainstUnclassified(t *testing.T) {
+	// mavẓorf is mavẓorff with the §3.6.1 Ca gemination removed, which
+	// re-splits the word: "vẓ" stops being a Slot V affix and is read
+	// as the Ca, where it isn't a legal value. Comparing the two is how
+	// you see that re-split, so a word that fails to decode must still
+	// line up by shape against one that doesn't.
+	out, _, code := runCLI("-data", dataFile(), "compare", "mavẓorff", "mavẓorf")
+	if code != 0 {
+		t.Fatalf("compare exit %d; got %q", code, out)
+	}
+	for _, want := range []string{
+		"Cs₅₁", "Ca", "Vx₁", "Cs₁",
+		"UNCLASSIFIED", `unrecognized Ca "vẓ"`,
+	} {
+		if !strings.Contains(out, want) {
+			t.Errorf("compare output missing %q; got %q", want, out)
+		}
+	}
+	// Cr and Vr split the same way in both words. Shape is all the two
+	// have in common, so only shape may decide what gets marked, and
+	// the decoded side's codes must not mark those rows.
+	for _, line := range strings.Split(out, "\n") {
+		if strings.HasPrefix(line, "≠") && (strings.Contains(line, " Cr ") || strings.Contains(line, " Vr ")) {
+			t.Errorf("shared shape marked as differing: %q", line)
+		}
+	}
+	// An undecoded word has no glossary, so there is no code-by-code
+	// table to print; every category would read as a difference.
+	if strings.Contains(out, "DIFFERENCES") {
+		t.Errorf("glossary diff should be skipped for an undecoded word; got %q", out)
+	}
+}
+
+func TestCompare_UnclassifiedElisions(t *testing.T) {
+	// A shape split has no placeholder rows for elided slots, so the
+	// decoded side's ∅ Vv and Vc must not show up as differences.
+	out, _, code := runCLI("-data", dataFile(), "compare", "mavẓorff", "mavẓorf")
+	if code != 0 {
+		t.Fatalf("compare exit %d", code)
+	}
+	if strings.Contains(out, "∅") {
+		t.Errorf("elided slots should be dropped when diffing by shape; got %q", out)
+	}
+}
+
+func TestCompare_UnsplittableWord(t *testing.T) {
+	// Without even a shape split there is nothing to lay side by side.
+	_, errOut, code := runCLI("-data", dataFile(), "compare", "hlç", "marcat")
+	if code != 1 {
+		t.Errorf("compare exit %d, want 1", code)
+	}
+	if !strings.Contains(errOut, "too short") {
+		t.Errorf("expected the split failure in stderr; got %q", errOut)
+	}
+}
+
 func TestCompare_WrongArgCount(t *testing.T) {
 	for _, args := range [][]string{{"compare", "marcat"}, {"compare"}, {"compare", "a", "b", "c"}} {
 		_, errOut, code := runCLI(args...)
