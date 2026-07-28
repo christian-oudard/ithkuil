@@ -76,35 +76,33 @@ func TestCorpus_WHQuestions(t *testing.T) {
 // means another formative follows, and the romanization joins the two
 // with a hyphen. So a word with no hyphen cannot carry one.
 //
-// These thirteen come from the archive with no hyphen anywhere near
-// them, and we read each as a chain dependent standing on its own.
-// Every one begins with an h-cluster that ParseCc claims: "h" and "hw"
-// are the bare Type-1 and Type-2 markers, and "hl"/"hm"/"hr"/"hn" pair
-// a type with a Slot IV/VI shortcut.
+// These fourteen come from the archive with no hyphen anywhere near
+// them, and each used to read as a chain dependent standing on its
+// own. Every one begins with an h-cluster that ParseCc claims: "h" and
+// "hw" are the bare Type-1 and Type-2 markers, and "hl"/"hm"/"hr"/"hn"
+// pair a type with a Slot IV/VI shortcut.
 //
-// The fix is not simply to reject a lone C_C here. "hnas" is the case
-// that shows why: tokenize.go documents the intent that it read as a
-// Naming carrier, but ParseCarrier rejects it, because a §4.5 carrier
-// adjunct is C_P plus a case vowel and "as" is not one. The formative
-// reading is what isCarrierToken then leans on to scope a following
-// foreign name. Rejecting the lone C_C without settling what these
-// words are instead just moves the wrong answer somewhere else.
+// They are now UnknownWord, which is the honest answer. Some are
+// foreign names in Ithkuil letters ("hoňkoň", "höňkoň" — Hong Kong);
+// some are a dependent someone quoted without its parent, which is
+// discourse about a word rather than a word. What none of them is is a
+// standalone formative, and serialize could not encode one anyway: a
+// lone C_C would make the decoder swallow the next token into a chain
+// that never terminates.
 //
-// serialize refuses to encode them: a lone C_C would make the decoder
-// swallow the next token into a chain that never terminates.
+// The list is the words that exposed the defect; the corpus sweep
+// below is the guard, since a lone C_C is a shape rather than a
+// vocabulary.
 func TestCorpus_LoneConcatMarker(t *testing.T) {
-	t.Skip("known defect: a C_C marker outside a hyphenated chain")
-	for _, w := range []string{
+	words := []string{
 		"höňkoň", "hläxëinļa", "hrabtü", "hliöčmái", "hanļkakceilliu",
 		"haeřalei", "hliamžá", "hmaxanļa", "hwëivholüpsao", "hafçäxeuppëu",
 		"hoňkoň", "hlamëu", "hramëu", "hnas",
-	} {
-		tok := tokenize.ClassifyWord(w)
-		fw, ok := tok.(tokenize.FormativeWord)
-		if !ok {
-			continue
-		}
-		if fw.Formative.Concat != g.ConcatNone {
+	}
+	words = append(words, corpus.Words()...)
+	for _, w := range words {
+		fw, ok := tokenize.ClassifyWord(w).(tokenize.FormativeWord)
+		if ok && fw.Formative.Concat != g.ConcatNone {
 			t.Errorf("ClassifyWord(%s) = lone formative with Concat %v", w, fw.Formative.Concat)
 		}
 	}
