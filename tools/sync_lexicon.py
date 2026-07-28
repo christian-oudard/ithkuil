@@ -128,7 +128,7 @@ def parse_affixes(csv_text: str) -> list[dict]:
 # and crepuscular/nocturnal is one. Upstream pairs each description with
 # the previous row's meanings.
 #
-# ENS's nine degrees survive only in grammar_reference/affixes_reference.md,
+# ENS's nine degrees survive only in language_reference/affixes_reference.md,
 # which predates the spreadsheet sync, so all three are restored from
 # there verbatim. merge_affixes reports when it overrides, so a sync that
 # stops printing these three has had the shift repaired upstream and the

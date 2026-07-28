@@ -663,9 +663,13 @@ the remaining 271 affixes. The three that stay out:
   zero/none to maximum". `r` is the one affix where A1's shape rule
   demonstrably picks the wrong type.
 
-### G17. §3.9.2 requires fourteen C_S increments and publishes eight
+### G17. WITHDRAWN — the PDF publishes all fourteen increments
 
-The prose is explicit about the inventory:
+Our markdown carried eight, not Quijada. See G34. What survives of
+this entry is the observation at the end, that none of the fourteen
+increments collides with an ordinary affix C_S.
+
+The original claim rested on the prose:
 
 > There are two separate C_S increments for each of the seven types of
 > affix (Types-1, -2, and -3 Case-Accessor, Types-1, -2, and -3 Inverse
@@ -673,25 +677,15 @@ The prose is explicit about the inventory:
 > being used for Cases 1 through 36, while the second C_S increment is
 > used for Cases 37 through 68.
 
-Seven types times two increments is fourteen. The table below it
-supplies four pairs — **sw**/**sy**, **čw**/**čy**, **šw**/**šy** and
-**lw**/**ly** — and those eight forms are every occurrence of an
-accessor increment anywhere in the document. Six are missing, and with
-them three of the seven affix types cannot be written at all.
-
-The table is inconsistent with itself as well: its second header row
-names seven columns (Type-1/2/3 Case-Accessor, Type-1/2/3 Inverse
-Case-Accessor, Case-Stacking), while its third header row lays out only
-four `V_X = Series No. | C_S =` column pairs, which is what the data
-rows fill.
+Seven types times two increments is fourteen, and the PDF's table
+supplies all fourteen. Ours supplied eight.
 
 What is published is otherwise sound. The V_X carries the case-group in
 its series and the case within the group in its form — four series by
 nine forms for cases 1-36, by eight for cases 37-68 with vowel-tier 8
-unused, giving exactly 36 and 32. And none of the eight increments
-collides with an ordinary affix: `sw`, `čw`, `šw`, `lw`, `sy`, `čy`,
-`šy` and `ly` are all absent from the 527-affix table, though twenty
-other two-consonant forms ending in -w or -y are taken.
+unused, giving exactly 36 and 32. And none of them collides with an
+ordinary affix: all fourteen are absent from the 527-affix table,
+though twenty other two-consonant forms ending in -w or -y are taken.
 
 ### G18. Every referential consonant is also an ordinary affix C_S
 
@@ -822,7 +816,7 @@ third entry is `hňo`, whose V_C is `o`, ERG. The paradigm calls for
 
 ### G22. §4.2's lead-in was not updated when its table was
 
-The version history for v1.3 records the change:
+The version history for v1.3 (see `CHANGELOG.md`) records the change:
 
 > **Sec. 4.2:** The Slot IV V_R Values for the Specialized C_S-Root now
 > show Degree plus Context, instead of Degree plus Specification, as it
@@ -1128,7 +1122,6 @@ So the footnote has to govern the column, and the marker belongs on all
 five rows. This is the residue of the old G3: the conditions were never
 swapped, but the ¹ is under-applied.
 
-
 ### G34. Our markdown lost three of the seven case-accessor affixes
 
 *A transcription defect, in layer 3 rather than in Quijada.* §3.9.2
@@ -1159,3 +1152,56 @@ consulting the source at all.
 **Fixed** in `language_reference/morphology.md`, which now lists the
 fourteen increments as a flat table plus a separate series-to-case-group
 table, rather than reproducing the merged-cell layout that caused this.
+
+### G35. The documents disagree on whether ç is a fricative or an affricate
+
+The two source documents print the same phoneme in different rows of
+their phonemic inventories.
+
+The grammar document, §1.1, puts it in the fricative row under PALATAL,
+leaving the palatal affricate cell empty:
+
+```
+FRICATIVE   f v      ţ ḑ  s z      š ž    ç      x    h   ļ
+AFFRICATE                 c ẓ      č j
+```
+
+The phonotactics document does the reverse: the palatal fricative cell
+is empty and `ç` sits in the affricate row. This is not a column
+artifact of reading the PDF. In the bounding-box dump the PALATAL
+column spans x 404-430, `ç` sits at x 414 on the affricate row, and
+the fricative row jumps from `ž` at 384 straight to `x` at 447.
+
+The grammar document is right, and the phonotactics document agrees
+with it everywhere except that one cell: its own §2.10 opens "the
+voiceless palatal fricative -ç-", and §3.2 lists `pç`, `tç` and `kç`
+among the stop + *non-sibilant fricative* conjuncts.
+
+### G36. The phonotactics document contradicts itself about ç being a sibilant
+
+Its opening paragraph defines both terms to include `ç`:
+
+- "the term 'sibilant' refers to -s-, -z-, -š-, -ž-, -c-, -ż-, -č-, -j-, and -ç-"
+- "the term 'sibilant fricative' refers to -s-, -z-, -š-, -ž-, and -ç-"
+
+Five later rules take the opposite view, three of them by writing the
+membership out:
+
+| Rule | Text | ç a sibilant? |
+|------|------|---------------|
+| §2.2 | "any sibilant (s, z, š, ž, c, ż, č, j)" | no |
+| §2.10 | "a sibilant fricative (s, z, š, ž)" | no |
+| §2.17 | "any sibilant fricative (s, z, š, ž), -ç-" | no |
+| §3.2 | `pç`, `tç`, `kç` as *non-sibilant* fricatives | no |
+| §3.2.1 | "a word-initial sibilant fricative (s, z, š, ž)" | no |
+| §3.3.4 | "Word-initial sibilant fricatives (s, z, š, ž, ç)" | yes |
+
+§2.2 settles it. It forbids a dental stop before any sibilant, and
+§3.2 lists `tç` as permissible; the two can only both hold if `ç` is
+not a sibilant. §2.10 and §2.17 also become redundant under the
+opening definition, since §2.8 already forbids adjacent distinct
+sibilant fricatives.
+
+So the opening paragraph is wrong in both clauses, and §3.3.4 wrong
+with it. `validation` reads `ç` as neither a sibilant nor a sibilant
+fricative, which the corpus test corroborates.

@@ -1,7 +1,14 @@
 # Ithkuil V4 Affix Reference
 
-Complete reference for all 528 VxCs affixes in New Ithkuil (v1.3.2).
-Each affix has a consonant form (Cs), a gradient type, and 9 degrees of meaning.
+All 528 V_XC_S affixes. Each has a consonant form (C_S), a gradient
+type, and 9 degrees of meaning.
+
+Unlike the other documents here, this is not a transcription of a
+single source. The entries come from the community spreadsheet, kept in
+step with `data/data.json`, and are reconciled against Quijada's affix
+document (version 1.1, Feb. 11, 2023) where the two differ. The
+gradient-type descriptions below are summaries, not Quijada's wording.
+`issues.md` records where the sources disagree.
 
 ## Gradient Types
 
@@ -544,7 +551,7 @@ Each affix has a consonant form (Cs), a gradient type, and 9 degrees of meaning.
 | 4 | X times per age (10⁶ years) |
 | 5 | X times per epoch (10⁷ years) |
 | 6 | X times per era (10⁸ years) |
-| 7 | Eight |
+| 7 | X times per eon [5 x 10⁸ years] |
 | 8 | X times per billion (10⁹) year period |
 | 9 | X times per universe-lifespan |
 
@@ -4085,7 +4092,7 @@ Sec. 5.6.
 
 ### MDI - Modification
 
-- **Cs**: -ḑg-
+- **Cs**: -gḑ-
 - **Type**: D1
 
 | Degree | Meaning |
@@ -6542,7 +6549,7 @@ Sec. 5.6.
 | 1 | (PCT) Punctual |
 | 2 | (ITR) Iterative |
 | 3 | (REP) Repetitive |
-| 4 | (IMT) Intermittent |
+| 4 | (ITM) Intermittent |
 | 5 | (RCT) Recurrent |
 | 6 | (FRE) Frequentative |
 | 7 | (FRG) Fragmentative |
@@ -8179,15 +8186,15 @@ Sec. 5.6.
 
 | Degree | Meaning |
 |--------|---------|
-| 1 |  |
-| 2 |  |
-| 3 |  |
-| 4 |  |
-| 5 |  |
-| 6 |  |
-| 7 |  |
-| 8 |  |
-| 9 |  |
+| 1 | hydroxil, hydroxy-, -ol |
+| 2 | carbonyl, oxo-, -oyl-, -one |
+| 3 | aldehyde, -formyl-, -al |
+| 4 | haloformyl, carbono...oyl-, -oyl halide |
+| 5 | carbonate ester, alkoxycarbonyloxy-, alkyl carbonate |
+| 6 | carboxylate, carboxylato-, -oate |
+| 7 | carboxyl, carboxy-, -oic acid |
+| 8 | carboalcoxy, alkanoyloxy-, alkyl alkanoate |
+| 9 | methoxy, methoxy- |
 
 ### GPC - Functional Group C
 
@@ -8196,15 +8203,15 @@ Sec. 5.6.
 
 | Degree | Meaning |
 |--------|---------|
-| 1 |  |
-| 2 |  |
-| 3 |  |
-| 4 |  |
-| 5 |  |
-| 6 |  |
-| 7 |  |
-| 8 |  |
-| 9 |  |
+| 1 | hydroperoxy-, alkyl hydroperoxide |
+| 2 | peroxy-, alkyl peroxide |
+| 3 | ether, alkoxy-, alkyl ether |
+| 4 | hemiacetal, alkoxy -ol, -al alkyl hemiacetal |
+| 5 | hemiketal, alxoxy -ol, -one alkyl hemiketal |
+| 6 | acetal, dialkoxy-, -al dialkyl acetal |
+| 7 | ketal, dialcoxy-, -one dialkyl ketal |
+| 8 | orthoester, -trialkoxy |
+| 9 | orthocarbonate ester, tetralkoxy-, tetraalkyl orthocarbonate |
 
 ### GPD - Functional Group D
 
@@ -8213,15 +8220,15 @@ Sec. 5.6.
 
 | Degree | Meaning |
 |--------|---------|
-| 1 |  |
-| 2 |  |
-| 3 |  |
-| 4 |  |
-| 5 |  |
-| 6 |  |
-| 7 |  |
-| 8 |  |
-| 9 |  |
+| 1 | methylenedioxy-, -dioxole |
+| 2 | carboxylic anhydride, anhydride |
+| 3 | carboxamide, carboxamido-, carbamoyl-, -amide |
+| 4 | primary amine, amino-, -amine |
+| 5 | secondary amine, amino-, -amine |
+| 6 | tertiary amine, amino-, -amine |
+| 7 | ammonio-, -ammonium |
+| 8 | imide, imido-, -imide |
+| 9 | azide, azido-, alkyl azide |
 
 ### GPE - Functional Group E
 
@@ -8230,15 +8237,15 @@ Sec. 5.6.
 
 | Degree | Meaning |
 |--------|---------|
-| 1 |  |
-| 2 |  |
-| 3 |  |
-| 4 |  |
-| 5 |  |
-| 6 |  |
-| 7 |  |
-| 8 |  |
-| 9 |  |
+| 1 | primary ketimine, imino-, imine |
+| 2 | secondary ketimine, imino-, -imine |
+| 3 | primary aldimine, imino-, imine |
+| 4 | secondary aldimine, imino-, -imine |
+| 5 | azo diimide, azo-, -diazene |
+| 6 | cyanate, cyanato-, alkyl cyanate |
+| 7 | isocyanate, isocyanato-, alkyl isocyanate |
+| 8 | nitrate, nitrooxy-, nitroxy-, alkyl nitrate |
+| 9 | nitrite, nitrosooxy-, alkyl nitrite |
 
 ### GPF - Functional Group F
 
@@ -8247,15 +8254,15 @@ Sec. 5.6.
 
 | Degree | Meaning |
 |--------|---------|
-| 1 |  |
-| 2 |  |
-| 3 |  |
-| 4 |  |
-| 5 |  |
-| 6 |  |
-| 7 |  |
-| 8 |  |
-| 9 |  |
+| 1 | nitrile, cyano-, alkanenitrile, alkyl cyanide |
+| 2 | isonitrile, isocyano-, alkaneisonitrile, alkyl isocyanide |
+| 3 | nitro compound, nitro- |
+| 4 | nitroso compound, nitroso-, nitrosyl- |
+| 5 | oxime |
+| 6 | pyridyl, 4-pyridyl, 3-pyridyl, 2-pyridyl, -pyridine |
+| 7 | carbamate, -carbamoyloxy-, -carbamate |
+| 8 | phosphine, phosphanyl-, -phosphane |
+| 9 | phosphonic acid, phosphono-, -phosphonic acid |
 
 ### GPG - Functional Group G
 
@@ -8264,15 +8271,15 @@ Sec. 5.6.
 
 | Degree | Meaning |
 |--------|---------|
-| 1 |  |
-| 2 |  |
-| 3 |  |
-| 4 |  |
-| 5 |  |
-| 6 |  |
-| 7 |  |
-| 8 |  |
-| 9 |  |
+| 1 | phosphate, phosphonooxy-, O-phospono-, ... phosphate |
+| 2 | phosphodiester, hydroxyphosphoryloxy-, di...hydrogen phosphate |
+| 3 | boronic acid, borono-, ... boronic acid |
+| 4 | boronate, O-alkylboronyl-, ... boronic acid di... ester |
+| 5 | borinic acid, hydroxyborino-, di... borinic acid |
+| 6 | borinate, O-alkoxydialkylboronyl-, di... borinic acid ... ester |
+| 7 | alkyllithium, -lithium |
+| 8 | alkylmagnesium halide, -magnesium halide |
+| 9 | alkylaluminium, -aluminium / -aluminum |
 
 ### GPH - Functional Group H
 

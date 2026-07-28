@@ -115,7 +115,15 @@ Everything under `tools/` is non-Go tooling. Go tools stay with the code they be
 - `language_reference/affixes_reference.md` - All 528 affixes with gradient types and 9 degrees
 - `language_reference/phonotactics.md` - Detailed consonant cluster rules
 - `language_reference/issues.md` - Defects in the published sources, not in this code.
+- `language_reference/CHANGELOG.md` - Quijada's published version history for the three documents. The documents themselves carry only the current version.
 - Source PDFs and any intermediate extraction output (html, per-page pdf) go outside the repo, under `$XDG_DATA_HOME/ithkuil/reference/`.
+
+`morphology.md` and `phonotactics.md` are transcriptions of Quijada's
+PDFs and should stay faithful to them, including where a source is
+wrong; record the defect in `issues.md` rather than silently correcting
+the transcription. `affixes_reference.md` is not a transcription: it
+tracks `data/data.json`, which merges the community spreadsheet with the
+affix document.
 
 The writing system is not implemented on `main`, and its reference material does
 not live here either: `v4_script.md`, `v4_script_pdf.md`, the extracted figures,
