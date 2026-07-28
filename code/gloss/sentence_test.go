@@ -145,11 +145,19 @@ func TestToken_CombinationRef_WithCarrier(t *testing.T) {
 	}
 }
 
+// §4.6.3 lets a suppletive cluster head a referential so it can take
+// the Specification, affixes and stacked case a referential carries.
+// "üohla" uses none of them, so it says exactly what the §4.5 carrier
+// adjunct "hla" says, and the "üo-" in front of it is only there to
+// keep the word from being read as a modular adjunct. It reads back
+// as the plainer word.
 func TestToken_Ref_WithCarrier(t *testing.T) {
 	tok := tokenize.ClassifyWord("üohla")
-	got := (&Glosser{}).Token(tok)
-	if !strings.Contains(got, "CARR[") {
-		t.Errorf("Token(üohla) = %q, want CARR[...]", got)
+	if _, ok := tok.(tokenize.CarrierWord); !ok {
+		t.Fatalf("ClassifyWord(üohla) = %T, want CarrierWord", tok)
+	}
+	if got, want := (&Glosser{Canonical: true}).Token(tok), "[CAR]"; got != want {
+		t.Errorf("Token(üohla) = %q, want %q", got, want)
 	}
 }
 

@@ -173,6 +173,20 @@ type ForeignWord struct {
 func (f ForeignWord) Surface() string { return f.Text }
 func (ForeignWord) word()             {}
 
+// referentialToken wraps a parsed referential, folding away the one
+// shape that has a simpler equivalent. §4.6.3 gives a suppletive
+// cluster the referential's machinery so it can carry a Specification,
+// affixes and a stacked case; a word using none of that says no more
+// than the carrier adjunct of §4.5 does, and the epenthetic vowel in
+// front of it is there to keep the parse unambiguous, not to mean
+// anything. So it reads back as the plainer word.
+func referentialToken(word string, r g.Referential) WordToken {
+	if h, ok := r.Head.(g.SuppletiveHead); ok && r.Second == nil && !r.RpvEssence {
+		return CarrierWord{Text: word, Carrier: g.CarrierAdjunct{Type: h.Type, Case: r.Case}}
+	}
+	return ReferentialWord{Text: word, Referential: r}
+}
+
 // ClassifyWord decides which WordToken variant a single surface word
 // belongs to. The order of attempts is the docstring of the package.
 //
@@ -244,8 +258,8 @@ func ClassifyWord(word string) WordToken {
 	//    first so the modular pattern doesn't snatch it.
 	if len(conjs) >= 2 && conjs[0] == "üo" {
 		if _, isCp := parse.ParseCarrierType(conjs[1]); isCp {
-			if r, ok := tryReferential(word); ok {
-				return r
+			if r, err := fullparse.Referential(word); err == nil {
+				return referentialToken(word, r)
 			}
 		}
 	}
@@ -284,13 +298,13 @@ func ClassifyWord(word string) WordToken {
 	// 5. Single/dual referential per §4.6.1:
 	//    [ë]C1 Vc1 [w/y Vc2 [C2 [ë]]], with ultimate stress signalling
 	//    the RPV essence override.
-	if r, ok := tryReferential(word); ok {
-		return r
+	if r, err := fullparse.Referential(word); err == nil {
+		return referentialToken(word, r)
 	}
 
 	// 5b. Combination referential: [ë] C1 Vc Spec [VxCs...] [Vc2].
-	if c, ok := tryCombinationRef(word); ok {
-		return c
+	if c, err := fullparse.CombinationReferential(word); err == nil {
+		return CombinationRefWord{Text: word, Combination: c}
 	}
 
 	// 6. Formative. A Slot I C_C marker means another formative
@@ -390,238 +404,6 @@ func isCarrierToken(tok WordToken) bool {
 		return false
 	}
 	return false
-}
-
-// parseCombinationSpec decodes a Specification consonant marker
-// (x/xt/xp/xx — §4.6.2) into the typed Specification enum.
-func parseCombinationSpec(c string) (g.Specification, bool) {
-	switch c {
-	case "x":
-		return g.BSC, true
-	case "xt":
-		return g.CTE, true
-	case "xp":
-		return g.CSV, true
-	case "xx":
-		return g.OBJ, true
-	}
-	return 0, false
-}
-
-// hasDoubledLetter reports whether s contains two consecutive identical
-// runes. Used to detect geminated Ca clusters — a signal that an
-// ambiguous word is a formative (with §3.6.1 gemination marking Slot V
-// boundary) rather than a combination referential (whose post-spec
-// affix Cs values never contain doubled letters).
-func hasDoubledLetter(s string) bool {
-	var prev rune
-	for i, r := range s {
-		if i > 0 && r == prev {
-			return true
-		}
-		prev = r
-	}
-	return false
-}
-
-// tryReferential matches the Single/Dual Referential shape (§4.6.1):
-//
-//	[ë] C1 Vc1 [w/y Vc2 [C2 [ë]]]
-//
-// Ultimate stress maps to RPV essence. Returns ok=false when the
-// surface doesn't consume cleanly to this shape.
-func tryReferential(word string) (ReferentialWord, bool) {
-	bare, stress := surface.Strip(word)
-	if stress == surface.InvalidStress {
-		return ReferentialWord{}, false
-	}
-	conjs := surface.MergeGlottalVowels(surface.SplitConjuncts(bare))
-	if len(conjs) < 2 {
-		return ReferentialWord{}, false
-	}
-	i := 0
-	// §4.6.3 epenthesis: "üo-" lets a C_P suppletive cluster occupy
-	// C1 instead of a personal-reference cluster. We track that and
-	// route the C_P through ParseCarrierType below.
-	cpEpenthesis := false
-	if conjs[i] == "ë" || conjs[i] == "äi" {
-		i++
-		if i+1 >= len(conjs) {
-			return ReferentialWord{}, false
-		}
-	} else if conjs[i] == "üo" && i+1 < len(conjs) {
-		if _, isCp := parse.ParseCarrierType(conjs[i+1]); isCp {
-			cpEpenthesis = true
-			i++
-		}
-	}
-	c1 := conjs[i]
-	if !surface.IsConsonantConjunct(c1) {
-		return ReferentialWord{}, false
-	}
-	var head g.RefHead
-	if cpEpenthesis {
-		ct, _ := parse.ParseCarrierType(c1)
-		head = g.SuppletiveHead{Type: ct}
-	} else {
-		cat, refs, ok := parse.DecomposeRefWithCategory(c1)
-		if !ok || len(refs) == 0 {
-			return ReferentialWord{}, false
-		}
-		head = g.PersonalHead{Refs: refs, Category: cat}
-	}
-	i++
-	if i >= len(conjs) || !surface.IsVowelConjunct(conjs[i]) {
-		return ReferentialWord{}, false
-	}
-	caseA, caseAok := parse.ParseCase(conjs[i])
-	if !caseAok {
-		return ReferentialWord{}, false
-	}
-	i++
-
-	var second *g.SecondReferent
-	if i < len(conjs) && (conjs[i] == "w" || conjs[i] == "y") {
-		i++
-		if i >= len(conjs) || !surface.IsVowelConjunct(conjs[i]) {
-			return ReferentialWord{}, false
-		}
-		c2v, c2ok := parse.ParseCase(conjs[i])
-		if !c2ok {
-			return ReferentialWord{}, false
-		}
-		second = &g.SecondReferent{Case: c2v}
-		i++
-		if i < len(conjs) && surface.IsConsonantConjunct(conjs[i]) {
-			rs, dok := parse.DecomposeRefCluster(conjs[i])
-			if !dok || len(rs) == 0 {
-				return ReferentialWord{}, false
-			}
-			second.Refs = rs
-			i++
-			if i < len(conjs) && conjs[i] == "ë" {
-				i++
-			}
-		}
-	}
-	if i != len(conjs) {
-		return ReferentialWord{}, false
-	}
-	return ReferentialWord{
-		Text: word,
-		Referential: g.Referential{
-			Head:       head,
-			Case:       caseA,
-			Second:     second,
-			RpvEssence: stress == surface.Ultimate,
-		},
-	}, true
-}
-
-// tryCombinationRef matches the combination-referential shape
-// [ë] C1 Vc Spec [VxCs...] [Vc2]. Returns ok=false if any constraint
-// fails. The Vc2 special form "üa" maps to THM and "a" alone means
-// "no second case".
-func tryCombinationRef(text string) (CombinationRefWord, bool) {
-	// §4.6.2 slot 6: ultimate stress gives the adjunct RPV Essence.
-	// The diacritic has to come off before any vowel is looked up, or
-	// a stressed affix vowel decodes to the wrong degree.
-	bare, stress := surface.Strip(text)
-	if stress == surface.InvalidStress {
-		return CombinationRefWord{}, false
-	}
-	// Vc is looked up as a whole conjunct, so a glottalized case vowel
-	// ("a'o" in mma'oxinļ) has to be one conjunct rather than the three
-	// SplitConjuncts leaves it as.
-	conjs := surface.MergeGlottalVowels(surface.SplitConjuncts(bare))
-	// §4.6.3 epenthesis: "a-" lets a C_P suppletive cluster occupy C1
-	// instead of a personal-reference cluster. Otherwise "ë" is the
-	// only acceptable prefix.
-	cpEpenthesis := false
-	if len(conjs) > 1 && conjs[0] == "a" {
-		if _, isCp := parse.ParseCarrierType(conjs[1]); isCp {
-			cpEpenthesis = true
-			conjs = conjs[1:]
-		}
-	} else if len(conjs) > 0 && conjs[0] == "ë" {
-		conjs = conjs[1:]
-	}
-	if len(conjs) < 3 {
-		return CombinationRefWord{}, false
-	}
-	c1, vc, specSurface := conjs[0], conjs[1], conjs[2]
-	if !surface.IsConsonantConjunct(c1) || !surface.IsVowelConjunct(vc) {
-		return CombinationRefWord{}, false
-	}
-	spec, specOK := parseCombinationSpec(specSurface)
-	if !specOK {
-		return CombinationRefWord{}, false
-	}
-	var head g.RefHead
-	if cpEpenthesis {
-		ct, _ := parse.ParseCarrierType(c1)
-		head = g.SuppletiveHead{Type: ct}
-	} else {
-		cat, refs, refsOk := parse.DecomposeRefWithCategory(c1)
-		if !refsOk || len(refs) == 0 {
-			return CombinationRefWord{}, false
-		}
-		head = g.PersonalHead{Refs: refs, Category: cat}
-	}
-	caseVal, caseOk := parse.ParseCase(vc)
-	if !caseOk {
-		return CombinationRefWord{}, false
-	}
-	// Pair up the rest as VxCs with optional trailing Vc2.
-	rest := conjs[3:]
-	// A geminated consonant anywhere in the tail (e.g. "kk" in ţnaxekka)
-	// signals this is actually a formative with a Slot V boundary,
-	// not a combination referential.
-	for _, c := range rest {
-		if surface.IsConsonantConjunct(c) && hasDoubledLetter(c) {
-			return CombinationRefWord{}, false
-		}
-	}
-	var affixes []g.Affix
-	var case2 *g.Case
-	for i := 0; i < len(rest); {
-		if i+1 < len(rest) &&
-			surface.IsVowelConjunct(rest[i]) &&
-			surface.IsConsonantConjunct(rest[i+1]) {
-			t, d := parse.ClassifyAffixVowel(rest[i])
-			affixes = append(affixes, g.Affix{Type: t, Degree: d, Consonant: rest[i+1]})
-			i += 2
-			continue
-		}
-		if i == len(rest)-1 && surface.IsVowelConjunct(rest[i]) {
-			// Final Vc2: special-case "a" (no case) and "üa" → THM.
-			switch rest[i] {
-			case "a":
-				// no second case
-			case "üa":
-				thm := g.THM
-				case2 = &thm
-			default:
-				if c, ok := parse.ParseCase(rest[i]); ok {
-					case2 = &c
-				}
-			}
-			i++
-			continue
-		}
-		return CombinationRefWord{}, false
-	}
-	return CombinationRefWord{
-		Text: text,
-		Combination: g.CombinationReferential{
-			Head:       head,
-			Case:       caseVal,
-			Spec:       spec,
-			Affixes:    affixes,
-			Case2:      case2,
-			RpvEssence: stress == surface.Ultimate,
-		},
-	}, true
 }
 
 // tryConcatenation attempts to read word as a hyphen-joined formative

@@ -26,11 +26,17 @@ func TestReferentialCategory_RoundTrip(t *testing.T) {
 	}
 	gl := &gloss.Glosser{Lex: lex, Canonical: true}
 
+	// §4.6 attaches the category affix on whichever side is
+	// "phonotactically permissible", so which words exist is decided by
+	// the cluster rules: "çla" and "xla" are both sayable, while the
+	// suffixed "lça" and "lxa" are not clusters Ithkuil allows to open
+	// a word.
 	for _, w := range []string{
-		"lxa",  // NOM suffix, THM
-		"lxo",  // NOM suffix, ERG
+		"xla",  // NOM prefix, x form
+		"sxa",  // NOM suffix, the only legal side on 2m
 		"tļla", // AGM prefix
 		"çla",  // NOM prefix
+		"lwa",  // ABS, which §4.6 writes as a suffix only
 		"la",   // no category at all, the control
 	} {
 		tok := tokenize.ClassifyWord(w)
