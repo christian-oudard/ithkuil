@@ -28,6 +28,35 @@ func TestTable_NonEmpty(t *testing.T) {
 	}
 }
 
+// TestTable_EveryEntryDescribed guards the DESCRIPTION column. The
+// table carried a description for Bias alone, so search printed the
+// column blank for the other 280-odd entries and Filter's substring
+// match against it could never fire.
+func TestTable_EveryEntryDescribed(t *testing.T) {
+	for _, e := range Table {
+		if e.Description == "" {
+			t.Errorf("%s/%s has no description", e.Category, e.Abbrev)
+		}
+	}
+}
+
+// TestFilter_ByDescription checks that a query with no abbreviation in
+// it reaches the entries whose meaning matches. "wish" is the pair the
+// illocution labels themselves do not distinguish: POT is the open
+// wish, HOR the counterfactual one.
+func TestFilter_ByDescription(t *testing.T) {
+	hits := Filter("Illocution", "wish", false)
+	got := map[string]bool{}
+	for _, h := range hits {
+		got[h.Abbrev] = true
+	}
+	for _, want := range []string{"POT", "HOR"} {
+		if !got[want] {
+			t.Errorf("Filter(Illocution, wish) missed %s, got %v", want, hits)
+		}
+	}
+}
+
 func TestLookupGrammar(t *testing.T) {
 	hits := LookupGrammar("THM")
 	if len(hits) != 1 || hits[0].Abbrev != "THM" {

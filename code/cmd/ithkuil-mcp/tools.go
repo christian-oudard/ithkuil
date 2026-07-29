@@ -11,7 +11,6 @@ import (
 	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/dictionary"
 	"github.com/christian-oudard/ithkuil/gloss"
-	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/render"
@@ -438,8 +437,7 @@ type grammarEntryOut struct {
 	Abbrev      string `json:"abbrev"`
 	Name        string `json:"name,omitempty"`
 	Form        string `json:"form,omitempty"`
-	Meaning     string `json:"meaning,omitempty"`
-	Description string `json:"description,omitempty"` // Bias expression text only
+	Description string `json:"description,omitempty"`
 }
 
 type rootHitOut struct {
@@ -548,7 +546,6 @@ func toGrammarEntries(hits []compose.Entry) []grammarEntryOut {
 			Abbrev:      e.Abbrev,
 			Name:        e.Name,
 			Form:        e.Form,
-			Meaning:     g.Meaning(e.Abbrev),
 			Description: e.Description,
 		}
 	}

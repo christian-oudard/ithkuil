@@ -119,11 +119,22 @@ func init() {
 			Form:     parse.CarrierTypeForm(ct),
 		})
 	}
-	// Fill canonical Name on every entry from grammar.Name. Bias rows
-	// already carry the human expression in Description (e.g. "Please"
-	// for SOL); other rows leave Description empty.
+	// Fill canonical Name from grammar.Name, and Description from
+	// grammar.Meaning where the row has none of its own. Bias rows keep
+	// theirs (e.g. "Please" for SOL), which is the utterance the bias
+	// stands for rather than a gloss of the category.
+	//
+	// Every row having a description is what makes Filter's documented
+	// substring match against it real: before this, only Bias could be
+	// found by meaning, and the DESCRIPTION column printed blank for the
+	// other 280-odd entries. A bare "HOR Hortative" with no gloss beside
+	// it invites the reader to supply the standard meaning of the word,
+	// which for that one is wrong (see docs/reference/ISSUES.md).
 	for i := range Table {
 		Table[i].Name = g.Name(Table[i].Abbrev)
+		if Table[i].Description == "" {
+			Table[i].Description = g.Meaning(Table[i].Abbrev)
+		}
 	}
 }
 
