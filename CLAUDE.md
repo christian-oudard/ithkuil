@@ -126,13 +126,13 @@ of SPEC.md, and the head of `english.md` for what earns an entry.
 - `docs/reference/morphology.md` - Canonical V4 grammar reference (phonology, morphology, slots, cases, adjuncts, syntax, numbers)
 - `docs/reference/affixes_reference.md` - All 528 affixes with gradient types and 9 degrees
 - `docs/reference/phonotactics.md` - Detailed consonant cluster rules
-- `docs/reference/issues.md` - Defects in the published sources, not in this code.
+- `docs/reference/ISSUES.md` - Defects in the published sources, not in this code.
 - `docs/reference/source_versions.md` - Quijada's published version history for the three documents. The documents themselves carry only the current version.
 - Source PDFs and any intermediate extraction output (html, per-page pdf) go outside the repo, under `$XDG_DATA_HOME/ithkuil/reference/`.
 
 `morphology.md` and `phonotactics.md` are transcriptions of Quijada's
 PDFs and should stay faithful to them, including where a source is
-wrong; record the defect in `issues.md` rather than silently correcting
+wrong; record the defect in `ISSUES.md` rather than silently correcting
 the transcription. `affixes_reference.md` is not a transcription: it
 tracks `data/data.json`, which merges the community spreadsheet with the
 affix document.
@@ -151,4 +151,4 @@ carrying the section it rests on and why the obvious fix is wrong, and
 `go test ./... -v | grep SKIP` lists those directly. Words we cannot read live
 in the drift guards (`tokenize/corpus_test.go`, `corpus/discord_examples.txt`),
 which fail when the set changes in either direction. Defects in the published
-sources go in `docs/reference/issues.md`.
+sources go in `docs/reference/ISSUES.md`.

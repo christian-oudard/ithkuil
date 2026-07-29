@@ -7,7 +7,7 @@ Unlike the other documents here, this is not a transcription of a
 single source. The entries come from the community spreadsheet, kept in
 step with `data/data.json`, and are reconciled against Quijada's affix
 document (version 1.1, Feb. 11, 2023) where the two differ.
-`issues.md` records where the sources disagree.
+`ISSUES.md` records where the sources disagree.
 
 ## Gradient Types
 
