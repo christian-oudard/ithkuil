@@ -54,7 +54,7 @@ var column4Degrees = map[string]int{
 
 var column4Vowels = [...]string{"", "ao", "aö", "eo", "eö", "oë", "öe", "oe", "öa", "oa"}
 
-// AffixVowel returns the canonical surface vowel for an affix of the
+// AffixVowel returns the canonical written vowel for an affix of the
 // given Type and Degree (0-9). For Type-3, the canonical (non-alternate)
 // form is returned.
 //
@@ -62,7 +62,7 @@ var column4Vowels = [...]string{"", "ao", "aö", "eo", "eö", "oë", "öe", "oe"
 // write reaches that: parsing derives degrees from AffixVowelDegree,
 // whose tables only hold 0-9, and the compose syntax matches a single
 // digit. An out-of-range value therefore means a Formative was built in
-// code that no surface form can express. Returning "" instead would
+// code that no romanization can express. Returning "" instead would
 // splice an affix with no vowel into the output and yield a different,
 // well-formed word with no complaint.
 func AffixVowel(t grammar.AffixType, degree int) string {

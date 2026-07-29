@@ -4,12 +4,12 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 )
 
-// CaForward maps each SlotVI to its surface Ca consonant cluster.
+// CaForward maps each SlotVI to its written Ca consonant cluster.
 // Populated at package init time by enumerating all 3840 combinations
 // and running ConstructCa on each.
 var CaForward map[g.SlotVI]string
 
-// CaReverse maps each surface Ca cluster to a SlotVI. When multiple
+// CaReverse maps each written Ca cluster to a SlotVI. When multiple
 // SlotVI values produce the same cluster, the first one encountered
 // in (Configuration, Affiliation, Perspective, Extension, Essence)
 // declaration order wins.
@@ -17,7 +17,7 @@ var CaReverse map[string]g.SlotVI
 
 // CaUngeminate maps each geminated Ca cluster back to its bare form.
 // Useful for string-level layers that want to recover the un-geminated
-// surface form without going through the SlotVI value.
+// romanization without going through the SlotVI value.
 var CaUngeminate map[string]string
 
 func init() {

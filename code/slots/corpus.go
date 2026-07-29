@@ -1,6 +1,6 @@
 package slots
 
-// FormativeCorpus is a curated list of surface words that exercise
+// FormativeCorpus is a curated list of romanizations that exercise
 // the formative slot grammar across its non-trivial paths: minimal /
 // canonical forms, the concatenation prefixes, every shortcut variant
 // (Cc, §3.8.1.2 Cn→Ca, §3.6.2 Slot V end-marker), Cs-root and

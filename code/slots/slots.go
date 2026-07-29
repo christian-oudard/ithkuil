@@ -1,15 +1,15 @@
 // Package slots is Layer C of the parse/render pipeline. It pairs raw
-// surface conjuncts with the slot positions they occupy, without
+// written conjuncts with the slot positions they occupy, without
 // decoding any grammar values. Both parse and render lean on it:
 //
-//	surface text  ──(phonology.Strip/SplitConjuncts)──▶  conjuncts + Stress
+//	romanization  ──(phonology.Strip/SplitConjuncts)──▶  conjuncts + Stress
 //	conjuncts     ──(slots.Parse)──▶                  Layout
 //	Layout        ──(slots.ToGrammar)──▶              grammar.Formative
 //	Layout        ──(slots.FromGrammar)──◀            grammar.Formative
 //	Layout        ──(slots.Render)──▶                 conjuncts
-//	conjuncts     ──(phonology.Apply/JoinConjuncts)──▶   surface text
+//	conjuncts     ──(phonology.Apply/JoinConjuncts)──▶   romanization
 //
-// Storing the slot-labelled surface form as its own value means the
+// Storing the slot-labelled romanization as its own value means the
 // shape-detection logic (consonant-initial vs vowel-initial, shortcut
 // vs not, special-Vv Cs-root vs reference-root) lives in exactly one
 // place. fullparse, render, and view all consume Layout instead of
@@ -21,7 +21,7 @@ import (
 )
 
 // RootKind discriminates the three formative shapes that the spec
-// recognises. The kind is determined by the surface Vv marker (or its
+// recognises. The kind is determined by the written Vv marker (or its
 // absence) plus, for shortcut forms, the Cc cluster.
 type RootKind int
 
@@ -40,7 +40,7 @@ const (
 	RefRootFormative
 )
 
-// AffixChunk is one (Vx, Cs) pair as it appears on the surface. The
+// AffixChunk is one (Vx, Cs) pair as it appears on the romanization. The
 // rendering order differs between Slot V (Cs then Vx) and Slot VII (Vx
 // then Cs), but both store the same (Vx, Cs) data here.
 type AffixChunk struct {
@@ -48,7 +48,7 @@ type AffixChunk struct {
 	Cs string
 }
 
-// Layout is the slot-labelled surface form of a formative. Every
+// Layout is the slot-labelled romanization of a formative. Every
 // string field carries a raw, bare conjunct — accents are stripped
 // (those live in Stress), and §3.5.1 Vv-glottal-stops / §3.6.1
 // Ca-geminations are removed (they're implied by len(SlotV)).
@@ -74,7 +74,7 @@ type Layout struct {
 	Vr string
 
 	// SlotV is the list of pre-Ca affixes in their (Vx, Cs) order.
-	// Surface rendering reverses each pair to Cs+Vx; the Vx field
+	// Written rendering reverses each pair to Cs+Vx; the Vx field
 	// here is the bare un-reversed vowel.
 	SlotV []AffixChunk
 

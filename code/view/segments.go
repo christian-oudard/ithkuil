@@ -16,11 +16,11 @@ import (
 // ElidedMark is the symbol shown for an elided slot.
 const ElidedMark = "∅"
 
-// Segment is one chunk of a surface formative paired with the slot it
+// Segment is one chunk of a romanized formative paired with the slot it
 // occupies and the grammatical codes it encodes.
 type Segment struct {
-	Chunk    string   // hyphen-decorated surface chunk
-	Raw      string   // bare surface chunk (no hyphens)
+	Chunk    string   // hyphen-decorated written chunk
+	Raw      string   // bare written chunk (no hyphens)
 	Slot     string   // "Cr", "Vr", "Ca", "Vx₁", "Cs₁", "Vc", "Vv", …
 	Encodes  []string // codes encoded by this chunk
 	Defaults bool     // every code is at its grammatical default
@@ -84,7 +84,7 @@ func Headword(f g.Formative, lex *lexicon.Lexicon) RootHead {
 	return RootHead{}
 }
 
-// Segments walks the surface conjuncts in lock-step with the parsed
+// Segments walks the written conjuncts in lock-step with the parsed
 // Formative and labels each chunk with its slot and encoded codes.
 // Trailing elided slots (Vv when consonant-initial, Vc when no final
 // vowel) are emitted as Elided segments.
@@ -106,7 +106,7 @@ func Segments(word string, f g.Formative, lex *lexicon.Lexicon) []Segment {
 }
 
 // segmentsFromLayout walks the slot fields of a Layout and emits one
-// Segment per surface chunk. Layout already knows which conjunct is
+// Segment per written chunk. Layout already knows which conjunct is
 // which slot, so this function doesn't have to re-derive shape.
 func segmentsFromLayout(l slots.Layout, f g.Formative, lex *lexicon.Lexicon) []Segment {
 	var segs []Segment
@@ -212,7 +212,7 @@ func vvSegment(l slots.Layout, f g.Formative) Segment {
 	return Segment{}
 }
 
-// displayVv returns the Vv as it appears on the surface, re-inserting
+// displayVv returns the Vv as it appears on the romanization, re-inserting
 // the §3.5.1 glottal-stop when Slot V has 2+ affixes.
 func displayVv(l slots.Layout) string {
 	if len(l.SlotV) < 2 || l.Vv == "" {
@@ -277,7 +277,7 @@ func vrSegment(l slots.Layout, f g.Formative) (Segment, bool) {
 }
 
 // caSegment emits the Slot VI segment. When Slot V has any affixes the
-// Ca is geminated on the surface, so we re-apply gemination for display.
+// Ca is geminated on the romanization, so we re-apply gemination for display.
 func caSegment(l slots.Layout, f g.Formative) Segment {
 	raw := l.Ca
 	if len(l.SlotV) > 0 {
@@ -348,8 +348,8 @@ func slotVIICsSegment(a slots.AffixChunk, idx int, f g.Formative, lex *lexicon.L
 // pairs, and an optional final vowel. The label "Vn₁/Cn₁/Vn₂/…"
 // makes each pair's slot inside the adjunct visible.
 //
-// marksMood disambiguates the Cn surface form (which is shared between
-// modularScopePrefix returns the surface w/y consonant for the
+// marksMood disambiguates the Cn romanization (which is shared between
+// modularScopePrefix returns the romanization w/y consonant for the
 // decoded ModularScope, or "" for the default scope.
 func modularScopePrefix(s g.ModularScope) string {
 	switch s {
@@ -361,13 +361,13 @@ func modularScopePrefix(s g.ModularScope) string {
 	return ""
 }
 
-// vnCnSurface re-encodes a typed SlotVIII as the (Vn, Cn) pair the
-// surface form uses. Inverse of parse.ParseVnCn.
-func vnCnSurface(s g.SlotVIII) (string, string) {
+// vnCnForms re-encodes a typed SlotVIII as the (Vn, Cn) pair the
+// romanization uses. Inverse of parse.ParseVnCn.
+func vnCnForms(s g.SlotVIII) (string, string) {
 	return slots.VnCnFromSlotVIII(s)
 }
 
-// reachVH returns the canonical surface V_H vowel for a non-None reach
+// reachVH returns the canonical romanization V_H vowel for a non-None reach
 // scope. "i" represents the formative reach by convention (could also
 // be "u").
 func reachVH(r g.ModularReach) string {
@@ -396,12 +396,12 @@ func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segmen
 			Encodes: []string{semantics.PrefixCode(raw)},
 		})
 	}
-	// Re-derive surface (Vn, Cn) per typed Content entry. The
-	// surface-level view still wants per-segment bytes, so we use
+	// Re-derive written (Vn, Cn) per typed Content entry. The
+	// romanization-level view still wants per-segment bytes, so we use
 	// the slots-package encoder as the inverse of ParseVnCn.
 	for i, s := range ma.Content {
 		idx := subscript(i + 1)
-		vn, cn := vnCnSurface(s)
+		vn, cn := vnCnForms(s)
 		segs = append(segs, Segment{
 			Raw:     strings.ToLower(vn),
 			Slot:    fmt.Sprintf("Vn%s", idx),
@@ -523,7 +523,7 @@ func UnknownReason(word string) string {
 }
 
 // LayoutSegments renders a slots.Layout as phonetic-table rows, in
-// surface order, skipping empty slots. It carries no Encodes, because
+// written order, skipping empty slots. It carries no Encodes, because
 // a Layout is the shape split alone — it is what Parse recovered
 // before ToGrammar assigned any grammatical value, and is the only
 // view available for a word that fails to decode.

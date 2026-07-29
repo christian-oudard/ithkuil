@@ -58,12 +58,12 @@ func (iw *indentedWriter) Write(p []byte) (int, error) {
 // cmdParse tokenizes the input and renders a learner-oriented
 // breakdown of each formative: phonetic segmentation paired with a
 // glossary that expands every code. --short collapses each word to a
-// single surface/type/gloss line. Phonotactics are checked first, so
+// single romanization/type/gloss line. Phonotactics are checked first, so
 // parsing a word is also how you validate it.
 func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile string) int {
 	fs := newFlagSet("parse", stderr)
 	fs.describe("Tokenize, parse, and gloss each word (detailed by default).", "TEXT...")
-	short := fs.Bool("short", "s", false, "one-line surface · type · gloss view")
+	short := fs.Bool("short", "s", false, "one-line romanization · type · gloss view")
 	color := fs.String("color", "", "auto", "MODE", "when to use ANSI color: auto|always|never")
 	if err := fs.Parse(args); err != nil {
 		return 2
@@ -89,7 +89,7 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 	// Accept the ASCII digraph notation everywhere a word is taken.
 	text = phonology.FromASCII(text)
 
-	// What the user typed, keyed by the surface a token will carry, so
+	// What the user typed, keyed by the romanization a token will carry, so
 	// an error can name their input rather than a form only we ever
 	// saw: "aaaa" normalizes to "ää", and reporting the rule against
 	// "ää" describes a word they never wrote. FromASCII never adds or
@@ -110,7 +110,7 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 
 	// Phonotactics are checked per token rather than through a map
 	// built from strings.Fields. The map was keyed by the raw word but
-	// read back with t.Surface(), which is lower-cased, so every
+	// read back with t.Romanization(), which is lower-cased, so every
 	// capitalized word missed the lookup and skipped validation in
 	// silence — "cskava" was rejected while "Cskava" sailed through,
 	// and sentences start with a capital.
@@ -118,21 +118,21 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 	if *short {
 		for _, t := range tokens {
 			var ill phonology.Illegal
-			if errors.As(phonology.CheckText(t.Surface()), &ill) {
-				renderValidationError(stderr, t.Surface(), asTyped[t.Surface()], ill)
+			if errors.As(phonology.CheckText(t.Romanization()), &ill) {
+				renderValidationError(stderr, t.Romanization(), asTyped[t.Romanization()], ill)
 				exit = 1
 				continue
 			}
-			// An unclassified word's gloss is just its surface spelled
+			// An unclassified word's gloss is just its romanization spelled
 			// back with a "?" on it, which says nothing the type
 			// column has not. Give the reason instead.
 			detail := glosser.Token(t)
 			if _, ok := t.(tokenize.UnknownWord); ok {
-				if reason := view.UnknownReason(t.Surface()); reason != "" {
+				if reason := view.UnknownReason(t.Romanization()); reason != "" {
 					detail = reason
 				}
 			}
-			fmt.Fprintf(stdout, "%s  %s  %s\n", t.Surface(), view.Type(t), detail)
+			fmt.Fprintf(stdout, "%s  %s  %s\n", t.Romanization(), view.Type(t), detail)
 		}
 		return exit
 	}
@@ -143,8 +143,8 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 			fmt.Fprintln(stdout)
 		}
 		var ill phonology.Illegal
-		if errors.As(phonology.CheckText(t.Surface()), &ill) {
-			renderValidationError(stderr, t.Surface(), asTyped[t.Surface()], ill)
+		if errors.As(phonology.CheckText(t.Romanization()), &ill) {
+			renderValidationError(stderr, t.Romanization(), asTyped[t.Romanization()], ill)
 			exit = 1
 			continue
 		}
@@ -186,7 +186,7 @@ func renderDetailed(w io.Writer, t tokenize.WordToken, lex interface{}, glosser 
 	case tokenize.UnknownWord:
 		renderUnknown(w, tt.Text)
 	default:
-		fmt.Fprintf(w, "%s  %s  %s\n", t.Surface(), view.Type(t), glosser.Token(t))
+		fmt.Fprintf(w, "%s  %s  %s\n", t.Romanization(), view.Type(t), glosser.Token(t))
 	}
 }
 
@@ -217,7 +217,7 @@ func renderUnknown(w io.Writer, word string) {
 }
 
 // renderModular prints the phonetic + glossary tables for a modular
-// adjunct. The surface word sits at column 0; the body is indented
+// adjunct. The romanization sits at column 0; the body is indented
 // two spaces so consecutive word blocks are visually separated.
 func renderModular(w io.Writer, mw tokenize.ModularWord) {
 	segs := view.SegmentsModular(mw.Text, mw.Modular, mw.MarksMood)
@@ -231,8 +231,8 @@ func renderModular(w io.Writer, mw tokenize.ModularWord) {
 	}
 }
 
-// renderFormativeBlock prints the surface, headword, phonetic table,
-// and glossary for one formative. The surface word sits at column 0
+// renderFormativeBlock prints the romanization, headword, phonetic table,
+// and glossary for one formative. The romanization sits at column 0
 // and everything below is indented under it.
 func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss.Glosser) {
 	head := view.Headword(f, glosser.Lex)
@@ -256,8 +256,8 @@ func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss
 
 // renderConcatenated walks every formative in a concatenation chain,
 // rendering each as its own block with a section marker. The chain's
-// surface is hyphen-joined; we split on "-" to recover each piece's
-// individual surface for the phonetic table.
+// romanization is hyphen-joined; we split on "-" to recover each piece's
+// individual romanization for the phonetic table.
 func renderConcatenated(w io.Writer, cw tokenize.ConcatenatedFormativeWord, glosser gloss.Glosser) {
 	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(cw.Text)))
 	iw := indented(w, "  ")
@@ -272,11 +272,11 @@ func renderConcatenated(w io.Writer, cw tokenize.ConcatenatedFormativeWord, glos
 			label = fmt.Sprintf("[%s dependent]", f.Concat.String())
 		}
 		fmt.Fprintln(iw, label)
-		surface := ""
+		rom := ""
 		if i < len(parts) {
-			surface = parts[i]
+			rom = parts[i]
 		}
-		renderFormativeBlock(iw, surface, f, glosser)
+		renderFormativeBlock(iw, rom, f, glosser)
 	}
 }
 

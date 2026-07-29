@@ -2,7 +2,7 @@ package grammar
 
 // Bias is one of the ~70 attitudinal/emotional markers that can stand
 // alone as a single-word adjunct. Each Bias has a unique consonant
-// cluster as its surface form (no vowels) and a representative
+// cluster as its romanization (no vowels) and a representative
 // English expression that captures its tone.
 type Bias int
 
@@ -87,7 +87,7 @@ var biasNames = [...]string{
 
 func (b Bias) String() string { return biasNames[b] }
 
-// biasForms is the surface consonant cluster for each Bias.
+// biasForms is the written consonant cluster for each Bias.
 var biasForms = [...]string{
 	DOL: "řřx",
 	DIS: "kff",
@@ -217,7 +217,7 @@ var biasExpressions = [...]string{
 	ADS: "Mm-hm",
 }
 
-// BiasForm returns the surface consonant cluster for a Bias.
+// BiasForm returns the written consonant cluster for a Bias.
 func BiasForm(b Bias) string { return biasForms[b] }
 
 // BiasExpression returns a representative English expression for a Bias.

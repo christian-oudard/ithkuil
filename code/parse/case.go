@@ -2,7 +2,7 @@ package parse
 
 import "github.com/christian-oudard/ithkuil/grammar"
 
-// caseFromVc maps every recognized Vc surface form to its Case. Canonical
+// caseFromVc maps every recognized Vc romanization to its Case. Canonical
 // vowels come from grammar.CaseToVc; this table additionally registers
 // series-3 alternate forms (used after y- / w- glides) so the parser
 // accepts both spellings.

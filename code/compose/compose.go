@@ -1,5 +1,5 @@
 // Package compose provides reverse-lookup tooling on the grammar
-// inventory. Given an abbreviation ("THM") or a surface form ("a") or
+// inventory. Given an abbreviation ("THM") or a written form ("a") or
 // a meaning keyword ("agent"), find the grammar entries or roots that
 // match.
 package compose
@@ -18,7 +18,7 @@ type Entry struct {
 	Category    string // e.g. "Case", "Aspect", "Configuration"
 	Abbrev      string // e.g. "THM", "RTR"
 	Name        string // canonical English name ("Thematic", "Retrospective")
-	Form        string // surface vowel/consonant form, when available
+	Form        string // written vowel/consonant form, when available
 	Description string // additional gloss / expression (used for Bias)
 }
 
@@ -161,7 +161,7 @@ func SearchGrammar(query string) []Entry {
 	return append(exact, fuzzy...)
 }
 
-// LookupForm returns every entry whose surface Form equals form.
+// LookupForm returns every entry whose written Form equals form.
 // Useful for "what grammar values does this vowel encode?" queries.
 func LookupForm(form string) []Entry {
 	var out []Entry

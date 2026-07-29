@@ -8,9 +8,9 @@ import (
 	"github.com/christian-oudard/ithkuil/render"
 )
 
-// TestCanonicalize asserts that a non-canonical input surface is
+// TestCanonicalize asserts that a non-canonical input romanization is
 // parsed correctly and re-renders as the canonical equivalent. The
-// parser accepts every spec-legal surface form, but the renderer
+// parser accepts every spec-legal romanization, but the renderer
 // only emits the canonical one. So fullparse(non-canonical) →
 // render is *not* the identity for these inputs — by design.
 //

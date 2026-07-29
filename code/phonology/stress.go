@@ -28,7 +28,7 @@ const (
 	Penultimate
 	Ultimate
 	Antepenultimate
-	// InvalidStress signals the surface form carried more than one
+	// InvalidStress signals the romanization carried more than one
 	// stress diacritic, so no single stress position can be derived.
 	// Returned by Strip; callers that need an unambiguous reading
 	// should reject the input.
@@ -177,7 +177,7 @@ func Strip(word string) (string, Stress) {
 	n, stressedSyllable, markCount := StressPosition(word)
 
 	// Derive Stress from position. >1 stress mark is a malformed
-	// surface form — the spec marks at most one syllable per word
+	// romanization — the spec marks at most one syllable per word
 	// (§1.3.1) — so report it instead of silently picking one.
 	var stress Stress
 	switch {
@@ -195,7 +195,7 @@ func Strip(word string) (string, Stress) {
 		stress = Antepenultimate
 	}
 
-	// Strip every stress mark from the surface text.
+	// Strip every stress mark from the romanization.
 	var b strings.Builder
 	b.Grow(len(word))
 	for _, r := range word {

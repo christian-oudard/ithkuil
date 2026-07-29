@@ -2,19 +2,19 @@ package grammar
 
 // Final is the sealed sum type for the formative's grammatical
 // category. It combines the SlotIX content with the verbal/nominal/
-// framed-verbal discrimination that stress encodes in the surface
+// framed-verbal discrimination that stress encodes in the romanization
 // form — keeping the grammatical truth in one place so that
 // inconsistent (Stress, SlotIX) pairs are unrepresentable.
 //
 // Variants:
 //
 //   - UnframedNominal: nominal formative. SlotIX is a Vc Case.
-//     Surface form has penultimate stress (the default, no diacritic).
+//     Romanization has penultimate stress (the default, no diacritic).
 //   - FramedVerbal: framed-verbal formative. SlotIX is a Vc Case.
-//     Surface form has antepenultimate stress (acute on the third-
+//     Romanization has antepenultimate stress (acute on the third-
 //     from-last vowel).
 //   - UnframedVerbal: verbal formative. SlotIX is a Vk illocution.
-//     Surface form has ultimate stress (acute on the last vowel) —
+//     Romanization has ultimate stress (acute on the last vowel) —
 //     except for monosyllabic words, where ultimate is implicit
 //     and no diacritic is written (§3.10).
 type Final interface {

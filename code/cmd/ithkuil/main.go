@@ -8,7 +8,7 @@
 //
 //	parse TEXT...     Tokenize, parse, and gloss each word.
 //	compare A B       Diff two words slot by slot.
-//	compose EXPR      Build a surface formative from grammar choices.
+//	compose EXPR      Build a romanized formative from grammar choices.
 //	search [Q]        Look up a term in the grammar and the lexicon.
 //	define WORD...    Look up an English word as Ithkuil lexical cores.
 //	help              Show this usage block.
@@ -66,10 +66,10 @@ Subcommands:
                      Phonotactics are checked first: an unpronounceable
                      word is reported with the rule it breaks, and the
                      exit status is 1.
-                       --short / -s        one-line surface/type/gloss
+                       --short / -s        one-line romanization/type/gloss
   compare A B        Lay two words' slot breakdowns side by side and
                      mark what differs.
-  compose EXPR       Build a surface formative from a gloss-style
+  compose EXPR       Build a romanized formative from a gloss-style
                      expression. "-" separates slots, "." joins
                      category values in a slot, "/" binds a degree
                      or a case to a head. Affixes before the Ca

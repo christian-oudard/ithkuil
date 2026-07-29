@@ -463,7 +463,7 @@ func TestCrRootLabel_EmptyCluster(t *testing.T) {
 func TestBiasLabel_EmptyExpression(t *testing.T) {
 	// A bias variant whose expression-table lookup returns "" should
 	// fall through to plain b.String(). Use a zero-value Bias which
-	// has no surface expression.
+	// has no romanized expression.
 	out := (&Glosser{}).biasLabel(g.Bias(0))
 	if out == "" {
 		t.Error("biasLabel(zero) returned empty")

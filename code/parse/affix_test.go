@@ -56,7 +56,7 @@ func TestParseAffixes_VxCs(t *testing.T) {
 
 func TestParseAffixes_CsVx(t *testing.T) {
 	// "la" is Cs+Vx — the slot-V ordering — and the affix's vowel is
-	// still "a"; only the surface ordering is swapped.
+	// still "a"; only the romanization ordering is swapped.
 	got := ParseAffixes("la")
 	want := []grammar.Affix{
 		{Type: grammar.Type1Affix, Degree: 1, Consonant: "l"},
@@ -108,7 +108,7 @@ func TestParseAffixes_LoneConjunct(t *testing.T) {
 func TestParseAffixes_ConsonantCluster(t *testing.T) {
 	// splitConjuncts groups consecutive consonants into one conjunct.
 	// "avalr" segments as ["a","v","a","lr"], so the second affix's
-	// consonant is "lr" — that's the real surface form of the affix
+	// consonant is "lr" — that's the real romanization of the affix
 	// identifier. Disambiguating "l" + trailing "r" is a higher-level
 	// concern (lexicon + Ca-end detection) that lives in FullParse.
 	got := ParseAffixes("avalr")

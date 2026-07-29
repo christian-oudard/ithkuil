@@ -27,7 +27,7 @@ func TestToken_CorpusRoundTrip(t *testing.T) {
 		case tokenize.UnknownWord, tokenize.ForeignWord:
 			continue
 		}
-		surface, err := tokenize.Render(tok)
+		rom, err := tokenize.Render(tok)
 		if err != nil {
 			// Not every class has a renderer yet; those that do not
 			// are counted rather than failed, and the count is
@@ -36,14 +36,14 @@ func TestToken_CorpusRoundTrip(t *testing.T) {
 			continue
 		}
 		rendered++
-		again := tokenize.ClassifyWord(surface)
+		again := tokenize.ClassifyWord(rom)
 		if _, bad := again.(tokenize.UnknownWord); bad {
-			t.Errorf("%q rendered %q, which no longer classifies", w, surface)
+			t.Errorf("%q rendered %q, which no longer classifies", w, rom)
 			continue
 		}
 		if want, got := gl.Token(tok), gl.Token(again); want != got {
 			t.Errorf("%q rendered %q, which reads back differently\n  want: %s\n  got:  %s",
-				w, surface, want, got)
+				w, rom, want, got)
 		}
 	}
 	if rendered == 0 {
@@ -64,15 +64,15 @@ func TestToken_CorpusReferentials(t *testing.T) {
 		default:
 			continue
 		}
-		surface, err := tokenize.Render(tok)
+		rom, err := tokenize.Render(tok)
 		if err != nil {
 			t.Errorf("%q classifies as %T but does not render: %v", w, tok, err)
 			continue
 		}
 		n++
-		if want, got := gl.Token(tok), gl.Token(tokenize.ClassifyWord(surface)); want != got {
+		if want, got := gl.Token(tok), gl.Token(tokenize.ClassifyWord(rom)); want != got {
 			t.Errorf("%q rendered %q, which reads back as %q rather than %q",
-				w, surface, got, want)
+				w, rom, got, want)
 		}
 	}
 	if n == 0 {

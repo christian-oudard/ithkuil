@@ -44,9 +44,9 @@ Grammatical values that carry no punctuation of their own follow from this: the 
 
 Every arm has a `format → Formative → format` round-trip identity, modulo canonicalization. Non-canonical inputs parse successfully but re-encode to the canonical equivalent. A given Formative has exactly one canonical form in each format. The system does not preserve incidental user choices (e.g. shortcut form vs. expanded form when both are valid). Equivalent inputs are folded to one canonical output, by design.
 
-## Canonical surface
+## Canonical romanization
 
-A Formative has exactly one canonical surface. The grammar permits several equivalent spellings of the same word, and three of them are optional shortenings the speaker may or may not take: the §3.2 Cc shortcut, the §3.8.1.2 Cn→Ca shortcut, and the §3.9.1 moved Vc glottal. The system spells the word every legal way and keeps the best one, ranked by:
+A Formative has exactly one canonical romanization. The grammar permits several equivalent spellings of the same word, and three of them are optional shortenings the speaker may or may not take: the §3.2 Cc shortcut, the §3.8.1.2 Cn→Ca shortcut, and the §3.9.1 moved Vc glottal. The system spells the word every legal way and keeps the best one, ranked by:
 
 1. Fewest syllables. §3.2 justifies its shortcut as "shortening the formative by one syllable", so that is the language's own measure.
 2. Fewest glottal stops. A shortcut that saves no syllable but forces a glottal, as §3.6.2 does to mark the end of Slot V once the Ca is gone, is a loss.
@@ -56,7 +56,7 @@ Past that the candidates are indistinguishable on any measure the spec offers, s
 
 Default slot values are elided regardless, and parsing accepts the non-canonical spellings too; they simply re-render as the canonical one.
 
-The canonical surface is also composed (Unicode NFC) and lowercase. Decomposed
+The canonical romanization is also composed (Unicode NFC) and lowercase. Decomposed
 input and capitals parse — a capital is a sentence-position artifact and carries
 no meaning in Ithkuil — and re-render composed and lowercase. The one exception
 is a foreign word following a carrier adjunct: that is passthrough text, not
@@ -74,4 +74,4 @@ Coverage of English is partial and stays that way. The index says what the lexic
 
 ## Cross-format conversion
 
-Any format-to-format trip (e.g. gloss → Unicode surface) is the composition of two single-arm trips through the in-memory center. There is no direct format-to-format converter and no need for one. N arms give N² round-trip pairs from N converter pairs.
+Any format-to-format trip (e.g. gloss → romanization) is the composition of two single-arm trips through the in-memory center. There is no direct format-to-format converter and no need for one. N arms give N² round-trip pairs from N converter pairs.

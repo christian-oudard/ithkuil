@@ -340,7 +340,7 @@ func stackedCaBody(cluster string) string {
 // all-default Ca: Slot V affixes apply to the stem without scope over
 // Ca, Slot VII affixes have scope over it, and position in the gloss
 // is what tells them apart — so the Ca must stay visible as the
-// boundary between them. The surface does the same thing, geminating
+// boundary between them. The romanization does the same thing, geminating
 // the Ca whenever Slot V is filled.
 func slotVI(s g.SlotVI, slotVFilled bool) string {
 	if s == g.DefaultSlotVI {
@@ -369,7 +369,7 @@ func slotVI(s g.SlotVI, slotVFilled bool) string {
 }
 
 // affixes renders a list of affixes, hyphenated. With a lexicon each
-// affix shows its ABBREV/degree; without one, the surface "Cs:Vx" form.
+// affix shows its ABBREV/degree; without one, the romanization "Cs:Vx" form.
 //
 // §4.6.5 special case: a lone Type-3 affix whose Cs is a referential
 // consonant reads as a personal-reference shortcut rather than a

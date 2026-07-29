@@ -29,7 +29,7 @@ the Ca geminates (`-l-` → `-ll-`) to mark that Slot V is filled.
 
 A set of tools for working in Ithkuil, written in Go, covering three jobs.
 
-**Phonology**: typing the orthography from an ASCII keyboard, and checking that
+**Phonology**: typing the romanization from an ASCII keyboard, and checking that
 a word is pronounceable Ithkuil at all, that its clusters and vowel sequences
 and stress obey the phonotactics.
 
@@ -47,7 +47,7 @@ the flags for any of them.
 
 ## Typing Phonetically
 
-The orthography uses diacritics that aren't on a keyboard, so every character
+The romanization uses diacritics that aren't on a keyboard, so every character
 that carries one also has a two-keystroke ASCII spelling. The notation is a
 pure recoding of the Unicode text, one character to one digraph, and reversible
 in both directions. Anything with no digraph, `'` (glottal stop) included,
@@ -125,7 +125,7 @@ maţřëullait
 
 Words are classified before they are parsed, so a sentence can mix formatives
 with referentials and the various adjuncts, and each is broken down as its own
-kind of word. `--short` collapses each one to a single line of surface, type,
+kind of word. `--short` collapses each one to a single line of romanization, type,
 and gloss, which is the form to reach for on a whole sentence:
 
 ```bash
@@ -208,7 +208,7 @@ has to mark that boundary, as *maţřëullait* does:
 ithkuil compose 'm-SYS/5_2-{Ca}-DCD/1_2'   # → maţřëullait
 ```
 
-Every slot you leave out takes its default, and the surface printed is
+Every slot you leave out takes its default, and the romanization printed is
 canonical: one Formative has exactly one spelling here, even where the grammar
 would permit several. See [SPEC.md](SPEC.md) for what canonical means and which
 optional shortenings it decides between.
@@ -223,7 +223,7 @@ abbreviation than a root:
 ithkuil search ERG               # the Ergative case, then roots and affixes matching
 ithkuil search --category Case   # every entry in one category
 ithkuil search --exact THM       # exact abbreviation only
-ithkuil search --form ëu         # what a surface vowel or cluster can encode
+ithkuil search --form ëu         # what a written vowel or cluster can encode
 ```
 
 With no arguments it lists the categories available to `--category`. A section

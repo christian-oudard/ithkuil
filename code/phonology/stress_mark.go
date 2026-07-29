@@ -10,7 +10,7 @@ const (
 	DoubleMarkedStress StressError = iota + 1
 	// MarkedDefaultStress: an accent on the default-stress syllable
 	// (monosyllabic, or the penult of a multi-syllable word). The
-	// surface is unambiguous without the mark.
+	// romanization is unambiguous without the mark.
 	MarkedDefaultStress
 	// UnrecognizedPlacement: accent on a syllable other than ultimate,
 	// penultimate, or antepenultimate.

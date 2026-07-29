@@ -432,7 +432,7 @@ func TestChain_FreeFraming(t *testing.T) {
 	}
 }
 
-// TestChain_RejectsUngrammatical covers the states the surface cannot
+// TestChain_RejectsUngrammatical covers the states the romanization cannot
 // express either: a Cc on a lone formative, a chain whose parent
 // carries a Cc, and a dependent that carries none.
 func TestChain_RejectsUngrammatical(t *testing.T) {

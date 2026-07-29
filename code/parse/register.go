@@ -2,7 +2,7 @@ package parse
 
 import "github.com/christian-oudard/ithkuil/grammar"
 
-// registerByInitial maps the opening adjunct surface to its Register.
+// registerByInitial maps the opening adjunct romanization to its Register.
 var registerByInitial = func() map[string]grammar.Register {
 	m := make(map[string]grammar.Register, len(grammar.AllRegisters))
 	for _, r := range grammar.AllRegisters {
@@ -14,7 +14,7 @@ var registerByInitial = func() map[string]grammar.Register {
 	return m
 }()
 
-// registerByFinal maps the closing adjunct surface to its Register.
+// registerByFinal maps the closing adjunct romanization to its Register.
 var registerByFinal = func() map[string]grammar.Register {
 	m := make(map[string]grammar.Register, len(grammar.AllRegisters))
 	for _, r := range grammar.AllRegisters {

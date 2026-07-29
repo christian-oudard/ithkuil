@@ -3,7 +3,7 @@ package parse
 import "github.com/christian-oudard/ithkuil/phonology"
 
 // Stress is a type alias for phonology.Stress. The orthographic
-// observation lives at the surface layer (where the bytes of the
+// observation lives at the romanization layer (where the bytes of the
 // stress mark are interpreted); this alias keeps fullparse and the
 // slot-level parsers compiling against the existing type name while
 // new code should reach for phonology.Stress directly.

@@ -8,14 +8,14 @@ import (
 	"github.com/christian-oudard/ithkuil/render"
 )
 
-// Render turns any classified word back to surface text.
+// Render turns any classified word back to its romanization.
 //
 // It closes the loop tokenize opens: every word class now has a
 // grammar type and a way back out of it, so a token built by compose
 // or read out of a serialized file can be spoken, not just glossed. A
 // token's own Text field is not consulted — it records what was typed,
 // which for a synthesized token is nothing, and the point here is to
-// derive the surface from the grammar.
+// derive the romanization from the grammar.
 //
 // The one exception is a foreign word, whose meaning genuinely is its
 // letters.

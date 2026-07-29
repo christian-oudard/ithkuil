@@ -52,9 +52,9 @@ func TestFormative_RoundTrip_0to99(t *testing.T) {
 		if !ok {
 			t.Fatalf("Formative(%d): ok=false", n)
 		}
-		// Round-trip via the rendered surface form so we exercise the
+		// Round-trip via the rendered romanization so we exercise the
 		// real render → parse pipeline.
-		// Skip surface verification for now; just call Decode directly
+		// Skip romanization verification for now; just call Decode directly
 		// on the built Formative.
 		dec, ok := Decode(f)
 		if !ok {
@@ -115,22 +115,22 @@ func TestRender_RoundTripsThroughFullparse(t *testing.T) {
 	// values. This is the real end-to-end pipeline.
 	cases := []int{0, 1, 5, 10, 11, 42, 99}
 	for _, n := range cases {
-		surface, ok := Render(n, Cardinal, Concrete, g.THM)
+		rom, ok := Render(n, Cardinal, Concrete, g.THM)
 		if !ok {
 			t.Fatalf("Render(%d): ok=false", n)
 		}
-		f, err := fullparse.Formative(surface)
+		f, err := fullparse.Formative(rom)
 		if err != nil {
-			t.Errorf("Parse(%q): %v", surface, err)
+			t.Errorf("Parse(%q): %v", rom, err)
 			continue
 		}
 		dec, ok := Decode(f)
 		if !ok {
-			t.Errorf("Decode after parse(%q): ok=false (formative %+v)", surface, f)
+			t.Errorf("Decode after parse(%q): ok=false (formative %+v)", rom, f)
 			continue
 		}
 		if dec.Value != int64(n) {
-			t.Errorf("end-to-end %d: surface %q → %d", n, surface, dec.Value)
+			t.Errorf("end-to-end %d: romanization %q → %d", n, rom, dec.Value)
 		}
 	}
 }
@@ -255,7 +255,7 @@ func TestPhrase_GzaluiOmission(t *testing.T) {
 }
 
 func TestPhrase_ChainsMagnitudes(t *testing.T) {
-	// 21,000,000 = 21 × 100 × 10000. The expected surface is a chain
+	// 21,000,000 = 21 × 100 × 10000. The expected romanization is a chain
 	// of three words: 21, gz-PAR, pc-PAR.
 	words, ok := Phrase(21_000_000, Cardinal, Concrete)
 	if !ok {
@@ -429,7 +429,7 @@ func TestRenderSPT_ShortcutForm(t *testing.T) {
 }
 
 func TestRenderSPT_ParsesBack(t *testing.T) {
-	// Every (n, degree) combination renders to a surface form that
+	// Every (n, degree) combination renders to a romanization that
 	// parses back to the same value and SPT degree.
 	for n := 0; n <= 12; n++ {
 		for deg := SPTSecond; deg <= SPTCentury; deg++ {

@@ -22,7 +22,7 @@ func cmdSearch(args []string, stdout, stderr io.Writer, dataFile string) int {
 	fs.describe("Search the grammar inventory and the lexicon.", "[QUERY]")
 	category := fs.String("category", "c", "", "CAT", "grammar: list only this category (Case, Aspect, Bias, …)")
 	exact := fs.Bool("exact", "e", false, "grammar: exact abbreviation match against the query")
-	formMode := fs.Bool("form", "f", false, "grammar: treat the query as a surface form (vowel/consonant)")
+	formMode := fs.Bool("form", "f", false, "grammar: treat the query as a written form (vowel/consonant)")
 	limit := fs.Int("limit", "n", 20, "N", "lexicon: maximum hits per kind (default 20)")
 	if err := fs.Parse(args); err != nil {
 		return 2
@@ -49,7 +49,7 @@ func cmdSearch(args []string, stdout, stderr io.Writer, dataFile string) int {
 	}
 
 	// A category listing is a grammar request; there is no lexicon
-	// half to it. --form likewise asks what a surface form encodes.
+	// half to it. --form likewise asks what a written form encodes.
 	found := len(entries) > 0
 	if query != "" && !*formMode {
 		s := openStore(dataFile, stderr)

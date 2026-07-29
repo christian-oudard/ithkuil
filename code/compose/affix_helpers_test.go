@@ -54,7 +54,7 @@ func TestMCSDegreeForCaseScope(t *testing.T) {
 
 func TestWithMCSMood_RoundTrip(t *testing.T) {
 	// Build a FRAMED verbal formative and add MCS for SUB. The result
-	// should render to a surface that parses back with an MCS affix
+	// should render to a romanization that parses back with an MCS affix
 	// (consonant "bẓ") at degree 1 in Slot VII.
 	f := g.MinimalFormative("ml")
 	f.Final = g.FramedVerbal{Case: g.THM}
@@ -75,7 +75,7 @@ func TestWithMCSMood_RoundTrip(t *testing.T) {
 		}
 	}
 	if found == nil {
-		t.Fatalf("no MCS affix in round-tripped SlotVII (surface %q, slot7=%+v)", surf, back.SlotVII)
+		t.Fatalf("no MCS affix in round-tripped SlotVII (romanization %q, slot7=%+v)", surf, back.SlotVII)
 	}
 	if found.Degree != 1 {
 		t.Errorf("MCS degree = %d, want 1 (SUB)", found.Degree)
@@ -118,7 +118,7 @@ func TestWithCHC_RoundTrip(t *testing.T) {
 			}
 		}
 		if found == nil {
-			t.Errorf("CHC degree=%d: no CHC affix in round-trip (surface %q)", deg, surf)
+			t.Errorf("CHC degree=%d: no CHC affix in round-trip (romanization %q)", deg, surf)
 			continue
 		}
 		if found.Degree != deg {

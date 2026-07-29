@@ -274,7 +274,7 @@ func PowerFormative(i int, stem Stem, ver Version, c g.Case) (g.Formative, bool)
 }
 
 // Render builds the formative for n with the given Stem/Version/Case
-// and returns its surface form. Convenience wrapper around Formative
+// and returns its romanization. Convenience wrapper around Formative
 // + render.Formative.
 func Render(n int, stem Stem, ver Version, c g.Case) (string, bool) {
 	f, ok := Formative(n, stem, ver, c)
@@ -315,7 +315,7 @@ func Decode(f g.Formative) (Number, bool) {
 	return Number{Value: value, Stem: nv.s, Version: nv.v}, true
 }
 
-// Phrase returns the spoken form of n as a sequence of surface words
+// Phrase returns the spoken form of n as a sequence of romanizations
 // per ch. 13. For 0 ≤ n < 100 the slice has one element. For larger n
 // the encoding factors n recursively: at each level the largest fitting
 // magnitude p is extracted, the count n/p is itself expressed as a
@@ -335,7 +335,7 @@ func Decode(f g.Formative) (Number, bool) {
 // (e.g. *wallärsa gzalui pcalui* = 21,000,000 vs. *wallärsa pcalui* =
 // 210,000).
 //
-// Examples (showing semantic structure, not literal surface):
+// Examples (showing semantic structure, not literal rom):
 //
 //	4229       → [42 THM, 29 THM]                    (gzalui omitted)
 //	269,766    → [26 THM, of-10000 PAR, 97 COM, 66 THM]   (one gzalui omitted)
@@ -354,7 +354,7 @@ func Phrase(n int64, stem Stem, ver Version) ([]string, bool) {
 	words := make([]string, 0, len(terms))
 	for i, t := range terms {
 		if t.isMag {
-			w, ok := powerSurface(int(t.value), stem, ver)
+			w, ok := powerWord(int(t.value), stem, ver)
 			if !ok {
 				return nil, false
 			}
@@ -433,10 +433,10 @@ func phraseTerms(n int64) []phraseTerm {
 	return nil
 }
 
-// powerSurface returns the surface form of the i-th power-of-100 root
+// powerWord returns the romanization of the i-th power-of-100 root
 // rendered in PARTITIVE case ("gzalui", "wapcui", "ẓkẓalui", "čgalui"),
 // agreeing with the surrounding chain's stem/version.
-func powerSurface(i int, stem Stem, ver Version) (string, bool) {
+func powerWord(i int, stem Stem, ver Version) (string, bool) {
 	f, ok := PowerFormative(i, stem, ver, g.PAR)
 	if !ok {
 		return "", false
@@ -488,7 +488,7 @@ const (
 )
 
 // SptCs is the affix consonant for the SPT (Specified Points in
-// Calendrical Time) affix per §6. The spec gives two surface forms
+// Calendrical Time) affix per §6. The spec gives two romanizations
 // (-rw- / -ry-); -rw- is the canonical pre-vowel form.
 const SptCs = "rw"
 
@@ -530,7 +530,7 @@ func SPTDegree(f g.Formative) (int, bool) {
 }
 
 // RenderSPT builds and renders the SPT formative for n at the given
-// SPT degree. Uses the canonical w-shortcut surface form (Cc=w,
+// SPT degree. Uses the canonical w-shortcut romanization (Cc=w,
 // Vr/Ca elided) so the output matches spec convention for date and
 // time-of-day expressions. Returns ok=false for out-of-range inputs.
 func RenderSPT(n int, sptDegree int, stem Stem, ver Version) (string, bool) {

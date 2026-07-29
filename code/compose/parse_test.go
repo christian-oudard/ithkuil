@@ -49,7 +49,7 @@ func TestFormative_RoundTripGloss(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Formative(%q): %v", c.in, err)
 			}
-			// Sanity: must render to a non-empty surface word.
+			// Sanity: must render to a non-empty romanization.
 			if surf := render.Formative(f); surf == "" {
 				t.Errorf("rendered to empty string")
 			}
@@ -246,14 +246,14 @@ func TestFormative_SlotVAffixes(t *testing.T) {
 }
 
 // TestFormative_MaţřëullaitRoundTrip closes the loop on the community
-// endonym and on the older spelling it replaced: surface → canonical
+// endonym and on the older spelling it replaced: romanization → canonical
 // gloss → compose must land back on the same formative. The two words
 // differ only in which side of the Ca the SYS affix sits on, so this
 // fails the moment the gloss stops carrying the Ca boundary.
 func TestFormative_MaţřëullaitRoundTrip(t *testing.T) {
 	lex := mustLex(t)
 	gl := &gloss.Glosser{Lex: lex, Canonical: true}
-	cases := []struct{ surface, want, canonical string }{
+	cases := []struct{ rom, want, canonical string }{
 		// Slot V forces a §3.6.2 glottal into the shortcut encoding
 		// ("wamëu'ţřait"), which the plain form doesn't pay, so the
 		// plain form is canonical.
@@ -264,20 +264,20 @@ func TestFormative_MaţřëullaitRoundTrip(t *testing.T) {
 		{"malëuţřait", "m-SYS/5_2-DCD/1_2", "malëuţřait"},
 	}
 	for _, c := range cases {
-		f, err := fullparse.Formative(c.surface)
+		f, err := fullparse.Formative(c.rom)
 		if err != nil {
-			t.Fatalf("fullparse.Formative(%q): %v", c.surface, err)
+			t.Fatalf("fullparse.Formative(%q): %v", c.rom, err)
 		}
 		got := gl.Formative(f)
 		if got != c.want {
-			t.Fatalf("gloss(%q) = %q, want %q", c.surface, got, c.want)
+			t.Fatalf("gloss(%q) = %q, want %q", c.rom, got, c.want)
 		}
 		back, err := Formative(got, lex.Affixes)
 		if err != nil {
 			t.Fatalf("compose.Formative(%q): %v", got, err)
 		}
 		if again := gl.Formative(back); again != got {
-			t.Errorf("round-trip of %q: %q → %q", c.surface, got, again)
+			t.Errorf("round-trip of %q: %q → %q", c.rom, got, again)
 		}
 		if surf := render.Formative(back); surf != c.canonical {
 			t.Errorf("render(%q) = %q, want %q", got, surf, c.canonical)

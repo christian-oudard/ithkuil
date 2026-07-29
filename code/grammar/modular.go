@@ -51,13 +51,13 @@ var (
 
 // ModularAdjunct carries one or more SlotVIII-shaped content slots as
 // a stand-alone adjunct, scoping mood/aspect/etc. across an adjacent
-// formative instead of being embedded in it. Surface encoding details
+// formative instead of being embedded in it. Written encoding details
 // (the w-/y- Slot-1 prefix, the Cn pattern alternation, the V_H Slot-4
 // vowel) live in the Scope and Reach enums; Content holds the typed
 // (Vn, Cn) pairs as SlotVIII values.
 //
 // Scope, Reach, and Content together carry the full grammatical
-// content of §4.3 — no raw surface vowels remain in this struct.
+// content of §4.3 — no raw written vowels remain in this struct.
 type ModularAdjunct struct {
 	Scope   ModularScope
 	Reach   ModularReach

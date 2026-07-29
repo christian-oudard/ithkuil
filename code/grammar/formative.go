@@ -1,7 +1,7 @@
 package grammar
 
 // Formative is the full grammatical structure of a V4 Ithkuil word.
-// Every field carries grammatical meaning — surface-form encoding
+// Every field carries grammatical meaning — romanization encoding
 // decisions (shortcut form, default-value elision, stress diacritic
 // placement, §3.5.1 / §3.6.1 signals for Slot V presence, special Vv
 // markers for Cs/Ref roots) live in the render package.
@@ -25,7 +25,7 @@ package grammar
 // of scripts for performance. The parser accepts and discards it; it
 // has no representation on Formative.
 //
-// Render always emits the canonical surface for a given Formative —
+// Render always emits the canonical romanization for a given Formative —
 // shortcut form when conditions match, default elisions applied. A
 // formative parsed from a long-form input and re-rendered comes back
 // as the canonical (often shorter) form, by design. The non-canonical

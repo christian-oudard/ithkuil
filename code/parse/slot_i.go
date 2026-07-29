@@ -3,7 +3,7 @@ package parse
 import "github.com/christian-oudard/ithkuil/grammar"
 
 // ShortcutVariant is a parse-time observation of which Ca-shortcut
-// indicator the surface Cc cluster carried. The grammar itself does
+// indicator the written Cc cluster carried. The grammar itself does
 // not store this — it's a rendering choice — but the parser needs
 // to thread the info through so it can resolve Slot VI from the Vv
 // series.
@@ -18,7 +18,7 @@ const (
 // CcResult bundles the two pieces of Slot I that Cc can carry.
 //   - Concat marks the formative's role in a concatenation chain.
 //   - Shortcut tells the caller which Ca-shortcut indicator (if any)
-//     the surface Cc had; it does not appear in the grammar output.
+//     the written Cc had; it does not appear in the grammar output.
 type CcResult struct {
 	Concat   grammar.ConcatenationStatus
 	Shortcut ShortcutVariant

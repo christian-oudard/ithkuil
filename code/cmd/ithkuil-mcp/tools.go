@@ -26,7 +26,7 @@ func (s *server) registerTools(srv *mcp.Server) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "parse",
 		Description: "Tokenize, parse, and gloss every word in the given Ithkuil text. " +
-			"Returns surface, type (Form/Ref/Bias/...), one-line gloss, slot segments, " +
+			"Returns the romanization, type (Form/Ref/Bias/...), one-line gloss, slot segments, " +
 			"and per-word phonotactic validation, so parsing a word is also how you " +
 			"check that it is pronounceable Ithkuil. Text may be written in the ASCII " +
 			"digraph notation (aa→ä, t,→ţ, sq→š, e/→é); it is converted before parsing. " +
@@ -38,7 +38,7 @@ func (s *server) registerTools(srv *mcp.Server) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "compare",
 		Description: "Lay two Ithkuil words' slot breakdowns side by side and report " +
-			"what differs: one row per slot with each side's surface chunk and codes " +
+			"what differs: one row per slot with each side's written chunk and codes " +
 			"and whether they disagree, then the glossary categories whose code " +
 			"changed. Answers what one letter is doing without diffing two parse " +
 			"results by hand. A concatenation chain is compared member by member from " +
@@ -48,14 +48,14 @@ func (s *server) registerTools(srv *mcp.Server) {
 
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "compose",
-		Description: "Build a surface Ithkuil formative from a gloss-style expression. " +
+		Description: "Build a Ithkuil formative from a gloss-style expression. " +
 			"Each punctuation mark has one job: '-' separates slots, '.' joins category " +
 			"values inside a slot (S2.CPT, DYN.OBJ, MSS.G.RPV), '/' binds a degree or a " +
 			"case to a head (DEV/3, ACC/INS), '_' trails the affix Type (t/1_2), and ':' " +
 			"tags a stacked Ca (Ca:MSS.G). The root is a lowercase consonant cluster (Cr), " +
 			"or (ABBREV)/degree for a CsRoot, or (1m+2p) for a RefRoot. Affixes placed " +
 			"before the Ca land in Slot V (applying to the stem alone); write '{Ca}' for an " +
-			"all-default Ca that still needs to mark that boundary. The returned surface is " +
+			"all-default Ca that still needs to mark that boundary. The returned romanization is " +
 			"canonical. By default (verbose=false) descriptions are omitted. Set " +
 			"verbose=true for inline names and meanings. Examples: expression=\"ml\" → " +
 			"\"mlala\"; \"S2.CPT-ml-ERG\" → \"wimlo\"; " +
@@ -71,7 +71,7 @@ func (s *server) registerTools(srv *mcp.Server) {
 			"abbreviation than a root. With no query and no category, returns the list " +
 			"of category names. With category, lists all entries in that category (Case, " +
 			"Aspect, Bias, Mood, ...). With exact=true, the query must equal an " +
-			"abbreviation. With form=true, treats the query as a surface form (vowel or " +
+			"abbreviation. With form=true, treats the query as a written form (vowel or " +
 			"consonant) and answers from the grammar only. limit caps lexicon hits per " +
 			"kind (default 20). Example: query=\"ERG\"; category=\"Case\"; " +
 			"query=\"ëu\", form=true.",
@@ -98,8 +98,8 @@ type parseIn struct {
 }
 
 type segmentOut struct {
-	Chunk   string   `json:"chunk"`             // hyphen-decorated surface
-	Raw     string   `json:"raw"`               // bare surface chunk
+	Chunk   string   `json:"chunk"`             // hyphen-decorated romanization
+	Raw     string   `json:"raw"`               // bare written chunk
 	Slot    string   `json:"slot"`              // Cr, Vr, Ca, Vx₁, Cs₁, …
 	Encodes []string `json:"encodes"`           // codes encoded
 	Default bool     `json:"default,omitempty"` // all encoded codes are defaults
@@ -125,15 +125,15 @@ type rootHead struct {
 }
 
 type parseWord struct {
-	Surface    string          `json:"surface"`
-	Type       string          `json:"type"`
-	Gloss      string          `json:"gloss"`
-	Reason     string          `json:"reason,omitempty"` // why an unclassified word could not be read
-	Root       *rootHead       `json:"root,omitempty"`
-	Segments   []segmentOut    `json:"segments,omitempty"`
-	Glossary   []glossaryRow   `json:"glossary,omitempty"`
-	Valid      bool            `json:"valid"`
-	Violations []validationOut `json:"violations,omitempty"`
+	Romanization string          `json:"romanization"`
+	Type         string          `json:"type"`
+	Gloss        string          `json:"gloss"`
+	Reason       string          `json:"reason,omitempty"` // why an unclassified word could not be read
+	Root         *rootHead       `json:"root,omitempty"`
+	Segments     []segmentOut    `json:"segments,omitempty"`
+	Glossary     []glossaryRow   `json:"glossary,omitempty"`
+	Valid        bool            `json:"valid"`
+	Violations   []validationOut `json:"violations,omitempty"`
 }
 
 type parseOut struct {
@@ -152,9 +152,9 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 	out := make([]parseWord, len(tokens))
 	for i, t := range tokens {
 		w := parseWord{
-			Surface: t.Surface(),
-			Type:    view.Type(t),
-			Gloss:   glosser.Token(t),
+			Romanization: t.Romanization(),
+			Type:         view.Type(t),
+			Gloss:        glosser.Token(t),
 		}
 		switch tt := t.(type) {
 		case tokenize.FormativeWord:
@@ -199,7 +199,7 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 			}
 		case tokenize.UnknownWord:
 			// Without this the caller gets type "?" and a gloss that
-			// is the surface spelled back, and no way to tell an
+			// is the romanization spelled back, and no way to tell an
 			// unreadable word from an unsupported one. The shape
 			// split survives even when the grammatical decode fails,
 			// so both the reason and the split are available.
@@ -213,7 +213,7 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 			}
 		}
 		var ill phonology.Illegal
-		err := phonology.CheckText(t.Surface())
+		err := phonology.CheckText(t.Romanization())
 		w.Valid = err == nil
 		if errors.As(err, &ill) {
 			for _, v := range ill.Violations {
@@ -258,7 +258,7 @@ type glossDiffOut struct {
 // comparePairOut is one pair of formatives compared. Words that are not
 // chains give exactly one pair.
 type comparePairOut struct {
-	A           string         `json:"a"` // header: surface, plus chain role
+	A           string         `json:"a"` // header: romanization, plus chain role
 	B           string         `json:"b"`
 	Slots       []slotRowOut   `json:"slots"`
 	Differences []glossDiffOut `json:"differences,omitempty"`
@@ -362,11 +362,11 @@ type composeIn struct {
 }
 
 type composeOut struct {
-	Surface  string        `json:"surface"`
-	Gloss    string        `json:"gloss"`
-	Root     *rootHead     `json:"root,omitempty"`
-	Segments []segmentOut  `json:"segments,omitempty"`
-	Glossary []glossaryRow `json:"glossary,omitempty"`
+	Romanization string        `json:"romanization"`
+	Gloss        string        `json:"gloss"`
+	Root         *rootHead     `json:"root,omitempty"`
+	Segments     []segmentOut  `json:"segments,omitempty"`
+	Glossary     []glossaryRow `json:"glossary,omitempty"`
 }
 
 func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn) (*mcp.CallToolResult, composeOut, error) {
@@ -382,13 +382,13 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 	if err != nil {
 		return nil, composeOut{}, err
 	}
-	surface := render.Formative(f)
+	rom := render.Formative(f)
 	glosser := gloss.Glosser{Lex: s.lex}
-	segs := view.Segments(surface, f, s.lex)
+	segs := view.Segments(rom, f, s.lex)
 	head := view.Headword(f, s.lex)
 	out := composeOut{
-		Surface: surface,
-		Gloss:   glosser.Formative(f),
+		Romanization: rom,
+		Gloss:        glosser.Formative(f),
 	}
 	if head.Code != "" {
 		r := &rootHead{Code: head.Code}
@@ -404,7 +404,7 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 		})
 	}
 	if in.Verbose {
-		for _, ge := range view.Glossary(surface, f, segs, s.lex) {
+		for _, ge := range view.Glossary(rom, f, segs, s.lex) {
 			out.Glossary = append(out.Glossary, glossaryRow{
 				Category: ge.Category, Code: ge.Code,
 				Name: ge.Name, Meaning: ge.Meaning,
@@ -419,10 +419,10 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 // --------------------------------------------------------------------
 
 type searchIn struct {
-	Query    string `json:"query,omitempty" jsonschema:"abbreviation, category, surface form, or meaning substring"`
+	Query    string `json:"query,omitempty" jsonschema:"abbreviation, category, written form, or meaning substring"`
 	Category string `json:"category,omitempty" jsonschema:"restrict grammar hits to one category (Case, Aspect, Bias, ...)"`
 	Exact    bool   `json:"exact,omitempty" jsonschema:"if true, query must equal an abbreviation exactly"`
-	Form     bool   `json:"form,omitempty" jsonschema:"if true, treat query as a surface form (vowel or consonant); grammar only"`
+	Form     bool   `json:"form,omitempty" jsonschema:"if true, treat query as a written form (vowel or consonant); grammar only"`
 	Limit    int    `json:"limit,omitempty" jsonschema:"maximum lexicon hits per kind (default 20)"`
 }
 
@@ -482,7 +482,7 @@ func (s *server) search(_ context.Context, _ *mcp.CallToolRequest, in searchIn) 
 			hits = filterEntriesByCategory(hits, in.Category)
 		}
 		out.Entries = toGrammarEntries(hits)
-		// A surface form is a grammar question; the lexicon has no
+		// A written form is a grammar question; the lexicon has no
 		// answer to what a vowel encodes.
 		return nil, out, nil
 	}
@@ -576,9 +576,9 @@ type defineIn struct {
 // thematic formative, its canonical gloss, and the lexicon cell the
 // headword was read out of.
 type senseOut struct {
-	Surface string `json:"surface"`
-	Gloss   string `json:"gloss"`
-	Meaning string `json:"meaning"`
+	Romanization string `json:"romanization"`
+	Gloss        string `json:"gloss"`
+	Meaning      string `json:"meaning"`
 }
 
 type defineOut struct {
@@ -609,9 +609,9 @@ func (s *server) define(_ context.Context, _ *mcp.CallToolRequest, in defineIn) 
 		}
 		f := sense.Formative()
 		out.Senses = append(out.Senses, senseOut{
-			Surface: render.Formative(f),
-			Gloss:   glosser.Formative(f),
-			Meaning: sense.Gloss,
+			Romanization: render.Formative(f),
+			Gloss:        glosser.Formative(f),
+			Meaning:      sense.Gloss,
 		})
 	}
 	return nil, out, nil

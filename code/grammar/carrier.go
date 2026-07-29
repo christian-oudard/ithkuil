@@ -23,14 +23,14 @@ var carrierForms = [...]string{
 	Phrasal:   "hň",
 }
 
-// CarrierTypeForm returns the surface consonant cluster for a CarrierType.
+// CarrierTypeForm returns the written consonant cluster for a CarrierType.
 func CarrierTypeForm(c CarrierType) string { return carrierForms[c] }
 
 // AllCarrierTypes enumerates the four types in declaration order.
 var AllCarrierTypes = []CarrierType{Carrier, Quotative, Naming, Phrasal}
 
 // CarrierAdjunct is a carrier word marked by a CarrierType consonant
-// cluster and a Case that scopes the embedded content. The surface
+// cluster and a Case that scopes the embedded content. The romanization
 // Vc vowel is derivable via CaseToVc(adjunct.Case).
 type CarrierAdjunct struct {
 	Type CarrierType

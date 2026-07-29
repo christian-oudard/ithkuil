@@ -25,7 +25,7 @@ type Block struct {
 	Note    string
 }
 
-// Header is how a Block titles itself: the surface, plus the part it
+// Header is how a Block titles itself: the romanization, plus the part it
 // plays when it is one member of a chain.
 func (b Block) Header() string {
 	if b.Role == "" {
@@ -35,7 +35,7 @@ func (b Block) Header() string {
 }
 
 // Side is one word to compare: a single formative or adjunct is one
-// block, a concatenation chain is one block per member, in surface
+// block, a concatenation chain is one block per member, in written
 // order (dependents first, parent last, §3.1.7).
 type Side struct {
 	Word   string
@@ -53,26 +53,26 @@ func BuildSide(word string, lex *lexicon.Lexicon) (Side, error) {
 	if len(tokens) != 1 {
 		return Side{}, fmt.Errorf("%s: expected one word, got %d tokens", word, len(tokens))
 	}
-	surface := strings.ToLower(tokens[0].Surface())
+	rom := strings.ToLower(tokens[0].Romanization())
 	switch t := tokens[0].(type) {
 	case tokenize.FormativeWord:
-		return Side{surface, []Block{FormativeBlock(t.Text, t.Formative, "", lex)}}, nil
+		return Side{rom, []Block{FormativeBlock(t.Text, t.Formative, "", lex)}}, nil
 	case tokenize.ModularWord:
 		segs := SegmentsModular(t.Text, t.Modular, t.MarksMood)
-		return Side{surface, []Block{{
+		return Side{rom, []Block{{
 			Word:    strings.ToLower(t.Text),
 			Segs:    segs,
 			Gloss:   GlossaryModular(segs),
 			Decoded: true,
 		}}}, nil
 	case tokenize.ConcatenatedFormativeWord:
-		return Side{surface, chainBlocks(t, lex)}, nil
+		return Side{rom, chainBlocks(t, lex)}, nil
 	case tokenize.UnknownWord:
 		bl, err := unknownBlock(t.Text)
 		if err != nil {
 			return Side{}, err
 		}
-		return Side{surface, []Block{bl}}, nil
+		return Side{rom, []Block{bl}}, nil
 	default:
 		return Side{}, fmt.Errorf("%s: %s has no slot breakdown to compare", word, Type(tokens[0]))
 	}
@@ -92,8 +92,8 @@ func FormativeBlock(text string, f g.Formative, role string, lex *lexicon.Lexico
 }
 
 // chainBlocks splits a concatenation chain into one block per member.
-// The chain's surface is hyphen-joined, so splitting on "-" recovers
-// each member's own surface. Dependents lead and the parent comes last
+// The chain's romanization is hyphen-joined, so splitting on "-" recovers
+// each member's own romanization. Dependents lead and the parent comes last
 // (§3.1.7), but the Cc marker is what tells them apart, not position.
 func chainBlocks(cw tokenize.ConcatenatedFormativeWord, lex *lexicon.Lexicon) []Block {
 	parts := strings.Split(cw.Text, "-")
@@ -104,11 +104,11 @@ func chainBlocks(cw tokenize.ConcatenatedFormativeWord, lex *lexicon.Lexicon) []
 		if f.Concat != g.ConcatNone {
 			role = f.Concat.String() + " dependent"
 		}
-		surface := ""
+		rom := ""
 		if i < len(parts) {
-			surface = parts[i]
+			rom = parts[i]
 		}
-		blocks = append(blocks, FormativeBlock(surface, f, role, lex))
+		blocks = append(blocks, FormativeBlock(rom, f, role, lex))
 	}
 	return blocks
 }
@@ -187,7 +187,7 @@ func SlotDiff(a, b Block) []SlotRow {
 	byShape := !a.Decoded || !b.Decoded
 	if byShape {
 		// A shape split lists only the conjuncts that are there, with
-		// no placeholder for a slot the surface elides. Drop the other
+		// no placeholder for a slot the romanization elides. Drop the other
 		// side's placeholders too, or every elision reads as a
 		// difference.
 		segsA, segsB = dropElided(segsA), dropElided(segsB)

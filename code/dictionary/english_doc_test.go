@@ -3,7 +3,7 @@ package dictionary_test
 // docs/dictionary/english.md claims that a list of Ithkuil words is
 // built on the root or affix named above them. Those claims are checked
 // here, so an entry cannot quietly go stale when the lexicon or the
-// canonical surface changes. The document is the source; this test is
+// canonical romanization changes. The document is the source; this test is
 // the proof.
 
 import (

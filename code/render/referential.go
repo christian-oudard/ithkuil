@@ -10,7 +10,7 @@ import (
 )
 
 // Referential renders a §4.6.1 single- or dual-referential to its
-// canonical surface. Ultimate stress marks RPV Essence; every other
+// canonical romanization. Ultimate stress marks RPV Essence; every other
 // form is left unmarked, which §4.6.1 gives as the default.
 func Referential(r g.Referential) (string, error) {
 	head, err := refHeadForm(r.Head)

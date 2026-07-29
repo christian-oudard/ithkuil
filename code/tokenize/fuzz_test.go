@@ -9,7 +9,7 @@ import (
 )
 
 // FuzzClassifyWord runs ClassifyWord on arbitrary strings and asserts
-// it never panics, never returns a token whose Surface() differs from
+// it never panics, never returns a token whose Romanization() differs from
 // the input, and accepts only inputs that parse as phonology. Seeded
 // with a representative corpus across word types.
 func FuzzClassifyWord(f *testing.F) {
@@ -52,8 +52,8 @@ func FuzzClassifyWord(f *testing.F) {
 		if tok == nil {
 			t.Fatalf("ClassifyWord(%q) returned nil token", in)
 		}
-		if tok.Surface() != in {
-			t.Fatalf("ClassifyWord(%q).Surface() = %q, want %q", in, tok.Surface(), in)
+		if tok.Romanization() != in {
+			t.Fatalf("ClassifyWord(%q).Romanization() = %q, want %q", in, tok.Romanization(), in)
 		}
 
 		// Char-validation is now a hard precondition. Anything with a
@@ -69,7 +69,7 @@ func FuzzClassifyWord(f *testing.F) {
 
 // FuzzTokenize feeds whole sentences (whitespace-joined fields) to
 // Tokenize and asserts the result is well-formed: every token's
-// Surface concatenates back to a substring of the input, and the
+// Romanization concatenates back to a substring of the input, and the
 // MarksMood post-pass never panics on weird neighbour combinations.
 func FuzzTokenize(f *testing.F) {
 	seeds := []string{
@@ -99,9 +99,9 @@ func FuzzTokenize(f *testing.F) {
 			if tok == nil {
 				t.Fatalf("Tokenize(%q): token %d is nil", in, i)
 			}
-			if tok.Surface() != fields[i] {
-				t.Fatalf("Tokenize(%q): token %d Surface() = %q, want %q",
-					in, i, tok.Surface(), fields[i])
+			if tok.Romanization() != fields[i] {
+				t.Fatalf("Tokenize(%q): token %d Romanization() = %q, want %q",
+					in, i, tok.Romanization(), fields[i])
 			}
 		}
 		_ = phonology.SplitConjuncts(in) // ensure Layer B doesn't panic either

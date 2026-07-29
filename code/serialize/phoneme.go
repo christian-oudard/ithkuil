@@ -2,7 +2,7 @@
 // grammatical structure a formative parses into, written as bytes.
 //
 // The point is to store meaning rather than pronunciation. A
-// grammar.Formative is the parsed word, and the romanized surface is
+// grammar.Formative is the parsed word, and the romanization is
 // one rendering of it; this codec writes the structure directly, so
 // nothing depends on orthographic or phonotactic detail.
 //

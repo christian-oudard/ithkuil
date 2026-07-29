@@ -135,7 +135,7 @@ func isUnknown(t WordToken) bool {
 }
 
 func TestClassifyWord_Concatenated(t *testing.T) {
-	// Per §3.1.1, the concatenated formative comes FIRST in surface
+	// Per §3.1.1, the concatenated formative comes FIRST in written
 	// order with a Cc marker, and the parent comes LAST without one.
 	// "hamlala-amlala" = Type1-concat "hamlala" (h prefix) + parent
 	// "amlala".
@@ -167,7 +167,7 @@ func TestClassifyWord_Unknown(t *testing.T) {
 
 // TestClassifyWord_IthkuilGlossCorpus is a smoke test seeded with
 // example words from the Kotlin IthkuilGloss test suite (WordTests.kt).
-// We assert classifier types only — our gloss surface differs from
+// We assert classifier types only — our gloss differs from
 // theirs so a literal port isn't useful, but the classifier should at
 // least agree on what kind of word each input is.
 //
@@ -374,13 +374,13 @@ func TestTokenize_Empty(t *testing.T) {
 	}
 }
 
-func TestSurface(t *testing.T) {
-	// Every word token preserves its original surface text.
+func TestRomanization(t *testing.T) {
+	// Every word token preserves its original romanization.
 	cases := []string{"malëuţřait", "řřx", "ha", "hai", "hla", "ah"}
 	for _, w := range cases {
 		tok := ClassifyWord(w)
-		if tok.Surface() != w {
-			t.Errorf("token Surface() = %q, want %q", tok.Surface(), w)
+		if tok.Romanization() != w {
+			t.Errorf("token Romanization() = %q, want %q", tok.Romanization(), w)
 		}
 	}
 }

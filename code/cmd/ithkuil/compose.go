@@ -11,7 +11,7 @@ import (
 )
 
 // cmdCompose builds a formative from a gloss-style expression and
-// prints the surface form plus the gloss it round-trips through.
+// prints the romanization plus the gloss it round-trips through.
 //
 // Usage: ithkuil compose EXPR
 //
@@ -24,7 +24,7 @@ import (
 //	S2.CPT-ml-DYN.OBJ-MSS.G.RPV-DEV/3-ERG
 func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 	fs := newFlagSet("compose", stderr)
-	fs.describe("Build a surface formative from a gloss-style expression.", "EXPR")
+	fs.describe("Build a romanized formative from a gloss-style expression.", "EXPR")
 	if err := fs.Parse(args); err != nil {
 		return 2
 	}

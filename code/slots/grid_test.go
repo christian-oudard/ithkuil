@@ -128,7 +128,7 @@ func TestRoundTrip_Grid_ConcatShortcut(t *testing.T) {
 				if err != nil {
 					t.Fatalf("ToGrammar (shortcut): %v", err)
 				}
-				if !reflect.DeepEqual(stripSurface(got), f) {
+				if !reflect.DeepEqual(got, f) {
 					t.Errorf("shortcut+concat drift:\n  got  %+v\n  want %+v", got, f)
 				}
 			})
@@ -203,7 +203,7 @@ func TestRestoreMovedGlottal(t *testing.T) {
 }
 
 // TestParse_SlotV exercises parseFromCa's Slot V branch: render a
-// Slot-V formative and re-parse the surface, asserting the affixes
+// Slot-V formative and re-parse the romanization, asserting the affixes
 // come back. This is the path the existing test corpus barely
 // touches because most natural strings don't have geminated Ca.
 func TestParse_SlotV(t *testing.T) {
@@ -216,13 +216,13 @@ func TestParse_SlotV(t *testing.T) {
 		{Type: g.Type1Affix, Degree: 5, Consonant: "r"},
 	}
 	l := FromGrammar(f)
-	surface := Render(l)
-	got, err := Parse(surface)
+	rom := Render(l)
+	got, err := Parse(rom)
 	if err != nil {
-		t.Fatalf("Parse(%q): %v", surface, err)
+		t.Fatalf("Parse(%q): %v", rom, err)
 	}
 	if len(got.SlotV) != 2 {
-		t.Errorf("Parse(%q): SlotV count = %d, want 2", surface, len(got.SlotV))
+		t.Errorf("Parse(%q): SlotV count = %d, want 2", rom, len(got.SlotV))
 	}
 }
 

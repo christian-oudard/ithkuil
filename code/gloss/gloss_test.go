@@ -335,17 +335,17 @@ func TestFormative_CanonicalWord(t *testing.T) {
 	// in the first and Slot VII in the second, and the "{Ca}" marker is
 	// what keeps the two glosses apart. Type 2 emits a "₂" subscript in
 	// display mode (silent in canonical mode); Type 1 stays silent.
-	cases := []struct{ surface, want string }{
+	cases := []struct{ rom, want string }{
 		{"maţřëullait", "-m--ţř/5₂-{Ca}-t/1₂"},
 		{"malëuţřait", "-m--ţř/5₂-t/1₂"},
 	}
 	for _, c := range cases {
-		parsed, err := fullparse.Formative(c.surface)
+		parsed, err := fullparse.Formative(c.rom)
 		if err != nil {
-			t.Fatalf("parse %q: %v", c.surface, err)
+			t.Fatalf("parse %q: %v", c.rom, err)
 		}
 		if got := Formative(parsed); got != c.want {
-			t.Errorf("Formative(%s) = %q, want %q", c.surface, got, c.want)
+			t.Errorf("Formative(%s) = %q, want %q", c.rom, got, c.want)
 		}
 	}
 }

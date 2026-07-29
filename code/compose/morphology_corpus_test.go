@@ -15,7 +15,7 @@ import (
 // as a FormativeWord. Each word in tokenize/morphology_corpus_test.go
 // that successfully classifies and parses goes through:
 //
-//	surface ─tokenize→ FormativeWord
+//	romanization ─tokenize→ FormativeWord
 //	         ─fullparse→ grammar.Formative
 //	         ─gloss(Canonical)→ G1
 //	         ─compose.Formative→ Formative'
@@ -50,14 +50,14 @@ func TestFullDistance_MorphologyCorpus(t *testing.T) {
 			}
 			s2 := gl.Formative(f2)
 			if s1 != s2 {
-				t.Errorf("gloss round-trip mismatch\n  surface: %s\n  first:   %s\n  second:  %s",
+				t.Errorf("gloss round-trip mismatch\n  romanization: %s\n  first:   %s\n  second:  %s",
 					w, s1, s2)
 			}
 		})
 	}
 }
 
-// morphologyCorpusWords mirrors the spec-worked-example surfaces in
+// morphologyCorpusWords mirrors the spec-worked-example romanizations in
 // tokenize/morphology_corpus_test.go. Kept here as a flat list so the
 // compose-level test doesn't reach into another package's test code.
 // Update when the source corpus grows.

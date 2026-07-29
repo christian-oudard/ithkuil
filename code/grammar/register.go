@@ -1,7 +1,7 @@
 package grammar
 
 // Register marks the discourse mode of a stretch of text. Narrative
-// (NRR) is the unmarked default and produces no surface marker.
+// (NRR) is the unmarked default and produces no written marker.
 // Other registers are opened by an h-vowel adjunct and closed by an
 // "h…i"/"h…u" finalizer.
 type Register int
@@ -47,10 +47,10 @@ var registerFinalForms = [...]string{
 	END: "hüi",
 }
 
-// RegisterInitialForm returns the opening adjunct surface for r.
+// RegisterInitialForm returns the opening adjunct romanization for r.
 // Empty if r has no opening form (NRR, END).
 func RegisterInitialForm(r Register) string { return registerInitialForms[r] }
 
-// RegisterFinalForm returns the closing adjunct surface for r.
+// RegisterFinalForm returns the closing adjunct romanization for r.
 // Empty if r has no closing form (NRR).
 func RegisterFinalForm(r Register) string { return registerFinalForms[r] }

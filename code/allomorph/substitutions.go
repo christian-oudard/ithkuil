@@ -58,7 +58,7 @@ var secondPassSubstitutions = []rule{
 // The §3.6 substitution "ţbn → (tḑ) → ḑy" cannot cover both cases that
 // need it. MDS composes "ţbn" and MSS composes "tbn"; the rule names
 // the first on its input side and the second in its intermediate, and
-// routing both through it collapses two Ca values onto one surface
+// routing both through it collapses two Ca values onto one romanization
 // form that ParseCa cannot separate. Whichever we take, the other
 // composes an unsayable cluster: "ţḑ" under §2.5 or "tḑ" under §2.2.
 // We take the intermediate, which is the older reading here.
@@ -112,7 +112,7 @@ func ApplySubstitutions(s string) string {
 	return s
 }
 
-// ConstructCa builds the surface Ca consonant cluster for a SlotVI by
+// ConstructCa builds the written Ca consonant cluster for a SlotVI by
 // composing the raw form and applying allomorphic substitutions.
 func ConstructCa(s g.SlotVI) string {
 	return ApplySubstitutions(ConstructCaRaw(s))

@@ -122,7 +122,7 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 		}
 	}
 
-	// Build typed Content from the surface pairs (and the trailing
+	// Build typed Content from the romanization pairs (and the trailing
 	// aspect vowel when present without a Cn — lone-aspect modular).
 	var content []grammar.SlotVIII
 	for _, p := range pairs {

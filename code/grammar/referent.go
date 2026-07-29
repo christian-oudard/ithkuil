@@ -1,7 +1,7 @@
 package grammar
 
 // This file holds the §4.6 personal-reference vocabulary: the values a
-// referential is built from, with no surface knowledge. The consonant
+// referential is built from, with no knowledge of the romanization. The consonant
 // forms that spell them live in parse, alongside the other lookup
 // tables.
 

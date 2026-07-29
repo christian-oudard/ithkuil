@@ -1,6 +1,6 @@
 // Package grammar holds the morphological categories of Ithkuil V4
 // (Stem, Version, Function, Case, etc.) and the slot tuples that combine
-// them. Encoding from grammar values to surface vowels/consonants lives
+// them. Encoding from grammar values to written vowels/consonants lives
 // here too; parsing in the reverse direction lives in package parse.
 package grammar
 

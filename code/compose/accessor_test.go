@@ -45,7 +45,7 @@ func TestAccessor_RoundTrip(t *testing.T) {
 			continue
 		}
 		if again := gl.Formative(back); again != in {
-			t.Errorf("round trip of %q came back as %q (surface %q)", in, again, w)
+			t.Errorf("round trip of %q came back as %q (romanization %q)", in, again, w)
 		}
 	}
 }

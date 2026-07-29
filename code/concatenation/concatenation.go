@@ -9,10 +9,10 @@ import (
 )
 
 // Chain is a list of concatenated dependents followed by the parent
-// formative (§3.1.7). On the surface the parent comes LAST: the spec
+// formative (§3.1.7). On the romanization the parent comes LAST: the spec
 // terms the leading formative(s) "concatenated" — each carries a Cc
 // marker in Slot I — and the trailing one "parent" — which has no Cc.
-// Head holds the parent; Tail holds the dependents in surface order.
+// Head holds the parent; Tail holds the dependents in written order.
 // Each dependent's own Concat field tells Type-1 from Type-2 apart.
 type Chain struct {
 	Head g.Formative
@@ -40,7 +40,7 @@ func (c *Chain) AddType2(f g.Formative) *Chain {
 	return c
 }
 
-// Formatives returns every formative in the chain in surface order:
+// Formatives returns every formative in the chain in written order:
 // the leading concatenated dependents first, then the parent.
 func (c *Chain) Formatives() []g.Formative {
 	out := make([]g.Formative, 0, 1+len(c.Tail))
@@ -52,7 +52,7 @@ func (c *Chain) Formatives() []g.Formative {
 // Length returns the total number of formatives in the chain.
 func (c *Chain) Length() int { return 1 + len(c.Tail) }
 
-// ConcatMarker returns the surface Slot I consonant for a
+// ConcatMarker returns the romanization Slot I consonant for a
 // ConcatenationStatus, or "" for the None state.
 func ConcatMarker(s g.ConcatenationStatus) string {
 	switch s {

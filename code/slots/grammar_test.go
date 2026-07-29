@@ -7,15 +7,6 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 )
 
-// stripSurface returns a copy of f with the Surface hint cleared. Used
-// in round-trip tests that build a Formative programmatically (Surface
-// = nil) and want to compare against the result of FromGrammar +
-// ToGrammar, which records the surface choices made by FromGrammar's
-// canonical defaults.
-func stripSurface(f g.Formative) g.Formative {
-	return f
-}
-
 // TestFromGrammar_ToGrammar_RoundTrip drives Layer D inverse-then-
 // forward and checks the original Formative is recovered. The corpus
 // is a hand-picked set spanning shapes (Cr/Cs/Ref) and Final variants
@@ -99,7 +90,7 @@ func TestFromGrammar_ToGrammar_RoundTrip(t *testing.T) {
 			if err != nil {
 				t.Fatalf("ToGrammar: %v", err)
 			}
-			if !reflect.DeepEqual(stripSurface(got), tc.f) {
+			if !reflect.DeepEqual(got, tc.f) {
 				t.Errorf("round-trip drift:\n  got  %+v\n  want %+v", got, tc.f)
 			}
 		})
@@ -110,7 +101,7 @@ func TestFromGrammar_ToGrammar_RoundTrip(t *testing.T) {
 // FromGrammar. Eligibility needs a CrRoot with default SlotIV and a
 // Slot VI the shortcut table can encode, but eligibility alone isn't
 // enough: the shortcut is only taken when it produces a shorter
-// surface, which needs a Vv that wouldn't have elided anyway.
+// rom, which needs a Vv that wouldn't have elided anyway.
 func TestFromGrammar_Shortcut(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	cr := f.Root.(g.CrRoot)
@@ -125,7 +116,7 @@ func TestFromGrammar_Shortcut(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ToGrammar after shortcut: %v", err)
 	}
-	if !reflect.DeepEqual(stripSurface(got), f) {
+	if !reflect.DeepEqual(got, f) {
 		t.Errorf("shortcut round-trip drift:\n  got  %+v\n  want %+v", got, f)
 	}
 }
@@ -150,7 +141,7 @@ func TestFromGrammar_Slot8_EffectAndLevel(t *testing.T) {
 			if err != nil {
 				t.Fatalf("ToGrammar: %v", err)
 			}
-			if !reflect.DeepEqual(stripSurface(got), tc.f) {
+			if !reflect.DeepEqual(got, tc.f) {
 				t.Errorf("round-trip drift:\n  got  %+v\n  want %+v", got, tc.f)
 			}
 		})
@@ -161,7 +152,7 @@ func TestFromGrammar_Slot8_EffectAndLevel(t *testing.T) {
 // formative with a Slot V affix whose final Vx carries the end-of-
 // slot glottal-stop. The parser must recognise the (Vx, Cs) order
 // (not the reversed (Cs, Vx) used when Ca is present) and split the
-// "'C" surface conjunct so the leading glottal is stripped from the
+// "'C" written conjunct so the leading glottal is stripped from the
 // Cs, leaving the affix's true consonant.
 func TestParse_ShortcutSlotV(t *testing.T) {
 	cases := []struct {

@@ -123,7 +123,7 @@ func TestFormative_NoMovedGlottal_OtherCases(t *testing.T) {
 
 func TestFormative_CnCaShortcut_AllVariants(t *testing.T) {
 	// All five Pattern-1 non-FAC Cn variants produce the canonical
-	// short-form surface when paired with default Ca and MNO Valence.
+	// short-form romanization when paired with default Ca and MNO Valence.
 	cases := []struct {
 		mood g.Mood
 		want string

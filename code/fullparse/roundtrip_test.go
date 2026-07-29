@@ -14,42 +14,42 @@ import (
 // parsed Formative matches f field-by-field.
 func assertRoundTrip(t *testing.T, name string, f g.Formative) {
 	t.Helper()
-	surface := render.Formative(f)
-	if err := phonology.CheckText(surface); err != nil && !allomorph.UnresolvedCa(surface) {
+	rom := render.Formative(f)
+	if err := phonology.CheckText(rom); err != nil && !allomorph.UnresolvedCa(rom) {
 		t.Errorf("%s: render produced %q, which our own validator rejects: %v",
-			name, surface, err)
+			name, rom, err)
 	}
-	parsed, err := Formative(surface)
+	parsed, err := Formative(rom)
 	if err != nil {
-		t.Errorf("%s: Formative(%q): %v", name, surface, err)
+		t.Errorf("%s: Formative(%q): %v", name, rom, err)
 		return
 	}
 	if !reflect.DeepEqual(parsed.Root, f.Root) {
-		t.Errorf("%s: Root: got %v, want %v (surface %q)", name, parsed.Root, f.Root, surface)
+		t.Errorf("%s: Root: got %v, want %v (romanization %q)", name, parsed.Root, f.Root, rom)
 	}
 	if parsed.SlotVI != f.SlotVI {
-		t.Errorf("%s: SlotVI: got %v, want %v (surface %q)", name, parsed.SlotVI, f.SlotVI, surface)
+		t.Errorf("%s: SlotVI: got %v, want %v (romanization %q)", name, parsed.SlotVI, f.SlotVI, rom)
 	}
 	if !reflect.DeepEqual(parsed.SlotV, f.SlotV) {
-		t.Errorf("%s: SlotV: got %v, want %v (surface %q)", name, parsed.SlotV, f.SlotV, surface)
+		t.Errorf("%s: SlotV: got %v, want %v (romanization %q)", name, parsed.SlotV, f.SlotV, rom)
 	}
 	if !reflect.DeepEqual(parsed.SlotVII, f.SlotVII) {
-		t.Errorf("%s: SlotVII: got %v, want %v (surface %q)", name, parsed.SlotVII, f.SlotVII, surface)
+		t.Errorf("%s: SlotVII: got %v, want %v (romanization %q)", name, parsed.SlotVII, f.SlotVII, rom)
 	}
 	if !reflect.DeepEqual(parsed.SlotVIII, f.SlotVIII) {
-		t.Errorf("%s: SlotVIII: got %v, want %v (surface %q)", name, parsed.SlotVIII, f.SlotVIII, surface)
+		t.Errorf("%s: SlotVIII: got %v, want %v (romanization %q)", name, parsed.SlotVIII, f.SlotVIII, rom)
 	}
 	if !reflect.DeepEqual(parsed.Final, f.Final) {
-		t.Errorf("%s: Final: got %v, want %v (surface %q)", name, parsed.Final, f.Final, surface)
+		t.Errorf("%s: Final: got %v, want %v (romanization %q)", name, parsed.Final, f.Final, rom)
 	}
 	if parsed.Concat != f.Concat {
-		t.Errorf("%s: Concat: got %v, want %v (surface %q)", name, parsed.Concat, f.Concat, surface)
+		t.Errorf("%s: Concat: got %v, want %v (romanization %q)", name, parsed.Concat, f.Concat, rom)
 	}
 }
 
 // TestRoundTrip_Final asserts parse(render(F)).Final == F.Final for
 // every reasonable Final variant. This is the guard rail that catches
-// accidental category shifts where the rendered surface form's default
+// accidental category shifts where the rendered romanization's default
 // stress disagrees with the Formative's intended category.
 func TestRoundTrip_Final(t *testing.T) {
 	mkFormative := func(final g.Final) g.Formative {
@@ -84,13 +84,13 @@ func TestRoundTrip_Final(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			surface := render.Formative(tc.f)
-			parsed, err := Formative(surface)
+			rom := render.Formative(tc.f)
+			parsed, err := Formative(rom)
 			if err != nil {
-				t.Fatalf("Formative(%q): %v", surface, err)
+				t.Fatalf("Formative(%q): %v", rom, err)
 			}
 			if !reflect.DeepEqual(parsed.Final, tc.f.Final) {
-				t.Errorf("Final: got %v, want %v (surface: %q)", parsed.Final, tc.f.Final, surface)
+				t.Errorf("Final: got %v, want %v (romanization: %q)", parsed.Final, tc.f.Final, rom)
 			}
 		})
 	}
@@ -257,7 +257,7 @@ func TestRoundTrip_SlotVIII_VerbalMood(t *testing.T) {
 
 // TestRoundTrip_ShortcutEncodableSlotVI walks every SlotVI value that
 // the renderer can encode via Cc-Vv shortcut form. Each combination
-// renders to a shortcut surface and parses back to the same SlotVI.
+// renders to a shortcut romanization and parses back to the same SlotVI.
 // The shortcut/W vs shortcut/Y distinction is purely a rendering
 // choice — the grammar carries only the SlotVI.
 func TestRoundTrip_ShortcutEncodableSlotVI(t *testing.T) {
@@ -294,14 +294,14 @@ func TestRoundTrip_ShortcutEncodableSlotVI(t *testing.T) {
 		f.SlotVI = c.slotVI
 		t.Run(c.name, func(t *testing.T) {
 			assertRoundTrip(t, c.name, f)
-			// Also exercise the shortcut surface form explicitly.
-			surface := render.Formative(f)
-			parsed, err := Formative(surface)
+			// Also exercise the shortcut romanization explicitly.
+			rom := render.Formative(f)
+			parsed, err := Formative(rom)
 			if err != nil {
-				t.Fatalf("Formative(%q): %v", surface, err)
+				t.Fatalf("Formative(%q): %v", rom, err)
 			}
 			if parsed.SlotVI != c.slotVI {
-				t.Errorf("shortcut SlotVI: got %v, want %v (surface %q)", parsed.SlotVI, c.slotVI, surface)
+				t.Errorf("shortcut SlotVI: got %v, want %v (romanization %q)", parsed.SlotVI, c.slotVI, rom)
 			}
 		})
 	}

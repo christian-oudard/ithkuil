@@ -8,7 +8,7 @@
 // The classifier tries parsers in priority order tightest-first:
 //
 //  1. Pure-consonant single conjunct → Bias.
-//  2. Recognized register opener/closer surface → Register.
+//  2. Recognized register opener/closer romanization → Register.
 //  3. Recognized carrier consonant + vowel → Carrier.
 //  4. Vowel + valid Cn consonant → Modular.
 //  5. A referential, then a combination referential.
@@ -27,10 +27,10 @@ import (
 )
 
 // WordToken is the sealed sum type for classified words. Each variant
-// carries the original surface text plus the parsed data appropriate
+// carries the original romanization plus the parsed data appropriate
 // to its kind.
 type WordToken interface {
-	Surface() string
+	Romanization() string
 	word()
 }
 
@@ -40,8 +40,8 @@ type FormativeWord struct {
 	Formative g.Formative
 }
 
-func (f FormativeWord) Surface() string { return f.Text }
-func (FormativeWord) word()             {}
+func (f FormativeWord) Romanization() string { return f.Text }
+func (FormativeWord) word()                  {}
 
 // ConcatenatedFormativeWord wraps a hyphen-joined chain of two or more
 // formatives. The first part is the head; subsequent parts must each
@@ -51,8 +51,8 @@ type ConcatenatedFormativeWord struct {
 	Chain *concatenation.Chain
 }
 
-func (c ConcatenatedFormativeWord) Surface() string { return c.Text }
-func (ConcatenatedFormativeWord) word()             {}
+func (c ConcatenatedFormativeWord) Romanization() string { return c.Text }
+func (ConcatenatedFormativeWord) word()                  {}
 
 // BiasWord is a stand-alone bias adjunct.
 type BiasWord struct {
@@ -60,8 +60,8 @@ type BiasWord struct {
 	Bias g.Bias
 }
 
-func (b BiasWord) Surface() string { return b.Text }
-func (BiasWord) word()             {}
+func (b BiasWord) Romanization() string { return b.Text }
+func (BiasWord) word()                  {}
 
 // RegisterStartWord opens a non-narrative register.
 type RegisterStartWord struct {
@@ -69,8 +69,8 @@ type RegisterStartWord struct {
 	Register g.Register
 }
 
-func (r RegisterStartWord) Surface() string { return r.Text }
-func (RegisterStartWord) word()             {}
+func (r RegisterStartWord) Romanization() string { return r.Text }
+func (RegisterStartWord) word()                  {}
 
 // RegisterEndWord closes a register.
 type RegisterEndWord struct {
@@ -78,13 +78,13 @@ type RegisterEndWord struct {
 	Register g.Register
 }
 
-func (r RegisterEndWord) Surface() string { return r.Text }
-func (RegisterEndWord) word()             {}
+func (r RegisterEndWord) Romanization() string { return r.Text }
+func (RegisterEndWord) word()                  {}
 
 // ModularWord carries a Vn+Cn modular adjunct.
 //
 // MarksMood reflects the next formative's verbal/nominal status, used
-// to disambiguate the Cn surface form: true = the adjacent formative is
+// to disambiguate the Cn romanization: true = the adjacent formative is
 // verbal (Cn → Mood); false = nominal or framed-verbal (Cn → Case-
 // Scope); nil = no adjacent formative was found in the token stream.
 type ModularWord struct {
@@ -93,8 +93,8 @@ type ModularWord struct {
 	MarksMood *bool
 }
 
-func (m ModularWord) Surface() string { return m.Text }
-func (ModularWord) word()             {}
+func (m ModularWord) Romanization() string { return m.Text }
+func (ModularWord) word()                  {}
 
 // SingleAffixWord is one V_x C_s affix on its own as an adjunct
 // (§4.1.1). Shape: V-C[-V].
@@ -103,8 +103,8 @@ type SingleAffixWord struct {
 	Affix g.SingleAffixAdjunct
 }
 
-func (s SingleAffixWord) Surface() string { return s.Text }
-func (SingleAffixWord) word()             {}
+func (s SingleAffixWord) Romanization() string { return s.Text }
+func (SingleAffixWord) word()                  {}
 
 // MultipleAffixWord is two-or-more affixes chained into one adjunct
 // (§4.1.2). Shape: [ë] C V Cz V C ... [V].
@@ -113,8 +113,8 @@ type MultipleAffixWord struct {
 	Affixes g.MultipleAffixAdjunct
 }
 
-func (m MultipleAffixWord) Surface() string { return m.Text }
-func (MultipleAffixWord) word()             {}
+func (m MultipleAffixWord) Romanization() string { return m.Text }
+func (MultipleAffixWord) word()                  {}
 
 // CarrierWord wraps a carrier adjunct (carrier/quotative/naming/phrasal).
 type CarrierWord struct {
@@ -122,8 +122,8 @@ type CarrierWord struct {
 	Carrier g.CarrierAdjunct
 }
 
-func (c CarrierWord) Surface() string { return c.Text }
-func (CarrierWord) word()             {}
+func (c CarrierWord) Romanization() string { return c.Text }
+func (CarrierWord) word()                  {}
 
 // ReferentialWord wraps a §4.6.1 single- or dual-referential.
 type ReferentialWord struct {
@@ -137,11 +137,11 @@ type CombinationRefWord struct {
 	Combination g.CombinationReferential
 }
 
-func (c CombinationRefWord) Surface() string { return c.Text }
-func (CombinationRefWord) word()             {}
+func (c CombinationRefWord) Romanization() string { return c.Text }
+func (CombinationRefWord) word()                  {}
 
-func (r ReferentialWord) Surface() string { return r.Text }
-func (ReferentialWord) word()             {}
+func (r ReferentialWord) Romanization() string { return r.Text }
+func (ReferentialWord) word()                  {}
 
 // ParsingAdjunctWord wraps a §4.8 parsing adjunct ('V'). The adjunct
 // itself has no grammatical content; it signals the stress of the
@@ -152,16 +152,16 @@ type ParsingAdjunctWord struct {
 	Adjunct g.ParsingAdjunct
 }
 
-func (p ParsingAdjunctWord) Surface() string { return p.Text }
-func (ParsingAdjunctWord) word()             {}
+func (p ParsingAdjunctWord) Romanization() string { return p.Text }
+func (ParsingAdjunctWord) word()                  {}
 
 // UnknownWord is the fallback when no parser claims the word.
 type UnknownWord struct {
 	Text string
 }
 
-func (u UnknownWord) Surface() string { return u.Text }
-func (UnknownWord) word()             {}
+func (u UnknownWord) Romanization() string { return u.Text }
+func (UnknownWord) word()                  {}
 
 // ForeignWord is a token consumed in carrier context: the word
 // immediately following a CarrierWord is treated as foreign text
@@ -170,8 +170,8 @@ type ForeignWord struct {
 	Text string
 }
 
-func (f ForeignWord) Surface() string { return f.Text }
-func (ForeignWord) word()             {}
+func (f ForeignWord) Romanization() string { return f.Text }
+func (ForeignWord) word()                  {}
 
 // referentialToken wraps a parsed referential, folding away the one
 // shape that has a simpler equivalent. §4.6.3 gives a suppletive
@@ -187,7 +187,7 @@ func referentialToken(word string, r g.Referential) WordToken {
 	return ReferentialWord{Text: word, Referential: r}
 }
 
-// ClassifyWord decides which WordToken variant a single surface word
+// ClassifyWord decides which WordToken variant a single romanization
 // belongs to. The order of attempts is the docstring of the package.
 //
 // Non-Ithkuil characters (chars not in the V4 alphabet) reject the
@@ -340,7 +340,7 @@ func Tokenize(sentence string) []WordToken {
 	for i := 0; i+1 < len(out); i++ {
 		if isCarrierToken(out[i]) {
 			// Foreign text is passthrough: take the raw field rather
-			// than the discarded classification's surface, which has
+			// than the discarded classification's rom, which has
 			// been case-normalized as Ithkuil.
 			out[i+1] = ForeignWord{Text: fields[i+1]}
 		}
@@ -356,7 +356,7 @@ func Tokenize(sentence string) []WordToken {
 //
 // It is derived rather than intrinsic, so nothing needs to store it.
 // Any consumer that rebuilds a token stream from something other than
-// surface text calls this to restore it.
+// romanization calls this to restore it.
 func ResolveModularMood(toks []WordToken) {
 	for i, t := range toks {
 		mw, ok := t.(ModularWord)
@@ -407,7 +407,7 @@ func isCarrierToken(tok WordToken) bool {
 }
 
 // tryConcatenation attempts to read word as a hyphen-joined formative
-// chain (§3.1.7). Surface order: every leading formative is a
+// chain (§3.1.7). Written order: every leading formative is a
 // "concatenated" dependent carrying a Slot I Cc marker, and the LAST
 // formative is the "parent" with no Cc. Returns ok=false if any
 // constraint fails.

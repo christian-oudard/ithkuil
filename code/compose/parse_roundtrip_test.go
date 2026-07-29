@@ -11,7 +11,7 @@ import (
 )
 
 // TestFormative_FullRoundTrip composes a formative from a gloss
-// string, renders it to surface text, parses that back, and verifies
+// string, renders it to a romanization, parses that back, and verifies
 // the resulting gloss matches the original compose input's gloss.
 // This is the strongest invariant: compose ∘ render ∘ fullparse ∘
 // gloss == gloss ∘ compose.

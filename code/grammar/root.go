@@ -1,7 +1,7 @@
 package grammar
 
 // Root is the sealed sum type for a formative's lexical identity.
-// It consolidates the grammatical content of surface-form Slots II
+// It consolidates the grammatical content of written Slots II
 // (Vv) and IV (Vr) into one unit. Three variants — one per kind of
 // root the spec distinguishes:
 //
@@ -33,7 +33,7 @@ package grammar
 // over a table headed "Stem 1 Nominal meaning" — but supplies no form
 // for a second or third, so nothing else is expressible.
 //
-// Surface markers that distinguish these (special Vv ëi/eë/ëu/oë for
+// Written markers that distinguish these (special Vv ëi/eë/ëu/oë for
 // CsRoot, ae/ea for RefRoot) are a rendering concern and do not
 // appear in the grammar.
 type Root interface {

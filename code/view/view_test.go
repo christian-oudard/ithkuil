@@ -98,7 +98,7 @@ func TestSegments_VariantShapes(t *testing.T) {
 }
 
 func TestSegments_WithSlotV_AndConcat(t *testing.T) {
-	// Build a Slot V formative directly and round-trip the surface
+	// Build a Slot V formative directly and round-trip the romanization
 	// through Segments so ccCodes / slotVCsSegment / slotVVxSegment
 	// actually get exercised.
 	f := g.MinimalFormative("ml")
@@ -106,8 +106,8 @@ func TestSegments_WithSlotV_AndConcat(t *testing.T) {
 		{Type: g.Type1Affix, Degree: 5, Consonant: "r"},
 		{Type: g.Type1Affix, Degree: 5, Consonant: "r"},
 	}
-	surface := render.Formative(f)
-	segs := Segments(surface, f, nil)
+	rom := render.Formative(f)
+	segs := Segments(rom, f, nil)
 	if len(segs) == 0 {
 		t.Fatal("Segments for Slot V formative returned empty")
 	}
@@ -115,8 +115,8 @@ func TestSegments_WithSlotV_AndConcat(t *testing.T) {
 	t1 := g.Type1
 	f2 := g.MinimalFormative("ml")
 	f2.Concat = t1
-	surface = render.Formative(f2)
-	segs = Segments(surface, f2, nil)
+	rom = render.Formative(f2)
+	segs = Segments(rom, f2, nil)
 	if len(segs) == 0 {
 		t.Fatal("Segments for concat formative returned empty")
 	}
@@ -159,9 +159,9 @@ func TestGlossary_WithLexicon(t *testing.T) {
 	// Build a formative with a lexicon-known affix in Slot VII.
 	f := g.MinimalFormative("ml")
 	f.SlotVII = []g.Affix{{Type: g.Type1Affix, Degree: 5, Consonant: "r"}}
-	surface := render.Formative(f)
-	segs := Segments(surface, f, lex)
-	glossary := Glossary(surface, f, segs, lex)
+	rom := render.Formative(f)
+	segs := Segments(rom, f, lex)
+	glossary := Glossary(rom, f, segs, lex)
 	if len(glossary) == 0 {
 		t.Error("Glossary with lexicon returned empty")
 	}

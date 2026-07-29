@@ -14,7 +14,7 @@ import (
 // the full distance through every transformation layer and asserts
 // that the round-trip preserves meaning at every stage:
 //
-//	surface ─parse→ Formative ─render→ surface' (must equal surface)
+//	romanization ─parse→ Formative ─render→ romanization' (must equal romanization)
 //	Formative ─gloss→ G1 ─compose→ Formative' ─gloss→ G2 (must equal G1)
 //
 // The first chain catches structural drift in parse/render; the
@@ -36,9 +36,9 @@ func TestFullDistance_SlotsCorpus(t *testing.T) {
 				t.Skipf("fullparse rejects %q: %v", w, err)
 			}
 			// Gloss round-trip: assert compose is the inverse of gloss
-			// at the canonical level. The surface round-trip is *not*
+			// at the canonical level. The romanization round-trip is *not*
 			// asserted — render emits the canonical form, which for
-			// some input surfaces (e.g. consonant-initial vs Cc
+			// some input romanizations (e.g. consonant-initial vs Cc
 			// shortcut equivalents) differs from the input. That's
 			// by design; see TestCanonicalize in slots/.
 			s1 := gl.Formative(f)
@@ -48,7 +48,7 @@ func TestFullDistance_SlotsCorpus(t *testing.T) {
 			}
 			s2 := gl.Formative(f2)
 			if s1 != s2 {
-				t.Errorf("gloss round-trip mismatch\n  surface: %s\n  first:   %s\n  second:  %s",
+				t.Errorf("gloss round-trip mismatch\n  romanization: %s\n  first:   %s\n  second:  %s",
 					w, s1, s2)
 			}
 		})

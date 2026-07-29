@@ -2,13 +2,13 @@ package grammar
 
 // AffixType is the gradient class of an affix: Type 1, 2, or 3, plus
 // CaStackAffix, which is not a gradient class at all but occupies the
-// same position. The class is grammatical; the surface vowel that
+// same position. The class is grammatical; the written vowel that
 // encodes it is a rendering concern handled in the parse/render
 // packages.
 //
 // CaStackAffix is §3.5/§3.7's specialized Vx value -üö-, marking the
 // following Cs as a Ca complex stacked on the Slot VI Ca. It belongs
-// here rather than in a separate type because the surface treats it as
+// here rather than in a separate type because the romanization treats it as
 // one more value of the Vx that otherwise carries Type and Degree —
 // the script document lists it in the affix degree row, between degree
 // 9 and degree 0. A CaStackAffix carries no Degree.
@@ -159,7 +159,7 @@ func ParseAccessorCs(cs string) (k AccessorKind, high, ok bool) {
 }
 
 // Affix is a single grammar-level affix. Vx degree (0-9) and Type are
-// the grammatical content; Cs is the affix identifier. The surface
+// the grammatical content; Cs is the affix identifier. The romanization
 // vowel (Vx) is derived from (Type, Degree) at render time and does
 // not appear here — keeping phonetic and grammatical data apart.
 //

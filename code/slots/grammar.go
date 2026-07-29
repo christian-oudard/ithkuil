@@ -313,9 +313,9 @@ func formatFromVf(vc string, stress phonology.Stress) (g.Final, error) {
 // inverse. Three of the encoding choices are optional shortenings that
 // the spec permits rather than requires (see encoding), so instead of
 // deciding each one greedily we lay the word out every legal way and
-// keep the best by surfaceCost. Default-value elisions run within each
+// keep the best by romanizationCost. Default-value elisions run within each
 // candidate. There is no option to request a particular spelling —
-// non-canonical surfaces exist only as input to the parser.
+// non-canonical romanizations exist only as input to the parser.
 func FromGrammar(f g.Formative) Layout {
 	if f.Root == nil {
 		panic("slots: Formative.Root is nil")
@@ -324,10 +324,10 @@ func FromGrammar(f g.Formative) Layout {
 		panic("slots: Formative.Final is nil")
 	}
 	best := layoutFor(f, encoding{})
-	bestCost := surfaceCost(best, encoding{})
+	bestCost := romanizationCost(best, encoding{})
 	for _, e := range allEncodings[1:] {
 		l := layoutFor(f, e)
-		if c := surfaceCost(l, e); c.better(bestCost) {
+		if c := romanizationCost(l, e); c.better(bestCost) {
 			best, bestCost = l, c
 		}
 	}
@@ -336,7 +336,7 @@ func FromGrammar(f g.Formative) Layout {
 
 // encoding selects which of the optional shortenings to attempt. Each
 // is permissive in the spec ("may"), so switching one off always
-// yields a legal surface; switching one on has no effect unless the
+// yields a legal romanization; switching one on has no effect unless the
 // formative also meets that shortcut's own conditions.
 type encoding struct {
 	ccShortcut bool // §3.2 Slot IV/VI a+Ca shortcut, Cc = w-/y-
@@ -374,14 +374,14 @@ func (e encoding) count() int {
 // is a loss, hence glottals next. Length breaks the remaining ties.
 // Past that, a shortcut that has bought nothing on any of those three
 // measures is pure overhead for reader and writer alike, so the plain
-// spelling wins. Surface text is the final backstop, so the choice is
+// spelling wins. Romanization is the final backstop, so the choice is
 // always deterministic.
 type cost struct {
 	syllables int
 	glottals  int
 	runes     int
 	shortcuts int
-	surface   string
+	rom       string
 }
 
 func (c cost) better(than cost) bool {
@@ -397,12 +397,12 @@ func (c cost) better(than cost) bool {
 	if c.shortcuts != than.shortcuts {
 		return c.shortcuts < than.shortcuts
 	}
-	return c.surface < than.surface
+	return c.rom < than.rom
 }
 
-func surfaceCost(l Layout, e encoding) cost {
+func romanizationCost(l Layout, e encoding) cost {
 	s := Render(l)
-	c := cost{runes: len([]rune(s)), shortcuts: e.count(), surface: s}
+	c := cost{runes: len([]rune(s)), shortcuts: e.count(), rom: s}
 	for _, conj := range phonology.SplitConjuncts(s) {
 		if phonology.IsVowelConjunct(conj) {
 			c.syllables++
@@ -486,7 +486,7 @@ func layoutFor(f g.Formative, e encoding) Layout {
 //
 // The spec disallows the shift in two contexts:
 //
-//   - When a Slot IV/VI a+Ca shortcut is in play. In that surface the
+//   - When a Slot IV/VI a+Ca shortcut is in play. In that romanization the
 //     Vr has been elided into the Cc-Vv pair, so there is no Vr to
 //     carry the glottal.
 //   - When the §3.8.1.2 Cn→Ca shortcut has been applied. The §3.6.2
@@ -550,7 +550,7 @@ func maybeMoveCnToCa(l *Layout, f g.Formative) {
 }
 
 // canUseShortcut reports whether the formative's grammar permits a
-// Cc-shortcut surface form: a CrRoot with default SlotIV and a SlotVI
+// Cc-shortcut romanization: a CrRoot with default SlotIV and a SlotVI
 // that the shortcut table can encode. Slot V is allowed per §3.6.2 —
 // the renderer signals end-of-Slot-V with a glottal on the final Vx.
 func canUseShortcut(f g.Formative) bool {
@@ -703,7 +703,7 @@ func csRootVr(degree int, ctx g.Context) string {
 }
 
 // vnCnFromSlotVIII decomposes a Slot VIII value into its (Vn, Cn) pair.
-// VnCnFromSlotVIII returns the surface Vn vowel and Cn consonant for a
+// VnCnFromSlotVIII returns the written Vn vowel and Cn consonant for a
 // SlotVIII variant. Exposes the inverse of parse.ParseVnCn so callers
 // outside this package can encode typed SlotVIII values into the raw
 // pair stored on grammar.ModularAdjunct.
@@ -803,7 +803,7 @@ func stripVfGlottal(vc string) string {
 	return strings.Replace(vc, "'", "", 1)
 }
 
-// vkVowel renders a Vk variant as its surface vowel.
+// vkVowel renders a Vk variant as its written vowel.
 func vkVowel(v g.Vk) string {
 	switch x := v.(type) {
 	case g.Assertive:
@@ -867,7 +867,7 @@ func applyDefaultElisions(l *Layout, f g.Formative) {
 // diacritic, so eliding the Vk-vowel "a" round-trips faithfully via
 // finalFromVc's monosyllabic branch.
 //
-// Only the Assertive/OBS combination is eligible — its surface vowel
+// Only the Assertive/OBS combination is eligible — its written vowel
 // "a" happens to coincide with the THM-default that already elides
 // elsewhere, and dropping it produces a form that the parser will
 // reconstitute as Assertive/OBS via the monosyllabic-implicit-ultimate

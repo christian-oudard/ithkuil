@@ -62,17 +62,17 @@ relative to `code/`.
 
 - `phonology/` - §1 of the grammar, sounds and the letters that write them. `inventory.go` holds 31 consonants, 9 vowels, and the vowel form table (4 series x 9 forms); the rest is rune-level work with no grammatical knowledge: `Strip`/`Apply` for stress diacritics, `SplitConjuncts`/`JoinConjuncts` for vowel/consonant runs, `MergeGlottalVowels`, `Normalize`, vowel classification, and `InputState` + `FromASCII`/`ToASCII` for the digraph notation. `ParseWord` is the only constructor of `Word`, which carries the reading (normalized text, stress, conjuncts) that every later layer builds on; the §2 phonotactic rules are a separate judgment on a word already read (`Word.Violations`, `CheckText`, `Legal`), because the Ca tables generate a few clusters our reading of §2 rejects and a parser that refused them could not round-trip its own output.
 - `grammar/` - All morphological types, one per word class. `Formative` is the largest (Concat, Root, SlotV, SlotVI, SlotVII, SlotVIII, Final); `Referential` and `CombinationReferential` cover §4.6, and `Bias`, `Register`, `ModularAdjunct`, `CarrierAdjunct`, `ParsingAdjunct` and the two affixual adjuncts the rest. Variation within a class is a sealed sum type: `Root`, `Final`, `SlotVIII`, `Vk`, `RefHead`.
-- `slots/` - `Layout` is the slot-labelled surface form: one raw conjunct per string field (Cc, Vv, Cr, Vr, Ca, Vn, Cn, Vc), plus affix pairs and observed stress. `Parse`/`Render` convert between surface text and `Layout` by shape alone; `ToGrammar`/`FromGrammar` translate `Layout` ↔ `Formative` through the lookup tables. All canonical-form choices (which shortcut wins, moved-glottal, default elisions) live in `FromGrammar`.
+- `slots/` - `Layout` is the slot-labelled romanization: one raw conjunct per string field (Cc, Vv, Cr, Vr, Ca, Vn, Cn, Vc), plus affix pairs and observed stress. `Parse`/`Render` convert between romanization and `Layout` by shape alone; `ToGrammar`/`FromGrammar` translate `Layout` ↔ `Formative` through the lookup tables. All canonical-form choices (which shortcut wins, moved-glottal, default elisions) live in `FromGrammar`.
 - `parse/` - Grammatical decoders for individual slot positions, plus all lookup tables (Vv, Vr, Vc, Vn, Cn). Nothing text-level.
 - `allomorph/` - Slot VI Ca complex construction and parsing. Pre-generates all Ca forms from component tables with allomorphic substitutions, stores bidirectional lookup.
-- `semantics/` - Context-dependent labels derived from grammar values: Mood vs CaseScope, V_N vs V_H, the Vn category for a given Cn. Never looks at surface text.
-- `fullparse/` - Turns surface text into a grammar value, handling stress and returning errors. `Formative` is `slots.Parse` ∘ `slots.ToGrammar`; `Referential` and `CombinationReferential` decode §4.6 and run the phonotactic checks, so a word the validator rejects is not classified as one.
-- `render/` - Renders a grammar value back to surface text. `Formative` is `slots.FromGrammar` ∘ `slots.Render`; `Referential` and `CombinationReferential` mirror the fullparse entry points. `tokenize.Render` dispatches over the whole word-class sum (it lives there, not here, because the sum type does).
+- `semantics/` - Context-dependent labels derived from grammar values: Mood vs CaseScope, V_N vs V_H, the Vn category for a given Cn. Never looks at the romanization.
+- `fullparse/` - Turns a romanization into a grammar value, handling stress and returning errors. `Formative` is `slots.Parse` ∘ `slots.ToGrammar`; `Referential` and `CombinationReferential` decode §4.6 and run the phonotactic checks, so a word the validator rejects is not classified as one.
+- `render/` - Renders a grammar value back to a romanization. `Formative` is `slots.FromGrammar` ∘ `slots.Render`; `Referential` and `CombinationReferential` mirror the fullparse entry points. `tokenize.Render` dispatches over the whole word-class sum (it lives there, not here, because the sum type does).
 - `serialize/` - Binary encoding of parsed tokens. Default-eliding and
   byte-aligned; no lexicon indices, so files outlive lexicon updates.
   `formative.go` documents why the layout is shaped the way it is.
 - `gloss/` - Human-readable morphological glossing.
-- `tokenize/` - Classifies words in a sentence into formatives, referentials, bias adjuncts, etc. Each `WordToken` variant is a thin `{Text, payload}` wrapper over the grammar type for its class; `Text` records what was typed and is empty on a synthesized token, so derive the surface with `tokenize.Render` rather than reading it.
+- `tokenize/` - Classifies words in a sentence into formatives, referentials, bias adjuncts, etc. Each `WordToken` variant is a thin `{Text, payload}` wrapper over the grammar type for its class; `Text` records what was typed and is empty on a synthesized token, so derive the romanization with `tokenize.Render` rather than reading it.
 - `concatenation/` - Type 1/2 compound formative chains.
 - `numbers/` - Centesimal/base-100 number system.
 - `compose/` - Builds formatives from grammatical specifications + lexicon search helpers.
@@ -95,7 +95,7 @@ Command-line entrypoints under `cmd/`:
 - `Root` is a sum-type interface with three variants (`CrRoot`, `CsRoot`, `RefRoot`); it consolidates the lexical identity that the spec splits across Slots II/III/IV.
 - A referential is not a kind of formative. §4.6 makes it its own word class, so `grammar.Referential` is a peer of `Formative`, not a `Root` variant. Do not confuse it with `RefRoot`, which is a *formative* whose root is a personal reference (§5.3).
 - `Final` is a sum-type interface covering the various case/illocution endings (UnframedNominal, UnframedVerbal, FramedVerbal, etc.).
-- `Affix` stores `(Type, Degree)` plus the consonant cluster; never the surface vowel string.
+- `Affix` stores `(Type, Degree)` plus the consonant cluster; never the vowel as written.
 - Grammatical values use standard Ithkuil abbreviations (3-letter uppercase): THM, INS, ABS, STA, DYN, BSC, CTE, etc.
 - Data comes from the store at `store.DefaultPath()`; pass `--data FILE` on the CLI to point elsewhere.
 - Reference implementations, cloned outside the repo to `$XDG_DATA_HOME/ithkuil/reference/`: `IthkuilGloss/` (Kotlin).

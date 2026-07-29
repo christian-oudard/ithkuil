@@ -60,7 +60,7 @@ func TestParseModular_SingleVowel(t *testing.T) {
 
 func TestParseModular_ChainsWithVnCn(t *testing.T) {
 	// A modular adjunct's typed Content should match ParseVnCn output
-	// on the original surface (Vn, Cn) pair.
+	// on the original written (Vn, Cn) pair.
 	ma, err := ParseModular("ah")
 	if err != nil {
 		t.Fatal(err)

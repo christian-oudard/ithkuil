@@ -1,5 +1,5 @@
 // This file decodes the two §4.6 referential shapes, the way
-// fullparse.Formative decodes a formative: surface text in, a grammar
+// fullparse.Formative decodes a formative: romanization in, a grammar
 // value out.
 //
 // Both run the phonotactic checks before returning. §4.6.1 says the
@@ -20,7 +20,7 @@ import (
 	"github.com/christian-oudard/ithkuil/phonology"
 )
 
-// errNotReferential says the surface does not have the shape, which is
+// errNotReferential says the romanization does not have the shape, which is
 // the ordinary outcome when the classifier is trying parsers in turn.
 var errNotReferential = errors.New("not a referential")
 
@@ -157,11 +157,11 @@ func CombinationReferential(text string) (g.CombinationReferential, error) {
 	if len(conjs) < 3 {
 		return g.CombinationReferential{}, errNotReferential
 	}
-	c1, vc, specSurface := conjs[0], conjs[1], conjs[2]
+	c1, vc, specConj := conjs[0], conjs[1], conjs[2]
 	if !phonology.IsConsonantConjunct(c1) || !phonology.IsVowelConjunct(vc) {
 		return g.CombinationReferential{}, errNotReferential
 	}
-	spec, specOK := parseCombinationSpec(specSurface)
+	spec, specOK := parseCombinationSpec(specConj)
 	if !specOK {
 		return g.CombinationReferential{}, errNotReferential
 	}

@@ -14,9 +14,9 @@ import (
 // Cs as a Ca complex stacked on the Slot VI Ca. The gloss writes it
 // "Ca:" plus the same component list Slot VI uses.
 //
-// Each case goes the whole way round — gloss in, surface out, parse
+// Each case goes the whole way round — gloss in, romanization out, parse
 // back, gloss again — because the two halves can agree on a wrong
-// answer and a one-way check would not see it. The surface is also
+// answer and a one-way check would not see it. The romanization is also
 // validated: a round trip alone cannot tell that what we emitted was
 // an impossible word.
 func TestCaStack_RoundTrip(t *testing.T) {
@@ -28,7 +28,7 @@ func TestCaStack_RoundTrip(t *testing.T) {
 		// VI uses. Whether it means anything is a question about the
 		// language; the gloss stays able to say it either way.
 		{"ml-Ca:{Ca}-ERG", "mlalüölo"},
-		// Slot V, where the affix is reversed to Cs-Vx on the surface.
+		// Slot V, where the affix is reversed to Cs-Vx on the romanization.
 		{"m-Ca:ASO.PRX-{Ca}-t/1_2", "maldüöllait"},
 	} {
 		f, err := compose.Formative(tc.in, nil)
@@ -50,7 +50,7 @@ func TestCaStack_RoundTrip(t *testing.T) {
 			continue
 		}
 		if again := gl.Formative(back); again != tc.in {
-			t.Errorf("round trip of %q came back as %q (surface %q)", tc.in, again, got)
+			t.Errorf("round trip of %q came back as %q (romanization %q)", tc.in, again, got)
 		}
 	}
 }

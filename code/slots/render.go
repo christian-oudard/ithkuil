@@ -7,15 +7,15 @@ import (
 	"github.com/christian-oudard/ithkuil/phonology"
 )
 
-// Render produces the surface word that this Layout describes. It is
+// Render produces the romanization that this Layout describes. It is
 // the inverse of Parse — round-tripping (`Render(Parse(w))`) returns
 // the original w, after default-elision decisions have been baked
 // into the Layout.
 //
-// Render handles the mechanical surface-form details:
+// Render handles the mechanical romanization details:
 //   - re-inserts the §3.5.1 Vv glottal-stop when len(SlotV) ≥ 2
 //   - re-applies §3.6.1 Ca gemination when len(SlotV) ≥ 1
-//   - reverses Slot V to its Cs+Vx surface order
+//   - reverses Slot V to its Cs+Vx written order
 //   - applies the stress diacritic via phonology.Apply
 func Render(l Layout) string {
 	var b strings.Builder
@@ -32,7 +32,7 @@ func Render(l Layout) string {
 	if l.MovedGlottal {
 		b.WriteString("'")
 	}
-	// Slot V surface order: §3.5 reverses to Cs-Vx when Ca is present
+	// Slot V written order: §3.5 reverses to Cs-Vx when Ca is present
 	// (the geminated Ca handles the boundary). In shortcut form (Ca
 	// elided), §3.5's NOTE keeps the standard Vx-Cs order and §3.6.2
 	// adds a glottal-stop end marker on the final Vx.

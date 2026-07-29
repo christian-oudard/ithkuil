@@ -88,10 +88,10 @@ func TestFormative_ElidedVc(t *testing.T) {
 
 func TestRoundTripMinimal(t *testing.T) {
 	original := g.MinimalFormative("ml")
-	surface := render.Formative(original)
-	parsed, err := Formative(surface)
+	rom := render.Formative(original)
+	parsed, err := Formative(rom)
 	if err != nil {
-		t.Fatalf("round trip error on %q: %v", surface, err)
+		t.Fatalf("round trip error on %q: %v", rom, err)
 	}
 	if parsed.Root != original.Root || parsed.SlotVI != original.SlotVI {
 		t.Errorf("round trip mismatch:\noriginal: %+v\nparsed:   %+v", original, parsed)
@@ -126,7 +126,7 @@ func TestFormative_ConsonantInitial(t *testing.T) {
 
 func TestFormative_SlotVIIAffixPair(t *testing.T) {
 	// Two Slot VII affixes after a default Ca, the shape the community
-	// endonym had before the SYS affix moved to Slot V. Surface:
+	// endonym had before the SYS affix moved to Slot V. Romanization:
 	// "malëuţřait".
 	// Conjuncts: ["m", "a", "l", "ëu", "ţř", "ai", "t"]
 	// Cr=m, Vr=a, Ca=l, Vx=ëu/Cs=ţř (affix 1), Vx=ai/Cs=t (affix 2).
@@ -389,13 +389,13 @@ func TestRoundTrip_ConsonantInitial(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// The Render layer always emits Vv, so the round-trip surface is
+	// The Render layer always emits Vv, so the round-trip romanization is
 	// the vowel-initial form. Re-parsing should give the same slot values.
-	surface := "a" + "m" + "a" + "l" // = render of {S1,PRC; m; defaults}
-	if surface != "amal" {
-		t.Fatalf("surface synthesis error: %s", surface)
+	rom := "a" + "m" + "a" + "l" // = render of {S1,PRC; m; defaults}
+	if rom != "amal" {
+		t.Fatalf("romanization synthesis error: %s", rom)
 	}
-	reparsed, err := Formative(surface)
+	reparsed, err := Formative(rom)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -474,10 +474,10 @@ func TestFormative_SlotVIIIVerbal(t *testing.T) {
 func TestRoundTrip_WithSlotVII(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.SlotVII = []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}}
-	surface := render.Formative(f)
-	parsed, err := Formative(surface)
+	rom := render.Formative(f)
+	parsed, err := Formative(rom)
 	if err != nil {
-		t.Fatalf("round trip %q failed: %v", surface, err)
+		t.Fatalf("round trip %q failed: %v", rom, err)
 	}
 	if len(parsed.SlotVII) != 1 || parsed.SlotVII[0] != f.SlotVII[0] {
 		t.Errorf("SlotVII round-trip: got %v, want %v", parsed.SlotVII, f.SlotVII)
@@ -493,10 +493,10 @@ func TestRoundTrip_WithSlotVIII(t *testing.T) {
 		Valence:   g.MNO,
 		MoodScope: g.SUB,
 	}
-	surface := render.Formative(f)
-	parsed, err := Formative(surface)
+	rom := render.Formative(f)
+	parsed, err := Formative(rom)
 	if err != nil {
-		t.Fatalf("round trip %q failed: %v", surface, err)
+		t.Fatalf("round trip %q failed: %v", rom, err)
 	}
 	if parsed.SlotVIII != f.SlotVIII {
 		t.Errorf("SlotVIII round-trip: got %v, want %v", parsed.SlotVIII, f.SlotVIII)
@@ -527,10 +527,10 @@ func TestFormative_RoundTripVariants(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			surface := render.Formative(c.f)
-			parsed, err := Formative(surface)
+			rom := render.Formative(c.f)
+			parsed, err := Formative(rom)
 			if err != nil {
-				t.Fatalf("round trip error on %q: %v", surface, err)
+				t.Fatalf("round trip error on %q: %v", rom, err)
 			}
 			if parsed.Root != c.f.Root {
 				t.Errorf("Root: got %v, want %v", parsed.Root, c.f.Root)

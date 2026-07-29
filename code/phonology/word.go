@@ -8,7 +8,7 @@ import (
 )
 
 // ithkuilRunes is the set of characters that may appear in well-formed
-// Ithkuil V4 surface text — the 31 consonants, the 9 base vowels, the
+// Ithkuil V4 romanization — the 31 consonants, the 9 base vowels, the
 // 9 stressed forms (acute and circumflex; "i" has no umlaut so no î),
 // the glottal stop, and the concatenation hyphen.
 var ithkuilRunes = func() map[rune]bool {
@@ -214,7 +214,7 @@ func (w Word) Violations() []Violation {
 
 // Legal reports whether text is a well-formed Ithkuil word or chain:
 // it reads as phonology and breaks no phonotactic rule. Generators
-// building candidate surfaces use it, where there is no reading to
+// building candidate romanizations use it, where there is no reading to
 // keep, only a yes or a no.
 func Legal(text string) bool {
 	words, err := ParseChain(text)

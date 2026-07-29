@@ -535,7 +535,7 @@ func getFormative(buf []byte) (g.Formative, int, error) {
 // status already delimits the run: read formatives until one comes
 // back with ConcatNone, and that one is the parent.
 //
-// This is the same signal the surface uses, which is why it is free
+// This is the same signal the romanization uses, which is why it is free
 // here. It also makes the ungrammatical state unrepresentable: a
 // lone formative may not carry a Cc, because a Cc means "another
 // formative follows". MarshalWord rejects one rather than writing

@@ -87,8 +87,8 @@ func VzScope(vz string) (AffixScope, bool) {
 }
 
 // SingleAffixAdjunct carries one affix as its own word, scoping it
-// onto the next formative via Scope. The affix's surface Vx vowel is
-// decoded into (Type, Degree) at parse time; surface fields don't
+// onto the next formative via Scope. The affix's written Vx vowel is
+// decoded into (Type, Degree) at parse time; written fields don't
 // appear here.
 type SingleAffixAdjunct struct {
 	Affix Affix
@@ -97,7 +97,7 @@ type SingleAffixAdjunct struct {
 
 // MultipleAffixAdjunct chains two or more affixes into one adjunct
 // word. The first affix takes FirstScope; the rest take RestScope.
-// Both scopes are decoded from the surface Cz/Vz vowels at parse time.
+// Both scopes are decoded from the romanization Cz/Vz vowels at parse time.
 type MultipleAffixAdjunct struct {
 	First      Affix
 	Rest       []Affix

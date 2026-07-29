@@ -2,7 +2,7 @@ package parse
 
 import "github.com/christian-oudard/ithkuil/grammar"
 
-// biasByForm is the reverse index from surface consonant cluster to
+// biasByForm is the reverse index from written consonant cluster to
 // Bias value, built once at init time.
 var biasByForm = func() map[string]grammar.Bias {
 	m := make(map[string]grammar.Bias, len(grammar.AllBiases))
@@ -12,7 +12,7 @@ var biasByForm = func() map[string]grammar.Bias {
 	return m
 }()
 
-// ParseBias decodes a surface consonant cluster as a Bias adjunct.
+// ParseBias decodes a written consonant cluster as a Bias adjunct.
 // Returns (0, false) for clusters that don't match any Bias form.
 func ParseBias(s string) (grammar.Bias, bool) {
 	b, ok := biasByForm[s]

@@ -49,7 +49,7 @@ func TestCa_EveryFormIsPronounceable(t *testing.T) {
 }
 
 // TestCa_EveryGeminateIsPronounceable is the same sweep for the §3.6.1
-// geminated forms, which is what Slot V affixes put on the surface.
+// geminated forms, which is what Slot V affixes put on the romanization.
 func TestCa_EveryGeminateIsPronounceable(t *testing.T) {
 	allSlotVI(func(s g.SlotVI) {
 		ca := ConstructCa(s)
@@ -63,7 +63,7 @@ func TestCa_EveryGeminateIsPronounceable(t *testing.T) {
 	})
 }
 
-// TestCa_EveryFormParsesBack checks that the surface form identifies
+// TestCa_EveryFormParsesBack checks that the romanization identifies
 // its SlotVI uniquely. A substitution that collapses two distinct Ca
 // values onto one cluster is unrecoverable at parse time.
 func TestCa_EveryFormParsesBack(t *testing.T) {

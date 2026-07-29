@@ -28,32 +28,32 @@ func TestFuzz_FormativeRoundTrip(t *testing.T) {
 	rng := rand.New(rand.NewSource(2026_05_21))
 	for i := 0; i < iterations; i++ {
 		f := randomFormative(rng)
-		surface := render.Formative(f)
+		rom := render.Formative(f)
 		// Anything we emit has to be a word by our own rules. A
-		// round-trip alone can't see this: a surface form both halves
+		// round-trip alone can't see this: a romanization both halves
 		// mis-handle the same way still comes back equal.
-		if err := phonology.CheckText(surface); err != nil && !allomorph.UnresolvedCa(surface) {
+		if err := phonology.CheckText(rom); err != nil && !allomorph.UnresolvedCa(rom) {
 			t.Errorf("iter %d: render produced %q, which our own validator rejects: %v\n  formative: %+v",
-				i, surface, err, f)
+				i, rom, err, f)
 		}
-		parsed, err := Formative(surface)
+		parsed, err := Formative(rom)
 		if err != nil {
 			t.Errorf("iter %d: Formative(%q): %v\n  formative: %+v",
-				i, surface, err, f)
+				i, rom, err, f)
 			continue
 		}
 		if !formativesEquivalent(parsed, f) {
-			t.Errorf("iter %d: round-trip mismatch (surface %q)\n  want: %+v\n  got:  %+v",
-				i, surface, f, parsed)
+			t.Errorf("iter %d: round-trip mismatch (romanization %q)\n  want: %+v\n  got:  %+v",
+				i, rom, f, parsed)
 			continue
 		}
 		// Canonicalization must be a fixed point. Round-tripping alone
 		// does not show this: render could alternate between two
 		// spellings of the same formative and both would parse back to
 		// f. Only re-rendering the parse catches that.
-		if again := render.Formative(parsed); again != surface {
+		if again := render.Formative(parsed); again != rom {
 			t.Errorf("iter %d: canonicalization is not a fixed point: %q -> %q",
-				i, surface, again)
+				i, rom, again)
 		}
 	}
 }

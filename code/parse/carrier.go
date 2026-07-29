@@ -28,7 +28,7 @@ func ParseCarrierType(s string) (grammar.CarrierType, bool) {
 // ParseCarrier reads a carrier adjunct word: a CarrierType cluster
 // (hl/hm/hn/hň) followed by a case vowel. The case vowel is decoded
 // at parse time so the in-memory model carries the typed Case rather
-// than the raw surface vowel.
+// than the raw written vowel.
 func ParseCarrier(word string) (grammar.CarrierAdjunct, error) {
 	conjs := phonology.SplitConjuncts(word)
 	if len(conjs) < 2 {

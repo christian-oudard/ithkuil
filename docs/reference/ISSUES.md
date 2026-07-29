@@ -131,7 +131,7 @@ Two Ca configurations reach an unsayable intermediate:
 §3.6 offers exactly one escape, **ţbn → (tḑ) → ḑy**, and it names the
 second configuration on its input side and the first in its
 intermediate. It cannot be read to cover both: they would then share
-the surface `ḑy`, and Ca would stop being uniquely decodable. Whichever
+the romanization `ḑy`, and Ca would stop being uniquely decodable. Whichever
 reading is taken, one configuration is left with no pronounceable form.
 
 The neighbouring rule **fbm → (fv) → vw** is parallel to the `ţbn`
@@ -188,7 +188,7 @@ Reading rule 3 loosely, as "a stop followed by a liquid anywhere in the
 form", closes those 99 but not the rest: 40 forms still match no rule.
 It is also not a free repair — the loose reading takes 300 further
 forms away from rule 5 and geminates them somewhere else, so the two
-readings disagree on the surface of `fkl` and its like, not just on
+readings disagree on the romanization of `fkl` and its like, not just on
 coverage.
 
 None of this shows up as an ambiguity: the 3725 covered forms geminate

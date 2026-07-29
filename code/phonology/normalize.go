@@ -55,7 +55,7 @@ var variants = strings.NewReplacer(
 	"ż", "ẓ", // unsanctioned, but the phonotactics document uses it throughout
 )
 
-// Normalize puts surface text in the form the rest of the stack expects:
+// Normalize puts a romanization in the form the rest of the stack expects:
 // composed (Unicode NFC), lowercase, and with look-alike spellings of
 // the alphabet's own letters folded onto it.
 //

@@ -118,7 +118,7 @@ func TestParse_UnclassifiedShowsDiagnostic(t *testing.T) {
 }
 
 // TestParse_ShortShowsReason checks the one-line view carries the
-// reason too. Its gloss for an unclassified word is the surface
+// reason too. Its gloss for an unclassified word is the romanization
 // spelled back with a "?", which repeats the type column and says
 // nothing about why the word could not be read.
 func TestParse_ShortShowsReason(t *testing.T) {
@@ -130,13 +130,13 @@ func TestParse_ShortShowsReason(t *testing.T) {
 		t.Errorf("short view missing the reason; got %q", out)
 	}
 	if strings.Contains(out, "?mavẓorf") {
-		t.Errorf("short view still echoing the surface as a gloss; got %q", out)
+		t.Errorf("short view still echoing the romanization as a gloss; got %q", out)
 	}
 }
 
 // TestParse_CapitalDoesNotSkipValidation pins the bypass shut. The
 // invalid-word map was keyed by the raw token but read back with the
-// lower-cased surface, so a capital silently skipped validation:
+// lower-cased rom, so a capital silently skipped validation:
 // "cskava" exited 1 while "Cskava" exited 0. Both must now report,
 // and the message must name the word as typed.
 func TestParse_CapitalDoesNotSkipValidation(t *testing.T) {
@@ -474,10 +474,10 @@ func TestCompose_Expression(t *testing.T) {
 	}
 	lines := strings.Split(strings.TrimSpace(out), "\n")
 	if len(lines) != 2 {
-		t.Fatalf("compose output = %q, want 2 lines (surface + gloss)", out)
+		t.Fatalf("compose output = %q, want 2 lines (romanization + gloss)", out)
 	}
 	if lines[0] != "wimlo" {
-		t.Errorf("compose surface = %q, want canonical \"wimlo\" (Cc shortcut form)", lines[0])
+		t.Errorf("compose rom = %q, want canonical \"wimlo\" (Cc shortcut form)", lines[0])
 	}
 	if !strings.Contains(lines[1], "-ml-") || !strings.Contains(lines[1], "ERG") {
 		t.Errorf("compose gloss = %q, want it to mention -ml- and ERG", lines[1])
@@ -547,7 +547,7 @@ func TestSearch_FormMode(t *testing.T) {
 	if !strings.Contains(out, "THM") {
 		t.Errorf("--form a should mention THM; got %q", out)
 	}
-	// A surface form is a grammar question; the lexicon has no
+	// A romanization is a grammar question; the lexicon has no
 	// answer to "what does this vowel encode".
 	if strings.Contains(out, "Roots:") {
 		t.Errorf("--form should not search the lexicon; got %q", out)

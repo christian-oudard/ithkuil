@@ -1,4 +1,4 @@
-// Package fullparse turns a surface Ithkuil word into a grammar.Formative
+// Package fullparse turns a romanized Ithkuil word into a grammar.Formative
 // by composing slots.Parse (Layer C) and slots.ToGrammar (Layer D).
 package fullparse
 
@@ -7,7 +7,7 @@ import (
 	"github.com/christian-oudard/ithkuil/slots"
 )
 
-// Formative decodes a single surface Ithkuil word into a grammar.Formative.
+// Formative decodes a single romanized Ithkuil word into a grammar.Formative.
 // Returns a descriptive error if the word doesn't match a recognized
 // formative shape.
 func Formative(word string) (g.Formative, error) {

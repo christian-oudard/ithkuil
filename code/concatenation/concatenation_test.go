@@ -44,7 +44,7 @@ func TestAddType2_SetsConcat(t *testing.T) {
 
 func TestFormatives_OrderAndCount(t *testing.T) {
 	// New() takes the parent; AddType1/AddType2 register the
-	// concatenated dependents. Formatives() walks them in surface
+	// concatenated dependents. Formatives() walks them in written
 	// order: dependents first, then the parent.
 	c := New(g.MinimalFormative("a")).
 		AddType1(g.MinimalFormative("b")).

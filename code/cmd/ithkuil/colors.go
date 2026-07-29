@@ -6,7 +6,7 @@ import (
 )
 
 // Color scheme: phonetic chunks cyan, slot labels yellow, grammar
-// codes magenta, canonical names bold, surface word headings bold,
+// codes magenta, canonical names bold, romanization headings bold,
 // everything explanatory (meanings, table headers, the "(modular
 // adjunct)" hint) dim. Disable with NO_COLOR=1 or when stdout is not
 // a terminal.

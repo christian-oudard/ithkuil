@@ -11,7 +11,7 @@ import (
 	"github.com/christian-oudard/ithkuil/phonology"
 )
 
-// Parse decodes a surface Ithkuil word into a Layout, reading it as
+// Parse decodes a romanized Ithkuil word into a Layout, reading it as
 // phonology first. It is ParseWord composed with phonology.ParseWord,
 // for callers holding raw text; one that has parsed the word already
 // calls ParseWord instead of paying for the pass twice.
@@ -61,7 +61,7 @@ func ParseWord(w phonology.Word) (Layout, error) {
 	}
 
 	// §3.9.1 moved-glottal stripping runs only outside the shortcut
-	// form. In shortcut form the same "'C" surface pattern is the
+	// form. In shortcut form the same "'C" written pattern is the
 	// §3.6.2 Slot V end-of-slot marker, not a moved Vc glottal — the
 	// §3.6.2 footnote makes the two mutually exclusive.
 	//
@@ -324,10 +324,10 @@ func parseFromCa(l *Layout, conjs []string, i int, allowSlotV bool) error {
 
 // parseShortcutSlotV walks (Vx, Cs) pairs starting at i, looking for
 // the §3.6.2 end-of-Slot-V glottal-stop. In shortcut form Slot V is
-// surface-ordered Vx-Cs (unlike the normal form, where it is reversed
+// written-ordered Vx-Cs (unlike the normal form, where it is reversed
 // to Cs-Vx because the geminated Ca handles the boundary). The end of
 // Slot V is signalled by a glottal infixed into the final Vx; that
-// glottal surfaces as a leading "'" on the next consonant conjunct
+// glottal romanizations as a leading "'" on the next consonant conjunct
 // (since SplitConjuncts groups "'" with the consonant that follows).
 //
 // Returns the (possibly-modified) conjunct slice and the new index to
@@ -430,7 +430,7 @@ func parseAfterCa(l *Layout, conjs []string, i int) error {
 
 // stripMovedGlottal handles the §3.9.1 SPECIAL NOTE rule: the V_C
 // glottal-stop for cases 37-52 may be shifted to any earlier vocalic
-// form (V_R / V_X / V_N). On the surface this manifests as a
+// form (V_R / V_X / V_N). On the romanization this manifests as a
 // consonant conjunct whose first rune is "'" (e.g., "la'la" splits as
 // [l, a, 'l, a]). When the preceding conjunct is a vowel we strip the
 // leading "'" and flag the layout so ToGrammar reads the Vc with the
