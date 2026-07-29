@@ -1,6 +1,7 @@
 package gloss
 
 import (
+	g "github.com/christian-oudard/ithkuil/grammar"
 	"strings"
 	"testing"
 
@@ -16,9 +17,13 @@ import (
 // glossOne deliberately runs without a lexicon so affixes show as
 // "Cs/degree". This keeps the assertions structural rather than tied to
 // specific lexicon entries.
-func glossOne(_ *testing.T, word string) string {
+func glossOne(t *testing.T, word string) string {
 	gl := &Glosser{}
-	return gl.Token(tokenize.ClassifyWord(word))
+	w, err := tokenize.ClassifyWord(word)
+	if err != nil {
+		return "?" + word
+	}
+	return gl.Token(w)
 }
 
 func assertContains(t *testing.T, word, gloss, want string) {
@@ -62,8 +67,11 @@ func TestCorpus_Referential_1m_Dative(t *testing.T) {
 
 // Counter-example: malformed verbal forms must NOT parse as a Formative.
 func TestCorpus_VerbalFormRequiresPrefix(t *testing.T) {
-	tok := tokenize.ClassifyWord("aḑḑái")
-	if _, isFormative := tok.(tokenize.FormativeWord); isFormative {
+	tok, err := tokenize.ClassifyWord("aḑḑái")
+	if err != nil {
+		return // not read at all, which is stronger than not a formative
+	}
+	if _, isFormative := tok.(g.Formative); isFormative {
 		t.Error("aḑḑái should not parse as a Formative; verbal forms need w-/y- prefix")
 	}
 }
@@ -187,14 +195,24 @@ func TestCorpus_BiasAdjuncts(t *testing.T) {
 		{"mmh", "GRT"},
 	}
 	for _, c := range cases {
-		tok := tokenize.ClassifyWord(c.word)
-		b, ok := tok.(tokenize.BiasWord)
+		tok := readWord(t, c.word)
+		b, ok := tok.(g.Bias)
 		if !ok {
 			t.Errorf("%q should parse as a BiasWord, got %T", c.word, tok)
 			continue
 		}
-		if b.Bias.String() != c.biasAbbr {
-			t.Errorf("%q parsed as %s, want %s", c.word, b.Bias, c.biasAbbr)
+		if b.String() != c.biasAbbr {
+			t.Errorf("%q parsed as %s, want %s", c.word, b, c.biasAbbr)
 		}
 	}
+}
+
+// readWord reads one word or fails the test.
+func readWord(t *testing.T, word string) g.Word {
+	t.Helper()
+	w, err := tokenize.ClassifyWord(word)
+	if err != nil {
+		t.Fatalf("ClassifyWord(%q): %v", word, err)
+	}
+	return w
 }

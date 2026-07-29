@@ -26,7 +26,7 @@ func runCorpusSection(t *testing.T, s corpusSection) {
 	t.Helper()
 	var got []string
 	for _, w := range s.words {
-		if _, isUnk := ClassifyWord(w).(UnknownWord); isUnk {
+		if _, err := ClassifyWord(w); err != nil {
 			got = append(got, w)
 		}
 	}

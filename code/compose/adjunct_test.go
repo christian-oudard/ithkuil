@@ -7,7 +7,6 @@ import (
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
 // canonicalGlosser returns a Glosser configured for canonical/input
@@ -24,16 +23,16 @@ func canonicalGlosser(t *testing.T) *gloss.Glosser {
 func TestParseToken_Bias(t *testing.T) {
 	gl := canonicalGlosser(t)
 	for _, b := range g.AllBiases {
-		want := tokenize.BiasWord{Text: b.String(), Bias: b}
+		want := b
 		s := gl.Token(want)
 		got, err := ParseToken(s, nil)
 		if err != nil {
 			t.Errorf("Bias %s: ParseToken(%q) err: %v", b, s, err)
 			continue
 		}
-		bw, ok := got.(tokenize.BiasWord)
-		if !ok || bw.Bias != b {
-			t.Errorf("Bias %s: got %T %+v, want BiasWord with %s", b, got, got, b)
+		bw, ok := got.(g.Bias)
+		if !ok || bw != b {
+			t.Errorf("Bias %s: got %T %+v", b, got, got)
 		}
 	}
 }
@@ -44,14 +43,14 @@ func TestParseToken_RegisterStart(t *testing.T) {
 		if r == g.END {
 			continue // END is only used for register-end tokens
 		}
-		want := tokenize.RegisterStartWord{Text: r.String(), Register: r}
+		want := g.RegisterMarker{Register: r}
 		s := gl.Token(want)
 		got, err := ParseToken(s, nil)
 		if err != nil {
 			t.Errorf("Register start %s: ParseToken(%q) err: %v", r, s, err)
 			continue
 		}
-		rw, ok := got.(tokenize.RegisterStartWord)
+		rw, ok := got.(g.RegisterMarker)
 		if !ok || rw.Register != r {
 			t.Errorf("Register start %s: got %T %+v", r, got, got)
 		}
@@ -61,14 +60,14 @@ func TestParseToken_RegisterStart(t *testing.T) {
 func TestParseToken_RegisterEnd(t *testing.T) {
 	gl := canonicalGlosser(t)
 	for _, r := range g.AllRegisters {
-		want := tokenize.RegisterEndWord{Text: r.String() + "_END", Register: r}
+		want := g.RegisterMarker{Register: r, End: true}
 		s := gl.Token(want)
 		got, err := ParseToken(s, nil)
 		if err != nil {
 			t.Errorf("Register end %s: ParseToken(%q) err: %v", r, s, err)
 			continue
 		}
-		rw, ok := got.(tokenize.RegisterEndWord)
+		rw, ok := got.(g.RegisterMarker)
 		if !ok || rw.Register != r {
 			t.Errorf("Register end %s: got %T %+v", r, got, got)
 		}
@@ -89,11 +88,9 @@ func TestParseToken_SingleAffix(t *testing.T) {
 		{g.Type3Affix, 9, "tk", g.ScopeFormative},
 	}
 	for _, c := range cases {
-		want := tokenize.SingleAffixWord{
-			Affix: g.SingleAffixAdjunct{
-				Affix: g.Affix{Type: c.atype, Degree: c.deg, Consonant: c.cs},
-				Scope: c.scope,
-			},
+		want := g.SingleAffixAdjunct{
+			Affix: g.Affix{Type: c.atype, Degree: c.deg, Consonant: c.cs},
+			Scope: c.scope,
 		}
 		s := gl.Token(want)
 		got, err := ParseToken(s, lex)
@@ -101,9 +98,9 @@ func TestParseToken_SingleAffix(t *testing.T) {
 			t.Errorf("Single %+v: ParseToken(%q) err: %v", c, s, err)
 			continue
 		}
-		sw, ok := got.(tokenize.SingleAffixWord)
-		if !ok || sw.Affix.Scope != c.scope || sw.Affix.Affix.Type != c.atype ||
-			sw.Affix.Affix.Degree != c.deg || sw.Affix.Affix.Consonant != c.cs {
+		sw, ok := got.(g.SingleAffixAdjunct)
+		if !ok || sw.Scope != c.scope || sw.Affix.Type != c.atype ||
+			sw.Affix.Degree != c.deg || sw.Affix.Consonant != c.cs {
 			t.Errorf("Single %+v: got %T %+v", c, got, got)
 		}
 	}
@@ -117,83 +114,81 @@ func TestParseToken_MultiAffix(t *testing.T) {
 		{Type: g.Type2Affix, Degree: 5, Consonant: "kt"},
 		{Type: g.Type1Affix, Degree: 7, Consonant: "tk"},
 	}
-	want := tokenize.MultipleAffixWord{
-		Affixes: g.MultipleAffixAdjunct{
-			First:      first,
-			Rest:       rest,
-			FirstScope: g.ScopeVSub,
-			RestScope:  g.ScopeVIIDom,
-		},
+	want := g.MultipleAffixAdjunct{
+		First:      first,
+		Rest:       rest,
+		FirstScope: g.ScopeVSub,
+		RestScope:  g.ScopeVIIDom,
 	}
 	s := gl.Token(want)
 	got, err := ParseToken(s, lex)
 	if err != nil {
 		t.Fatalf("ParseToken(%q): %v", s, err)
 	}
-	mw, ok := got.(tokenize.MultipleAffixWord)
+	mw, ok := got.(g.MultipleAffixAdjunct)
 	if !ok {
-		t.Fatalf("got %T, want MultipleAffixWord", got)
+		t.Fatalf("got %T, want a MultipleAffixAdjunct", got)
 	}
-	if mw.Affixes.First != first {
-		t.Errorf("First = %+v, want %+v", mw.Affixes.First, first)
+	if mw.First != first {
+		t.Errorf("First = %+v, want %+v", mw.First, first)
 	}
-	if len(mw.Affixes.Rest) != len(rest) {
-		t.Fatalf("Rest len = %d, want %d", len(mw.Affixes.Rest), len(rest))
+	if len(mw.Rest) != len(rest) {
+		t.Fatalf("Rest len = %d, want %d", len(mw.Rest), len(rest))
 	}
 	for i, a := range rest {
-		if mw.Affixes.Rest[i] != a {
-			t.Errorf("Rest[%d] = %+v, want %+v", i, mw.Affixes.Rest[i], a)
+		if mw.Rest[i] != a {
+			t.Errorf("Rest[%d] = %+v, want %+v", i, mw.Rest[i], a)
 		}
 	}
-	if mw.Affixes.FirstScope != g.ScopeVSub || mw.Affixes.RestScope != g.ScopeVIIDom {
+	if mw.FirstScope != g.ScopeVSub || mw.RestScope != g.ScopeVIIDom {
 		t.Errorf("scopes = (%v,%v), want (VSub,VIIDom)",
-			mw.Affixes.FirstScope, mw.Affixes.RestScope)
+			mw.FirstScope, mw.RestScope)
 	}
 }
 
 func TestParseToken_Referential(t *testing.T) {
 	gl := canonicalGlosser(t)
 	nomicCat := g.Nomic
-	cases := []tokenize.ReferentialWord{
+	cases := []g.Referential{
 		// Plain: single referent + case
-		{Referential: g.Referential{
+		g.Referential{
 			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
 			Case: g.THM,
-		}},
+		},
 		// Effect
-		{Referential: g.Referential{
+		g.Referential{
 			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R2m, Effect: g.BEN}}},
 			Case: g.ERG,
-		}},
+		},
 		// A second case stacked onto the head
-		{Referential: g.Referential{
+		g.Referential{
 			Head:   g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
 			Case:   g.THM,
 			Second: &g.SecondReferent{Case: g.ERG},
-		}},
+		},
 		// A second referent carrying its own case
-		{Referential: g.Referential{
+		g.Referential{
 			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
 			Case: g.THM,
 			Second: &g.SecondReferent{
 				Case: g.IND,
 				Refs: []g.PersonalRef{{Referent: g.R2m, Effect: g.NEU}},
 			},
-		}},
+		},
 		// RpvEssence
-		{Referential: g.Referential{
+		g.Referential{
 			Head:       g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
 			Case:       g.DAT,
 			RpvEssence: true,
-		}},
+		},
 		// A category modifier on the head
-		{Referential: g.Referential{
+		g.Referential{
 			Head: g.PersonalHead{
 				Refs:     []g.PersonalRef{{Referent: g.Rma, Effect: g.NEU}},
 				Category: &nomicCat,
 			},
 			Case: g.ERG,
-		}},
+		},
 	}
 	for i, want := range cases {
 		s := gl.Token(want)
@@ -202,7 +197,7 @@ func TestParseToken_Referential(t *testing.T) {
 			t.Errorf("case %d %q: %v", i, s, err)
 			continue
 		}
-		rw, ok := got.(tokenize.ReferentialWord)
+		rw, ok := got.(g.Referential)
 		if !ok {
 			t.Errorf("case %d %q: got %T", i, s, got)
 			continue
@@ -218,21 +213,15 @@ func TestParseToken_Referential(t *testing.T) {
 func TestParseToken_Modular(t *testing.T) {
 	gl := canonicalGlosser(t)
 	// All-default: empty body, MNO/FAC.
-	allDefault := tokenize.ModularWord{
-		Modular: g.ModularAdjunct{Scope: g.ModularScopeDefault},
-	}
+	allDefault := g.ModularAdjunct{Scope: g.ModularScopeDefault}
 	// Typed: aspect + mood.
-	typed := tokenize.ModularWord{
-		Modular: g.ModularAdjunct{
-			Content: []g.SlotVIII{g.VnCnAspect{Aspect: g.RTR, MoodScope: g.SUB}},
-		},
+	typed := g.ModularAdjunct{
+		Content: []g.SlotVIII{g.VnCnAspect{Aspect: g.RTR, MoodScope: g.SUB}},
 	}
 	// Scoped to parent only.
-	scoped := tokenize.ModularWord{
-		Modular: g.ModularAdjunct{
-			Scope:   g.ModularScopeParent,
-			Content: []g.SlotVIII{g.VnCnValence{Valence: g.PRL, MoodScope: g.HYP}},
-		},
+	scoped := g.ModularAdjunct{
+		Scope:   g.ModularScopeParent,
+		Content: []g.SlotVIII{g.VnCnValence{Valence: g.PRL, MoodScope: g.HYP}},
 	}
 	// With reach scope (V_H §4.3 Slot 4).
 	reachCases := []g.ModularReach{
@@ -241,16 +230,14 @@ func TestParseToken_Modular(t *testing.T) {
 		g.ModularReachFormative,
 		g.ModularReachAdjacent,
 	}
-	var reachWords []tokenize.ModularWord
+	var reachWords []g.ModularAdjunct
 	for _, r := range reachCases {
-		reachWords = append(reachWords, tokenize.ModularWord{
-			Modular: g.ModularAdjunct{
-				Reach:   r,
-				Content: []g.SlotVIII{g.VnCnAspect{Aspect: g.HAB, MoodScope: g.FAC}},
-			},
+		reachWords = append(reachWords, g.ModularAdjunct{
+			Reach:   r,
+			Content: []g.SlotVIII{g.VnCnAspect{Aspect: g.HAB, MoodScope: g.FAC}},
 		})
 	}
-	all := append([]tokenize.ModularWord{allDefault, typed, scoped}, reachWords...)
+	all := append([]g.ModularAdjunct{allDefault, typed, scoped}, reachWords...)
 	for _, want := range all {
 		s := gl.Token(want)
 		got, err := ParseToken(s, nil)
@@ -267,23 +254,23 @@ func TestParseToken_Modular(t *testing.T) {
 
 func TestParseToken_MultiReferential(t *testing.T) {
 	gl := canonicalGlosser(t)
-	want := tokenize.ReferentialWord{Referential: g.Referential{
+	want := g.Referential{
 		Head: g.PersonalHead{Refs: []g.PersonalRef{
 			{Referent: g.R1m, Effect: g.NEU},
 			{Referent: g.R2p, Effect: g.BEN},
 		}},
 		Case: g.ERG,
-	}}
+	}
 	s := gl.Token(want)
 	got, err := ParseToken(s, nil)
 	if err != nil {
 		t.Fatalf("ParseToken(%q): %v", s, err)
 	}
-	rw, ok := got.(tokenize.ReferentialWord)
+	rw, ok := got.(g.Referential)
 	if !ok {
 		t.Fatalf("got %T", got)
 	}
-	refs, _ := g.HeadRefs(rw.Referential.Head)
+	refs, _ := g.HeadRefs(rw.Head)
 	if len(refs) != 2 || refs[0].Referent != g.R1m ||
 		refs[1].Referent != g.R2p || refs[1].Effect != g.BEN {
 		t.Errorf("Refs = %+v", refs)
@@ -296,29 +283,29 @@ func TestParseToken_MultiReferential(t *testing.T) {
 
 func TestParseToken_CarrierHeadedReferential(t *testing.T) {
 	gl := canonicalGlosser(t)
-	want := tokenize.ReferentialWord{Referential: g.Referential{
+	want := g.Referential{
 		Head:   g.SuppletiveHead{Type: g.Quotative},
 		Case:   g.ERG,
 		Second: &g.SecondReferent{Case: g.DAT},
-	}}
+	}
 	s := gl.Token(want)
 	got, err := ParseToken(s, nil)
 	if err != nil {
 		t.Fatalf("ParseToken(%q): %v", s, err)
 	}
-	rw, ok := got.(tokenize.ReferentialWord)
+	rw, ok := got.(g.Referential)
 	if !ok {
 		t.Fatalf("got %T (input %q)", got, s)
 	}
-	head, ok := rw.Referential.Head.(g.SuppletiveHead)
+	head, ok := rw.Head.(g.SuppletiveHead)
 	if !ok || head.Type != g.Quotative {
-		t.Errorf("Head = %+v", rw.Referential.Head)
+		t.Errorf("Head = %+v", rw.Head)
 	}
-	if rw.Referential.Case != g.ERG {
-		t.Errorf("Case = %+v", rw.Referential.Case)
+	if rw.Case != g.ERG {
+		t.Errorf("Case = %+v", rw.Case)
 	}
-	if rw.Referential.Second == nil || rw.Referential.Second.Case != g.DAT {
-		t.Errorf("Second = %+v", rw.Referential.Second)
+	if rw.Second == nil || rw.Second.Case != g.DAT {
+		t.Errorf("Second = %+v", rw.Second)
 	}
 	got2 := gl.Token(rw)
 	if got2 != s {
@@ -333,23 +320,23 @@ func TestParseToken_CombinationRef(t *testing.T) {
 	}
 	gl := &gloss.Glosser{Lex: lex, Canonical: true}
 	dative := g.DAT
-	want := tokenize.CombinationRefWord{Combination: g.CombinationReferential{
+	want := g.CombinationReferential{
 		Head:    g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
 		Case:    g.ERG,
 		Spec:    g.BSC,
 		Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 3, Consonant: "r"}},
 		Case2:   &dative,
-	}}
+	}
 	s := gl.Token(want)
 	got, err := ParseToken(s, lex)
 	if err != nil {
 		t.Fatalf("ParseToken(%q): %v", s, err)
 	}
-	cw, ok := got.(tokenize.CombinationRefWord)
+	cw, ok := got.(g.CombinationReferential)
 	if !ok {
 		t.Fatalf("got %T, want CombinationRefWord", got)
 	}
-	comb := cw.Combination
+	comb := cw
 	refs, _ := g.HeadRefs(comb.Head)
 	if comb.Case != g.ERG || comb.Spec != g.BSC || len(refs) != 1 {
 		t.Errorf("got %+v", comb)
@@ -368,14 +355,14 @@ func TestParseToken_CombinationRef(t *testing.T) {
 func TestParseToken_ForeignWord(t *testing.T) {
 	gl := canonicalGlosser(t)
 	for _, name := range []string{"John", "Emily", "Beethoven", "naïve"} {
-		want := tokenize.ForeignWord{Text: name}
+		want := g.Foreign{Text: name}
 		s := gl.Token(want)
 		got, err := ParseToken(s, nil)
 		if err != nil {
 			t.Errorf("ForeignWord %q: ParseToken(%q) err: %v", name, s, err)
 			continue
 		}
-		fw, ok := got.(tokenize.ForeignWord)
+		fw, ok := got.(g.Foreign)
 		if !ok || fw.Text != name {
 			t.Errorf("ForeignWord %q: got %T %+v", name, got, got)
 		}
@@ -394,17 +381,15 @@ func TestParseToken_CarrierAdjunct(t *testing.T) {
 		{g.Phrasal, g.DAT},
 	}
 	for _, c := range cases {
-		want := tokenize.CarrierWord{
-			Carrier: g.CarrierAdjunct{Type: c.ct, Case: c.c},
-		}
+		want := g.CarrierAdjunct{Type: c.ct, Case: c.c}
 		s := gl.Token(want)
 		got, err := ParseToken(s, nil)
 		if err != nil {
 			t.Errorf("Carrier %v %v: ParseToken(%q) err: %v", c.ct, c.c, s, err)
 			continue
 		}
-		cw, ok := got.(tokenize.CarrierWord)
-		if !ok || cw.Carrier.Type != c.ct || cw.Carrier.Case != c.c {
+		cw, ok := got.(g.CarrierAdjunct)
+		if !ok || cw.Type != c.ct || cw.Case != c.c {
 			t.Errorf("Carrier %v %v: got %T %+v", c.ct, c.c, got, got)
 		}
 	}

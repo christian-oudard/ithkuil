@@ -5,6 +5,7 @@ import (
 
 	"github.com/christian-oudard/ithkuil/corpus"
 	"github.com/christian-oudard/ithkuil/gloss"
+	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -22,9 +23,11 @@ func TestToken_CorpusRoundTrip(t *testing.T) {
 	gl := &gloss.Glosser{Canonical: true}
 	var rendered, skipped int
 	for _, w := range corpus.Words() {
-		tok := tokenize.ClassifyWord(w)
-		switch tok.(type) {
-		case tokenize.UnknownWord, tokenize.ForeignWord:
+		tok, err := tokenize.ClassifyWord(w)
+		if err != nil {
+			continue
+		}
+		if _, foreign := tok.(g.Foreign); foreign {
 			continue
 		}
 		rom, err := tokenize.Render(tok)
@@ -36,9 +39,9 @@ func TestToken_CorpusRoundTrip(t *testing.T) {
 			continue
 		}
 		rendered++
-		again := tokenize.ClassifyWord(rom)
-		if _, bad := again.(tokenize.UnknownWord); bad {
-			t.Errorf("%q rendered %q, which no longer classifies", w, rom)
+		again, err := tokenize.ClassifyWord(rom)
+		if err != nil {
+			t.Errorf("%q rendered %q, which no longer reads: %v", w, rom, err)
 			continue
 		}
 		if want, got := gl.Token(tok), gl.Token(again); want != got {
@@ -58,19 +61,27 @@ func TestToken_CorpusReferentials(t *testing.T) {
 	gl := &gloss.Glosser{Canonical: true}
 	var n int
 	for _, w := range corpus.Words() {
-		tok := tokenize.ClassifyWord(w)
+		tok, err := tokenize.ClassifyWord(w)
+		if err != nil {
+			continue
+		}
 		switch tok.(type) {
-		case tokenize.ReferentialWord, tokenize.CombinationRefWord:
+		case g.Referential, g.CombinationReferential:
 		default:
 			continue
 		}
 		rom, err := tokenize.Render(tok)
 		if err != nil {
-			t.Errorf("%q classifies as %T but does not render: %v", w, tok, err)
+			t.Errorf("%q reads as %T but does not render: %v", w, tok, err)
 			continue
 		}
 		n++
-		if want, got := gl.Token(tok), gl.Token(tokenize.ClassifyWord(rom)); want != got {
+		back, err := tokenize.ClassifyWord(rom)
+		if err != nil {
+			t.Errorf("%q rendered %q, which no longer reads: %v", w, rom, err)
+			continue
+		}
+		if want, got := gl.Token(tok), gl.Token(back); want != got {
 			t.Errorf("%q rendered %q, which reads back as %q rather than %q",
 				w, rom, got, want)
 		}

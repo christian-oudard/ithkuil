@@ -44,8 +44,8 @@ func TestCanonicalGlossIsASCII(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			for _, w := range corpus.Words() {
-				tok := tokenize.ClassifyWord(w)
-				if _, ok := tok.(tokenize.UnknownWord); ok {
+				tok, err := tokenize.ClassifyWord(w)
+				if err != nil {
 					continue
 				}
 				g := tc.gl.Token(tok)

@@ -5,7 +5,6 @@ import (
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
 // Adjuncts, referentials, and the rest of the non-formative tokens,
@@ -239,8 +238,8 @@ func headCategory(head g.RefHead) *g.RefCategory {
 	return nil
 }
 
-func putReferential(out []byte, r tokenize.ReferentialWord) ([]byte, error) {
-	ref := r.Referential
+func putReferential(out []byte, r g.Referential) ([]byte, error) {
+	ref := r
 	cat := headCategory(ref.Head)
 	flags := byte(0)
 	for _, f := range []struct {
@@ -283,8 +282,8 @@ func putReferential(out []byte, r tokenize.ReferentialWord) ([]byte, error) {
 	return out, nil
 }
 
-func getReferential(buf []byte) (tokenize.ReferentialWord, int, error) {
-	var r tokenize.ReferentialWord
+func getReferential(buf []byte) (g.Referential, int, error) {
+	var r g.Referential
 	if len(buf) == 0 {
 		return r, 0, fmt.Errorf("referential: short read")
 	}
@@ -336,8 +335,7 @@ func getReferential(buf []byte) (tokenize.ReferentialWord, int, error) {
 		}
 		ref.Second = &second
 	}
-	r.Referential = ref
-	return r, cur, nil
+	return ref, cur, nil
 }
 
 // ── combination referential ───────────────────────────────────
@@ -351,8 +349,8 @@ const (
 	combFlagRPV
 )
 
-func putCombinationRef(out []byte, c tokenize.CombinationRefWord) ([]byte, error) {
-	comb := c.Combination
+func putCombinationRef(out []byte, c g.CombinationReferential) ([]byte, error) {
+	comb := c
 	cat := headCategory(comb.Head)
 	flags := byte(0)
 	for _, f := range []struct {
@@ -397,8 +395,8 @@ func putCombinationRef(out []byte, c tokenize.CombinationRefWord) ([]byte, error
 	return out, nil
 }
 
-func getCombinationRef(buf []byte) (tokenize.CombinationRefWord, int, error) {
-	var c tokenize.CombinationRefWord
+func getCombinationRef(buf []byte) (g.CombinationReferential, int, error) {
+	var c g.CombinationReferential
 	if len(buf) == 0 {
 		return c, 0, fmt.Errorf("combination ref: short read")
 	}
@@ -462,8 +460,7 @@ func getCombinationRef(buf []byte) (tokenize.CombinationRefWord, int, error) {
 		cs := g.Case(b)
 		comb.Case2 = &cs
 	}
-	c.Combination = comb
-	return c, cur, nil
+	return comb, cur, nil
 }
 
 func stressFromByte(b byte) phonology.Stress { return phonology.Stress(b) }

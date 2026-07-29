@@ -146,19 +146,36 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 		return nil, parseOut{}, fmt.Errorf("text is required")
 	}
 	text = phonology.FromASCII(text)
-	tokens := tokenize.Tokenize(text)
+	results := tokenize.Tokenize(text)
+	span := tokenize.Words(results)
 	glosser := gloss.Glosser{Lex: s.lex}
 
-	out := make([]parseWord, len(tokens))
-	for i, t := range tokens {
-		w := parseWord{
-			Romanization: t.Romanization(),
-			Type:         view.Type(t),
-			Gloss:        glosser.Token(t),
+	out := make([]parseWord, len(results))
+	for i, r := range results {
+		w := parseWord{Romanization: r.Romanization}
+		if r.Err != nil {
+			// The shape split survives even when the grammatical
+			// reading fails, so both the reason and the split are
+			// available; without them the caller gets no way to tell
+			// an unreadable word from an unsupported one.
+			w.Type = "?"
+			w.Gloss = "?" + r.Romanization
+			w.Reason = view.UnknownReason(r.Romanization)
+			if layout, err := slots.Parse(r.Romanization); err == nil {
+				for _, sg := range view.LayoutSegments(layout) {
+					w.Segments = append(w.Segments, segmentOut{
+						Chunk: sg.Chunk, Raw: sg.Raw, Slot: sg.Slot,
+					})
+				}
+			}
+			out[i] = w
+			continue
 		}
-		switch tt := t.(type) {
-		case tokenize.FormativeWord:
-			head := view.Headword(tt.Formative, s.lex)
+		w.Type = view.Type(r.Word)
+		w.Gloss = glosser.Word(r.Word, span, i)
+		switch tt := r.Word.(type) {
+		case g.Formative:
+			head := view.Headword(tt, s.lex)
 			if head.Code != "" {
 				r := &rootHead{Code: head.Code}
 				if in.Verbose {
@@ -166,7 +183,7 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 				}
 				w.Root = r
 			}
-			segs := view.Segments(tt.Text, tt.Formative, s.lex)
+			segs := view.Segments(r.Romanization, tt, s.lex)
 			for _, sg := range segs {
 				w.Segments = append(w.Segments, segmentOut{
 					Chunk: sg.Chunk, Raw: sg.Raw, Slot: sg.Slot,
@@ -174,15 +191,19 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 				})
 			}
 			if in.Verbose {
-				for _, ge := range view.Glossary(tt.Text, tt.Formative, segs, s.lex) {
+				for _, ge := range view.Glossary(r.Romanization, tt, segs, s.lex) {
 					w.Glossary = append(w.Glossary, glossaryRow{
 						Category: ge.Category, Code: ge.Code,
 						Name: ge.Name, Meaning: ge.Meaning,
 					})
 				}
 			}
-		case tokenize.ModularWord:
-			segs := view.SegmentsModular(tt.Text, tt.Modular, tt.MarksMood)
+		case g.ModularAdjunct:
+			var marksMood *bool
+			if verbal, found := tokenize.ModularIsVerbal(span, i); found {
+				marksMood = &verbal
+			}
+			segs := view.SegmentsModular(r.Romanization, tt, marksMood)
 			for _, sg := range segs {
 				w.Segments = append(w.Segments, segmentOut{
 					Chunk: sg.Chunk, Raw: sg.Raw, Slot: sg.Slot,
@@ -197,23 +218,9 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 					})
 				}
 			}
-		case tokenize.UnknownWord:
-			// Without this the caller gets type "?" and a gloss that
-			// is the romanization spelled back, and no way to tell an
-			// unreadable word from an unsupported one. The shape
-			// split survives even when the grammatical decode fails,
-			// so both the reason and the split are available.
-			w.Reason = view.UnknownReason(tt.Text)
-			if layout, err := slots.Parse(tt.Text); err == nil {
-				for _, sg := range view.LayoutSegments(layout) {
-					w.Segments = append(w.Segments, segmentOut{
-						Chunk: sg.Chunk, Raw: sg.Raw, Slot: sg.Slot,
-					})
-				}
-			}
 		}
 		var ill phonology.Illegal
-		err := phonology.CheckText(t.Romanization())
+		err := phonology.CheckText(r.Romanization)
 		w.Valid = err == nil
 		if errors.As(err, &ill) {
 			for _, v := range ill.Violations {

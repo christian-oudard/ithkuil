@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
 // nonFormative is the two-byte prefix that introduces every token that
@@ -41,43 +40,45 @@ const (
 // registerEnd marks a RegisterEndWord in the register byte.
 const registerEnd = 1 << 7
 
-// MarshalWord encodes a single tokenize.WordToken to bytes. A formative
+// MarshalWord encodes a single g.Word to bytes. A formative
 // is written directly; every other token is introduced by the
 // nonFormative prefix and a type tag.
-func MarshalWord(t tokenize.WordToken) ([]byte, error) {
+func MarshalWord(t g.Word) ([]byte, error) {
 	switch v := t.(type) {
-	case tokenize.FormativeWord:
+	case g.Formative:
 		// A Cc marker means "another formative follows", so it belongs
 		// to a chain and never to a lone formative. Writing one here
-		// would make the decoder swallow the next token.
-		if v.Formative.Concat != g.ConcatNone {
-			return nil, fmt.Errorf("lone formative carries concatenation status %v; use a ConcatenatedFormativeWord", v.Formative.Concat)
+		// would make the decoder swallow the next word.
+		if v.Concat != g.ConcatNone {
+			return nil, fmt.Errorf("lone formative carries concatenation status %v; write it as a chain", v.Concat)
 		}
-		return putFormative(nil, v.Formative)
-	case tokenize.ConcatenatedFormativeWord:
-		return putChain(nil, v.Chain)
+		return putFormative(nil, v)
+	case *g.Chain:
+		return putChain(nil, v)
 	}
 	out := append([]byte{}, nonFormative[:]...)
 	switch v := t.(type) {
-	case tokenize.BiasWord:
-		return append(out, TokenBias, byte(v.Bias)), nil
-	case tokenize.RegisterStartWord:
-		return append(out, TokenRegister, byte(v.Register)), nil
-	case tokenize.RegisterEndWord:
-		return append(out, TokenRegister, byte(v.Register)|registerEnd), nil
-	case tokenize.ForeignWord:
+	case g.Bias:
+		return append(out, TokenBias, byte(v)), nil
+	case g.RegisterMarker:
+		b := byte(v.Register)
+		if v.End {
+			b |= registerEnd
+		}
+		return append(out, TokenRegister, b), nil
+	case g.Foreign:
 		return putForeign(append(out, TokenForeign), v.Text), nil
-	case tokenize.CarrierWord:
-		return putCarrier(append(out, TokenCarrier), v.Carrier), nil
-	case tokenize.ModularWord:
-		return putModular(append(out, TokenModular), v.Modular)
-	case tokenize.SingleAffixWord:
-		return putSingleAffix(append(out, TokenSingleAffix), v.Affix)
-	case tokenize.MultipleAffixWord:
-		return putMultipleAffix(append(out, TokenMultipleAffix), v.Affixes)
-	case tokenize.ReferentialWord:
+	case g.CarrierAdjunct:
+		return putCarrier(append(out, TokenCarrier), v), nil
+	case g.ModularAdjunct:
+		return putModular(append(out, TokenModular), v)
+	case g.SingleAffixAdjunct:
+		return putSingleAffix(append(out, TokenSingleAffix), v)
+	case g.MultipleAffixAdjunct:
+		return putMultipleAffix(append(out, TokenMultipleAffix), v)
+	case g.Referential:
 		return putReferential(append(out, TokenReferential), v)
-	case tokenize.CombinationRefWord:
+	case g.CombinationReferential:
 		return putCombinationRef(append(out, TokenCombinationRef), v)
 	}
 	return nil, fmt.Errorf("MarshalWord: unsupported token %T", t)
@@ -86,7 +87,7 @@ func MarshalWord(t tokenize.WordToken) ([]byte, error) {
 // UnmarshalWord decodes a single token from bytes. Returns the token
 // plus the number of bytes consumed, so a sentence-level decoder can
 // stream multiple tokens from one buffer.
-func UnmarshalWord(buf []byte) (tokenize.WordToken, int, error) {
+func UnmarshalWord(buf []byte) (g.Word, int, error) {
 	if len(buf) == 0 {
 		return nil, 0, fmt.Errorf("empty input")
 	}
@@ -102,9 +103,9 @@ func UnmarshalWord(buf []byte) (tokenize.WordToken, int, error) {
 			if err != nil {
 				return nil, 0, err
 			}
-			return tokenize.ConcatenatedFormativeWord{Chain: c}, n + rest, nil
+			return c, n + rest, nil
 		}
-		return tokenize.FormativeWord{Formative: f}, n, nil
+		return f, n, nil
 	}
 	if len(buf) < 3 {
 		return nil, 0, fmt.Errorf("token: prefix with no type tag")
@@ -121,13 +122,12 @@ func UnmarshalWord(buf []byte) (tokenize.WordToken, int, error) {
 		b := rest[0]
 		switch tag {
 		case TokenBias:
-			return tokenize.BiasWord{Bias: g.Bias(b)}, hdr + 1, nil
+			return g.Bias(b), hdr + 1, nil
 		case TokenRegister:
-			reg := g.Register(b &^ registerEnd)
-			if b&registerEnd != 0 {
-				return tokenize.RegisterEndWord{Register: reg}, hdr + 1, nil
-			}
-			return tokenize.RegisterStartWord{Register: reg}, hdr + 1, nil
+			return g.RegisterMarker{
+				Register: g.Register(b &^ registerEnd),
+				End:      b&registerEnd != 0,
+			}, hdr + 1, nil
 		}
 	}
 
@@ -138,31 +138,31 @@ func UnmarshalWord(buf []byte) (tokenize.WordToken, int, error) {
 		if err != nil {
 			return nil, 0, err
 		}
-		return tokenize.ForeignWord{Text: s}, hdr + n, nil
+		return g.Foreign{Text: s}, hdr + n, nil
 	case TokenCarrier:
 		c, n, err := getCarrier(rest)
 		if err != nil {
 			return nil, 0, err
 		}
-		return tokenize.CarrierWord{Carrier: c}, hdr + n, nil
+		return c, hdr + n, nil
 	case TokenModular:
 		m, n, err := getModular(rest)
 		if err != nil {
 			return nil, 0, err
 		}
-		return tokenize.ModularWord{Modular: m}, hdr + n, nil
+		return m, hdr + n, nil
 	case TokenSingleAffix:
 		a, n, err := getSingleAffix(rest)
 		if err != nil {
 			return nil, 0, err
 		}
-		return tokenize.SingleAffixWord{Affix: a}, hdr + n, nil
+		return a, hdr + n, nil
 	case TokenMultipleAffix:
 		m, n, err := getMultipleAffix(rest)
 		if err != nil {
 			return nil, 0, err
 		}
-		return tokenize.MultipleAffixWord{Affixes: m}, hdr + n, nil
+		return m, hdr + n, nil
 	case TokenReferential:
 		r, n, err := getReferential(rest)
 		if err != nil {
@@ -198,7 +198,7 @@ const FormatVersion byte = 3
 // boundaries are prosodic (§5.8 ¶8) and not encoded in the romanized
 // text. The format mirrors that: one stream of tokens, no higher
 // framing.
-func MarshalTokens(tokens []tokenize.WordToken) ([]byte, error) {
+func MarshalTokens(tokens []g.Word) ([]byte, error) {
 	out := appendUvarint([]byte{FormatVersion}, uint64(len(tokens)))
 	for _, t := range tokens {
 		b, err := MarshalWord(t)
@@ -211,7 +211,7 @@ func MarshalTokens(tokens []tokenize.WordToken) ([]byte, error) {
 }
 
 // UnmarshalTokens is the inverse of MarshalTokens.
-func UnmarshalTokens(buf []byte) ([]tokenize.WordToken, error) {
+func UnmarshalTokens(buf []byte) ([]g.Word, error) {
 	if len(buf) < 2 {
 		return nil, fmt.Errorf("tokens: short input (need at least 2 header bytes)")
 	}
@@ -223,7 +223,7 @@ func UnmarshalTokens(buf []byte) ([]tokenize.WordToken, error) {
 		return nil, fmt.Errorf("tokens: bad token count: %w", err)
 	}
 	cur := 1 + n
-	out := make([]tokenize.WordToken, 0, count)
+	out := make([]g.Word, 0, count)
 	for i := uint64(0); i < count; i++ {
 		t, consumed, err := UnmarshalWord(buf[cur:])
 		if err != nil {
@@ -232,9 +232,8 @@ func UnmarshalTokens(buf []byte) ([]tokenize.WordToken, error) {
 		cur += consumed
 		out = append(out, t)
 	}
-	// A modular adjunct's MarksMood is read off its neighbours rather
-	// than off the adjunct, so it is not stored. Restore it now that
-	// the whole stream is back.
-	tokenize.ResolveModularMood(out)
+	// Nothing to restore: whether a modular adjunct's neighbour is
+	// verbal is asked of the span where it is used rather than stored
+	// on the adjunct, so no decoder can leave a derived field stale.
 	return out, nil
 }

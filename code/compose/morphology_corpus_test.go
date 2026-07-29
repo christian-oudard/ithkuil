@@ -1,6 +1,7 @@
 package compose
 
 import (
+	g "github.com/christian-oudard/ithkuil/grammar"
 	"path/filepath"
 	"testing"
 
@@ -35,9 +36,12 @@ func TestFullDistance_MorphologyCorpus(t *testing.T) {
 
 	for _, w := range morphologyCorpusWords {
 		t.Run(w, func(t *testing.T) {
-			tok := tokenize.ClassifyWord(w)
-			if _, ok := tok.(tokenize.FormativeWord); !ok {
-				t.Skipf("not a FormativeWord: %T", tok)
+			tok, err := tokenize.ClassifyWord(w)
+			if err != nil {
+				t.Skipf("not readable: %v", err)
+			}
+			if _, ok := tok.(g.Formative); !ok {
+				t.Skipf("not a formative: %T", tok)
 			}
 			f, err := fullparse.Formative(w)
 			if err != nil {
@@ -113,4 +117,14 @@ var morphologyCorpusWords = []string{
 	"ksalirsa", "gzalui", "walẓärs",
 	"cpalärsa", "wapcui", "wansorsë'i", "cpalörs",
 	"wallärsa",
+}
+
+// readWord reads one word or fails the test.
+func readWord(t *testing.T, word string) g.Word {
+	t.Helper()
+	w, err := tokenize.ClassifyWord(word)
+	if err != nil {
+		t.Fatalf("ClassifyWord(%q): %v", word, err)
+	}
+	return w
 }

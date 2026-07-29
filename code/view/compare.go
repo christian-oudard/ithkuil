@@ -6,6 +6,7 @@ import (
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/render"
 	"github.com/christian-oudard/ithkuil/slots"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
@@ -49,32 +50,40 @@ type Side struct {
 // Referentials and the rest have no slot structure at all, and are an
 // error here. Phonotactic validation is the caller's to run first.
 func BuildSide(word string, lex *lexicon.Lexicon) (Side, error) {
-	tokens := tokenize.Tokenize(word)
-	if len(tokens) != 1 {
-		return Side{}, fmt.Errorf("%s: expected one word, got %d tokens", word, len(tokens))
+	results := tokenize.Tokenize(word)
+	if len(results) != 1 {
+		return Side{}, fmt.Errorf("%s: expected one word, got %d", word, len(results))
 	}
-	rom := strings.ToLower(tokens[0].Romanization())
-	switch t := tokens[0].(type) {
-	case tokenize.FormativeWord:
-		return Side{rom, []Block{FormativeBlock(t.Text, t.Formative, "", lex)}}, nil
-	case tokenize.ModularWord:
-		segs := SegmentsModular(t.Text, t.Modular, t.MarksMood)
-		return Side{rom, []Block{{
-			Word:    strings.ToLower(t.Text),
-			Segs:    segs,
-			Gloss:   GlossaryModular(segs),
-			Decoded: true,
-		}}}, nil
-	case tokenize.ConcatenatedFormativeWord:
-		return Side{rom, chainBlocks(t, lex)}, nil
-	case tokenize.UnknownWord:
-		bl, err := unknownBlock(t.Text)
+	r := results[0]
+	rom := strings.ToLower(r.Romanization)
+	if r.Err != nil {
+		// A word that could not be read still has a shape, and showing
+		// it is the point here: it is what makes a good word comparable
+		// to a bad one.
+		bl, err := unknownBlock(r.Romanization)
 		if err != nil {
 			return Side{}, err
 		}
 		return Side{rom, []Block{bl}}, nil
+	}
+	switch t := r.Word.(type) {
+	case g.Formative:
+		return Side{rom, []Block{FormativeBlock(rom, t, "", lex)}}, nil
+	case g.ModularAdjunct:
+		// One word on its own has no neighbour to say whether the
+		// formative it applies to is verbal, so the Cn reading falls
+		// back to the Vn pattern.
+		segs := SegmentsModular(rom, t, nil)
+		return Side{rom, []Block{{
+			Word:    rom,
+			Segs:    segs,
+			Gloss:   GlossaryModular(segs),
+			Decoded: true,
+		}}}, nil
+	case *g.Chain:
+		return Side{rom, chainBlocks(t, lex)}, nil
 	default:
-		return Side{}, fmt.Errorf("%s: %s has no slot breakdown to compare", word, Type(tokens[0]))
+		return Side{}, fmt.Errorf("%s: %s has no slot breakdown to compare", word, Type(r.Word))
 	}
 }
 
@@ -95,19 +104,15 @@ func FormativeBlock(text string, f g.Formative, role string, lex *lexicon.Lexico
 // The chain's romanization is hyphen-joined, so splitting on "-" recovers
 // each member's own romanization. Dependents lead and the parent comes last
 // (§3.1.7), but the Cc marker is what tells them apart, not position.
-func chainBlocks(cw tokenize.ConcatenatedFormativeWord, lex *lexicon.Lexicon) []Block {
-	parts := strings.Split(cw.Text, "-")
-	formatives := cw.Chain.Formatives()
+func chainBlocks(cw *g.Chain, lex *lexicon.Lexicon) []Block {
+	formatives := cw.Formatives()
 	blocks := make([]Block, 0, len(formatives))
-	for i, f := range formatives {
+	for _, f := range formatives {
 		role := "head"
 		if f.Concat != g.ConcatNone {
 			role = f.Concat.String() + " dependent"
 		}
-		rom := ""
-		if i < len(parts) {
-			rom = parts[i]
-		}
+		rom := render.Formative(f)
 		blocks = append(blocks, FormativeBlock(rom, f, role, lex))
 	}
 	return blocks

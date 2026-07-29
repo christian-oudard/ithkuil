@@ -12,12 +12,18 @@ import (
 )
 
 // Sentence runs the tokenizer over a sentence and returns one gloss
-// string per recognized word.
+// string per word. A word that cannot be read glosses as "?" and the
+// romanization, which says only that it was not read; callers wanting
+// the reason should use tokenize.Tokenize and report it themselves.
 func (gl *Glosser) Sentence(sentence string) []string {
-	tokens := tokenize.Tokenize(sentence)
-	out := make([]string, len(tokens))
-	for i, t := range tokens {
-		out[i] = gl.Token(t)
+	results := tokenize.Tokenize(sentence)
+	out := make([]string, len(results))
+	for i, r := range results {
+		if r.Err != nil {
+			out[i] = "?" + r.Romanization
+			continue
+		}
+		out[i] = gl.Word(r.Word, tokenize.Words(results), i)
 	}
 	return out
 }
@@ -27,15 +33,27 @@ func Sentence(sentence string) []string {
 	return (&Glosser{}).Sentence(sentence)
 }
 
-// Token formats a single tokenize.WordToken. Each variant gets a
-// concise, identifying gloss.
-func (gl *Glosser) Token(t tokenize.WordToken) string {
+// Token glosses one word out of context.
+//
+// Every class but one reads the same alone as in a span. The exception
+// is the modular adjunct, whose Cn is Mood or Case-Scope depending on
+// whether the formative it applies to is verbal — a fact about the
+// neighbours, not the adjunct. Alone it falls back to the Vn-pattern
+// heuristic, which is usually right and sometimes a guess. Use Word
+// when the span is known.
+func (gl *Glosser) Token(t g.Word) string {
+	return gl.Word(t, nil, 0)
+}
+
+// Word glosses the word at index i of span, using the span for the
+// facts that are not in the word. A nil span means there is none.
+func (gl *Glosser) Word(t g.Word, span g.Text, i int) string {
 	switch v := t.(type) {
-	case tokenize.FormativeWord:
-		return gl.Formative(v.Formative)
-	case tokenize.ConcatenatedFormativeWord:
-		parts := make([]string, 0, v.Chain.Length())
-		for _, f := range v.Chain.Formatives() {
+	case g.Formative:
+		return gl.Formative(v)
+	case *g.Chain:
+		parts := make([]string, 0, v.Length())
+		for _, f := range v.Formatives() {
 			parts = append(parts, gl.Formative(f))
 		}
 		sep := " >> "
@@ -43,29 +61,34 @@ func (gl *Glosser) Token(t tokenize.WordToken) string {
 			sep = " "
 		}
 		return strings.Join(parts, sep)
-	case tokenize.BiasWord:
-		return gl.biasLabel(v.Bias)
-	case tokenize.RegisterStartWord:
+	case g.Bias:
+		return gl.biasLabel(v)
+	case g.RegisterMarker:
+		if v.End {
+			return gl.registerEndLabel(v.Register)
+		}
 		return gl.registerStartLabel(v.Register)
-	case tokenize.RegisterEndWord:
-		return gl.registerEndLabel(v.Register)
-	case tokenize.CarrierWord:
-		return gl.carrierLabel(v.Carrier)
-	case tokenize.ModularWord:
-		return gl.modularLabel(v.Modular, v.MarksMood)
-	case tokenize.SingleAffixWord:
-		return gl.singleAffixLabel(v.Affix)
-	case tokenize.MultipleAffixWord:
-		return gl.multiAffixLabel(v.Affixes)
-	case tokenize.ReferentialWord:
+	case g.CarrierAdjunct:
+		return gl.carrierLabel(v)
+	case g.ModularAdjunct:
+		var marksMood *bool
+		if span != nil {
+			if verbal, found := tokenize.ModularIsVerbal(span, i); found {
+				marksMood = &verbal
+			}
+		}
+		return gl.modularLabel(v, marksMood)
+	case g.SingleAffixAdjunct:
+		return gl.singleAffixLabel(v)
+	case g.MultipleAffixAdjunct:
+		return gl.multiAffixLabel(v)
+	case g.Referential:
 		return gl.refLabel(v)
-	case tokenize.CombinationRefWord:
+	case g.CombinationReferential:
 		return gl.combinationRefLabel(v)
-	case tokenize.UnknownWord:
-		return "?" + v.Text
-	case tokenize.ForeignWord:
+	case g.Foreign:
 		// Canonical: wrap in double quotes so the parser can recognize
-		// foreign text without confusing it for an Ithkuil token.
+		// foreign text without confusing it for an Ithkuil word.
 		// Display: bare text matches existing display-side expectations.
 		if gl.Canonical {
 			return `"` + v.Text + `"`
@@ -288,8 +311,8 @@ func modularReachSuffix(r g.ModularReach) string {
 // Canonical: "<refs>-<case>-<spec>(-<affix>...)(-<case2>)(-RPV)" — the
 // Specification is always emitted, which is what tells a combination
 // referential apart from a plain one.
-func (gl *Glosser) combinationRefLabel(c tokenize.CombinationRefWord) string {
-	comb := c.Combination
+func (gl *Glosser) combinationRefLabel(c g.CombinationReferential) string {
+	comb := c
 	head := gl.refHead(comb.Head)
 	sep := "-"
 	if !gl.Canonical {
@@ -321,8 +344,8 @@ func (gl *Glosser) combinationRefLabel(c tokenize.CombinationRefWord) string {
 // the gloss rule that a case attached to a head is written HEAD/CASE.
 // A second case with no referent of its own stacks onto the head
 // instead, and stays a plain slot.
-func (gl *Glosser) refLabel(r tokenize.ReferentialWord) string {
-	ref := r.Referential
+func (gl *Glosser) refLabel(r g.Referential) string {
+	ref := r
 	label := gl.refHead(ref.Head) + "-" + ref.Case.String()
 	if s := ref.Second; s != nil {
 		if len(s.Refs) > 0 {

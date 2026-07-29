@@ -47,46 +47,46 @@ func TestCluster_RoundTrip(t *testing.T) {
 func TestMarshalWord_AllTokenTypes(t *testing.T) {
 	nomic := g.Nomic
 	dat := g.DAT
-	cases := []tokenize.WordToken{
+	cases := []g.Word{
 		// Formative — minimal.
-		tokenize.FormativeWord{Formative: g.MinimalFormative("m")},
+		g.MinimalFormative("m"),
 		// Bias.
-		tokenize.BiasWord{Bias: g.DOL},
+		g.DOL,
 		// Register start.
-		tokenize.RegisterStartWord{Register: g.DSV},
+		g.RegisterMarker{Register: g.DSV},
 		// Register end.
-		tokenize.RegisterEndWord{Register: g.DSV},
+		g.RegisterMarker{Register: g.DSV},
 		// Parsing adjunct.
 		// Carrier.
-		tokenize.CarrierWord{Carrier: g.CarrierAdjunct{Type: g.Carrier, Case: g.ERG}},
+		g.CarrierAdjunct{Type: g.Carrier, Case: g.ERG},
 		// Modular — default.
-		tokenize.ModularWord{Modular: g.ModularAdjunct{}},
+		g.ModularAdjunct{},
 		// Modular — with content + scope + reach.
-		tokenize.ModularWord{Modular: g.ModularAdjunct{
+		g.ModularAdjunct{
 			Scope:   g.ModularScopeParent,
 			Reach:   g.ModularReachFormative,
 			Content: []g.SlotVIII{g.VnCnValence{Valence: g.MNO, MoodScope: g.FAC}},
-		}},
+		},
 		// Single affix.
-		tokenize.SingleAffixWord{Affix: g.SingleAffixAdjunct{
+		g.SingleAffixAdjunct{
 			Affix: g.Affix{Type: g.Type2Affix, Degree: 5, Consonant: "kt"},
 			Scope: g.ScopeVIIDom,
-		}},
+		},
 		// Multi-affix.
-		tokenize.MultipleAffixWord{Affixes: g.MultipleAffixAdjunct{
+		g.MultipleAffixAdjunct{
 			First:      g.Affix{Type: g.Type1Affix, Degree: 3, Consonant: "r"},
 			Rest:       []g.Affix{{Type: g.Type2Affix, Degree: 5, Consonant: "kt"}},
 			FirstScope: g.ScopeVSub,
 			RestScope:  g.ScopeVIIDom,
-		}},
+		},
 		// Referential — single ref.
-		tokenize.ReferentialWord{Referential: g.Referential{
+		g.Referential{
 			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
 			Case: g.THM,
-		}},
+		},
 		// Referential — full shape: suppletive head, a second referent
 		// carrying its own case, and RPV essence.
-		tokenize.ReferentialWord{Referential: g.Referential{
+		g.Referential{
 			Head: g.SuppletiveHead{Type: g.Quotative},
 			Case: g.ERG,
 			Second: &g.SecondReferent{
@@ -94,24 +94,24 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 				Refs: []g.PersonalRef{{Referent: g.R2p, Effect: g.DET}},
 			},
 			RpvEssence: true,
-		}},
+		},
 		// Combination ref.
-		tokenize.CombinationRefWord{Combination: g.CombinationReferential{
+		g.CombinationReferential{
 			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R2m, Effect: g.BEN}}},
 			Case: g.ERG,
 			Spec: g.BSC,
-		}},
+		},
 		// Multi-affix with no Rest — the run holds only the head, so
 		// Rest must come back nil rather than an empty slice.
-		tokenize.MultipleAffixWord{Affixes: g.MultipleAffixAdjunct{
+		g.MultipleAffixAdjunct{
 			First:      g.Affix{Type: g.Type1Affix, Degree: 3, Consonant: "r"},
 			FirstScope: g.ScopeVSub,
 			RestScope:  g.ScopeVIIDom,
-		}},
+		},
 		// Carrier at its default case, which the encoding elides.
-		tokenize.CarrierWord{Carrier: g.CarrierAdjunct{Type: g.Naming, Case: g.THM}},
+		g.CarrierAdjunct{Type: g.Naming, Case: g.THM},
 		// Modular carrying the maximum three Vn/Cn pairs.
-		tokenize.ModularWord{Modular: g.ModularAdjunct{
+		g.ModularAdjunct{
 			Scope: g.ModularScopeConcat,
 			Reach: g.ModularReachAdjacent,
 			Content: []g.SlotVIII{
@@ -119,45 +119,45 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 				g.VnCnAspect{Aspect: g.SQN, MoodScope: g.FAC},
 				g.VnCnLevel{Level: g.MAX, MoodScope: g.FAC, Absolute: true},
 			},
-		}},
+		},
 		// A second case with no referent of its own, which §4.6.1
 		// stacks onto the head instead.
-		tokenize.ReferentialWord{Referential: g.Referential{
+		g.Referential{
 			Head:   g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.Rma, Effect: g.NEU}}},
 			Case:   g.THM,
 			Second: &g.SecondReferent{Case: g.ABS},
-		}},
+		},
 		// Combination ref at its default Case and Spec, both elided.
-		tokenize.CombinationRefWord{Combination: g.CombinationReferential{
+		g.CombinationReferential{
 			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.Rpvs, Effect: g.DET}}},
 			Case: g.THM,
 			Spec: g.BSC,
-		}},
+		},
 		// Combination ref with no Refs, which the corpus contains and
 		// which used to write zero ref bytes but read one back,
 		// desynchronising every token after it in the stream.
-		tokenize.CombinationRefWord{Combination: g.CombinationReferential{
+		g.CombinationReferential{
 			Head: g.SuppletiveHead{Type: g.Quotative},
 			Case: g.ERG,
 			Spec: g.CTE,
-		}},
+		},
 		// A category modifier on the head, which rides along with the
 		// referent chain rather than in a slot of its own.
-		tokenize.ReferentialWord{Referential: g.Referential{
+		g.Referential{
 			Head: g.PersonalHead{
 				Refs:     []g.PersonalRef{{Referent: g.Rmi, Effect: g.NEU}},
 				Category: &nomic,
 			},
 			Case: g.ERG,
-		}},
+		},
 		// Combination ref with affixes + case2.
-		tokenize.CombinationRefWord{Combination: g.CombinationReferential{
+		g.CombinationReferential{
 			Head:    g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
 			Case:    g.ERG,
 			Spec:    g.OBJ,
 			Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}},
 			Case2:   &dat,
-		}},
+		},
 	}
 	for i, want := range cases {
 		b, err := MarshalWord(want)
@@ -180,13 +180,13 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 }
 
 func TestMarshalTokens_RoundTrip(t *testing.T) {
-	tokens := []tokenize.WordToken{
-		tokenize.BiasWord{Bias: g.DOL},
-		tokenize.FormativeWord{Formative: g.MinimalFormative("m")},
-		tokenize.ReferentialWord{Referential: g.Referential{
+	tokens := []g.Word{
+		g.DOL,
+		g.MinimalFormative("m"),
+		g.Referential{
 			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
 			Case: g.THM,
-		}},
+		},
 	}
 	b, err := MarshalTokens(tokens)
 	if err != nil {
@@ -214,7 +214,7 @@ func TestFuzz_BinaryRoundTrip(t *testing.T) {
 	const iterations = 500
 	for i := 0; i < iterations; i++ {
 		f := randomFormative(rng)
-		t1 := tokenize.FormativeWord{Formative: f}
+		t1 := f
 		b1, err := MarshalWord(t1)
 		if err != nil {
 			t.Errorf("iter %d: marshal: %v\n  f: %+v", i, err, f)
@@ -367,13 +367,13 @@ func TestNonFormativeEscape(t *testing.T) {
 	// keeps the decoder's dispatch unambiguous.
 	dep := g.MinimalFormative("ml")
 	dep.Concat = g.Type1
-	tokens := []tokenize.WordToken{
-		tokenize.ConcatenatedFormativeWord{Chain: &g.Chain{
+	tokens := []g.Word{
+		&g.Chain{
 			Head: g.MinimalFormative("l"),
 			Tail: []g.Formative{dep},
-		}},
-		tokenize.BiasWord{Bias: g.DOL},
-		tokenize.FormativeWord{Formative: g.MinimalFormative("m")},
+		},
+		g.DOL,
+		g.MinimalFormative("m"),
 	}
 	b, err := MarshalTokens(tokens)
 	if err != nil {
@@ -418,9 +418,7 @@ func TestChain_FreeFraming(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	chain, err := MarshalWord(tokenize.ConcatenatedFormativeWord{
-		Chain: &g.Chain{Head: head, Tail: []g.Formative{dep}},
-	})
+	chain, err := MarshalWord(&g.Chain{Head: head, Tail: []g.Formative{dep}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -440,26 +438,18 @@ func TestChain_RejectsUngrammatical(t *testing.T) {
 	}
 	for _, tc := range []struct {
 		name  string
-		token tokenize.WordToken
+		token g.Word
 	}{
-		{"lone formative with a Cc", tokenize.FormativeWord{
-			Formative: withConcat("ml", g.Type1),
+		{"lone formative with a Cc", withConcat("ml", g.Type1)},
+		{"parent with a Cc", &g.Chain{
+			Head: withConcat("l", g.Type2),
+			Tail: []g.Formative{withConcat("ml", g.Type1)},
 		}},
-		{"parent with a Cc", tokenize.ConcatenatedFormativeWord{
-			Chain: &g.Chain{
-				Head: withConcat("l", g.Type2),
-				Tail: []g.Formative{withConcat("ml", g.Type1)},
-			},
+		{"dependent without a Cc", &g.Chain{
+			Head: g.MinimalFormative("l"),
+			Tail: []g.Formative{g.MinimalFormative("ml")},
 		}},
-		{"dependent without a Cc", tokenize.ConcatenatedFormativeWord{
-			Chain: &g.Chain{
-				Head: g.MinimalFormative("l"),
-				Tail: []g.Formative{g.MinimalFormative("ml")},
-			},
-		}},
-		{"chain of one", tokenize.ConcatenatedFormativeWord{
-			Chain: &g.Chain{Head: g.MinimalFormative("l")},
-		}},
+		{"chain of one", &g.Chain{Head: g.MinimalFormative("l")}},
 	} {
 		if _, err := MarshalWord(tc.token); err == nil {
 			t.Errorf("%s: encoded without error, want a rejection", tc.name)
@@ -473,10 +463,10 @@ func TestChain_RejectsUngrammatical(t *testing.T) {
 func TestFuzz_ChainRoundTrip(t *testing.T) {
 	rng := rand.New(rand.NewSource(2026_07_26))
 	for i := 0; i < 200; i++ {
-		tokens := []tokenize.WordToken{
-			tokenize.ConcatenatedFormativeWord{Chain: randomChain(rng)},
-			tokenize.BiasWord{Bias: g.DOL},
-			tokenize.FormativeWord{Formative: randomFormative(rng)},
+		tokens := []g.Word{
+			randomChain(rng),
+			g.DOL,
+			randomFormative(rng),
 		}
 		b, err := MarshalTokens(tokens)
 		if err != nil {
@@ -592,7 +582,7 @@ func randomAffixes(rng *rand.Rand) []g.Affix {
 // equalTokens compares two WordTokens for structural equality. Uses
 // reflect.DeepEqual for the convenience of working through interface
 // fields and slices.
-func equalTokens(a, b tokenize.WordToken) bool {
+func equalTokens(a, b g.Word) bool {
 	return reflect.DeepEqual(a, b)
 }
 
@@ -605,10 +595,10 @@ func TestForeignWord_RoundTrip(t *testing.T) {
 		"John", "", "Ithkuil", "Ⅳ", "naïve café", "日本語",
 		strings.Repeat("x", 200), // past the one-byte uvarint length
 	} {
-		tokens := []tokenize.WordToken{
-			tokenize.CarrierWord{Carrier: g.CarrierAdjunct{Type: g.Naming}},
-			tokenize.ForeignWord{Text: s},
-			tokenize.FormativeWord{Formative: g.MinimalFormative("ml")},
+		tokens := []g.Word{
+			g.CarrierAdjunct{Type: g.Naming},
+			g.Foreign{Text: s},
+			g.MinimalFormative("ml"),
 		}
 		b, err := MarshalTokens(tokens)
 		if err != nil {
@@ -621,16 +611,6 @@ func TestForeignWord_RoundTrip(t *testing.T) {
 		if !reflect.DeepEqual(got, tokens) {
 			t.Errorf("%q\n  want: %+v\n  got:  %+v", s, tokens, got)
 		}
-	}
-}
-
-// TestUnknownWord_NotEncodable pins the deliberate gap. A word we
-// could not classify is a parse failure, not a meaning; storing its
-// bytes would let a document encode cleanly while recording that we
-// did not understand part of it.
-func TestUnknownWord_NotEncodable(t *testing.T) {
-	if _, err := MarshalWord(tokenize.UnknownWord{Text: "hello"}); err == nil {
-		t.Error("UnknownWord encoded without error, want a rejection")
 	}
 }
 
@@ -653,13 +633,12 @@ func TestModularMood_Restored(t *testing.T) {
 		{"before a verbal formative", verbal, true},
 		{"before a nominal formative", nominal, false},
 	} {
-		tokens := []tokenize.WordToken{
-			tokenize.ModularWord{Modular: g.ModularAdjunct{
+		tokens := []g.Word{
+			g.ModularAdjunct{
 				Content: []g.SlotVIII{g.VnCnAspect{Aspect: g.RTR, MoodScope: g.SUB}},
-			}},
-			tokenize.FormativeWord{Formative: tc.next},
+			},
+			tc.next,
 		}
-		tokenize.ResolveModularMood(tokens)
 		b, err := MarshalTokens(tokens)
 		if err != nil {
 			t.Fatalf("%s: marshal: %v", tc.name, err)
@@ -668,13 +647,11 @@ func TestModularMood_Restored(t *testing.T) {
 		if err != nil {
 			t.Fatalf("%s: unmarshal: %v", tc.name, err)
 		}
-		mw := got[0].(tokenize.ModularWord)
-		if mw.MarksMood == nil {
-			t.Errorf("%s: MarksMood came back nil, want %v", tc.name, tc.want)
-			continue
-		}
-		if *mw.MarksMood != tc.want {
-			t.Errorf("%s: MarksMood = %v, want %v", tc.name, *mw.MarksMood, tc.want)
+		// Whether the adjunct's neighbour is verbal is asked of the
+		// span, not stored, so it survives the trip by being derived
+		// from the words either side rather than by being encoded.
+		if verbal, found := tokenize.ModularIsVerbal(got, 0); !found || verbal != tc.want {
+			t.Errorf("%s: verbal = %v (found %v), want %v", tc.name, verbal, found, tc.want)
 		}
 		if !reflect.DeepEqual(got, tokens) {
 			t.Errorf("%s\n  want: %+v\n  got:  %+v", tc.name, tokens, got)

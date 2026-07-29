@@ -7,18 +7,17 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
 // ParseToken parses a single canonical-gloss token (whitespace-delimited
-// unit) into a tokenize.WordToken. Inverse of gloss.Glosser.Token when
+// unit) into a g.Word. Inverse of gloss.Glosser.Token when
 // Canonical=true.
 //
 // Dispatch is structural: each adjunct type has a distinctive shape
 // (leading bracket, trailing colon, bare uppercase, and so on), which
 // is what the one-job-per-mark rule in SPEC.md buys. No lookup is
 // needed to decide which kind of word a token is.
-func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
+func ParseToken(s string, lex *lexicon.Lexicon) (g.Word, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
 		return nil, fmt.Errorf("empty token")
@@ -33,13 +32,13 @@ func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
 
 	// Foreign word: double-quoted text.
 	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
-		return tokenize.ForeignWord{Text: s[1 : len(s)-1]}, nil
+		return g.Foreign{Text: s[1 : len(s)-1]}, nil
 	}
 
 	// Register end: "<NAME>_END"
 	if strings.HasSuffix(s, "_END") {
 		if r, ok := parseRegisterName(strings.TrimSuffix(s, "_END")); ok {
-			return tokenize.RegisterEndWord{Text: s, Register: r}, nil
+			return g.RegisterMarker{Register: r, End: true}, nil
 		}
 	}
 
@@ -53,10 +52,10 @@ func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
 	// Bare uppercase abbreviation: bias OR register-start.
 	if isBareUppercase(s) {
 		if b, ok := parseBiasName(s); ok {
-			return tokenize.BiasWord{Text: s, Bias: b}, nil
+			return b, nil
 		}
 		if r, ok := parseRegisterName(s); ok {
-			return tokenize.RegisterStartWord{Text: s, Register: r}, nil
+			return g.RegisterMarker{Register: r}, nil
 		}
 	}
 
@@ -83,7 +82,7 @@ func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
 	if lex != nil {
 		f, err := Formative(s, lex.Affixes)
 		if err == nil {
-			return tokenize.FormativeWord{Text: s, Formative: f}, nil
+			return f, nil
 		}
 		return nil, fmt.Errorf("formative parse failed: %w", err)
 	}
@@ -120,7 +119,7 @@ func parseRegisterName(s string) (g.Register, bool) {
 //
 // A leading referent list ("[1m+2p]-ERG") is a multi-referent
 // referential.
-func parseCarrierOrReferential(s string, affixes map[string]lexicon.AffixEntry) (tokenize.WordToken, bool, error) {
+func parseCarrierOrReferential(s string, affixes map[string]lexicon.AffixEntry) (g.Word, bool, error) {
 	end := strings.Index(s, "]")
 	if end < 1 {
 		return nil, false, nil
@@ -134,10 +133,7 @@ func parseCarrierOrReferential(s string, affixes map[string]lexicon.AffixEntry) 
 			if err != nil {
 				return nil, true, fmt.Errorf("carrier %q: %w", s, err)
 			}
-			return tokenize.CarrierWord{
-				Text:    s,
-				Carrier: g.CarrierAdjunct{Type: ct, Case: cv},
-			}, true, nil
+			return g.CarrierAdjunct{Type: ct, Case: cv}, true, nil
 		}
 		w, err := buildReferential(s, g.SuppletiveHead{Type: ct},
 			append([]string{caseChunk}, strings.Split(restTail, "-")...), affixes)
@@ -191,7 +187,7 @@ func buildReferential(
 	head g.RefHead,
 	parts []string,
 	affixes map[string]lexicon.AffixEntry,
-) (tokenize.WordToken, error) {
+) (g.Word, error) {
 	if len(parts) == 0 || parts[0] == "" {
 		return nil, fmt.Errorf("referential %q: missing case", text)
 	}
@@ -240,7 +236,7 @@ func buildReferential(
 			ref.Second = &g.SecondReferent{Case: cv}
 		}
 	}
-	return tokenize.ReferentialWord{Text: text, Referential: ref}, nil
+	return ref, nil
 }
 
 // buildCombinationRef reads the §4.6.2 tail after the Specification:
@@ -253,7 +249,7 @@ func buildCombinationRef(
 	spec g.Specification,
 	rest []string,
 	affixes map[string]lexicon.AffixEntry,
-) (tokenize.WordToken, error) {
+) (g.Word, error) {
 	comb := g.CombinationReferential{Head: head, Case: c, Spec: spec}
 	for _, p := range rest {
 		if p == "RPV" {
@@ -273,7 +269,7 @@ func buildCombinationRef(
 		}
 		comb.Case2 = &cv
 	}
-	return tokenize.CombinationRefWord{Text: text, Combination: comb}, nil
+	return comb, nil
 }
 
 // parseCarrierTypeAbbrev maps the 3-letter canonical form back to a
@@ -454,9 +450,9 @@ func looksLikeAffixual(s string) bool {
 // ParseSentence splits a canonical-gloss sentence on whitespace and
 // dispatches each token via ParseToken. Returns the slice of tokens
 // in order; errors include the failing token's index and content.
-func ParseSentence(s string, lex *lexicon.Lexicon) ([]tokenize.WordToken, error) {
+func ParseSentence(s string, lex *lexicon.Lexicon) ([]g.Word, error) {
 	fields := strings.Fields(s)
-	out := make([]tokenize.WordToken, 0, len(fields))
+	out := make([]g.Word, 0, len(fields))
 	for i, f := range fields {
 		tok, err := ParseToken(f, lex)
 		if err != nil {
@@ -468,14 +464,14 @@ func ParseSentence(s string, lex *lexicon.Lexicon) ([]tokenize.WordToken, error)
 }
 
 // parseAffixualAdjunct decodes the canonical form of an affixual
-// adjunct — single or multi — into a tokenize.WordToken.
+// adjunct — single or multi — into a g.Word.
 //
 // Single: "Cs/N" optionally followed by "-{scope}".
 // Multi:  "Cs1/N1[-{s1}]-Cs2/N2-Cs3/N3...[-{sN}]".
 //
 // Each affix segment is "Cs/N" with an optional "_2"/"_3" Type suffix.
 // Scope segments are wrapped in "{}". Default-VDom scopes are absent.
-func parseAffixualAdjunct(s string, affixes map[string]lexicon.AffixEntry) (tokenize.WordToken, error) {
+func parseAffixualAdjunct(s string, affixes map[string]lexicon.AffixEntry) (g.Word, error) {
 	parts := strings.Split(s, "-")
 	type element struct {
 		kind  string // "affix" or "scope"
@@ -533,31 +529,22 @@ func parseAffixualAdjunct(s string, affixes map[string]lexicon.AffixEntry) (toke
 	}
 	if !scopeSeenAfterFirst && len(rest) == 0 {
 		// Single-affix form: collapses to SingleAffixAdjunct.
-		return tokenize.SingleAffixWord{
-			Text:  s,
-			Affix: g.SingleAffixAdjunct{Affix: first, Scope: restScope},
-		}, nil
+		return g.SingleAffixAdjunct{Affix: first, Scope: restScope}, nil
 	}
 	if len(rest) == 0 {
 		// First-scope tagged but no further affixes — still single-affix
 		// with that scope.
-		return tokenize.SingleAffixWord{
-			Text:  s,
-			Affix: g.SingleAffixAdjunct{Affix: first, Scope: firstScope},
-		}, nil
+		return g.SingleAffixAdjunct{Affix: first, Scope: firstScope}, nil
 	}
 	// Multi-affix: when no explicit rest scope, it matches firstScope.
 	if restScope == g.ScopeVDom && firstScope != g.ScopeVDom {
 		restScope = firstScope
 	}
-	return tokenize.MultipleAffixWord{
-		Text: s,
-		Affixes: g.MultipleAffixAdjunct{
-			First:      first,
-			Rest:       rest,
-			FirstScope: firstScope,
-			RestScope:  restScope,
-		},
+	return g.MultipleAffixAdjunct{
+		First:      first,
+		Rest:       rest,
+		FirstScope: firstScope,
+		RestScope:  restScope,
 	}, nil
 }
 
@@ -608,7 +595,7 @@ func parseScopeName(s string) (g.AffixScope, bool) {
 // bare, as a single referent with an optional §4.6 category tag
 // ("NOM:1m-ERG"). Multi-referent and suppletive heads are bracketed
 // and reach the tail parser through parseCarrierOrReferential.
-func parseReferentialToken(s string, affixes map[string]lexicon.AffixEntry) (tokenize.WordToken, error) {
+func parseReferentialToken(s string, affixes map[string]lexicon.AffixEntry) (g.Word, error) {
 	parts := strings.Split(s, "-")
 	if len(parts) < 2 {
 		return nil, fmt.Errorf("referential %q: need at least head and case", s)
@@ -670,9 +657,9 @@ func parseSpecName(s string) (g.Specification, bool) {
 //	RTR.SUB-{parent}          — with non-default application scope
 //	MOD-{concat}              — empty body with scope
 //
-// Returns a tokenize.ModularWord. Reach scope (V_H, §4.3 Slot 4)
+// Returns a g.ModularAdjunct. Reach scope (V_H, §4.3 Slot 4)
 // rides the trailing "-{formative}"-style marker and round-trips.
-func parseModularToken(s string) (tokenize.WordToken, error) {
+func parseModularToken(s string) (g.Word, error) {
 	// The reach suffix comes after the application-scope suffix in
 	// canonical output, so peel it first.
 	body, reach := trimModularReach(s)
@@ -696,7 +683,7 @@ func parseModularToken(s string) (tokenize.WordToken, error) {
 			ma.Content = append(ma.Content, sv)
 		}
 	}
-	return tokenize.ModularWord{Text: s, Modular: ma}, nil
+	return ma, nil
 }
 
 // trimModularReach and trimModularScope strip a trailing "-{name}"

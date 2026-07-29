@@ -4,45 +4,59 @@ import (
 	"fmt"
 	"strings"
 
+	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/render"
 )
 
-// Render turns any classified word back to its romanization.
+// Render writes a word back out as romanization.
 //
-// It closes the loop tokenize opens: every word class now has a
-// grammar type and a way back out of it, so a token built by compose
-// or read out of a serialized file can be spoken, not just glossed. A
-// token's own Text field is not consulted — it records what was typed,
-// which for a synthesized token is nothing, and the point here is to
-// derive the romanization from the grammar.
+// It closes the loop Tokenize opens: every class has a grammar type
+// and a way back out of it, so a word built by compose or read from a
+// serialized file can be said, not only glossed. Nothing here consults
+// how the word was written, because a Word does not carry that; the
+// romanization is derived from the grammar every time.
 //
-// The one exception is a foreign word, whose meaning genuinely is its
-// letters.
-func Render(t WordToken) (string, error) {
-	switch v := t.(type) {
-	case FormativeWord:
-		return render.Formative(v.Formative), nil
-	case ConcatenatedFormativeWord:
-		parts := make([]string, 0, v.Chain.Length())
-		for _, f := range v.Chain.Formatives() {
+// The one word whose letters are not derived is Foreign, whose meaning
+// genuinely is its letters.
+func Render(w g.Word) (string, error) {
+	switch v := w.(type) {
+	case g.Formative:
+		return render.Formative(v), nil
+	case *g.Chain:
+		parts := make([]string, 0, v.Length())
+		for _, f := range v.Formatives() {
 			parts = append(parts, render.Formative(f))
 		}
 		return strings.Join(parts, "-"), nil
-	case ReferentialWord:
-		return render.Referential(v.Referential)
-	case CombinationRefWord:
-		return render.CombinationReferential(v.Combination)
-	case BiasWord:
-		return parse.BiasForm(v.Bias), nil
-	case RegisterStartWord:
+	case g.Referential:
+		return render.Referential(v)
+	case g.CombinationReferential:
+		return render.CombinationReferential(v)
+	case g.Bias:
+		return parse.BiasForm(v), nil
+	case g.RegisterMarker:
+		if v.End {
+			return parse.RegisterFinalForm(v.Register), nil
+		}
 		return parse.RegisterInitialForm(v.Register), nil
-	case RegisterEndWord:
-		return parse.RegisterFinalForm(v.Register), nil
-	case CarrierWord:
-		return parse.CarrierTypeForm(v.Carrier.Type) + parse.CaseToVc(v.Carrier.Case), nil
-	case ForeignWord:
+	case g.CarrierAdjunct:
+		return parse.CarrierTypeForm(v.Type) + parse.CaseToVc(v.Case), nil
+	case g.Foreign:
 		return v.Text, nil
 	}
-	return "", fmt.Errorf("no renderer for %T", t)
+	return "", fmt.Errorf("no renderer for %T", w)
+}
+
+// RenderText writes a whole span back out, one word after another.
+func RenderText(t g.Text) (string, error) {
+	parts := make([]string, 0, len(t))
+	for _, w := range t {
+		s, err := Render(w)
+		if err != nil {
+			return "", err
+		}
+		parts = append(parts, s)
+	}
+	return strings.Join(parts, " "), nil
 }

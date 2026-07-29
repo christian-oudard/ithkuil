@@ -32,7 +32,7 @@ func TestSentence_Empty(t *testing.T) {
 }
 
 func TestToken_Carrier(t *testing.T) {
-	tok := tokenize.ClassifyWord("hla")
+	tok := readWord(t, "hla")
 	got := (&Glosser{}).Token(tok)
 	if got != "CARR-Carrier(a)" {
 		t.Errorf("Token(\"hla\") = %q, want \"CARR-Carrier(a)\"", got)
@@ -42,7 +42,7 @@ func TestToken_Carrier(t *testing.T) {
 func TestToken_Modular(t *testing.T) {
 	// "ah" = Vn "a" (MNO valence) + Cn "h" (FAC mood). Both default,
 	// so the inner gloss is empty → "MOD".
-	tok := tokenize.ClassifyWord("ah")
+	tok := readWord(t, "ah")
 	got := (&Glosser{}).Token(tok)
 	if got != "MOD" {
 		t.Errorf("Token(\"ah\") = %q, want \"MOD\"", got)
@@ -51,7 +51,7 @@ func TestToken_Modular(t *testing.T) {
 
 func TestToken_Modular_NonDefault(t *testing.T) {
 	// "ähl" = Vn "ä" (PRL valence) + Cn "hl" (SUB mood).
-	tok := tokenize.ClassifyWord("ähl")
+	tok := readWord(t, "ähl")
 	got := (&Glosser{}).Token(tok)
 	if got != "MOD(PRL.SUB)" {
 		t.Errorf("Token(\"ähl\") = %q, want \"MOD(PRL.SUB)\"", got)
@@ -61,7 +61,7 @@ func TestToken_Modular_NonDefault(t *testing.T) {
 func TestToken_Modular_AspectPattern2(t *testing.T) {
 	// "ehňw" = Vn "e" (HAB aspect) + Cn "hňw" (Pattern 2 HYP).
 	// Pattern 2 → CaseScopeVal{CCV} initial parse.
-	tok := tokenize.ClassifyWord("ehňw")
+	tok := readWord(t, "ehňw")
 	got := (&Glosser{}).Token(tok)
 	if got != "MOD(HAB.CCV)" {
 		t.Errorf("Token(\"ehňw\") = %q, want \"MOD(HAB.CCV)\"", got)
@@ -69,7 +69,7 @@ func TestToken_Modular_AspectPattern2(t *testing.T) {
 }
 
 func TestToken_RegisterEnd(t *testing.T) {
-	tok := tokenize.ClassifyWord("hai")
+	tok := readWord(t, "hai")
 	got := (&Glosser{}).Token(tok)
 	if got != "REG-DSV-END" {
 		t.Errorf("Token(\"hai\") = %q, want \"REG-DSV-END\"", got)
@@ -79,14 +79,13 @@ func TestToken_RegisterEnd(t *testing.T) {
 func TestToken_Referential(t *testing.T) {
 	// "la" is the C1 for R1m/NEU (the speaker, "I") at the THM case,
 	// which §4.6.1 requires: the bare cluster "l" is not a word.
-	tok := tokenize.ClassifyWord("la")
+	tok := readWord(t, "la")
 	got := (&Glosser{}).Token(tok)
 	if got != "REF[1m]-THM" {
 		t.Errorf("Token(\"la\") = %q, want \"REF[1m]-THM\"", got)
 	}
 	// "ra" is R1m/BEN — effect shown.
-	tok = tokenize.ClassifyWord("ra")
-	got = (&Glosser{}).Token(tok)
+	got = (&Glosser{}).Token(readWord(t, "ra"))
 	if got != "REF[1m/BEN]-THM" {
 		t.Errorf("Token(\"ra\") = %q, want \"REF[1m/BEN]-THM\"", got)
 	}
@@ -94,7 +93,7 @@ func TestToken_Referential(t *testing.T) {
 
 func TestToken_ReferentialWithCase(t *testing.T) {
 	// "lü" = R1m + DAT.
-	tok := tokenize.ClassifyWord("lü")
+	tok := readWord(t, "lü")
 	got := (&Glosser{}).Token(tok)
 	if got != "REF[1m]-DAT" {
 		t.Errorf("Token(\"lü\") = %q, want \"REF[1m]-DAT\"", got)
@@ -114,7 +113,7 @@ func TestSentence_CarrierForeign(t *testing.T) {
 }
 
 func TestToken_SingleAffixWord(t *testing.T) {
-	tok := tokenize.ClassifyWord("are")
+	tok := readWord(t, "are")
 	got := (&Glosser{}).Token(tok)
 	if !strings.HasPrefix(got, "AFFIX[") {
 		t.Errorf("Token(are) = %q, want AFFIX[...]", got)
@@ -122,7 +121,7 @@ func TestToken_SingleAffixWord(t *testing.T) {
 }
 
 func TestToken_MultipleAffixWord(t *testing.T) {
-	tok := tokenize.ClassifyWord("xaheitr")
+	tok := readWord(t, "xaheitr")
 	got := (&Glosser{}).Token(tok)
 	if !strings.HasPrefix(got, "AFFIXES[") {
 		t.Errorf("Token(xaheitr) = %q, want AFFIXES[...]", got)
@@ -130,7 +129,7 @@ func TestToken_MultipleAffixWord(t *testing.T) {
 }
 
 func TestToken_CombinationRef(t *testing.T) {
-	tok := tokenize.ClassifyWord("ţnaxeka")
+	tok := readWord(t, "ţnaxeka")
 	got := (&Glosser{}).Token(tok)
 	if !strings.Contains(got, "REF[") || !strings.Contains(got, ".BSC") {
 		t.Errorf("Token(ţnaxeka) = %q, want REF[...].BSC", got)
@@ -138,7 +137,7 @@ func TestToken_CombinationRef(t *testing.T) {
 }
 
 func TestToken_CombinationRef_WithCarrier(t *testing.T) {
-	tok := tokenize.ClassifyWord("ahlax")
+	tok := readWord(t, "ahlax")
 	got := (&Glosser{}).Token(tok)
 	if !strings.Contains(got, "CARR[") {
 		t.Errorf("Token(ahlax) = %q, want CARR[...]", got)
@@ -152,8 +151,8 @@ func TestToken_CombinationRef_WithCarrier(t *testing.T) {
 // keep the word from being read as a modular adjunct. It reads back
 // as the plainer word.
 func TestToken_Ref_WithCarrier(t *testing.T) {
-	tok := tokenize.ClassifyWord("üohla")
-	if _, ok := tok.(tokenize.CarrierWord); !ok {
+	tok := readWord(t, "üohla")
+	if _, ok := tok.(g.CarrierAdjunct); !ok {
 		t.Fatalf("ClassifyWord(üohla) = %T, want CarrierWord", tok)
 	}
 	if got, want := (&Glosser{Canonical: true}).Token(tok), "[CAR]"; got != want {
@@ -162,7 +161,7 @@ func TestToken_Ref_WithCarrier(t *testing.T) {
 }
 
 func TestToken_Ref_RpvAndCase2(t *testing.T) {
-	tok := tokenize.ClassifyWord("layá")
+	tok := readWord(t, "layá")
 	got := (&Glosser{}).Token(tok)
 	if !strings.Contains(got, "\\RPV") {
 		t.Errorf("Token(layá) = %q, want \\RPV suffix", got)
@@ -170,7 +169,7 @@ func TestToken_Ref_RpvAndCase2(t *testing.T) {
 }
 
 func TestToken_Concatenated(t *testing.T) {
-	tok := tokenize.ClassifyWord("hamlala-amlala")
+	tok := readWord(t, "hamlala-amlala")
 	got := (&Glosser{}).Token(tok)
 	if !strings.Contains(got, " >> ") {
 		t.Errorf("Token(hamlala-amlala) = %q, want \" >> \" separator", got)
@@ -190,8 +189,8 @@ func TestFormative_NumberRoot(t *testing.T) {
 		{"wapcui", "'10000'"}, // W-shortcut power root for 10000
 	}
 	for _, c := range cases {
-		tok := tokenize.ClassifyWord(c.word).(tokenize.FormativeWord)
-		got := (&Glosser{}).Formative(tok.Formative)
+		tok := readWord(t, c.word).(g.Formative)
+		got := (&Glosser{}).Formative(tok)
 		if !strings.Contains(got, c.wantVal) {
 			t.Errorf("gloss(%q) = %q, want substring %q", c.word, got, c.wantVal)
 		}
@@ -212,12 +211,8 @@ func TestFormative_NumberWithSPT(t *testing.T) {
 		{"wuzorw", "'3th month'"},     // 3 + SPT/7 → "3th month"
 	}
 	for _, c := range cases {
-		tok, ok := tokenize.ClassifyWord(c.word).(tokenize.FormativeWord)
-		if !ok {
-			t.Errorf("ClassifyWord(%q) is not a FormativeWord: %T", c.word, tokenize.ClassifyWord(c.word))
-			continue
-		}
-		got := (&Glosser{}).Formative(tok.Formative)
+		tok := readWord(t, c.word).(g.Formative)
+		got := (&Glosser{}).Formative(tok)
 		if !strings.Contains(got, c.wantVal) {
 			t.Errorf("gloss(%q) = %q, want substring %q", c.word, got, c.wantVal)
 		}
@@ -225,8 +220,8 @@ func TestFormative_NumberWithSPT(t *testing.T) {
 }
 
 func TestFormative_CsRoot(t *testing.T) {
-	tok := tokenize.ClassifyWord("oërmölá").(tokenize.FormativeWord)
-	got := (&Glosser{}).Formative(tok.Formative)
+	tok := readWord(t, "oërmölá").(g.Formative)
+	got := (&Glosser{}).Formative(tok)
 	if got == "" {
 		t.Fatal("Formative of oërmölá returned empty")
 	}
@@ -238,8 +233,8 @@ func TestFormative_CsRoot(t *testing.T) {
 }
 
 func TestFormative_RefRoot(t *testing.T) {
-	tok := tokenize.ClassifyWord("ealali").(tokenize.FormativeWord)
-	got := (&Glosser{}).Formative(tok.Formative)
+	tok := readWord(t, "ealali").(g.Formative)
+	got := (&Glosser{}).Formative(tok)
 	if got == "" {
 		t.Fatal("Formative of ealali returned empty")
 	}
@@ -291,11 +286,10 @@ func TestAffix_TypeSubscripts(t *testing.T) {
 		{"ia", g.Type3Affix},
 	}
 	for _, c := range cases {
-		a := g.SingleAffixAdjunct{
+		got := (&Glosser{}).Token(g.SingleAffixAdjunct{
 			Affix: g.Affix{Type: c.t, Degree: 1, Consonant: "r"},
 			Scope: g.ScopeVDom,
-		}
-		got := (&Glosser{}).Token(tokenize.SingleAffixWord{Text: c.name + "r", Affix: a})
+		})
 		if got == "" {
 			t.Errorf("SingleAffix Type=%s: empty gloss", c.t)
 		}
@@ -405,10 +399,15 @@ func TestCsRootLabel_WithLex(t *testing.T) {
 func TestToken_Unknown(t *testing.T) {
 	// "qpqp" has only non-Ithkuil "q"s plus a non-referential "p"
 	// arrangement; nothing claims it.
-	tok := tokenize.ClassifyWord("qpqp")
-	got := (&Glosser{}).Token(tok)
-	if got != "?qpqp" {
-		t.Errorf("Token(\"qpqp\") = %q, want \"?qpqp\"", got)
+	// It never becomes a Word at all, so there is nothing to gloss;
+	// the reason comes back from the reader instead.
+	if w, err := tokenize.ClassifyWord("qpqp"); err == nil {
+		t.Errorf("ClassifyWord(\"qpqp\") = %T, want an error", w)
+	}
+	// A whole span still glosses, marking the word it could not read.
+	out := (&Glosser{}).Sentence("qpqp")
+	if len(out) != 1 || out[0] != "?qpqp" {
+		t.Errorf("Sentence(\"qpqp\") = %q, want [\"?qpqp\"]", out)
 	}
 }
 
@@ -482,7 +481,7 @@ func TestModularLabel_AllDefault(t *testing.T) {
 
 func TestRefLabel_FullShape(t *testing.T) {
 	cat := g.Nomic
-	r := tokenize.ReferentialWord{Referential: g.Referential{
+	r := g.Referential{
 		Head: g.PersonalHead{
 			Refs:     []g.PersonalRef{{Referent: g.R1m, Effect: g.BEN}},
 			Category: &cat,
@@ -493,7 +492,7 @@ func TestRefLabel_FullShape(t *testing.T) {
 			Refs: []g.PersonalRef{{Referent: g.R2m, Effect: g.NEU}},
 		},
 		RpvEssence: true,
-	}}
+	}
 	// The second referent carries its own case, so it reads as one
 	// bound pair rather than two adjacent slots.
 	want := "REF[NOM:1m/BEN]-THM-[2m]/ERG\\RPV"
@@ -505,11 +504,11 @@ func TestRefLabel_FullShape(t *testing.T) {
 // A second case with no referent of its own stacks onto the head, so
 // it stays a plain slot with nothing to bind to.
 func TestRefLabel_StackedSecondCase(t *testing.T) {
-	r := tokenize.ReferentialWord{Referential: g.Referential{
+	r := g.Referential{
 		Head:   g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m}}},
 		Case:   g.THM,
 		Second: &g.SecondReferent{Case: g.ERG},
-	}}
+	}
 	want := "1m-THM-ERG"
 	if got := (&Glosser{Canonical: true}).refLabel(r); got != want {
 		t.Errorf("refLabel stacked = %q, want %q", got, want)
@@ -518,13 +517,13 @@ func TestRefLabel_StackedSecondCase(t *testing.T) {
 
 func TestCombinationRefLabel_WithAffixes(t *testing.T) {
 	thm := g.THM
-	c := tokenize.CombinationRefWord{Combination: g.CombinationReferential{
+	c := g.CombinationReferential{
 		Head:    g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.BEN}}},
 		Case:    thm,
 		Spec:    g.BSC,
 		Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: "r"}},
 		Case2:   &thm,
-	}}
+	}
 	out := (&Glosser{}).combinationRefLabel(c)
 	if !strings.Contains(out, "r/1") {
 		t.Errorf("combinationRefLabel = %q, want affix \"r/1\"", out)

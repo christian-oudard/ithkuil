@@ -10,6 +10,7 @@ import (
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/phonology"
+	"github.com/christian-oudard/ithkuil/render"
 	"github.com/christian-oudard/ithkuil/slots"
 	"github.com/christian-oudard/ithkuil/tokenize"
 	"github.com/christian-oudard/ithkuil/view"
@@ -101,11 +102,12 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 		}
 	}
 
-	tokens := tokenize.Tokenize(text)
-	if len(tokens) == 0 {
+	results := tokenize.Tokenize(text)
+	if len(results) == 0 {
 		return 0
 	}
 	lex := loadLex(dataFile, stderr)
+	span := tokenize.Words(results)
 	glosser := gloss.Glosser{Lex: lex}
 	// The gloss this command prints is the canonical one, the same
 	// string compose reads back. There is a second, prettier rendering
@@ -122,10 +124,10 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 	// and sentences start with a capital.
 	exit := 0
 	if *short {
-		for _, t := range tokens {
+		for i, r := range results {
 			var ill phonology.Illegal
-			if errors.As(phonology.CheckText(t.Romanization()), &ill) {
-				renderValidationError(stderr, t.Romanization(), asTyped[t.Romanization()], ill)
+			if errors.As(phonology.CheckText(r.Romanization), &ill) {
+				renderValidationError(stderr, r.Romanization, asTyped[r.Romanization], ill)
 				exit = 1
 				continue
 			}
@@ -136,37 +138,39 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 			// A column repeating either is noise in output whose point
 			// is to be pasted back into compose.
 			//
-			// An unclassified word is the exception. Its gloss is the
-			// romanization with a "?" on it, which says nothing at all,
-			// so give the reason it failed instead.
-			if _, ok := t.(tokenize.UnknownWord); ok {
-				reason := view.UnknownReason(t.Romanization())
+			// A word that could not be read is the exception: it has
+			// no gloss, so give the reason instead. Named with a colon
+			// rather than dressed up with a "?" — a line here is a
+			// gloss you can paste back, and this one is not.
+			if r.Err != nil {
+				reason := view.UnknownReason(r.Romanization)
 				if reason == "" {
-					reason = "unclassified"
+					reason = r.Err.Error()
 				}
-				// Named with a colon rather than glossed with a "?".
-				// A line here is a gloss you can paste back; this one
-				// is not, and should not be dressed as one.
-				fmt.Fprintf(stdout, "%s: %s\n", t.Romanization(), reason)
+				fmt.Fprintf(stdout, "%s: %s\n", r.Romanization, reason)
 				continue
 			}
-			fmt.Fprintln(stdout, canonical.Token(t))
+			fmt.Fprintln(stdout, canonical.Word(r.Word, span, i))
 		}
 		return exit
 	}
 
 	// Detailed view.
-	for i, t := range tokens {
+	for i, r := range results {
 		if i > 0 {
 			fmt.Fprintln(stdout)
 		}
 		var ill phonology.Illegal
-		if errors.As(phonology.CheckText(t.Romanization()), &ill) {
-			renderValidationError(stderr, t.Romanization(), asTyped[t.Romanization()], ill)
+		if errors.As(phonology.CheckText(r.Romanization), &ill) {
+			renderValidationError(stderr, r.Romanization, asTyped[r.Romanization], ill)
 			exit = 1
 			continue
 		}
-		renderDetailed(stdout, t, lex, glosser, canonical)
+		if r.Err != nil {
+			renderUnknown(stdout, r.Romanization)
+			continue
+		}
+		renderDetailed(stdout, r, span, i, lex, glosser, canonical)
 	}
 	return exit
 }
@@ -197,19 +201,24 @@ func renderValidationError(w io.Writer, word, typed string, ill phonology.Illega
 // gloss, and then the working underneath. Leading with the gloss makes
 // the detailed view the short view plus evidence, rather than a
 // separate answer in a notation the short view never shows.
-func renderDetailed(w io.Writer, t tokenize.WordToken, lex interface{}, glosser, canonical gloss.Glosser) {
-	switch tt := t.(type) {
-	case tokenize.FormativeWord:
-		renderFormativeBlock(w, tt.Text, tt.Formative, glosser, canonical)
-	case tokenize.ConcatenatedFormativeWord:
-		renderConcatenated(w, tt, glosser, canonical)
-	case tokenize.ModularWord:
-		renderModular(w, tt, canonical)
-	case tokenize.UnknownWord:
-		renderUnknown(w, tt.Text)
+func renderDetailed(w io.Writer, r tokenize.Result, span g.Text, i int,
+	lex interface{}, glosser, canonical gloss.Glosser,
+) {
+	gl := canonical.Word(r.Word, span, i)
+	switch tt := r.Word.(type) {
+	case g.Formative:
+		renderFormativeBlock(w, r.Romanization, tt, glosser, gl)
+	case *g.Chain:
+		renderConcatenated(w, r.Romanization, tt, glosser, gl)
+	case g.ModularAdjunct:
+		var marksMood *bool
+		if verbal, found := tokenize.ModularIsVerbal(span, i); found {
+			marksMood = &verbal
+		}
+		renderModular(w, r.Romanization, tt, marksMood, gl)
 	default:
-		wordHeader(w, t.Romanization(), canonical.Token(t))
-		fmt.Fprintln(indented(w, "  "), view.Type(t))
+		wordHeader(w, r.Romanization, gl)
+		fmt.Fprintln(indented(w, "  "), view.Type(r.Word))
 	}
 }
 
@@ -252,11 +261,11 @@ func renderUnknown(w io.Writer, word string) {
 // renderModular prints the phonetic + glossary tables for a modular
 // adjunct. The romanization sits at column 0; the body is indented
 // two spaces so consecutive word blocks are visually separated.
-func renderModular(w io.Writer, mw tokenize.ModularWord, canonical gloss.Glosser) {
-	segs := view.SegmentsModular(mw.Text, mw.Modular, mw.MarksMood)
+func renderModular(w io.Writer, rom string, m g.ModularAdjunct, marksMood *bool, gl string) {
+	segs := view.SegmentsModular(rom, m, marksMood)
 	glossary := view.GlossaryModular(segs)
 
-	wordHeader(w, mw.Text, canonical.Token(mw))
+	wordHeader(w, rom, gl)
 	iw := indented(w, "  ")
 	renderPhoneticTable(iw, segs)
 	if len(glossary) > 0 {
@@ -267,12 +276,12 @@ func renderModular(w io.Writer, mw tokenize.ModularWord, canonical gloss.Glosser
 // renderFormativeBlock prints the romanization, headword, phonetic table,
 // and glossary for one formative. The romanization sits at column 0
 // and everything below is indented under it.
-func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser, canonical gloss.Glosser) {
+func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss.Glosser, gl string) {
 	head := view.Headword(f, glosser.Lex)
 	segs := view.Segments(text, f, glosser.Lex)
 	glossary := view.Glossary(text, f, segs, glosser.Lex)
 
-	wordHeader(w, text, canonical.Formative(f))
+	wordHeader(w, text, gl)
 	iw := indented(w, "  ")
 	renderPhoneticTable(iw, segs)
 	if head.Code != "" {
@@ -291,12 +300,11 @@ func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser, cano
 // rendering each as its own block with a section marker. The chain's
 // romanization is hyphen-joined; we split on "-" to recover each piece's
 // individual romanization for the phonetic table.
-func renderConcatenated(w io.Writer, cw tokenize.ConcatenatedFormativeWord, glosser, canonical gloss.Glosser) {
-	wordHeader(w, cw.Text, canonical.Token(cw))
+func renderConcatenated(w io.Writer, rom string, cw *g.Chain, glosser gloss.Glosser, gl string) {
+	wordHeader(w, rom, gl)
 	iw := indented(w, "  ")
 	fmt.Fprintln(iw, stylize(ansiDim, "(concatenated chain)"))
-	parts := strings.Split(cw.Text, "-")
-	for i, f := range cw.Chain.Formatives() {
+	for _, f := range cw.Formatives() {
 		fmt.Fprintln(iw)
 		// Dependents lead and the parent comes last (§3.1.7), so the
 		// Cc marker alone tells them apart; position does not.
@@ -305,11 +313,7 @@ func renderConcatenated(w io.Writer, cw tokenize.ConcatenatedFormativeWord, glos
 			label = fmt.Sprintf("[%s dependent]", f.Concat.String())
 		}
 		fmt.Fprintln(iw, label)
-		rom := ""
-		if i < len(parts) {
-			rom = parts[i]
-		}
-		renderFormativeBlock(iw, rom, f, glosser, canonical)
+		renderFormativeBlock(iw, render.Formative(f), f, glosser, glosser.Formative(f))
 	}
 }
 

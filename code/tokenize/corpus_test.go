@@ -41,7 +41,7 @@ func TestCorpus_Classification(t *testing.T) {
 	}
 	var got []string
 	for _, w := range words {
-		if _, unknown := tokenize.ClassifyWord(w).(tokenize.UnknownWord); unknown {
+		if _, err := tokenize.ClassifyWord(w); err != nil {
 			got = append(got, w)
 		}
 	}
@@ -67,8 +67,8 @@ func TestCorpus_WHQuestions(t *testing.T) {
 	}
 	gl := &gloss.Glosser{}
 	for _, c := range cases {
-		tok := tokenize.ClassifyWord(c.word)
-		if _, ok := tok.(tokenize.CombinationRefWord); !ok {
+		tok, _ := tokenize.ClassifyWord(c.word)
+		if _, ok := tok.(g.CombinationReferential); !ok {
 			t.Errorf("ClassifyWord(%s) = %T, want CombinationRefWord", c.word, tok)
 			continue
 		}
@@ -107,9 +107,12 @@ func TestCorpus_LoneConcatMarker(t *testing.T) {
 	}
 	words = append(words, corpus.Words()...)
 	for _, w := range words {
-		fw, ok := tokenize.ClassifyWord(w).(tokenize.FormativeWord)
-		if ok && fw.Formative.Concat != g.ConcatNone {
-			t.Errorf("ClassifyWord(%s) = lone formative with Concat %v", w, fw.Formative.Concat)
+		word, err := tokenize.ClassifyWord(w)
+		if err != nil {
+			continue
+		}
+		if fw, ok := word.(g.Formative); ok && fw.Concat != g.ConcatNone {
+			t.Errorf("ClassifyWord(%s) = lone formative with Concat %v", w, fw.Concat)
 		}
 	}
 }

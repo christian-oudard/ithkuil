@@ -48,21 +48,16 @@ func FuzzClassifyWord(f *testing.F) {
 			}
 		}
 
-		tok := ClassifyWord(in)
-		if tok == nil {
-			t.Fatalf("ClassifyWord(%q) returned nil token", in)
-		}
-		if tok.Romanization() != in {
-			t.Fatalf("ClassifyWord(%q).Romanization() = %q, want %q", in, tok.Romanization(), in)
+		word, err := ClassifyWord(in)
+		if err == nil && word == nil {
+			t.Fatalf("ClassifyWord(%q) returned no word and no error", in)
 		}
 
-		// Char-validation is now a hard precondition. Anything with a
-		// non-V4 rune must classify as UnknownWord; anything that
-		// classifies as something else must parse as phonology.
-		_, isUnknown := tok.(UnknownWord)
-		charsOK := func() bool { err := phonology.CheckText(in); return err == nil }()
-		if !charsOK && !isUnknown {
-			t.Fatalf("ClassifyWord(%q) = %T, want UnknownWord (non-V4 chars)", in, tok)
+		// Char validation is a hard precondition: anything holding a
+		// non-V4 rune has to fail, never come back as some word class.
+		charsOK := phonology.CheckText(in) == nil
+		if !charsOK && err == nil {
+			t.Fatalf("ClassifyWord(%q) = %T, want an error (non-V4 chars)", in, word)
 		}
 	})
 }
@@ -95,13 +90,13 @@ func FuzzTokenize(f *testing.F) {
 			t.Fatalf("Tokenize(%q) returned %d tokens, want %d (one per field)",
 				in, len(toks), len(fields))
 		}
-		for i, tok := range toks {
-			if tok == nil {
-				t.Fatalf("Tokenize(%q): token %d is nil", in, i)
+		for i, r := range toks {
+			if r.Word == nil && r.Err == nil {
+				t.Fatalf("Tokenize(%q): word %d has neither grammar nor a reason", in, i)
 			}
-			if tok.Romanization() != fields[i] {
-				t.Fatalf("Tokenize(%q): token %d Romanization() = %q, want %q",
-					in, i, tok.Romanization(), fields[i])
+			if r.Romanization != fields[i] {
+				t.Fatalf("Tokenize(%q): word %d romanization = %q, want %q",
+					in, i, r.Romanization, fields[i])
 			}
 		}
 		_ = phonology.SplitConjuncts(in) // ensure Layer B doesn't panic either

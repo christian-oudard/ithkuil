@@ -1,6 +1,7 @@
 package tokenize
 
 import (
+	"fmt"
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
@@ -18,7 +19,7 @@ func TestTokenize_ParsingAdjunctIsConsumed(t *testing.T) {
 	if len(toks) != 1 {
 		t.Fatalf("Tokenize returned %d words, want 1: %+v", len(toks), toks)
 	}
-	if got := toks[0].Romanization(); got != "amlalá" {
+	if got := toks[0].Romanization; got != "amlalá" {
 		t.Errorf("declared stress not applied: got %q, want %q", got, "amlalá")
 	}
 }
@@ -55,33 +56,32 @@ func TestParsingAdjunct_ReversesAsADiacritic(t *testing.T) {
 	if len(viaAdjunct) != 1 || len(viaDiacritic) != 1 {
 		t.Fatalf("expected one word each, got %d and %d", len(viaAdjunct), len(viaDiacritic))
 	}
-	a, aok := viaAdjunct[0].(FormativeWord)
-	b, bok := viaDiacritic[0].(FormativeWord)
+	a, aok := viaAdjunct[0].Word.(g.Formative)
+	b, bok := viaDiacritic[0].Word.(g.Formative)
 	if !aok || !bok {
-		t.Fatalf("expected formatives, got %T and %T", viaAdjunct[0], viaDiacritic[0])
+		t.Fatalf("expected formatives, got %T and %T", viaAdjunct[0].Word, viaDiacritic[0].Word)
 	}
-	if a.Formative.Final != b.Formative.Final {
-		t.Errorf("the two spellings disagree on stress: %v vs %v",
-			a.Formative.Final, b.Formative.Final)
+	if a.Final != b.Final {
+		t.Errorf("the two spellings disagree on stress: %v vs %v", a.Final, b.Final)
 	}
 }
 
 func TestClassifyWord_Bias(t *testing.T) {
-	w := ClassifyWord("řřx")
-	b, ok := w.(BiasWord)
+	w, _ := ClassifyWord("řřx")
+	b, ok := w.(g.Bias)
 	if !ok {
-		t.Fatalf("ClassifyWord(\"řřx\") = %T, want BiasWord", w)
+		t.Fatalf("ClassifyWord(\"řřx\") = %T, want a Bias", w)
 	}
-	if b.Bias != g.DOL {
-		t.Errorf("Bias = %v, want DOL", b.Bias)
+	if b != g.DOL {
+		t.Errorf("Bias = %v, want DOL", b)
 	}
 }
 
 func TestClassifyWord_RegisterOpen(t *testing.T) {
-	w := ClassifyWord("ha")
-	r, ok := w.(RegisterStartWord)
-	if !ok {
-		t.Fatalf("ClassifyWord(\"ha\") = %T, want RegisterStartWord", w)
+	w, _ := ClassifyWord("ha")
+	r, ok := w.(g.RegisterMarker)
+	if !ok || r.End {
+		t.Fatalf("ClassifyWord(\"ha\") = %T, want a register opener", w)
 	}
 	if r.Register != g.DSV {
 		t.Errorf("Register = %v, want DSV", r.Register)
@@ -89,10 +89,10 @@ func TestClassifyWord_RegisterOpen(t *testing.T) {
 }
 
 func TestClassifyWord_RegisterClose(t *testing.T) {
-	w := ClassifyWord("hai")
-	r, ok := w.(RegisterEndWord)
-	if !ok {
-		t.Fatalf("ClassifyWord(\"hai\") = %T, want RegisterEndWord", w)
+	w, _ := ClassifyWord("hai")
+	r, ok := w.(g.RegisterMarker)
+	if !ok || !r.End {
+		t.Fatalf("ClassifyWord(\"hai\") = %T, want a register closer", w)
 	}
 	if r.Register != g.DSV {
 		t.Errorf("Register = %v, want DSV", r.Register)
@@ -100,56 +100,56 @@ func TestClassifyWord_RegisterClose(t *testing.T) {
 }
 
 func TestClassifyWord_Carrier(t *testing.T) {
-	w := ClassifyWord("hla")
-	c, ok := w.(CarrierWord)
+	w, _ := ClassifyWord("hla")
+	c, ok := w.(g.CarrierAdjunct)
 	if !ok {
-		t.Fatalf("ClassifyWord(\"hla\") = %T, want CarrierWord", w)
+		t.Fatalf("ClassifyWord(\"hla\") = %T, want a CarrierAdjunct", w)
 	}
-	if c.Carrier.Type != g.Carrier || c.Carrier.Case != g.THM {
-		t.Errorf("Carrier = %v, want {Carrier, THM}", c.Carrier)
+	if c.Type != g.Carrier || c.Case != g.THM {
+		t.Errorf("Carrier = %v, want {Carrier, THM}", c)
 	}
 }
 
 func TestClassifyWord_Modular(t *testing.T) {
 	// "ah" = Vn "a" + Cn "h" → modular.
-	w := ClassifyWord("ah")
-	m, ok := w.(ModularWord)
+	w, _ := ClassifyWord("ah")
+	m, ok := w.(g.ModularAdjunct)
 	if !ok {
-		t.Fatalf("ClassifyWord(\"ah\") = %T, want ModularWord", w)
+		t.Fatalf("ClassifyWord(\"ah\") = %T, want a ModularAdjunct", w)
 	}
-	if len(m.Modular.Content) != 1 {
-		t.Fatalf("Modular.Content = %v, want one entry", m.Modular.Content)
+	if len(m.Content) != 1 {
+		t.Fatalf("Content = %v, want one entry", m.Content)
 	}
-	if _, ok := m.Modular.Content[0].(g.VnCnValence); !ok {
-		t.Errorf("Modular.Content[0] = %T, want VnCnValence", m.Modular.Content[0])
+	if _, ok := m.Content[0].(g.VnCnValence); !ok {
+		t.Errorf("Content[0] = %T, want VnCnValence", m.Content[0])
 	}
 }
 
 func TestClassifyWord_Formative(t *testing.T) {
-	w := ClassifyWord("malëuţřait")
-	f, ok := w.(FormativeWord)
+	w, _ := ClassifyWord("malëuţřait")
+	f, ok := w.(g.Formative)
 	if !ok {
-		t.Fatalf("ClassifyWord(\"malëuţřait\") = %T, want FormativeWord", w)
+		t.Fatalf("ClassifyWord(\"malëuţřait\") = %T, want a Formative", w)
 	}
-	cr, ok := f.Formative.Root.(g.CrRoot)
+	cr, ok := f.Root.(g.CrRoot)
 	if !ok || cr.Cluster != "m" {
-		t.Errorf("Root = %v, want CrRoot{Cluster:m}", f.Formative.Root)
+		t.Errorf("Root = %v, want CrRoot{Cluster:m}", f.Root)
 	}
 }
 
 func TestClassifyWord_ReferentialWithCase(t *testing.T) {
 	// "lü" = R1m + DAT case.
-	w := ClassifyWord("lü")
-	r, ok := w.(ReferentialWord)
+	w, _ := ClassifyWord("lü")
+	r, ok := w.(g.Referential)
 	if !ok {
-		t.Fatalf("ClassifyWord(\"lü\") = %T, want ReferentialWord", w)
+		t.Fatalf("ClassifyWord(\"lü\") = %T, want g.Referential", w)
 	}
-	refs, ok := g.HeadRefs(r.Referential.Head)
+	refs, ok := g.HeadRefs(r.Head)
 	if !ok || len(refs) != 1 || refs[0].Referent.String() != "1m" {
 		t.Errorf("refs = %v, want [{1m, NEU}]", refs)
 	}
-	if r.Referential.Case.String() != "DAT" {
-		t.Errorf("Case = %v, want DAT", r.Referential.Case)
+	if r.Case.String() != "DAT" {
+		t.Errorf("Case = %v, want DAT", r.Case)
 	}
 }
 
@@ -159,15 +159,10 @@ func TestClassifyWord_ReferentialWithCase(t *testing.T) {
 // all, having no vowel to pronounce.
 func TestClassifyWord_BareClusterIsNotAReferential(t *testing.T) {
 	for _, w := range []string{"l", "sml"} {
-		if got := ClassifyWord(w); !isUnknown(got) {
-			t.Errorf("ClassifyWord(%q) = %T, want UnknownWord", w, got)
+		if got, err := ClassifyWord(w); err == nil {
+			t.Errorf("ClassifyWord(%q) = %T, want an error", w, got)
 		}
 	}
-}
-
-func isUnknown(t WordToken) bool {
-	_, ok := t.(UnknownWord)
-	return ok
 }
 
 func TestClassifyWord_Concatenated(t *testing.T) {
@@ -175,29 +170,29 @@ func TestClassifyWord_Concatenated(t *testing.T) {
 	// order with a Cc marker, and the parent comes LAST without one.
 	// "hamlala-amlala" = Type1-concat "hamlala" (h prefix) + parent
 	// "amlala".
-	w := ClassifyWord("hamlala-amlala")
-	cf, ok := w.(ConcatenatedFormativeWord)
+	w, _ := ClassifyWord("hamlala-amlala")
+	cf, ok := w.(*g.Chain)
 	if !ok {
-		t.Fatalf("ClassifyWord(\"hamlala-amlala\") = %T, want ConcatenatedFormativeWord", w)
+		t.Fatalf("ClassifyWord(\"hamlala-amlala\") = %T, want *g.Chain", w)
 	}
-	if cf.Chain.Length() != 2 {
-		t.Errorf("chain length = %d, want 2", cf.Chain.Length())
+	if cf.Length() != 2 {
+		t.Errorf("chain length = %d, want 2", cf.Length())
 	}
 }
 
 func TestClassifyWord_NotAChain(t *testing.T) {
 	// A single hyphen with no real formative on one side falls through
 	// to UnknownWord (or whatever else might match).
-	w := ClassifyWord("amlala-")
-	if _, ok := w.(ConcatenatedFormativeWord); ok {
+	w, _ := ClassifyWord("amlala-")
+	if _, ok := w.(*g.Chain); ok {
 		t.Errorf("ClassifyWord(\"amlala-\") = %T, should not be concat chain", w)
 	}
 }
 
 func TestClassifyWord_Unknown(t *testing.T) {
-	w := ClassifyWord("xyzzy")
-	if _, ok := w.(UnknownWord); !ok {
-		t.Errorf("ClassifyWord(\"xyzzy\") = %T, want UnknownWord", w)
+	w, err := ClassifyWord("xyzzy")
+	if err == nil {
+		t.Errorf("ClassifyWord(\"xyzzy\") = %T, want an error", w)
 	}
 }
 
@@ -261,60 +256,34 @@ func TestClassifyWord_IthkuilGlossCorpus(t *testing.T) {
 		{"hamlala-amlala", concatenated},
 		{"çëhamala-lala", concatenated},
 	}
-	typeName := func(w WordToken) string {
-		switch w.(type) {
-		case FormativeWord:
-			return "FormativeWord"
-		case ConcatenatedFormativeWord:
-			return "ConcatenatedFormativeWord"
-		case ReferentialWord:
-			return "ReferentialWord"
-		case CombinationRefWord:
-			return "CombinationRefWord"
-		case ModularWord:
-			return "ModularWord"
-		case SingleAffixWord:
-			return "SingleAffixWord"
-		case MultipleAffixWord:
-			return "MultipleAffixWord"
-		case BiasWord:
-			return "BiasWord"
-		case RegisterStartWord:
-			return "RegisterStartWord"
-		case CarrierWord:
-			return "CarrierWord"
-		case UnknownWord:
-			return "UnknownWord"
-		}
-		return "?"
-	}
 	for _, c := range cases {
-		w := ClassifyWord(c.word)
+		w, _ := ClassifyWord(c.word)
 		matched := false
 		switch c.kind {
 		case formative:
-			_, matched = w.(FormativeWord)
+			_, matched = w.(g.Formative)
 		case concatenated:
-			_, matched = w.(ConcatenatedFormativeWord)
+			_, matched = w.(*g.Chain)
 		case ref:
-			_, matched = w.(ReferentialWord)
+			_, matched = w.(g.Referential)
 		case combref:
-			_, matched = w.(CombinationRefWord)
+			_, matched = w.(g.CombinationReferential)
 		case modular:
-			_, matched = w.(ModularWord)
+			_, matched = w.(g.ModularAdjunct)
 		case bias:
-			_, matched = w.(BiasWord)
+			_, matched = w.(g.Bias)
 		case registerStart:
-			_, matched = w.(RegisterStartWord)
+			m, ok := w.(g.RegisterMarker)
+			matched = ok && !m.End
 		case carrier:
-			_, matched = w.(CarrierWord)
+			_, matched = w.(g.CarrierAdjunct)
 		case singleAffix:
-			_, matched = w.(SingleAffixWord)
+			_, matched = w.(g.SingleAffixAdjunct)
 		case multiAffix:
-			_, matched = w.(MultipleAffixWord)
+			_, matched = w.(g.MultipleAffixAdjunct)
 		}
 		if !matched {
-			t.Errorf("ClassifyWord(%q) = %s, want kind %d", c.word, typeName(w), c.kind)
+			t.Errorf("ClassifyWord(%q) = %s, want kind %d", c.word, fmt.Sprintf("%T", w), c.kind)
 		}
 	}
 }
@@ -326,19 +295,19 @@ func TestTokenize_CarrierForeign(t *testing.T) {
 	if len(tokens) != 3 {
 		t.Fatalf("got %d tokens, want 3", len(tokens))
 	}
-	if _, ok := tokens[0].(CarrierWord); !ok {
-		t.Errorf("token 0 = %T, want CarrierWord", tokens[0])
+	if _, ok := tokens[0].Word.(g.CarrierAdjunct); !ok {
+		t.Errorf("word 0 = %T, want a CarrierAdjunct", tokens[0].Word)
 	}
-	fw, ok := tokens[1].(ForeignWord)
+	fw, ok := tokens[1].Word.(g.Foreign)
 	if !ok {
-		t.Fatalf("token 1 = %T, want ForeignWord", tokens[1])
+		t.Fatalf("word 1 = %T, want Foreign", tokens[1].Word)
 	}
 	if fw.Text != "John" {
-		t.Errorf("ForeignWord.Text = %q, want \"John\"", fw.Text)
+		t.Errorf("Foreign.Text = %q, want \"John\"", fw.Text)
 	}
-	// malá should NOT be foreign — carrier only scopes one word.
-	if _, isForeign := tokens[2].(ForeignWord); isForeign {
-		t.Errorf("token 2 should not be ForeignWord; carrier only scopes one")
+	// malá should NOT be foreign — a carrier scopes one word only.
+	if _, isForeign := tokens[2].Word.(g.Foreign); isForeign {
+		t.Errorf("word 2 should not be foreign; a carrier scopes one")
 	}
 }
 
@@ -349,14 +318,14 @@ func TestTokenize_Sentence(t *testing.T) {
 	if len(tokens) != 3 {
 		t.Fatalf("got %d tokens, want 3", len(tokens))
 	}
-	if _, ok := tokens[0].(FormativeWord); !ok {
-		t.Errorf("token 0 = %T, want FormativeWord", tokens[0])
+	if _, ok := tokens[0].Word.(g.Formative); !ok {
+		t.Errorf("word 0 = %T, want a Formative", tokens[0].Word)
 	}
-	if _, ok := tokens[1].(BiasWord); !ok {
-		t.Errorf("token 1 = %T, want BiasWord", tokens[1])
+	if _, ok := tokens[1].Word.(g.Bias); !ok {
+		t.Errorf("word 1 = %T, want a Bias", tokens[1].Word)
 	}
-	if _, ok := tokens[2].(RegisterStartWord); !ok {
-		t.Errorf("token 2 = %T, want RegisterStartWord", tokens[2])
+	if m, ok := tokens[2].Word.(g.RegisterMarker); !ok || m.End {
+		t.Errorf("word 2 = %T, want a register opener", tokens[2].Word)
 	}
 }
 
@@ -368,35 +337,34 @@ func TestTokenize_ModularMarksMood(t *testing.T) {
 		wantNil  bool
 		wantMood bool
 	}{
-		// Verbal next formative (ultimate stress) → MarksMood=true.
+		// Verbal next formative (ultimate stress) → Mood.
 		{"ah amlalú", false, true},
-		// Nominal next formative (penultimate stress) → MarksMood=false.
+		// Nominal next formative (penultimate stress) → Case-Scope.
 		{"ah amlala", false, false},
 		// Framed-verbal (antepenultimate stress) → also CaseScope per §3.8.1.
 		{"ah ámlala", false, false},
-		// No following formative → MarksMood=nil (default to Mood).
+		// No following formative at all: nothing to read it against.
 		{"ah řřx", true, false},
 		{"ah", true, false},
 	}
 	for _, c := range cases {
-		toks := Tokenize(c.sentence)
-		mw, ok := toks[0].(ModularWord)
-		if !ok {
-			t.Fatalf("Tokenize(%q)[0] = %T, want ModularWord", c.sentence, toks[0])
+		span := Words(Tokenize(c.sentence))
+		if _, ok := span[0].(g.ModularAdjunct); !ok {
+			t.Fatalf("Tokenize(%q)[0] = %T, want a ModularAdjunct", c.sentence, span[0])
 		}
+		verbal, found := ModularIsVerbal(span, 0)
 		if c.wantNil {
-			if mw.MarksMood != nil {
-				t.Errorf("Tokenize(%q): MarksMood = %v, want nil", c.sentence, *mw.MarksMood)
+			if found {
+				t.Errorf("Tokenize(%q): found a formative (%v), want none", c.sentence, verbal)
 			}
 			continue
 		}
-		if mw.MarksMood == nil {
-			t.Errorf("Tokenize(%q): MarksMood = nil, want %v", c.sentence, c.wantMood)
+		if !found {
+			t.Errorf("Tokenize(%q): no formative found, want %v", c.sentence, c.wantMood)
 			continue
 		}
-		if *mw.MarksMood != c.wantMood {
-			t.Errorf("Tokenize(%q): MarksMood = %v, want %v",
-				c.sentence, *mw.MarksMood, c.wantMood)
+		if verbal != c.wantMood {
+			t.Errorf("Tokenize(%q): verbal = %v, want %v", c.sentence, verbal, c.wantMood)
 		}
 	}
 }
@@ -410,13 +378,16 @@ func TestTokenize_Empty(t *testing.T) {
 	}
 }
 
+// A Word holds no text, so the romanization comes back beside it in
+// the Result rather than out of it.
 func TestRomanization(t *testing.T) {
-	// Every word token preserves its original romanization.
-	cases := []string{"malëuţřait", "řřx", "ha", "hai", "hla", "ah"}
-	for _, w := range cases {
-		tok := ClassifyWord(w)
-		if tok.Romanization() != w {
-			t.Errorf("token Romanization() = %q, want %q", tok.Romanization(), w)
+	for _, w := range []string{"malëuţřait", "řřx", "ha", "hai", "hla", "ah"} {
+		results := Tokenize(w)
+		if len(results) != 1 {
+			t.Fatalf("Tokenize(%q) gave %d results, want 1", w, len(results))
+		}
+		if results[0].Romanization != w {
+			t.Errorf("romanization = %q, want %q", results[0].Romanization, w)
 		}
 	}
 }
@@ -441,14 +412,14 @@ func TestCombinationRef_Rule1Glottal(t *testing.T) {
 		{"mmiexinļ", g.PUR},
 	}
 	for _, c := range cases {
-		w := ClassifyWord(c.word)
-		cr, ok := w.(CombinationRefWord)
+		w, _ := ClassifyWord(c.word)
+		cr, ok := w.(g.CombinationReferential)
 		if !ok {
-			t.Errorf("ClassifyWord(%q) = %T, want CombinationRefWord", c.word, w)
+			t.Errorf("ClassifyWord(%q) = %T, want g.CombinationReferential", c.word, w)
 			continue
 		}
-		if cr.Combination.Case != c.want {
-			t.Errorf("%s: case = %v, want %v", c.word, cr.Combination.Case, c.want)
+		if cr.Case != c.want {
+			t.Errorf("%s: case = %v, want %v", c.word, cr.Case, c.want)
 		}
 	}
 }
@@ -467,22 +438,32 @@ func TestReferential_Rule1Glottal(t *testing.T) {
 		{"fo'we'is", g.PRD, g.ESS}, // o+' , case 43; ei+' -> e'i, case 47
 	}
 	for _, c := range cases {
-		w := ClassifyWord(c.word)
-		r, ok := w.(ReferentialWord)
+		w, _ := ClassifyWord(c.word)
+		r, ok := w.(g.Referential)
 		if !ok {
-			t.Errorf("ClassifyWord(%q) = %T, want ReferentialWord", c.word, w)
+			t.Errorf("ClassifyWord(%q) = %T, want g.Referential", c.word, w)
 			continue
 		}
-		if r.Referential.Case != c.want {
-			t.Errorf("%s: V_C1 = %v, want %v", c.word, r.Referential.Case, c.want)
+		if r.Case != c.want {
+			t.Errorf("%s: V_C1 = %v, want %v", c.word, r.Case, c.want)
 		}
-		second := r.Referential.Second
+		second := r.Second
 		if second == nil || second.Case != c.want2 {
 			t.Errorf("%s: V_C2 = %v, want %v", c.word, second, c.want2)
 		}
 	}
 	// Without the glottal it is a different case, not the same word.
-	if r, ok := ClassifyWord("laiwiš").(ReferentialWord); !ok || r.Referential.Case != g.POS {
-		t.Errorf("laiwiš: V_C1 = %v, want POS", r.Referential.Case)
+	if r, ok := mustClassify(t, "laiwiš").(g.Referential); !ok || r.Case != g.POS {
+		t.Errorf("laiwiš: V_C1 = %v, want POS", r.Case)
 	}
+}
+
+// mustClassify reads one word or fails the test.
+func mustClassify(t *testing.T, word string) g.Word {
+	t.Helper()
+	w, err := ClassifyWord(word)
+	if err != nil {
+		t.Fatalf("ClassifyWord(%q): %v", word, err)
+	}
+	return w
 }

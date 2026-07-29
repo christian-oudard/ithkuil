@@ -7,7 +7,6 @@ import (
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
 // §4.6's referent categories (Agglomerative, Nomic, Abstract) attach to
@@ -39,8 +38,8 @@ func TestReferentialCategory_RoundTrip(t *testing.T) {
 		"lwa",  // ABS, which §4.6 writes as a suffix only
 		"la",   // no category at all, the control
 	} {
-		tok := tokenize.ClassifyWord(w)
-		if _, ok := tok.(tokenize.ReferentialWord); !ok {
+		tok := readWord(t, w)
+		if _, ok := tok.(g.Referential); !ok {
 			t.Errorf("%q no longer classifies as a referential: %T", w, tok)
 			continue
 		}
@@ -68,27 +67,27 @@ func TestReferentialCategory_EveryCategory(t *testing.T) {
 
 	for _, cat := range []g.RefCategory{g.Agglomerative, g.Nomic, g.Abstract} {
 		c := cat
-		want := tokenize.ReferentialWord{Referential: g.Referential{
+		want := g.Referential{
 			Head: g.PersonalHead{
 				Refs:     []g.PersonalRef{{Referent: g.R1m}},
 				Category: &c,
 			},
 			Case: erg,
-		}}
+		}
 		s := gl.Token(want)
 		back, err := ParseToken(s, lex)
 		if err != nil {
 			t.Errorf("%v: gloss %q does not parse: %v", cat, s, err)
 			continue
 		}
-		got, ok := back.(tokenize.ReferentialWord)
+		got, ok := back.(g.Referential)
 		if !ok {
 			t.Errorf("%v: gloss %q parsed as %T", cat, s, back)
 			continue
 		}
-		head, ok := got.Referential.Head.(g.PersonalHead)
+		head, ok := got.Head.(g.PersonalHead)
 		if !ok || head.Category == nil || *head.Category != cat {
-			t.Errorf("%v: gloss %q lost the category (got %+v)", cat, s, got.Referential.Head)
+			t.Errorf("%v: gloss %q lost the category (got %+v)", cat, s, got.Head)
 		}
 	}
 }
@@ -110,16 +109,16 @@ func TestCombinationReferential_KeepsItsTail(t *testing.T) {
 	gl := &gloss.Glosser{Lex: lex, Canonical: true}
 	dat := g.DAT
 
-	for _, want := range []tokenize.CombinationRefWord{
+	for _, want := range []g.CombinationReferential{
 		// A bare head, which used to take the lossy path.
-		{Combination: g.CombinationReferential{
+		g.CombinationReferential{
 			Head:    g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m}}},
 			Case:    g.ERG,
 			Spec:    g.CTE,
 			Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 3, Consonant: "r"}},
-		}},
+		},
 		// Affixes plus a stacked case, the full §4.6.2 tail.
-		{Combination: g.CombinationReferential{
+		g.CombinationReferential{
 			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R2m, Effect: g.BEN}}},
 			Case: g.ERG,
 			Spec: g.OBJ,
@@ -128,16 +127,16 @@ func TestCombinationReferential_KeepsItsTail(t *testing.T) {
 				{Type: g.Type2Affix, Degree: 5, Consonant: "kt"},
 			},
 			Case2: &dat,
-		}},
+		},
 		// A bracketed multi-referent head reaches the same parser.
-		{Combination: g.CombinationReferential{
+		g.CombinationReferential{
 			Head: g.PersonalHead{Refs: []g.PersonalRef{
 				{Referent: g.R1m}, {Referent: g.R2p},
 			}},
 			Case:    g.THM,
 			Spec:    g.BSC,
 			Affixes: []g.Affix{{Type: g.Type1Affix, Degree: 3, Consonant: "r"}},
-		}},
+		},
 	} {
 		s := gl.Token(want)
 		back, err := ParseToken(s, lex)

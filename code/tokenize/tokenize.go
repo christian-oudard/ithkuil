@@ -17,6 +17,7 @@
 package tokenize
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/christian-oudard/ithkuil/fullparse"
@@ -25,140 +26,21 @@ import (
 	"github.com/christian-oudard/ithkuil/phonology"
 )
 
-// WordToken is the sealed sum type for classified words. Each variant
-// carries the original romanization plus the parsed data appropriate
-// to its kind.
-type WordToken interface {
-	Romanization() string
-	word()
-}
-
-// FormativeWord wraps a successfully parsed formative.
-type FormativeWord struct {
-	Text      string
-	Formative g.Formative
-}
-
-func (f FormativeWord) Romanization() string { return f.Text }
-func (FormativeWord) word()                  {}
-
-// ConcatenatedFormativeWord wraps a hyphen-joined chain of two or more
-// formatives. The first part is the head; subsequent parts must each
-// have a Slot I concatenation marker on their parsed Formative.
-type ConcatenatedFormativeWord struct {
-	Text  string
-	Chain *g.Chain
-}
-
-func (c ConcatenatedFormativeWord) Romanization() string { return c.Text }
-func (ConcatenatedFormativeWord) word()                  {}
-
-// BiasWord is a stand-alone bias adjunct.
-type BiasWord struct {
-	Text string
-	Bias g.Bias
-}
-
-func (b BiasWord) Romanization() string { return b.Text }
-func (BiasWord) word()                  {}
-
-// RegisterStartWord opens a non-narrative register.
-type RegisterStartWord struct {
-	Text     string
-	Register g.Register
-}
-
-func (r RegisterStartWord) Romanization() string { return r.Text }
-func (RegisterStartWord) word()                  {}
-
-// RegisterEndWord closes a register.
-type RegisterEndWord struct {
-	Text     string
-	Register g.Register
-}
-
-func (r RegisterEndWord) Romanization() string { return r.Text }
-func (RegisterEndWord) word()                  {}
-
-// ModularWord carries a Vn+Cn modular adjunct.
+// Result is what reading one written word produced: the grammar, or
+// the reason there is none.
 //
-// MarksMood reflects the next formative's verbal/nominal status, used
-// to disambiguate the Cn romanization: true = the adjacent formative is
-// verbal (Cn → Mood); false = nominal or framed-verbal (Cn → Case-
-// Scope); nil = no adjacent formative was found in the token stream.
-type ModularWord struct {
-	Text      string
-	Modular   g.ModularAdjunct
-	MarksMood *bool
+// The romanization is kept beside the Word rather than inside it. A
+// Word is grammar and holds no text, so anything that wants to show
+// the user what they typed — an error message, a table header — takes
+// it from here.
+type Result struct {
+	// Romanization is the word as read, normalized.
+	Romanization string
+	// Word is the grammar it carries, nil when Err is set.
+	Word g.Word
+	// Err says why no word could be read.
+	Err error
 }
-
-func (m ModularWord) Romanization() string { return m.Text }
-func (ModularWord) word()                  {}
-
-// SingleAffixWord is one V_x C_s affix on its own as an adjunct
-// (§4.1.1). Shape: V-C[-V].
-type SingleAffixWord struct {
-	Text  string
-	Affix g.SingleAffixAdjunct
-}
-
-func (s SingleAffixWord) Romanization() string { return s.Text }
-func (SingleAffixWord) word()                  {}
-
-// MultipleAffixWord is two-or-more affixes chained into one adjunct
-// (§4.1.2). Shape: [ë] C V Cz V C ... [V].
-type MultipleAffixWord struct {
-	Text    string
-	Affixes g.MultipleAffixAdjunct
-}
-
-func (m MultipleAffixWord) Romanization() string { return m.Text }
-func (MultipleAffixWord) word()                  {}
-
-// CarrierWord wraps a carrier adjunct (carrier/quotative/naming/phrasal).
-type CarrierWord struct {
-	Text    string
-	Carrier g.CarrierAdjunct
-}
-
-func (c CarrierWord) Romanization() string { return c.Text }
-func (CarrierWord) word()                  {}
-
-// ReferentialWord wraps a §4.6.1 single- or dual-referential.
-type ReferentialWord struct {
-	Text        string
-	Referential g.Referential
-}
-
-// CombinationRefWord wraps a §4.6.2 combination referential.
-type CombinationRefWord struct {
-	Text        string
-	Combination g.CombinationReferential
-}
-
-func (c CombinationRefWord) Romanization() string { return c.Text }
-func (CombinationRefWord) word()                  {}
-
-func (r ReferentialWord) Romanization() string { return r.Text }
-func (ReferentialWord) word()                  {}
-
-// UnknownWord is the fallback when no parser claims the word.
-type UnknownWord struct {
-	Text string
-}
-
-func (u UnknownWord) Romanization() string { return u.Text }
-func (UnknownWord) word()                  {}
-
-// ForeignWord is a token consumed in carrier context: the word
-// immediately following a CarrierWord is treated as foreign text
-// (a name, quotation, or other passthrough) and not parsed.
-type ForeignWord struct {
-	Text string
-}
-
-func (f ForeignWord) Romanization() string { return f.Text }
-func (ForeignWord) word()                  {}
 
 // referentialToken wraps a parsed referential, folding away the one
 // shape that has a simpler equivalent. §4.6.3 gives a suppletive
@@ -167,11 +49,11 @@ func (ForeignWord) word()                  {}
 // than the carrier adjunct of §4.5 does, and the epenthetic vowel in
 // front of it is there to keep the parse unambiguous, not to mean
 // anything. So it reads back as the plainer word.
-func referentialToken(word string, r g.Referential) WordToken {
+func referentialWord(r g.Referential) g.Word {
 	if h, ok := r.Head.(g.SuppletiveHead); ok && r.Second == nil && !r.RpvEssence {
-		return CarrierWord{Text: word, Carrier: g.CarrierAdjunct{Type: h.Type, Case: r.Case}}
+		return g.CarrierAdjunct{Type: h.Type, Case: r.Case}
 	}
-	return ReferentialWord{Text: word, Referential: r}
+	return r
 }
 
 // ClassifyWord decides which WordToken variant a single romanization
@@ -183,18 +65,17 @@ func referentialToken(word string, r g.Referential) WordToken {
 // modulars and other adjunct shapes have their own phonotactic rules
 // that diverge from the formative-shaped ones (e.g. modulars permit a
 // word-final w, biases use the otherwise-prohibited geminates çç/ļļ).
-func ClassifyWord(word string) WordToken {
+func ClassifyWord(word string) (g.Word, error) {
 	if word == "" {
-		return UnknownWord{Text: word}
+		return nil, fmt.Errorf("empty word")
 	}
 	// Compose and lowercase before any classifier reads the letters;
 	// see phonology.Normalize. Words we fail to classify keep their
 	// original text: a carrier adjunct scopes over a following foreign
 	// name ("hna John"), where capitalization is meaningful.
-	orig := word
 	word = phonology.Normalize(word)
 	if _, err := phonology.ParseChain(word); err != nil {
-		return UnknownWord{Text: orig}
+		return nil, err
 	}
 	// Hyphenated input: try as a concatenation chain. A hyphen is only
 	// meaningful as a concat-pair separator, so if the chain doesn't
@@ -202,25 +83,25 @@ func ClassifyWord(word string) WordToken {
 	// hyphen) snatch the word with a stretchy match.
 	if strings.Contains(word, "-") {
 		if c, ok := tryConcatenation(word); ok {
-			return ConcatenatedFormativeWord{Text: word, Chain: c}
+			return c, nil
 		}
-		return UnknownWord{Text: orig}
+		return nil, fmt.Errorf("hyphenated word %q is not a concatenation chain", word)
 	}
 	conjs := phonology.SplitConjuncts(word)
 
 	// 1. Single consonant cluster → Bias.
 	if len(conjs) == 1 && phonology.IsConsonantConjunct(conjs[0]) {
 		if b, ok := parse.ParseBias(conjs[0]); ok {
-			return BiasWord{Text: word, Bias: b}
+			return b, nil
 		}
 	}
 
 	// 2. Register opener or closer (whole word, no splitting).
 	if r, ok := parse.ParseRegister(word); ok {
-		return RegisterStartWord{Text: word, Register: r}
+		return g.RegisterMarker{Register: r}, nil
 	}
 	if r, ok := parse.ParseRegisterFinal(word); ok {
-		return RegisterEndWord{Text: word, Register: r}
+		return g.RegisterMarker{Register: r, End: true}, nil
 	}
 
 	// 3. Carrier adjunct: word starting with a carrier consonant
@@ -229,7 +110,7 @@ func ClassifyWord(word string) WordToken {
 	// than a formative with Cr=hn.
 	if len(conjs) >= 2 && phonology.IsConsonantConjunct(conjs[0]) {
 		if c, err := parse.ParseCarrier(word); err == nil {
-			return CarrierWord{Text: word, Carrier: c}
+			return c, nil
 		}
 	}
 
@@ -240,7 +121,7 @@ func ClassifyWord(word string) WordToken {
 	if len(conjs) >= 2 && conjs[0] == "üo" {
 		if _, isCp := parse.ParseCarrierType(conjs[1]); isCp {
 			if r, err := fullparse.Referential(word); err == nil {
-				return referentialToken(word, r)
+				return referentialWord(r), nil
 			}
 		}
 	}
@@ -251,7 +132,7 @@ func ClassifyWord(word string) WordToken {
 	//    three VnCn pairs plus a final vowel, plus an optional w/y
 	//    scope prefix.
 	if m, err := parse.ParseModular(word); err == nil {
-		return ModularWord{Text: word, Modular: m}
+		return m, nil
 	}
 
 	// 4a. Single-affix adjunct (§4.1.1): V-C[-V], starting with a
@@ -264,7 +145,7 @@ func ClassifyWord(word string) WordToken {
 		phonology.IsVowelConjunct(conjs[0]) && conjs[0] != "ë" &&
 		!parse.IsSpecialVv(conjs[0]) {
 		if a, err := parse.ParseSingleAffix(word); err == nil {
-			return SingleAffixWord{Text: word, Affix: a}
+			return a, nil
 		}
 	}
 
@@ -273,19 +154,19 @@ func ClassifyWord(word string) WordToken {
 	//     position is what distinguishes this shape from a same-length
 	//     consonant-initial formative.
 	if a, err := parse.ParseMultipleAffix(word); err == nil {
-		return MultipleAffixWord{Text: word, Affixes: a}
+		return a, nil
 	}
 
 	// 5. Single/dual referential per §4.6.1:
 	//    [ë]C1 Vc1 [w/y Vc2 [C2 [ë]]], with ultimate stress signalling
 	//    the RPV essence override.
 	if r, err := fullparse.Referential(word); err == nil {
-		return referentialToken(word, r)
+		return referentialWord(r), nil
 	}
 
 	// 5b. Combination referential: [ë] C1 Vc Spec [VxCs...] [Vc2].
 	if c, err := fullparse.CombinationReferential(word); err == nil {
-		return CombinationRefWord{Text: word, Combination: c}
+		return c, nil
 	}
 
 	// 6. Formative. A Slot I C_C marker means another formative
@@ -296,7 +177,7 @@ func ClassifyWord(word string) WordToken {
 	// dependent someone quoted without its parent.
 	if f, err := fullparse.Formative(word); err == nil {
 		if f.Concat == g.ConcatNone {
-			return FormativeWord{Text: word, Formative: f}
+			return f, nil
 		}
 	}
 
@@ -305,31 +186,65 @@ func ClassifyWord(word string) WordToken {
 	// unparenthesized in its slot table and gives "(ë)C(C)-V" as the
 	// tell-tale shape, so a referential always carries a case, and a
 	// word with no vowel in it at all is unpronounceable besides.
-	return UnknownWord{Text: orig}
+	return nil, fmt.Errorf("no word class fits %q", word)
 }
 
-// Tokenize splits a sentence on whitespace and classifies each word.
+// Tokenize reads a span of romanization into one Result per word.
 //
 // Two things here are decided across words rather than within one. A
-// carrier adjunct scopes the word after it as foreign text, and a
-// §4.8 parsing adjunct declares the stress of the word after it —
-// which is phonology, not grammar, so the adjunct is consumed rather
-// than classified and never appears in the result.
-func Tokenize(sentence string) []WordToken {
+// carrier adjunct scopes the word after it as foreign text, and a §4.8
+// parsing adjunct declares the stress of the word after it — which is
+// phonology, not grammar, so the adjunct is consumed rather than read
+// as a word and never appears in the result.
+//
+// A word that cannot be read leaves its Result carrying the reason
+// instead of a Word. Reading is per-word, so one unreadable word does
+// not cost the rest of the span.
+func Tokenize(sentence string) []Result {
 	fields := consumeParsingAdjuncts(strings.Fields(sentence))
-	out := make([]WordToken, len(fields))
+	out := make([]Result, len(fields))
 	for i, w := range fields {
-		out[i] = ClassifyWord(w)
+		word, err := ClassifyWord(w)
+		out[i] = Result{Romanization: phonology.Normalize(w), Word: word, Err: err}
 	}
 	for i := 0; i+1 < len(out); i++ {
-		if isCarrierToken(out[i]) {
-			// Foreign text is passthrough: take the raw field rather
-			// than the discarded classification's rom, which has
-			// been case-normalized as Ithkuil.
-			out[i+1] = ForeignWord{Text: fields[i+1]}
+		if isCarrier(out[i].Word) {
+			// Foreign text is passthrough: take the raw field, not the
+			// discarded reading's romanization, which was normalized as
+			// Ithkuil.
+			out[i+1] = Result{
+				Romanization: fields[i+1],
+				Word:         g.Foreign{Text: fields[i+1]},
+			}
 		}
 	}
-	ResolveModularMood(out)
+	return out
+}
+
+// Text reads a span of romanization into grammar, and fails if any
+// word in it cannot be read. Callers that want to report per-word and
+// carry on — the analyzer, mostly — use Tokenize instead.
+func Text(sentence string) (g.Text, error) {
+	results := Tokenize(sentence)
+	out := make(g.Text, 0, len(results))
+	for _, r := range results {
+		if r.Err != nil {
+			return nil, fmt.Errorf("%s: %w", r.Romanization, r.Err)
+		}
+		out = append(out, r.Word)
+	}
+	return out, nil
+}
+
+// Words drops the provenance, for callers that only want the grammar
+// of a span they already know reads cleanly.
+func Words(results []Result) g.Text {
+	out := make(g.Text, 0, len(results))
+	for _, r := range results {
+		if r.Word != nil {
+			out = append(out, r.Word)
+		}
+	}
 	return out
 }
 
@@ -356,38 +271,21 @@ func consumeParsingAdjuncts(fields []string) []string {
 	return out
 }
 
-// ResolveModularMood fills in each ModularWord's MarksMood from the
-// tokens around it: the flag says whether the next formative-bearing
-// token is verbal, which is what disambiguates the adjunct's Cn
-// between Mood and Case-Scope.
+// ModularIsVerbal reports whether the formative a modular adjunct at
+// index i applies to is verbal, which is what decides whether its Cn
+// reads as Mood or as Case-Scope.
 //
-// It is derived rather than intrinsic, so nothing needs to store it.
-// Any consumer that rebuilds a token stream from something other than
-// romanization calls this to restore it.
-func ResolveModularMood(toks []WordToken) {
-	for i, t := range toks {
-		mw, ok := t.(ModularWord)
-		if !ok {
-			continue
-		}
-		if verbal, found := nextFormativeIsVerbal(toks, i); found {
-			mw.MarksMood = &verbal
-			toks[i] = mw
-		}
-	}
-}
-
-// nextFormativeIsVerbal scans forward from i+1 for the next formative-
-// bearing token and returns whether its (parent, for chains) Final is
-// verbal (ultimate stress). Returns found=false if no formative-bearing
-// token is encountered.
-func nextFormativeIsVerbal(toks []WordToken, i int) (verbal, found bool) {
-	for j := i + 1; j < len(toks); j++ {
-		switch w := toks[j].(type) {
-		case FormativeWord:
-			return g.IsVerbal(w.Formative.Final), true
-		case ConcatenatedFormativeWord:
-			fs := w.Chain.Formatives()
+// It is asked of the span rather than stored on the adjunct. The fact
+// belongs to the arrangement of words, not to any one of them, and
+// storing it meant every caller that built a span from something other
+// than text had to remember to recompute it.
+func ModularIsVerbal(t g.Text, i int) (verbal, found bool) {
+	for j := i + 1; j < len(t); j++ {
+		switch w := t[j].(type) {
+		case g.Formative:
+			return g.IsVerbal(w.Final), true
+		case *g.Chain:
+			fs := w.Formatives()
 			if len(fs) == 0 {
 				return false, false
 			}
@@ -397,18 +295,16 @@ func nextFormativeIsVerbal(toks []WordToken, i int) (verbal, found bool) {
 	return false, false
 }
 
-// isCarrierToken reports whether tok semantically scopes a foreign word
-// that follows it. Plain CarrierWords always do; FormativeWords whose
-// root is the carrier root "s" also do.
-func isCarrierToken(tok WordToken) bool {
-	switch v := tok.(type) {
-	case CarrierWord:
+// isCarrier reports whether a word scopes the foreign text after it.
+// A carrier adjunct always does; so does a formative on the carrier
+// root "s".
+func isCarrier(w g.Word) bool {
+	switch v := w.(type) {
+	case g.CarrierAdjunct:
 		return true
-	case FormativeWord:
-		if cr, ok := v.Formative.Root.(g.CrRoot); ok {
-			return cr.Cluster == "s"
-		}
-		return false
+	case g.Formative:
+		cr, ok := v.Root.(g.CrRoot)
+		return ok && cr.Cluster == "s"
 	}
 	return false
 }

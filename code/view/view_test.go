@@ -12,9 +12,9 @@ import (
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
-func tok(t *testing.T, w string) tokenize.WordToken {
+func tok(t *testing.T, w string) g.Word {
 	t.Helper()
-	return tokenize.ClassifyWord(w)
+	return readWord(t, w)
 }
 
 func TestType_All(t *testing.T) {
@@ -31,7 +31,6 @@ func TestType_All(t *testing.T) {
 		{"hai", "Reg"},
 		{"ah", "Mod"},
 		{"hla", "Carrier"},
-		{"xyzzy", "?"},
 	}
 	for _, c := range cases {
 		got := Type(tok(t, c.w))
@@ -42,8 +41,8 @@ func TestType_All(t *testing.T) {
 }
 
 func TestSegments_FormativeWalkable(t *testing.T) {
-	fw := tok(t, "malëuţřait").(tokenize.FormativeWord)
-	segs := Segments(fw.Text, fw.Formative, nil)
+	fw := tok(t, "malëuţřait").(g.Formative)
+	segs := Segments("malëuţřait", fw, nil)
 	if len(segs) == 0 {
 		t.Fatal("Segments returned empty slice for malëuţřait")
 	}
@@ -55,16 +54,16 @@ func TestSegments_FormativeWalkable(t *testing.T) {
 }
 
 func TestHeadword_NoLexicon(t *testing.T) {
-	fw := tok(t, "lalu").(tokenize.FormativeWord)
-	h := Headword(fw.Formative, nil)
+	fw := tok(t, "lalu").(g.Formative)
+	h := Headword(fw, nil)
 	if h.Code == "" {
 		t.Errorf("Headword without lex: Code empty, expected the Cr cluster")
 	}
 }
 
 func TestSegmentsModular_BasicAndScope(t *testing.T) {
-	mw := tok(t, "ah").(tokenize.ModularWord)
-	segs := SegmentsModular(mw.Text, mw.Modular, nil)
+	mw := tok(t, "ah").(g.ModularAdjunct)
+	segs := SegmentsModular("ah", mw, nil)
 	if len(segs) == 0 {
 		t.Fatal("SegmentsModular(ah) returned empty")
 	}
@@ -84,13 +83,13 @@ func TestSegments_VariantShapes(t *testing.T) {
 		"amlalara",  // CrRoot with Slot V (geminated Ca + reversed Cs/Vx)
 		"amlalahla", // CrRoot with Slot VIII
 	} {
-		tok := tokenize.ClassifyWord(w)
-		v, ok := tok.(tokenize.FormativeWord)
+		tok := readWord(t, w)
+		v, ok := tok.(g.Formative)
 		if !ok {
 			t.Errorf("%q didn't tokenize as a formative (%T)", w, tok)
 			continue
 		}
-		segs := Segments(v.Text, v.Formative, nil)
+		segs := Segments(w, v, nil)
 		if len(segs) == 0 {
 			t.Errorf("Segments(%q) returned empty", w)
 		}
@@ -141,8 +140,8 @@ func TestHeadword_WithLexicon(t *testing.T) {
 	if err != nil {
 		t.Fatalf("LoadDefault: %v", err)
 	}
-	tok := tokenize.ClassifyWord("lalu").(tokenize.FormativeWord)
-	h := Headword(tok.Formative, lex)
+	tok := readWord(t, "lalu").(g.Formative)
+	h := Headword(tok, lex)
 	if h.Code == "" {
 		t.Error("Headword with lex: Code empty")
 	}
@@ -171,9 +170,9 @@ func TestGlossary_FormativeWithLexicon(t *testing.T) {
 	// Without the embedded lexicon we still want Glossary to walk the
 	// segments and emit category rows for non-default slots. Use a
 	// formative known to have a non-default Ca + Vc.
-	tok := tokenize.ClassifyWord("emlölo").(tokenize.FormativeWord)
-	segs := Segments(tok.Text, tok.Formative, nil)
-	glossary := Glossary(tok.Text, tok.Formative, segs, nil)
+	tok := readWord(t, "emlölo").(g.Formative)
+	segs := Segments("emlölo", tok, nil)
+	glossary := Glossary("emlölo", tok, segs, nil)
 	if len(glossary) == 0 {
 		t.Error("Glossary returned empty for emlölo")
 	}
@@ -189,22 +188,21 @@ func TestType_AllVariants(t *testing.T) {
 	// because they're created by recognizers that aren't normally
 	// triggered through ClassifyWord alone.
 	cases := []struct {
-		tok  tokenize.WordToken
+		tok  g.Word
 		want string
 	}{
-		{tokenize.FormativeWord{}, "Form"},
-		{tokenize.ConcatenatedFormativeWord{}, "Concat"},
-		{tokenize.ReferentialWord{}, "Ref"},
-		{tokenize.CombinationRefWord{}, "CombRef"},
-		{tokenize.BiasWord{}, "Bias"},
-		{tokenize.RegisterStartWord{}, "Reg"},
-		{tokenize.RegisterEndWord{}, "Reg"},
-		{tokenize.ModularWord{}, "Mod"},
-		{tokenize.SingleAffixWord{}, "Affix"},
-		{tokenize.MultipleAffixWord{}, "Affixes"},
-		{tokenize.CarrierWord{}, "Carrier"},
-		{tokenize.ForeignWord{}, "(fgn)"},
-		{tokenize.UnknownWord{}, "?"},
+		{g.Formative{}, "Form"},
+		{&g.Chain{}, "Concat"},
+		{g.Referential{}, "Ref"},
+		{g.CombinationReferential{}, "CombRef"},
+		{g.DOL, "Bias"},
+		{g.RegisterMarker{}, "Reg"},
+		{g.RegisterMarker{End: true}, "Reg"},
+		{g.ModularAdjunct{}, "Mod"},
+		{g.SingleAffixAdjunct{}, "Affix"},
+		{g.MultipleAffixAdjunct{}, "Affixes"},
+		{g.CarrierAdjunct{}, "Carrier"},
+		{g.Foreign{}, "(fgn)"},
 	}
 	for _, c := range cases {
 		if got := Type(c.tok); got != c.want {
@@ -270,11 +268,11 @@ func TestStemNum(t *testing.T) {
 }
 
 func TestSegmentsModular_VerbalVsNominal(t *testing.T) {
-	mw := tok(t, "ah").(tokenize.ModularWord)
+	mw := tok(t, "ah").(g.ModularAdjunct)
 	verbal := true
-	verbalSegs := SegmentsModular(mw.Text, mw.Modular, &verbal)
+	verbalSegs := SegmentsModular("ah", mw, &verbal)
 	nominal := false
-	nominalSegs := SegmentsModular(mw.Text, mw.Modular, &nominal)
+	nominalSegs := SegmentsModular("ah", mw, &nominal)
 	getCn := func(segs []Segment) string {
 		for _, s := range segs {
 			if strings.HasPrefix(s.Slot, "Cn") {
@@ -513,4 +511,14 @@ func TestCategoryForCode_Fallback(t *testing.T) {
 	if got != "case" {
 		t.Errorf("categoryForCode unknown code = %q, want case (slot fallback)", got)
 	}
+}
+
+// readWord reads one word or fails the test.
+func readWord(t *testing.T, word string) g.Word {
+	t.Helper()
+	w, err := tokenize.ClassifyWord(word)
+	if err != nil {
+		t.Fatalf("ClassifyWord(%q): %v", word, err)
+	}
+	return w
 }

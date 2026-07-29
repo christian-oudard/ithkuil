@@ -1,37 +1,37 @@
 package view
 
-import "github.com/christian-oudard/ithkuil/tokenize"
+import g "github.com/christian-oudard/ithkuil/grammar"
 
-// Type returns a short tag identifying the token kind: Form, Concat,
-// Ref, CombRef, Bias, Reg, Mod, Affix, Affixes, Carrier, (fgn), or "?"
-// for unknown. Used by the CLI's --short view and the MCP per-token
-// type field.
-func Type(t tokenize.WordToken) string {
+// Type returns a short tag naming the word class: Form, Concat, Ref,
+// CombRef, Bias, Reg, Mod, Affix, Affixes, Carrier or (fgn). Used by
+// the MCP per-word type field.
+//
+// A word that could not be read has no type to give — it never becomes
+// a Word at all, and the reason comes back from the parser instead.
+func Type(t g.Word) string {
 	switch t.(type) {
-	case tokenize.FormativeWord:
+	case g.Formative:
 		return "Form"
-	case tokenize.ConcatenatedFormativeWord:
+	case *g.Chain:
 		return "Concat"
-	case tokenize.ReferentialWord:
+	case g.Referential:
 		return "Ref"
-	case tokenize.CombinationRefWord:
+	case g.CombinationReferential:
 		return "CombRef"
-	case tokenize.BiasWord:
+	case g.Bias:
 		return "Bias"
-	case tokenize.RegisterStartWord, tokenize.RegisterEndWord:
+	case g.RegisterMarker:
 		return "Reg"
-	case tokenize.ModularWord:
+	case g.ModularAdjunct:
 		return "Mod"
-	case tokenize.SingleAffixWord:
+	case g.SingleAffixAdjunct:
 		return "Affix"
-	case tokenize.MultipleAffixWord:
+	case g.MultipleAffixAdjunct:
 		return "Affixes"
-	case tokenize.CarrierWord:
+	case g.CarrierAdjunct:
 		return "Carrier"
-	case tokenize.ForeignWord:
+	case g.Foreign:
 		return "(fgn)"
-	case tokenize.UnknownWord:
-		return "?"
 	}
 	return "?"
 }
