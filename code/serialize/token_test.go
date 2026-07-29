@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/concatenation"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
@@ -372,7 +371,7 @@ func TestNonFormativeEscape(t *testing.T) {
 	dep := g.MinimalFormative("ml")
 	dep.Concat = g.Type1
 	tokens := []tokenize.WordToken{
-		tokenize.ConcatenatedFormativeWord{Chain: &concatenation.Chain{
+		tokenize.ConcatenatedFormativeWord{Chain: &g.Chain{
 			Head: g.MinimalFormative("l"),
 			Tail: []g.Formative{dep},
 		}},
@@ -423,7 +422,7 @@ func TestChain_FreeFraming(t *testing.T) {
 		t.Fatal(err)
 	}
 	chain, err := MarshalWord(tokenize.ConcatenatedFormativeWord{
-		Chain: &concatenation.Chain{Head: head, Tail: []g.Formative{dep}},
+		Chain: &g.Chain{Head: head, Tail: []g.Formative{dep}},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -450,19 +449,19 @@ func TestChain_RejectsUngrammatical(t *testing.T) {
 			Formative: withConcat("ml", g.Type1),
 		}},
 		{"parent with a Cc", tokenize.ConcatenatedFormativeWord{
-			Chain: &concatenation.Chain{
+			Chain: &g.Chain{
 				Head: withConcat("l", g.Type2),
 				Tail: []g.Formative{withConcat("ml", g.Type1)},
 			},
 		}},
 		{"dependent without a Cc", tokenize.ConcatenatedFormativeWord{
-			Chain: &concatenation.Chain{
+			Chain: &g.Chain{
 				Head: g.MinimalFormative("l"),
 				Tail: []g.Formative{g.MinimalFormative("ml")},
 			},
 		}},
 		{"chain of one", tokenize.ConcatenatedFormativeWord{
-			Chain: &concatenation.Chain{Head: g.MinimalFormative("l")},
+			Chain: &g.Chain{Head: g.MinimalFormative("l")},
 		}},
 	} {
 		if _, err := MarshalWord(tc.token); err == nil {
@@ -504,8 +503,8 @@ func TestFuzz_ChainRoundTrip(t *testing.T) {
 }
 
 // randomChain builds a chain of one to three dependents plus a parent.
-func randomChain(rng *rand.Rand) *concatenation.Chain {
-	c := &concatenation.Chain{Head: randomFormative(rng)}
+func randomChain(rng *rand.Rand) *g.Chain {
+	c := &g.Chain{Head: randomFormative(rng)}
 	for n := 1 + rng.Intn(3); n > 0; n-- {
 		dep := randomFormative(rng)
 		dep.Concat = []g.ConcatenationStatus{g.Type1, g.Type2}[rng.Intn(2)]

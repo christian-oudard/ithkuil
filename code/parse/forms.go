@@ -228,3 +228,15 @@ func SlotIVToVr(s g.SlotIV) string {
 	}
 	return phonology.VowelForm(series, form)
 }
+
+// ConcatMarker returns the romanization Slot I consonant for a
+// ConcatenationStatus, or "" for the None state.
+func ConcatMarker(s g.ConcatenationStatus) string {
+	switch s {
+	case g.Type1:
+		return "h"
+	case g.Type2:
+		return "hw"
+	}
+	return ""
+}

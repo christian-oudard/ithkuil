@@ -19,7 +19,6 @@ package tokenize
 import (
 	"strings"
 
-	"github.com/christian-oudard/ithkuil/concatenation"
 	"github.com/christian-oudard/ithkuil/fullparse"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
@@ -48,7 +47,7 @@ func (FormativeWord) word()                  {}
 // have a Slot I concatenation marker on their parsed Formative.
 type ConcatenatedFormativeWord struct {
 	Text  string
-	Chain *concatenation.Chain
+	Chain *g.Chain
 }
 
 func (c ConcatenatedFormativeWord) Romanization() string { return c.Text }
@@ -411,7 +410,7 @@ func isCarrierToken(tok WordToken) bool {
 // "concatenated" dependent carrying a Slot I Cc marker, and the LAST
 // formative is the "parent" with no Cc. Returns ok=false if any
 // constraint fails.
-func tryConcatenation(word string) (*concatenation.Chain, bool) {
+func tryConcatenation(word string) (*g.Chain, bool) {
 	parts := strings.Split(word, "-")
 	if len(parts) < 2 {
 		return nil, false
@@ -435,7 +434,7 @@ func tryConcatenation(word string) (*concatenation.Chain, bool) {
 			return nil, false
 		}
 	}
-	chain := concatenation.New(formatives[last])
+	chain := g.NewChain(formatives[last])
 	for i := 0; i < last; i++ {
 		switch formatives[i].Concat {
 		case g.Type1:

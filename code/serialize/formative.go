@@ -3,7 +3,6 @@ package serialize
 import (
 	"fmt"
 
-	"github.com/christian-oudard/ithkuil/concatenation"
 	g "github.com/christian-oudard/ithkuil/grammar"
 )
 
@@ -541,7 +540,7 @@ func getFormative(buf []byte) (g.Formative, int, error) {
 // formative follows". MarshalWord rejects one rather than writing
 // bytes that would swallow the following token into a phantom chain.
 
-func putChain(out []byte, c *concatenation.Chain) ([]byte, error) {
+func putChain(out []byte, c *g.Chain) ([]byte, error) {
 	if c == nil {
 		return nil, fmt.Errorf("chain: nil")
 	}
@@ -568,8 +567,8 @@ func putChain(out []byte, c *concatenation.Chain) ([]byte, error) {
 
 // getChain reads the rest of a chain given its first dependent, which
 // the caller has already decoded and found to carry a Cc marker.
-func getChain(first g.Formative, buf []byte) (*concatenation.Chain, int, error) {
-	c := &concatenation.Chain{Tail: []g.Formative{first}}
+func getChain(first g.Formative, buf []byte) (*g.Chain, int, error) {
+	c := &g.Chain{Tail: []g.Formative{first}}
 	cur := 0
 	for {
 		f, n, err := getFormative(buf[cur:])

@@ -1,12 +1,10 @@
-// Package concatenation assembles multi-formative chains. Type 1
-// concatenation forms a single compound concept whose dependents share
-// the head formative's case frame; Type 2 concatenation coordinates
-// formatives that each carry their own case.
-package concatenation
+package grammar
 
-import (
-	g "github.com/christian-oudard/ithkuil/grammar"
-)
+// A concatenation chain is a word (§3.1.7): two or more formatives
+// written with hyphens between them and read as one unit. Type 1
+// forms a single compound concept whose dependents share the head's
+// case frame; Type 2 coordinates formatives that each carry their own
+// case.
 
 // Chain is a list of concatenated dependents followed by the parent
 // formative (§3.1.7). On the romanization the parent comes LAST: the spec
@@ -15,35 +13,35 @@ import (
 // Head holds the parent; Tail holds the dependents in written order.
 // Each dependent's own Concat field tells Type-1 from Type-2 apart.
 type Chain struct {
-	Head g.Formative
-	Tail []g.Formative
+	Head Formative
+	Tail []Formative
 }
 
-// New starts a chain with the given head formative.
-func New(head g.Formative) *Chain {
+// NewChain starts a chain with the given head formative.
+func NewChain(head Formative) *Chain {
 	return &Chain{Head: head}
 }
 
 // AddType1 appends a Type-1 dependent. The dependent's SlotI is
 // overwritten to Type1.
-func (c *Chain) AddType1(f g.Formative) *Chain {
-	f.Concat = g.Type1
+func (c *Chain) AddType1(f Formative) *Chain {
+	f.Concat = Type1
 	c.Tail = append(c.Tail, f)
 	return c
 }
 
 // AddType2 appends a Type-2 dependent. The dependent's SlotI is
 // overwritten to Type2.
-func (c *Chain) AddType2(f g.Formative) *Chain {
-	f.Concat = g.Type2
+func (c *Chain) AddType2(f Formative) *Chain {
+	f.Concat = Type2
 	c.Tail = append(c.Tail, f)
 	return c
 }
 
 // Formatives returns every formative in the chain in written order:
 // the leading concatenated dependents first, then the parent.
-func (c *Chain) Formatives() []g.Formative {
-	out := make([]g.Formative, 0, 1+len(c.Tail))
+func (c *Chain) Formatives() []Formative {
+	out := make([]Formative, 0, 1+len(c.Tail))
 	out = append(out, c.Tail...)
 	out = append(out, c.Head)
 	return out
@@ -51,15 +49,3 @@ func (c *Chain) Formatives() []g.Formative {
 
 // Length returns the total number of formatives in the chain.
 func (c *Chain) Length() int { return 1 + len(c.Tail) }
-
-// ConcatMarker returns the romanization Slot I consonant for a
-// ConcatenationStatus, or "" for the None state.
-func ConcatMarker(s g.ConcatenationStatus) string {
-	switch s {
-	case g.Type1:
-		return "h"
-	case g.Type2:
-		return "hw"
-	}
-	return ""
-}
