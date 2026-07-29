@@ -66,3 +66,22 @@ func DeclareStress(word string, declared Stress) (string, error) {
 	}
 	return Apply(bare, declared), nil
 }
+
+// ParsingAdjunctFor returns the adjunct that declares the given
+// stress, the inverse of ParsingAdjunct.
+//
+// This is what a stressless spelling needs: §2.3 makes pitch accent
+// the means by which word boundaries are found, and §2.3 ¶5 offers the
+// adjunct for when that channel is unavailable — singing, where the
+// melody has taken the pitch and pausing between words is unrealistic.
+// The adjunct restores both halves of what the contour carried: the
+// glottal stops around it mark where a word begins, and the vowel says
+// where its stress falls.
+func ParsingAdjunctFor(s Stress) (string, bool) {
+	for vowel, declared := range parsingAdjunctVowels {
+		if declared == s {
+			return "'" + string(vowel) + "'", true
+		}
+	}
+	return "", false
+}

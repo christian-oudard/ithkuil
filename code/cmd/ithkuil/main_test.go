@@ -709,3 +709,62 @@ func TestDefine_NoArg(t *testing.T) {
 		t.Errorf("got %q", errOut)
 	}
 }
+
+// The README documents these, and a reader copies them into the shell
+// rather than into a Go call. TestDocumentedSyntaxExamples checks the
+// library function; this checks the command, which is not the same
+// path and did not always agree with it. Routing compose through
+// ParseToken broke "m-SYS/5_2-{Ca}-DCD/1_2": the "{Ca}" there marks
+// the Slot V/VII boundary, and the affixual-adjunct recognizer took
+// any brace as proof of an affixual adjunct.
+func TestCompose_DocumentedExamples(t *testing.T) {
+	for _, c := range []struct{ expr, want string }{
+		{"ml", "mlala"},
+		{"S2.CPT-ml-ERG", "wimlo"},
+		{"m-SYS/5_2-{Ca}-DCD/1_2", "maţřëullait"},
+		{"ml-Ca:PRX-ERG", "mlalüödo"},
+		{"ml-ACC/INS-ERG", "mlaläswo"},
+		{"ml-(1m)/AFF-ERG", "mlaleölo"},
+		{"1m-ERG", "lo"},
+		{"[CAR]", "hla"},
+		{"DSV_END", "hai"},
+	} {
+		out, errOut, code := runCLI("-data", dataFile(), "compose", c.expr)
+		if code != 0 {
+			t.Errorf("compose %q: exit %d: %s", c.expr, code, errOut)
+			continue
+		}
+		if got := strings.SplitN(strings.TrimSpace(out), "\n", 2)[0]; got != c.want {
+			t.Errorf("compose %q = %q, want %q", c.expr, got, c.want)
+		}
+	}
+}
+
+// Both spellings of a word have to read back to the same grammar, so
+// --stressless is a different channel rather than a different word.
+func TestCompose_StresslessMatchesNormal(t *testing.T) {
+	for _, expr := range []string{"ml", "S2.CPT-ml-ERG", "1m-ERG", "m-SYS/5_2-{Ca}-DCD/1_2"} {
+		plain, _, code := runCLI("-data", dataFile(), "compose", expr)
+		if code != 0 {
+			t.Errorf("compose %q failed", expr)
+			continue
+		}
+		sung, errOut, code := runCLI("-data", dataFile(), "compose", "--stressless", expr)
+		if code != 0 {
+			t.Errorf("compose --stressless %q: exit %d: %s", expr, code, errOut)
+			continue
+		}
+		normalWord := strings.SplitN(strings.TrimSpace(plain), "\n", 2)[0]
+		sungWords := strings.SplitN(strings.TrimSpace(sung), "\n", 2)[0]
+		if normalWord == sungWords {
+			t.Errorf("%q: --stressless produced the same spelling %q", expr, sungWords)
+		}
+		// Reading either one has to give the same gloss.
+		a, _, _ := runCLI("-data", dataFile(), "parse", "--short", normalWord)
+		b, _, _ := runCLI("-data", dataFile(), "parse", "--short", sungWords)
+		if strings.TrimSpace(a) != strings.TrimSpace(b) {
+			t.Errorf("%q: %q glosses as %q but %q glosses as %q",
+				expr, normalWord, strings.TrimSpace(a), sungWords, strings.TrimSpace(b))
+		}
+	}
+}

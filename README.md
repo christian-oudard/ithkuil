@@ -286,7 +286,24 @@ The whole gloss is ASCII, including the root, which uses the digraph notation fr
 ithkuil compose 'ml-Ca:PRX-ERG'         # a Ca stacked on the Slot VI Ca
 ithkuil compose 'ml-ACC/INS-ERG'        # a §3.9.2 case-accessor
 ithkuil compose 'ml-(1m)/AFF-ERG'       # a §4.6.5 Column-4 referential
+ithkuil compose '1m-ERG'                # a referential, not only formatives
+ithkuil compose '[CAR]'                 # a carrier adjunct
 ```
+
+Stress is normally written with the acute and circumflex. `--stressless`
+writes it instead with the §4.8 parsing adjunct, a vowel between two glottal
+stops placed before the word it describes:
+
+```bash
+ithkuil compose 'S2.CPT-ml-ERG'                # wimlo
+ithkuil compose --stressless 'S2.CPT-ml-ERG'   # 'o' wimlo
+```
+
+§2.3 makes pitch accent the means by which a listener finds word boundaries,
+and §2.3 ¶5 offers the adjunct for when that channel is unavailable — its
+example is singing, where the melody has taken the pitch and pausing between
+words is unrealistic. Both spellings parse, and both read back to the same
+word.
 
 ## References
 

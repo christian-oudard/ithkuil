@@ -425,14 +425,14 @@ func looksLikeAffixual(s string) bool {
 	if slash < 1 {
 		return false
 	}
-	// A formative slot like "S2.CPT" has no "/" at all; a slot that
-	// does, like "DEV/3", sits among more hyphen-separated slots.
-	// hyphens around it; an affixual adjunct is the whole token.
-	// Heuristic: token has a "/" and either ends with "}" (scope) or
-	// has only one hyphen-separated slot (just the affix).
-	if strings.Contains(s, "{") {
-		return true
-	}
+	// An affixual adjunct is affixes and nothing else: every slot is
+	// either an affix field or a brace. A formative can carry the same
+	// affix slots, but it also carries a root, so one slot that is
+	// neither settles it.
+	//
+	// A "{" used to be taken as proof on its own, which read the
+	// formative "m-SYS/5_2-{Ca}-DCD/1_2" as an affixual adjunct: the
+	// "{Ca}" there is the Slot V/VII boundary, not an affix scope.
 	parts := strings.Split(s, "-")
 	if len(parts) == 1 {
 		return true

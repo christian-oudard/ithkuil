@@ -6,6 +6,7 @@ import (
 
 	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/gloss"
+	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -31,6 +32,8 @@ import (
 func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 	fs := newFlagSet("compose", stderr)
 	fs.describe("Build a romanized word from a gloss expression.", "EXPR")
+	stressless := fs.Bool("stressless", "", false,
+		"write stress as a §4.8 parsing adjunct instead of a diacritic")
 	if err := fs.Parse(args); err != nil {
 		return 2
 	}
@@ -49,7 +52,12 @@ func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 		fmt.Fprintf(stderr, "compose: %v\n", err)
 		return 2
 	}
-	word, err := tokenize.Render(tok)
+	var word string
+	if *stressless {
+		word, err = tokenize.RenderStressless(g.Text{tok})
+	} else {
+		word, err = tokenize.Render(tok)
+	}
 	if err != nil {
 		fmt.Fprintf(stderr, "compose: %v\n", err)
 		return 2
