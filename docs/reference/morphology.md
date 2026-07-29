@@ -1347,12 +1347,12 @@ In many cases, a particular formative may take either STATIVE or DYNAMIC Functio
 
 | STATIVE | DYNAMIC |
 |---|---|
-| **Byala pa.** *'He has/shows/is showing common sense.'* | **Byula pa.** (Byula pu.\*) *'He uses/exercises/is demonstrating common sense.'* [\*if emphasizing the resulting beneficial change in state] |
-| **Vvrala mi wurcpei.** *'Her passion is dance / She feels passionate about dance.'* | **Vvrala mi urcpulei.** *'Her passion is dancing / She feels passionate about dancing.'* |
-| **Tladatra cskava.** *Disease is rampant there.* | **Tludatra cskava.** *Disease runs rampant there.* |
-| **Txada ku.** *They are having a meal.* | **Txuda ku.** *They are eating a meal.* |
-| **Waltla wele lo.** *I make the child wear a jacket.* | **Altlul wele lo.** *I put a jacket on the child / I dress the child in a jacket.* |
-| **Mala welu wiosadca espanya.** *The child is speaking (in) Spanish.* | **Mula welu wiosadca espanya.** *The child is saying something in Spanish.\** [\*This meaning can also be conveyed by using CTE Specification: **mula**] |
+| **Byalá pa.** *'He has/shows/is showing common sense.'* | **Byulá pa.** (Byulá pu.\*) *'He uses/exercises/is demonstrating common sense.'* [\*if emphasizing the resulting beneficial change in state] |
+| **Vvralá mi wurçpëi.** *'Her passion is dance / She feels passionate about dance.'* | **Vvralá mi urçpulëi.** *'Her passion is dancing / She feels passionate about dancing.'* |
+| **Tladatřá çkava.** *Disease is rampant there.* | **Tludatřá çkava.** *Disease runs rampant there.* |
+| **Txadá ku.** *They are having a meal.* | **Txudá ku.** *They are eating a meal.* |
+| **Waltlá wele lo.** *I make the child wear a jacket.* | **Altlúl wele lo.** *I put a jacket on the child / I dress the child in a jacket.* |
+| **Malá welu wiosaḑcä espanya.** *The child is speaking (in) Spanish.* | **Mulá welu wiosaḑcä espanya.** *The child is saying something in Spanish.\** [\*This meaning can also be conveyed by using CTE Specification: **mula**] |
 
 ### 5.4 Relative Clause Formation
 
@@ -1508,12 +1508,12 @@ This affix is used to specify the exact semantic relationships between the parti
 
 | English Sentence | Ithkuil |
 |---|---|
-| *The boy jumps (up and down).* | **Adcsuloeuha welecu.** 'jump'-DYN-RCT-OBS [default C_A]-'child'-GID1/3-IND |
-| *Mother makes the boy jump (up and down).* | **Adcsuloeuha ampalaicooe welecu.** 'jump'-DYN-RCT-OBS 'parent'-GID2/1-EFF [default C_A]-'child'-GID1/3-IND |
-| *The boy is made to jump (up and down).* | **Adcsuloeuha welec**a**rzu.** 'jump'-DYN-RCT-OBS [default C_A]-'child'-GID1/3-**CHC1/2**-IND |
-| *Jumping (up and down) takes place. / There's jumping (up and down) going on.* | **Yadcseuha.** PRX-'jump'-(STA)-RCT-OBS |
-| *Someone's jumping (up and down). / There's someone jumping (up and down).* | **Adcsuleuha.** 'jump'-DYN-RCT-OBS |
-| *Someone's being made to jump (up and down).* | **Adcsul**a**rzeuha.** 'jump'-DYN-**CHC1/2**-RCT-OBS |
+| *The boy jumps (up and down).* | **Aḑçulëuhá welecu.** 'jump'-DYN-RCT-OBS [default C_A]-'child'-GID1/3-IND |
+| *Mother makes the boy jump (up and down).* | **Aḑçulëuhá ampalaicooe welecu.** 'jump'-DYN-RCT-OBS 'parent'-GID2/1-EFF [default C_A]-'child'-GID1/3-IND |
+| *The boy is made to jump (up and down).* | **Aḑçulëuhá welec**a**rzu.** 'jump'-DYN-RCT-OBS [default C_A]-'child'-GID1/3-**CHC1/2**-IND |
+| *Jumping (up and down) takes place. / There's jumping (up and down) going on.* | **Yaḑçëuhá.** PRX-'jump'-(STA)-RCT-OBS |
+| *Someone's jumping (up and down). / There's someone jumping (up and down).* | **Aḑçulëuhá.** 'jump'-DYN-RCT-OBS |
+| *Someone's being made to jump (up and down).* | **Aḑçul**ä**rzëuhá.** 'jump'-DYN-**CHC1/2**-RCT-OBS |
 
 **Additional examples using the verb 'sing':**
 
@@ -1545,7 +1545,7 @@ This affix is used to specify the exact semantic relationships between the parti
 
 7. **Register, Carrier, Quotative, Naming, and Phrasal Adjuncts:** Given that these adjuncts signal the beginning (and/or ending) of various specialized types of words/phrases, their position in a sentence is obviously determined by the beginning (or ending) of the word/phrase in question.
 
-8. **Juncture between sentences:** The ultimate stress on a non-monosyllabic main verbal formative in sentence-initial position (including concatenated verbal formatives but NOT including any preceding adjuncts) shall be sufficient to indicate the beginning of a new sentence. Additionally, any sentence at the beginning of a breath group (i.e., an initial utterance or an utterance preceded by a pause for breath) shall require no further indication that a new sentence has begun. Otherwise, the first word of a new sentence shall take a word-initial prefix **cs(e)**- to indicate the beginning of a new sentence. The prefix before vowels is **cs**- (replacing the initial glottal-stop), while the form before consonants besides **w**- and **y**- is **cse**-. For words with initial **w**-, the **cs**- plus **w**- become **csw**-; for **cs**- plus **y**-, these combine to become **cscs**-. All formatives and adjuncts have now been redesigned/modified where necessary to accommodate this without creating any ambiguities. When used before consonants besides **w**- and **y**-, the word-initial **cse**- prefix never takes syllabic stress (if necessary, add additional default syllables via Slots VIII and/or IX instead or by avoiding the use of a C_A shortcut).
+8. **Juncture between sentences:** The ultimate stress on a non-monosyllabic main verbal formative in sentence-initial position (including concatenated verbal formatives but NOT including any preceding adjuncts) shall be sufficient to indicate the beginning of a new sentence. Additionally, any sentence at the beginning of a breath group (i.e., an initial utterance or an utterance preceded by a pause for breath) shall require no further indication that a new sentence has begun. Otherwise, the first word of a new sentence shall take a word-initial prefix **ç(e)**- to indicate the beginning of a new sentence. The prefix before vowels is **ç**- (replacing the initial glottal-stop), while the form before consonants besides **w**- and **y**- is **çë**-. For words with initial **w**-, the **ç**- plus **w**- become **çw**-; for **ç**- plus **y**-, these combine to become **çç**-. All formatives and adjuncts have now been redesigned/modified where necessary to accommodate this without creating any ambiguities. When used before consonants besides **w**- and **y**-, the word-initial **çë**- prefix never takes syllabic stress (if necessary, add additional default syllables via Slots VIII and/or IX instead or by avoiding the use of a C_A shortcut).
 
 9. **Bias Adjuncts:** A Bias Adjunct should be pronounced with both a preceding and following pause, just as in English we tend to pause for breath before uttering a supra-segmental expression, e.g., 'Phew!...', 'Ugh!...', 'Hmm...', etc., and pause afterward.
 
@@ -1553,7 +1553,7 @@ This affix is used to specify the exact semantic relationships between the parti
 
 ## 6.0 DATES AND TIMES OF DAY
 
-The new SPT Affix is now available for use in expressing the hour of day, day of the week, week of the month, month of the year, the year and the century. It is used with the number roots (usually Stem 3) to render, e.g., 'the eighth hour of the day', 'the third day of the week (i.e., Wednesday)' or '20th of May', etc. Furthermore, each use of this affix can in turn be modified by a following Type-3 number affix (e.g., XX2, XX3, etc.) to enumerate the higher-ordered time-period named by the affix. For example, for the word *wuksarseirwa* '22nd day of the month', the **SPT/5** affix -eirw- can in turn be modified by a following Type-3 number affix, e.g., *wuksarseirwiasta* '22nd of May'. Other Type-3 affixes may also be used in the same fashion, as per the third example below.
+The new SPT Affix is now available for use in expressing the hour of day, day of the week, week of the month, month of the year, the year and the century. It is used with the number roots (usually Stem 3) to render, e.g., 'the eighth hour of the day', 'the third day of the week (i.e., Wednesday)' or '20th of May', etc. Furthermore, each use of this affix can in turn be modified by a following Type-3 number affix (e.g., XX2, XX3, etc.) to enumerate the higher-ordered time-period named by the affix. For example, for the word *wuksärsëirwa* '22nd day of the month', the **SPT/5** affix -ëirw- can in turn be modified by a following Type-3 number affix, e.g., *wuksärsëirwiasta* '22nd of May'. Other Type-3 affixes may also be used in the same fashion, as per the third example below.
 
 **SPT -- Specified Points in Calendrical Time** (form: -**rw**/-**ry**)
 
@@ -1570,15 +1570,15 @@ The new SPT Affix is now available for use in expressing the hour of day, day of
 | 9 | century |
 
 **Examples:**
-- 'the 15th of March, 1969' *wustarseirwiaza walzarsao walzorsurwei*
+- 'the 15th of March, 1969' *wustarsëirwiaza walzarsao walzorsurwei*
 - 'on Saturday' *wucpirwao*
 - 'on Saturday of next week' *wucpirwoltao*
-- 'the 21st century' *wullarsurya*
+- 'the 21st century' *wullärsurya*
 - 'by the 34-second mark' *wupsersaryoa*
 
 **Time of Day Using Degree 3 of the affix:**
-- '8:52 a.m.' *wuckerwa ksaleirson* [Note the use of COO/7 affix on the 2nd word; the phrase is literally 'eighth hour of the day and fifty-two (minutes)' with the SPT/3 affix on the first word implying the possibility of a following number of minutes]
-- '8:52 p.m. and 33 seconds' *wuvrarserwa ksaleirson wazersarwei* [literally: 'twentieth hour of the day and fifty-two (minutes) with thirty-three seconds of a minute']
+- '8:52 a.m.' *wučkerwa ksalëirsoň* [Note the use of COO/7 affix on the 2nd word; the phrase is literally 'eighth hour of the day and fifty-two (minutes)' with the SPT/3 affix on the first word implying the possibility of a following number of minutes]
+- '8:52 p.m. and 33 seconds' *wuvrärserwa ksalëirsoň wazersarwei* [literally: 'twentieth hour of the day and fifty-two (minutes) with thirty-three seconds of a minute']
 
 ### 6.1 Alternate Names of the Months
 
@@ -1586,18 +1586,18 @@ Name the first 4 months is via Degrees 1 through 4 of the Type-2 **SEQ** affix (
 
 | Month | Names |
 |---|---|
-| January | *wurdainta / wurdauzca* |
-| February | *wurdaunta / wurdauks* |
-| March | *wurdeinta / wurdauz* |
-| April | *wurdeunta / wurdaups* |
-| May | *wurdaust* |
-| June | *wurdaucpa* |
-| July | *wurdauns* |
-| August | *wurdaucka* |
-| September | *wurdounta / wurdaulza* |
-| October | *wurdointa / wurdauj* |
-| November | *wurdiunta / wurdaucga* |
-| December | *wurduinta / wurdaujda* |
+| January | *wurḑainta / wurḑauzca* |
+| February | *wurḑaunta / wurḑauks* |
+| March | *wurḑeinta / wurḑauz* |
+| April | *wurḑeunta / wurḑaupš* |
+| May | *wurḑaust* |
+| June | *wurḑaucpa* |
+| July | *wurḑauns* |
+| August | *wurḑaučka* |
+| September | *wurḑounta / wurḑaulẓa* |
+| October | *wurḑointa / wurḑauj* |
+| November | *wurḑiunta / wurḑaucga* |
+| December | *wurḑuinta / wurḑaujda* |
 
 ---
 
@@ -1637,23 +1637,23 @@ Toponyms, demonyms and other proper names are a phonetic rendering of the native
 
 ### 7.1 Names of Continents
 
-To be preceded by the carrier stem form *usarcs* or *usarcsa*:
+To be preceded by the carrier stem form *usarç* or *usarça*:
 
-Africa: *usarcsa afrika*, Antarctica: *usarcsa antarktika*, Asia: *usarcsa asya*, Europe: *usarcsa europa*, Oceania: *usarcsa oseanya*, North America: *usarcsaidna amerika*, South America: *usarcsuidna amerika*
+Africa: *usarça áfrika*, Antarctica: *usarça antárktika*, Asia: *usarça asya*, Europe: *usarça europa*, Oceania: *usarça oseanya*, North America: *usarçaidna amérika*, South America: *usarçuidna amérika*
 
 ### 7.2 Names of Oceans
 
-Preceded by the word *hlusei-bwala* [Carrier Stem 3 concatenated to Stem 1 of -**BW**- 'ocean'] meaning 'ocean named...'. The Southern Ocean (a.k.a. Antarctic) does not use the carrier stem, instead simply utilizing the Type-2 OCG/9 affix 'southern' with stem 1 of -**BW**- 'ocean'. As an alternative to incorporating the carrier stem, a carrier adjunct *hlei* or the SPF register adjunct *hi* may be used.
+Preceded by the word *hluséi-bwala* [Carrier Stem 3 concatenated to Stem 1 of -**BW**- 'ocean'] meaning 'ocean named...'. The Southern Ocean (a.k.a. Antarctic) does not use the carrier stem, instead simply utilizing the Type-2 OCG/9 affix 'southern' with stem 1 of -**BW**- 'ocean'. As an alternative to incorporating the carrier stem, a carrier adjunct *hlei* or the SPF register adjunct *hi* may be used.
 
-Pacific Ocean: *hlusei-bwala pasifika* OR *bwala hi pasifika*
-Atlantic Ocean: *hlusei-bwala atlantis* OR *bwala hi atlantis*
-Indian Ocean: *hlusei-bwala indus* OR *bwala hi indus*
-Arctic Ocean: *hlusei-bwala arktos* OR *bwala hi arktos*
+Pacific Ocean: *hluséi-bwala pasífika* OR *bwala hi pasífika*
+Atlantic Ocean: *hluséi-bwala atlantis* OR *bwala hi atlantis*
+Indian Ocean: *hluséi-bwala indus* OR *bwala hi indus*
+Arctic Ocean: *hluséi-bwala arktos* OR *bwala hi arktos*
 Southern/Antarctic Ocean: *bwaluidna*
 
 ### 7.3 Names of Seas and Lakes
 
-Preceded by the word *hlusei-bwaleuxa* ('smaller ocean named...') if referring to a large mostly landlocked salt-water sea (e.g., Mediterranean, Black, Azov), or *hluse-bwalafta* ('section of an ocean named...') utilizing the **POR -- Portion or Section** affix -**ft**-) if referring to a section or sub-section of a larger sea or ocean (e.g., Baltic, South China, North).
+Preceded by the word *hluséi-bwaleuxa* ('smaller ocean named...') if referring to a large mostly landlocked salt-water sea (e.g., Mediterranean, Black, Azov), or *hlusé-bwalafta* ('section of an ocean named...') utilizing the **POR -- Portion or Section** affix -**ft**-) if referring to a section or sub-section of a larger sea or ocean (e.g., Baltic, South China, North).
 
 **POR -- Portion or Section** (form: -**ft**)
 
@@ -1669,154 +1669,154 @@ Preceded by the word *hlusei-bwaleuxa* ('smaller ocean named...') if referring t
 | 8 | a majority-sized portion/section/amount of a whole |
 | 9 | almost the entire portion/section/amount of a whole |
 
-Mediterranean Sea: *hlusei-bwaloufta mediterra*
-Baltic Sea: *hlusei-bwaleufta balt*
-Black Sea: *hraxme-bwaleufta*
-Sea of Azov: *hlusei-bwaleifta azof*
-Caribbean Sea: *hlusei-bwaleufta karib*
+Mediterranean Sea: *hluséi-bwaloufta mediterra*
+Baltic Sea: *hluséi-bwaleufta balt*
+Black Sea: *hraxmé-bwaleufta*
+Sea of Azov: *hluséi-bwaleifta azof*
+Caribbean Sea: *hluséi-bwaleufta karíb*
 North Sea: *bwalaidneufta*
-Bering Sea: *hlusei-bwaleufta bering*
-Arabian Sea: *hlusei-bwaleufta arab*
+Bering Sea: *hluséi-bwaleufta bering*
+Arabian Sea: *hluséi-bwaleufta arab*
 
-Those examples above utilizing an incorporated carrier stem may alternately be expressed using the carrier adjunct *hlei* or the SPF register adjunct *hi*, i.e., *bwaloufta hi mediterra, bwaleufta hi balt, bwaleifta hi azof, bwaleufta hi karib*, etc.
+Those examples above utilizing an incorporated carrier stem may alternately be expressed using the carrier adjunct *hlei* or the SPF register adjunct *hi*, i.e., *bwaloufta hi mediterra, bwaleufta hi balt, bwaleifta hi azof, bwaleufta hi karíb*, etc.
 
 Large saltwater lakes not connected to the world ocean (e.g., Caspian Sea, Aral Sea) use Stem 3 of -**BW**- 'saltwater lake' rather than Stem 1 in conjunction with the appropriate **SIZ** affix -**x**-. Freshwater lakes use Stem 1 of -**LZ**- while freshwater inland seas use Stem 3 of -**LZ**-.
 
-Caspian Sea: *hlusei-wubwiuxa kaspi*, Aral Sea: *hlusei-wubwoixakta aral*, Lake Baikal: *hlusei-wubwoixa baikal*, Lake Geneva: *hlusei-wubwoixa zenev*, Lake Erie: *hlusei-walziuxa erie*, Sea of Galilee: *hlusei-wulza kinneret*
+Caspian Sea: *hluséi-wubwiuxa kaspi*, Aral Sea: *hluséi-wubwoixäkta aral*, Lake Baikal: *hluséi-wubwoixa baikál*, Lake Geneva: *hluséi-wubwoixa ženév*, Lake Erie: *hluséi-walziuxa erie*, Sea of Galilee: *hluséi-wulza kínneret*
 
-Progressively smaller sub-sections of oceans such as gulfs, bays, bights, and sounds attach various degrees of the POR affix to *hluse-bwala* or *bwala hlei / hi*.
+Progressively smaller sub-sections of oceans such as gulfs, bays, bights, and sounds attach various degrees of the POR affix to *hlusé-bwala* or *bwala hlei / hi*.
 
-Bay of Biscay: *hlusei-bwaleufta biskaya*, Bight of Benin: *hlusei-bwalaufta benin*, Gulf of Mexico: *hlusei-bwaleufta mexiko*, San Francisco Bay: *hlusei-bwalaifta sanfransisko*, Hudson Bay: *hlusei-bwaleufta hedsen*, James Bay: *hlusei-bwaleifta jeimz*
+Bay of Biscay: *hluséi-bwaleufta biskaya*, Bight of Benin: *hluséi-bwalaufta benín*, Gulf of Mexico: *hluséi-bwaleufta méxiko*, San Francisco Bay: *hluséi-bwalaifta sanfransisko*, Hudson Bay: *hluséi-bwaleufta hëdsën*, James Bay: *hluséi-bwaleifta jeimz*
 
 ### 7.4 Names of Terrestrial Landmarks
 
 The roots -**JL**- 'MOUNTAINOUS TOPOGRAPHY', -**ZH**- 'DESERT/STEPPE/TUNDRA', -**VN**- 'VALLEY/CANYON/GORGE' and -**LZW**- 'ESTUARY / RIVER DELTA' are likewise used with the carrier stem or carrier adjunct.
 
-Gobi Desert: *hlusei-wazha gob*, Andes Mountains: *hlusei-ejlarcsta andes*, Central Asian Steppe: *hlusei-wezhoixidna asya*, Grand Canyon: *wevniuxa*, Himalaya Mountains: *hlusei-ejlarcsta himalaya*, Tibetan Plateau: *hlusei-wujlluxa pho*, Siberian Tundra: *hlusei-wuzha sibir*, Niagara Falls: *hlusei-urtrarfta nayagra*, Amazon River Delta: *hlusei-welzwa amazonas*
+Gobi Desert: *hluséi-wazha gob*, Andes Mountains: *hluséi-ejlarçta andes*, Central Asian Steppe: *hluséi-wezhoixidna asya*, Grand Canyon: *wevňiuxa*, Himalaya Mountains: *hluséi-ejlarçta himálaya*, Tibetan Plateau: *hluséi-wujlluxa pho*, Siberian Tundra: *hluséi-wuzha sibír*, Niagara Falls: *hluséi-urţrarfta nayagra*, Amazon River Delta: *hluséi-welzwa amazonas*
 
 ### 7.5 Names of Large Rivers
 
-The native names of rivers often vary depending on the various enthnographic domains they pass through. In some instances, the dominant ethnonymn has been chosen (e.g., *dijla* for the Tigris), in other instances combined names have been used (e.g., *canpobrahmaputra* for the Brahmaputra), while in others a form derived from an underlying proto-language has been used (e.g., *purat* for the Euphrates, *danu* for the Danube). The following names are preceded by *hlusei-welza* OR *welza hlei / hi* 'river named...' (Carrier Stem 3 incorporated into Stem 2 of the root -**LZ**-).
+The native names of rivers often vary depending on the various enthnographic domains they pass through. In some instances, the dominant ethnonymn has been chosen (e.g., *dijla* for the Tigris), in other instances combined names have been used (e.g., *caňpobrahmaputra* for the Brahmaputra), while in others a form derived from an underlying proto-language has been used (e.g., *purát* for the Euphrates, *danu* for the Danube). The following names are preceded by *hluséi-welza* OR *welza hlei / hi* 'river named...' (Carrier Stem 3 incorporated into Stem 2 of the root -**LZ**-).
 
 | River | Name | River | Name | River | Name |
 |---|---|---|---|---|---|
 | Nile | *nil* | Ob | *ob* | Tigris | *dijla* |
-| Amazon | *amazonas* | Irtysh | *irtis* | Euphrates | *purat* |
+| Amazon | *amazonas* | Irtysh | *irtiš* | Euphrates | *purát* |
 | Yangtze | *can* | Volga | *volga* | Danube | *danu* |
-| Mississippi | *misisipi* | Amur | *amur* | Ganges | *genga* |
-| Missouri | *misuri* | Mekong | *mekon* | Don | *don* |
-| Yenisei | *yenisei* | Brahmaputra | *canpobrahmaputra* | Rio Grande | *riogrande* |
-| Yellow | *hwan* | Indus | *indus* | Irrawaddy | *eyawedi* |
+| Mississippi | *misisipi* | Amur | *amur* | Ganges | *gënga* |
+| Missouri | *misuri* | Mekong | *mekoň* | Don | *don* |
+| Yenisei | *yeniséi* | Brahmaputra | *caňpobrahmaputra* | Rio Grande | *riogrande* |
+| Yellow | *hwaň* | Indus | *indus* | Irrawaddy | *eyawëdi* |
 
 ### 7.6 Names of World's Largest Cities
 
-The following names are preceded by *hlusei-phwar(a)* or *phwara hlei / hi* 'city named...':
+The following names are preceded by *hluséi-phwär(a)* or *phwära hlei / hi* 'city named...':
 
 | City | Name | City | Name | City | Name | City | Name |
 |---|---|---|---|---|---|---|---|
-| Tokyo | *tokyo* | Manila | *manila* | Bangkok | *krunthep* | Dongguan | *tunkwan* |
-| Delhi | *dilli* | Lagos | *eko* | Seoul | *seoul* | Hangzhou | *hance* |
-| Shanghai | *zanhe* | Rio de Janeiro | *uhiujizeneiru* | Nagoya | *nagoya* | Foshan | *faccen* |
-| Sao Paulo | *saupaulu* | Tianjin | *tcencin* | Hyderabad | *haiderebad* | Shenyang | *senyan* |
-| Mexico City | *mexiko* | Kinshasa | *kinsasa* | London | *lenden* | Riyadh | *erriyad* |
-| Cairo | *alkahira* | Guangzhou | *kwonceu* | Tehran | *tehran* | Baghdad | *bardad* |
-| Mumbai | *mumbei* | Los Angeles | *losanjeles* | Chicago | *sikago* | Santiago | *santyago* |
-| Beijing | *peicin* | Moscow | *meskwa* | Chengdu | *chentu* | Surat | *surat* |
-| Dhaka | *dhaka* | Shenzhen | *sencen* | Nanjing | *nancin* | Madrid | *madrid* |
-| Osaka | *osaka* | Lahore | *lahor* | Wuhan | *uxan* | Suzhou | *seucou* |
-| New York City | *nuyork* | Bangalore | *bengeluru* | Ho Chi Minh City | *hotcimin* | Pune | *pune* |
-| Buenos Aires | *bwenosaires* | Paris | *pari* | Luanda | *luanda* | Harbin | *haerbin* |
-| Chongqing | *chonchin* | Bogota | *bogota* | Ahmendabad | *amdavad* | Houston | *custen* |
-| Istanbul | *istanbul* | Jakarta | *jakarta* | Kuala Lumpur | *kualelumpor* | Dallas | *dales* |
-| Kolkata | *kolkata* | Lima | *lima* | Xi'an | *sian* | Toronto | *terantou* |
-| Karachi | *keraci* | Chennai | *cennai* | Hong Kong | *honkon* | Dar Es Salaam | *daressalam* |
+| Tokyo | *tokyo* | Manila | *manila* | Bangkok | *kruňthép* | Dongguan | *tuňkwan* |
+| Delhi | *dilli* | Lagos | *eko* | Seoul | *seoul* | Hangzhou | *haňce* |
+| Shanghai | *zaňhe* | Rio de Janeiro | *uhiujižëneiru* | Nagoya | *nagoya* | Foshan | *faččën* |
+| Sao Paulo | *saupaulu* | Tianjin | *tçenčin* | Hyderabad | *háidërëbad* | Shenyang | *šënyaň* |
+| Mexico City | *méxiko* | Kinshasa | *kinšasa* | London | *lëndën* | Riyadh | *erriyáḑ* |
+| Cairo | *alkáhira* | Guangzhou | *kwoňcëu* | Tehran | *tehrán* | Baghdad | *bařdád* |
+| Mumbai | *mumbëi* | Los Angeles | *losânjeles* | Chicago | *šikago* | Santiago | *santyago* |
+| Beijing | *peičiň* | Moscow | *meskwa* | Chengdu | *chëňtu* | Surat | *surat* |
+| Dhaka | *dhaka* | Shenzhen | *šënčën* | Nanjing | *nančin* | Madrid | *maḑríḑ* |
+| Osaka | *osaka* | Lahore | *lahór* | Wuhan | *uxán* | Suzhou | *sëucöü* |
+| New York City | *nuyórk* | Bangalore | *bengëluru* | Ho Chi Minh City | *hotçimín* | Pune | *pune* |
+| Buenos Aires | *bwenosaires* | Paris | *paří* | Luanda | *luanda* | Harbin | *háërbin* |
+| Chongqing | *choňčhin* | Bogotá | *bogotá* | Ahmendabad | *ámdavad* | Houston | *çustën* |
+| Istanbul | *istanbul* | Jakarta | *jakarta* | Kuala Lumpur | *kúalëlumpor* | Dallas | *dälës* |
+| Kolkata | *kolkata* | Lima | *lima* | Xi'an | *šián* | Toronto | *tërantou* |
+| Karachi | *kërači* | Chennai | *čennái* | Hong Kong | *höňkoň* | Dar Es Salaam | *daressalám* |
 
 ### 7.7 Names of Countries
 
-To be preceded by the carrier stem form *wusudca* (meaning approximately '*land/country of [the] ...*'), or if the context makes clear that a country is being spoken of, or if the speaker knows the audience is familiar with the name as being a country, then simply *wusa*.
+To be preceded by the carrier stem form *wusuḑca* (meaning approximately '*land/country of [the] ...*'), or if the context makes clear that a country is being spoken of, or if the speaker knows the audience is familiar with the name as being a country, then simply *wusa*.
 
 For countries with multiple names due to multiple official languages (e.g., Switzerland, Belgium, Ethiopia, Mauritania), one name has been arbitrarily selected. Names consisting of words denoting a governance structure (e.g., United States of, Republic, Democratic Republic, etc.) or directional words (e.g., South) are shown in notes following the tables.
 
 | Country | Name | Country | Name | Country | Name |
 |---|---|---|---|---|---|
-| Afghanistan | *afgan* | Gabon | *gabon* | North Korea | [see Note below] |
-| Albania | *skyiperi* | Gambia | *kambi* | Norway | *norye* |
-| Algeria | *jazair* | Georgia | *kartvel* | Oman | *oman* |
-| Andorra | *andorra* | Germany | *doic* | Pakistan | *pak* |
+| Afghanistan | *afgan* | Gabon | *gabón* | North Korea | [see Note below] |
+| Albania | *škyípëri* | Gambia | *kambi* | Norway | *noryë* |
+| Algeria | *jazair* | Georgia | *kartvel* | Oman | *omán* |
+| Andorra | *andorra* | Germany | *doič* | Pakistan | *pak* |
 | Angola | *angola* | Ghana | *gana* | Palau | *belau* |
-| Antigua & Barbuda | *antigwabarbuda* | Greece | *elada / helas* | Palestine | *falastin* |
-| Argentina | *arxentina* | Grenada | *greneida* | Panama | *panama* |
+| Antigua & Barbuda | *antigwabarbuda* | Greece | *elaḑa / helás* | Palestine | *falaštín* |
+| Argentina | *arxentina* | Grenada | *greneida* | Panama | *panamá* |
 | Armenia | *haik* | Guatemala | *gwatemala* | Papua New Guinea | *papuanyugini* |
-| Australia | *ostralya* | Guinea | *gine* | Paraguay | *paragwai* |
-| Austria | *osteraic* | Guinea-Bissau | *ginebiso* | Peru | *peru* |
-| Azerbaijan | *azarbaijan* | Guyana | *gayana* | Philippines | *pilipinas* |
-| Bahamas | *bahama* | Haiti | *aiti* | Poland | *polska* |
-| Bahrain | *bahrain* | Honduras | *onduras* | Portugal | *portugal* |
-| Bangladesh | *banla* | Hungary | *madyar* | Qatar | *gatar* |
+| Australia | *ostralya* | Guinea | *giné* | Paraguay | *paragwái* |
+| Austria | *ôstëřaiç* | Guinea-Bissau | *ginebisó* | Peru | *perú* |
+| Azerbaijan | *azärbaiján* | Guyana | *gayana* | Philippines | *pilipinas* |
+| Bahamas | *bahama* | Haiti | *aití* | Poland | *polska* |
+| Bahrain | *bahráin* | Honduras | *onduras* | Portugal | *portugál* |
+| Bangladesh | *baňla* | Hungary | *madyar* | Qatar | *gatar* |
 | Barbados | *barbeidos* | Iceland | *is* | Romania | *romenia* |
-| Belarus | *byelarus* | India | *bharet* | Russia | *rasiya* |
-| Belgium | *belz* | Indonesia | *indonesia* | Rwanda | *rwanda* |
-| Belize | *beliz* | Iran | *iran* | Saint Kitts & Nevis | *seintkicannevis* |
-| Benin | *benin* | Iraq | *irak* | Saint Lucia | *seintlusya* |
-| Bhutan | *trukul* | Ireland | *erye* | St. Vincent & the Grenadines | *seintvinsentangrenadinz* |
+| Belarus | *byelarús* | India | *bharët* | Russia | *rasiya* |
+| Belgium | *belž* | Indonesia | *indonesia* | Rwanda | *rwanda* |
+| Belize | *belíz* | Iran | *irán* | Saint Kitts & Nevis | *seintkicannevis* |
+| Benin | *benín* | Iraq | *irák* | Saint Lucia | *seintlusya* |
+| Bhutan | *trukül* | Ireland | *eryë* | St. Vincent & the Grenadines | *seintvinsentangrénadinz* |
 | Bolivia | *bolivya* | Israel | *yisrael* | San Marino | *sanmarino* |
-| Bosnia & Herzegovina | *bosnaxercegovina* | Italy | *italya* | Sao Tome & Principe | *sautumeeprinispe* |
+| Bosnia & Herzegovina | *bosnaxercegovina* | Italy | *italya* | Sao Tomé & Príncipe | *sautumeeprinispe* |
 | Botswana | *bocwana* | Jamaica | *jameka* | Saudi Arabia | *arabiyaassudiya* |
-| Brazil | *breziu* | Japan | *nihon* | Senegal | *senegal* |
-| Brunei | *brunai* | Jordan | *urdan* | Serbia | *serp* |
-| Bulgaria | *belgariya* | Kazakhstan | *kazak* | Seychelles | *sesel* |
-| Burkina Faso | *burkinafaso* | Kenya | *kenya* | Sierra Leone | *sieraleon* |
-| Burundi | *burundi* | Kiribati | *kiribas* | Somalia | *somaliya* |
-| Cote d'Ivoire | *kotedivwar* | Kuwait | *kuwet* | South Korea | *hanguk* |
+| Brazil | *brëzíu* | Japan | *nihon* | Senegal | *sénegal* |
+| Brunei | *brunai* | Jordan | *urdan* | Serbia | *sërp* |
+| Bulgaria | *bëlgáriya* | Kazakhstan | *kazak* | Seychelles | *sešél* |
+| Burkina Faso | *burkinafaso* | Kenya | *kenya* | Sierra Leone | *sieraleón* |
+| Burundi | *burundi* | Kiribati | *kíribas* | Somalia | *somáliya* |
+| Côte d'Ivoire | *kotëdivwář* | Kuwait | *kuwet* | South Korea | *hanguk* |
 | Cabo Verde | *kabuverdi* | Kyrgyzstan | *kerfez* | Spain | *espanya* |
-| Cambodia | *kampucie* | Laos | *lau* | Sri Lanka | *srilanka* |
-| Cameroon | *kamerun* | Latvia | *latviya* | Sudan | *sudan* |
-| Canada | *kanada* | Lebanon | *libnen* | Suriname | *suriname* |
-| Chad | *cad* | Lesotho | *sutu* | Sweden | *sveriye* |
-| Chile | *cile* | Liberia | *laibirya* | Switzerland | *svaic* |
-| China | *cunkwo* | Libya | *libiya* | Syria | *suriya* |
-| Colombia | *kolombya* | Liechtenstein | *lictenstain* | Tajikistan | *tojiki* |
-| Comoros | *komori* | Lithuania | *lyetuva* | Tanzania | *tanzania* |
+| Cambodia | *kampučië* | Laos | *lau* | Sri Lanka | *srilanka* |
+| Cameroon | *kamerún* | Latvia | *látviya* | Sudan | *sudán* |
+| Canada | *kánada* | Lebanon | *libnén* | Suriname | *sürinamë* |
+| Chad | *cad* | Lesotho | *sutu* | Sweden | *svériyë* |
+| Chile | *čile* | Liberia | *laibirya* | Switzerland | *švaic* |
+| China | *čuňkwo* | Libya | *líbiya* | Syria | *suriya* |
+| Colombia | *kolombya* | Liechtenstein | *líçtenštain* | Tajikistan | *tojikí* |
+| Comoros | *komori* | Lithuania | *lyetuvá* | Tanzania | *tanzania* |
 | Congo | *kongo* | Luxembourg | *leceiburs* | Thailand | *thai* |
-| Costa Rica | *kostarrika* | Madagascar | *madagaskyare* | Tibet | *pho* |
-| Croatia | *xrvacka* | Malawi | *malavi* | Timor-Leste | *timorleste* |
-| Cuba | *kuba* | Malaysia | *meleisya* | Togo | *togo* |
-| Cyprus | *kipros* | Maldives | *divehi* | Tonga | *tona* |
-| Czechia | *cesko* | Mali | *mali* | Trinidad & Tobago | *trinidadantobago* |
-| Denmark | *tanmak* | Malta | *malta* | Tunisia | *tunisiya* |
-| Djibouti | *jibuti* | Marshall Islands | *mrazyel* | Turkey | *turkiye* |
-| Dominica | *dominika* | Mauritania | *muritaniya* | Turkmenistan | *turkmen* |
-| Ecuador | *ekwador* | Mauritius | *moris* | Tuvalu | *tuvalu* |
-| Egypt | *misr* | Mexico | *mexiko* | Uganda | *uganda* |
-| El Salvador | *elsalbador* | Micronesia | *mikronesya* | Ukraine | *ukrayina* |
+| Costa Rica | *kostarrika* | Madagascar | *madagaskyarë* | Tibet | *pho* |
+| Croatia | *xrvacka* | Malawi | *malavi* | Timor-Leste | *timorlešte* |
+| Cuba | *kuba* | Malaysia | *mëleisya* | Togo | *togo* |
+| Cyprus | *kipros* | Maldives | *divehi* | Tonga | *toňa* |
+| Czechia | *česko* | Mali | *mali* | Trinidad & Tobago | *trinidadantobago* |
+| Denmark | *tänmak* | Malta | *malta* | Tunisia | *tunisiya* |
+| Djibouti | *jibuti* | Marshall Islands | *mřazyel* | Turkey | *tûrkiye* |
+| Dominica | *domínika* | Mauritania | *muritániya* | Turkmenistan | *türkmen* |
+| Ecuador | *ekwadór* | Mauritius | *mořís* | Tuvalu | *tuvalu* |
+| Egypt | *misr* | Mexico | *méxiko* | Uganda | *uganda* |
+| El Salvador | *elsalbadór* | Micronesia | *mikronesya* | Ukraine | *ukrayina* |
 | Eritrea | *ertra* | Moldova | *moldova* | United Arab Emirates | [see Note below] |
-| Estonia | *esti* | Monaco | *monako* | United Kingdom | [see Note below] |
+| Estonia | *esti* | Monaco | *monakó* | United Kingdom | [see Note below] |
 | Eswatini | *eswatini* | Mongolia | *mongol* | United States of America | [see Note below] |
-| Ethiopia | *ityoppya* | Montenegro | *cernagora* | Uruguay | *uruguai* |
-| Fiji | *vici* | Morocco | *magrib* | Uzbekistan | *ozbek* |
-| Finland | *suomi* | Mozambique | *musambiki* | Vanuatu | *vanuatu* |
-| France | *frans* | Myanmar | *myema* | Vatican City | *vatikano* |
+| Ethiopia | *ityoppya* | Montenegro | *cërnagora* | Uruguay | *uruguai* |
+| Fiji | *viči* | Morocco | *magrib* | Uzbekistan | *ozbek* |
+| Finland | *súomi* | Mozambique | *musambiki* | Vanuatu | *vanuatu* |
+| France | *fřans* | Myanmar | *myëmá* | Vatican City | *vatikano* |
 |  |  | Namibia | *namibya* | Venezuela | *beneswela* |
-|  |  | Nauru | *naoero* | Vietnam | *vietnam* |
-|  |  | Nepal | *nepal* | Yemen | *yaman* |
-|  |  | Netherlands | *nederland* | Zambia | *zambiya* |
+|  |  | Nauru | *naoero* | Vietnam | *vietnám* |
+|  |  | Nepal | *nepál* | Yemen | *yaman* |
+|  |  | Netherlands | *néderland* | Zambia | *zambiya* |
 |  |  | New Zealand | *nyuziland* | Zimbabwe | *zimbabwe* |
 |  |  | Nicaragua | *nikaragwa* |  |  |
-|  |  | Niger | *nizer* |  |  |
+|  |  | Niger | *nižéř* |  |  |
 |  |  | Nigeria | *naijeria* |  |  |
 
 **NOTE:** For countries whose names contain governance structures (e.g., the Democratic Republic of Congo), such words are translated directly into New Ithkuil, with the carrier stem then being incorporated to reference the part of the name which is a proper noun. For countries whose names contain a directional or orientational word (e.g., South Sudan), the new **OGC** affix is employed on the carrier stem. The full names (including carrier-stem) of such countries are listed below:
 
-Central African Republic: *hluseudnei-edteila afrika*
-Democratic Republic of Congo: *hladtau-edtila hi kongo*
-Dominican Republic: *hlusei-edteila dominika*
-Equatorial Guinea: *hlantnu-wusa gine*
-North Macedonia: *wusaidna makedoniya*
-South Africa: *wusuidna afrika*
-South Sudan: *wusuidna sudan*
-United Arab Emirates: *hlellu-ellkina hi arab*
-United Kingdom (of Great Britain and North Ireland): *hlellu-allkila (hi britanya hiu wusadnun erye)*
-United States of America: *hlusei-eksmatsa amerika*
+Central African Republic: *hlusëudnéi-eḑtëila áfrika*
+Democratic Republic of Congo: *hlaḑtáu-eḑtila hi kongo*
+Dominican Republic: *hluséi-eḑtëila domínika*
+Equatorial Guinea: *hlantňú-wusa giné*
+North Macedonia: *wusaidna makedóniya*
+South Africa: *wusuidna áfrika*
+South Sudan: *wusuidna sudán*
+United Arab Emirates: *hlellú-ellkina hi arab*
+United Kingdom (of Great Britain and North Ireland): *hlellú-allkila (hi britanya hiu wusadnuň eryë)*
+United States of America: *hluséi-eksmatsa amérika*
 
 The ten specialized names listed immediately above utilize stems from the following four roots:
 

@@ -207,21 +207,12 @@ func tryParseRoot(tok string, affixes map[string]lexicon.AffixEntry) (g.Root, bo
 // validator rejects for a triple consonant.
 //
 // Only these two rules are applied, because only these two are free
-// of false positives: run over all 5946 lexicon roots, neither fires
-// once. The §2 pair rules fire on two — "csk" and "dcs" are Quijada's
-// own roots, attested as "cskava" and "Adcsuleuha" — so a Cr cannot
-// be held to them, and validating the rendered word instead fails the
-// same two.
-//
-// Which side is wrong is open. §2.2 bars a dental stop before any
-// sibilant and §2.9 a sibilant affricate before a sibilant fricative,
-// and §2.2's own justification argues against the examples: "dc"
-// really would be hard to tell from "cc". Against that, these are
-// Quijada's own roots in his own glossed sentences, in three separate
-// places and in the lexicon besides, and a typo repeated that often is
-// a stretch. Until it is settled, compose rejects only what is certain
-// and the parser applies §2 as written, so "cskava", "wiosadca" and
-// "Adcsuleuha" all fail there.
+// of false positives across the lexicon: run over all 5946 roots and
+// 528 affixes, neither fires once. The §2 pair rules fire on two
+// roots, "ňkhw" and "řẓňy", which break §1.2.2's ban on ň before k
+// and the rule against ň before y. Both are community coinages, so
+// whether they are lexicon errors is a separate question, and a Cr is
+// not held to §2 here until it is answered.
 func validateRootCluster(cluster string) error {
 	return validateCluster("root", cluster)
 }

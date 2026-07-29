@@ -178,15 +178,19 @@ func TestFormative_AbbrevNeedsLexicon(t *testing.T) {
 	}
 }
 
-// TestFormative_AttestedAwkwardRoots guards the other side of the
-// root check. "csk" and "dcs" break the §2 sibilant and dental-stop
-// pair rules, but they are Quijada's own roots — the morphology
-// corpus attests "cskava" and "Adcsuleuha" — so compose must still
-// accept them. Holding a Cr to §2, or validating the rendered word,
-// rejects all three.
-func TestFormative_AttestedAwkwardRoots(t *testing.T) {
+// TestFormative_AwkwardRootsStillCompose guards the other side of the
+// root check: a Cr is not held to the §2 pair rules. "ňkhw" and
+// "řẓňy" are lexicon roots that break them — ň before k, and ň before
+// y — and must still compose.
+//
+// The earlier version of this test used "csk" and "dcs", believing
+// them Quijada's roots because morphology.md attests "cskava" and
+// "Adcsuleuha". Neither is a root, and neither word is his: the
+// markdown had lost its diacritics, and the PDF reads "çkava" and
+// "Aḑçulëuhá" on the root "ḑç" 'jumping'. See G41.
+func TestFormative_AwkwardRootsStillCompose(t *testing.T) {
 	lex := mustLex(t)
-	for _, in := range []string{"csk-N", "dcs-DYN.BSC.EXS-ITM"} {
+	for _, in := range []string{"ňkhw", "řẓňy"} {
 		t.Run(in, func(t *testing.T) {
 			if _, err := ParseFormative(in, lex.Affixes); err != nil {
 				t.Errorf("Formative(%q) = %v, want success", in, err)
