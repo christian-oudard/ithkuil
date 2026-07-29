@@ -167,3 +167,51 @@ func DiscordExamples() ([]DiscordExample, error) {
 	}
 	return out, nil
 }
+
+//go:embed morphology_examples.txt
+var morphologyFile string
+
+// MorphologySection is one section of worked examples from the
+// morphology document: the words it demonstrates, and the subset of
+// them that no classifier reads today.
+type MorphologySection struct {
+	Name    string
+	Words   []string
+	Unknown []string
+}
+
+// MorphologySections returns every section in file order. It lives
+// here rather than in a _test.go file because two packages need it —
+// tokenize checks what classifies, compose checks the gloss round
+// trip — and a test-only identifier cannot cross a package boundary.
+// Keeping a second copy meant every corpus correction had to be made
+// twice, in lockstep, from the same source.
+func MorphologySections() []MorphologySection {
+	var out []MorphologySection
+	for _, line := range strings.Split(morphologyFile, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") || strings.HasPrefix(line, "Section |") {
+			continue
+		}
+		f := strings.SplitN(line, "|", 3)
+		if len(f) != 3 {
+			panic("corpus: malformed morphology_examples.txt line: " + line)
+		}
+		out = append(out, MorphologySection{
+			Name:    strings.TrimSpace(f[0]),
+			Words:   strings.Fields(f[1]),
+			Unknown: strings.Fields(f[2]),
+		})
+	}
+	return out
+}
+
+// MorphologyWords returns every worked-example word, sections
+// flattened, in file order.
+func MorphologyWords() []string {
+	var out []string
+	for _, s := range MorphologySections() {
+		out = append(out, s.Words...)
+	}
+	return out
+}

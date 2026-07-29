@@ -1,0 +1,59 @@
+# Worked-example words from the morphology document, section by
+# section, for use as classifier and compose test data.
+#
+# Every word is checked against Quijada himself: the seven documents
+# under $XDG_DATA_HOME/ithkuil/reference/, plus examples.txt beside
+# this file. The spellings were originally taken from our markdown
+# while it was still missing diacritics the PDF carries, so they are
+# respelled from the source — "cskava" is çkava, "Mala" is Malá, the
+# jump examples are Aḑçulëuhá on the root -ḑç-. Where two documents
+# disagree, v1.3.2 wins, being the version morphology.md transcribes.
+#
+# Words with no source at all were removed, and §3.5 went with them:
+# its wal / walurx / waluirx illustrate a passage in none of the
+# documents, and §3.5.0 is the section ISSUES.md G38 already records
+# as ours rather than his. A word we cannot trace is not evidence
+# about the classifier, because it can only fail for reasons we have
+# no way to judge.
+#
+# The Unknown column is a snapshot: exactly those words that fall
+# through to UnknownWord today. It fails in both directions on
+# purpose. When the classifier grows to read one, drop it from the
+# column; when a regression breaks one that used to read, it appears.
+# Either way the change is worth looking at.
+#
+# Notes on individual entries:
+#
+#   Sec4.6.1  Every word reads. zëmse was the last holdout: it pads
+#             its z+m+s referent chain with the epenthetic -ë- that
+#             §4.6.1 puts "within C_1 combinations".
+#   Sec5.4    The Vc=uu words this section carried, hlarrnei-yurkuu
+#             and hluu, are gone; neither is in any source, so what
+#             they showed about that gap was never checkable.
+#   Sec5.7    "A" is the single-vowel RTR modular adjunct, and reads
+#             now that ClassifyWord case-normalizes. Kšölaölwáu is
+#             the section's own subject matter, a §3.9.2 case-stacking
+#             affix on the -lw- increment; it was unreadable while
+#             that family was unimplemented, which this block's
+#             missing diacritics had disguised as an extraction
+#             problem. Both are fixed. "Hre" still does not read.
+#   Sec5.8    The -oë words read. The reference used to spell them
+#             "-ooe", which was the extraction dropping the umlaut.
+#             Yaḑçëuhá needed both case-normalization in slots.Parse
+#             and its cedillas back.
+#   Sec5.8    ellyahrú and ellyuhrú read via the §3.8.1.2 Cn-in-Ca
+#     sing    shortcut, hr sitting in the Ca slot.
+
+Section | Words | Unknown
+Sec4.6.1 | to zua laiwe ëpgói ëztewim zëmse smoyút triwejvë smlo püwüp zäwiez |
+Sec4.6.2 | slex poxtanz ëtkexpa ëlsuoxxéd |
+Sec5.3 | Byalá pa Byulá pu Vvralá mi wurçpëi urçpulëi Tladatřá çkava Tludatřá Txadá ku Txudá Waltlá wele lo Altlúl Malá welu wiosaḑcä espanya Mulá | espanya
+Sec5.4 | Weňayá kšilo äpçólöwa lu eňtyarkena thaxač li kšilenëi Erčädókh elavöte kšivëi Erčuláfs elaţwe kšivöto Yuřká kšila Umňälöřdá ẓúlikti kšilëi welene Umňälá kšivu thu |
+Sec5.5 | Muliuţmá mu hlu hma ažxíp Wanzvihá |
+Sec5.6 | Weilüsve erčuléi utxoléi akftyäloë |
+Sec5.7 | Hre willyothoilyá utplaliör A Kšölaölwáu | Hre
+Sec5.8 eat | Etxulá welacu wanžekcoë Itxulá Enulá laleco welacülwu etxulie welacurzu welacärzülwu welacärzu welacerzoë welaculwoë welacorzoë Etxulärzá |
+Sec5.8 jump | Aḑçulëuhá welecu welecärzu Yaḑçëuhá Aḑçulärzëuhá |
+Sec5.8 sing | Yubškirfúi ellyuhrú lalacu ellyila ellyahrú Ellyulá ro Ellyulerzá Ellyalerzá |
+Sec6.0 | wuksärsëirwa wuksärsëirwiasta wustarsëirwiaza wullärsurya |
+Sec8.3 | ksalirsa gzalui walẓärs cpalärsa wapcui wansorsë'i cpalörs wallärsa |
