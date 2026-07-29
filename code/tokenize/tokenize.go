@@ -142,18 +142,6 @@ func (CombinationRefWord) word()                  {}
 func (r ReferentialWord) Romanization() string { return r.Text }
 func (ReferentialWord) word()                  {}
 
-// ParsingAdjunctWord wraps a §4.8 parsing adjunct ('V'). The adjunct
-// itself has no grammatical content; it signals the stress of the
-// immediately-following word as a written cue when prosody can't be
-// relied on.
-type ParsingAdjunctWord struct {
-	Text    string
-	Adjunct parse.ParsingAdjunct
-}
-
-func (p ParsingAdjunctWord) Romanization() string { return p.Text }
-func (ParsingAdjunctWord) word()                  {}
-
 // UnknownWord is the fallback when no parser claims the word.
 type UnknownWord struct {
 	Text string
@@ -207,12 +195,6 @@ func ClassifyWord(word string) WordToken {
 	word = phonology.Normalize(word)
 	if _, err := phonology.ParseChain(word); err != nil {
 		return UnknownWord{Text: orig}
-	}
-	// §4.8 parsing adjunct: 'V' is a fixed three-character word; check
-	// before anything else so a leading glottal doesn't get reinterpreted
-	// downstream.
-	if pa, err := parse.ParseParsingAdjunct(word); err == nil {
-		return ParsingAdjunctWord{Text: word, Adjunct: pa}
 	}
 	// Hyphenated input: try as a concatenation chain. A hyphen is only
 	// meaningful as a concat-pair separator, so if the chain doesn't
@@ -327,11 +309,14 @@ func ClassifyWord(word string) WordToken {
 }
 
 // Tokenize splits a sentence on whitespace and classifies each word.
-// Context-aware: a CarrierWord causes the immediately-following word
-// to be re-tagged as a ForeignWord (carrier scopes one trailing word
-// of foreign text — a name, quotation, or similar).
+//
+// Two things here are decided across words rather than within one. A
+// carrier adjunct scopes the word after it as foreign text, and a
+// §4.8 parsing adjunct declares the stress of the word after it —
+// which is phonology, not grammar, so the adjunct is consumed rather
+// than classified and never appears in the result.
 func Tokenize(sentence string) []WordToken {
-	fields := strings.Fields(sentence)
+	fields := consumeParsingAdjuncts(strings.Fields(sentence))
 	out := make([]WordToken, len(fields))
 	for i, w := range fields {
 		out[i] = ClassifyWord(w)
@@ -345,6 +330,29 @@ func Tokenize(sentence string) []WordToken {
 		}
 	}
 	ResolveModularMood(out)
+	return out
+}
+
+// consumeParsingAdjuncts applies each §4.8 adjunct's stress
+// declaration to the word it precedes and drops the adjunct. A
+// declaration the following word contradicts is left alone: the
+// classifier will fail on the word itself and report that, which
+// names the real problem better than a rewritten word would.
+func consumeParsingAdjuncts(fields []string) []string {
+	out := make([]string, 0, len(fields))
+	for i := 0; i < len(fields); i++ {
+		declared, ok := phonology.ParsingAdjunct(fields[i])
+		if !ok || i+1 >= len(fields) {
+			out = append(out, fields[i])
+			continue
+		}
+		i++
+		if marked, err := phonology.DeclareStress(fields[i], declared); err == nil {
+			out = append(out, marked)
+		} else {
+			out = append(out, fields[i])
+		}
+	}
 	return out
 }
 

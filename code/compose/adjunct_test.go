@@ -7,8 +7,6 @@ import (
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -73,26 +71,6 @@ func TestParseToken_RegisterEnd(t *testing.T) {
 		rw, ok := got.(tokenize.RegisterEndWord)
 		if !ok || rw.Register != r {
 			t.Errorf("Register end %s: got %T %+v", r, got, got)
-		}
-	}
-}
-
-func TestParseToken_ParsingAdjunct(t *testing.T) {
-	gl := canonicalGlosser(t)
-	cases := []phonology.Stress{
-		phonology.Monosyllabic, phonology.Ultimate, phonology.Penultimate, phonology.Antepenultimate,
-	}
-	for _, st := range cases {
-		want := tokenize.ParsingAdjunctWord{Adjunct: parse.ParsingAdjunct{Stress: st}}
-		s := gl.Token(want)
-		got, err := ParseToken(s, nil)
-		if err != nil {
-			t.Errorf("ParsingAdjunct %v: ParseToken(%q) err: %v", st, s, err)
-			continue
-		}
-		pa, ok := got.(tokenize.ParsingAdjunctWord)
-		if !ok || pa.Adjunct.Stress != st {
-			t.Errorf("ParsingAdjunct %v: got %T %+v", st, got, got)
 		}
 	}
 }

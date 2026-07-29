@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -26,10 +25,11 @@ var nonFormative = [2]byte{fConcat, 0}
 // Register start and end share a tag: they carry the same enum, so the
 // direction rides in the high bit of the register byte.
 const (
-	TokenBias           byte = 2
-	TokenRegister       byte = 3
-	TokenForeign        byte = 4
-	TokenParsingAdjunct byte = 5
+	TokenBias     byte = 2
+	TokenRegister byte = 3
+	TokenForeign  byte = 4
+	// 5 was the parsing adjunct, now consumed as phonology while
+	// parsing and never stored.
 	TokenCarrier        byte = 6
 	TokenModular        byte = 7
 	TokenSingleAffix    byte = 8
@@ -65,8 +65,6 @@ func MarshalWord(t tokenize.WordToken) ([]byte, error) {
 		return append(out, TokenRegister, byte(v.Register)), nil
 	case tokenize.RegisterEndWord:
 		return append(out, TokenRegister, byte(v.Register)|registerEnd), nil
-	case tokenize.ParsingAdjunctWord:
-		return append(out, TokenParsingAdjunct, byte(v.Adjunct.Stress)), nil
 	case tokenize.ForeignWord:
 		return putForeign(append(out, TokenForeign), v.Text), nil
 	case tokenize.CarrierWord:
@@ -116,7 +114,7 @@ func UnmarshalWord(buf []byte) (tokenize.WordToken, int, error) {
 
 	// The one-byte-payload tags, which is most of them.
 	switch tag {
-	case TokenBias, TokenRegister, TokenParsingAdjunct:
+	case TokenBias, TokenRegister:
 		if len(rest) < 1 {
 			return nil, 0, fmt.Errorf("tag %d: short read", tag)
 		}
@@ -130,10 +128,6 @@ func UnmarshalWord(buf []byte) (tokenize.WordToken, int, error) {
 				return tokenize.RegisterEndWord{Register: reg}, hdr + 1, nil
 			}
 			return tokenize.RegisterStartWord{Register: reg}, hdr + 1, nil
-		default:
-			return tokenize.ParsingAdjunctWord{
-				Adjunct: parse.ParsingAdjunct{Stress: stressFromByte(b)},
-			}, hdr + 1, nil
 		}
 	}
 

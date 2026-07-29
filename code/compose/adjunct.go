@@ -7,7 +7,6 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -35,13 +34,6 @@ func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
 	// Foreign word: double-quoted text.
 	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
 		return tokenize.ForeignWord{Text: s[1 : len(s)-1]}, nil
-	}
-
-	// Parsing adjunct: "mono:" / "ulti:" / "penu:" / "ante:"
-	if strings.HasSuffix(s, ":") {
-		if pa, ok := parseParsingAdjunct(s); ok {
-			return tokenize.ParsingAdjunctWord{Text: s, Adjunct: pa}, nil
-		}
 	}
 
 	// Register end: "<NAME>_END"
@@ -96,21 +88,6 @@ func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
 		return nil, fmt.Errorf("formative parse failed: %w", err)
 	}
 	return nil, fmt.Errorf("unrecognized token %q (no lexicon for formative fallback)", s)
-}
-
-// parseParsingAdjunct decodes "mono:" / "ulti:" / "penu:" / "ante:".
-func parseParsingAdjunct(s string) (parse.ParsingAdjunct, bool) {
-	switch s {
-	case "mono:":
-		return parse.ParsingAdjunct{Stress: phonology.Monosyllabic}, true
-	case "ulti:":
-		return parse.ParsingAdjunct{Stress: phonology.Ultimate}, true
-	case "penu:":
-		return parse.ParsingAdjunct{Stress: phonology.Penultimate}, true
-	case "ante:":
-		return parse.ParsingAdjunct{Stress: phonology.Antepenultimate}, true
-	}
-	return parse.ParsingAdjunct{}, false
 }
 
 // parseBiasName looks up the abbreviation against the Bias enum.

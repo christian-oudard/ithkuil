@@ -8,8 +8,6 @@ import (
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/parse"
-	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -59,7 +57,6 @@ func TestMarshalWord_AllTokenTypes(t *testing.T) {
 		// Register end.
 		tokenize.RegisterEndWord{Register: g.DSV},
 		// Parsing adjunct.
-		tokenize.ParsingAdjunctWord{Adjunct: parse.ParsingAdjunct{Stress: phonology.Ultimate}},
 		// Carrier.
 		tokenize.CarrierWord{Carrier: g.CarrierAdjunct{Type: g.Carrier, Case: g.ERG}},
 		// Modular — default.

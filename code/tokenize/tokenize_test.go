@@ -7,8 +7,25 @@ import (
 	"github.com/christian-oudard/ithkuil/phonology"
 )
 
-func TestClassifyWord_ParsingAdjunct(t *testing.T) {
-	cases := []struct {
+// A §4.8 parsing adjunct declares the stress of the word after it.
+// That is phonology, not grammar — it says how the next word is said,
+// not what it means — so Tokenize consumes it and it never appears as
+// a word of its own.
+func TestTokenize_ParsingAdjunctIsConsumed(t *testing.T) {
+	// "amlala" carries penultimate stress unmarked; 'e' declares
+	// ultimate, which is written with an acute.
+	toks := Tokenize("'e' amlala")
+	if len(toks) != 1 {
+		t.Fatalf("Tokenize returned %d words, want 1: %+v", len(toks), toks)
+	}
+	if got := toks[0].Romanization(); got != "amlalá" {
+		t.Errorf("declared stress not applied: got %q, want %q", got, "amlalá")
+	}
+}
+
+// Every vowel §2.3 ¶5 lists names a stress.
+func TestParsingAdjunct_Vowels(t *testing.T) {
+	for _, c := range []struct {
 		in   string
 		want phonology.Stress
 	}{
@@ -16,17 +33,36 @@ func TestClassifyWord_ParsingAdjunct(t *testing.T) {
 		{"'e'", phonology.Ultimate},
 		{"'o'", phonology.Penultimate},
 		{"'u'", phonology.Antepenultimate},
+	} {
+		got, ok := phonology.ParsingAdjunct(c.in)
+		if !ok || got != c.want {
+			t.Errorf("ParsingAdjunct(%q) = %v, %v; want %v", c.in, got, ok, c.want)
+		}
 	}
-	for _, c := range cases {
-		w := ClassifyWord(c.in)
-		p, ok := w.(ParsingAdjunctWord)
-		if !ok {
-			t.Errorf("ClassifyWord(%q) = %T, want ParsingAdjunctWord", c.in, w)
-			continue
-		}
-		if p.Adjunct.Stress != c.want {
-			t.Errorf("ClassifyWord(%q).Stress = %v, want %v", c.in, p.Adjunct.Stress, c.want)
-		}
+	if _, ok := phonology.ParsingAdjunct("'i'"); ok {
+		t.Error("'i' is not one of the four vowels §2.3 ¶5 lists")
+	}
+}
+
+// The adjunct reverses correctly because its content is the stress,
+// and stress is fully expressible with the diacritics. Reading a word
+// written with an adjunct and writing it back gives the same word with
+// the stress marked, which is the canonical spelling of the same
+// grammar rather than a loss.
+func TestParsingAdjunct_ReversesAsADiacritic(t *testing.T) {
+	viaAdjunct := Tokenize("'e' amlala")
+	viaDiacritic := Tokenize("amlalá")
+	if len(viaAdjunct) != 1 || len(viaDiacritic) != 1 {
+		t.Fatalf("expected one word each, got %d and %d", len(viaAdjunct), len(viaDiacritic))
+	}
+	a, aok := viaAdjunct[0].(FormativeWord)
+	b, bok := viaDiacritic[0].(FormativeWord)
+	if !aok || !bok {
+		t.Fatalf("expected formatives, got %T and %T", viaAdjunct[0], viaDiacritic[0])
+	}
+	if a.Formative.Final != b.Formative.Final {
+		t.Errorf("the two spellings disagree on stress: %v vs %v",
+			a.Formative.Final, b.Formative.Final)
 	}
 }
 

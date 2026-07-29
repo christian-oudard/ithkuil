@@ -61,8 +61,6 @@ func (gl *Glosser) Token(t tokenize.WordToken) string {
 		return gl.refLabel(v)
 	case tokenize.CombinationRefWord:
 		return gl.combinationRefLabel(v)
-	case tokenize.ParsingAdjunctWord:
-		return gl.parsingAdjunctLabel(v.Adjunct)
 	case tokenize.UnknownWord:
 		return "?" + v.Text
 	case tokenize.ForeignWord:
@@ -75,23 +73,6 @@ func (gl *Glosser) Token(t tokenize.WordToken) string {
 		return v.Text
 	}
 	return "?"
-}
-
-// parsingAdjunctLabel formats a §4.8 parsing adjunct.
-// Canonical: "mono:" / "ulti:" / "penu:" / "ante:" (zsnout style).
-// Display: same — there's no useful display elaboration for these.
-func (gl *Glosser) parsingAdjunctLabel(p parse.ParsingAdjunct) string {
-	switch p.Stress {
-	case phonology.Monosyllabic:
-		return "mono:"
-	case phonology.Ultimate:
-		return "ulti:"
-	case phonology.Penultimate:
-		return "penu:"
-	case phonology.Antepenultimate:
-		return "ante:"
-	}
-	return "?:"
 }
 
 // singleAffixLabel formats a single-affix adjunct. Display mode:
