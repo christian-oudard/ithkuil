@@ -532,6 +532,42 @@ func TestCompose_BareRoot(t *testing.T) {
 	}
 }
 
+// TestCompose_WordClasses drives the classes that are not formatives.
+// compose called compose.Formative directly, so every one of these came
+// back as "no root in ..." — the command documented a syntax it could
+// not run.
+func TestCompose_WordClasses(t *testing.T) {
+	for _, tc := range []struct{ expr, want string }{
+		{"1m-ERG", "lo"},           // referential
+		{"DOL", "řřx"},             // bias adjunct
+		{"[QUO]-ERG", "hmo"},       // carrier adjunct
+		{"\"Emily\"", "Emily"},     // foreign word
+		{"S2.CPT-ml-ERG", "wimlo"}, // still a formative
+	} {
+		out, errOut, code := runCLI("-data", dataFile(), "compose", tc.expr)
+		if code != 0 {
+			t.Errorf("compose %q: exit %d, stderr %q", tc.expr, code, errOut)
+			continue
+		}
+		lines := strings.Split(strings.TrimSpace(out), "\n")
+		if lines[0] != tc.want {
+			t.Errorf("compose %q = %q, want %q", tc.expr, lines[0], tc.want)
+		}
+	}
+}
+
+// TestCompose_Unmarked covers the one word that composes to nothing:
+// NRR is the default register, so there is no adjunct to write.
+func TestCompose_Unmarked(t *testing.T) {
+	out, errOut, code := runCLI("-data", dataFile(), "compose", "NRR")
+	if code == 0 {
+		t.Errorf("expected non-zero exit, got output %q", out)
+	}
+	if !strings.Contains(errOut, "unmarked") {
+		t.Errorf("stderr = %q, want it to say the register is unmarked", errOut)
+	}
+}
+
 func TestCompose_BadValue(t *testing.T) {
 	_, errOut, code := runCLI("compose", "ml-XYZZY")
 	if code == 0 {

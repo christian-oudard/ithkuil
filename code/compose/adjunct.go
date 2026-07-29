@@ -78,15 +78,16 @@ func ParseToken(s string, lex *lexicon.Lexicon) (g.Word, error) {
 		return parseAffixualAdjunct(s, lex.Affixes)
 	}
 
-	// Default: try as a formative via the existing Formative.
-	if lex != nil {
-		f, err := Formative(s, lex.Affixes)
-		if err == nil {
-			return f, nil
-		}
+	// Default: try as a formative via the existing Formative. affixes
+	// is nil when lex is, which Formative accepts — it then takes an
+	// affix written as a raw Cs cluster but not one written as an
+	// abbreviation, and says so. Refusing the whole token for want of a
+	// lexicon would fail every root as well.
+	f, err := Formative(s, affixes)
+	if err != nil {
 		return nil, fmt.Errorf("formative parse failed: %w", err)
 	}
-	return nil, fmt.Errorf("unrecognized token %q (no lexicon for formative fallback)", s)
+	return f, nil
 }
 
 // parseBiasName looks up the abbreviation against the Bias enum.

@@ -62,6 +62,13 @@ func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 		fmt.Fprintf(stderr, "compose: %v\n", err)
 		return 2
 	}
+	// A word class can be real and still write nothing: NRR is the
+	// unmarked register, so it has no adjunct. Printing the blank line
+	// would read as a bug in the renderer.
+	if word == "" {
+		fmt.Fprintf(stderr, "compose: %s is unmarked and writes no word\n", rest[0])
+		return 2
+	}
 	fmt.Fprintln(stdout, word)
 	fmt.Fprintln(stdout, (&gloss.Glosser{Lex: lex}).Token(tok))
 	return 0

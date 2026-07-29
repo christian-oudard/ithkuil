@@ -11,6 +11,7 @@ import (
 	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/dictionary"
 	"github.com/christian-oudard/ithkuil/gloss"
+	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/render"
@@ -380,23 +381,27 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 	if expr == "" {
 		return nil, composeOut{}, fmt.Errorf("expression is required")
 	}
-	var affixes map[string]lexicon.AffixEntry
-	if s.lex != nil {
-		affixes = s.lex.Affixes
-	}
-	f, err := compose.Formative(expr, affixes)
+	tok, err := compose.ParseToken(expr, s.lex)
 	if err != nil {
 		return nil, composeOut{}, err
 	}
-	rom := render.Formative(f)
+	rom, err := tokenize.Render(tok)
+	if err != nil {
+		return nil, composeOut{}, err
+	}
 	glosser := gloss.Glosser{Lex: s.lex}
-	segs := view.Segments(rom, f, s.lex)
-	head := view.Headword(f, s.lex)
 	out := composeOut{
 		Romanization: rom,
-		Gloss:        glosser.Formative(f),
+		Gloss:        glosser.Token(tok),
 	}
-	if head.Code != "" {
+	// The slot breakdown is a formative's; the other word classes have
+	// their own shapes and no Segments to show here.
+	f, ok := tok.(g.Formative)
+	if !ok {
+		return nil, out, nil
+	}
+	segs := view.Segments(rom, f, s.lex)
+	if head := view.Headword(f, s.lex); head.Code != "" {
 		r := &rootHead{Code: head.Code}
 		if in.Verbose {
 			r.Meaning = head.Meaning

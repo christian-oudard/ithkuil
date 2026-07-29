@@ -213,6 +213,26 @@ canonical: one Formative has exactly one spelling here, even where the grammar
 would permit several. See [SPEC.md](SPEC.md) for what canonical means and which
 optional shortenings it decides between.
 
+Formatives are the largest word class but not the only one, and `compose` takes
+the others in the same syntax:
+
+```
+$ ithkuil compose 1m-ERG
+lo
+REF[1m]-ERG
+
+$ ithkuil compose DOL
+řřx
+DOL(Ow! Ouch!)
+
+$ ithkuil compose '[QUO]-ERG'
+hmo
+CARR-Quotative(o)
+```
+
+Modular, affixual and parsing adjuncts parse but have no renderer yet, so
+`compose` reports that rather than guessing; see [BUGS.md](BUGS.md).
+
 ## Grammar Lookup
 
 `search` looks a term up in the grammar inventory and in the lexicon at once,

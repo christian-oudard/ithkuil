@@ -9,33 +9,27 @@ fix is wrong. `go test ./... -v | grep SKIP` lists them directly.
 Compose's 38 skipped subtests are not defects; they are corpus words
 that are not formatives, skipped by design.
 
-## compose reaches only formatives from the CLI
+## Four word classes cannot be written back
 
-`cmd/ithkuil/compose.go` calls `compose.Formative` instead of
-`compose.ParseToken`, so twelve of the thirteen word classes are
-unreachable from the command line:
+`tokenize.Render` dispatches over the whole word-class sum and answers
+for nine of the thirteen. Modular adjuncts, the two affixual adjuncts
+and parsing adjuncts fall through to "no renderer for ...", because the
+`render` package has no function for any of them: it covers formatives
+and the two referentials, and everything else is a table lookup in
+`grammar` that these four have no equivalent of.
 
 ```
-compose '1m-ERG'      ->  compose: root "1m": non-Ithkuil characters
-compose '1m-ERG-CTE'  ->  compose: root "1m": non-Ithkuil characters
-compose 'NOM:1m-ERG'  ->  compose: no root in "NOM:1m-ERG"
-compose '[QUO]-ERG'   ->  compose: no root in "[QUO]-ERG"
-compose 'DOL'         ->  compose: no root in "DOL"
+compose 'MOD'    ->  compose: no renderer for tokenize.ModularWord
+compose 'mono:'  ->  compose: no renderer for tokenize.ParsingAdjunctWord
 ```
 
-A referential head is taken for a root cluster, and the error names a
-root the expression never claimed to have. It used to be worse: `1m-ERG`
-built `wa1mo`, with a digit inside an Ithkuil word, until "compose:
-reject a root that cannot spell a word" stopped that.
+The parse arm reads all four, so this is one-way: a modular adjunct in
+a sentence glosses correctly and cannot be composed. Nothing in the
+grammar makes them unwritable — §4.2's V_N/C_N shape and §4.7's stress
+markers are as mechanical as the rest — the code was simply never
+written.
 
-The library is not at fault:
-`compose.ParseToken` handles all thirteen classes and is tested. The
-README documents the gloss syntax for every class, so for non-formative
-words it documents something that cannot be run.
-
-No skipped test yet. `compose/documented_syntax_test.go` tests the
-library function, not the command, which is the gap that let this
-through.
+`cmd/ithkuil/main_test.go`'s `TestCompose_NoRenderer`
 
 ## render cannot write ëztewim
 

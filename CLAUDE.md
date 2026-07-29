@@ -75,7 +75,7 @@ relative to `code/`.
 - `tokenize/` - Classifies words in a sentence into formatives, referentials, bias adjuncts, etc. Each `WordToken` variant is a thin `{Text, payload}` wrapper over the grammar type for its class; `Text` records what was typed and is empty on a synthesized token, so derive the romanization with `tokenize.Render` rather than reading it.
 - `concatenation/` - Type 1/2 compound formative chains.
 - `numbers/` - Centesimal/base-100 number system.
-- `compose/` - Builds formatives from grammatical specifications + lexicon search helpers.
+- `compose/` - Builds words from grammatical specifications + lexicon search helpers. `ParseToken` covers every word class and is what the CLI and MCP call; `Formative` is the formative-only path it falls back to.
 - `view/` - Presentation layer for parsed tokens: the per-token type tag (`view.Type`), the phonetic-segment + glossary breakdown (`view.Segments`, `view.Headword`, `view.Glossary`), and the two-word comparison model (`view.BuildSide`, `view.PairSides`, `view.SlotDiff`, `view.GlossDiff`). Both the CLI and the MCP server build on it; only the table drawing lives in `cmd/ithkuil/compare.go`.
 - `store/` - Read-only SQLite access to `data/data.db` (roots, affixes, grammar tables).
 - `lexicon/` - Roots and affixes in memory. `LoadFromStore(*store.Store)` is the normal path; `Load(path)` reads the JSON source directly (used by tests).
