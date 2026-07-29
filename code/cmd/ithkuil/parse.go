@@ -107,6 +107,12 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 	}
 	lex := loadLex(dataFile, stderr)
 	glosser := gloss.Glosser{Lex: lex}
+	// The gloss this command prints is the canonical one, the same
+	// string compose reads back. There is a second, prettier rendering
+	// with Unicode subscripts and spelled-out English, but it is not
+	// the gloss syntax and nothing can parse it, so showing it here
+	// would be showing the user a form they cannot use.
+	canonical := gloss.Glosser{Lex: lex, Canonical: true}
 
 	// Phonotactics are checked per token rather than through a map
 	// built from strings.Fields. The map was keyed by the raw word but
@@ -123,16 +129,28 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 				exit = 1
 				continue
 			}
-			// An unclassified word's gloss is just its romanization spelled
-			// back with a "?" on it, which says nothing the type
-			// column has not. Give the reason instead.
-			detail := glosser.Token(t)
+			// One gloss per line and nothing else. The romanization is
+			// what the user just typed, and the word class is legible
+			// from the gloss itself now that each punctuation mark has
+			// one job: "[CAR]" is a carrier, "1m-THM" a referential.
+			// A column repeating either is noise in output whose point
+			// is to be pasted back into compose.
+			//
+			// An unclassified word is the exception. Its gloss is the
+			// romanization with a "?" on it, which says nothing at all,
+			// so give the reason it failed instead.
 			if _, ok := t.(tokenize.UnknownWord); ok {
-				if reason := view.UnknownReason(t.Romanization()); reason != "" {
-					detail = reason
+				reason := view.UnknownReason(t.Romanization())
+				if reason == "" {
+					reason = "unclassified"
 				}
+				// Named with a colon rather than glossed with a "?".
+				// A line here is a gloss you can paste back; this one
+				// is not, and should not be dressed as one.
+				fmt.Fprintf(stdout, "%s: %s\n", t.Romanization(), reason)
+				continue
 			}
-			fmt.Fprintf(stdout, "%s  %s  %s\n", t.Romanization(), view.Type(t), detail)
+			fmt.Fprintln(stdout, canonical.Token(t))
 		}
 		return exit
 	}
@@ -148,7 +166,7 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 			exit = 1
 			continue
 		}
-		renderDetailed(stdout, t, lex, glosser)
+		renderDetailed(stdout, t, lex, glosser, canonical)
 	}
 	return exit
 }
@@ -175,18 +193,33 @@ func renderValidationError(w io.Writer, word, typed string, ill phonology.Illega
 	}
 }
 
-func renderDetailed(w io.Writer, t tokenize.WordToken, lex interface{}, glosser gloss.Glosser) {
+// renderDetailed prints one word: its romanization, the canonical
+// gloss, and then the working underneath. Leading with the gloss makes
+// the detailed view the short view plus evidence, rather than a
+// separate answer in a notation the short view never shows.
+func renderDetailed(w io.Writer, t tokenize.WordToken, lex interface{}, glosser, canonical gloss.Glosser) {
 	switch tt := t.(type) {
 	case tokenize.FormativeWord:
-		renderFormativeBlock(w, tt.Text, tt.Formative, glosser)
+		renderFormativeBlock(w, tt.Text, tt.Formative, glosser, canonical)
 	case tokenize.ConcatenatedFormativeWord:
-		renderConcatenated(w, tt, glosser)
+		renderConcatenated(w, tt, glosser, canonical)
 	case tokenize.ModularWord:
-		renderModular(w, tt)
+		renderModular(w, tt, canonical)
 	case tokenize.UnknownWord:
 		renderUnknown(w, tt.Text)
 	default:
-		fmt.Fprintf(w, "%s  %s  %s\n", t.Romanization(), view.Type(t), glosser.Token(t))
+		wordHeader(w, t.Romanization(), canonical.Token(t))
+		fmt.Fprintln(indented(w, "  "), view.Type(t))
+	}
+}
+
+// wordHeader prints the romanization and, under it, the canonical
+// gloss — the same string --short prints and compose reads back.
+func wordHeader(w io.Writer, romanization, gl string) {
+	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(romanization)))
+	if gl != "" {
+		fmt.Fprintln(indented(w, "  "), stylize(ansiMagenta, gl))
+		fmt.Fprintln(w)
 	}
 }
 
@@ -219,11 +252,11 @@ func renderUnknown(w io.Writer, word string) {
 // renderModular prints the phonetic + glossary tables for a modular
 // adjunct. The romanization sits at column 0; the body is indented
 // two spaces so consecutive word blocks are visually separated.
-func renderModular(w io.Writer, mw tokenize.ModularWord) {
+func renderModular(w io.Writer, mw tokenize.ModularWord, canonical gloss.Glosser) {
 	segs := view.SegmentsModular(mw.Text, mw.Modular, mw.MarksMood)
 	glossary := view.GlossaryModular(segs)
 
-	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(mw.Text)))
+	wordHeader(w, mw.Text, canonical.Token(mw))
 	iw := indented(w, "  ")
 	renderPhoneticTable(iw, segs)
 	if len(glossary) > 0 {
@@ -234,12 +267,12 @@ func renderModular(w io.Writer, mw tokenize.ModularWord) {
 // renderFormativeBlock prints the romanization, headword, phonetic table,
 // and glossary for one formative. The romanization sits at column 0
 // and everything below is indented under it.
-func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss.Glosser) {
+func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser, canonical gloss.Glosser) {
 	head := view.Headword(f, glosser.Lex)
 	segs := view.Segments(text, f, glosser.Lex)
 	glossary := view.Glossary(text, f, segs, glosser.Lex)
 
-	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(text)))
+	wordHeader(w, text, canonical.Formative(f))
 	iw := indented(w, "  ")
 	renderPhoneticTable(iw, segs)
 	if head.Code != "" {
@@ -258,8 +291,8 @@ func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss
 // rendering each as its own block with a section marker. The chain's
 // romanization is hyphen-joined; we split on "-" to recover each piece's
 // individual romanization for the phonetic table.
-func renderConcatenated(w io.Writer, cw tokenize.ConcatenatedFormativeWord, glosser gloss.Glosser) {
-	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(cw.Text)))
+func renderConcatenated(w io.Writer, cw tokenize.ConcatenatedFormativeWord, glosser, canonical gloss.Glosser) {
+	wordHeader(w, cw.Text, canonical.Token(cw))
 	iw := indented(w, "  ")
 	fmt.Fprintln(iw, stylize(ansiDim, "(concatenated chain)"))
 	parts := strings.Split(cw.Text, "-")
@@ -276,7 +309,7 @@ func renderConcatenated(w io.Writer, cw tokenize.ConcatenatedFormativeWord, glos
 		if i < len(parts) {
 			rom = parts[i]
 		}
-		renderFormativeBlock(iw, rom, f, glosser)
+		renderFormativeBlock(iw, rom, f, glosser, canonical)
 	}
 }
 

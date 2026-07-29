@@ -6,25 +6,31 @@ import (
 
 	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/gloss"
-	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
-// cmdCompose builds a formative from a gloss-style expression and
-// prints the romanization plus the gloss it round-trips through.
+// cmdCompose builds a word from a gloss expression and prints the
+// romanization plus the gloss it round-trips through.
 //
 // Usage: ithkuil compose EXPR
 //
-// EXPR is the syntax accepted by compose.Formative: "-" separates
-// slots, "." joins category values inside a slot, "/" binds a degree
-// or a case to a head. Examples:
+// EXPR is the canonical gloss, the same string "parse --short" emits:
+// "-" separates slots, "." joins category values inside a slot, "/"
+// binds a degree or a case to a head. Examples:
 //
 //	ml
 //	S2.CPT-ml-ERG
 //	S2.CPT-ml-DYN.OBJ-MSS.G.RPV-DEV/3-ERG
+//	1m-ERG
+//	[CAR]
+//
+// Every word class is accepted, not only formatives. Routing this
+// through compose.Formative meant a referential gloss like "1m-ERG"
+// was read as a formative whose root is the cluster "1m", which built
+// the unpronounceable "wa1mo" and reported success.
 func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 	fs := newFlagSet("compose", stderr)
-	fs.describe("Build a romanized formative from a gloss-style expression.", "EXPR")
+	fs.describe("Build a romanized word from a gloss expression.", "EXPR")
 	if err := fs.Parse(args); err != nil {
 		return 2
 	}
@@ -38,16 +44,17 @@ func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 		return 2
 	}
 	lex := loadLex(dataFile, stderr)
-	var affixes map[string]lexicon.AffixEntry
-	if lex != nil {
-		affixes = lex.Affixes
-	}
-	f, err := compose.Formative(rest[0], affixes)
+	tok, err := compose.ParseToken(rest[0], lex)
 	if err != nil {
 		fmt.Fprintf(stderr, "compose: %v\n", err)
 		return 2
 	}
-	fmt.Fprintln(stdout, render.Formative(f))
-	fmt.Fprintln(stdout, (&gloss.Glosser{Lex: lex}).Formative(f))
+	word, err := tokenize.Render(tok)
+	if err != nil {
+		fmt.Fprintf(stderr, "compose: %v\n", err)
+		return 2
+	}
+	fmt.Fprintln(stdout, word)
+	fmt.Fprintln(stdout, (&gloss.Glosser{Lex: lex}).Token(tok))
 	return 0
 }

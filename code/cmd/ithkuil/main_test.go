@@ -222,13 +222,26 @@ func TestParse_ShortValidates(t *testing.T) {
 	}
 }
 
+// --short prints the canonical gloss and nothing else: the one string
+// compose reads back. It used to print the display rendering, which
+// spells the affix Type as a Unicode subscript and a carrier as
+// "CARR-Carrier(a)" — neither of which parses, so the view told you
+// something you could not use.
 func TestParse_Short(t *testing.T) {
 	out, _, code := runCLI("parse", "--short", "malëuţřait")
 	if code != 0 {
 		t.Fatalf("parse --short exit %d", code)
 	}
-	if !strings.Contains(out, "Form") {
-		t.Errorf("--short should include type tag; got %q", out)
+	if !strings.Contains(out, "SYS/5_2") {
+		t.Errorf("--short should print the canonical gloss; got %q", out)
+	}
+	if strings.Contains(out, "₂") {
+		t.Errorf("--short printed the display rendering, not the syntax; got %q", out)
+	}
+	// The word class is legible from the gloss's own shape, so no
+	// column repeats it.
+	if strings.Contains(out, "Form") {
+		t.Errorf("--short should not carry a type column; got %q", out)
 	}
 }
 
@@ -238,8 +251,30 @@ func TestParse_ShortFlag(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("parse -s exit %d", code)
 	}
-	if !strings.Contains(out, "Form") {
-		t.Errorf("-s should include type tag; got %q", out)
+	if !strings.Contains(out, "SYS/5_2") {
+		t.Errorf("-s should print the canonical gloss; got %q", out)
+	}
+}
+
+// What --short prints has to compose back to the word it came from.
+// That is the whole claim the view makes, and nothing checked it while
+// the view was printing a rendering no parser accepted.
+func TestParse_ShortRoundTripsThroughCompose(t *testing.T) {
+	for _, word := range []string{"malëuţřait", "hla", "la", "mlala", "lo"} {
+		out, _, code := runCLI("-data", dataFile(), "parse", "--short", word)
+		if code != 0 {
+			t.Errorf("parse --short %q exit %d: %s", word, code, out)
+			continue
+		}
+		gl := strings.TrimSpace(out)
+		back, _, code := runCLI("-data", dataFile(), "compose", gl)
+		if code != 0 {
+			t.Errorf("%q glossed to %q, which compose rejects: %s", word, gl, back)
+			continue
+		}
+		if got := strings.TrimSpace(strings.SplitN(back, "\n", 2)[0]); got != word {
+			t.Errorf("%q glossed to %q, which composes to %q", word, gl, got)
+		}
 	}
 }
 
@@ -249,8 +284,10 @@ func TestParse_Stdin(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("parse (stdin) exit %d; stderr=%s", code, stderr.String())
 	}
-	if !strings.Contains(stdout.String(), "amlala") {
-		t.Errorf("stdin path missing word; got %q", stdout.String())
+	// The gloss, not the romanization: --short prints one and not the
+	// other. "amlala" is the root "ml" at every default.
+	if strings.TrimSpace(stdout.String()) != "ml" {
+		t.Errorf("stdin path gloss = %q, want %q", stdout.String(), "ml")
 	}
 }
 
