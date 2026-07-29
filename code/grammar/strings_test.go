@@ -83,21 +83,6 @@ func TestStringer_Concatenation(t *testing.T) {
 	}
 }
 
-func TestCarrierTypeForms(t *testing.T) {
-	// Each CarrierType has a unique 2-char form.
-	seen := map[string]bool{}
-	for _, c := range AllCarrierTypes {
-		f := CarrierTypeForm(c)
-		if f == "" {
-			t.Errorf("%s has empty form", c)
-		}
-		if seen[f] {
-			t.Errorf("duplicate carrier form %q", f)
-		}
-		seen[f] = true
-	}
-}
-
 func TestFunctionSpecificationContext_String(t *testing.T) {
 	for _, f := range []Function{STA, DYN} {
 		if f.String() == "" {

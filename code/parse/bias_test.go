@@ -33,7 +33,7 @@ func TestParseBias_Known(t *testing.T) {
 func TestParseBias_RoundTrip(t *testing.T) {
 	// Every Bias's form must parse back to that Bias.
 	for _, b := range grammar.AllBiases {
-		f := grammar.BiasForm(b)
+		f := BiasForm(b)
 		got, ok := ParseBias(f)
 		if !ok {
 			t.Errorf("ParseBias(%q) failed for %s", f, b)

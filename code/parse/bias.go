@@ -7,7 +7,7 @@ import "github.com/christian-oudard/ithkuil/grammar"
 var biasByForm = func() map[string]grammar.Bias {
 	m := make(map[string]grammar.Bias, len(grammar.AllBiases))
 	for _, b := range grammar.AllBiases {
-		m[grammar.BiasForm(b)] = b
+		m[BiasForm(b)] = b
 	}
 	return m
 }()

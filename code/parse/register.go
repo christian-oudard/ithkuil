@@ -6,7 +6,7 @@ import "github.com/christian-oudard/ithkuil/grammar"
 var registerByInitial = func() map[string]grammar.Register {
 	m := make(map[string]grammar.Register, len(grammar.AllRegisters))
 	for _, r := range grammar.AllRegisters {
-		f := grammar.RegisterInitialForm(r)
+		f := RegisterInitialForm(r)
 		if f != "" {
 			m[f] = r
 		}
@@ -18,7 +18,7 @@ var registerByInitial = func() map[string]grammar.Register {
 var registerByFinal = func() map[string]grammar.Register {
 	m := make(map[string]grammar.Register, len(grammar.AllRegisters))
 	for _, r := range grammar.AllRegisters {
-		f := grammar.RegisterFinalForm(r)
+		f := RegisterFinalForm(r)
 		if f != "" {
 			m[f] = r
 		}

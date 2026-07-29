@@ -8,7 +8,7 @@ import (
 
 func TestParseCaseRoundTrip(t *testing.T) {
 	for _, c := range grammar.AllCases {
-		v := grammar.CaseToVc(c)
+		v := CaseToVc(c)
 		got, ok := ParseCase(v)
 		if !ok {
 			t.Errorf("ParseCase(%q) failed for %s", v, c)

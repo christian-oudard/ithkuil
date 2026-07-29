@@ -3,13 +3,13 @@ package parse
 import "github.com/christian-oudard/ithkuil/grammar"
 
 // caseFromVc maps every recognized Vc romanization to its Case. Canonical
-// vowels come from grammar.CaseToVc; this table additionally registers
+// vowels come from CaseToVc; this table additionally registers
 // series-3 alternate forms (used after y- / w- glides) so the parser
 // accepts both spellings.
 var caseFromVc = func() map[string]grammar.Case {
 	m := make(map[string]grammar.Case, len(grammar.AllCases)+16)
 	for _, c := range grammar.AllCases {
-		m[grammar.CaseToVc(c)] = c
+		m[CaseToVc(c)] = c
 	}
 	// Series 3 alternates (Associative)
 	m["uä"] = grammar.APL

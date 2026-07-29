@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/semantics"
 	"github.com/christian-oudard/ithkuil/tokenize"
@@ -79,7 +80,7 @@ func (gl *Glosser) Token(t tokenize.WordToken) string {
 // parsingAdjunctLabel formats a §4.8 parsing adjunct.
 // Canonical: "mono:" / "ulti:" / "penu:" / "ante:" (zsnout style).
 // Display: same — there's no useful display elaboration for these.
-func (gl *Glosser) parsingAdjunctLabel(p g.ParsingAdjunct) string {
+func (gl *Glosser) parsingAdjunctLabel(p parse.ParsingAdjunct) string {
 	switch p.Stress {
 	case phonology.Monosyllabic:
 		return "mono:"
@@ -226,7 +227,7 @@ func (gl *Glosser) carrierLabel(c g.CarrierAdjunct) string {
 		}
 		return head + "-" + c.Case.String()
 	}
-	return "CARR-" + c.Type.String() + "(" + g.CaseToVc(c.Case) + ")"
+	return "CARR-" + c.Type.String() + "(" + parse.CaseToVc(c.Case) + ")"
 }
 
 // carrierTypeAbbrev returns the 3-letter canonical abbreviation for a

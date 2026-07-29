@@ -87,71 +87,6 @@ var biasNames = [...]string{
 
 func (b Bias) String() string { return biasNames[b] }
 
-// biasForms is the written consonant cluster for each Bias.
-var biasForms = [...]string{
-	DOL: "řřx",
-	DIS: "kff",
-	DRS: "pfc",
-	PES: "ksp",
-	DUB: "mmf",
-	SKP: "rnž",
-	TRP: "llč",
-	APH: "vvz",
-	IPT: "žžv",
-	ANP: "lst",
-	DPB: "ffx",
-	CTP: "kšš",
-	IDG: "pšš",
-	EXA: "kçç",
-	RPU: "šštļ",
-	IVD: "řřn",
-	VEX: "ksk",
-	STU: "ļļč",
-	PPX: "llh",
-	DCC: "gzj",
-	RVL: "mmļ",
-	FSC: "žžj",
-	EUH: "gzz",
-	GRT: "mmh",
-	SAT: "ļţ",
-	DLC: "ẓmm",
-	IFT: "vvr",
-	SOL: "ňňs",
-	RAC: "kll",
-	MAN: "msk",
-	EXG: "rrs",
-	ATE: "ňj",
-	APB: "řs",
-	OPT: "ččk",
-	CNV: "rrj",
-	ACC: "lf",
-	ACH: "mçt",
-	IRO: "mmž",
-	PSM: "nnţ",
-	CRR: "ňţ",
-	EUP: "vvt",
-	PSC: "žžt",
-	CMD: "pļļ",
-	PPV: "sl",
-	SGS: "ltç",
-	DFD: "cč",
-	RFL: "llm",
-	DES: "mřř",
-	COI: "ššč",
-	FOR: "lzp",
-	ANN: "drr",
-	RSG: "msf",
-	ISP: "lçp",
-	IPL: "vll",
-	MNF: "pss",
-	ARB: "xtļ",
-	PPT: "mll",
-	CTV: "gvv",
-	CRP: "gžž",
-	DEJ: "žžg",
-	ADS: "lļ",
-}
-
 // biasExpressions are the representative English glosses.
 var biasExpressions = [...]string{
 	DOL: "Ow! Ouch!",
@@ -216,9 +151,6 @@ var biasExpressions = [...]string{
 	DEJ: "[dejected sigh]",
 	ADS: "Mm-hm",
 }
-
-// BiasForm returns the written consonant cluster for a Bias.
-func BiasForm(b Bias) string { return biasForms[b] }
 
 // BiasExpression returns a representative English expression for a Bias.
 // May be empty (ANP).

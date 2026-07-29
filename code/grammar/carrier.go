@@ -15,17 +15,6 @@ func (c CarrierType) String() string {
 	return [...]string{"Carrier", "Quotative", "Naming", "Phrasal"}[c]
 }
 
-// carrierForms maps each CarrierType to its h-consonant cluster.
-var carrierForms = [...]string{
-	Carrier:   "hl",
-	Quotative: "hm",
-	Naming:    "hn",
-	Phrasal:   "hň",
-}
-
-// CarrierTypeForm returns the written consonant cluster for a CarrierType.
-func CarrierTypeForm(c CarrierType) string { return carrierForms[c] }
-
 // AllCarrierTypes enumerates the four types in declaration order.
 var AllCarrierTypes = []CarrierType{Carrier, Quotative, Naming, Phrasal}
 

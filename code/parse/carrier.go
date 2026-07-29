@@ -13,7 +13,7 @@ import (
 var carrierByForm = func() map[string]grammar.CarrierType {
 	m := make(map[string]grammar.CarrierType, len(grammar.AllCarrierTypes))
 	for _, c := range grammar.AllCarrierTypes {
-		m[grammar.CarrierTypeForm(c)] = c
+		m[CarrierTypeForm(c)] = c
 	}
 	return m
 }()

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
@@ -131,7 +132,7 @@ func UnmarshalWord(buf []byte) (tokenize.WordToken, int, error) {
 			return tokenize.RegisterStartWord{Register: reg}, hdr + 1, nil
 		default:
 			return tokenize.ParsingAdjunctWord{
-				Adjunct: g.ParsingAdjunct{Stress: stressFromByte(b)},
+				Adjunct: parse.ParsingAdjunct{Stress: stressFromByte(b)},
 			}, hdr + 1, nil
 		}
 	}

@@ -7,6 +7,7 @@ import (
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
@@ -82,7 +83,7 @@ func TestParseToken_ParsingAdjunct(t *testing.T) {
 		phonology.Monosyllabic, phonology.Ultimate, phonology.Penultimate, phonology.Antepenultimate,
 	}
 	for _, st := range cases {
-		want := tokenize.ParsingAdjunctWord{Adjunct: g.ParsingAdjunct{Stress: st}}
+		want := tokenize.ParsingAdjunctWord{Adjunct: parse.ParsingAdjunct{Stress: st}}
 		s := gl.Token(want)
 		got, err := ParseToken(s, nil)
 		if err != nil {

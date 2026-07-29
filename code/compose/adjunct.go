@@ -99,18 +99,18 @@ func ParseToken(s string, lex *lexicon.Lexicon) (tokenize.WordToken, error) {
 }
 
 // parseParsingAdjunct decodes "mono:" / "ulti:" / "penu:" / "ante:".
-func parseParsingAdjunct(s string) (g.ParsingAdjunct, bool) {
+func parseParsingAdjunct(s string) (parse.ParsingAdjunct, bool) {
 	switch s {
 	case "mono:":
-		return g.ParsingAdjunct{Stress: phonology.Monosyllabic}, true
+		return parse.ParsingAdjunct{Stress: phonology.Monosyllabic}, true
 	case "ulti:":
-		return g.ParsingAdjunct{Stress: phonology.Ultimate}, true
+		return parse.ParsingAdjunct{Stress: phonology.Ultimate}, true
 	case "penu:":
-		return g.ParsingAdjunct{Stress: phonology.Penultimate}, true
+		return parse.ParsingAdjunct{Stress: phonology.Penultimate}, true
 	case "ante:":
-		return g.ParsingAdjunct{Stress: phonology.Antepenultimate}, true
+		return parse.ParsingAdjunct{Stress: phonology.Antepenultimate}, true
 	}
-	return g.ParsingAdjunct{}, false
+	return parse.ParsingAdjunct{}, false
 }
 
 // parseBiasName looks up the abbreviation against the Bias enum.

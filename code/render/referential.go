@@ -17,13 +17,13 @@ func Referential(r g.Referential) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	body := head + g.CaseToVc(r.Case)
+	body := head + parse.CaseToVc(r.Case)
 	if s := r.Second; s != nil {
 		// §4.6.1 slot 3 is written "w/y + V_C2". The two are one
 		// morpheme with two spellings, so take whichever the cluster
 		// rules admit next to the vowel that follows.
 		tail, err := pickValid(func(sep string) string {
-			out := body + sep + g.CaseToVc(s.Case)
+			out := body + sep + parse.CaseToVc(s.Case)
 			if len(s.Refs) > 0 {
 				out += refChainForm(s.Refs)
 			}
@@ -49,7 +49,7 @@ func CombinationReferential(c g.CombinationReferential) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	body := head + g.CaseToVc(c.Case) + spec
+	body := head + parse.CaseToVc(c.Case) + spec
 	for _, a := range c.Affixes {
 		v := parse.AffixVowel(a.Type, a.Degree)
 		if v == "" {
@@ -68,7 +68,7 @@ func CombinationReferential(c g.CombinationReferential) (string, error) {
 			// being the epenthetic vowel that means no second case.
 			body += "üa"
 		} else {
-			body += g.CaseToVc(*c.Case2)
+			body += parse.CaseToVc(*c.Case2)
 		}
 	case len(c.Affixes) > 0:
 		body += "a"
@@ -132,7 +132,7 @@ func pickValid(build func(string) string, options ...string) (string, error) {
 func refHeadForm(head g.RefHead) (string, error) {
 	switch h := head.(type) {
 	case g.SuppletiveHead:
-		return g.CarrierTypeForm(h.Type), nil
+		return parse.CarrierTypeForm(h.Type), nil
 	case g.PersonalHead:
 		if len(h.Refs) == 0 {
 			return "", fmt.Errorf("personal head with no referents")

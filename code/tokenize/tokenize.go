@@ -149,7 +149,7 @@ func (ReferentialWord) word()                  {}
 // relied on.
 type ParsingAdjunctWord struct {
 	Text    string
-	Adjunct g.ParsingAdjunct
+	Adjunct parse.ParsingAdjunct
 }
 
 func (p ParsingAdjunctWord) Romanization() string { return p.Text }

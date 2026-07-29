@@ -11,6 +11,7 @@ import (
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/parse"
 )
 
 // Entry is one row of the grammar reverse-lookup table.
@@ -33,7 +34,7 @@ func init() {
 		Table = append(Table, Entry{
 			Category: "Case/" + c.Group().String(),
 			Abbrev:   c.String(),
-			Form:     g.CaseToVc(c),
+			Form:     parse.CaseToVc(c),
 		})
 	}
 	// Stem.
@@ -103,19 +104,19 @@ func init() {
 		Table = append(Table, Entry{
 			Category:    "Bias",
 			Abbrev:      b.String(),
-			Form:        g.BiasForm(b),
+			Form:        parse.BiasForm(b),
 			Description: g.BiasExpression(b),
 		})
 	}
 	for _, r := range g.AllRegisters {
-		f := g.RegisterInitialForm(r)
+		f := parse.RegisterInitialForm(r)
 		Table = append(Table, Entry{Category: "Register", Abbrev: r.String(), Form: f})
 	}
 	for _, ct := range g.AllCarrierTypes {
 		Table = append(Table, Entry{
 			Category: "CarrierType",
 			Abbrev:   ct.String(),
-			Form:     g.CarrierTypeForm(ct),
+			Form:     parse.CarrierTypeForm(ct),
 		})
 	}
 	// Fill canonical Name on every entry from grammar.Name. Bias rows

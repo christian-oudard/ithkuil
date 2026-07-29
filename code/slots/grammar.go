@@ -425,11 +425,11 @@ func layoutFor(f g.Formative, e encoding) Layout {
 		l.Cr = r.Cluster
 		if useShortcut {
 			series := shortcutSeries(f.SlotVI)
-			l.Vv = g.SlotIIToVvSeries(g.SlotII{Stem: r.Stem, Version: r.Version}, series)
+			l.Vv = parse.SlotIIToVvSeries(g.SlotII{Stem: r.Stem, Version: r.Version}, series)
 			// Vr, Ca elided
 		} else {
-			l.Vv = g.SlotIIToVv(g.SlotII{Stem: r.Stem, Version: r.Version})
-			l.Vr = g.SlotIVToVr(r.SlotIV)
+			l.Vv = parse.SlotIIToVv(g.SlotII{Stem: r.Stem, Version: r.Version})
+			l.Vr = parse.SlotIVToVr(r.SlotIV)
 			l.Ca = allomorph.ConstructCa(f.SlotVI)
 		}
 	case g.CsRoot:
@@ -442,7 +442,7 @@ func layoutFor(f g.Formative, e encoding) Layout {
 		l.Kind = RefRootFormative
 		l.Cr = r.C1
 		l.Vv = refRootVv(r.Version)
-		l.Vr = g.SlotIVToVr(r.SlotIV)
+		l.Vr = parse.SlotIVToVr(r.SlotIV)
 		l.Ca = allomorph.ConstructCa(f.SlotVI)
 	}
 
@@ -777,15 +777,15 @@ func slotIXFromFinal(f g.Formative) (string, phonology.Stress) {
 			panic(fmt.Sprintf("slots: concatenated formative with %T final; §3.1.3 gives a dependent a Vf Format, so it is always nominal", f.Final))
 		}
 		if n.Case > g.SIT {
-			return stripVfGlottal(g.CaseToVc(n.Case)), phonology.Ultimate
+			return stripVfGlottal(parse.CaseToVc(n.Case)), phonology.Ultimate
 		}
-		return g.CaseToVc(n.Case), phonology.Penultimate
+		return parse.CaseToVc(n.Case), phonology.Penultimate
 	}
 	switch v := f.Final.(type) {
 	case g.UnframedNominal:
-		return g.CaseToVc(v.Case), phonology.Penultimate
+		return parse.CaseToVc(v.Case), phonology.Penultimate
 	case g.FramedVerbal:
-		return g.CaseToVc(v.Case), phonology.Antepenultimate
+		return parse.CaseToVc(v.Case), phonology.Antepenultimate
 	case g.UnframedVerbal:
 		return vkVowel(v.Vk), phonology.Ultimate
 	}

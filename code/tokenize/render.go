@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/render"
 )
 
@@ -34,13 +34,13 @@ func Render(t WordToken) (string, error) {
 	case CombinationRefWord:
 		return render.CombinationReferential(v.Combination)
 	case BiasWord:
-		return g.BiasForm(v.Bias), nil
+		return parse.BiasForm(v.Bias), nil
 	case RegisterStartWord:
-		return g.RegisterInitialForm(v.Register), nil
+		return parse.RegisterInitialForm(v.Register), nil
 	case RegisterEndWord:
-		return g.RegisterFinalForm(v.Register), nil
+		return parse.RegisterFinalForm(v.Register), nil
 	case CarrierWord:
-		return g.CarrierTypeForm(v.Carrier.Type) + g.CaseToVc(v.Carrier.Case), nil
+		return parse.CarrierTypeForm(v.Carrier.Type) + parse.CaseToVc(v.Carrier.Case), nil
 	case ForeignWord:
 		return v.Text, nil
 	}
