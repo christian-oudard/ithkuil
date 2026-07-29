@@ -843,7 +843,7 @@ Illocution refers to the type of "speech act" being made by a speaker, i.e., the
 | **DIR** | DIRECTIVE | the statement is either an imperative command to another party to do/be something, or a "commissive" statement committing the speaker to a specific state or course of action (i.e., a vow, promise, guarantee, etc.) |
 | **DEC** | DECLARATIVE | a "performative" statement which, by its utterance/publication, creates a change of state (at least psychologically) for the addressees (i.e., a declaration, announcement, edict, etc.) |
 | **IRG** | INTERROGATIVE | a statement whose purpose is to inquire or seek information from the addressee (i.e., equivalent to an English WH-question) -- see Sec. 5.6 for further explanation on the use of IRG Illocution |
-| **VER** | VERIFICATIVE | a statement whose purpose is to seek/obtain corroboration, confirmation, or verification (i.e., equivalent to a Yes/No question) |
+| **VRF** | VERIFICATIVE | a statement whose purpose is to seek/obtain corroboration, confirmation, or verification (i.e., equivalent to a Yes/No question) |
 | **ADM** | ADMONITIVE | a statement whose purpose is to provide advisory/admonitive information to the addressee (i.e., a warning) |
 | **POT** | POTENTIATIVE | a statement of wishing, hoping, or other unreal(ized) provenance |
 | **HOR** | HORTATIVE | a counterfactual statement indicating a desired but impossible state of affairs that cannot be realized (equivalent to English hortative constructions such as *If only..., Were that..., If only it were so that...*) |
@@ -872,7 +872,7 @@ Validation refers to the evidential basis for a statement in ASSERTIVE illocutio
 | **DIR** | DIRECTIVE Illocution | ái |
 | **DEC** | DECLARATIVE Illocution | áu |
 | **IRG** | INTERROGATIVE Illocution | éi |
-| **VER** | VERIFICATIVE Illocution | éu |
+| **VRF** | VERIFICATIVE Illocution | éu |
 | **ADM** | ADMONITIVE Illocution | óu |
 | **POT** | POTENTIATIVE Illocution | ói |
 | **HOR** | HORTATIVE Illocution | íu |
@@ -888,7 +888,7 @@ If desired to show V_K information on a FRAMED formative or a concatenated forma
 | 2 | DIR DIRECTIVE | REC Recollective |
 | 3 | DEC DECLARATIVE | PUP Purportive |
 | 4 | IRG INTERROGATIVE | RPR Reportive |
-| 5 | VER VERIFICATIVE | USP Unspecified |
+| 5 | VRF VERIFICATIVE | USP Unspecified |
 | 6 | ADM ADMONITIVE | IMA Imaginary |
 | 7 | POT POTENTIATIVE | CVN Conventional |
 | 8 | HOR HORTATIVE | ITU Intuitive |

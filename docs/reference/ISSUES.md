@@ -86,8 +86,8 @@ Quijada's real definitions both fit exactly, and the mismatch was in a
 paraphrase of his wording that we had written ourselves.
 
 **Verified against the source:** the Affix table and Lexicon sections,
-and G33, G35, G36, G39. **Not yet:** G2, G5-G13, G15, G18, G20-G26,
-G28, G30, G37 and the Corpus section. Those have been read against our
+and G33, G35, G36, G39, G40, G41. **Not yet:** G2, G5-G13, G15, G18,
+G20-G26, G28, G30, G37 and the Corpus section. Those have been read against our
 markdown, not against the PDF, so each is a claim about a document that
 has been wrong eleven times.
 
@@ -231,3 +231,62 @@ combination. The document does consider §3.8.1.2's interactions
 elsewhere — §3.9.1's Special Note suspends the V_C shortening rule when
 §3.8.1.2 has been applied — so the omission here is of a piece the
 author was otherwise tracking.
+
+### G40. HORTATIVE and POTENTIATIVE are both named for categories they are not
+
+§3.9.3.1 defines the two illocutions as a matched pair, separated by
+whether the wish can come true:
+
+- **POT** POTENTIATIVE: "a statement of wishing, hoping, or other
+  unreal(ized) provenance"
+- **HOR** HORTATIVE: "a counterfactual statement indicating a desired
+  but impossible state of affairs that cannot be realized (equivalent
+  to English hortative constructions such as *If only..., Were that...,
+  If only it were so that...*)"
+
+Neither name carries that meaning outside this document. A hortative
+exhorts: Allen & Greenough §439, "the Hortatory Subjunctive is used in
+the present tense to express an exhortation or a command", and the
+English instance of it is *let's*. A potential expresses probability,
+that the speaker holds the event likely. What both definitions describe
+is the optative, the mood of wishing, and the split between them is the
+one Allen & Greenough §441 draws inside the optative subjunctive by
+tense: "the present tense denotes the wish as possible, the Imperfect
+as unaccomplished in present time". The tradition has one name for the
+category and a tense contrast for the division; V4 needs two labels and
+took two wrong ones.
+
+The naming is deliberate rather than a slip, and it predates the
+category. No HORTATIVE illocution exists in the 2020 drafts. From
+v0.12.0 through v0.17.2 each carries the same sentence: "Hortatives
+('if only.../were it so that...') are expressable by the combination of
+PERFORMATIVE Illocution + EXECUTIVE Expectation + COUNTERFACTUAL Mood."
+The word was already the author's name for the English construction
+while it was still a three-part periphrasis, and when Illocution was
+restructured for the 1.x releases the new value inherited it.
+
+Nothing here is ambiguous and nothing in this code is wrong: HOR is
+counterfactual, and exhortation to act is DIR, whose own definition
+covers "an imperative command to another party to do/be something".
+The entry exists because the label misleads exactly the readers who
+know the term, who reach for HOR to say "let's" and get "if only".
+Anything that teaches the illocutions should gloss these two rather
+than list their names.
+
+### G41. VRF abbreviates both an illocution and an affix
+
+The morphology document gives VRF to the VERIFICATIVE illocution, in
+all three places it appears (§3.9.3.1's table, §3.9.3.3's V_K list, and
+the illocution/validation matrix). The affix document gives the same
+three letters to -**ňç** "Verifiability of Info & Trustworthiness of
+its Source", and reprints the illocution matrix with VRF in it, so both
+senses appear on one page.
+
+A gloss is a sequence of abbreviations with no per-token type, so the
+two cannot be told apart in one: `VRF/3` is the affix at degree 3 and a
+bare `VRF` is the illocution, but only because affixes are the ones
+that carry a degree. The illocution list is otherwise collision-free.
+
+This code writes the illocution **VER** for that reason, and it is the
+only abbreviation here that departs from the source. The transcription
+in `morphology.md` keeps VRF, as it should.

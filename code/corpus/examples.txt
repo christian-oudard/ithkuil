@@ -8,6 +8,15 @@
 # The Gloss column is the upstream hand-curated notation, which differs
 # from what gloss.Formative emits; it is reference material, not an
 # expected value.
+#
+# The Section column numbers ithkuil.net's chapters, not the sections of
+# the Grammar Design PDF that docs/reference/morphology.md transcribes.
+# The two disagree: what the PDF calls §5.6 (WH-interrogatives) is filed
+# here under 10.6, and 5.6 here holds aspect examples. Of the 554
+# distinct words below, 91 occur in the PDF, so most of this came from
+# elsewhere on the site and cannot be checked against the document we
+# hold. Cite an example as attested usage, not as a passage of the
+# grammar, unless you have found it in the PDF yourself.
 Section | Ithkuil | Gloss | English
 3.1 | rrala | 'cat'-UPX | a cat
 3.1 | anzwul | 'spherical-shape'-OBJ-UPX | a sphere

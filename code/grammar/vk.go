@@ -33,6 +33,12 @@ func (Interrogative) Tag() string { return "IRG" }
 
 type Verificative struct{}
 
+// Tag is VER where the grammar writes VRF, the one place this code
+// departs from the source's abbreviation. The affix document gives VRF
+// to an affix as well, -ňç "Verifiability of Info & Trustworthiness of
+// its Source", so the source spells two different things the same way
+// and a gloss carrying both would be ambiguous. See G41 in
+// docs/reference/ISSUES.md.
 func (Verificative) vk()         {}
 func (Verificative) Tag() string { return "VER" }
 
