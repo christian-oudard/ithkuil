@@ -118,6 +118,48 @@ func hasAffix(f g.Formative, cs string) bool {
 	return false
 }
 
+// Entries are alphabetical and the index reaches all of them. A
+// dictionary that cannot be looked up in is not one, and entries get
+// appended, so both drift the moment they are not checked.
+func TestEnglishDocOrder(t *testing.T) {
+	lines := doc(t)
+	var heads []string
+	var index string
+	inIndex := false
+	for _, line := range lines {
+		if strings.HasPrefix(line, "## ") {
+			h := strings.TrimSpace(line[3:])
+			inIndex = h == "Index"
+			// Headwords are lowercase; a capitalised heading is a note.
+			if !inIndex && h != "" && strings.ToLower(h[:1]) == h[:1] {
+				heads = append(heads, h)
+			}
+			continue
+		}
+		if inIndex {
+			index += line
+		}
+	}
+	if len(heads) < 50 {
+		t.Fatalf("only %d entries found; the heading format has drifted", len(heads))
+	}
+	for i := 1; i < len(heads); i++ {
+		a := strings.Split(heads[i-1], ",")[0]
+		b := strings.Split(heads[i], ",")[0]
+		if a >= b {
+			t.Errorf("entries out of order: %q comes before %q", heads[i-1], heads[i])
+		}
+	}
+	for _, h := range heads {
+		for _, w := range strings.Split(h, ",") {
+			w = strings.TrimSpace(w)
+			if !strings.Contains(index, "["+w+"]") {
+				t.Errorf("headword %q is missing from the index", w)
+			}
+		}
+	}
+}
+
 // Every affix named in a block header exists in the affix reference by
 // that abbreviation, so a header cannot invent one.
 func TestEnglishDocAffixes(t *testing.T) {
