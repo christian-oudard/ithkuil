@@ -9,6 +9,20 @@ import (
 // Each subtest names the section it came from so a future failure
 // points back to the spec text it covers.
 //
+// Every word is checked against Quijada himself: the seven documents
+// under $XDG_DATA_HOME/ithkuil/reference/ plus corpus/examples.txt.
+// The spellings were taken from the markdown while it was still
+// missing diacritics the PDF has, so 130 across this file and
+// compose's copy were respelled from the source — "cskava" is çkava,
+// "Mala" is Malá, and the jump examples are Aḑçulëuhá on the root
+// -ḑç-. Where two documents disagree, v1.3.2 wins, being the version
+// morphology.md transcribes.
+//
+// 30 were removed for having no source at all, and the §3.5 section
+// with them. A word we cannot trace is not evidence about the
+// classifier, so it does not belong in a drift guard: it can only
+// fail for reasons we would have no way to judge.
+//
 // Each section asserts a snapshot: the exact set of words that
 // currently fall through to UnknownWord. When the classifier grows to
 // handle a previously-unknown form, the corresponding `unknown` slice
@@ -51,19 +65,16 @@ func equalStringSlice(a, b []string) bool {
 	return true
 }
 
-func TestMorphologyCorpus_Sec3_5_AffixType(t *testing.T) {
-	runCorpusSection(t, corpusSection{
-		name:  "Sec3.5",
-		words: []string{"wal", "walurx", "waluirx"},
-	})
-}
+// §3.5 had a section here, on wal / walurx / waluirx. All three are
+// gone: the passage they illustrate is in none of Quijada's documents,
+// and §3.5.0 is the same section G38 already records as ours rather
+// than his. Nothing is left to assert.
 
 func TestMorphologyCorpus_Sec4_6_1_Referential(t *testing.T) {
 	runCorpusSection(t, corpusSection{
 		name: "Sec4.6.1",
 		words: []string{
-			"to", "zua", "laiwe", "ëpgói", "ëztewim", "zëmse", "smoyút",
-			"triwejvë", "sme'e", "ka'u", "fo'we'is",
+			"to", "zua", "laiwe", "ëpgói", "ëztewim", "zëmse", "smoyút", "triwejvë",
 			"smlo", "püwüp", "zäwiez",
 		},
 		// Every §4.6.1 example reads. Two of them are why: fo'we'is
@@ -76,8 +87,10 @@ func TestMorphologyCorpus_Sec4_6_1_Referential(t *testing.T) {
 
 func TestMorphologyCorpus_Sec4_6_2_CombinationRef(t *testing.T) {
 	runCorpusSection(t, corpusSection{
-		name:  "Sec4.6.2",
-		words: []string{"slex", "poxtanz", "ëtkexpa", "ëlsuoxxéd"},
+		name: "Sec4.6.2",
+		words: []string{
+			"slex", "poxtanz", "ëtkexpa", "ëlsuoxxéd",
+		},
 	})
 }
 
@@ -85,14 +98,13 @@ func TestMorphologyCorpus_Sec5_3_StativeDynamic(t *testing.T) {
 	runCorpusSection(t, corpusSection{
 		name: "Sec5.3",
 		words: []string{
-			"Byala", "pa", "Byula", "pu",
-			"Vvrala", "mi", "wurcpei", "urcpulei",
-			"Tladatra", "cskava", "Tludatra",
-			"Txada", "ku", "Txuda",
-			"Waltla", "wele", "lo", "Altlul",
-			"Mala", "welu", "wiosadca", "espanya", "Mula",
+			"Byalá", "pa", "Byulá", "pu", "Vvralá", "mi", "wurçpëi", "urçpulëi",
+			"Tladatřá", "çkava", "Tludatřá", "Txadá", "ku", "Txudá", "Waltlá",
+			"wele", "lo", "Altlúl", "Malá", "welu", "wiosaḑcä", "espanya", "Mulá",
 		},
-		unknown: []string{"espanya"},
+		unknown: []string{
+			"espanya",
+		},
 	})
 }
 
@@ -100,22 +112,15 @@ func TestMorphologyCorpus_Sec5_4_RelativeClause(t *testing.T) {
 	runCorpusSection(t, corpusSection{
 		name: "Sec5.4",
 		words: []string{
-			"Wenaya", "ksilo", "apcolowa", "lu", "entyarkena",
-			"apcoloyu", "thaxac",
-			"Zala", "li", "ksilenei", "malihu",
-			"Ercadokh", "elavote", "zzjaduu", "ksivei",
-			"Erculafs", "elatwe", "ainsaida", "ksivoto",
-			"hlarrnei-yurkuu",
-			"Yurka", "warrnernei", "ksila", "hluu",
-			"Umnalorda", "zulikti", "ksilei", "welene",
-			"Umnala", "ksivu", "thu",
+			"Weňayá", "kšilo", "äpçólöwa", "lu", "eňtyarkena", "thaxač", "li",
+			"kšilenëi", "Erčädókh", "elavöte", "kšivëi", "Erčuláfs", "elaţwe",
+			"kšivöto", "Yuřká", "kšila", "Umňälöřdá", "ẓúlikti", "kšilëi", "welene",
+			"Umňälá", "kšivu", "thu",
 		},
-		// hlarrnei-yurkuu is a valid §3.1.7 chain (hlarrnei carries
-		// Type-1 Cc shortcut hl, yurkuu is the parent) but yurkuu's
-		// Vc=uu isn't recognised yet, so the parent half of the chain
-		// fails parsing. Same Vc=uu issue takes hluu out of the
-		// carrier-adjunct path under strict ParseCarrier.
-		unknown: []string{"hlarrnei-yurkuu", "hluu", "zzjaduu"},
+		// The Vc=uu words this section carried, hlarrnei-yurkuu and
+		// hluu, are gone: neither is in any source document, so what
+		// they showed about that gap was never checkable.
+		unknown: nil,
 	})
 }
 
@@ -123,11 +128,10 @@ func TestMorphologyCorpus_Sec5_5_AttendantCase(t *testing.T) {
 	runCorpusSection(t, corpusSection{
 		name: "Sec5.5",
 		words: []string{
-			"Muliutma", "mu", "hlu", "hma", "azxip", "hlie",
-			"Wanzviha", "welei", "welie", "thie",
+			"Muliuţmá", "mu", "hlu", "hma", "ažxíp", "Wanzvihá",
 		},
-		// (Was unknown: [Wanzviha] — now classifies via case-normalization
-		// in slots.Parse, which lowercases the input.)
+		// (Was unknown: [Wanzviha] — now classifies via case-
+		// normalization in slots.Parse, and is spelled Wanzvihá.)
 	})
 }
 
@@ -135,8 +139,7 @@ func TestMorphologyCorpus_Sec5_6_WHQuestion(t *testing.T) {
 	runCorpusSection(t, corpusSection{
 		name: "Sec5.6",
 		words: []string{
-			"Weilusve", "erculei",
-			"Lalutikusvu", "utxolei", "akftyaloe",
+			"Weilüsve", "erčuléi", "utxoléi", "akftyäloë",
 		},
 	})
 }
@@ -148,17 +151,16 @@ func TestMorphologyCorpus_Sec5_7_CaseStacking(t *testing.T) {
 	runCorpusSection(t, corpusSection{
 		name: "Sec5.7",
 		words: []string{
-			"Hre", "willyothoilya", "utplalior",
-			"A", "hrelu-azcoijhailloelya",
-			"Ksolaolwau",
+			"Hre", "willyothoilyá", "utplaliör", "A", "Kšölaölwáu",
 		},
-		// Ksolaolwau and hrelu-azcoijhailloelya now read, and they are
-		// the section's own subject matter: both carry §3.9.2
-		// case-stacking affixes on the -lw- increment. They were
-		// unreadable while that family was unimplemented, which the
-		// missing diacritics in this block (the clown root is -kš-,
-		// not -ks-) had disguised as an extraction problem.
-		unknown: []string{"Hre"},
+		// Kšölaölwáu reads, and it is the section's own subject
+		// matter: it carries a §3.9.2 case-stacking affix on the -lw-
+		// increment. It was unreadable while that family was
+		// unimplemented, which this block's missing diacritics had
+		// disguised as an extraction problem. Both are fixed now.
+		unknown: []string{
+			"Hre",
+		},
 	})
 }
 
@@ -166,16 +168,13 @@ func TestMorphologyCorpus_Sec5_8_CHC_Eat(t *testing.T) {
 	runCorpusSection(t, corpusSection{
 		name: "Sec5.8 eat",
 		words: []string{
-			"Etxula", "welacu", "wanzekcoë",
-			"Itxula",
-			"Enula", "laleco", "welaculwu", "etxulie",
-			"welacurzu", "welacarzulwu", "welacarzu",
-			"welacerzoë", "welaculwoë", "welacorzoë",
-			"Etxularza",
-			"hetxejie-etxitoë",
+			"Etxulá", "welacu", "wanžekcoë", "Itxulá", "Enulá", "laleco",
+			"welacülwu", "etxulie", "welacurzu", "welacärzülwu", "welacärzu",
+			"welacerzoë", "welaculwoë", "welacorzoë", "Etxulärzá",
 		},
-		// (Was unknown: all five -oë words, which the reference spells
-		// "-ooe" because §5.8 lost its diacritics in extraction.)
+		// The -oë words read. The reference used to spell them "-ooe",
+		// which was the extraction dropping the umlaut; it spells them
+		// -oë again.
 	})
 }
 
@@ -183,13 +182,12 @@ func TestMorphologyCorpus_Sec5_8_CHC_Jump(t *testing.T) {
 	runCorpusSection(t, corpusSection{
 		name: "Sec5.8 jump",
 		words: []string{
-			"Adcsulëuha", "welecu",
-			"ampalaicoë", "welecarzu",
-			"Yadcseuha", "Adcsuleuha", "Adcsularzeuha",
+			"Aḑçulëuhá", "welecu", "welecärzu", "Yaḑçëuhá", "Aḑçulärzëuhá",
 		},
-		// (Was unknown: [Yadcseuha, ampalaicooe]. Yadcseuha now
-		// classifies via case-normalization in slots.Parse; ampalaicoë
-		// once its diacritic is restored.)
+		// All five read. Yaḑçëuhá needed both case-normalization in
+		// slots.Parse and its cedillas back: the root is -ḑç-
+		// 'jumping'. The "ampalaicooe" that sat here is gone, being in
+		// no source document.
 	})
 }
 
@@ -197,17 +195,13 @@ func TestMorphologyCorpus_Sec5_8_CHC_Sing(t *testing.T) {
 	runCorpusSection(t, corpusSection{
 		name: "Sec5.8 sing",
 		words: []string{
-			"Yubskirfui", "ellyuhru", "lalacu", "ellyila",
-			"ellyahru", "ellyulëihru",
-			"Ellyula", "ro", "Ellyulerza", "Ellyalerza",
+			"Yubškirfúi", "ellyuhrú", "lalacu", "ellyila", "ellyahrú", "Ellyulá",
+			"ro", "Ellyulerzá", "Ellyalerzá",
 		},
 		// ellyahru and ellyuhru previously fell through; both classify
 		// now via the §3.8.1.2 Cn-in-Ca shortcut (hr in the Ca slot).
 		// (Was unknown: [Yubskirfui] — now classifies via case-
-		// normalization in slots.Parse.)
-		//
-		// (Was unknown: [ellyuleeihru], the same lost-diacritic
-		// spelling of "ellyulëihru".)
+		// normalization in slots.Parse, and is spelled Yubškirfúi.)
 	})
 }
 
@@ -215,10 +209,7 @@ func TestMorphologyCorpus_Sec6_0_SPTDate(t *testing.T) {
 	runCorpusSection(t, corpusSection{
 		name: "Sec6.0",
 		words: []string{
-			"wuksarseirwa", "wuksarseirwiasta",
-			"wustarseirwiaza", "walzarsao", "walzorsurwei",
-			"wucpirwao", "wucpirwoltao",
-			"wullarsurya", "wupsersaryoa",
+			"wuksärsëirwa", "wuksärsëirwiasta", "wustarsëirwiaza", "wullärsurya",
 		},
 	})
 }
@@ -227,9 +218,8 @@ func TestMorphologyCorpus_Sec8_3_SpokenNumbers(t *testing.T) {
 	runCorpusSection(t, corpusSection{
 		name: "Sec8.3",
 		words: []string{
-			"ksalirsa", "gzalui", "walẓärs",
-			"cpalärsa", "wapcui", "wansorsë'i", "cpalörs",
-			"wallärsa",
+			"ksalirsa", "gzalui", "walẓärs", "cpalärsa", "wapcui", "wansorsë'i",
+			"cpalörs", "wallärsa",
 		},
 	})
 }

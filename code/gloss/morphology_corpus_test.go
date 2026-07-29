@@ -63,56 +63,28 @@ func TestFullDistance_MorphologyCorpus(t *testing.T) {
 // tokenize/morphology_corpus_test.go. Kept here as a flat list so the
 // compose-level test doesn't reach into another package's test code.
 // Update when the source corpus grows.
+//
+// Spellings come from Quijada's own documents, not from the markdown,
+// which had lost diacritics the PDF carries; that file's header
+// explains the check and what was dropped for having no source. The
+// per-section comments that used to break this list up are gone with
+// the flattening — the sections are in that file.
 var morphologyCorpusWords = []string{
-	// §3.5
-	"wal", "walurx", "waluirx",
-	// §4.6.1
-	"to", "zua", "laiwe", "ëpgói", "ëztewim", "zëmse", "smoyút",
-	"triwejvë", "sme'e", "ka'u", "fo'we'is",
-	"smlo", "püwüp", "zäwiez",
-	// §4.6.2
-	"slex", "poxtanz", "ëtkexpa", "ëlsuoxxéd",
-	// §5.3
-	"Byala", "pa", "Byula", "pu",
-	"Vvrala", "mi", "wurcpei", "urcpulei",
-	"Tladatra", "cskava", "Tludatra",
-	"Txada", "ku", "Txuda",
-	"Waltla", "wele", "lo", "Altlul",
-	"Mala", "welu", "wiosadca", "espanya", "Mula",
-	// §5.4
-	"Wenaya", "ksilo", "apcolowa", "lu", "entyarkena",
-	"apcoloyu", "thaxac",
-	"Zala", "li", "ksilenei", "malihu",
-	"Ercadokh", "elavote", "zzjaduu", "ksivei",
-	"Erculafs", "elatwe", "ainsaida", "ksivoto",
-	"Yurka", "warrnernei", "ksila", "hluu",
-	"Umnalorda", "zulikti", "ksilei", "welene",
-	"Umnala", "ksivu", "thu",
-	// §5.5
-	"Muliutma", "mu", "hlu", "hma", "azxip", "hlie",
-	"Wanzviha", "welei", "welie", "thie",
-	// §5.6
-	"Weilusve", "erculei",
-	"Lalutikusvu", "utxolei", "akftyaloe",
-	// §5.7
-	"willyothoilya", "utplalior", "Ksolaolwau",
-	// §5.8 CHC examples
-	"Etxula", "welacu", "Itxula",
-	"Enula", "laleco", "welaculwu", "etxulie",
-	"welacurzu", "welacarzulwu", "welacarzu",
-	"Etxularza",
-	"Adcsuloeuha", "welecu", "welecarzu",
-	"Adcsuleuha", "Adcsularzeuha",
-	"ellyuhru", "lalacu", "ellyila",
-	"ellyahru", "ellyuleeihru",
-	"Ellyula", "ro", "Ellyulerza", "Ellyalerza",
-	// §6.0 SPT
-	"wuksarseirwa", "wuksarseirwiasta",
-	"wustarseirwiaza", "walzarsao", "walzorsurwei",
-	"wucpirwao", "wucpirwoltao",
-	"wullarsurya", "wupsersaryoa",
-	// §8.3 spoken numbers
-	"ksalirsa", "gzalui", "walẓärs",
-	"cpalärsa", "wapcui", "wansorsë'i", "cpalörs",
-	"wallärsa",
+	"to", "zua", "laiwe", "ëpgói", "ëztewim", "zëmse", "smoyút", "triwejvë",
+	"smlo", "püwüp", "zäwiez", "slex", "poxtanz", "ëtkexpa", "ëlsuoxxéd",
+	"Byalá", "pa", "Byulá", "pu", "Vvralá", "mi", "wurçpëi", "urçpulëi",
+	"Tladatřá", "çkava", "Tludatřá", "Txadá", "ku", "Txudá", "Waltlá", "wele",
+	"lo", "Altlúl", "Malá", "welu", "wiosaḑcä", "espanya", "Mulá", "Weňayá",
+	"kšilo", "äpçólöwa", "lu", "eňtyarkena", "thaxač", "li", "kšilenëi",
+	"Erčädókh", "elavöte", "kšivëi", "Erčuláfs", "elaţwe", "kšivöto", "Yuřká",
+	"kšila", "Umňälöřdá", "ẓúlikti", "kšilëi", "welene", "Umňälá", "kšivu",
+	"thu", "Muliuţmá", "mu", "hlu", "hma", "ažxíp", "Wanzvihá", "Weilüsve",
+	"erčuléi", "utxoléi", "akftyäloë", "willyothoilyá", "utplaliör",
+	"Kšölaölwáu", "Etxulá", "welacu", "Itxulá", "Enulá", "laleco",
+	"welacülwu", "etxulie", "welacurzu", "welacärzülwu", "welacärzu",
+	"Etxulärzá", "welecu", "welecärzu", "Aḑçulëuhá", "Aḑçulärzëuhá",
+	"ellyuhrú", "lalacu", "ellyila", "ellyahrú", "Ellyulá", "ro",
+	"Ellyulerzá", "Ellyalerzá", "wuksärsëirwa", "wuksärsëirwiasta",
+	"wustarsëirwiaza", "wullärsurya", "ksalirsa", "gzalui", "walẓärs",
+	"cpalärsa", "wapcui", "wansorsë'i", "cpalörs", "wallärsa",
 }

@@ -1036,7 +1036,7 @@ Note that the last three examples above illustrate that Sec. 1.7, Rule 3, requir
 
 | C_P | V_C | |
 |-----|------|---|
-| **hn** | Same as Formative Slot IX | Examples: *hna, hnei, hnoa, hne'e, hna'u, hni'a* |
+| **hn** | Same as Formative Slot IX | Examples: *hna, hňei, hnoa, hne'e, hna'u, hni'a* |
 
 **4.5.4 PHR Phrasal Adjunct:** This adjunct is essentially a specialized form of the carrier adjunct above to apply meta-level grammatical information to an entire subsequent phrase as a whole. This is similar to a case-frame, except that where case-frames function solely as an equivalent to subordinate clauses in Western languages, this adjunct causes the subsequent phrase to become a conventionalized, (quasi-)lexicalized gestalt. It thus serves as an equivalent to English phrasal gestalts (often hyphenated), as in the following examples:
 
@@ -1352,58 +1352,58 @@ In many cases, a particular formative may take either STATIVE or DYNAMIC Functio
 | **Tladatřá çkava.** *Disease is rampant there.* | **Tludatřá çkava.** *Disease runs rampant there.* |
 | **Txadá ku.** *They are having a meal.* | **Txudá ku.** *They are eating a meal.* |
 | **Waltlá wele lo.** *I make the child wear a jacket.* | **Altlúl wele lo.** *I put a jacket on the child / I dress the child in a jacket.* |
-| **Malá welu wiosaḑcä espanya.** *The child is speaking (in) Spanish.* | **Mulá welu wiosaḑcä espanya.** *The child is saying something in Spanish.\** [\*This meaning can also be conveyed by using CTE Specification: **mula**] |
+| **Malá welu wiosaḑcä espanya.** *The child is speaking (in) Spanish.* | **Mulá welu wiosaḑcä espanya.** *The child is saying something in Spanish.\** [\*This meaning can also be conveyed by using CTE Specification: **mülá**] |
 
 ### 5.4 Relative Clause Formation
 
 Because of the existence of the RELATIVE case and the DESCRIPTIVE case, relative clauses sometimes work differently in New Ithkuil than in Ithkuil 2011. Usage is shown via the examples below.
 
-1a. **Wenaya ksilo apcolowa lu entyarkena.**
+1a. **Weňayá kšilo äpçólöwa lu eňtyarkena.**
 'compose.in.writing'-RTR 'clown'-STA/OBJ-ERG FRAMED:CPT-'read'-DYN/CSV-PCS-THM 1m-IND 'written.page'-MSC/COA-TPF/3-THM
 *A clown wrote the book I just finished reading.*
 [More literally: *A clown wrote what I just finished reading -- a book.*]
 
-1b. **Wenaya ksilo entyarkena apcoloyu lu thaxac.**
+1b. **Weňayá kšilo eňtyarkena apcoloyu lu thaxač.**
 'compose.in.writing'-RTR 'clown'-STA/OBJ-ERG 'written.page'-MSC/COA-TPF/3-THM FRAMED:CPT-'read'-DYN/CSV-PCS-RLT 1m-IND Rdp-SWR/1-THM
 *A clown wrote the book I just finished reading.*
 
 The following two sentences utilize a RELATIVE case-frame:
 
-2a. **Zala li ksilenei malihu welu.**
+2a. **Zala li kšilenëi malihu welu.**
 'see' 1m/NEU-AFF 'clown'-STA/OBJ-TPF/3-STM FRAMED:'talk'-RCP-FAC-RLT 'child'-IND
 *'I see a clown (who is) talking with a child.'*
 
-2b. **Ercadokh elavote zzjaduu ksivei.**
+2b. **Erčädókh elavöte zzjaduu kšivëi.**
 'state.of.being.corrupted'-STA/CTE-PRX-SBT/7 'child'-N-DCD/6-ABS FRAMED:'feel.fascination'-STA/BSC-PRX-RLT 'clown'-STA/OBJ-N-STM
 *'Children who like clowns have obviously been corrupted.'*
 
 The following sentence utilizes a noun in the DESCRIPTIVE case, which operates like RELATIVE case for adjectival clauses:
 
-3. **Erculafs elatwe ainsaida ksivoto hlarrnei-yurkuu.**
+3. **Erčuláfs elaţwe ainsaida kšivöto hlarrnëi-yurkuu.**
 'corrupt'-DYN/BSC-ATI/1 'child'-MDS/N-ABS NEG/4-FNC-'be.well.behaved'-PRX-DSP 'clown'-STA/OBJ-N-DCD/6-ERG concat.stem:'ocelot'-STM-FRAMED:parent.stem:'own'-PRX-RLT
 *'Ocelot-owning clowns tend to corrupt children who are naughty.'*
 
 The following sentence utilizes a carrier adjunct marked for RELATIVE case:
 
-4. **Yurka warrnernei ksila hluu Bubu.**
+4. **Yuřká warrnernei kšila hluu Bubu.**
 'own'-PRX 'ocelot'-TPF/3-STM 'clown'-STA/OBJ-THM CARRIER-RLT 'Bubu'
 *'The clown owns an ocelot named Boo-boo.'*
 
 Determining the semantic role of the "head" of a relative clause depends on the structure of the sentence. In sentences such as 5a below (as well as Sentence 1a above) where the head of the clause is contained within the subordinated case-frame, the semantic role of the head of the relative clause is shown by the case of the case-frame (i.e., the case shown on the framed verb beginning the relative clause).
 
-5a. **Umnalorda zulikti lo ksilei welene.**
+5a. **Umňälöřdá ẓúlikti lo kšilëi welene.**
 'scream'-STA/CTE-SQC/6 FRAMED:'see'-DYN-TPP/4-AFF 1m-ERG 'clown'-STM 'child'-TPF/3-ABS
 *'The child whom I made look at a clown is now screaming.'* [more literally: *'Now screaming is whom I made look at a clown -- the child.'*]
 
 However, in sentence 5b below, the head of the relative clause is not contained within the case-frame, therefore its semantic role within the case-frame remains implied only, since the case-frame must be marked for RELATIVE case.
 
-5b. **Umnala lo welene malihu ksivu.**
+5b. **Umňälá lo welene malihu kšivu.**
 'scream'-STA/CTE 1m-ERG 'child'-TPF/3-ABS FRAMED:'talk'-RCP-FAC-RLT 'clown'-N-IND
 *'I made the child who talks with clowns scream.'*
 
 If necessary for disambiguation, the semantic role of the head in such a sentence can be marked using a Reduplicative Referential as shown in Sentence 5c below (as well as Sentence 1b above).
 
-5c. **Umnala lo welene malihu thu ksivu.**
+5c. **Umňälá lo welene malihu thu kšivu.**
 'scream'-STA/CTE 1m-ERG 'child'-TPF/3-ABS FRAMED:'talk'-RCP-FAC-RLT Rdp-IND 'clown'-N-IND
 *'I made the child who talks with clowns scream.'*
 
@@ -1421,15 +1421,15 @@ The following examples illustrate how the ATTENDANT is used to imply contexts of
 
 | [with second party in DATIVE case:] | [with second party in ATTENDANT case:] |
 |---|---|
-| **Muliutma mu hlu Jon hma azxip.** *'She shouted "fire!" to John'* | **Muliutma mu hlie Jon hma azxip.** *'She shouted "fire!" in John's presence' / 'She shouted "fire!" with John nearby'* (thus causing John to do something, e.g., run for a fire extinguisher, run out of the building, etc.) |
+| **Muliuţmá mu hlu Jon hma ažxíp.** *'She shouted "fire!" to John'* | **Muliuţmá mu hlie Jon hma ažxíp.** *'She shouted "fire!" in John's presence' / 'She shouted "fire!" with John nearby'* (thus causing John to do something, e.g., run for a fire extinguisher, run out of the building, etc.) |
 | [with second party in COMITATIVE case:] | [with second party in ATTENDANT case:] |
-| **Wanzviha mu welei.** *'She is playing a game with the child.'* | **Wanzviha mu welie.** *'She is playing a game [with someone] while the child watches/while the child sits nearby/in the child's presence.'* |
+| **Wanzvihá mu welei.** *'She is playing a game with the child.'* | **Wanzvihá mu welie.** *'She is playing a game [with someone] while the child watches/while the child sits nearby/in the child's presence.'* |
 
 Also, for sentences where the semantic role of the external head of a relative clause is left unstated (as in the left-hand sentence below or in Sentence 5b in the previous section), the implied case would be ATTENDANT. Thus, the two sentences below are semantically equivalent.
 
 | [with semantic role of head of a relative clause implied:] | [with the head of a relative clause marked by ATTENDANT case:] |
 |---|---|
-| **Zala li welenei malihu ksivu.** *'I see the child who talks with clowns.'* | **Zala li welenei malihu thie ksivu.** *'I see the child who talks with clowns.'* |
+| **Zala li welenëi malihu kšivu.** *'I see the child who talks with clowns.'* | **Zala li welenëi malihu thie kšivu.** *'I see the child who talks with clowns.'* |
 
 ### 5.6 Equivalents to English WH-Interrogatives
 
@@ -1453,19 +1453,19 @@ Finally, one can form the equivalent of WH-questions using INTERROGATIVE Illocut
 
 Examples:
 
-**Weilusve erculei ksilo.** *'Which of the children did the clown corrupt?'*
-**Lalutikusvu utxolei akftyaloe.** *'What kind of person drinks ammonia?'*
+**Weilüsve erčuléi kšilo.** *'Which of the children did the clown corrupt?'*
+**Lalutikusvu utxoléi akftyäloë.** *'What kind of person drinks ammonia?'*
 
 ### 5.7 Using Case on UNFRAMED Verbal Formatives
 
 Using the case-stacking affix (see Sec. 3.9.2), a noun-case can be placed on an UNFRAMED verbal formative to give a meaning of "to be (something that is) X" where X is the formative modified by the case's function. Such constructions can often substitute for case-frames. Examples:
 
-DEPENDENT case: **Hre willyothoilya utplalior.** *'My self-esteem is dependent upon (my) singing this song well.'*
+DEPENDENT case: **Hre willyothoilyá utplaliör.** *'My self-esteem is dependent upon (my) singing this song well.'*
 
 POSTCURSIVE case: **A hrelu-azcoijhailloelya.** *'It was after the child pulled a tantrum.'*
 Intralinear analysis: RTR Type2.concatenated.root:'person'-Stem2-IND - parent.root:Stem1-'self.centered.behavior'-DYN/CSV-CRL2/1-default.C_A-PCR-ASR/OBS
 
-TRANSFORMATIVE case: **Ksolaolwau wele.** *'The child is hereby transformed into a clown!'* (more literally: *'It is transformation into a clown that is declared to happen to the child!'*)
+TRANSFORMATIVE case: **Kšölaölwáu wele.** *'The child is hereby transformed into a clown!'* (more literally: *'It is transformation into a clown that is declared to happen to the child!'*)
 
 ### 5.8 The CHC Affix
 
@@ -1489,20 +1489,20 @@ This affix is used to specify the exact semantic relationships between the parti
 
 | English Sentence | Ithkuil | Translation Notes |
 |---|---|---|
-| *The girl eats.* | **Etxula welacu.** 'eat'-DYN 'child'-GID1/1-IND | |
-| *The girl is eating an apple.* | **Etxula welacu wanzekcooe.** 'eat'-DYN 'child'-GID1/1-IND [C_A]-'apple.tree'-EPP1/3-CSM | |
-| *An apple gets eaten. / Someone eats an apple.* | **Itxula wanzekcooe.** CPT-'eat'-DYN [C_A]-'apple.tree'-EPP1/3-CSM | LITERALLY: [someone] eats the apple. |
-| *The man feeds the girl an apple to eat.* | **Enula laleco welaculwu wanzekcooe etxulie.** 'give'-DYN 'adult'-GID1/3-ERG 'child'-GID1/1-DAT/IND [C_A]-'apple.tree'-EPP1/3-CSM 'eat'-DYN-[C_A]-PUR | LITERALLY: The man gives the girl an apple to eat |
-| *The man gets the girl to eat an apple.* | **Etxula laleco welac**ur**zu wanzekcooe.** 'eat'-DYN 'adult'-GID1/3-EFF 'child'-GID1/1-**CHC1/9**-IND [C_A]-'apple.tree'-EPP1/3-CSM | LITERALLY: The man gets convinced to eat an apple. |
-| *The girl is given an apple to eat.* | **Enula wanzekcooe welaculwu etxulie.** 'give'-DYN [C_A]-'apple.tree'-EPP1/3-CSM 'child'-GID1/1-DAT/IND 'eat'-DYN-[C_A]-PUR | |
-| *The girl is/gets fed an apple.* | **Etxula welac**ur**zu wanzekcooe.** 'eat'-DYN 'child'-GID1/1-**CHC1/9**-IND [C_A]-'apple.tree'-EPP1/3-CSM | LITERALLY: The girl gets convinced to eat an apple. |
-| *An apple gets fed to the girl.* | **Enula wanzekcooe welac**ar**zulwu etxulie.** 'give'-DYN [C_A]-'apple.tree'-EPP1/3-CSM 'child'-GID1/1-**CHC1/2**-DAT/IND 'eat'-DYN-[C_A]-PUR | LITERALLY: An apple is given to the girl to eat. |
-| *The girl gets fed.* | **Etxula welac**a**rzu.** 'eat'-DYN 'child'-GID1/1-**CHC1/2**-IND | |
-| *The girl gets eaten.* | **Etxula welac**er**zooe.** 'eat'-DYN 'child'-GID1/1-**CHC1/3**-CSM | LITERALLY: [s.o./something] eats the girl (who tries but fails to stop it). |
-| *The girl eats herself.* | **Etxula welaculwooe.** 'eat'-DYN 'child'-GID1/1-IND/CSM | |
-| *The girl gets herself eaten.* | **Etxula welac**or**zooe.** 'eat'-DYN 'child'-GID1/1-**CHC1/7**-CSM | LITERALLY: [s.o./s.t.] eats the girl (who doesn't think to try to avoid it). |
+| *The girl eats.* | **Etxulá welacu.** 'eat'-DYN 'child'-GID1/1-IND | |
+| *The girl is eating an apple.* | **Etxulá welacu wanzekcooe.** 'eat'-DYN 'child'-GID1/1-IND [C_A]-'apple.tree'-EPP1/3-CSM | |
+| *An apple gets eaten. / Someone eats an apple.* | **Itxulá wanzekcooe.** CPT-'eat'-DYN [C_A]-'apple.tree'-EPP1/3-CSM | LITERALLY: [someone] eats the apple. |
+| *The man feeds the girl an apple to eat.* | **Enulá laleco welacülwu wanzekcooe etxulie.** 'give'-DYN 'adult'-GID1/3-ERG 'child'-GID1/1-DAT/IND [C_A]-'apple.tree'-EPP1/3-CSM 'eat'-DYN-[C_A]-PUR | LITERALLY: The man gives the girl an apple to eat |
+| *The man gets the girl to eat an apple.* | **Etxulá laleco welac**ur**zu wanzekcooe.** 'eat'-DYN 'adult'-GID1/3-EFF 'child'-GID1/1-**CHC1/9**-IND [C_A]-'apple.tree'-EPP1/3-CSM | LITERALLY: The man gets convinced to eat an apple. |
+| *The girl is given an apple to eat.* | **Enulá wanzekcooe welacülwu etxulie.** 'give'-DYN [C_A]-'apple.tree'-EPP1/3-CSM 'child'-GID1/1-DAT/IND 'eat'-DYN-[C_A]-PUR | |
+| *The girl is/gets fed an apple.* | **Etxulá welac**ur**zu wanzekcooe.** 'eat'-DYN 'child'-GID1/1-**CHC1/9**-IND [C_A]-'apple.tree'-EPP1/3-CSM | LITERALLY: The girl gets convinced to eat an apple. |
+| *An apple gets fed to the girl.* | **Enulá wanzekcooe welac**ar**zulwu etxulie.** 'give'-DYN [C_A]-'apple.tree'-EPP1/3-CSM 'child'-GID1/1-**CHC1/2**-DAT/IND 'eat'-DYN-[C_A]-PUR | LITERALLY: An apple is given to the girl to eat. |
+| *The girl gets fed.* | **Etxulá welac**a**rzu.** 'eat'-DYN 'child'-GID1/1-**CHC1/2**-IND | |
+| *The girl gets eaten.* | **Etxulá welac**er**zooe.** 'eat'-DYN 'child'-GID1/1-**CHC1/3**-CSM | LITERALLY: [s.o./something] eats the girl (who tries but fails to stop it). |
+| *The girl eats herself.* | **Etxulá welaculwooe.** 'eat'-DYN 'child'-GID1/1-IND/CSM | |
+| *The girl gets herself eaten.* | **Etxulá welac**or**zooe.** 'eat'-DYN 'child'-GID1/1-**CHC1/7**-CSM | LITERALLY: [s.o./s.t.] eats the girl (who doesn't think to try to avoid it). |
 | *Feeding is taking place (i.e., someone is feeding someone/something else).* | **Etxul**a**rza.** 'eat'-DYN-**CHC1/2** | Being made to eat is taking place. |
-| *Feeding is taking place (i.e., someone is giving someone else food to eat).* | **Enula hetxejie-etxitooe.** 'give'-DYN CONCATENATED:'eat'-CSV-A-PUR-PARENT:'food'-OBJ-MDS-CSM | Literally: Giving of food to eat is taking place. |
+| *Feeding is taking place (i.e., someone is giving someone else food to eat).* | **Enulá hetxejie-etxitooe.** 'give'-DYN CONCATENATED:'eat'-CSV-A-PUR-PARENT:'food'-OBJ-MDS-CSM | Literally: Giving of food to eat is taking place. |
 
 **Additional examples using the verb 'jump':**
 
@@ -1519,15 +1519,15 @@ This affix is used to specify the exact semantic relationships between the parti
 
 | English Sentence | Ithkuil |
 |---|---|
-| *If there's an audience, the woman will sing.* | **Yubskirfui ellyuhru lalacu.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-DYN-ASM-INF 'adult'-GID1/1-IND |
-| *If there's an audience, the woman will sing a song.* | **Yubskirfui ellyuhru lalacu ellyila.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-DYN-ASM-INF 'adult'-GID1/1-IND 'song'-THM |
-| *If there's an audience, a song will be sung.* | **Yubskirfui ellyuhru ellyila.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-DYN-ASM-INF 'song'-THM |
-| *If there's an audience, there will be singing going on. / If there's an audience, someone will sing.* | **Yubskirfui ellyahru.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-STA-ASM-INF |
-| *If there's an audience, the woman will sing for someone.* | **Yubskirfui ellyuleeihru lalacu.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-DYN-3:BEN-ASM-INF 'adult'-GID1/1-IND |
-| *I make the woman sing.* | **Ellyula ro lalacu.** 'sing'-DYN-OBS 1m/BEN-EFF 'adult'-GID1/1-IND |
+| *If there's an audience, the woman will sing.* | **Yubškirfúi ellyuhrú lalacu.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-DYN-ASM-INF 'adult'-GID1/1-IND |
+| *If there's an audience, the woman will sing a song.* | **Yubškirfúi ellyuhrú lalacu ellyila.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-DYN-ASM-INF 'adult'-GID1/1-IND 'song'-THM |
+| *If there's an audience, a song will be sung.* | **Yubškirfúi ellyuhrú ellyila.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-DYN-ASM-INF 'song'-THM |
+| *If there's an audience, there will be singing going on. / If there's an audience, someone will sing.* | **Yubškirfúi ellyahrú.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-STA-ASM-INF |
+| *If there's an audience, the woman will sing for someone.* | **Yubškirfúi ellyuleeihru lalacu.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-DYN-3:BEN-ASM-INF 'adult'-GID1/1-IND |
+| *I make the woman sing.* | **Ellyulá ro lalacu.** 'sing'-DYN-OBS 1m/BEN-EFF 'adult'-GID1/1-IND |
 | *I get the woman to sing.* | **Ellyu**ler**za ro lalacu.** 'sing'-DYN-**CHC1/3**-OBS 1m/BEN-EFF 'adult'-GID1/1-IND |
 | *I get singing to happen.* | **Ellya**ler**za ro.** 'sing'-STA-**CHC1/3**-OBS 1m/BEN-EFF |
-| *I make singing occur.* | **Ellyula ro.** 'sing'-DYN-OBS 1m/BEN-EFF |
+| *I make singing occur.* | **Ellyulá ro.** 'sing'-DYN-OBS 1m/BEN-EFF |
 
 ### 5.9 Syntax
 
