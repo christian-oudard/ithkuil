@@ -1,38 +1,7 @@
 # English to Ithkuil
 
-What an English word becomes in Ithkuil, and where it splits, merges, or
-disappears. Ordered alphabetically, so a word can be looked up; which
-word gets written next is decided elsewhere, by frequency, in
-`tools/worklist.py`.
-
-Each block names the root or affix it turns on, then lists what it
-builds. Every word here composes and parses; `code/dictionary` checks it.
-
-    Root _Cr_=`-l-`: Human Being
-    - a person, a human being: **olal**
-
-Closed-class words are left out. *The*, *of*, *not*, *any* are cases,
-affixes, or nothing, and belong to a grammar guide.
-
-## Adjectives are usually affixes
-
-Root _Cr_=`-l-`: Human Being
-Affix _Cs_=`-th-` QUA: Degree Of Quality, Effectiveness Or Adequacy
-- a good adult, one who is effective at it: **lalöth**
-- a bad, poor, inadequate one: **laleth**
-
-Root _Cr_=`-l-`: Human Being
-Affix _Cs_=`-sp-` NEW: Newness
-- an adult never before seen: **lalasp**
-- an adult new to this setting: **laläsp**
-
-Root _Cr_=`-l-`: Human Being
-Affix _Cs_=`-nţ-` MDN: Degree Of Age Or Modernity
-- an ancient adult: **lalenţ**
-
-## Index
-
-[action](#action), [age](#age), [answer](#question-answer), [back](#back), [big](#big-large), [boy](#man-woman-boy-girl), [business](#business), [car](#car-vehicle), [child](#family-parent-child), [city](#city), [country](#country), [daughter](#mother-father-son-daughter), [day](#day-week-month-year), [development](#development), [dog](#dog), [drink](#eat-drink), [duty](#job-duty), [eat](#eat-drink), [effort](#effort), [face](#face), [family](#family-parent-child), [father](#mother-father-son-daughter), [find](#find-meet), [fire](#fire), [five](#five), [food](#food), [four](#four), [girl](#man-woman-boy-girl), [give](#give-receive), [go](#walk-run-go), [good](#good), [government](#government), [group](#group), [hand](#hand), [head](#head), [health](#health), [help](#help), [home](#house-home), [house](#house-home), [idea](#idea), [interest](#interest), [job](#job-duty), [kind](#kind-type), [know](#know), [lake](#river-lake), [large](#big-large), [law](#law), [learn](#learn-study), [life](#life), [little](#small-little), [love](#love), [make](#make), [man](#man-woman-boy-girl), [meet](#find-meet), [mistake](#mistake), [moment](#moment), [money](#money), [month](#day-week-month-year), [mother](#mother-father-son-daughter), [mountain](#mountain), [name](#name), [night](#night), [number](#number), [origin](#start-origin), [parent](#family-parent-child), [part](#part), [party](#party), [person](#person), [place](#place), [police](#police), [policy](#policy), [power](#power), [problem](#problem), [process](#process-step), [question](#question-answer), [read](#read), [receive](#give-receive), [report](#report), [river](#river-lake), [room](#room), [run](#walk-run-go), [say](#say-speak), [see](#see), [side](#side), [six](#six), [small](#small-little), [son](#mother-father-son-daughter), [speak](#say-speak), [start](#start-origin), [step](#process-step), [study](#learn-study), [think](#think), [three](#three), [time](#time), [tree](#tree), [two](#two), [type](#kind-type), [use](#use), [vehicle](#car-vehicle), [voice](#voice), [walk](#walk-run-go), [want](#want), [war](#war), [water](#water), [way](#way), [week](#day-week-month-year), [woman](#man-woman-boy-girl), [word](#word), [work](#work), [write](#write), [year](#day-week-month-year)
+What an English word becomes in Ithkuil. Alphabetical; which word is
+written next is decided by frequency in `tools/worklist.py`.
 
 ## action
 
@@ -60,57 +29,20 @@ Root _Cr_=`-kf-`: Back
 
 ## big, large
 
-Root _Cr_=`-rm-`: Dwelling
 Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a big house: **wurmox**
-
-Root _Cr_=`-l-`: Human Being
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a big adult: **lalox**
 - a big child: **welox**
-
-Root _Cr_=`-lḑ-`: Tree
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a big tree: **walḑox**
-
-Root _Cr_=`-jl-`: Mountainous Topography
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a big mountain: **jlalox**
-
-Root _Cr_=`-lz-`: Body Of Fresh Water
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a big river: **welzox**
-
-Root _Cr_=`-zv-`: Common Canine
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a big dog: **zvalox**
-
-Root _Cr_=`-žx-`: Fire
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a big fire: **wažxox**
-
-Root _Cr_=`-lks-`: Foodstuff
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a big meal: **walksox**
-
-Root _Cr_=`-d-`: Group
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a big gathering: **dalox**
-
-Root _Cr_=`-bč-`: Kin
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a big family: **wabčox**
-
-Root _Cr_=`-nth-`: Number
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a big number: **wanthox**
-
-Root _Cr_=`-thw-`: Component
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a big part: **thwalox**
-
-Root _Cr_=`-ţr-`: Water
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a big amount of water: **ţrarox**
 
 Root _Cr_=`-šh-`: Importance
@@ -119,17 +51,10 @@ Root _Cr_=`-šh-`: Importance
 - prevalence: **ešhal**
 - salience, prominence: **ušhal**
 
-Root _Cr_=`-tx-`: Eat
 Affix _Cs_=`-g-` EXN: Degree Or Extent
 - a big drinker, one who drinks a great deal: **wutxog**
 - a big eater: **wetxog**
-
-Root _Cr_=`-šč-`: Money
-Affix _Cs_=`-g-` EXN: Degree Or Extent
 - a big spender: **ščalog**
-
-Root _Cr_=`-rňf-`: Trouble
-Affix _Cs_=`-g-` EXN: Degree Or Extent
 - big trouble: **warňfog**
 
 Root _Cr_=`-ẓdr-`: Incarceration
@@ -544,18 +469,12 @@ Root _Cr_=`-l-`: Human Being
 - a man: **laleš**
 - a woman: **lalaš**
 
-A good person, a bad person. The judgement is an affix on the person,
-or the root for moral goodness.
-
 Root _Cr_=`-žv-`: Good
 - a morally good person: **ežval**
 
 Affix _Cs_=`-th-` QUA: Degree Of Quality
 - a good person, an effective one: **lalöth**
 - a bad person: **laleth**
-
-The person who. Commonest use of the word in running English, and an
-affix on what the person does rather than a word for the person.
 
 Affix _Cs_=`-vẓ-` PSA: Personal Association
 - a lawyer, one whose profession is law: **waẓtavẓ**
@@ -571,10 +490,6 @@ Affix _Cs_=`-vẓ-` PSA: Personal Association
 - a mathematician: **wanthavẓ**
 - one who is interested in people: **lalävẓ**
 - one obsessed with love: **warkwivẓ**
-
-Degree picks the relation: 1 profession, 2 interest, 3 hobby,
-4 obsession, 5 pursuit, 6 following, 7 responsibility, 8 stake in,
-9 subject to.
 
 ## place
 
@@ -696,21 +611,11 @@ Root _Cr_=`-cp-`: Six
 
 ## small, little
 
-Root _Cr_=`-rm-`: Dwelling
 Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a small house: **wurmex**
-
-Root _Cr_=`-l-`: Human Being
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a small adult: **lalex**
 - a small child: **welex**
-
-Root _Cr_=`-lḑ-`: Tree
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a small tree: **walḑex**
-
-Root _Cr_=`-zv-`: Common Canine
-Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a small dog: **zvalex**
 
 ## start, origin
