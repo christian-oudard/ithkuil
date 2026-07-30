@@ -56,7 +56,7 @@ func parseCmPair(vn, cm string) (grammar.SlotVIII, bool) {
 func ParseModular(word string) (grammar.ModularAdjunct, error) {
 	conjs := phonology.SplitConjuncts(word)
 	if len(conjs) == 0 {
-		return grammar.ModularAdjunct{}, fmt.Errorf("modular adjunct: empty input")
+		return grammar.ModularAdjunct{}, shape(word, "shape", word, "a modular adjunct needs at least one conjunct")
 	}
 
 	// Optional w/y scope prefix.
@@ -71,7 +71,8 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 	}
 
 	if len(conjs) == 0 {
-		return grammar.ModularAdjunct{}, fmt.Errorf("modular adjunct: nothing after scope prefix")
+		return grammar.ModularAdjunct{}, shape(word, "shape", word,
+			"the w/y scope prefix needs a Vn Cn pair or an aspect vowel after it")
 	}
 
 	// Walk the (V_N C) pairs; whatever vowel comes alone at the end is
@@ -91,8 +92,8 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 				ok = isCm(c)
 			}
 			if !ok {
-				return grammar.ModularAdjunct{}, fmt.Errorf(
-					"modular adjunct: %q is not a valid Slot %d consonant", c, slot)
+				return grammar.ModularAdjunct{}, shape(word, fmt.Sprintf("C%d", slot), c,
+					fmt.Sprintf("Slot %d of a modular adjunct takes %s", slot, slotConsonants(slot)))
 			}
 			pairs = append(pairs, rawPair{vn: conjs[i], c: c})
 			i += 2
@@ -103,10 +104,12 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 			i++
 			continue
 		}
-		return grammar.ModularAdjunct{}, fmt.Errorf("modular adjunct: unexpected conjunct %q", conjs[i])
+		return grammar.ModularAdjunct{}, shape(word, "shape", conjs[i],
+			"a modular adjunct alternates Vn and Cn from here, and "+conjs[i]+" fits neither position")
 	}
 	if len(pairs) == 0 && final == "" {
-		return grammar.ModularAdjunct{}, fmt.Errorf("modular adjunct: no VnCn pair or final vowel")
+		return grammar.ModularAdjunct{}, shape(word, "shape", word,
+			"a modular adjunct holds at least one Vn Cn pair or a lone aspect vowel")
 	}
 
 	// V_H reach scope: §4.3 Slot 4 — when ultimate stress is present
@@ -134,7 +137,8 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 			s, ok = ParseVnCn(p.vn, p.c)
 		}
 		if !ok {
-			return grammar.ModularAdjunct{}, fmt.Errorf("modular adjunct: cannot decode (Vn=%q, C=%q)", p.vn, p.c)
+			return grammar.ModularAdjunct{}, value(word, "Vn", p.vn,
+				"no Valence, Phase, Effect, Level or Aspect is written "+p.vn+" against "+p.c)
 		}
 		content = append(content, s)
 	}
@@ -165,7 +169,8 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 		// decodes as one.
 		asp, ok := ParseVnAspect(final)
 		if !ok {
-			return grammar.ModularAdjunct{}, fmt.Errorf("modular adjunct: trailing vowel %q is not an aspect", final)
+			return grammar.ModularAdjunct{}, value(word, "Vn", final,
+				"no aspect is written "+final+"; a modular adjunct's lone trailing vowel is read as one")
 		}
 		content = append(content, grammar.VnCnAspect{Aspect: asp, MoodScope: grammar.FAC})
 	}
@@ -191,4 +196,16 @@ func decodeVH(v string) (grammar.ModularReach, bool) {
 		return grammar.ModularReachAdjacent, true
 	}
 	return 0, false
+}
+
+// slotConsonants names what a modular adjunct's Slot 2 and Slot 3
+// admit. §4.3 gives Slot 3 its C_M for one purpose — to say whether
+// the V_N beside it is an Aspect — so the two inventories are
+// disjoint and naming the wrong one would send a reader to the wrong
+// table.
+func slotConsonants(slot int) string {
+	if slot == 3 {
+		return "a C_M consonant, n or ň"
+	}
+	return "a C_N consonant"
 }

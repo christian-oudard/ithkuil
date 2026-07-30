@@ -1,7 +1,6 @@
 package parse
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/christian-oudard/ithkuil/grammar"
@@ -32,17 +31,20 @@ func ParseCarrierType(s string) (grammar.CarrierType, bool) {
 func ParseCarrier(word string) (grammar.CarrierAdjunct, error) {
 	conjs := phonology.SplitConjuncts(word)
 	if len(conjs) < 2 {
-		return grammar.CarrierAdjunct{}, fmt.Errorf("carrier adjunct: expected ≥2 conjuncts, got %d", len(conjs))
+		return grammar.CarrierAdjunct{}, shape(word, "shape", word,
+			"a carrier adjunct is a carrier consonant plus a case vowel, and this has one conjunct")
 	}
 	cs := conjs[0]
 	ct, ok := ParseCarrierType(cs)
 	if !ok {
-		return grammar.CarrierAdjunct{}, fmt.Errorf("carrier adjunct: %q is not a carrier consonant", cs)
+		return grammar.CarrierAdjunct{}, shape(word, "Cp", cs,
+			"a carrier adjunct opens with hl, hm, hn or hň")
 	}
 	vc := strings.Join(conjs[1:], "")
 	c, ok := ParseCase(vc)
 	if !ok {
-		return grammar.CarrierAdjunct{}, fmt.Errorf("carrier adjunct: %q is not a recognized case vowel", vc)
+		return grammar.CarrierAdjunct{}, value(word, "Vc", vc,
+			"no case is written "+vc+"; a carrier adjunct carries a case and nothing else")
 	}
 	return grammar.CarrierAdjunct{Type: ct, Case: c}, nil
 }

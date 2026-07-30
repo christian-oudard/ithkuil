@@ -23,21 +23,25 @@ func ParseSingleAffix(word string) (grammar.SingleAffixAdjunct, error) {
 		case phonology.IsConsonantConjunct(x) && phonology.IsVowelConjunct(y):
 			vx, cs = y, x
 		default:
-			return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: %q + %q is not a vowel/consonant pair", x, y)
+			return grammar.SingleAffixAdjunct{}, shape(word, "shape", x+y,
+				"a single-affix adjunct pairs a Vx vowel with a Cs cluster, in either order")
 		}
 	case 3:
 		// Vx-Cs-Vs form: vowel, consonant, vowel.
 		x, y, z := conjs[0], conjs[1], conjs[2]
 		if !(phonology.IsVowelConjunct(x) && phonology.IsConsonantConjunct(y) && phonology.IsVowelConjunct(z)) {
-			return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: %q+%q+%q doesn't match Vx-Cs-Vs", x, y, z)
+			return grammar.SingleAffixAdjunct{}, shape(word, "shape", x+y+z,
+				"a three-conjunct single-affix adjunct is Vx-Cs-Vs: vowel, consonant, vowel")
 		}
 		vx, cs, vs = x, y, z
 	default:
-		return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: expected 2 or 3 conjuncts, got %d", len(conjs))
+		return grammar.SingleAffixAdjunct{}, shape(word, "shape", word,
+			fmt.Sprintf("a single-affix adjunct is two or three conjuncts; this has %d", len(conjs)))
 	}
 	scope, ok := grammar.VsScope(vs)
 	if !ok {
-		return grammar.SingleAffixAdjunct{}, fmt.Errorf("single-affix adjunct: %q is not a valid Vs scope vowel", vs)
+		return grammar.SingleAffixAdjunct{}, value(word, "Vs", vs,
+			"no §4.1 scope is written "+vs)
 	}
 	t, d := ClassifyAffixVowel(vx)
 	return grammar.SingleAffixAdjunct{
@@ -72,14 +76,17 @@ func ParseMultipleAffix(word string) (grammar.MultipleAffixAdjunct, error) {
 		conjs = conjs[1:]
 	}
 	if len(conjs) < 4 {
-		return grammar.MultipleAffixAdjunct{}, fmt.Errorf("multiple-affix adjunct: expected ≥4 conjuncts after ë-prefix, got %d", len(conjs))
+		return grammar.MultipleAffixAdjunct{}, shape(word, "shape", word,
+			fmt.Sprintf("a multiple-affix adjunct is Cs Vx Cz then at least one Vx Cs pair; this has %d conjuncts to work with", len(conjs)))
 	}
 	cs, vx, cz := conjs[0], conjs[1], conjs[2]
 	if !phonology.IsConsonantConjunct(cs) || !phonology.IsVowelConjunct(vx) {
-		return grammar.MultipleAffixAdjunct{}, fmt.Errorf("multiple-affix adjunct: first pair %q+%q not Cs+Vx", cs, vx)
+		return grammar.MultipleAffixAdjunct{}, shape(word, "shape", cs+vx,
+			"a multiple-affix adjunct opens with a Cs cluster and its Vx vowel")
 	}
 	if !isCzConsonant(cz) {
-		return grammar.MultipleAffixAdjunct{}, fmt.Errorf("multiple-affix adjunct: %q is not a Cz scope consonant", cz)
+		return grammar.MultipleAffixAdjunct{}, shape(word, "Cz", cz,
+			"the scope consonant after the first affix is one of h, 'h, 'hl, 'hr, hw, 'hw")
 	}
 
 	// Remaining conjuncts: alternating (Vx Cs)* with an optional trailing Vz.
@@ -101,21 +108,23 @@ func ParseMultipleAffix(word string) (grammar.MultipleAffixAdjunct, error) {
 			i++
 			continue
 		}
-		return grammar.MultipleAffixAdjunct{}, fmt.Errorf("multiple-affix adjunct: unexpected conjunct %q at position %d", rest[i], 3+i)
+		return grammar.MultipleAffixAdjunct{}, shape(word, "shape", rest[i],
+			"after the Cz the word alternates Vx and Cs, and "+rest[i]+" fits neither position")
 	}
 	if len(more) < 1 {
-		return grammar.MultipleAffixAdjunct{}, fmt.Errorf("multiple-affix adjunct: at least one trailing VxCs pair required")
+		return grammar.MultipleAffixAdjunct{}, shape(word, "shape", word,
+			"a multiple-affix adjunct carries a second affix after the Cz; with one affix it is a single-affix adjunct")
 	}
 	firstScope, ok := grammar.CzScope(cz)
 	if !ok {
 		// isCzConsonant already accepted cz, so this is unreachable.
-		return grammar.MultipleAffixAdjunct{}, fmt.Errorf("multiple-affix adjunct: %q has no scope mapping", cz)
+		return grammar.MultipleAffixAdjunct{}, value(word, "Cz", cz, "no §4.1 scope is written "+cz)
 	}
 	restScope := firstScope
 	if vz != "" && vz != "ai" {
 		s, ok := grammar.VzScope(vz)
 		if !ok {
-			return grammar.MultipleAffixAdjunct{}, fmt.Errorf("multiple-affix adjunct: %q is not a valid Vz scope vowel", vz)
+			return grammar.MultipleAffixAdjunct{}, value(word, "Vz", vz, "no §4.1 scope is written "+vz)
 		}
 		restScope = s
 	}

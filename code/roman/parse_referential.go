@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/christian-oudard/ithkuil/fault"
+
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
@@ -11,7 +13,30 @@ import (
 
 // errNotReferential says the romanization does not have the shape, which is
 // the ordinary outcome when the classifier is trying parsers in turn.
+//
+// It stays a bare sentinel deliberately. Every word the classifier
+// reads is offered to every class, so almost every one of these
+// rejections is about a word nobody was writing as a referential, and
+// prose explaining that to a reader would be prose they never wanted.
+// The rejections worth explaining are the ones below that reach a
+// table: the shape fit and the value in it is not listed, which is a
+// word someone plainly was writing with one thing wrong.
 var errNotReferential = errors.New("not a referential")
+
+// notAReferentialCase reports a vowel sitting where §4.6.1 wants a
+// case, in a word whose referent cluster already decoded. The head is
+// named because it is the evidence that this is a referential at all,
+// and so the reason this complaint outranks the shape rejections
+// every other class will raise.
+func notAReferentialCase(word, slot, vowel, head string) error {
+	return fault.One(word, fault.Fault{
+		Stage: fault.Value,
+		Code:  slot,
+		Found: vowel,
+		Fix: "no case is written " + vowel + ", and " + head +
+			" reads as a referent chain, so this word wants one",
+	})
+}
 
 // phonotactic reads word as phonology, reporting what it breaks. The
 // referential decoders run it because a word the phonotactics reject
@@ -75,7 +100,7 @@ func ParseReferential(word string) (g.Referential, error) {
 	}
 	caseA, caseAok := parse.ParseCase(conjs[i])
 	if !caseAok {
-		return g.Referential{}, errNotReferential
+		return g.Referential{}, notAReferentialCase(word, "Vc", conjs[i], c1)
 	}
 	i++
 
@@ -87,14 +112,20 @@ func ParseReferential(word string) (g.Referential, error) {
 		}
 		c2v, c2ok := parse.ParseCase(conjs[i])
 		if !c2ok {
-			return g.Referential{}, errNotReferential
+			return g.Referential{}, notAReferentialCase(word, "Vc\u2082", conjs[i], c1)
 		}
 		second = &g.SecondReferent{Case: c2v}
 		i++
 		if i < len(conjs) && phonology.IsConsonantConjunct(conjs[i]) {
 			rs, dok := parse.DecomposeRefCluster(conjs[i])
 			if !dok || len(rs) == 0 {
-				return g.Referential{}, errNotReferential
+				return g.Referential{}, fault.One(word, fault.Fault{
+					Stage: fault.Value,
+					Code:  "C\u2082",
+					Found: conjs[i],
+					Fix: conjs[i] + " is not a chain of referent forms, and \u00a74.6.1 " +
+						"puts the second referent's own cluster here",
+				})
 			}
 			second.Refs = rs
 			i++

@@ -120,9 +120,11 @@ func ParseWord(word string) (g.Word, error) {
 	// formative parsing so that "hna" is a Naming carrier rather
 	// than a formative with Cr=hn.
 	if len(conjs) >= 2 && phonology.IsConsonantConjunct(conjs[0]) {
-		if c, err := parse.ParseCarrier(word); err == nil {
+		c, err := parse.ParseCarrier(word)
+		if err == nil {
 			return c, nil
 		}
+		consider(err)
 	}
 
 	// 4. §4.6.3 Cp-in-referential epenthesis: "üo" + a Cp cluster
