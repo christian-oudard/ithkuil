@@ -8,6 +8,7 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/search"
 	"github.com/christian-oudard/ithkuil/semantics"
 	"github.com/christian-oudard/ithkuil/slots"
@@ -388,6 +389,24 @@ func reachVH(r g.ModularReach) string {
 // Cn defaults to Mood — matching the spec's verbal-formative reading.
 func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segment {
 	asMood := marksMood == nil || *marksMood
+	// The segments are derived from the grammar, but the word decides
+	// which of them were written: §4.3's bare Slot 4 form drops the C_N
+	// of a final default entry, so "a" is a whole RTR adjunct with no
+	// -w- in it. Walking the word alongside marks what is not there as
+	// elided, the way the formative path does, rather than printing
+	// letters the reader cannot find.
+	bare, _ := phonology.Strip(strings.ToLower(word))
+	written := func(raw string) bool {
+		if raw == "" {
+			return false
+		}
+		i := strings.Index(bare, raw)
+		if i < 0 {
+			return false
+		}
+		bare = bare[i+len(raw):]
+		return true
+	}
 	var segs []Segment
 	if raw := modularScopePrefix(ma.Scope); raw != "" {
 		segs = append(segs, Segment{
@@ -402,17 +421,22 @@ func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segmen
 	for i, s := range ma.Content {
 		idx := subscript(i + 1)
 		vn, cn := vnCnForms(s)
+		written(strings.ToLower(vn))
 		segs = append(segs, Segment{
 			Raw:     strings.ToLower(vn),
 			Slot:    fmt.Sprintf("Vn%s", idx),
 			Encodes: []string{semantics.VnCategory(vn, cn)},
 		})
 		if cn != "" {
-			segs = append(segs, Segment{
+			seg := Segment{
 				Raw:     strings.ToLower(cn),
 				Slot:    fmt.Sprintf("Cn%s", idx),
 				Encodes: []string{semantics.CnLabel(cn, asMood)},
-			})
+			}
+			if !written(seg.Raw) {
+				seg.Raw, seg.Elided = ElidedMark, true
+			}
+			segs = append(segs, seg)
 		}
 	}
 	if ma.Reach != g.ModularReachNone {

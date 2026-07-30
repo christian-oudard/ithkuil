@@ -7,6 +7,7 @@ import (
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/roman"
 	"github.com/christian-oudard/ithkuil/slots"
 )
@@ -520,4 +521,136 @@ func readWord(t *testing.T, word string) g.Word {
 		t.Fatalf("ClassifyWord(%q): %v", word, err)
 	}
 	return w
+}
+
+// TestSegmentsModular_EveryReach walks §4.3's Slot 4 V_H, the vowel
+// that says how far the adjunct's content reaches. The reach is only
+// written when it is not the default, so the "none" case must produce
+// no V_H segment at all rather than an empty one.
+//
+// The letters are checked against the word the renderer wrote rather
+// than against a list here. Two tables spell these, roman's and view's,
+// and nothing else compares them: a segment view that disagreed with
+// the romanization would label the right letter with the wrong reach
+// and every round trip would still pass.
+func TestSegmentsModular_EveryReach(t *testing.T) {
+	for _, reach := range g.AllModularReaches {
+		m := g.ModularAdjunct{
+			Reach:   reach,
+			Content: []g.SlotVIII{g.VnCnAspect{Aspect: g.RTR}},
+		}
+		word, err := roman.Word(m)
+		if err != nil {
+			t.Errorf("reach %v does not render: %v", reach, err)
+			continue
+		}
+		segs := SegmentsModular(word, m, nil)
+		var vh *Segment
+		var joined string
+		for i, s := range segs {
+			if !s.Elided {
+				joined += s.Raw
+			}
+			if s.Slot == "Vh" {
+				vh = &segs[i]
+			}
+		}
+		// A one-entry adjunct's written segments partition the word: what
+		// they hold end to end is the word itself, less the stress
+		// diacritic that rides on a vowel without being one. An elided
+		// segment is a placeholder for a slot the renderer dropped and
+		// contributes no letters.
+		bare, _ := phonology.Strip(word)
+		if joined != bare {
+			t.Errorf("reach %v: segments spell %q, the word is %q", reach, joined, bare)
+		}
+		if reach == g.ModularReachNone {
+			if vh != nil {
+				t.Errorf("the default reach writes no V_H; got %q", vh.Raw)
+			}
+			continue
+		}
+		if vh == nil {
+			t.Errorf("reach %v: no V_H segment in %q", reach, word)
+			continue
+		}
+		if len(vh.Encodes) == 0 {
+			t.Errorf("reach %v: the V_H segment encodes nothing", reach)
+		}
+	}
+}
+
+// TestSegmentsModular_ClaimsNoAbsentLetter is the weaker property that
+// holds for every modular adjunct, one entry or three: a segment may be
+// silent about a letter, but it may not name one the word does not
+// have. Before this was checked, a three-entry adjunct printed a
+// phonetic column of "w-ä-hň-ai-w-ui-w" for the word "wähňainui",
+// inventing two w's and losing the n.
+func TestSegmentsModular_ClaimsNoAbsentLetter(t *testing.T) {
+	adjuncts := []g.ModularAdjunct{
+		{Content: []g.SlotVIII{g.VnCnAspect{Aspect: g.RTR}}},
+		{Content: []g.SlotVIII{g.VnCnValence{Valence: g.PRL, MoodScope: g.HYP}}},
+		{
+			Scope: g.ModularScopeParent,
+			Content: []g.SlotVIII{
+				g.VnCnValence{Valence: g.PRL, MoodScope: g.HYP},
+				g.VnCnAspect{Aspect: g.RSM},
+				g.VnCnAspect{Aspect: g.IRP},
+			},
+		},
+	}
+	for _, m := range adjuncts {
+		word, err := roman.Word(m)
+		if err != nil {
+			t.Errorf("%+v does not render: %v", m, err)
+			continue
+		}
+		rest, _ := phonology.Strip(word)
+		for _, s := range SegmentsModular(word, m, nil) {
+			if s.Elided {
+				continue
+			}
+			i := strings.Index(rest, s.Raw)
+			if i < 0 {
+				t.Errorf("%q: segment %s claims %q, which is not in the word",
+					word, s.Slot, s.Raw)
+				continue
+			}
+			rest = rest[i+len(s.Raw):]
+		}
+	}
+}
+
+// TestSegmentsModular_SlotThreeSeparator records what the view still
+// does not model. §4.3 spends Slot 3's consonant entirely on C_M, "n if
+// V_N represents an Aspect, otherwise ň", where Slot 2 writes a full
+// C_N. SegmentsModular asks slots.VnCnFromSlotVIII for every entry, so
+// it derives a C_N for Slot 3 as well, finds it is not in the word, and
+// shows the slot as elided. The n that is in the word gets no segment
+// at all.
+func TestSegmentsModular_SlotThreeSeparator(t *testing.T) {
+	t.Skip("Slot 3's C_M has no segment; see BUGS.md")
+
+	m := g.ModularAdjunct{
+		Scope: g.ModularScopeParent,
+		Content: []g.SlotVIII{
+			g.VnCnValence{Valence: g.PRL, MoodScope: g.HYP},
+			g.VnCnAspect{Aspect: g.RSM},
+			g.VnCnAspect{Aspect: g.IRP},
+		},
+	}
+	word, err := roman.Word(m)
+	if err != nil {
+		t.Fatalf("render: %v", err)
+	}
+	var joined string
+	for _, s := range SegmentsModular(word, m, nil) {
+		if !s.Elided {
+			joined += s.Raw
+		}
+	}
+	bare, _ := phonology.Strip(word)
+	if joined != bare {
+		t.Errorf("segments spell %q, the word is %q", joined, bare)
+	}
 }
