@@ -339,6 +339,11 @@ var canonicalNames = map[string]string{
 	"EXM": "Exemplificative",
 	"CGT": "Cogitant",
 	"END": "End of register",
+	// Carrier type (§4.5.1-4.5.4).
+	"CAR": "Carrier",
+	"QUO": "Quotative",
+	"NAM": "Naming",
+	"PHR": "Phrasal",
 }
 
 // meanings holds short one-line descriptions for the most-asked-about
@@ -643,13 +648,11 @@ var meanings = map[string]string{
 	"EXM": "giving an example",
 	"CGT": "internal thought",
 	"END": "ends the open register",
-	// Carrier type (§4.5.1-4.5.4). Keyed by the String() of the Go
-	// value, which spells the name out; the grammar abbreviates these
-	// CAR, QUO, NAM and PHR.
-	"Carrier":   "carries a known foreign word or name, case only",
-	"Quotative": "carries a direct quote, case-framed",
-	"Naming":    "the following word is a name as such, not its bearer",
-	"Phrasal":   "case-frames a phrase as a lexicalized gestalt",
+	// Carrier type (§4.5.1-4.5.4).
+	"CAR": "carries a known foreign word or name, case only",
+	"QUO": "carries a direct quote, case-framed",
+	"NAM": "the following word is a name as such, not its bearer",
+	"PHR": "case-frames a phrase as a lexicalized gestalt",
 	// Configuration — matrix of Plexity × Similarity × Separability
 	"UPX": "a single instance",
 	"DPX": "two instances forming one entity",

@@ -15,6 +15,16 @@ func (c CarrierType) String() string {
 	return [...]string{"Carrier", "Quotative", "Naming", "Phrasal"}[c]
 }
 
+// Abbrev returns the three-letter abbreviation, which is what §4.5's
+// own section headings use: "4.5.1 CAR Carrier Adjunct", "4.5.2 QUO
+// Quotative Adjunct", and so on. Every other category in the language
+// is named by its abbreviation and spelled out by String; this one has
+// String spelling it out, so the abbreviation needs a method of its
+// own rather than the two being the same string.
+func (c CarrierType) Abbrev() string {
+	return [...]string{"CAR", "QUO", "NAM", "PHR"}[c]
+}
+
 // AllCarrierTypes enumerates the four types in declaration order.
 var AllCarrierTypes = []CarrierType{Carrier, Quotative, Naming, Phrasal}
 

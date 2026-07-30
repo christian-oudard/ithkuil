@@ -114,7 +114,7 @@ func init() {
 	for _, ct := range g.AllCarrierTypes {
 		Table = append(Table, Entry{
 			Category: "CarrierType",
-			Abbrev:   ct.String(),
+			Abbrev:   ct.Abbrev(),
 			Form:     parse.CarrierTypeForm(ct),
 		})
 	}

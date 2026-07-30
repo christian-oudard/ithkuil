@@ -273,7 +273,7 @@ func buildCombinationRef(
 }
 
 // parseCarrierTypeAbbrev maps the 3-letter canonical form back to a
-// CarrierType (inverse of carrierTypeAbbrev in gloss).
+// CarrierType (inverse of grammar.CarrierType.Abbrev).
 func parseCarrierTypeAbbrev(s string) (g.CarrierType, bool) {
 	switch s {
 	case "CAR":

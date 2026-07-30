@@ -1876,22 +1876,22 @@
       "description": "ends the open register"
     },
     {
-      "abbrev": "Carrier",
+      "abbrev": "CAR",
       "category": "CarrierType",
       "form": "hl"
     },
     {
-      "abbrev": "Quotative",
+      "abbrev": "QUO",
       "category": "CarrierType",
       "form": "hm"
     },
     {
-      "abbrev": "Naming",
+      "abbrev": "NAM",
       "category": "CarrierType",
       "form": "hn"
     },
     {
-      "abbrev": "Phrasal",
+      "abbrev": "PHR",
       "category": "CarrierType",
       "form": "hň"
     }

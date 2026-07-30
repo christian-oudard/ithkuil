@@ -225,30 +225,13 @@ func (gl *Glosser) registerEndLabel(r g.Register) string {
 // to its case name (zsnout-style suppletive form).
 func (gl *Glosser) carrierLabel(c g.CarrierAdjunct) string {
 	if gl.Canonical {
-		head := "[" + carrierTypeAbbrev(c.Type) + "]"
+		head := "[" + c.Type.Abbrev() + "]"
 		if c.Case == g.THM {
 			return head
 		}
 		return head + "-" + c.Case.String()
 	}
 	return "CARR-" + c.Type.String() + "(" + parse.CaseToVc(c.Case) + ")"
-}
-
-// carrierTypeAbbrev returns the 3-letter canonical abbreviation for a
-// CarrierType, matching the suppletive-adjunct convention used by the
-// zsnout toolkit (CAR/QUO/NAM/PHR).
-func carrierTypeAbbrev(t g.CarrierType) string {
-	switch t {
-	case g.Carrier:
-		return "CAR"
-	case g.Quotative:
-		return "QUO"
-	case g.Naming:
-		return "NAM"
-	case g.Phrasal:
-		return "PHR"
-	}
-	return "?"
 }
 
 // modularLabel formats a parsed modular adjunct.
@@ -379,7 +362,7 @@ func (gl *Glosser) refHead(head g.RefHead) string {
 	switch h := head.(type) {
 	case g.SuppletiveHead:
 		if gl.Canonical {
-			return "[" + carrierTypeAbbrev(h.Type) + "]"
+			return "[" + h.Type.Abbrev() + "]"
 		}
 		return "CARR[" + h.Type.String() + "]"
 	case g.PersonalHead:
