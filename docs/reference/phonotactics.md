@@ -315,11 +315,148 @@ The grid holds **684** permissible forms. The source's own row totals sum to **6
 
 (The table is arranged by permitted 2nd/medial consonants; geminates are treated as simply two adjacent consonants)
 
-Total permissible tri-consonantal conjuncts: **5183**
+Each row gives a set of permitted initial consonants, one medial consonant, and the set of permitted third consonants: every combination of the three is a permissible conjunct. `count` is the row's own arithmetic, the initial set times the third set; `printed` is the total the source gives, bolded where the two disagree.
+
+| Initial | 2nd | 3rd | count | printed |
+|---|---|---|---|---|
+| rř | p | ptkdgfţxsšvḑzžcčẓjmnlrwyhļřç | 56 | **54** |
+| l | p | ptkdgfţxsšḑcčẓjmnlrwyhļřç | 25 | 25 |
+| m | p | dgmnlrwyhļřç | 12 | 12 |
+| ň | p | ţlrwyhļřç | 9 | 9 |
+| sšç | p | fţsšlrwyhļřç | 36 | 36 |
+| ktcčgdẓjzž | p | lrwyhļřç | 80 | 80 |
+| p | p | fţsšvlrwyhļřç | 13 | 13 |
+| fvxţḑ | p | lrwyhļřç | 40 | 40 |
+| ļ | p | lrwyhļřç | 8 | 8 |
+| lrř | t | ptkbgfxvmnlrwyhļřç | 54 | 54 |
+| n | t | pkbgfvmnlrwyhļř | 15 | 15 |
+| ňsšç | t | fvmnlrwyhļřç | 48 | 48 |
+| mpkcčẓjzž | t | fvlrwyhļřç | 90 | 90 |
+| tgb | t | lrwyhļřç | 24 | 24 |
+| fvxţ | t | lrwyhļřç | 32 | 32 |
+| ļ | t | lrwyhļřç | 8 | 8 |
+| lrř | k | ptkbdfţsšvḑzžcčẓjmnlrwyhřç | 78 | 78 |
+| n | k | ptbdfţvḑzžcčẓjmnlrwyhřç | 23 | 23 |
+| mfvţḑ | k | fţvlrwyhřç | 50 | 50 |
+| ptkbdsšçcčẓjzž | k | fţsšvmnlrwyhřç | 196 | 196 |
+| ļ | k | flrwyhřç | 8 | 8 |
+| rř | b | tkbdgfţsšvḑzžcčẓjnlrwyhř | 48 | 48 |
+| l | b | vḑzžnlrwyř | 10 | 10 |
+| ňsšzžktcčgdẓjfvxţḑç | b | vlrwyř | 114 | 114 |
+| m | b | lrwyř | 5 | 5 |
+| ļ | b | lrwyř | 5 | 5 |
+| b | b | vḑlrwyř | 7 | 7 |
+| rř | d | pkbdgfvmnlrwyhř | 30 | 30 |
+| l | d | vmnlrwyř | 8 | 8 |
+| n | d | vmlrwyř | 7 | 7 |
+| mň | d | vlrwyř | 12 | 12 |
+| sšfvxţcčẓjḑç | d | vlrwyř | 72 | **60** |
+| zž | d | vlrwyř | 12 | 12 |
+| ļ | d | lrwyř | 5 | 5 |
+| pkbg | d | lrwyř | 20 | 20 |
+| d | d | vlrwyř | 6 | 6 |
+| rř | g | ptbdgfţsšvḑzžcčẓjmnlrwyř | 48 | 48 |
+| l | g | vḑmnzžlrwyř | 11 | 11 |
+| nptbdfvţcčẓjḑ | g | lrwyř | 65 | 65 |
+| m | g | vḑzžlrwyř | 9 | 9 |
+| g | g | vḑlrwyř | 7 | 7 |
+| sšzžç | g | vḑlrwyř | 35 | 35 |
+| ļ | g | lrwyř | 5 | 5 |
+| lrř | f | ptkbdgfţxsšḑzžcčẓjmnňlrwyhļřç | 87 | 87 |
+| mň | f | ptkbdgfxcčmnňlrwyhļř | 40 | 40 |
+| ptk | f | ptkbdgfxmnňlrwyř | 48 | 48 |
+| sšzžxţbdgcčẓjç | f | fmnňlrwyř | 126 | 126 |
+| f | f | ptkbdgţxsšḑzžcčẓjmnňlrwyhļřç | 28 | 28 |
+| ļ | f | flrwyř | 6 | 6 |
+| rlř | ţ | ptkbdgfţxsšvcčẓjmnňlrwyhř | 75 | 75 |
+| nň | ţ | ptkbdgfţxvcčmnňlrwyhř | 42 | 42 |
+| m | ţ | tkdgfţxvcčmnňlrwyhř | 19 | 19 |
+| sšzžç | ţ | rw | 10 | 10 |
+| xbg | ţ | lrwyř | 15 | 15 |
+| ţ | ţ | ptkbdgfxsšvcčẓjmnňlrwyhř | 24 | 24 |
+| pk | ţ | ptkbdgfţxsšvcčmnňlrwyř | 44 | 44 |
+| ļ | ţ | ţlrwyř | 6 | 6 |
+| rlř | x | ptbdfţxvḑcčẓjmnlrw | 54 | 54 |
+| nm | x | ptkbdxvmnlrw | 24 | 24 |
+| ptbdcčẓjfvţḑsšzž | x | xlrmnw | 96 | 96 |
+| ļ | x | xw | 2 | 2 |
+| x | x | ptbdfţvḑcčẓjmnlrw | 17 | 17 |
+| rř | ļ | ptkbdgfţxļvḑcčẓjmnňrwř | 44 | 44 |
+| ļl | ļ | ptkbdgfţxvḑcčẓjmnňrwř | 42 | 42 |
+| mnň | ļ | ptkbdgfxļvmnňrwř | 48 | 48 |
+| pt | ļ | ptkbdgfxļvmnňrwř | 32 | 32 |
+| cčẓjsšzžfţvḑ | ļ | ļ | 12 | 12 |
+| rlřmnňpkf | s | ptkbdgfţxsvḑcčjmnňlrwyhř | 216 | 216 |
+| bgv | s | ptkfţxscčmnňlrwyř | 51 | 51 |
+| ţ | s | ptkbdgfsvmnňlrwyhř | 18 | 18 |
+| s | s | ptkbdgfţxvḑcčjmnňlrwyhļř | 24 | 24 |
+| rlřmnňpkf | š | ptkbdgfţxšvḑčjmnňlrwyhř | 207 | 207 |
+| bgv | š | ptkfţxščwyhlř | 39 | 39 |
+| ţ | š | ptkbdgfšvmnňlrwyhř | 18 | 18 |
+| š | š | ptkbdgfţxvḑčjmnňlrwyhļř | 23 | 23 |
+| rř | v | ptkbdgţxsšvḑzžcčẓjmnňlrwyhļřç | 58 | 58 |
+| l | v | bdgvḑzžẓjmnňlrwyřç | 18 | 18 |
+| mň | v | vlrwyř | 12 | 12 |
+| ptkdsšzžẓjç | v | vlrwyř | 66 | 66 |
+| bg | v | bdgvmnlrwyř | 22 | 22 |
+| v | v | ptkbdgţxsšḑzžcčẓjmnňlrwyhļřç | 28 | 28 |
+| ļ | v | wy | 2 | 2 |
+| rř | ḑ | ptkbdgfxvḑcčẓjmnňlrwyhļř | 48 | **24** |
+| l | ḑ | bdgḑmnrwyř | 10 | 10 |
+| nmň | ḑ | ptkbdgfxvḑmnňlrwyř | 54 | 54 |
+| pk | ḑ | ḑrwyř | 10 | 10 |
+| bg | ḑ | ptkbdgḑmnlrwyř | 28 | 28 |
+| zž | ḑ | ḑrwyř | 10 | 10 |
+| ḑ | ḑ | ptkbdgfxvcčẓjmnňlrwyhļř | 23 | 23 |
+| ļ | ḑ | wy | 2 | 2 |
+| rřlnmň | z | ptkbdgfţxhvḑzẓjmnňlrwyř | 138 | 138 |
+| bgv | z | ptkbdgvḑzẓjmnňlrwyhř | 60 | 60 |
+| z | z | ptkbdgfţxvḑcčẓjmnňlrwyhļř | 25 | 25 |
+| rřlnmň | ž | ptkbdgfţxhvḑžjmnňlrwyř | 132 | 132 |
+| bgv | ž | ptkbdgvḑžjmnňlrwyhř | 57 | 57 |
+| ž | ž | ptkbdgfţxvḑčjmnňlrwyhļř | 23 | 23 |
+| rřl | c | ptkbdgfţxvḑcčjmnňlrwyhļř | 72 | 72 |
+| c | c | ptkbdgfţxvḑčjmnňlrwyhļř | 23 | **223** |
+| sx | c | wyh | 6 | 6 |
+| rřl | č | ptkbdgfţxvḑčmnňlrwyhļř | 66 | 66 |
+| č | č | ptkbdgfţxvḑmnňlrwyhļř | 21 | 21 |
+| sš | č | wyh | 6 | 6 |
+| rřl | ẓ | ptkbdgfţxhvḑẓčjmnňlrwyř | 69 | 69 |
+| ẓ | ẓ | ptkbdgfţxvḑmnňlrwyļř | 20 | 20 |
+| rřl | j | ptkbdgfţxhvḑjmnňlrwyř | 63 | 63 |
+| j | j | ptkbdgfţxvḑmnňlrwyļř | 20 | 20 |
+| rlř | m | ptkbdgfţxsšvḑzžcčẓjmnlrwyhļřç | 87 | 87 |
+| ptkbdgfvţḑsšzžxļcčẓjç | m | wy | 42 | 42 |
+| m | m | ptkbdgfţxsšvḑzžcčẓjnlrwyhļřç | 28 | 28 |
+| rř | n | tkdgfţxsšvḑzžmnlrwyhļřç | 46 | 46 |
+| l | n | tdkgţḑsšzžlrwyç | 15 | 15 |
+| ptkbdgfvţḑsšzžxļcčẓjç | n | wy | 42 | 42 |
+| n | n | tkdgfţxsšvḑzžmlrwyhļřç | 22 | 22 |
+| rř | ň | ptbdfţsšvḑzžcčẓjmnňlrwhļřç | 52 | 52 |
+| tlfvţḑsšzžļcčẓjç | ň | w | 16 | 16 |
+| ň | ň | ptbdfţsšvḑzžcčẓjmnlrwhļřç | 25 | 25 |
+| l | l | ptkbdgfţxsšvḑzžcčẓjmnňrwyhřç | 28 | 28 |
+| rř | l | lwyhř | 10 | 10 |
+| ptkbdgfţxsšvḑzžcčẓjmnňç | l | lwy | 69 | 69 |
+| r | r | ptkbdgfţxsšvḑzžcčẓjmnňlwyhļç | 28 | 28 |
+| ptkbdgfţxsšvḑzžcčẓjmnňlļç | r | r | 25 | 25 |
+| ptkbdgfţx | r | wy | 18 | 18 |
+| ř | ř | ptkbdgfţxsšvḑzžcčẓjmnňlwyhļç | 28 | 28 |
+| ptkbdgfţsšvḑzžcčẓjmnňlļç | ř | ř | 24 | 24 |
+| ptkbdgcčmnňřrl | h | mnw | 42 | 42 |
+| ptkbdgcčmnňrl | h | r | 13 | 13 |
+| ptkmnňrlř | ç | ptkbdgfvcčmnňlrwřç | 162 | 162 |
+| f | ç | ptkmnçw | 7 | 7 |
+| ç | ç | ptkbdgfvcčmnňlrwř | 17 | 17 |
+
+The rows enumerate **5021** conjuncts. The source's printed row totals sum to **5183**, which is also the grand total it states, so the totals are internally consistent with each other but not with the rows they sit beside. Four rows differ:
+
+- `rř` + **p**: 2 x 28 = 56 against a printed 54.
+- `sšfvxţcčẓjḑç` + **d**: 12 x 6 = 72 against a printed 60.
+- `rř` + **ḑ**: 2 x 24 = 48 against a printed 24, which is the third-consonant count alone, as though the two initials had not been multiplied in.
+- `c` + **c**: 1 x 23 = 23 against a printed **223**. This one is a digit typo, and on its own it accounts for 200 of the 162-form gap: correct it to 23 and the printed totals sum to 4983.
 
 **NOTE:** In addition to the above-listed forms, the following 8 forms are permissible as tri-consonantal conjuncts in the language but cannot be a C_R root or a C_S affix form: -**hlw**-, -**hrw**-, -**hmw**-, -**hnw**-, -**hly**-, -**hry**-, -**hmy**-, -**hny**-.
-
-The full table of 5183 permissible tri-consonantal conjuncts is available in the PDF source.
 
 ## 10. Permissible Tetra-Consonantal Conjuncts Which Can Be Roots
 
