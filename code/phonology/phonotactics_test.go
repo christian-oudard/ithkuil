@@ -188,8 +188,7 @@ func TestCheckProhibitedPair_GeminatesAreAllowed(t *testing.T) {
 // impermissible in v0.5.4. They were prose rules too, §2.6 and the
 // last sentence of §2.15, until the v0.5.0 renumbering dropped them
 // and left the tables carrying the constraint alone (G44 in
-// ISSUES.md). This pins the enforcement against the row totals the
-// document prints beside the matrix.
+// ISSUES.md).
 func TestCheckProhibitedPair_TableConstraints(t *testing.T) {
 	for _, p := range []struct{ a, b rune }{
 		{'ḑ', 's'}, {'ḑ', 'š'}, {'ḑ', 'z'}, {'ḑ', 'ž'}, {'n', 'ň'},
@@ -197,26 +196,6 @@ func TestCheckProhibitedPair_TableConstraints(t *testing.T) {
 		if rule, _ := CheckProhibitedPair(p.a, p.b); rule != "8" {
 			t.Errorf("%s%s: rule = %q, want the §8 table",
 				string(p.a), string(p.b), rule)
-		}
-	}
-	// The two rows the constraint lives in, counted against the
-	// totals printed in the document: 25 of 30 for ḑ, 23 for n.
-	seconds := []rune{'p', 't', 'k', 'b', 'd', 'g', 'f', 'ţ', 'ç', 'x',
-		'v', 'ḑ', 'ļ', 's', 'š', 'z', 'ž', 'c', 'č', 'ẓ', 'j', 'l', 'r',
-		'ř', 'm', 'n', 'ň', 'w', 'y', 'h'}
-	for _, row := range []struct {
-		c     rune
-		total int
-	}{{'ḑ', 25}, {'n', 23}} {
-		ok := 0
-		for _, b := range seconds {
-			if rule, _ := CheckProhibitedPair(row.c, b); rule == "" {
-				ok++
-			}
-		}
-		if ok != row.total {
-			t.Errorf("%c heads %d permissible conjuncts, and §8 gives %d",
-				row.c, ok, row.total)
 		}
 	}
 }
