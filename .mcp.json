@@ -1,10 +1,9 @@
 {
   "mcpServers": {
     "ithkuil": {
-      "command": "/projects/ithkuil/bin/ithkuil-mcp",
+      "command": "ithkuil-mcp",
       "args": [
-        "-lex", "/projects/ithkuil/data",
-        "-grammar", "/projects/ithkuil/language_reference"
+        "-grammar", "/projects/ithkuil/docs/reference"
       ]
     }
   }
