@@ -112,6 +112,13 @@ func getCa(buf []byte) (g.SlotVI, int, error) {
 	var f [5]int
 	n := 1
 	if sel := buf[0] >> 5; sel != 0 {
+		// putCa writes 1..5 here, one per Ca component, but the field is
+		// three bits wide and a corrupt byte can hold 6 or 7. Bytes come
+		// from a file, so the value has to be checked rather than
+		// trusted: without this the index below panicked.
+		if int(sel) > len(f) {
+			return g.SlotVI{}, 0, fmt.Errorf("Ca: component selector %d, only %d components", sel, len(f))
+		}
 		f[sel-1] = int(buf[0] & 0x1F)
 	} else {
 		packed, m, err := getUvarint(buf[1:])

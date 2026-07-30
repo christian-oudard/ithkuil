@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/phonology"
 )
 
 // Adjuncts, referentials, and the rest of the non-formative tokens,
@@ -462,8 +461,6 @@ func getCombinationRef(buf []byte) (g.CombinationReferential, int, error) {
 	}
 	return comb, cur, nil
 }
-
-func stressFromByte(b byte) phonology.Stress { return phonology.Stress(b) }
 
 // ── foreign text ────────────────────────────────────────────────────
 //
