@@ -83,7 +83,7 @@ var biasForms = [...]string{
 	g.EXG: "rrs",
 	g.ATE: "ňj",
 	g.APB: "řs",
-	g.OPT: "ččk",
+	g.OPT: "ççk",
 	g.CNV: "rrj",
 	g.ACC: "lf",
 	g.ACH: "mçt",
