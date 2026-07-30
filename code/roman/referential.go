@@ -17,26 +17,21 @@ func Referential(r g.Referential) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	body := head + parse.CaseToVc(r.Case)
+	base := head + parse.CaseToVc(r.Case)
+	// §4.6.1 slot 3 is written "w/y + V_C2". The two are one morpheme
+	// with two spellings, so both go forward as candidate bodies and
+	// the cluster rules choose between them.
+	bodies := []string{base}
 	if s := r.Second; s != nil {
-		// §4.6.1 slot 3 is written "w/y + V_C2". The two are one
-		// morpheme with two spellings, so take whichever the cluster
-		// rules admit next to the vowel that follows.
-		tail, err := pickValid(func(sep string) string {
-			out := body + sep + parse.CaseToVc(s.Case)
-			if len(s.Refs) > 0 {
-				out += refChainForm(s.Refs)
-			}
-			return out
-		}, "w", "y")
-		if err != nil {
-			return "", fmt.Errorf("referential second referent: %w", err)
+		tail := parse.CaseToVc(s.Case)
+		if len(s.Refs) > 0 {
+			tail += refChainForm(s.Refs)
 		}
-		body = tail
+		bodies = []string{base + "w" + tail, base + "y" + tail}
 	}
 	// §4.6.3: a suppletive cluster here takes "üo-", so the word is not
 	// read as a modular adjunct.
-	return finishReferential(body, r.Head, "üo", r.RpvEssence)
+	return finishReferential(bodies, r.Head, "üo", r.RpvEssence)
 }
 
 // CombinationReferential renders the §4.6.2 shape.
@@ -75,7 +70,7 @@ func CombinationReferential(c g.CombinationReferential) (string, error) {
 	}
 	// §4.6.3: a suppletive cluster here takes "a-", so the word is not
 	// read as a concatenated formative.
-	return finishReferential(body, c.Head, "a", c.RpvEssence)
+	return finishReferential([]string{body}, c.Head, "a", c.RpvEssence)
 }
 
 // finishReferential applies the epenthetic prefix a head may need and
@@ -85,14 +80,29 @@ func CombinationReferential(c g.CombinationReferential) (string, error) {
 // §4.6.3 makes the prefix obligatory in front of a suppletive cluster,
 // and the two shapes use different vowels, so the caller names it. For
 // a personal head the vowel is instead §4.6.1's epenthetic "-ë-",
-// which appears only "if necessary due to phonotactic rules", so the
-// bare form is tried first.
-func finishReferential(body string, head g.RefHead, suppletivePrefix string, rpv bool) (string, error) {
+// which appears only "if necessary due to phonotactic rules".
+//
+// The bodies are the spellings the caller could not choose between,
+// and the prefix is chosen against a whole word rather than against
+// one of them. The two are not independent: which Slot 3 separator is
+// sayable depends on the cluster the prefix leaves in front of it, and
+// judging the separator on the prefix-less body rejected "ëztewim",
+// whose "zt" cannot open a word without the prefix that was not yet in
+// play. Prefixes are the outer loop, so a spelling that needs no
+// epenthetic vowel wins over one that does, which is the only ranking
+// §4.6.1 states.
+func finishReferential(bodies []string, head g.RefHead, suppletivePrefix string, rpv bool) (string, error) {
 	prefixes := []string{"", "ë"}
 	if _, ok := head.(g.SuppletiveHead); ok {
 		prefixes = []string{suppletivePrefix}
 	}
-	word, err := pickValid(func(prefix string) string { return prefix + body }, prefixes...)
+	var candidates []string
+	for _, prefix := range prefixes {
+		for _, body := range bodies {
+			candidates = append(candidates, prefix+body)
+		}
+	}
+	word, err := pickValid(candidates...)
 	if err != nil {
 		return "", err
 	}
@@ -113,19 +123,15 @@ func finishReferential(body string, head g.RefHead, suppletivePrefix string, rpv
 	return word, nil
 }
 
-// pickValid builds a candidate from each option in turn and returns
-// the first that passes the phonotactic checks.
-func pickValid(build func(string) string, options ...string) (string, error) {
-	var tried []string
-	for _, o := range options {
-		w := build(o)
+// pickValid returns the first candidate that can be said.
+func pickValid(candidates ...string) (string, error) {
+	for _, w := range candidates {
 		if phonology.Legal(w) {
 			return w, nil
 		}
-		tried = append(tried, w)
 	}
 	return "", fmt.Errorf("no phonotactically valid spelling among %s",
-		strings.Join(tried, ", "))
+		strings.Join(candidates, ", "))
 }
 
 // refHeadForm spells a referential head.

@@ -238,29 +238,21 @@ func TestReferential_MonosyllabicCannotCarryRPV(t *testing.T) {
 	}
 }
 
-// §4.6.1's own example "ëztewim" parses and cannot be written back.
-//
-// The word needs the epenthetic -ë-: its head cluster "zt" cannot open
-// a word without it. But Referential validates the w/y separator
-// against the prefix-less body, and only finishReferential adds the
-// prefix afterwards. So both candidates it weighs, "ztewim" and
-// "zteyim", are unpronounceable for a reason the prefix would have
-// fixed, and the render fails outright rather than choosing.
-//
-// The fix is not to reorder the two steps: the separator and the
-// prefix are not independent, since which separator is sayable depends
-// on the cluster the prefix leaves behind. They have to be one search
-// over the four combinations, which means pickValid stops being a
-// single-axis helper.
+// §4.6.1's own example "ëztewim" needs the epenthetic -ë-: its head
+// cluster "zt" cannot open a word without it. The Slot 3 separator and
+// the prefix are chosen together for that reason, since which separator
+// is sayable depends on the cluster the prefix leaves in front of it.
 func TestReferential_EpentheticPrefixWithSecondReferent(t *testing.T) {
-	t.Skip("§4.6.1 epenthetic -ë- is never tried alongside the w/y choice; see the comment above")
-
 	r, err := ParseReferential("ëztewim")
 	if err != nil {
 		t.Fatalf("Referential(ëztewim): %v", err)
 	}
-	if _, err := Referential(r); err != nil {
-		t.Errorf("Referential(%+v): %v", r, err)
+	got, err := Referential(r)
+	if err != nil {
+		t.Fatalf("Referential(%+v): %v", r, err)
+	}
+	if got != "ëztewim" {
+		t.Errorf("ëztewim wrote back as %q", got)
 	}
 }
 

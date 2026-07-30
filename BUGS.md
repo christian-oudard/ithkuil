@@ -36,17 +36,6 @@ here.
 `gloss/corpus_gloss_test.go`'s `TestCorpusGloss_ComposesBack` holds the
 count of chains at nineteen, so the gap cannot widen quietly.
 
-## roman cannot write ëztewim
-
-`roman.Referential` picks the §4.6.1 Slot 3 w/y separator by validating
-the prefix-less body, and only adds the epenthetic `-ë-` afterwards. For
-a head cluster that needs the prefix, both candidates it weighs are
-unpronounceable for the reason the prefix would have fixed, and the
-render fails outright. §4.6.1's own example does not survive
-read to write.
-
-`roman.TestReferential_EpentheticPrefixWithSecondReferent`
-
 ## roman never writes the §1.7 Rule 1 glottal
 
 §1.7 gives two placements for a case vowel's glottal stop, and the
