@@ -324,3 +324,30 @@ diacritics returns an error naming this. Everything else round-trips,
 554 of the corpus words among them. Where the source leaves a construct
 undetermined we would rather say so at the point of failure than pick a
 spelling and have it read later as Quijada's.
+
+### G43. §4.6.1 assigns Rule 3 to a slot its own example spells by Rule 1
+
+§4.6.1 lists eleven examples and adds a parenthetical: "Note that the
+last three of these examples illustrate that Sec. 1.7, Rule 3, applies
+to Slot 2 V_C1 and Slot 3 V_C2 for Cases 37 through 52." The three are
+*sme'e*, *ka'u* and *fo'we'is*.
+
+The first two bear it out. Both have no Slot 3, so V_C1 ends the word:
+**sme'e** reduplicates *e* around the glottal and **ka'u** takes it
+intervocalically in the diphthong *au*, which is Rule 3 in each of its
+two shapes.
+
+The third does not. **fo'we'is** writes V_C1 as **o'**, the glottal
+after the whole vowel-form, which is Rule 1. Rule 3 would give
+**fo'owe'is**. Its V_C2 *is* Rule 3, as **e'i** for *ei*.
+
+§1.7 accounts for the word as printed: Rule 1 is the default and Rule 3
+overrides it only where Rule 1 would be impermissible or would leave
+the glottal word-final. V_C1 has the Slot 3 **w** behind it and so is
+neither. Read that way the parenthetical is loose rather than wrong,
+naming §1.7 as the reason glottal stops appear in those slots at all,
+not fixing which of its rules applies. The alternative is to take the
+sentence at its word and call the printed example a slip.
+
+This code follows §1.7 and the printed example: a V_C1 with a Slot 3
+behind it is written by Rule 1, and a word-final one by Rule 3.

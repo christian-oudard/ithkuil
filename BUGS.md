@@ -36,17 +36,6 @@ here.
 `gloss/corpus_gloss_test.go`'s `TestCorpusGloss_ComposesBack` holds the
 count of chains at nineteen, so the gap cannot widen quietly.
 
-## roman never writes the §1.7 Rule 1 glottal
-
-§1.7 gives two placements for a case vowel's glottal stop, and the
-renderer writes Rule 3's epenthetic spelling in every slot, including
-the ones Rule 1 serves. §4.6.1's printed `fo'we'is` comes back
-`fo'owe'is`, and `lai'wiš` comes back `la'iwiš`. Both re-parse to the
-right value, so the round-trip closes over them and nothing else catches
-it. The parse arm reads both placements.
-
-`roman.TestReferential_Rule1GlottalPlacement`
-
 ## phonology enforces an unsourced "2.23"
 
 The rule barring `ḑs`, `ḑš`, `ḑz`, `ḑž` and `nň` is in no published

@@ -17,17 +17,31 @@ func Referential(r g.Referential) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	base := head + parse.CaseToVc(r.Case)
-	// §4.6.1 slot 3 is written "w/y + V_C2". The two are one morpheme
-	// with two spellings, so both go forward as candidate bodies and
-	// the cluster rules choose between them.
-	bodies := []string{base}
+	vc1 := parse.CaseToVc(r.Case)
+	bodies := []string{head + vc1}
 	if s := r.Second; s != nil {
 		tail := parse.CaseToVc(s.Case)
 		if len(s.Refs) > 0 {
 			tail += refChainForm(s.Refs)
 		}
-		bodies = []string{base + "w" + tail, base + "y" + tail}
+		// A V_C1 with a Slot 3 behind it is not word-final, so §1.7
+		// Rule 1 can serve and Rule 3 only overrides it where it
+		// cannot: the document's own "fo'we'is" writes case 43 as
+		// "o'" rather than "o'o". The tables are keyed on the Rule 3
+		// spelling, so the Rule 1 one is derived and offered first.
+		vc1s := []string{vc1}
+		if r1, ok := phonology.Rule1Glottal(vc1); ok {
+			vc1s = []string{r1, vc1}
+		}
+		// §4.6.1 slot 3 is written "w/y + V_C2": one morpheme with two
+		// spellings. Every combination goes forward and the cluster
+		// rules choose.
+		bodies = nil
+		for _, v := range vc1s {
+			for _, sep := range []string{"w", "y"} {
+				bodies = append(bodies, head+v+sep+tail)
+			}
+		}
 	}
 	// §4.6.3: a suppletive cluster here takes "üo-", so the word is not
 	// read as a modular adjunct.

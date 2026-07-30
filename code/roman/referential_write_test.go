@@ -256,32 +256,36 @@ func TestReferential_EpentheticPrefixWithSecondReferent(t *testing.T) {
 	}
 }
 
-// §1.7 gives two placements for a case vowel's glottal stop, and the
-// renderer only ever writes one. Rule 3's epenthetic spelling (o → o'o)
-// is licensed "where Rule 1 will not do", which §4.6.1 spells out as
-// word-final position; a V_C1 followed by the Slot 3 w/y is not final,
-// so Rule 1 applies and the glottal stays after the vowel-form.
+// §1.7 gives a case vowel's glottal stop two placements, and §4.6.1
+// prints examples of both. Rule 1 puts it after the whole vowel-form
+// and is the default; Rule 3 reduplicates or goes intervocalic, and
+// overrides Rule 1 only where Rule 1 cannot serve, word-finally above
+// all. So a V_C1 with a Slot 3 behind it takes Rule 1 and a V_C1 at
+// the end of the word takes Rule 3, and both spell one case.
 //
-// fullparse reads both placements. The renderer writes Rule 3 in every
-// slot, so §4.6.1's printed example "fo'we'is" comes back "fo'owe'is"
-// and "lai'wiš" comes back "la'iwiš". Both re-parse to the right value,
-// so the round-trip closes and nothing else catches this — but the
-// document spells its own example the other way, and Rule 3 is not
-// licensed in a slot Rule 1 can serve.
+// The lookup tables are keyed on the Rule 3 spelling, because a
+// formative's word-final V_C always lands there, which is why the
+// writer used to put Rule 3 everywhere and could not reproduce the
+// document's own "fo'we'is".
 func TestReferential_Rule1GlottalPlacement(t *testing.T) {
-	t.Skip("§1.7 Rule 1 placement is never written; see the comment above")
-
-	for _, w := range []string{"fo'we'is", "lai'wiš"} {
+	for _, w := range []string{
+		"fo'we'is", // V_C1 Rule 1 before the Slot 3 w, V_C2 Rule 3
+		"lai'wiš",  // V_C1 Rule 1 on a diphthong: ai + '
+		"sme'e",    // no Slot 3, so V_C1 is final and takes Rule 3
+		"ka'u",     // the same, on a diphthong
+	} {
 		r, err := ParseReferential(w)
 		if err != nil {
-			t.Fatalf("Referential(%s): %v", w, err)
+			t.Errorf("ParseReferential(%s): %v", w, err)
+			continue
 		}
 		out, err := Referential(r)
 		if err != nil {
-			t.Fatalf("Referential(%+v): %v", r, err)
+			t.Errorf("%s: %v", w, err)
+			continue
 		}
 		if out != w {
-			t.Errorf("%s rendered as %s", w, out)
+			t.Errorf("%s wrote back as %q", w, out)
 		}
 	}
 }

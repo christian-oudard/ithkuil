@@ -141,3 +141,32 @@ func GlottalizeVowel(v string) string {
 	}
 	return string(rs[0]) + "'" + string(rs[1:])
 }
+
+// Rule1Glottal rewrites a §1.7 Rule 3 glottalized vowel-form into its
+// Rule 1 spelling, which puts the glottal after the whole form (a'a →
+// a', a'i → ai').
+//
+// Rule 1 is §1.7's default and Rule 3 overrides it only where Rule 1
+// cannot serve, so a form written Rule 3 mid-word can often be written
+// Rule 1 instead. The caller decides: this reports the alternative and
+// whether one exists, and the phonotactics say which survives.
+//
+// Reports false for a disyllabic conjunct (u'a), whose glottal sits
+// between the syllables under Rule 2. That placement is not the
+// positional choice Rule 1 and Rule 3 are making, so there is no
+// alternative spelling to offer.
+func Rule1Glottal(v string) (string, bool) {
+	i := strings.Index(v, "'")
+	if i < 0 {
+		return "", false
+	}
+	before, after := v[:i], v[i+1:]
+	if before == after {
+		// A single vowel reduplicated around the glottal.
+		return before + "'", true
+	}
+	if permissibleDiphthongs[before+after] {
+		return before + after + "'", true
+	}
+	return "", false
+}
