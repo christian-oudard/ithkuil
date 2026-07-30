@@ -36,7 +36,10 @@ const (
 func main() {
 	fd := int(os.Stdin.Fd())
 	if !term.IsTerminal(fd) {
-		batch(os.Stdin, os.Stdout)
+		if err := batch(os.Stdin, os.Stdout); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 		return
 	}
 	old, err := term.MakeRaw(fd)
@@ -53,13 +56,17 @@ func main() {
 
 // batch reads ASCII from r and writes the FromASCII conversion to w
 // with no TUI niceties. Suitable for shell pipes.
-func batch(r io.Reader, w io.Writer) {
+//
+// It returns its error rather than exiting, as tui does: the two are
+// the same program in two modes, and only main knows what a failure in
+// either should do to the process.
+func batch(r io.Reader, w io.Writer) error {
 	b, err := io.ReadAll(r)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		return err
 	}
-	fmt.Fprint(w, phonology.FromASCII(string(b)))
+	_, err = fmt.Fprint(w, phonology.FromASCII(string(b)))
+	return err
 }
 
 // tui runs the interactive raw-mode loop. Each Enter finalizes the
