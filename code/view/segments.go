@@ -501,27 +501,6 @@ func decorateHyphens(segs []Segment) {
 	}
 }
 
-// UnknownReason explains why no classifier claimed a word, as a bare
-// sentence the caller labels to taste. The formative decoder gets
-// furthest into a word of any of the classifiers, so its complaint is
-// the most specific description of the shape available; it is a
-// diagnostic, not a claim that the word was meant to be a formative.
-//
-// Returns "" when the formative decoders raise nothing at all, which
-// means the word decoded as a formative and something later rejected
-// it. There is nothing specific to say in that case, and inventing a
-// guess would be worse than the silence.
-func UnknownReason(word string) string {
-	layout, err := slots.Parse(word)
-	if err != nil {
-		return err.Error()
-	}
-	if _, err := slots.ToGrammar(layout); err != nil {
-		return err.Error()
-	}
-	return ""
-}
-
 // LayoutSegments renders a slots.Layout as phonetic-table rows, in
 // written order, skipping empty slots. It carries no Encodes, because
 // a Layout is the shape split alone — it is what Parse recovered

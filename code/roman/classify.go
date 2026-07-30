@@ -1,8 +1,11 @@
 package roman
 
 import (
+	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/christian-oudard/ithkuil/fault"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
@@ -83,6 +86,20 @@ func ParseWord(word string) (g.Word, error) {
 	}
 	conjs := phonology.SplitConjuncts(word)
 
+	// best keeps the complaint from whichever class read furthest.
+	// Every attempt below that fails has something to say, and nine of
+	// the ten are noise — "this is not a bias adjunct" describes a word
+	// nobody was writing. The stage ordering picks the one that is not
+	// noise: a class that got as far as reading slot values had a shape
+	// it recognized, and a class that failed on the shape never did.
+	var best fault.Faults
+	consider := func(err error) {
+		var fs fault.Faults
+		if errors.As(err, &fs) && (best.List == nil || fs.Stage() >= best.Stage()) {
+			best = fs
+		}
+	}
+
 	// 1. Single consonant cluster → Bias.
 	if len(conjs) == 1 && phonology.IsConsonantConjunct(conjs[0]) {
 		if b, ok := parse.ParseBias(conjs[0]); ok {
@@ -114,9 +131,11 @@ func ParseWord(word string) (g.Word, error) {
 	//    first so the modular pattern doesn't snatch it.
 	if len(conjs) >= 2 && conjs[0] == "üo" {
 		if _, isCp := parse.ParseCarrierType(conjs[1]); isCp {
-			if r, err := ParseReferential(word); err == nil {
+			r, err := ParseReferential(word)
+			if err == nil {
 				return referentialWord(r), nil
 			}
+			consider(err)
 		}
 	}
 
@@ -127,6 +146,8 @@ func ParseWord(word string) (g.Word, error) {
 	//    scope prefix.
 	if m, err := parse.ParseModular(word); err == nil {
 		return m, nil
+	} else {
+		consider(err)
 	}
 
 	// 4a. Single-affix adjunct (§4.1.1): V-C[-V], starting with a
@@ -138,9 +159,11 @@ func ParseWord(word string) (g.Word, error) {
 	if len(conjs) >= 2 && len(conjs) <= 3 &&
 		phonology.IsVowelConjunct(conjs[0]) && conjs[0] != "ë" &&
 		!parse.IsSpecialVv(conjs[0]) {
-		if a, err := parse.ParseSingleAffix(word); err == nil {
+		a, err := parse.ParseSingleAffix(word)
+		if err == nil {
 			return a, nil
 		}
+		consider(err)
 	}
 
 	// 4b. Multi-affix adjunct (§4.1.2): [ë] C V Cz V C ... [V]. The Cz
@@ -149,6 +172,8 @@ func ParseWord(word string) (g.Word, error) {
 	//     consonant-initial formative.
 	if a, err := parse.ParseMultipleAffix(word); err == nil {
 		return a, nil
+	} else {
+		consider(err)
 	}
 
 	// 5. Single/dual referential per §4.6.1:
@@ -156,11 +181,15 @@ func ParseWord(word string) (g.Word, error) {
 	//    the RPV essence override.
 	if r, err := ParseReferential(word); err == nil {
 		return referentialWord(r), nil
+	} else {
+		consider(err)
 	}
 
 	// 5b. Combination referential: [ë] C1 Vc Spec [VxCs...] [Vc2].
 	if c, err := ParseCombinationReferential(word); err == nil {
 		return c, nil
+	} else {
+		consider(err)
 	}
 
 	// 6. Formative. A Slot I C_C marker means another formative
@@ -173,6 +202,8 @@ func ParseWord(word string) (g.Word, error) {
 		if f.Concat == g.ConcatNone {
 			return f, nil
 		}
+	} else {
+		consider(err)
 	}
 
 	// A bare consonant cluster that decomposes as referents used to be
@@ -180,7 +211,18 @@ func ParseWord(word string) (g.Word, error) {
 	// unparenthesized in its slot table and gives "(ë)C(C)-V" as the
 	// tell-tale shape, so a referential always carries a case, and a
 	// word with no vowel in it at all is unpronounceable besides.
-	return nil, fmt.Errorf("no word class fits %q", word)
+	// A word that reached the value stage under some class failed for
+	// a reason worth printing: its shape was recognized and a slot in
+	// it was not. Anything less is a word no class recognized at all,
+	// and saying so is the whole of what we know.
+	if best.List != nil {
+		return nil, best
+	}
+	return nil, fault.One(word, fault.Fault{
+		Stage: fault.Shape,
+		Code:  "shape",
+		Fix:   "no word class has this shape: not a formative, referential, adjunct, register marker or bias",
+	})
 }
 
 // Tokenize reads a span of romanization into one Result per word.

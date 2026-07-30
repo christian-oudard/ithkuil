@@ -6,6 +6,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/christian-oudard/ithkuil/allomorph"
+	"github.com/christian-oudard/ithkuil/fault"
 	"github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
@@ -21,7 +22,7 @@ import (
 func Parse(word string) (Layout, error) {
 	w, err := phonology.ParseWord(word)
 	if err != nil {
-		return Layout{}, fmt.Errorf("slots: %w", err)
+		return Layout{}, err
 	}
 	return ParseWord(w)
 }
@@ -35,7 +36,7 @@ func ParseWord(w phonology.Word) (Layout, error) {
 	word := w.String()
 	stress := w.Stress()
 	if stress == phonology.InvalidStress {
-		return Layout{}, fmt.Errorf("word %q has more than one stress mark", word)
+		return Layout{}, fault.One(word, shape("stress", word, "a word carries at most one stress mark"))
 	}
 	// A sentence-initial word may carry a prefix that is no part of its
 	// slot structure; the conjuncts are re-split when it is dropped.
@@ -44,7 +45,9 @@ func ParseWord(w phonology.Word) (Layout, error) {
 		conjs = phonology.MergeGlottalVowels(phonology.SplitConjuncts(body))
 	}
 	if len(conjs) < 3 {
-		return Layout{}, fmt.Errorf("word %q too short (got %d conjuncts, need at least 3)", word, len(conjs))
+		return Layout{}, fault.One(word, shape("shape", word, fmt.Sprintf(
+			"a formative needs at least a Cr, a Vr and a Ca; this has %s",
+			plural(len(conjs), "conjunct"))))
 	}
 	l := Layout{
 		Stress: stress,
@@ -80,15 +83,16 @@ func ParseWord(w phonology.Word) (Layout, error) {
 	case i < len(conjs) && phonology.IsVowelConjunct(conjs[i]):
 		// Vowel-initial: Vv-Cr-Vr-…-Ca-… (possibly special-Vv).
 		if err := parseVowelInitial(&l, conjs, i); err != nil {
-			return Layout{}, fmt.Errorf("%v (word %q)", err, word)
+			return Layout{}, shapeErr(word, err)
 		}
 	default:
 		// Consonant-initial: Cr-Vr-Ca-… (no Vv).
 		if l.Cc != "" {
-			return Layout{}, fmt.Errorf("Slot I prefix with consonant-initial body not supported (word %q)", word)
+			return Layout{}, fault.One(word, shape("Cc", l.Cc,
+				"a Slot I prefix needs a Vv after it, and this word begins with a consonant cluster"))
 		}
 		if err := parseConsonantInitial(&l, conjs, i); err != nil {
-			return Layout{}, fmt.Errorf("%v (word %q)", err, word)
+			return Layout{}, shapeErr(word, err)
 		}
 	}
 	return l, nil
@@ -172,17 +176,17 @@ func parseVowelInitial(l *Layout, conjs []string, i int) error {
 	// Vv markers).
 	if parse.IsSpecialVv(vv) {
 		if isShortcutCc(l.Cc) {
-			return fmt.Errorf("shortcut Cc %q cannot combine with special Vv %q", l.Cc, vv)
+			return shape("Vv", vv, "the Slot I shortcut "+l.Cc+" takes a plain Vv, not a special one")
 		}
 		l.Vv = vv
 		i++
 		if i >= len(conjs) {
-			return fmt.Errorf("special Vv %q with no Cs/C1", vv)
+			return shape("Cr", "", "the special Vv "+vv+" needs a Cs or C1 cluster after it")
 		}
 		l.Cr = conjs[i]
 		i++
 		if i >= len(conjs) {
-			return fmt.Errorf("special Vv: missing Vr")
+			return shape("Vr", "", "a special Vv needs a Vr after the root")
 		}
 		l.Vr = conjs[i]
 		i++
@@ -216,7 +220,7 @@ func parseVowelInitial(l *Layout, conjs []string, i int) error {
 	i++
 
 	if i >= len(conjs) {
-		return fmt.Errorf("missing Cr after Vv")
+		return shape("Cr", "", "a Vv needs a root cluster after it")
 	}
 	l.Cr = conjs[i]
 	i++
@@ -231,17 +235,18 @@ func parseVowelInitial(l *Layout, conjs []string, i int) error {
 			return err
 		}
 		if hadGlottalVv && len(l.SlotV) < 2 {
-			return fmt.Errorf("shortcut form: Vv glottal-stop requires ≥2 Slot V affixes (got %d)", len(l.SlotV))
+			return shape("Vv", vv, fmt.Sprintf(
+				"a §3.5.1 glottal stop on Vv marks two or more Slot V affixes; this has %d", len(l.SlotV)))
 		}
 		return parseAfterCa(l, newConjs, newI)
 	}
 
 	// Regular long form: Vr next.
 	if i >= len(conjs) {
-		return fmt.Errorf("missing Vr after Cr")
+		return shape("Vr", "", "the root cluster needs a Vr after it")
 	}
 	if !phonology.IsVowelConjunct(conjs[i]) {
-		return fmt.Errorf("expected Vr vowel after Cr, got %q", conjs[i])
+		return shape("Vr", conjs[i], "the root cluster needs a vowel after it, and "+conjs[i]+" is a consonant cluster")
 	}
 	l.Vr = conjs[i]
 	i++
@@ -255,10 +260,10 @@ func parseConsonantInitial(l *Layout, conjs []string, i int) error {
 	l.Cr = conjs[i]
 	i++
 	if i >= len(conjs) {
-		return fmt.Errorf("missing Vr after Cr")
+		return shape("Vr", "", "the root cluster needs a Vr after it")
 	}
 	if !phonology.IsVowelConjunct(conjs[i]) {
-		return fmt.Errorf("expected Vr vowel after Cr, got %q", conjs[i])
+		return shape("Vr", conjs[i], "the root cluster needs a vowel after it, and "+conjs[i]+" is a consonant cluster")
 	}
 	l.Vr = conjs[i]
 	i++
@@ -271,7 +276,7 @@ func parseConsonantInitial(l *Layout, conjs []string, i int) error {
 // bare form. After Ca, parseAfterCa handles the rest.
 func parseFromCa(l *Layout, conjs []string, i int, allowSlotV bool) error {
 	if i >= len(conjs) {
-		return fmt.Errorf("missing Ca cluster")
+		return shape("Ca", "", "a formative needs a Ca complex after Vr")
 	}
 
 	// Try to find a geminated Ca that signals Slot V.
@@ -292,7 +297,7 @@ func parseFromCa(l *Layout, conjs []string, i int, allowSlotV bool) error {
 			// Slot V is the (Cs, Vx) pairs between i and geminatedAt.
 			for j := i; j < geminatedAt; j += 2 {
 				if j+1 >= geminatedAt {
-					return fmt.Errorf("Slot V missing Vx at conjunct %d", j)
+					return shape("Vx", "", "every Slot V affix Cs needs its Vx vowel")
 				}
 				l.SlotV = append(l.SlotV, AffixChunk{
 					Cs: conjs[j],
@@ -306,7 +311,7 @@ func parseFromCa(l *Layout, conjs []string, i int, allowSlotV bool) error {
 
 	// No Slot V — the conjunct at i is the bare Ca.
 	if !phonology.IsConsonantConjunct(conjs[i]) {
-		return fmt.Errorf("expected Ca consonant cluster, got %q", conjs[i])
+		return shape("Ca", conjs[i], "the Ca slot holds a consonant cluster, and "+conjs[i]+" is a vowel")
 	}
 	// §3.8.1.2 shortcut: a Pattern-1 Cn cluster in the Ca slot
 	// (hl/hr/hm/hn/hň, but not the FAC/CCN "h") means Vn=MNO and
@@ -354,7 +359,7 @@ func parseShortcutSlotV(l *Layout, conjs []string, i int) ([]string, int, error)
 			// is there but the Cs it should precede is not. An affix
 			// is its Cs, so there is no affix to record.
 			if cs == "'" {
-				return nil, 0, fmt.Errorf("Slot V end-marker glottal after Vx %q has no Cs", vx)
+				return nil, 0, shape("Cs", "", "the §3.6.2 end-marker glottal after Vx "+vx+" needs a Cs after it")
 			}
 			collected = append(collected, AffixChunk{Vx: vx, Cs: cs[1:]})
 			l.SlotV = append(l.SlotV, collected...)
@@ -405,11 +410,12 @@ func parseAfterCa(l *Layout, conjs []string, i int) error {
 	}
 	trailing := conjs[i:]
 	if len(trailing) > 1 {
-		return fmt.Errorf("unexpected trailing conjuncts after Ca: %v", trailing)
+		return shape("shape", strings.Join(trailing, ""),
+			"nothing follows Slot IX, and these conjuncts sit after it")
 	}
 	if len(trailing) == 1 {
 		if !phonology.IsVowelConjunct(trailing[0]) {
-			return fmt.Errorf("expected trailing vowel for Slot IX, got %q", trailing[0])
+			return shape("Vc", trailing[0], "Slot IX holds a vowel, and "+trailing[0]+" is a consonant cluster")
 		}
 		l.Vc = trailing[0]
 	}

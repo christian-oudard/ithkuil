@@ -186,9 +186,10 @@ func TestToGrammar_DefaultsOnEmptyVvVrVc(t *testing.T) {
 
 func TestFinalFromVc_UltimateEmpty(t *testing.T) {
 	// Ultimate stress with empty Vc → default OBS Assertive.
-	f, err := finalFromVc("", phonology.Ultimate, g.ConcatNone)
-	if err != nil {
-		t.Fatalf("finalFromVc(ultimate, empty): %v", err)
+	var fs faults
+	f := finalFromVc(&fs, "", phonology.Ultimate, g.ConcatNone)
+	if fs.any() {
+		t.Fatalf("finalFromVc(ultimate, empty): %v", fs.err(""))
 	}
 	uv, ok := f.(g.UnframedVerbal)
 	if !ok {

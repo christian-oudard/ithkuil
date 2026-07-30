@@ -165,7 +165,18 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 			// an unreadable word from an unsupported one.
 			w.Type = "?"
 			w.Gloss = "?" + r.Romanization
-			w.Reason = view.UnknownReason(r.Romanization)
+			// The faults carry the slot each one belongs to, so a
+			// client can line them up against the segments below
+			// rather than parse them out of the prose.
+			var fs fault.Faults
+			if errors.As(r.Err, &fs) {
+				for _, f := range fs.List {
+					w.Violations = append(w.Violations, validationOut{
+						Stage: f.Stage.String(), Code: f.Code, Found: f.Found, Fix: f.Fix,
+					})
+				}
+			}
+			w.Reason = r.Err.Error()
 			if layout, err := slots.Parse(r.Romanization); err == nil {
 				for _, sg := range view.LayoutSegments(layout) {
 					w.Segments = append(w.Segments, segmentOut{

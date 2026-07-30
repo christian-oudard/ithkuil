@@ -29,7 +29,7 @@ func TestMalformed_GlottalPatterns(t *testing.T) {
 		{"mla''la", "geminate"},
 		// Two-distinct-move pattern: glottal lands on two separate
 		// inter-vowel positions, second can't be parsed as anything.
-		{"mla'la'a", "invalid"},
+		{"mla'la'a", "no case is written"},
 	}
 	for _, c := range cases {
 		t.Run(c.in, func(t *testing.T) {

@@ -143,11 +143,10 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 			// rather than dressed up with a "?" — a line here is a
 			// gloss you can paste back, and this one is not.
 			if r.Err != nil {
-				reason := view.UnknownReason(r.Romanization)
-				if reason == "" {
-					reason = r.Err.Error()
-				}
-				fmt.Fprintf(stdout, "%s: %s\n", r.Romanization, reason)
+				var fs fault.Faults
+				errors.As(r.Err, &fs)
+				fmt.Fprintf(stdout, "%s: %s\n", r.Romanization,
+					strings.Join(faultLines(fs, r.Err), "; "))
 				continue
 			}
 			fmt.Fprintln(stdout, canonical.Word(r.Word, span, i))
@@ -167,7 +166,7 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 			continue
 		}
 		if r.Err != nil {
-			renderUnknown(stdout, r.Romanization)
+			renderUnknown(stdout, r.Romanization, r.Err)
 			continue
 		}
 		renderDetailed(stdout, r, span, i, lex, glosser, canonical)
@@ -232,30 +231,69 @@ func wordHeader(w io.Writer, romanization, gl string) {
 	}
 }
 
-// renderUnknown reports why no classifier claimed a word. The
-// formative decoder gets furthest into a word of any of them, so its
-// complaint is the most specific description of the shape available;
-// it is a diagnostic, not a claim that the word was meant to be a
-// formative.
-func renderUnknown(w io.Writer, word string) {
+// renderUnknown reports why no word class claimed a word.
+//
+// A value-stage failure is shown against the split rather than beside
+// it: the word divided into slots cleanly and the reader needs to see
+// which of them is the problem, which is a property of a row and not
+// of the word. Marking the row puts the correct slots and the wrong
+// one in the same picture, so "everything but the Ca is fine" is
+// legible without reading a sentence and counting conjuncts.
+//
+// A shape failure has no split to mark, since the cut is what failed,
+// so it prints alone.
+func renderUnknown(w io.Writer, word string, err error) {
 	fmt.Fprintln(w, stylize(ansiBold, strings.ToLower(word)))
 	iw := indented(w, "  ")
 	fmt.Fprintln(iw, stylize(ansiDim, "(unclassified)"))
 	fmt.Fprintln(iw)
 
-	layout, err := slots.Parse(word)
-	if err != nil {
-		// A shape failure names its own package already, and leaves
-		// no split to show, so it is the whole story.
-		fmt.Fprintf(iw, "%v\n", err)
+	var fs fault.Faults
+	errors.As(err, &fs)
+
+	layout, perr := slots.Parse(word)
+	if perr != nil {
+		for _, f := range faultLines(fs, err) {
+			fmt.Fprintln(iw, f)
+		}
 		return
 	}
-	if reason := view.UnknownReason(word); reason != "" {
-		fmt.Fprintf(iw, "as a formative: %s\n", reason)
+	byslot := map[string]fault.Fault{}
+	for _, f := range fs.List {
+		byslot[f.Code] = f
 	}
-	fmt.Fprintln(iw)
-	fmt.Fprintln(iw, stylize(ansiDim, "slot shape, for the word as a whole:"))
-	renderPhoneticTable(iw, view.LayoutSegments(layout))
+	segs := view.LayoutSegments(layout)
+	renderFaultedTable(iw, segs, byslot)
+	// A fault that names no slot in the split — a whole-word one, or a
+	// slot this view does not draw — still has to be said, or it is
+	// lost entirely.
+	drawn := drawnSlots(segs)
+	for _, f := range fs.List {
+		if !drawn[f.Code] {
+			fmt.Fprintf(iw, "\n%s\n", f.Fix)
+		}
+	}
+}
+
+func drawnSlots(segs []view.Segment) map[string]bool {
+	out := map[string]bool{}
+	for _, s := range segs {
+		out[s.Slot] = true
+	}
+	return out
+}
+
+// faultLines renders faults as plain sentences, for the cases with no
+// table to hang them on.
+func faultLines(fs fault.Faults, err error) []string {
+	if len(fs.List) == 0 {
+		return []string{err.Error()}
+	}
+	out := make([]string, len(fs.List))
+	for i, f := range fs.List {
+		out[i] = f.Fix
+	}
+	return out
 }
 
 // renderModular prints the phonetic + glossary tables for a modular
@@ -314,6 +352,41 @@ func renderConcatenated(w io.Writer, rom string, cw *g.Chain, glosser gloss.Glos
 		}
 		fmt.Fprintln(iw, label)
 		renderFormativeBlock(iw, roman.Formative(f), f, glosser, glosser.Formative(f))
+	}
+}
+
+// renderFaultedTable draws the slot split with a marker against each
+// row whose slot did not decode, and that slot's fix beside it. The
+// unmarked rows are the reading that succeeded, and showing them is
+// half the diagnosis: a reader has to know how much of the word was
+// understood before "the Ca is wrong" means anything.
+func renderFaultedTable(w io.Writer, segs []view.Segment, byslot map[string]fault.Fault) {
+	phW, slW := len("PHONETIC"), len("SLOT")
+	for _, s := range segs {
+		if n := runeWidth(s.Chunk); n > phW {
+			phW = n
+		}
+		if n := runeWidth(s.Slot); n > slW {
+			slW = n
+		}
+	}
+	fmt.Fprintf(w, "   %s  %s  %s\n",
+		stylize(ansiDim, padRunes("PHONETIC", phW)),
+		stylize(ansiDim, padRunes("SLOT", slW)),
+		stylize(ansiDim, "READS AS"))
+	for _, s := range segs {
+		f, bad := byslot[s.Slot]
+		mark := "   "
+		reads := stylize(ansiDim, "ok")
+		if bad {
+			mark = stylize(ansiRed, "✗  ")
+			reads = f.Fix
+		}
+		fmt.Fprintf(w, "%s%s  %s  %s\n",
+			mark,
+			stylize(ansiCyan, padRunes(s.Chunk, phW)),
+			stylize(ansiYellow, padRunes(s.Slot, slW)),
+			reads)
 	}
 }
 

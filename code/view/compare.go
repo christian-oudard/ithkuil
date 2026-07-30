@@ -1,9 +1,11 @@
 package view
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
+	"github.com/christian-oudard/ithkuil/fault"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/roman"
@@ -127,9 +129,22 @@ func unknownBlock(word string) (Block, error) {
 	if err != nil {
 		return Block{}, fmt.Errorf("%s: %v", word, err)
 	}
+	// The note names the slot and what it would admit, not the whole
+	// error: the word is already the block's header and the stage is
+	// implied by there being a split at all, so repeating either
+	// crowds out the part the reader has to act on.
 	note := ""
 	if _, err := slots.ToGrammar(layout); err != nil {
-		note = fmt.Sprintf("as a formative: %v", err)
+		var fs fault.Faults
+		if errors.As(err, &fs) {
+			parts := make([]string, len(fs.List))
+			for i, f := range fs.List {
+				parts[i] = f.Code + ": " + f.Fix
+			}
+			note = strings.Join(parts, "; ")
+		} else {
+			note = err.Error()
+		}
 	}
 	return Block{
 		Word: strings.ToLower(word),

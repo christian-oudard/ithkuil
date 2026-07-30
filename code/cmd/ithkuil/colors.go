@@ -19,6 +19,10 @@ const (
 	ansiYellow  = "\033[33m"
 	ansiMagenta = "\033[35m"
 	ansiGreen   = "\033[32m"
+	// Red marks the one thing that is wrong, and nothing else. It is
+	// the only colour here that carries a judgment rather than a
+	// category, so spending it on anything routine would blunt it.
+	ansiRed = "\033[31m"
 )
 
 // colorsOn is initialised from the writer and environment. analyze

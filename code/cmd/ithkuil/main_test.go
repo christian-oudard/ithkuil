@@ -102,12 +102,24 @@ func TestParse_UnclassifiedShowsDiagnostic(t *testing.T) {
 	}
 	for _, want := range []string{
 		"(unclassified)",
-		`unrecognized Ca "vẓ"`,
-		"PHONETIC", "SLOT",
+		"no Ca complex is written vẓ",
+		"PHONETIC", "SLOT", "READS AS",
 		"Cr", "Vr", "Ca",
 	} {
 		if !strings.Contains(out, want) {
 			t.Errorf("diagnostic missing %q; got %q", want, out)
+		}
+	}
+	// The failing row is marked and the rest say they read, so the
+	// reader can see how much of the word was understood. Without the
+	// marker the table is a list of conjuncts with a sentence beside
+	// it, and locating the bad slot means counting.
+	for _, line := range strings.Split(out, "\n") {
+		if strings.Contains(line, "-vẓ-") && !strings.Contains(line, "✗") {
+			t.Errorf("the Ca row is not marked as the failure: %q", line)
+		}
+		if strings.Contains(line, " m-") && strings.Contains(line, "✗") {
+			t.Errorf("the Cr row read fine and must not be marked: %q", line)
 		}
 	}
 	// No grammatical values are known, so the column must be gone
@@ -126,7 +138,7 @@ func TestParse_ShortShowsReason(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("parse --short exit %d; got %q", code, out)
 	}
-	if !strings.Contains(out, `unrecognized Ca "vẓ"`) {
+	if !strings.Contains(out, "no Ca complex is written vẓ") {
 		t.Errorf("short view missing the reason; got %q", out)
 	}
 	if strings.Contains(out, "?mavẓorf") {
@@ -375,7 +387,7 @@ func TestCompare_AgainstUnclassified(t *testing.T) {
 	}
 	for _, want := range []string{
 		"Cs₅₁", "Ca", "Vx₁", "Cs₁",
-		"UNCLASSIFIED", `unrecognized Ca "vẓ"`,
+		"UNCLASSIFIED", "no Ca complex is written vẓ",
 	} {
 		if !strings.Contains(out, want) {
 			t.Errorf("compare output missing %q; got %q", want, out)
@@ -414,7 +426,7 @@ func TestCompare_UnsplittableWord(t *testing.T) {
 	if code != 1 {
 		t.Errorf("compare exit %d, want 1", code)
 	}
-	if !strings.Contains(errOut, "too short") {
+	if !strings.Contains(errOut, "at least a Cr, a Vr and a Ca") {
 		t.Errorf("expected the split failure in stderr; got %q", errOut)
 	}
 }
