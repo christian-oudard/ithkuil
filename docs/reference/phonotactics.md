@@ -277,7 +277,39 @@ Also: No C_R root or C_S affix can begin with **h**-, **w**-, or **y**-; no C_R 
 
 **NOTE:** In addition to the values in the table below, the following seven forms are permissible as mono-consonantal or bi-consonantal intervocalic forms, but cannot be a C_R root form or a C_S affix form: -**h**-, -**hl**-, -**hr**-, -**hm**-, -**hn**-, -**hw**-, -**hy**-.
 
-Below is a chart showing the 25 permissible mono-consonantal C_R roots and the 679 permissible bi-consonantal conjuncts which can be C_R roots or C_S affixes. Blue squares are impermissible forms. *[The chart itself is not transcribed; see the PDF.]*
+Below is the chart of the 25 permissible mono-consonantal C_R roots and the permissible bi-consonantal conjuncts which can be C_R roots or C_S affixes. In the source it is a grid of white and blue squares, blue marking an impermissible form; here **+** is permissible and **.** impermissible. `count` is the row's permissible cells; `printed` is the total the source prints beside that row, bolded where the two disagree.
+
+| | p | t | k | b | d | g | f | ţ | ç | x | v | ḑ | ļ | s | š | z | ž | c | č | ẓ | j | l | r | ř | m | n | ň | w | y | h | count | printed |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| **p** | + | + | + | . | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | 29 | 29 |
+| **t** | + | + | + | + | . | + | + | . | + | + | + | . | + | . | . | . | . | . | . | . | . | + | + | + | + | + | + | + | + | + | 19 | 19 |
+| **k** | + | + | + | + | + | . | + | + | + | . | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | . | + | + | + | 27 | 27 |
+| **b** | . | + | + | + | + | + | + | + | + | + | + | + | . | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | 28 | 28 |
+| **d** | + | . | + | + | + | + | + | . | + | + | + | . | . | . | . | . | . | . | . | . | . | + | + | + | + | + | + | + | + | + | 18 | 18 |
+| **g** | + | + | . | + | + | + | + | + | + | . | + | + | . | + | + | + | + | + | + | + | + | + | + | + | + | + | . | + | + | + | 26 | 26 |
+| **f** | + | + | + | + | + | + | + | + | + | + | . | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | 29 | 29 |
+| **ţ** | + | + | + | + | + | + | + | + | + | + | + | . | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | 29 | 29 |
+| **ç** | + | + | + | + | + | + | + | + | + | + | + | + | . | . | . | . | . | + | + | + | + | + | + | + | + | + | + | + | + | . | 24 | **23** |
+| **x** | + | + | + | + | + | . | + | + | . | + | + | + | . | . | . | . | . | + | + | + | + | + | + | . | + | + | . | + | . | . | 19 | 19 |
+| **v** | + | + | + | + | + | + | . | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | 29 | 29 |
+| **ḑ** | + | + | + | + | + | + | + | . | + | + | + | + | + | . | . | . | . | + | + | + | + | + | + | + | + | + | + | + | + | + | 25 | 25 |
+| **ļ** | + | + | + | + | + | + | + | + | . | + | + | + | + | . | . | . | . | + | + | + | + | + | + | + | + | + | + | + | + | . | 24 | 24 |
+| **s** | + | + | + | + | + | + | + | + | . | + | + | + | + | + | . | . | . | + | + | . | + | + | + | + | + | + | + | + | + | + | 25 | 25 |
+| **š** | + | + | + | + | + | + | + | + | . | + | + | + | + | . | + | . | . | . | + | . | + | + | + | + | + | + | + | + | + | + | 24 | 24 |
+| **z** | + | + | + | + | + | + | + | + | . | + | + | + | + | . | . | + | . | + | + | + | + | + | + | + | + | + | + | + | + | + | 26 | 26 |
+| **ž** | + | + | + | + | + | + | + | + | . | + | + | + | + | . | . | . | + | . | + | . | + | + | + | + | + | + | + | + | + | + | 24 | 24 |
+| **c** | + | + | + | + | + | + | + | + | . | + | + | + | + | . | . | . | . | + | + | . | + | + | + | + | + | + | + | + | + | + | 24 | **23** |
+| **č** | + | + | + | + | + | + | + | + | . | + | + | + | + | . | . | . | . | . | + | . | . | + | + | + | + | + | + | + | + | + | 22 | **21** |
+| **ẓ** | + | + | + | + | + | + | + | + | . | + | + | + | + | . | . | . | . | . | + | + | + | + | + | + | + | + | + | + | + | + | 24 | **23** |
+| **j** | + | + | + | + | + | + | + | + | . | + | + | + | + | . | . | . | . | . | . | . | + | + | + | + | + | + | + | + | + | + | 22 | **21** |
+| **l** | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | 30 | 30 |
+| **r** | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | . | + | + | + | + | + | + | 29 | 29 |
+| **ř** | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | . | + | + | + | + | + | + | + | 29 | 29 |
+| **m** | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | 30 | 30 |
+| **n** | . | + | + | . | + | + | + | + | + | + | + | + | + | + | + | + | + | . | . | . | . | + | + | + | + | + | . | + | + | + | 23 | 23 |
+| **ň** | + | + | . | + | + | . | + | + | + | . | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | + | . | + | 26 | 26 |
+
+The grid holds **684** permissible forms. The source's own row totals sum to **679**, and its running text gives 679 twice. The two disagree in five rows — ç, c, č, ẓ and j — each of which has one more permissible cell in the grid than its printed total allows. Nothing marks which cell the total means to exclude.
 
 ## 9. Permissible Tri-Consonantal Conjuncts Which Can Be Roots or Affixes
 
