@@ -591,21 +591,6 @@ func canUseShortcut(f g.Formative) bool {
 	return true
 }
 
-// cnCaShortcutEligible reports whether the §3.8.1.2 Cn→Ca shortcut
-// would apply to f, ignoring the syllable-budget check that
-// maybeMoveCnToCa makes at layout-build time. Used by canUseShortcut
-// to pick the canonical form when both shortcuts are eligible.
-func cnCaShortcutEligible(f g.Formative) bool {
-	if len(f.SlotV) > 0 || f.SlotVI != g.DefaultSlotVI {
-		return false
-	}
-	v, ok := f.SlotVIII.(g.VnCnValence)
-	if !ok || v.Valence != g.MNO {
-		return false
-	}
-	return isMovedCn(moodCnP1(v.MoodScope))
-}
-
 // shortcutSeries returns the Vv series (1-4) used to encode the given
 // SlotVI under the W shortcut, or 0 if no Y-row encoding exists either.
 // The caller knows which shortcut letter (w or y) to pair this with
