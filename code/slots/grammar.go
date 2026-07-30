@@ -160,8 +160,13 @@ func rootFromLayout(l Layout, shortcut parse.ShortcutVariant) (g.Root, g.SlotVI,
 		if !ok {
 			return nil, g.SlotVI{}, fmt.Errorf("unrecognized Ca %q", l.Ca)
 		}
+		refs, ok := parse.DecomposeRefCluster(l.Cr)
+		if !ok || len(refs) == 0 {
+			return nil, g.SlotVI{}, fmt.Errorf(
+				"%q is not a referent chain, so it cannot be a §4.6.4 personal-reference root", l.Cr)
+		}
 		return g.RefRoot{
-			C1:      l.Cr,
+			Refs:    refs,
 			Version: sv.Version,
 			SlotIV:  slotIV,
 		}, slotVI, nil
@@ -440,7 +445,7 @@ func layoutFor(f g.Formative, e encoding) Layout {
 		l.Ca = allomorph.ConstructCa(f.SlotVI)
 	case g.RefRoot:
 		l.Kind = RefRootFormative
-		l.Cr = r.C1
+		l.Cr = parse.RefCluster(r.Refs)
 		l.Vv = refRootVv(r.Version)
 		l.Vr = parse.SlotIVToVr(r.SlotIV)
 		l.Ca = allomorph.ConstructCa(f.SlotVI)

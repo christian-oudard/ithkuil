@@ -150,7 +150,7 @@ func TestApplyFlag_StressVariants(t *testing.T) {
 func TestApplyFlag_VersionOnCsAndRefRoots(t *testing.T) {
 	for _, root := range []g.Root{
 		g.CsRoot{Cs: "r", Degree: 5, Version: g.PRC, Function: g.STA, Context: g.EXS},
-		g.RefRoot{C1: "l", Version: g.PRC, SlotIV: g.DefaultSlotIV},
+		g.RefRoot{Refs: []g.PersonalRef{{Referent: g.R1m}}, Version: g.PRC, SlotIV: g.DefaultSlotIV},
 	} {
 		f := g.MinimalFormative("ml")
 		f.Root = root
@@ -173,7 +173,7 @@ func TestApplyFlag_VersionOnCsAndRefRoots(t *testing.T) {
 func TestApplyFlag_FunctionOnCsAndRefRoots(t *testing.T) {
 	for _, root := range []g.Root{
 		g.CsRoot{Cs: "r", Degree: 5, Version: g.PRC, Function: g.STA, Context: g.EXS},
-		g.RefRoot{C1: "l", Version: g.PRC, SlotIV: g.DefaultSlotIV},
+		g.RefRoot{Refs: []g.PersonalRef{{Referent: g.R1m}}, Version: g.PRC, SlotIV: g.DefaultSlotIV},
 	} {
 		f := g.MinimalFormative("ml")
 		f.Root = root
@@ -193,7 +193,7 @@ func TestApplyFlag_SpecOnNonCrRefErrors(t *testing.T) {
 
 func TestApplyFlag_SpecOnRefRoot(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	f.Root = g.RefRoot{C1: "l", Version: g.PRC, SlotIV: g.DefaultSlotIV}
+	f.Root = g.RefRoot{Refs: []g.PersonalRef{{Referent: g.R1m}}, Version: g.PRC, SlotIV: g.DefaultSlotIV}
 	if err := ApplyFlag(&f, "OBJ"); err != nil {
 		t.Errorf("ApplyFlag OBJ on RefRoot: %v", err)
 	}
@@ -206,7 +206,7 @@ func TestApplyFlag_SpecOnRefRoot(t *testing.T) {
 func TestApplyFlag_ContextOnCsAndRef(t *testing.T) {
 	for _, root := range []g.Root{
 		g.CsRoot{Cs: "r", Degree: 5, Version: g.PRC, Function: g.STA, Context: g.EXS},
-		g.RefRoot{C1: "l", Version: g.PRC, SlotIV: g.DefaultSlotIV},
+		g.RefRoot{Refs: []g.PersonalRef{{Referent: g.R1m}}, Version: g.PRC, SlotIV: g.DefaultSlotIV},
 	} {
 		f := g.MinimalFormative("ml")
 		f.Root = root

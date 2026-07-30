@@ -78,7 +78,7 @@ func TestRoundTrip_Grid_RefRoot(t *testing.T) {
 			for _, sp := range []g.Specification{g.BSC, g.CTE, g.CSV, g.OBJ} {
 				f := g.MinimalFormative("ml")
 				f.Root = g.RefRoot{
-					C1: "l", Version: ver,
+					Refs: []g.PersonalRef{{Referent: g.R1m}}, Version: ver,
 					SlotIV: g.SlotIV{Function: fn, Specification: sp, Context: g.EXS},
 				}
 				name := ver.String() + "-" + fn.String() + "-" + sp.String()

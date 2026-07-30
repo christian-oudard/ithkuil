@@ -69,8 +69,8 @@ func TestRootVariants(t *testing.T) {
 	if cs, ok := r.(CsRoot); !ok || cs.Cs != "n" || cs.Degree != 4 {
 		t.Errorf("CsRoot mismatch: %v", r)
 	}
-	r = RefRoot{C1: "l", Version: PRC, SlotIV: DefaultSlotIV}
-	if rr, ok := r.(RefRoot); !ok || rr.C1 != "l" {
+	r = RefRoot{Refs: []PersonalRef{{Referent: R1m}}, Version: PRC, SlotIV: DefaultSlotIV}
+	if rr, ok := r.(RefRoot); !ok || len(rr.Refs) != 1 || rr.Refs[0].Referent != R1m {
 		t.Errorf("RefRoot mismatch: %v", r)
 	}
 }

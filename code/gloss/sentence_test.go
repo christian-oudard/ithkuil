@@ -431,7 +431,7 @@ func TestFormative_NilFinalPanics(t *testing.T) {
 
 func TestRootPrefix_RefRootNonDefaultVersion(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	f.Root = g.RefRoot{C1: "l", Version: g.CPT, SlotIV: g.DefaultSlotIV}
+	f.Root = g.RefRoot{Refs: []g.PersonalRef{{Referent: g.R1m}}, Version: g.CPT, SlotIV: g.DefaultSlotIV}
 	got := (&Glosser{}).Formative(f)
 	if !strings.Contains(got, "CPT") {
 		t.Errorf("RefRoot CPT gloss = %q, want CPT prefix", got)

@@ -58,6 +58,16 @@ var refAffixAlternates = map[string]g.PersonalRef{
 	"ňç": {Referent: g.Rpvs, Effect: g.DET},
 }
 
+// RefCluster spells a chain of personal references, the inverse of
+// DecomposeRefCluster.
+func RefCluster(refs []g.PersonalRef) string {
+	var b strings.Builder
+	for _, r := range refs {
+		b.WriteString(c1Table[r])
+	}
+	return b.String()
+}
+
 // RefC1 returns the consonant form spelling a PersonalRef.
 func RefC1(p g.PersonalRef) string { return c1Table[p] }
 

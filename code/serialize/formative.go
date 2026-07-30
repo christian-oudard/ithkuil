@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/parse"
 )
 
 // The formative encoding. Three rules produce the whole layout:
@@ -343,7 +344,7 @@ func putFormative(out []byte, f g.Formative) ([]byte, error) {
 		rootByte = byte(r.Degree) | byte(r.Version)<<4 |
 			byte(r.Function)<<5 | byte(r.Context)<<6
 	case g.RefRoot:
-		cluster, kind = r.C1, rootRef
+		cluster, kind = parse.RefCluster(r.Refs), rootRef
 		rootByte = byte(r.Version) | byte(r.SlotIV.Function)<<1 |
 			byte(r.SlotIV.Specification)<<2 | byte(r.SlotIV.Context)<<4
 	default:
@@ -470,8 +471,12 @@ func getFormative(buf []byte) (g.Formative, int, error) {
 			Context:  g.Context(rootByte >> 6 & 0x03),
 		}
 	case rootRef:
+		refs, ok := parse.DecomposeRefCluster(cluster)
+		if !ok || len(refs) == 0 {
+			return g.Formative{}, 0, fmt.Errorf("%q is not a referent chain", cluster)
+		}
 		f.Root = g.RefRoot{
-			C1:      cluster,
+			Refs:    refs,
 			Version: g.Version(rootByte & 0x01),
 			SlotIV: g.SlotIV{
 				Function:      g.Function(rootByte >> 1 & 0x01),

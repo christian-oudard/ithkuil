@@ -41,10 +41,10 @@ func TestFromGrammar_ToGrammar_RoundTrip(t *testing.T) {
 	csRootCpt.Root = g.CsRoot{Cs: "r", Degree: 5, Version: g.CPT, Function: g.DYN, Context: g.EXS}
 
 	refRoot := g.MinimalFormative("ml")
-	refRoot.Root = g.RefRoot{C1: "l", Version: g.PRC, SlotIV: g.DefaultSlotIV}
+	refRoot.Root = g.RefRoot{Refs: []g.PersonalRef{{Referent: g.R1m}}, Version: g.PRC, SlotIV: g.DefaultSlotIV}
 
 	refRootCpt := g.MinimalFormative("ml")
-	refRootCpt.Root = g.RefRoot{C1: "l", Version: g.CPT, SlotIV: g.DefaultSlotIV}
+	refRootCpt.Root = g.RefRoot{Refs: []g.PersonalRef{{Referent: g.R1m}}, Version: g.CPT, SlotIV: g.DefaultSlotIV}
 
 	withSlot8 := g.MinimalFormative("ml")
 	withSlot8.SlotVIII = g.VnCnValence{Valence: g.PRL, MoodScope: g.SUB}

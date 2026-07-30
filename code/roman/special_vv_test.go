@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/parse"
 )
 
 // Cs-root formatives put an affix Cs in the Cr slot and encode the
@@ -96,8 +97,8 @@ func TestRefRoot_ealali(t *testing.T) {
 	if !ok {
 		t.Fatalf("Root = %v, want RefRoot", f.Root)
 	}
-	if rr.C1 != "l" {
-		t.Errorf("C1 = %q, want \"l\"", rr.C1)
+	if parse.RefCluster(rr.Refs) != "l" {
+		t.Errorf("C1 = %q, want \"l\"", parse.RefCluster(rr.Refs))
 	}
 	if rr.Version != g.CPT {
 		t.Errorf("Version = %v, want CPT", rr.Version)

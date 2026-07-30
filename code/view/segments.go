@@ -78,7 +78,7 @@ func Headword(f g.Formative, lex *lexicon.Lexicon) RootHead {
 		}
 		return RootHead{Code: code, Meaning: meaning}
 	case g.RefRoot:
-		code := fmt.Sprintf("(Ref)%q / %s", strings.ToLower(r.C1), r.SlotIV.Specification)
+		code := fmt.Sprintf("(Ref)%q / %s", parse.RefCluster(r.Refs), r.SlotIV.Specification)
 		return RootHead{Code: code, Meaning: "referential root"}
 	}
 	return RootHead{}

@@ -128,18 +128,15 @@ func (gl *Glosser) rootBody(f g.Formative) string {
 		if gl.Canonical {
 			open, close = "(", ")"
 		}
-		if refs, ok := parse.DecomposeRefCluster(x.C1); ok && len(refs) > 0 {
-			parts := make([]string, len(refs))
-			for i, pr := range refs {
-				s := pr.Referent.String()
-				if pr.Effect != g.NEU {
-					s += "/" + pr.Effect.String()
-				}
-				parts[i] = s
+		parts := make([]string, len(x.Refs))
+		for i, pr := range x.Refs {
+			s := pr.Referent.String()
+			if pr.Effect != g.NEU {
+				s += "/" + pr.Effect.String()
 			}
-			return open + strings.Join(parts, "+") + close
+			parts[i] = s
 		}
-		return open + x.C1 + close
+		return open + strings.Join(parts, "+") + close
 	}
 	return ""
 }

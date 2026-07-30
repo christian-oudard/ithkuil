@@ -1,6 +1,7 @@
 package grammar_test
 
 import (
+	"github.com/christian-oudard/ithkuil/grammar"
 	"go/build"
 	"strings"
 	"testing"
@@ -29,5 +30,22 @@ func TestGrammarImportsNothingInternal(t *testing.T) {
 			t.Errorf("grammar imports %s; the centre should know nothing "+
 				"about how words are written or parsed", imp)
 		}
+	}
+}
+
+// A §4.6.4 personal-reference root names a referent chain — §4.6.4
+// calls the Slot III form "a combination Referential affix" — so
+// grammar.RefRoot holds the chain rather than the letters that spell it.
+//
+// It used to hold the cluster as a string, which meant every reader
+// decoded it again and grammar.RefRoot{C1: "xh"} was constructible: it glossed
+// as "(xh)" and spelled as "aexhal", a word built on a cluster that
+// decodes to no referents at all, reported as success by both arms.
+// gloss even carried a fallback branch for printing such a cluster
+// raw, which existed only because the type permitted it.
+func TestRefRootHoldsAChainNotACluster(t *testing.T) {
+	r := grammar.RefRoot{Refs: []grammar.PersonalRef{{Referent: grammar.R1m}}}
+	if len(r.Refs) != 1 || r.Refs[0].Referent != grammar.R1m {
+		t.Errorf("Refs = %v, want [1m]", r.Refs)
 	}
 }

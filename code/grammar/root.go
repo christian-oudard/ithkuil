@@ -62,8 +62,16 @@ type CsRoot struct {
 func (CsRoot) root() {}
 
 // RefRoot — referential formative.
+//
+// Refs holds the personal references the root names, not the cluster
+// that spells them. §4.6.4 calls the Slot III form "a combination
+// Referential affix", so the content is a referent chain; keeping it
+// as a string meant every reader decoded it again, and a RefRoot could
+// be built on a cluster that decodes to nothing. §4.6.4 also bars the
+// §4.6 category affixes here, the Slot VI Perspective carrying those
+// distinctions instead, so there is no category to hold.
 type RefRoot struct {
-	C1      string
+	Refs    []PersonalRef
 	Version Version
 	SlotIV  SlotIV
 }

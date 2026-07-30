@@ -526,7 +526,7 @@ func randomFormative(rng *rand.Rand) g.Formative {
 			Function: cr.SlotIV.Function, Context: cr.SlotIV.Context,
 		}
 	case 9:
-		f.Root = g.RefRoot{C1: "l", Version: cr.Version, SlotIV: cr.SlotIV}
+		f.Root = g.RefRoot{Refs: []g.PersonalRef{{Referent: g.R1m}}, Version: cr.Version, SlotIV: cr.SlotIV}
 	}
 	// Concat is deliberately left at its default: it is only legal on
 	// a chain dependent, so randomChain sets it.

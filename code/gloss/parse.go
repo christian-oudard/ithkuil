@@ -265,15 +265,15 @@ func parseParensRoot(tok string, affixes map[string]lexicon.AffixEntry) (g.Root,
 		return nil, true, fmt.Errorf("empty referential")
 	}
 	parts := strings.Split(inner, "+")
-	var c1 strings.Builder
+	refs := make([]g.PersonalRef, 0, len(parts))
 	for _, part := range parts {
 		ref, eff, err := parseRefSpec(part)
 		if err != nil {
 			return nil, true, err
 		}
-		c1.WriteString(parse.RefC1(g.PersonalRef{Referent: ref, Effect: eff}))
+		refs = append(refs, g.PersonalRef{Referent: ref, Effect: eff})
 	}
-	return g.RefRoot{C1: c1.String(), Version: g.PRC, SlotIV: g.DefaultSlotIV}, true, nil
+	return g.RefRoot{Refs: refs, Version: g.PRC, SlotIV: g.DefaultSlotIV}, true, nil
 }
 
 // parseRefSpec decodes "1m" or "1m/BEN" into a Referent + Effect.

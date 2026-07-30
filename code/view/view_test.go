@@ -315,7 +315,7 @@ func TestHeadword_CsRoot(t *testing.T) {
 
 func TestHeadword_RefRoot(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	f.Root = g.RefRoot{C1: "l", Version: g.PRC, SlotIV: g.DefaultSlotIV}
+	f.Root = g.RefRoot{Refs: []g.PersonalRef{{Referent: g.R1m}}, Version: g.PRC, SlotIV: g.DefaultSlotIV}
 	h := Headword(f, nil)
 	if h.Code == "" {
 		t.Error("RefRoot Headword: Code empty")
