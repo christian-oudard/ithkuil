@@ -94,8 +94,8 @@ about a document that has been wrong eleven times.
 ## Settled
 
 Removed from the list below; the reasoning is in the commit that
-settled each. Kept as a ledger because the proportion is the useful part. Eleven of
-the thirteen were defects in our own transcription, not in Quijada;
+settled each. Kept as a ledger because the proportion is the useful part. Twelve of
+the fourteen were defects in our own transcription, not in Quijada;
 one was a transposition in the community spreadsheet; one was a real
 gap in the published data that turned out to be recoverable. None was
 a defect in the language.
@@ -115,6 +115,7 @@ a defect in the language.
 | G32 | the script document tabulates 28, as it says |
 | G34 | Our markdown lost three of the seven case-accessor affixes |
 | G38 | §3.5.0's gradient-type descriptions were ours, and four were wrong |
+| G46 | §4.4's END adjunct is hü; our markdown added an i in three of four places |
 
 ## Affix table
 ## Grammar
@@ -398,3 +399,48 @@ or **ļļ**, and **ļļ** appears in their tables as a permitted form. That
 one was invented, so G1's withdrawal stands. Identical provenance,
 opposite answer, which is why they should not have been decided
 together.
+
+### G45. The adjunct inventories are not licensed by the phonotactics
+
+Two of Quijada's documents disagree about what may begin a word. The
+phonotactics document rules on it; the grammar document publishes
+tables of adjuncts that break those rules, and prints worked examples
+of them.
+
+§4.5's four suppletive adjuncts are **hl**-, **hm**-, **hn**- and
+**hň**-, described there as "the initial **h**+consonant with no
+subsequent consonant forms", with §4.5.4's own examples reading
+*hňa, hňei, hňo, hňe'e, hňa'u, hňi'a*. §3.8.1.2 adds **hňw** to the
+C_N forms that can move into Slot VI.
+
+Phonotactics §3.2.7 permits word-initial **h**- to be followed by "-l
+or -r, the nasals -m or -n, or by -w". Not -**ň**. §3.3.5 limits
+word-initial triconsonantal **h**- conjuncts to hlw, hrw, hmw, hnw,
+hmy, hny and four geminates, so **hňw** is unlicensed too. The
+sequence **hň** does not occur anywhere in the phonotactics document,
+in any position.
+
+The §4.4 registers are the same story from the vowel side: their
+adjuncts are a single vowel-form after **h**-, and every one of them
+is fine, but only because the table stops where it does.
+
+The bias adjuncts of §4.1 are the largest case. A bias adjunct is a
+bare consonant conjunct standing alone as a word, a shape §3 never
+contemplates, every rule there being written about a conjunct with a
+vowel-form beside it. Taken at its word, 34 of the 61 published forms
+are unlicensed word-initially: §3.2.9 grants **l**- and **r**- only
+-w or -y, which fails ACC *lf*, ANP *lst* and nine more; §3.2.8 grants
+nasals a liquid or approximant, which fails ATE *ňj*, RSG *msf* and
+nine more; **ř**- is granted no word-initial pair at all, failing APB
+*řs*, DOL *řřx* and IVD *řřn*; §3.2.1, §3.2.2, §3.3 and §3.3.4 take
+one apiece. None is hypothetical: every one is attested standing alone
+in the community corpus, *pļļ* 291 times, *msf* 127, *kçç* 48.
+
+Read together the documents are consistent if §3's word-initial rules
+are scoped to words that have a vowel in them, and if the adjunct
+tables are authoritative for the shapes they publish. That is the
+reading this code takes: `phonology.ParseWord` exempts a lone consonant
+conjunct from the cluster rules, and the sweep in
+`roman/inventory_test.go` holds the adjunct classes to §1's vowel rules
+but not §2's and §3's cluster rules. It is a reading, not something the
+source states, and the alternative is that §3.2.7 simply omits -ň.
