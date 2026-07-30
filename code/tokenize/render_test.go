@@ -1,6 +1,7 @@
 package tokenize_test
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/corpus"
@@ -32,9 +33,10 @@ func TestToken_CorpusRoundTrip(t *testing.T) {
 		}
 		rom, err := tokenize.Render(tok)
 		if err != nil {
-			// Not every class has a renderer yet; those that do not
-			// are counted rather than failed, and the count is
-			// asserted below so the gap cannot widen unnoticed.
+			// Every class the corpus exercises has a renderer now, so
+			// this is a failure rather than the tallied gap it used to
+			// be. The count below asserts the gap stays closed.
+			t.Errorf("%q classified as %T, which has no renderer: %v", w, tok, err)
 			skipped++
 			continue
 		}
@@ -52,7 +54,10 @@ func TestToken_CorpusRoundTrip(t *testing.T) {
 	if rendered == 0 {
 		t.Fatal("no corpus word was rendered; the test is not exercising anything")
 	}
-	t.Logf("rendered %d corpus words, %d classes without a renderer", rendered, skipped)
+	if skipped != 0 {
+		t.Errorf("%d corpus words have no renderer, want 0", skipped)
+	}
+	t.Logf("rendered %d corpus words", rendered)
 }
 
 // The referential classes specifically, which are the ones that had no
@@ -90,4 +95,39 @@ func TestToken_CorpusReferentials(t *testing.T) {
 		t.Fatal("no referential in the corpus; this test is not exercising anything")
 	}
 	t.Logf("round-tripped %d corpus referentials", n)
+}
+
+// TestRender_EverySumVariant walks the grammar.Word sum itself rather
+// than the corpus, which exercises only the classes the corpus happens
+// to use. Each case is a real word of its class, read and written back.
+func TestRender_EverySumVariant(t *testing.T) {
+	for _, tc := range []struct {
+		word string
+		want g.Word
+	}{
+		{"mlala", g.Formative{}},
+		{"hlamröé-mlala", &g.Chain{}},
+		{"řřx", g.Bias(0)},
+		{"ha", g.RegisterMarker{}},
+		{"hai", g.RegisterMarker{}},
+		{"uhlaini", g.ModularAdjunct{}},
+		{"ač", g.SingleAffixAdjunct{}},
+		{"dohast", g.MultipleAffixAdjunct{}},
+		{"hmo", g.CarrierAdjunct{}},
+		{"lo", g.Referential{}},
+		{"slex", g.CombinationReferential{}},
+	} {
+		w, err := tokenize.ClassifyWord(tc.word)
+		if err != nil {
+			t.Errorf("%q does not classify: %v", tc.word, err)
+			continue
+		}
+		if reflect.TypeOf(w) != reflect.TypeOf(tc.want) {
+			t.Errorf("%q classified as %T, want %T", tc.word, w, tc.want)
+			continue
+		}
+		if _, err := tokenize.Render(w); err != nil {
+			t.Errorf("%q (%T) does not render: %v", tc.word, w, err)
+		}
+	}
 }

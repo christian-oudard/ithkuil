@@ -556,6 +556,27 @@ func TestCompose_WordClasses(t *testing.T) {
 	}
 }
 
+// TestCompose_Adjuncts covers the two classes that had no renderer at
+// all, so composing one failed on the way out rather than on the way
+// in. The parsing adjunct is not among them: it declares stress rather
+// than meaning, so it is not a word compose builds.
+func TestCompose_Adjuncts(t *testing.T) {
+	for _, tc := range []struct{ expr, want string }{
+		{"RTR.SUB", "ahw"}, // §4.3 modular
+		{"DEV/3", "eb"},    // §4.1.1 single-affix
+	} {
+		out, errOut, code := runCLI("-data", dataFile(), "compose", tc.expr)
+		if code != 0 {
+			t.Errorf("compose %q: exit %d, stderr %q", tc.expr, code, errOut)
+			continue
+		}
+		lines := strings.Split(strings.TrimSpace(out), "\n")
+		if lines[0] != tc.want {
+			t.Errorf("compose %q = %q, want %q", tc.expr, lines[0], tc.want)
+		}
+	}
+}
+
 // TestCompose_Unmarked covers the one word that composes to nothing:
 // NRR is the default register, so there is no adjunct to write.
 func TestCompose_Unmarked(t *testing.T) {

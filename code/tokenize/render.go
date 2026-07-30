@@ -42,6 +42,12 @@ func Render(w g.Word) (string, error) {
 		return parse.RegisterInitialForm(v.Register), nil
 	case g.CarrierAdjunct:
 		return parse.CarrierTypeForm(v.Type) + parse.CaseToVc(v.Case), nil
+	case g.ModularAdjunct:
+		return render.ModularAdjunct(v)
+	case g.SingleAffixAdjunct:
+		return render.SingleAffixAdjunct(v)
+	case g.MultipleAffixAdjunct:
+		return render.MultipleAffixAdjunct(v)
 	case g.Foreign:
 		return v.Text, nil
 	}

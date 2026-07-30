@@ -230,8 +230,6 @@ hmo
 CARR-Quotative(o)
 ```
 
-Modular, affixual and parsing adjuncts parse but have no renderer yet, so
-`compose` reports that rather than guessing; see [BUGS.md](BUGS.md).
 
 ## Grammar Lookup
 

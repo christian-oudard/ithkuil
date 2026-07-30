@@ -240,3 +240,30 @@ func ConcatMarker(s g.ConcatenationStatus) string {
 	}
 	return ""
 }
+
+// VsForm is the inverse of grammar.VsScope: the V_S vowel that writes a
+// scope on a §4.1.1 single-affix adjunct. ScopeVDom is the default and
+// writes nothing, which is what the source's parenthesised "(a)" marks.
+func VsForm(s g.AffixScope) string {
+	return [...]string{"", "u", "e", "i", "o", "ö"}[s]
+}
+
+// CzForm is the inverse of grammar.CzScope: the C_Z consonant that
+// writes the first affix's scope on a §4.1.2 multiple-affix adjunct.
+// C_Z is structural — it is what tells the adjunct apart from a
+// formative — so unlike V_S and V_Z it has no elided form and every
+// scope writes one.
+func CzForm(s g.AffixScope) string {
+	return [...]string{"h", "'h", "'hl", "'hr", "hw", "'hw"}[s]
+}
+
+// VzForm is the inverse of grammar.VzScope: the V_Z vowel closing a
+// multiple-affix adjunct. Pass the first affix's scope as well: §4.1.2
+// gives "(ai)" for "same scope as C_Z", and an omitted V_Z says it more
+// briefly, so the two scopes agreeing writes nothing at all.
+func VzForm(rest, first g.AffixScope) string {
+	if rest == first {
+		return ""
+	}
+	return [...]string{"a", "u", "e", "i", "o", "ö"}[rest]
+}

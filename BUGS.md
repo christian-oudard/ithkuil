@@ -9,28 +9,6 @@ fix is wrong. `go test ./... -v | grep SKIP` lists them directly.
 Compose's 38 skipped subtests are not defects; they are corpus words
 that are not formatives, skipped by design.
 
-## Four word classes cannot be written back
-
-`tokenize.Render` dispatches over the whole word-class sum and answers
-for nine of the thirteen. Modular adjuncts, the two affixual adjuncts
-and parsing adjuncts fall through to "no renderer for ...", because the
-`render` package has no function for any of them: it covers formatives
-and the two referentials, and everything else is a table lookup in
-`grammar` that these four have no equivalent of.
-
-```
-compose 'MOD'    ->  compose: no renderer for tokenize.ModularWord
-compose 'mono:'  ->  compose: no renderer for tokenize.ParsingAdjunctWord
-```
-
-The parse arm reads all four, so this is one-way: a modular adjunct in
-a sentence glosses correctly and cannot be composed. Nothing in the
-grammar makes them unwritable — §4.2's V_N/C_N shape and §4.7's stress
-markers are as mechanical as the rest — the code was simply never
-written.
-
-`cmd/ithkuil/main_test.go`'s `TestCompose_NoRenderer`
-
 ## render cannot write ëztewim
 
 `render.Referential` picks the §4.6.1 Slot 3 w/y separator by validating

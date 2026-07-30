@@ -67,7 +67,7 @@ relative to `code/`.
 - `allomorph/` - Slot VI Ca complex construction and parsing. Pre-generates all Ca forms from component tables with allomorphic substitutions, stores bidirectional lookup.
 - `semantics/` - Context-dependent labels derived from grammar values: Mood vs CaseScope, V_N vs V_H, the Vn category for a given Cn. Never looks at the romanization.
 - `fullparse/` - Turns a romanization into a grammar value, handling stress and returning errors. `Formative` is `slots.Parse` ∘ `slots.ToGrammar`; `Referential` and `CombinationReferential` decode §4.6 and run the phonotactic checks, so a word the validator rejects is not classified as one.
-- `render/` - Renders a grammar value back to a romanization. `Formative` is `slots.FromGrammar` ∘ `slots.Render`; `Referential` and `CombinationReferential` mirror the fullparse entry points. `tokenize.Render` dispatches over the whole word-class sum (it lives there, not here, because the sum type does).
+- `render/` - Renders a grammar value back to a romanization. `Formative` is `slots.FromGrammar` ∘ `slots.Render`; `Referential` and `CombinationReferential` mirror the fullparse entry points. `tokenize.Render` dispatches over the whole word-class sum (it lives there, not here, because the sum type does); `adjunct.go` covers the four §4.1/§4.3/§4.8 adjunct classes.
 - `serialize/` - Binary encoding of parsed tokens. Default-eliding and
   byte-aligned; no lexicon indices, so files outlive lexicon updates.
   `formative.go` documents why the layout is shaped the way it is.
