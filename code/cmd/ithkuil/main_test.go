@@ -785,6 +785,9 @@ func TestCompose_DocumentedExamples(t *testing.T) {
 		{"1m-ERG", "lo"},
 		{"[CAR]", "hla"},
 		{"DSV_END", "hai"},
+		// A C_S root in parentheses, which the affixual-adjunct
+		// discriminator used to claim: "(CTR)" is a root, not an affix.
+		{"(CTR)/1", "ëilal"},
 	} {
 		out, errOut, code := runCLI("-data", dataFile(), "compose", c.expr)
 		if code != 0 {

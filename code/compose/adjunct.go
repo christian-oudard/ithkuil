@@ -434,13 +434,24 @@ func looksLikeAffixual(s string) bool {
 	// A "{" used to be taken as proof on its own, which read the
 	// formative "m-SYS/5_2-{Ca}-DCD/1_2" as an affixual adjunct: the
 	// "{Ca}" there is the Slot V/VII boundary, not an affix scope.
-	parts := strings.Split(s, "-")
-	if len(parts) == 1 {
-		return true
+	//
+	// A parenthesised head settles it the other way: "()" holds a C_S
+	// root, which only a formative has, so "(CTR)/1" is a root at
+	// degree 1 rather than an affix at degree 1.
+	if strings.HasPrefix(s, "(") {
+		return false
 	}
-	// Multi-affix: all parts look like "Cs/N" or "{scope}".
-	for _, p := range parts {
-		if strings.Contains(p, "/") || (strings.HasPrefix(p, "{") && strings.HasSuffix(p, "}")) {
+	// Every slot is an affix field or a scope in braces. A brace group
+	// counts only when it names a scope, so "{Ca}" does not qualify
+	// even where no bare root slot stands beside it.
+	for _, p := range strings.Split(s, "-") {
+		if strings.HasPrefix(p, "{") && strings.HasSuffix(p, "}") {
+			if _, ok := parseScopeName(strings.Trim(p, "{}")); ok {
+				continue
+			}
+			return false
+		}
+		if strings.Contains(p, "/") {
 			continue
 		}
 		return false
