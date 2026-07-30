@@ -82,12 +82,20 @@ type Faults struct {
 	List []Fault
 }
 
+// Error leads with the word, except where the word is already the
+// subject of the only fault in it. A one-token failure otherwise
+// prints its token twice in one line — "S3: stem \"S3\": …" — which
+// reads as though the two mentions were different things.
 func (e Faults) Error() string {
 	parts := make([]string, len(e.List))
 	for i, f := range e.List {
 		parts[i] = f.Error()
 	}
-	return e.Word + ": " + strings.Join(parts, "; ")
+	body := strings.Join(parts, "; ")
+	if len(e.List) == 1 && e.List[0].Found == e.Word {
+		return body
+	}
+	return e.Word + ": " + body
 }
 
 // Stage reports the latest stage any of the faults reached, which is

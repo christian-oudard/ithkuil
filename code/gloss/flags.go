@@ -1,7 +1,6 @@
 package gloss
 
 import (
-	"fmt"
 	"strings"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
@@ -16,6 +15,18 @@ var concatPrefix = map[string]g.ConcatenationStatus{
 // "S2", "DYN", "OBJ", "ERG", "RTR", "PEN". Case-insensitive. Returns
 // an error for unrecognized flags.
 //
+// It also returns the category it assigned, so a caller reading a
+// whole gloss can tell an assignment from a re-assignment. The
+// category comes from this function's own branch structure rather
+// than a table beside it: the branch that sets a field is the only
+// thing that knows which field that was, and a second table would
+// drift the first time a branch moved.
+//
+// Categories sharing one written slot share one name, because only
+// one of them survives into the word. Aspect, Valence, Phase, Effect
+// and Level are all "Slot VIII"; Mood and Case-Scope are both "mood",
+// the Cn position encoding either.
+//
 // Recognized flag families:
 //
 //	S0..S3                Stem
@@ -29,13 +40,13 @@ var concatPrefix = map[string]g.ConcatenationStatus{
 //	<Valence>             Slot VIII valence (with FAC mood)
 //	<Mood>                Slot VIII mood (wraps existing Slot VIII)
 //	<Illocution>          Slot IX illocution (forces ultimate stress)
-func ApplyFlag(f *g.Formative, flag string) error {
+func ApplyFlag(f *g.Formative, flag string) (string, error) {
 	flag = strings.ToUpper(flag)
 
 	// Concatenation status.
 	if c, ok := concatPrefix[flag]; ok {
 		f.Concat = c
-		return nil
+		return "concatenation", nil
 	}
 
 	// Stem (CrRoot only).
@@ -44,11 +55,12 @@ func ApplyFlag(f *g.Formative, flag string) error {
 		stem := map[string]g.Stem{"S0": g.S0, "S1": g.S1, "S2": g.S2, "S3": g.S3}[flag]
 		cr, ok := f.Root.(g.CrRoot)
 		if !ok {
-			return fmt.Errorf("stem %s only applies to CrRoot formatives", flag)
+			return "", value(flag, "stem", flag,
+				"a stem selects among a Cr root's three meanings, and this formative has no Cr root")
 		}
 		cr.Stem = stem
 		f.Root = cr
-		return nil
+		return "stem", nil
 	}
 
 	// Version (CrRoot / CsRoot / RefRoot).
@@ -69,7 +81,7 @@ func ApplyFlag(f *g.Formative, flag string) error {
 			r.Version = v
 			f.Root = r
 		}
-		return nil
+		return "version", nil
 	}
 
 	// Function.
@@ -90,7 +102,7 @@ func ApplyFlag(f *g.Formative, flag string) error {
 			r.SlotIV.Function = fn
 			f.Root = r
 		}
-		return nil
+		return "function", nil
 	}
 
 	// Specification (CrRoot / RefRoot — CsRoot is implicitly BSC).
@@ -105,9 +117,10 @@ func ApplyFlag(f *g.Formative, flag string) error {
 			r.SlotIV.Specification = s
 			f.Root = r
 		default:
-			return fmt.Errorf("specification %s only applies to CrRoot/RefRoot", flag)
+			return "", value(flag, "specification", flag,
+				"a specification applies to a Cr or personal-reference root, and this formative has neither")
 		}
-		return nil
+		return "specification", nil
 	}
 
 	// Context.
@@ -125,7 +138,7 @@ func ApplyFlag(f *g.Formative, flag string) error {
 			r.SlotIV.Context = c
 			f.Root = r
 		}
-		return nil
+		return "context", nil
 	}
 
 	// Stress is encoded in the Final variant. PEN/MON → nominal,
@@ -133,15 +146,15 @@ func ApplyFlag(f *g.Formative, flag string) error {
 	switch flag {
 	case "PEN", "MON":
 		f.Final = g.UnframedNominal{Case: currentCase(f.Final)}
-		return nil
+		return "stress", nil
 	case "ANT":
 		f.Final = g.FramedVerbal{Case: currentCase(f.Final)}
-		return nil
+		return "stress", nil
 	case "ULT":
 		if _, ok := f.Final.(g.UnframedVerbal); !ok {
 			f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
 		}
-		return nil
+		return "stress", nil
 	}
 
 	// Case (any of 68): nominal or framed-nominal Final.
@@ -152,7 +165,7 @@ func ApplyFlag(f *g.Formative, flag string) error {
 			} else {
 				f.Final = g.UnframedNominal{Case: c}
 			}
-			return nil
+			return "case", nil
 		}
 	}
 
@@ -160,7 +173,7 @@ func ApplyFlag(f *g.Formative, flag string) error {
 	for _, a := range g.AllAspects {
 		if a.String() == flag {
 			f.SlotVIII = g.VnCnAspect{Aspect: a, MoodScope: g.FAC}
-			return nil
+			return "Slot VIII", nil
 		}
 	}
 
@@ -168,7 +181,7 @@ func ApplyFlag(f *g.Formative, flag string) error {
 	for _, v := range g.AllValences {
 		if v.String() == flag {
 			f.SlotVIII = g.VnCnValence{Valence: v, MoodScope: g.FAC}
-			return nil
+			return "Slot VIII", nil
 		}
 	}
 
@@ -176,7 +189,7 @@ func ApplyFlag(f *g.Formative, flag string) error {
 	for _, p := range g.AllPhases {
 		if p.String() == flag {
 			f.SlotVIII = g.VnCnPhase{Phase: p, MoodScope: g.FAC}
-			return nil
+			return "Slot VIII", nil
 		}
 	}
 
@@ -184,7 +197,7 @@ func ApplyFlag(f *g.Formative, flag string) error {
 	for _, e := range g.AllEffects {
 		if e.String() == flag {
 			f.SlotVIII = g.VnCnEffect{Effect: e, MoodScope: g.FAC}
-			return nil
+			return "Slot VIII", nil
 		}
 	}
 
@@ -192,7 +205,7 @@ func ApplyFlag(f *g.Formative, flag string) error {
 	for _, lv := range g.AllLevels {
 		if lv.String() == flag {
 			f.SlotVIII = g.VnCnLevel{Level: lv, MoodScope: g.FAC}
-			return nil
+			return "Slot VIII", nil
 		}
 	}
 
@@ -200,21 +213,21 @@ func ApplyFlag(f *g.Formative, flag string) error {
 	// both). Map to the Mood counterpart via CaseScopeToMood.
 	for _, c := range g.AllCaseScopes {
 		if c.String() == flag {
-			return applyMoodScope(f, g.CaseScopeToMood(c))
+			return "mood", applyMoodScope(f, g.CaseScopeToMood(c))
 		}
 	}
 
 	// Mood: replaces MoodScope on whatever SlotVIII variant is there.
 	for _, m := range g.AllMoods {
 		if m.String() == flag {
-			return applyMoodScope(f, m)
+			return "mood", applyMoodScope(f, m)
 		}
 	}
 
 	// Illocution: forces UnframedVerbal Final.
 	if vk, ok := illocutionByName(flag); ok {
 		f.Final = g.UnframedVerbal{Vk: vk}
-		return nil
+		return "illocution", nil
 	}
 
 	// Validation: only meaningful on Assertive illocution. Replace
@@ -223,18 +236,18 @@ func ApplyFlag(f *g.Formative, flag string) error {
 	for _, v := range g.AllValidations {
 		if v.String() == flag {
 			f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: v}}
-			return nil
+			return "validation", nil
 		}
 	}
 
 	// Ca components (Affiliation / Configuration / Extension /
 	// Perspective / Essence). Each enum is disjoint so dispatch by
 	// matching the abbreviation against every enum's String().
-	if applyCaFlag(f, flag) {
-		return nil
+	if cat, ok := applyCaFlag(f, flag); ok {
+		return cat, nil
 	}
 
-	return unlisted(flag, "grammatical value", flag)
+	return "", unlisted(flag, "grammatical value", flag)
 }
 
 // applyMoodScope sets the MoodScope on the existing SlotVIII variant,
@@ -263,40 +276,41 @@ func applyMoodScope(f *g.Formative, m g.Mood) error {
 }
 
 // applyCaFlag tries to interpret flag as one of the five Ca-complex
-// abbreviations and mutate f.SlotVI accordingly. Returns true if the
-// flag matched a Ca component.
-func applyCaFlag(f *g.Formative, flag string) bool {
+// abbreviations and mutate f.SlotVI accordingly. It names the
+// component it set, so the five stay five categories: a Ca holds one
+// Configuration and one Perspective, and "MSS.G" assigns both.
+func applyCaFlag(f *g.Formative, flag string) (string, bool) {
 	for _, c := range g.AllConfigurations {
 		if c.String() == flag {
 			f.SlotVI.Configuration = c
-			return true
+			return "configuration", true
 		}
 	}
 	for _, a := range g.AllAffiliations {
 		if a.String() == flag {
 			f.SlotVI.Affiliation = a
-			return true
+			return "affiliation", true
 		}
 	}
 	for _, e := range g.AllExtensions {
 		if e.String() == flag {
 			f.SlotVI.Extension = e
-			return true
+			return "extension", true
 		}
 	}
 	for _, p := range g.AllPerspectives {
 		if p.String() == flag {
 			f.SlotVI.Perspective = p
-			return true
+			return "perspective", true
 		}
 	}
 	for _, e := range g.AllEssences {
 		if e.String() == flag {
 			f.SlotVI.Essence = e
-			return true
+			return "essence", true
 		}
 	}
-	return false
+	return "", false
 }
 
 // currentCase pulls the Case out of a nominal/framed-verbal Final, or

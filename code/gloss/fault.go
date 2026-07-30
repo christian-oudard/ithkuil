@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/christian-oudard/ithkuil/fault"
+	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/phonology"
 )
 
@@ -93,4 +94,44 @@ func inToken(tok string, err error) error {
 func degreeAdmits(found string) string {
 	return "an affix degree is one digit, 1 through 9, and " +
 		strings.TrimSpace(found) + " is not"
+}
+
+// assigned is the ledger of which grammatical categories a gloss has
+// already set, and the value that set each one.
+//
+// A gloss assigns each category once. Accepting a second assignment
+// let the last one win in silence, so "S2-S3-ml" composed as stem 3
+// and said nothing about the S2 it had discarded — the one failure
+// mode where a wrong answer comes back looking like a right one.
+//
+// The ledger is per scope, not per parse: a Ca stacked with "Ca:" is
+// a second Ca complex rather than a second assignment to the Slot VI
+// one, so it keeps its own.
+type assigned map[string]string
+
+func newAssigned() assigned { return assigned{} }
+
+// apply sets one flag and records the category it assigned, refusing
+// a category that is already spoken for. Both values are named: the
+// one rejected says what to remove, and the one it collided with says
+// why, which a reader scanning a long gloss cannot otherwise find.
+func (a assigned) apply(f *g.Formative, flag string) error {
+	cat, err := ApplyFlag(f, flag)
+	if err != nil {
+		return err
+	}
+	if prev, dup := a[cat]; dup {
+		// The category is the Code rather than a generic "syntax":
+		// which category collided is the thing a reader looks up, and
+		// a caller marking a token wants to name the same field the
+		// gloss does.
+		return fault.One(flag, fault.Fault{
+			Stage: fault.Shape,
+			Code:  cat,
+			Found: flag,
+			Fix:   "a gloss sets " + cat + " once, and " + prev + " already set it",
+		})
+	}
+	a[cat] = strings.ToUpper(flag)
+	return nil
 }

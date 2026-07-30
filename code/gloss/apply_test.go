@@ -8,7 +8,7 @@ import (
 
 func TestApplyFlag_Stem(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	if err := ApplyFlag(&f, "S2"); err != nil {
+	if _, err := ApplyFlag(&f, "S2"); err != nil {
 		t.Fatalf("ApplyFlag S2: %v", err)
 	}
 	cr, ok := f.Root.(g.CrRoot)
@@ -19,7 +19,7 @@ func TestApplyFlag_Stem(t *testing.T) {
 
 func TestApplyFlag_Version(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	if err := ApplyFlag(&f, "CPT"); err != nil {
+	if _, err := ApplyFlag(&f, "CPT"); err != nil {
 		t.Fatalf("ApplyFlag CPT: %v", err)
 	}
 	cr := f.Root.(g.CrRoot)
@@ -30,7 +30,7 @@ func TestApplyFlag_Version(t *testing.T) {
 
 func TestApplyFlag_Case(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	if err := ApplyFlag(&f, "ERG"); err != nil {
+	if _, err := ApplyFlag(&f, "ERG"); err != nil {
 		t.Fatalf("ApplyFlag ERG: %v", err)
 	}
 	un, ok := f.Final.(g.UnframedNominal)
@@ -41,7 +41,7 @@ func TestApplyFlag_Case(t *testing.T) {
 
 func TestApplyFlag_Illocution(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	if err := ApplyFlag(&f, "DIR"); err != nil {
+	if _, err := ApplyFlag(&f, "DIR"); err != nil {
 		t.Fatalf("ApplyFlag DIR: %v", err)
 	}
 	uv, ok := f.Final.(g.UnframedVerbal)
@@ -57,7 +57,7 @@ func TestApplyFlag_Stress(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	// PEN is the default, so applying it should be a no-op error or noop.
 	// ULT, ANT, MON change Final.
-	if err := ApplyFlag(&f, "ULT"); err != nil {
+	if _, err := ApplyFlag(&f, "ULT"); err != nil {
 		t.Fatalf("ApplyFlag ULT: %v", err)
 	}
 	if _, ok := f.Final.(g.UnframedVerbal); !ok {
@@ -67,7 +67,7 @@ func TestApplyFlag_Stress(t *testing.T) {
 
 func TestApplyFlag_UnknownReturnsError(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	if err := ApplyFlag(&f, "QQQ"); err == nil {
+	if _, err := ApplyFlag(&f, "QQQ"); err == nil {
 		t.Error("ApplyFlag(QQQ) returned nil error")
 	}
 }
@@ -76,7 +76,7 @@ func TestApplyFlag_StemOnNonCrErrors(t *testing.T) {
 	// Build a CsRoot formative and try applying S2.
 	f := g.MinimalFormative("ml")
 	f.Root = g.CsRoot{Cs: "ml", Degree: 5, Version: g.PRC, Function: g.STA, Context: g.EXS}
-	err := ApplyFlag(&f, "S2")
+	_, err := ApplyFlag(&f, "S2")
 	if err == nil {
 		t.Error("ApplyFlag S2 on CsRoot didn't error")
 	}
@@ -95,7 +95,7 @@ func TestApplyFlag_AllIllocutions(t *testing.T) {
 	}
 	for _, c := range cases {
 		f := g.MinimalFormative("ml")
-		err := ApplyFlag(&f, c.flag)
+		_, err := ApplyFlag(&f, c.flag)
 		if (err == nil) != c.ok {
 			t.Errorf("ApplyFlag(%s): err=%v, want ok=%v", c.flag, err, c.ok)
 			continue
@@ -110,14 +110,14 @@ func TestApplyFlag_AllIllocutions(t *testing.T) {
 
 func TestApplyFlag_FunctionAndSpecification(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	if err := ApplyFlag(&f, "DYN"); err != nil {
+	if _, err := ApplyFlag(&f, "DYN"); err != nil {
 		t.Fatalf("ApplyFlag DYN: %v", err)
 	}
 	cr := f.Root.(g.CrRoot)
 	if cr.SlotIV.Function != g.DYN {
 		t.Errorf("Function = %v, want DYN", cr.SlotIV.Function)
 	}
-	if err := ApplyFlag(&f, "OBJ"); err != nil {
+	if _, err := ApplyFlag(&f, "OBJ"); err != nil {
 		t.Fatalf("ApplyFlag OBJ: %v", err)
 	}
 	cr = f.Root.(g.CrRoot)
@@ -128,7 +128,7 @@ func TestApplyFlag_FunctionAndSpecification(t *testing.T) {
 
 func TestApplyFlag_Context(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	if err := ApplyFlag(&f, "FNC"); err != nil {
+	if _, err := ApplyFlag(&f, "FNC"); err != nil {
 		t.Fatalf("ApplyFlag FNC: %v", err)
 	}
 	cr := f.Root.(g.CrRoot)
@@ -141,7 +141,7 @@ func TestApplyFlag_StressVariants(t *testing.T) {
 	cases := []string{"MON", "PEN", "ULT", "ANT"}
 	for _, s := range cases {
 		f := g.MinimalFormative("ml")
-		if err := ApplyFlag(&f, s); err != nil {
+		if _, err := ApplyFlag(&f, s); err != nil {
 			t.Errorf("ApplyFlag(%s): %v", s, err)
 		}
 	}
@@ -154,7 +154,7 @@ func TestApplyFlag_VersionOnCsAndRefRoots(t *testing.T) {
 	} {
 		f := g.MinimalFormative("ml")
 		f.Root = root
-		if err := ApplyFlag(&f, "CPT"); err != nil {
+		if _, err := ApplyFlag(&f, "CPT"); err != nil {
 			t.Errorf("ApplyFlag CPT on %T: %v", root, err)
 		}
 		switch r := f.Root.(type) {
@@ -177,7 +177,7 @@ func TestApplyFlag_FunctionOnCsAndRefRoots(t *testing.T) {
 	} {
 		f := g.MinimalFormative("ml")
 		f.Root = root
-		if err := ApplyFlag(&f, "DYN"); err != nil {
+		if _, err := ApplyFlag(&f, "DYN"); err != nil {
 			t.Errorf("ApplyFlag DYN on %T: %v", root, err)
 		}
 	}
@@ -186,7 +186,7 @@ func TestApplyFlag_FunctionOnCsAndRefRoots(t *testing.T) {
 func TestApplyFlag_SpecOnNonCrRefErrors(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.Root = g.CsRoot{Cs: "r", Degree: 5, Version: g.PRC, Function: g.STA, Context: g.EXS}
-	if err := ApplyFlag(&f, "OBJ"); err == nil {
+	if _, err := ApplyFlag(&f, "OBJ"); err == nil {
 		t.Error("ApplyFlag OBJ on CsRoot didn't error")
 	}
 }
@@ -194,7 +194,7 @@ func TestApplyFlag_SpecOnNonCrRefErrors(t *testing.T) {
 func TestApplyFlag_SpecOnRefRoot(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.Root = g.RefRoot{Refs: []g.PersonalRef{{Referent: g.R1m}}, Version: g.PRC, SlotIV: g.DefaultSlotIV}
-	if err := ApplyFlag(&f, "OBJ"); err != nil {
+	if _, err := ApplyFlag(&f, "OBJ"); err != nil {
 		t.Errorf("ApplyFlag OBJ on RefRoot: %v", err)
 	}
 	rr := f.Root.(g.RefRoot)
@@ -210,7 +210,7 @@ func TestApplyFlag_ContextOnCsAndRef(t *testing.T) {
 	} {
 		f := g.MinimalFormative("ml")
 		f.Root = root
-		if err := ApplyFlag(&f, "RPS"); err != nil {
+		if _, err := ApplyFlag(&f, "RPS"); err != nil {
 			t.Errorf("ApplyFlag RPS on %T: %v", root, err)
 		}
 	}
@@ -219,7 +219,7 @@ func TestApplyFlag_ContextOnCsAndRef(t *testing.T) {
 func TestApplyFlag_CaseOnFramedVerbal(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.Final = g.FramedVerbal{Case: g.THM}
-	if err := ApplyFlag(&f, "ERG"); err != nil {
+	if _, err := ApplyFlag(&f, "ERG"); err != nil {
 		t.Fatalf("ApplyFlag ERG: %v", err)
 	}
 	fv, ok := f.Final.(g.FramedVerbal)
@@ -241,7 +241,7 @@ func TestApplyFlag_MoodOnEachSlotVIIIVariant(t *testing.T) {
 	for _, v := range variants {
 		f := g.MinimalFormative("ml")
 		f.SlotVIII = v
-		if err := ApplyFlag(&f, "SUB"); err != nil {
+		if _, err := ApplyFlag(&f, "SUB"); err != nil {
 			t.Errorf("ApplyFlag SUB on %T: %v", v, err)
 		}
 		if got := g.SlotVIIIMoodScope(f.SlotVIII); got != g.SUB {
@@ -250,7 +250,7 @@ func TestApplyFlag_MoodOnEachSlotVIIIVariant(t *testing.T) {
 	}
 	// Applying a mood when SlotVIII is nil → defaults to a MNO valence.
 	f := g.MinimalFormative("ml")
-	if err := ApplyFlag(&f, "SUB"); err != nil {
+	if _, err := ApplyFlag(&f, "SUB"); err != nil {
 		t.Fatalf("ApplyFlag SUB nil: %v", err)
 	}
 	if v, ok := f.SlotVIII.(g.VnCnValence); !ok || v.MoodScope != g.SUB {
@@ -260,14 +260,14 @@ func TestApplyFlag_MoodOnEachSlotVIIIVariant(t *testing.T) {
 
 func TestApplyFlag_AspectValenceFlags(t *testing.T) {
 	f := g.MinimalFormative("ml")
-	if err := ApplyFlag(&f, "RTR"); err != nil {
+	if _, err := ApplyFlag(&f, "RTR"); err != nil {
 		t.Fatalf("ApplyFlag RTR: %v", err)
 	}
 	if _, ok := f.SlotVIII.(g.VnCnAspect); !ok {
 		t.Errorf("SlotVIII = %v, want VnCnAspect", f.SlotVIII)
 	}
 	f = g.MinimalFormative("ml")
-	if err := ApplyFlag(&f, "PRL"); err != nil {
+	if _, err := ApplyFlag(&f, "PRL"); err != nil {
 		t.Fatalf("ApplyFlag PRL: %v", err)
 	}
 	if _, ok := f.SlotVIII.(g.VnCnValence); !ok {
@@ -279,7 +279,7 @@ func TestApplyFlag_ULTPreservesExistingVerbal(t *testing.T) {
 	// Already verbal — applying ULT should be a no-op.
 	f := g.MinimalFormative("ml")
 	f.Final = g.UnframedVerbal{Vk: g.Directive{}}
-	if err := ApplyFlag(&f, "ULT"); err != nil {
+	if _, err := ApplyFlag(&f, "ULT"); err != nil {
 		t.Fatalf("ApplyFlag ULT: %v", err)
 	}
 	uv := f.Final.(g.UnframedVerbal)
@@ -293,7 +293,7 @@ func TestCurrentCase_FramedAndVerbal(t *testing.T) {
 	// out of the FramedVerbal and carry it over.
 	f := g.MinimalFormative("ml")
 	f.Final = g.FramedVerbal{Case: g.ERG}
-	if err := ApplyFlag(&f, "PEN"); err != nil {
+	if _, err := ApplyFlag(&f, "PEN"); err != nil {
 		t.Fatalf("ApplyFlag PEN: %v", err)
 	}
 	un, ok := f.Final.(g.UnframedNominal)
@@ -303,7 +303,7 @@ func TestCurrentCase_FramedAndVerbal(t *testing.T) {
 	// Verbal Final → currentCase returns THM.
 	f = g.MinimalFormative("ml")
 	f.Final = g.UnframedVerbal{Vk: g.Directive{}}
-	if err := ApplyFlag(&f, "PEN"); err != nil {
+	if _, err := ApplyFlag(&f, "PEN"); err != nil {
 		t.Fatalf("ApplyFlag PEN on verbal: %v", err)
 	}
 	un = f.Final.(g.UnframedNominal)
@@ -316,7 +316,7 @@ func TestApplyFlag_ManyCaseValues(t *testing.T) {
 	// ApplyFlag for any Case abbrev should set the Final's case.
 	for _, c := range []g.Case{g.THM, g.INS, g.ERG, g.DAT, g.GEN, g.LOC} {
 		f := g.MinimalFormative("ml")
-		if err := ApplyFlag(&f, c.String()); err != nil {
+		if _, err := ApplyFlag(&f, c.String()); err != nil {
 			t.Errorf("ApplyFlag(%s): %v", c.String(), err)
 			continue
 		}

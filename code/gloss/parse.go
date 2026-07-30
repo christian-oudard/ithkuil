@@ -106,11 +106,12 @@ func ParseFormative(s string, affixes map[string]lexicon.AffixEntry) (g.Formativ
 		Final:  g.UnframedNominal{Case: g.THM},
 	}
 	caIdx := caTokenIndex(tokens, rootIdx)
+	seen := newAssigned()
 	for i, tok := range tokens {
 		if i == rootIdx || tok == caMarker {
 			continue
 		}
-		if err := applyToken(&f, tok, affixes, i < caIdx); err != nil {
+		if err := applyToken(&f, tok, affixes, i < caIdx, seen); err != nil {
 			return g.Formative{}, inToken(tok, err)
 		}
 	}
@@ -324,7 +325,7 @@ var affixToken = regexp.MustCompile(`^([^/_]+)/([0-9])(?:_([23]))?$`)
 // abbreviations, to the affix builder for "X/N" forms, or splits on
 // "." and recurses for compound slot groups like "S2.CPT". slotV
 // selects which affix slot the token lands in when it is an affix.
-func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntry, slotV bool) error {
+func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntry, slotV bool, seen assigned) error {
 	// Type-3 referential affix: "(refs)/degree" where refs is a
 	// referent list like "1m" or "1m/BEN+2p/DET". The cluster is
 	// the concatenation of each ref's C1 form.
@@ -370,13 +371,13 @@ func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntr
 			if part == "" {
 				continue
 			}
-			if err := ApplyFlag(f, part); err != nil {
+			if err := seen.apply(f, part); err != nil {
 				return err
 			}
 		}
 		return nil
 	}
-	return ApplyFlag(f, tok)
+	return seen.apply(f, tok)
 }
 
 // slashTokenFault explains a token that carries a "/" and matched
@@ -413,13 +414,17 @@ func appendCaStack(f *g.Formative, body string, slotV bool) error {
 		return syntax(caStackPrefix, "\"Ca:\" tags a stacked Ca and needs its components after it")
 	}
 	scratch := g.MinimalFormative("l")
+	stacked := newAssigned()
 	if body != caMarker {
 		for _, part := range strings.Split(body, ".") {
 			if part == "" {
 				continue
 			}
-			if err := ApplyFlag(&scratch, part); err != nil {
-				return fmt.Errorf("Ca-stacking affix: %w", err)
+			// A stacked Ca is its own scope: its components are a
+			// second Ca complex, not a second assignment to the Slot
+			// VI one, so it gets a ledger of its own.
+			if err := stacked.apply(&scratch, part); err != nil {
+				return err
 			}
 		}
 	}
