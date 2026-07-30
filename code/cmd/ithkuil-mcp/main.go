@@ -32,28 +32,36 @@ type server struct {
 	grammarDir string
 }
 
-func main() {
-	dataFile := flag.String("data", store.DefaultPath(), "path to data.db")
-	grammarDir := flag.String("grammar", "./docs/reference", "directory with grammar reference markdown")
-	flag.Parse()
-
-	st, err := store.Open(*dataFile)
+// newServer builds what main runs. A store that will not open is a
+// warning rather than an exit: the grammar tables are compiled into the
+// binary, so parse, compose, compare and grammar search all still
+// answer, and only the lexicon-backed half comes back empty. A client
+// launches this as a subprocess and has nowhere to show a startup
+// failure, so refusing to start would look like the server is broken
+// rather than like the store is missing.
+func newServer(dataFile, grammarDir string) *server {
+	st, err := store.Open(dataFile)
 	if err != nil {
-		log.Printf("warning: cannot open data store %s (%v); roots/affixes lookups will return empty", *dataFile, err)
+		log.Printf("warning: cannot open data store %s (%v); roots/affixes lookups will return empty", dataFile, err)
 	}
 
-	var lex *lexicon.Lexicon
+	lex := &lexicon.Lexicon{}
 	if st != nil {
 		lex, err = lexicon.LoadFromStore(st)
 		if err != nil {
 			log.Printf("warning: lexicon load failed (%v); roots/affixes lookups will return empty", err)
 			lex = &lexicon.Lexicon{}
 		}
-	} else {
-		lex = &lexicon.Lexicon{}
 	}
+	return &server{lex: lex, st: st, grammarDir: grammarDir}
+}
 
-	s := &server{lex: lex, st: st, grammarDir: *grammarDir}
+func main() {
+	dataFile := flag.String("data", store.DefaultPath(), "path to data.db")
+	grammarDir := flag.String("grammar", "./docs/reference", "directory with grammar reference markdown")
+	flag.Parse()
+
+	s := newServer(*dataFile, *grammarDir)
 
 	mcpServer := mcp.NewServer(
 		&mcp.Implementation{Name: "ithkuil", Version: "v0.1.0"},
@@ -67,8 +75,8 @@ func main() {
 			log.Fatalf("mcp server: %v", err)
 		}
 	}
-	if st != nil {
-		st.Close()
+	if s.st != nil {
+		s.st.Close()
 	}
 	_ = os.Stdout.Sync()
 }
