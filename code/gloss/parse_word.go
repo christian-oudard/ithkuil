@@ -372,16 +372,35 @@ func looksLikeModular(s string) bool {
 	if body == "MOD" {
 		return true
 	}
-	// Vn.Cn form: a dot between two uppercase abbreviations.
-	if dot := strings.Index(body, "."); dot > 0 {
-		left, right := body[:dot], body[dot+1:]
-		return isBareUppercase(left) && isBareUppercase(right)
+	// Vn.Cn form: a dot between two uppercase abbreviations. §4.3 has
+	// three content slots and the glosser joins them with "-", so test
+	// every entry rather than the body as a whole — parseModularToken
+	// splits on the same hyphen, and a narrower test here sent the
+	// multi-entry form off to the formative parser instead.
+	if strings.Contains(body, ".") {
+		for _, entry := range strings.Split(body, "-") {
+			dot := strings.Index(entry, ".")
+			if dot < 0 {
+				// A bare Vn entry among them: Cn defaults to FAC.
+				if !isBareUppercase(entry) || !isVnCategoryName(entry) {
+					return false
+				}
+				continue
+			}
+			if !isBareUppercase(entry[:dot]) || !isBareUppercase(entry[dot+1:]) {
+				return false
+			}
+		}
+		return true
 	}
 	// Vn-only form (Cn defaults to FAC): a bare uppercase abbreviation
-	// recognised as one of the Vn categories. This shape only matters
-	// when the original token had a scope/reach tail — otherwise the
-	// bare-uppercase dispatch already handled it as bias/register.
-	if body != s && isBareUppercase(body) {
+	// recognised as one of the Vn categories. A tail is not required.
+	// ParseToken tries bias and register before it gets here, so a
+	// bare abbreviation reaching this point is one neither of those
+	// claimed; requiring a tail left the §4.3 Slot-4 lone aspect with
+	// nothing to claim it, and "RTR" fell through to the formative
+	// parser as a rootless gloss.
+	if isBareUppercase(body) {
 		return isVnCategoryName(body)
 	}
 	return false

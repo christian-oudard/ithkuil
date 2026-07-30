@@ -251,6 +251,56 @@ func TestParseToken_Modular(t *testing.T) {
 	}
 }
 
+// TestParseToken_ModularMultiPair covers §4.3's Slots 2, 3 and 4 all
+// filled. The glosser writes the values hyphen-joined and
+// parseModularToken splits on the hyphen to read them back, but
+// looksLikeModular tested the body for a single dot, so a token with
+// more than one entry never reached the parser that handles it and
+// fell through to the formative path: Quijada's own "uhlaini" glossed
+// to "PTI.SUB-RSM-PRG" and came back "no root in ...".
+func TestParseToken_ModularMultiPair(t *testing.T) {
+	gl := canonicalGlosser(t)
+	want := g.ModularAdjunct{
+		Content: []g.SlotVIII{
+			g.VnCnValence{Valence: g.PTI, MoodScope: g.SUB},
+			g.VnCnAspect{Aspect: g.RSM, MoodScope: g.FAC},
+			g.VnCnAspect{Aspect: g.PRG, MoodScope: g.FAC},
+		},
+	}
+	s := gl.Token(want)
+	got, err := ParseWord(s, nil)
+	if err != nil {
+		t.Fatalf("ParseWord(%q): %v", s, err)
+	}
+	if got2 := gl.Token(got); got2 != s {
+		t.Errorf("round-trip differs\n  first:  %s\n  second: %s", s, got2)
+	}
+}
+
+// TestParseToken_ModularLoneAspect covers §4.3's Slot 4 filled alone,
+// whose canonical gloss is a bare abbreviation. Bias and register are
+// tried before the modular check, so a bare abbreviation that reaches
+// it is one neither claimed — but the check required a scope or reach
+// tail, so "RTR" (the adjunct written "a") went to the formative
+// parser and came back "no root".
+func TestParseToken_ModularLoneAspect(t *testing.T) {
+	gl := canonicalGlosser(t)
+	for _, asp := range []g.Aspect{g.RTR, g.PRS} {
+		want := g.ModularAdjunct{
+			Content: []g.SlotVIII{g.VnCnAspect{Aspect: asp, MoodScope: g.FAC}},
+		}
+		s := gl.Token(want)
+		got, err := ParseWord(s, nil)
+		if err != nil {
+			t.Errorf("ParseWord(%q): %v", s, err)
+			continue
+		}
+		if got2 := gl.Token(got); got2 != s {
+			t.Errorf("round-trip differs\n  first:  %s\n  second: %s", s, got2)
+		}
+	}
+}
+
 func TestParseToken_MultiReferential(t *testing.T) {
 	gl := canonicalGlosser(t)
 	want := g.Referential{

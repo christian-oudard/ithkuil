@@ -12,10 +12,9 @@ that are not formatives, skipped by design.
 ## a concatenated chain cannot be composed back into a chain
 
 The canonical gloss of a `grammar.Chain` is its members separated by a
-space, so it is not one whitespace-delimited token and
-`compose.ParseToken` never sees it. `compose.ParseSentence` reads the
-members as independent formatives, and the chain they belonged to is
-gone:
+space, so it is not one whitespace-delimited token and `gloss.ParseWord`
+never sees it. `gloss.ParseText` reads the members as independent
+formatives, and the chain they belonged to is gone:
 
 ```
 hakšiţé-alcialu'a
@@ -27,7 +26,15 @@ Nothing is lost from the members themselves, the T1 marker survives on
 the first, so what is missing is the reassembly. Every other word class
 round-trips through compose; this is the one that does not.
 
-No skipped test yet.
+Both fixes are real changes rather than repairs. Giving chains their own
+separator in the gloss costs a mark, and the obvious one is taken: "-"
+already separates slots, which is why the space was reached for. Teaching
+`ParseText` to reassemble is the other, and it has to decide what a space
+means everywhere else in the gloss before it can mean "next chain member"
+here.
+
+`gloss/corpus_gloss_test.go`'s `TestCorpusGloss_ComposesBack` holds the
+count of chains at nineteen, so the gap cannot widen quietly.
 
 ## render cannot write ëztewim
 
