@@ -143,7 +143,7 @@ func TestRegisterFinalForms(t *testing.T) {
 		{g.SPF, "hiu"},
 		{g.EXM, "hoi"},
 		{g.CGT, "hui"},
-		{g.END, "hüi"},
+		{g.END, "hü"},
 	}
 	for _, c := range cases {
 		if got := RegisterFinalForm(c.r); got != c.want {

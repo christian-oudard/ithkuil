@@ -34,7 +34,7 @@ func ParseRegister(s string) (grammar.Register, bool) {
 }
 
 // ParseRegisterFinal decodes a register-closing adjunct (hai, hei,
-// hiu, hoi, hui, hüi). hüi closes any open register/carrier (END).
+// hiu, hoi, hui, hü). hü closes any open register/carrier (END).
 func ParseRegisterFinal(s string) (grammar.Register, bool) {
 	r, ok := registerByFinal[s]
 	return r, ok

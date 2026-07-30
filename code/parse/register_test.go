@@ -42,7 +42,7 @@ func TestParseRegisterFinal(t *testing.T) {
 		{"hiu", grammar.SPF},
 		{"hoi", grammar.EXM},
 		{"hui", grammar.CGT},
-		{"hüi", grammar.END},
+		{"hü", grammar.END},
 	}
 	for _, c := range cases {
 		got, ok := ParseRegisterFinal(c.in)

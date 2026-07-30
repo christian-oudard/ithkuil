@@ -996,7 +996,7 @@ The structure of the adjunct is shown below. Slots 2 and 3 can be "mixed and mat
 
 ### 4.4 Register Adjunct
 
-These adjuncts are marked by a single vowel-form preceded by **h**-. A non-NARRATIVE register clause may be pronounced with low pitch on the last word of the clause, in which case the register clause does not require the end-register final adjunct listed below. If the word/phrase within the register is a proper name or foreign word/phrase, indicate this by ending the register clause using the CAR end-register adjunct *hüi*, or pronounce the last word of the proper name/phrase with low tone.
+These adjuncts are marked by a single vowel-form preceded by **h**-. A non-NARRATIVE register clause may be pronounced with low pitch on the last word of the clause, in which case the register clause does not require the end-register final adjunct listed below. If the word/phrase within the register is a proper name or foreign word/phrase, indicate this by ending the register clause using the CAR end-register adjunct *hü*, or pronounce the last word of the proper name/phrase with low tone.
 
 | Register Adjunct | | Register | Initial Adjunct | Final Adjunct |
 |---|---|---|---|---|
@@ -1006,13 +1006,13 @@ These adjuncts are marked by a single vowel-form preceded by **h**-. A non-NARRA
 | | **SPF** | SPECIFICATIVE (proper name of preceding referent) | hi | (hiu) |
 | | **EXM** | EXEMPLIFICATIVE ('for example, ...') | ho | (hoi) |
 | | **CGT** | COGITANT (silent/subjective thoughts) | hu | (hui) |
-| | **END** | CARRIER-END: end of term/phrase governed by carrier stem/adjunct | — | (hüi) |
+| | **END** | CARRIER-END: end of term/phrase governed by carrier stem/adjunct | — | (hü) |
 
 **Note:** Since Sec. 1.5 external juncture rules do not apply to foreign names/words, insert a pause after uttering the name/words prior to the CAR adjunct *hü*, or pronounce the last word of the proper name/phrase with low tone.
 
 ### 4.5 Suppletive Adjuncts
 
-These are a series of adjuncts of the form **C_P + V_C** where **C_P** is a bi-consonantal form beginning with **h**- specifying the nature of the adjunct, while **V_C** is the case-marker from Formative Slot IX. The tell-tale sign of these adjuncts is the initial **h**+consonant with no subsequent consonant forms. The last word of the word, phrase or name identified by the adjunct can be indicated by the adjunct form **hüi** if necessary, or by pronouncing that word/phrase/name with low tone.
+These are a series of adjuncts of the form **C_P + V_C** where **C_P** is a bi-consonantal form beginning with **h**- specifying the nature of the adjunct, while **V_C** is the case-marker from Formative Slot IX. The tell-tale sign of these adjuncts is the initial **h**+consonant with no subsequent consonant forms. The last word of the word, phrase or name identified by the adjunct can be indicated by the adjunct form **hü** if necessary, or by pronouncing that word/phrase/name with low tone.
 
 Use of these adjuncts implies **CCN** Case-scope; if the case-framed word/phrase/name has non-default Case-scope, use either a full carrier-stem or a preceding adjunct to show the case-scope.
 

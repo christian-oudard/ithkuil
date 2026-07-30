@@ -140,7 +140,7 @@ var registerInitialForms = [...]string{
 }
 
 // registerFinalForms hold the closing form for each register. g.NRR has
-// no closing form; g.END is itself a finalizer (hüi).
+// no closing form; g.END is itself a finalizer (hü).
 var registerFinalForms = [...]string{
 	g.NRR: "",
 	g.DSV: "hai",
@@ -148,7 +148,7 @@ var registerFinalForms = [...]string{
 	g.SPF: "hiu",
 	g.EXM: "hoi",
 	g.CGT: "hui",
-	g.END: "hüi",
+	g.END: "hü",
 }
 
 // RegisterInitialForm returns the opening adjunct romanization for r.
