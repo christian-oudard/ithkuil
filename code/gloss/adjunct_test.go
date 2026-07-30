@@ -9,7 +9,7 @@ import (
 )
 
 // canonicalGlosser returns a Glosser configured for canonical/input
-// mode — the same one whose output we expect ParseToken to invert.
+// mode — the same one whose output we expect ParseWord to invert.
 func canonicalGlosser(t *testing.T) *Glosser {
 	t.Helper()
 	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
@@ -19,7 +19,7 @@ func canonicalGlosser(t *testing.T) *Glosser {
 	return &Glosser{Lex: lex, Canonical: true}
 }
 
-func TestParseToken_Bias(t *testing.T) {
+func TestParseWord_Bias(t *testing.T) {
 	gl := canonicalGlosser(t)
 	for _, b := range g.AllBiases {
 		want := b
@@ -36,7 +36,7 @@ func TestParseToken_Bias(t *testing.T) {
 	}
 }
 
-func TestParseToken_RegisterStart(t *testing.T) {
+func TestParseWord_RegisterStart(t *testing.T) {
 	gl := canonicalGlosser(t)
 	for _, r := range g.AllRegisters {
 		if r == g.END {
@@ -56,7 +56,7 @@ func TestParseToken_RegisterStart(t *testing.T) {
 	}
 }
 
-func TestParseToken_RegisterEnd(t *testing.T) {
+func TestParseWord_RegisterEnd(t *testing.T) {
 	gl := canonicalGlosser(t)
 	for _, r := range g.AllRegisters {
 		want := g.RegisterMarker{Register: r, End: true}
@@ -73,7 +73,7 @@ func TestParseToken_RegisterEnd(t *testing.T) {
 	}
 }
 
-func TestParseToken_SingleAffix(t *testing.T) {
+func TestParseWord_SingleAffix(t *testing.T) {
 	gl := canonicalGlosser(t)
 	lex, _ := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	cases := []struct {
@@ -105,7 +105,7 @@ func TestParseToken_SingleAffix(t *testing.T) {
 	}
 }
 
-func TestParseToken_MultiAffix(t *testing.T) {
+func TestParseWord_MultiAffix(t *testing.T) {
 	gl := canonicalGlosser(t)
 	lex, _ := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	first := g.Affix{Type: g.Type1Affix, Degree: 3, Consonant: "r"}
@@ -145,7 +145,7 @@ func TestParseToken_MultiAffix(t *testing.T) {
 	}
 }
 
-func TestParseToken_Referential(t *testing.T) {
+func TestParseWord_Referential(t *testing.T) {
 	gl := canonicalGlosser(t)
 	nomicCat := g.Nomic
 	cases := []g.Referential{
@@ -209,7 +209,7 @@ func TestParseToken_Referential(t *testing.T) {
 	}
 }
 
-func TestParseToken_Modular(t *testing.T) {
+func TestParseWord_Modular(t *testing.T) {
 	gl := canonicalGlosser(t)
 	// All-default: empty body, MNO/FAC.
 	allDefault := g.ModularAdjunct{Scope: g.ModularScopeDefault}
@@ -251,14 +251,14 @@ func TestParseToken_Modular(t *testing.T) {
 	}
 }
 
-// TestParseToken_ModularMultiPair covers §4.3's Slots 2, 3 and 4 all
+// TestParseWord_ModularMultiPair covers §4.3's Slots 2, 3 and 4 all
 // filled. The glosser writes the values hyphen-joined and
 // parseModularToken splits on the hyphen to read them back, but
 // looksLikeModular tested the body for a single dot, so a token with
 // more than one entry never reached the parser that handles it and
 // fell through to the formative path: Quijada's own "uhlaini" glossed
 // to "PTI.SUB-RSM-PRG" and came back "no root in ...".
-func TestParseToken_ModularMultiPair(t *testing.T) {
+func TestParseWord_ModularMultiPair(t *testing.T) {
 	gl := canonicalGlosser(t)
 	want := g.ModularAdjunct{
 		Content: []g.SlotVIII{
@@ -277,13 +277,13 @@ func TestParseToken_ModularMultiPair(t *testing.T) {
 	}
 }
 
-// TestParseToken_ModularLoneAspect covers §4.3's Slot 4 filled alone,
+// TestParseWord_ModularLoneAspect covers §4.3's Slot 4 filled alone,
 // whose canonical gloss is a bare abbreviation. Bias and register are
 // tried before the modular check, so a bare abbreviation that reaches
 // it is one neither claimed — but the check required a scope or reach
 // tail, so "RTR" (the adjunct written "a") went to the formative
 // parser and came back "no root".
-func TestParseToken_ModularLoneAspect(t *testing.T) {
+func TestParseWord_ModularLoneAspect(t *testing.T) {
 	gl := canonicalGlosser(t)
 	for _, asp := range []g.Aspect{g.RTR, g.PRS} {
 		want := g.ModularAdjunct{
@@ -301,7 +301,7 @@ func TestParseToken_ModularLoneAspect(t *testing.T) {
 	}
 }
 
-func TestParseToken_MultiReferential(t *testing.T) {
+func TestParseWord_MultiReferential(t *testing.T) {
 	gl := canonicalGlosser(t)
 	want := g.Referential{
 		Head: g.PersonalHead{Refs: []g.PersonalRef{
@@ -330,7 +330,7 @@ func TestParseToken_MultiReferential(t *testing.T) {
 	}
 }
 
-func TestParseToken_CarrierHeadedReferential(t *testing.T) {
+func TestParseWord_CarrierHeadedReferential(t *testing.T) {
 	gl := canonicalGlosser(t)
 	want := g.Referential{
 		Head:   g.SuppletiveHead{Type: g.Quotative},
@@ -362,7 +362,7 @@ func TestParseToken_CarrierHeadedReferential(t *testing.T) {
 	}
 }
 
-func TestParseToken_CombinationRef(t *testing.T) {
+func TestParseWord_CombinationRef(t *testing.T) {
 	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
@@ -401,7 +401,7 @@ func TestParseToken_CombinationRef(t *testing.T) {
 	}
 }
 
-func TestParseToken_ForeignWord(t *testing.T) {
+func TestParseWord_ForeignWord(t *testing.T) {
 	gl := canonicalGlosser(t)
 	for _, name := range []string{"John", "Emily", "Beethoven", "naïve"} {
 		want := g.Foreign{Text: name}
@@ -418,7 +418,7 @@ func TestParseToken_ForeignWord(t *testing.T) {
 	}
 }
 
-func TestParseToken_CarrierAdjunct(t *testing.T) {
+func TestParseWord_CarrierAdjunct(t *testing.T) {
 	gl := canonicalGlosser(t)
 	cases := []struct {
 		ct g.CarrierType

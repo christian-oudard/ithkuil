@@ -39,8 +39,19 @@ func referentialWord(r g.Referential) g.Word {
 	return r
 }
 
-// ClassifyWord decides which WordToken variant a single romanization
-// belongs to. The order of attempts is the docstring of the package.
+// ParseWord decides which grammar.Word variant a single romanization
+// belongs to. It tries the recognizers tightest-first, so the first one
+// that fits wins:
+//
+//  1. Pure-consonant single conjunct → Bias.
+//  2. Recognized register opener/closer → RegisterMarker.
+//  3. Recognized carrier consonant + vowel → CarrierAdjunct.
+//  4. Vowel + valid Cn consonant → ModularAdjunct.
+//  5. A referential, then a combination referential.
+//  6. Anything else that parses as a formative → Formative.
+//
+// Nothing matching is an error, not a variant; see the Word doc in
+// package grammar for why an unreadable stretch is not a kind of word.
 //
 // Non-Ithkuil characters (chars not in the V4 alphabet) reject the
 // word up front. Stress-mark and per-slot phonotactic violations are

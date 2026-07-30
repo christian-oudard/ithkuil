@@ -8,11 +8,11 @@ import (
 	"github.com/christian-oudard/ithkuil/roman"
 )
 
-// TestFormative_FullRoundTrip composes a formative from a gloss
-// string, renders it to a romanization, parses that back, and verifies
-// the resulting gloss matches the original compose input's
-// This is the strongest invariant: compose ∘ render ∘ fullparse ∘
-// gloss == gloss ∘ compose.
+// TestFormative_FullRoundTrip reads a formative from a gloss string,
+// renders it to a romanization, parses that back, and verifies the
+// resulting gloss matches the string it started from. This is the
+// strongest invariant: Formative ∘ render ∘ fullparse ∘ ParseFormative
+// == identity on canonical gloss.
 func TestFormative_FullRoundTrip(t *testing.T) {
 	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	if err != nil {

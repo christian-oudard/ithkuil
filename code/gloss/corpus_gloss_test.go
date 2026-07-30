@@ -7,7 +7,7 @@ import (
 
 	"github.com/christian-oudard/ithkuil/corpus"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/tokenize"
+	"github.com/christian-oudard/ithkuil/roman"
 )
 
 // TestCorpusGloss_ComposesBack drives the arm SPEC claims, over the
@@ -30,7 +30,7 @@ func TestCorpusGloss_ComposesBack(t *testing.T) {
 	gl := &Glosser{Lex: lex, Canonical: true}
 	var chains, ok int
 	for _, w := range corpus.Words() {
-		word, err := tokenize.ClassifyWord(w)
+		word, err := roman.ParseWord(w)
 		if err != nil {
 			continue
 		}

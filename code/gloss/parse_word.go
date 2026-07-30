@@ -9,9 +9,8 @@ import (
 	"github.com/christian-oudard/ithkuil/parse"
 )
 
-// ParseToken parses a single canonical-gloss token (whitespace-delimited
-// unit) into a g.Word. Inverse of gloss.Glosser.Token when
-// Canonical=true.
+// ParseWord parses a single canonical-gloss token (whitespace-delimited
+// unit) into a g.Word. Inverse of Glosser.Word when Canonical=true.
 //
 // Dispatch is structural: each adjunct type has a distinctive shape
 // (leading bracket, trailing colon, bare uppercase, and so on), which
@@ -395,7 +394,7 @@ func looksLikeModular(s string) bool {
 	}
 	// Vn-only form (Cn defaults to FAC): a bare uppercase abbreviation
 	// recognised as one of the Vn categories. A tail is not required.
-	// ParseToken tries bias and register before it gets here, so a
+	// ParseWord tries bias and register before it gets here, so a
 	// bare abbreviation reaching this point is one neither of those
 	// claimed; requiring a tail left the §4.3 Slot-4 lone aspect with
 	// nothing to claim it, and "RTR" fell through to the formative
@@ -478,8 +477,8 @@ func looksLikeAffixual(s string) bool {
 	return true
 }
 
-// ParseSentence splits a canonical-gloss sentence on whitespace and
-// dispatches each token via ParseToken. Returns the slice of tokens
+// ParseText splits a canonical-gloss sentence on whitespace and
+// dispatches each token via ParseWord. Returns the slice of tokens
 // in order; errors include the failing token's index and content.
 func ParseText(s string, lex *lexicon.Lexicon) ([]g.Word, error) {
 	fields := strings.Fields(s)

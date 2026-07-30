@@ -771,7 +771,7 @@ func TestDefine_NoArg(t *testing.T) {
 // rather than into a Go call. TestDocumentedSyntaxExamples checks the
 // library function; this checks the command, which is not the same
 // path and did not always agree with it. Routing compose through
-// ParseToken broke "m-SYS/5_2-{Ca}-DCD/1_2": the "{Ca}" there marks
+// gloss.ParseWord broke "m-SYS/5_2-{Ca}-DCD/1_2": the "{Ca}" there marks
 // the Slot V/VII boundary, and the affixual-adjunct recognizer took
 // any brace as proof of an affixual adjunct.
 func TestCompose_DocumentedExamples(t *testing.T) {
