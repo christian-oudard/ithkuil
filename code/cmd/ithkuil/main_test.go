@@ -606,8 +606,15 @@ func TestCompose_BadValue(t *testing.T) {
 	if code == 0 {
 		t.Error("expected non-zero exit on unknown abbreviation")
 	}
-	if !strings.Contains(errOut, "unknown") {
-		t.Errorf("expected 'unknown' in stderr; got %q", errOut)
+	// The message has to name the token and the inventory it was
+	// looked for in. Which inventory is the part a reader acts on:
+	// XYZZY not being a grammatical value says to go and look at the
+	// value tables, where "unknown" alone said only that something
+	// went wrong somewhere in the line.
+	for _, want := range []string{"XYZZY", "grammatical value"} {
+		if !strings.Contains(errOut, want) {
+			t.Errorf("stderr missing %q; got %q", want, errOut)
+		}
 	}
 }
 

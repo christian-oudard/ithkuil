@@ -82,11 +82,11 @@ func ParseWord(s string, lex *lexicon.Lexicon) (g.Word, error) {
 	// affix written as a raw Cs cluster but not one written as an
 	// abbreviation, and says so. Refusing the whole token for want of a
 	// lexicon would fail every root as well.
-	f, err := ParseFormative(s, affixes)
-	if err != nil {
-		return nil, fmt.Errorf("formative parse failed: %w", err)
-	}
-	return f, nil
+	// The formative fault passes through as it stands. Wrapping it in
+	// "formative parse failed" said only that the branch we are
+	// standing in is the branch we took, and pushed the part a reader
+	// acts on to the end of the line.
+	return ParseFormative(s, affixes)
 }
 
 // parseBiasName looks up the abbreviation against the Bias enum.
@@ -620,7 +620,7 @@ func parseAffixualAdjunct(s string, affixes map[string]lexicon.AffixEntry) (g.Wo
 func parseAffixField(s string, affixes map[string]lexicon.AffixEntry) (g.Affix, error) {
 	slash := strings.Index(s, "/")
 	if slash < 1 {
-		return g.Affix{}, fmt.Errorf("not an affix field: %q", s)
+		return g.Affix{}, syntax(s, "an affix is written Cs/degree or ABBREV/degree")
 	}
 	csOrAbbrev := s[:slash]
 	tail := s[slash+1:]
@@ -632,17 +632,17 @@ func parseAffixField(s string, affixes map[string]lexicon.AffixEntry) (g.Affix, 
 		case "3":
 			atype = g.Type3Affix
 		default:
-			return g.Affix{}, fmt.Errorf("unknown Type suffix %q", tail[i:])
+			return g.Affix{}, syntax(tail[i:], "the affix Type suffix is _2 or _3; Type 1 is unmarked")
 		}
 		tail = tail[:i]
 	}
 	if len(tail) != 1 || tail[0] < '0' || tail[0] > '9' {
-		return g.Affix{}, fmt.Errorf("expected single-digit degree, got %q", tail)
+		return g.Affix{}, value(tail, "degree", tail, degreeAdmits(tail))
 	}
 	degree := int(tail[0] - '0')
 	cs := resolveAffixCs(csOrAbbrev, affixes)
 	if cs == "" {
-		return g.Affix{}, fmt.Errorf("unknown affix %q", csOrAbbrev)
+		return g.Affix{}, unlisted(csOrAbbrev, "affix", csOrAbbrev)
 	}
 	return g.Affix{Type: atype, Degree: degree, Consonant: cs}, nil
 }

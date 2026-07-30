@@ -234,7 +234,7 @@ func ApplyFlag(f *g.Formative, flag string) error {
 		return nil
 	}
 
-	return fmt.Errorf("unknown grammar flag %q", flag)
+	return unlisted(flag, "grammatical value", flag)
 }
 
 // applyMoodScope sets the MoodScope on the existing SlotVIII variant,

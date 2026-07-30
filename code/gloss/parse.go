@@ -44,13 +44,13 @@ import (
 func ParseFormative(s string, affixes map[string]lexicon.AffixEntry) (g.Formative, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
-		return g.Formative{}, fmt.Errorf("empty input")
+		return g.Formative{}, syntax("", "a gloss needs at least a root cluster")
 	}
 	// Collapse run of "-" into a single separator: gloss output writes
 	// "S2.CPT--ml-…" with a double hyphen around the root marker.
 	tokens := splitSlots(s)
 	if len(tokens) == 0 {
-		return g.Formative{}, fmt.Errorf("no slot tokens")
+		return g.Formative{}, syntax(s, "a gloss is slots joined by \"-\", and this has none")
 	}
 
 	// Identify the root. A bare Cr cluster (lowercase letters /
@@ -65,8 +65,8 @@ func ParseFormative(s string, affixes map[string]lexicon.AffixEntry) (g.Formativ
 			continue
 		}
 		if rootIdx >= 0 {
-			return g.Formative{}, fmt.Errorf("multiple root candidates: %q and %q",
-				tokens[rootIdx], tok)
+			return g.Formative{}, syntax(tok,
+				"a gloss has one root, and "+tokens[rootIdx]+" already read as one")
 		}
 		if err := validateRootCluster(cluster); err != nil {
 			return g.Formative{}, err
@@ -82,21 +82,22 @@ func ParseFormative(s string, affixes map[string]lexicon.AffixEntry) (g.Formativ
 			}
 			r, ok, err := parseParensRoot(tok, affixes)
 			if err != nil {
-				return g.Formative{}, fmt.Errorf("root token %q: %w", tok, err)
+				return g.Formative{}, inToken(tok, err)
 			}
 			if !ok {
 				continue
 			}
 			if rootIdx >= 0 {
-				return g.Formative{}, fmt.Errorf("multiple root candidates: %q and %q",
-					tokens[rootIdx], tok)
+				return g.Formative{}, syntax(tok,
+					"a gloss has one root, and "+tokens[rootIdx]+" already read as one")
 			}
 			rootIdx = i
 			root = r
 		}
 	}
 	if rootIdx < 0 {
-		return g.Formative{}, fmt.Errorf("no root in %q", s)
+		return g.Formative{}, syntax(s,
+			"a gloss needs a root: a lowercase consonant cluster, (ABBREV)/degree, or (1m+2p)")
 	}
 
 	f := g.Formative{
@@ -110,7 +111,7 @@ func ParseFormative(s string, affixes map[string]lexicon.AffixEntry) (g.Formativ
 			continue
 		}
 		if err := applyToken(&f, tok, affixes, i < caIdx); err != nil {
-			return g.Formative{}, fmt.Errorf("token %q: %w", tok, err)
+			return g.Formative{}, inToken(tok, err)
 		}
 	}
 	return f, nil
@@ -222,10 +223,10 @@ func validateRootCluster(cluster string) error {
 // roots or 528 affixes, so nothing attested is at risk.
 func validateCluster(kind, cluster string) error {
 	if v := phonology.CheckChars(cluster); len(v) > 0 {
-		return fmt.Errorf("%s %q: %s", kind, cluster, v[0].Fix)
+		return clusterFault(kind, cluster)
 	}
 	if phonology.HasTripleConsonant(cluster) {
-		return fmt.Errorf("%s %q: 1.7: triple consonant", kind, cluster)
+		return clusterFault(kind, cluster)
 	}
 	return nil
 }
@@ -350,6 +351,20 @@ func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntr
 	// flags. It is the only separator that does this: "/" binds an
 	// argument to a head, and every shape that uses it was tried above,
 	// so a "/" still here is an error rather than a grouping.
+	// A "/" still here means the token claimed one of the shapes above
+	// and failed inside it. Falling through to the plain-flag reading
+	// described the token as something it never was: "DEV/99" came
+	// back "unknown grammar flag", naming an affix the lexicon knows
+	// as if it were unheard of, and sending the reader to look for a
+	// typo in DEV rather than in the degree.
+	//
+	// So the shapes are committing. This is the same property the
+	// romanization parser has and for the same reason: a reading that
+	// gets far enough to identify what a token is meant to be should
+	// report against that, not retry as something less specific.
+	if strings.Contains(tok, "/") {
+		return slashTokenFault(tok, affixes)
+	}
 	if strings.Contains(tok, ".") {
 		for _, part := range strings.Split(tok, ".") {
 			if part == "" {
@@ -364,6 +379,30 @@ func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntr
 	return ApplyFlag(f, tok)
 }
 
+// slashTokenFault explains a token that carries a "/" and matched
+// none of the shapes that use one. The head before the slash says
+// which shape was meant, so the complaint can be about the argument
+// rather than about the token as a whole.
+func slashTokenFault(tok string, affixes map[string]lexicon.AffixEntry) error {
+	head, arg, _ := strings.Cut(tok, "/")
+	arg, _, _ = strings.Cut(arg, "_")
+	switch {
+	case head == "":
+		return syntax(tok, "\"/\" binds an argument to a head, and there is nothing in front of it")
+	case arg == "":
+		return syntax(tok, "\"/\" binds an argument to a head, and there is nothing after it")
+	}
+	// A known affix or accessor family in front means the head was
+	// right and the argument was not, which is the whole of the news.
+	if resolveAffixCs(head, affixes) != "" {
+		return value(tok, "degree", arg, degreeAdmits(arg))
+	}
+	if _, found := g.LookupAccessorKind(head, g.Type1Affix); found {
+		return unlisted(tok, "case", arg)
+	}
+	return unlisted(tok, "affix", head)
+}
+
 // appendCaStack builds a Ca-stacking affix from the component list
 // after "Ca:". The body is spelled exactly as a Slot VI Ca, so it is
 // applied to a scratch Formative and its SlotVI read back — that way
@@ -371,7 +410,7 @@ func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntr
 // never drift from the Slot VI spelling of the same complex.
 func appendCaStack(f *g.Formative, body string, slotV bool) error {
 	if body == "" {
-		return fmt.Errorf("Ca-stacking affix has no Ca after %q", caStackPrefix)
+		return syntax(caStackPrefix, "\"Ca:\" tags a stacked Ca and needs its components after it")
 	}
 	scratch := g.MinimalFormative("l")
 	if body != caMarker {
@@ -409,7 +448,7 @@ func appendAccessor(f *g.Formative, family, caseName, typeStr string, slotV bool
 	}
 	c, ok := parseCaseName(caseName)
 	if !ok {
-		return fmt.Errorf("unknown case %q", caseName)
+		return unlisted(caseName, "case", caseName)
 	}
 	series, degree, high, ok := g.AccessorVx(c)
 	if !ok {
@@ -450,7 +489,7 @@ func appendType3Affix(f *g.Formative, tok string, slotV bool) error {
 	if atype == g.Column4Affix {
 		c, ok := parseCaseName(value)
 		if !ok {
-			return fmt.Errorf("unknown case %q", value)
+			return unlisted(value, "case", value)
 		}
 		d, ok := g.TransrelativeDegree(c)
 		if !ok {
@@ -500,7 +539,7 @@ func appendAffix(f *g.Formative, csOrAbbrev, degreeStr, typeStr string, affixes 
 	atype := affixTypeFromSuffix(typeStr)
 	cs := resolveAffixCs(csOrAbbrev, affixes)
 	if cs == "" {
-		return fmt.Errorf("unknown affix %q", csOrAbbrev)
+		return unlisted(csOrAbbrev, "affix", csOrAbbrev)
 	}
 	// resolveAffixCs hands back anything it cannot look up, which is
 	// how "zzzz/3" composed to "malezzzza" (a triple consonant) and,
