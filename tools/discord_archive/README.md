@@ -1,7 +1,7 @@
 # Discord archive
 
 Mirrors the community Discord and turns it into a corpus of attested
-Ithkuil, which is what `fullparse/corpus_regression_test.go` is written
+Ithkuil, which is what `roman/corpus_regression_test.go` is written
 against. Attested usage catches defects that constructed examples do
 not, because nobody writing a test case thinks to put a §3.1.7 chain
 next to a Slot IV/VI shortcut.
@@ -86,38 +86,6 @@ default). It archives threads too. Channel order comes from
 `PRIORITY_CHANNELS` where that list applies, so a run cut short by the
 disk budget still gets the v4 material; a server not in the list is
 walked in API order, which is all we can do without knowing it.
-
-Then, from the repo root:
-
-```bash
-go run ./tools/discord_archive/fidelity ~/.local/share/ithkuil/discord/extracted/v4_words.txt
-```
-
-`fidelity` is the audit, and it asks two separate questions.
-
-Coverage: what fraction of the corpus do we understand at all? That
-goes through `tokenize.ClassifyWord`, the same entry point the CLI and
-the MCP server use, so a referential or a bias adjunct counts as
-understood. Asking `fullparse.Formative` directly instead, as this
-tool used to, scored every non-formative word as a parse failure: 372
-of them, over half of an apparent 696-word gap. A referential is not a
-broken formative.
-
-Fidelity: of the words that are formatives, is the round trip lossless
-(parse, render, parse again must land on the same gloss), is what we
-emit a legal word at all, and does our canonical spelling match what a
-human wrote? The first two are defects. The last is a style
-difference, because the renderer canonicalizes and the grammar permits
-several spellings of one word.
-
-Only formatives get the fidelity checks, because they are the only
-token kind with a renderer.
-
-What stays unclassified is printed as a triage list, grouped by the
-formative parse error that best describes the shape. Those errors are
-a diagnostic, not a claim that the word was meant to be a formative;
-the formative decoder simply gets furthest into a word of any of the
-classifiers.
 
 `words.py` has unit tests, because a tokenizer bug reads as an
 implementation bug: junk tokens land in the audit as parse failures
