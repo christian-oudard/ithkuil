@@ -1,23 +1,22 @@
-package compose
+package gloss
 
 import (
 	"path/filepath"
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 )
 
 // canonicalGlosser returns a Glosser configured for canonical/input
 // mode — the same one whose output we expect ParseToken to invert.
-func canonicalGlosser(t *testing.T) *gloss.Glosser {
+func canonicalGlosser(t *testing.T) *Glosser {
 	t.Helper()
 	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}
-	return &gloss.Glosser{Lex: lex, Canonical: true}
+	return &Glosser{Lex: lex, Canonical: true}
 }
 
 func TestParseToken_Bias(t *testing.T) {
@@ -25,9 +24,9 @@ func TestParseToken_Bias(t *testing.T) {
 	for _, b := range g.AllBiases {
 		want := b
 		s := gl.Token(want)
-		got, err := ParseToken(s, nil)
+		got, err := ParseWord(s, nil)
 		if err != nil {
-			t.Errorf("Bias %s: ParseToken(%q) err: %v", b, s, err)
+			t.Errorf("Bias %s: ParseWord(%q) err: %v", b, s, err)
 			continue
 		}
 		bw, ok := got.(g.Bias)
@@ -45,9 +44,9 @@ func TestParseToken_RegisterStart(t *testing.T) {
 		}
 		want := g.RegisterMarker{Register: r}
 		s := gl.Token(want)
-		got, err := ParseToken(s, nil)
+		got, err := ParseWord(s, nil)
 		if err != nil {
-			t.Errorf("Register start %s: ParseToken(%q) err: %v", r, s, err)
+			t.Errorf("Register start %s: ParseWord(%q) err: %v", r, s, err)
 			continue
 		}
 		rw, ok := got.(g.RegisterMarker)
@@ -62,9 +61,9 @@ func TestParseToken_RegisterEnd(t *testing.T) {
 	for _, r := range g.AllRegisters {
 		want := g.RegisterMarker{Register: r, End: true}
 		s := gl.Token(want)
-		got, err := ParseToken(s, nil)
+		got, err := ParseWord(s, nil)
 		if err != nil {
-			t.Errorf("Register end %s: ParseToken(%q) err: %v", r, s, err)
+			t.Errorf("Register end %s: ParseWord(%q) err: %v", r, s, err)
 			continue
 		}
 		rw, ok := got.(g.RegisterMarker)
@@ -93,9 +92,9 @@ func TestParseToken_SingleAffix(t *testing.T) {
 			Scope: c.scope,
 		}
 		s := gl.Token(want)
-		got, err := ParseToken(s, lex)
+		got, err := ParseWord(s, lex)
 		if err != nil {
-			t.Errorf("Single %+v: ParseToken(%q) err: %v", c, s, err)
+			t.Errorf("Single %+v: ParseWord(%q) err: %v", c, s, err)
 			continue
 		}
 		sw, ok := got.(g.SingleAffixAdjunct)
@@ -121,9 +120,9 @@ func TestParseToken_MultiAffix(t *testing.T) {
 		RestScope:  g.ScopeVIIDom,
 	}
 	s := gl.Token(want)
-	got, err := ParseToken(s, lex)
+	got, err := ParseWord(s, lex)
 	if err != nil {
-		t.Fatalf("ParseToken(%q): %v", s, err)
+		t.Fatalf("ParseWord(%q): %v", s, err)
 	}
 	mw, ok := got.(g.MultipleAffixAdjunct)
 	if !ok {
@@ -192,7 +191,7 @@ func TestParseToken_Referential(t *testing.T) {
 	}
 	for i, want := range cases {
 		s := gl.Token(want)
-		got, err := ParseToken(s, nil)
+		got, err := ParseWord(s, nil)
 		if err != nil {
 			t.Errorf("case %d %q: %v", i, s, err)
 			continue
@@ -240,9 +239,9 @@ func TestParseToken_Modular(t *testing.T) {
 	all := append([]g.ModularAdjunct{allDefault, typed, scoped}, reachWords...)
 	for _, want := range all {
 		s := gl.Token(want)
-		got, err := ParseToken(s, nil)
+		got, err := ParseWord(s, nil)
 		if err != nil {
-			t.Errorf("ParseToken(%q): %v", s, err)
+			t.Errorf("ParseWord(%q): %v", s, err)
 			continue
 		}
 		got2 := gl.Token(got)
@@ -262,9 +261,9 @@ func TestParseToken_MultiReferential(t *testing.T) {
 		Case: g.ERG,
 	}
 	s := gl.Token(want)
-	got, err := ParseToken(s, nil)
+	got, err := ParseWord(s, nil)
 	if err != nil {
-		t.Fatalf("ParseToken(%q): %v", s, err)
+		t.Fatalf("ParseWord(%q): %v", s, err)
 	}
 	rw, ok := got.(g.Referential)
 	if !ok {
@@ -289,9 +288,9 @@ func TestParseToken_CarrierHeadedReferential(t *testing.T) {
 		Second: &g.SecondReferent{Case: g.DAT},
 	}
 	s := gl.Token(want)
-	got, err := ParseToken(s, nil)
+	got, err := ParseWord(s, nil)
 	if err != nil {
-		t.Fatalf("ParseToken(%q): %v", s, err)
+		t.Fatalf("ParseWord(%q): %v", s, err)
 	}
 	rw, ok := got.(g.Referential)
 	if !ok {
@@ -318,7 +317,7 @@ func TestParseToken_CombinationRef(t *testing.T) {
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}
-	gl := &gloss.Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex, Canonical: true}
 	dative := g.DAT
 	want := g.CombinationReferential{
 		Head:    g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},
@@ -328,9 +327,9 @@ func TestParseToken_CombinationRef(t *testing.T) {
 		Case2:   &dative,
 	}
 	s := gl.Token(want)
-	got, err := ParseToken(s, lex)
+	got, err := ParseWord(s, lex)
 	if err != nil {
-		t.Fatalf("ParseToken(%q): %v", s, err)
+		t.Fatalf("ParseWord(%q): %v", s, err)
 	}
 	cw, ok := got.(g.CombinationReferential)
 	if !ok {
@@ -357,9 +356,9 @@ func TestParseToken_ForeignWord(t *testing.T) {
 	for _, name := range []string{"John", "Emily", "Beethoven", "naïve"} {
 		want := g.Foreign{Text: name}
 		s := gl.Token(want)
-		got, err := ParseToken(s, nil)
+		got, err := ParseWord(s, nil)
 		if err != nil {
-			t.Errorf("ForeignWord %q: ParseToken(%q) err: %v", name, s, err)
+			t.Errorf("ForeignWord %q: ParseWord(%q) err: %v", name, s, err)
 			continue
 		}
 		fw, ok := got.(g.Foreign)
@@ -383,9 +382,9 @@ func TestParseToken_CarrierAdjunct(t *testing.T) {
 	for _, c := range cases {
 		want := g.CarrierAdjunct{Type: c.ct, Case: c.c}
 		s := gl.Token(want)
-		got, err := ParseToken(s, nil)
+		got, err := ParseWord(s, nil)
 		if err != nil {
-			t.Errorf("Carrier %v %v: ParseToken(%q) err: %v", c.ct, c.c, s, err)
+			t.Errorf("Carrier %v %v: ParseWord(%q) err: %v", c.ct, c.c, s, err)
 			continue
 		}
 		cw, ok := got.(g.CarrierAdjunct)

@@ -1,18 +1,17 @@
-package compose
+package gloss
 
 import (
 	"path/filepath"
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/fullparse"
-	"github.com/christian-oudard/ithkuil/gloss"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/render"
 )
 
 // TestFormative_FullRoundTrip composes a formative from a gloss
 // string, renders it to a romanization, parses that back, and verifies
-// the resulting gloss matches the original compose input's gloss.
+// the resulting gloss matches the original compose input's
 // This is the strongest invariant: compose ∘ render ∘ fullparse ∘
 // gloss == gloss ∘ compose.
 func TestFormative_FullRoundTrip(t *testing.T) {
@@ -20,7 +19,7 @@ func TestFormative_FullRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}
-	gl := &gloss.Glosser{Lex: lex}
+	gl := &Glosser{Lex: lex}
 	inputs := []string{
 		"ml",
 		"S2.CPT-ml",
@@ -39,7 +38,7 @@ func TestFormative_FullRoundTrip(t *testing.T) {
 	}
 	for _, in := range inputs {
 		t.Run(in, func(t *testing.T) {
-			f, err := Formative(in, lex.Affixes)
+			f, err := ParseFormative(in, lex.Affixes)
 			if err != nil {
 				t.Fatalf("Formative: %v", err)
 			}

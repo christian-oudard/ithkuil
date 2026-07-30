@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/christian-oudard/ithkuil/compose"
+	"github.com/christian-oudard/ithkuil/search"
 )
 
 // cmdSearch looks a query up in the grammar inventory and in the
@@ -37,7 +37,7 @@ func cmdSearch(args []string, stdout, stderr io.Writer, dataFile string) int {
 		// Nothing to search for: list the categories so the user can
 		// drill down with --category.
 		fmt.Fprintln(stdout, "categories:")
-		for _, c := range compose.Categories() {
+		for _, c := range search.Categories() {
 			fmt.Fprintf(stdout, "  %s\n", c)
 		}
 		return 0
@@ -113,20 +113,20 @@ func cmdSearch(args []string, stdout, stderr io.Writer, dataFile string) int {
 }
 
 // grammarHits resolves the grammar half of a search.
-func grammarHits(query, category string, exact, formMode bool) []compose.Entry {
+func grammarHits(query, category string, exact, formMode bool) []search.Entry {
 	if formMode {
-		hits := compose.LookupForm(query)
+		hits := search.LookupForm(query)
 		if category != "" {
 			hits = filterByCategory(hits, category)
 		}
 		return hits
 	}
-	return compose.Filter(category, query, exact)
+	return search.Filter(category, query, exact)
 }
 
-func filterByCategory(in []compose.Entry, cat string) []compose.Entry {
-	out := make([]compose.Entry, 0, len(in))
-	keep := compose.Filter(cat, "", false)
+func filterByCategory(in []search.Entry, cat string) []search.Entry {
+	out := make([]search.Entry, 0, len(in))
+	keep := search.Filter(cat, "", false)
 	allowed := map[string]struct{}{}
 	for _, e := range keep {
 		allowed[e.Category+"|"+e.Abbrev] = struct{}{}
@@ -139,7 +139,7 @@ func filterByCategory(in []compose.Entry, cat string) []compose.Entry {
 	return out
 }
 
-func printEntries(w io.Writer, hits []compose.Entry) {
+func printEntries(w io.Writer, hits []search.Entry) {
 	catW, abW, nmW, fmW := 8, 4, 4, 4
 	for _, h := range hits {
 		if n := len(h.Category); n > catW {

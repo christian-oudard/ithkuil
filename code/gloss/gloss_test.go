@@ -205,7 +205,7 @@ func TestGlosser_RootWithLexicon(t *testing.T) {
 	}
 	want := "-m-'" + entry.Stem1 + "'"
 	if got != want {
-		t.Errorf("Formative(m, with lex) = %q, want %q", got, want)
+		t.Errorf("ParseFormative(m, with lex) = %q, want %q", got, want)
 	}
 }
 
@@ -220,7 +220,7 @@ func TestGlosser_RootDifferentStem(t *testing.T) {
 	entry := lex.Roots["m"]
 	want := "S3.PRC--m-'" + entry.Stem3 + "'"
 	if got != want {
-		t.Errorf("Formative(m, S3) = %q, want %q", got, want)
+		t.Errorf("ParseFormative(m, S3) = %q, want %q", got, want)
 	}
 }
 
@@ -318,7 +318,7 @@ func TestGlosser_UnknownClusterFallsBack(t *testing.T) {
 	got := gl.Formative(f)
 	want := "-zzzzz-"
 	if got != want {
-		t.Errorf("Formative(unknown root, with lex) = %q, want %q", got, want)
+		t.Errorf("ParseFormative(unknown root, with lex) = %q, want %q", got, want)
 	}
 }
 

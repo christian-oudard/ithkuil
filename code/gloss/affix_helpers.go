@@ -1,4 +1,4 @@
-package compose
+package gloss
 
 import (
 	"fmt"

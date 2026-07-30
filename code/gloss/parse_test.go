@@ -1,4 +1,4 @@
-package compose
+package gloss
 
 import (
 	"path/filepath"
@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/fullparse"
-	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/render"
@@ -21,12 +20,12 @@ func mustLex(t *testing.T) *lexicon.Lexicon {
 	return lex
 }
 
-// TestFormative_RoundTripGloss verifies that compose.Formative
-// inverts gloss.Formative for the cases it claims to support — gloss
+// TestFormative_RoundTripGloss verifies that ParseFormative
+// inverts Formative for the cases it claims to support — gloss
 // the parsed result and the strings must match.
 func TestFormative_RoundTripGloss(t *testing.T) {
 	lex := mustLex(t)
-	gl := &gloss.Glosser{Lex: lex}
+	gl := &Glosser{Lex: lex}
 	cases := []struct {
 		name string
 		in   string
@@ -45,7 +44,7 @@ func TestFormative_RoundTripGloss(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			f, err := Formative(c.in, lex.Affixes)
+			f, err := ParseFormative(c.in, lex.Affixes)
 			if err != nil {
 				t.Fatalf("Formative(%q): %v", c.in, err)
 			}
@@ -66,7 +65,7 @@ func TestFormative_RoundTripGloss(t *testing.T) {
 func TestFormative_Specific(t *testing.T) {
 	lex := mustLex(t)
 
-	f, err := Formative("S2.CPT-ml-DYN.OBJ-ERG", lex.Affixes)
+	f, err := ParseFormative("S2.CPT-ml-DYN.OBJ-ERG", lex.Affixes)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
@@ -100,7 +99,7 @@ func TestFormative_Specific(t *testing.T) {
 
 func TestFormative_AffixViaAbbrev(t *testing.T) {
 	lex := mustLex(t)
-	f, err := Formative("ml-DEV/3", lex.Affixes)
+	f, err := ParseFormative("ml-DEV/3", lex.Affixes)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
@@ -121,7 +120,7 @@ func TestFormative_AffixViaAbbrev(t *testing.T) {
 
 func TestFormative_AffixTypeTag(t *testing.T) {
 	lex := mustLex(t)
-	f, err := Formative("ml-nļ/1_2", lex.Affixes) // IVL type-2 degree 1
+	f, err := ParseFormative("ml-nļ/1_2", lex.Affixes) // IVL type-2 degree 1
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
@@ -154,7 +153,7 @@ func TestFormative_Errors(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			if _, err := Formative(c.in, lex.Affixes); err == nil {
+			if _, err := ParseFormative(c.in, lex.Affixes); err == nil {
 				t.Errorf("Formative(%q) succeeded, want error", c.in)
 			}
 		})
@@ -168,12 +167,12 @@ func TestFormative_Errors(t *testing.T) {
 // unrelated SCS/3-P08/3. A bare Cs must still work on the same path,
 // since that is what nil affixes is for.
 func TestFormative_AbbrevNeedsLexicon(t *testing.T) {
-	if _, err := Formative("m-DEV/3", nil); err == nil {
-		t.Error(`Formative("m-DEV/3", nil) succeeded, want error`)
+	if _, err := ParseFormative("m-DEV/3", nil); err == nil {
+		t.Error(`ParseFormative("m-DEV/3", nil) succeeded, want error`)
 	}
-	f, err := Formative("m-b/3", nil)
+	f, err := ParseFormative("m-b/3", nil)
 	if err != nil {
-		t.Fatalf(`Formative("m-b/3", nil) = %v, want success`, err)
+		t.Fatalf(`ParseFormative("m-b/3", nil) = %v, want success`, err)
 	}
 	if got := render.Formative(f); got != "maleb" {
 		t.Errorf("bare Cs on the nil-lexicon path = %q, want %q", got, "maleb")
@@ -190,7 +189,7 @@ func TestFormative_AttestedAwkwardRoots(t *testing.T) {
 	lex := mustLex(t)
 	for _, in := range []string{"csk-N", "dcs-DYN.BSC.EXS-ITM"} {
 		t.Run(in, func(t *testing.T) {
-			if _, err := Formative(in, lex.Affixes); err != nil {
+			if _, err := ParseFormative(in, lex.Affixes); err != nil {
 				t.Errorf("Formative(%q) = %v, want success", in, err)
 			}
 		})
@@ -231,7 +230,7 @@ func TestFormative_SlotVAffixes(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			f, err := Formative(c.in, lex.Affixes)
+			f, err := ParseFormative(c.in, lex.Affixes)
 			if err != nil {
 				t.Fatalf("Formative(%q): %v", c.in, err)
 			}
@@ -252,7 +251,7 @@ func TestFormative_SlotVAffixes(t *testing.T) {
 // fails the moment the gloss stops carrying the Ca boundary.
 func TestFormative_MaţřëullaitRoundTrip(t *testing.T) {
 	lex := mustLex(t)
-	gl := &gloss.Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex, Canonical: true}
 	cases := []struct{ rom, want, canonical string }{
 		// Slot V forces a §3.6.2 glottal into the shortcut encoding
 		// ("wamëu'ţřait"), which the plain form doesn't pay, so the
@@ -272,9 +271,9 @@ func TestFormative_MaţřëullaitRoundTrip(t *testing.T) {
 		if got != c.want {
 			t.Fatalf("gloss(%q) = %q, want %q", c.rom, got, c.want)
 		}
-		back, err := Formative(got, lex.Affixes)
+		back, err := ParseFormative(got, lex.Affixes)
 		if err != nil {
-			t.Fatalf("compose.Formative(%q): %v", got, err)
+			t.Fatalf("ParseFormative(%q): %v", got, err)
 		}
 		if again := gl.Formative(back); again != got {
 			t.Errorf("round-trip of %q: %q → %q", c.rom, got, again)
@@ -293,7 +292,7 @@ func TestFormative_MaţřëullaitRoundTrip(t *testing.T) {
 func TestFormative_AmbiguousAbbrevIsDeterministic(t *testing.T) {
 	lex := mustLex(t)
 	for i := 0; i < 50; i++ {
-		f, err := Formative("ml-SPT/3", lex.Affixes)
+		f, err := ParseFormative("ml-SPT/3", lex.Affixes)
 		if err != nil {
 			t.Fatalf("parse: %v", err)
 		}

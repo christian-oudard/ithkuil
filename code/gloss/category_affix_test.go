@@ -1,9 +1,8 @@
-package compose_test
+package gloss_test
 
 import (
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
@@ -44,7 +43,7 @@ func TestCategoryValuedAffixesRoundTrip(t *testing.T) {
 		f.SlotVII = []g.Affix{{Type: g.Type1Affix, Degree: 1, Consonant: cs}}
 
 		got := canonical.Formative(f)
-		if _, err := compose.Formative(got, lex.Affixes); err != nil {
+		if _, err := gloss.ParseFormative(got, lex.Affixes); err != nil {
 			t.Errorf("%s: canonical gloss %q does not compose back: %v", abbrev, got, err)
 		}
 		// Display mode is where the category code belongs, and it must

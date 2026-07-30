@@ -5,10 +5,10 @@ import (
 	"strings"
 
 	"github.com/christian-oudard/ithkuil/allomorph"
-	"github.com/christian-oudard/ithkuil/compose"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
+	"github.com/christian-oudard/ithkuil/search"
 	"github.com/christian-oudard/ithkuil/semantics"
 	"github.com/christian-oudard/ithkuil/slots"
 )
@@ -665,7 +665,7 @@ func Glossary(word string, f g.Formative, segs []Segment, lex *lexicon.Lexicon) 
 // grammar code ("STA" → "function"), falling back to a slot-derived
 // label when no precise category is known.
 func categoryForCode(code, slot string) string {
-	hits := compose.LookupGrammar(code)
+	hits := search.LookupGrammar(code)
 	if len(hits) > 0 {
 		cat := hits[0].Category
 		// Trim sub-category suffix like "Case/Transrelative".

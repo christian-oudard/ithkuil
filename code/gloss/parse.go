@@ -1,4 +1,4 @@
-package compose
+package gloss
 
 import (
 	"fmt"
@@ -41,7 +41,7 @@ import (
 //
 // Lexicon-aware affix resolution requires passing an AffixMap; pass
 // nil to accept only the bare Cs form.
-func Formative(s string, affixes map[string]lexicon.AffixEntry) (g.Formative, error) {
+func ParseFormative(s string, affixes map[string]lexicon.AffixEntry) (g.Formative, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
 		return g.Formative{}, fmt.Errorf("empty input")
@@ -372,12 +372,6 @@ func applyToken(f *g.Formative, tok string, affixes map[string]lexicon.AffixEntr
 	}
 	return ApplyFlag(f, tok)
 }
-
-// caStackPrefix is the gloss tag for a §3.5/§3.7 Ca-stacking affix.
-// Kept in sync with gloss.caStackPrefix; the two packages cannot share
-// it without one importing the other, and gloss already imports far
-// more than this constant is worth.
-const caStackPrefix = "Ca:"
 
 // appendCaStack builds a Ca-stacking affix from the component list
 // after "Ca:". The body is spelled exactly as a Slot VI Ca, so it is

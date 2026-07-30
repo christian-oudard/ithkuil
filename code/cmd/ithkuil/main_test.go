@@ -533,7 +533,7 @@ func TestCompose_BareRoot(t *testing.T) {
 }
 
 // TestCompose_WordClasses drives the classes that are not formatives.
-// compose called compose.Formative directly, so every one of these came
+// compose called gloss.ParseFormative directly, so every one of these came
 // back as "no root in ..." — the command documented a syntax it could
 // not run.
 func TestCompose_WordClasses(t *testing.T) {

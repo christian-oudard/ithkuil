@@ -1,4 +1,4 @@
-package compose
+package gloss
 
 import (
 	g "github.com/christian-oudard/ithkuil/grammar"
@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/fullparse"
-	"github.com/christian-oudard/ithkuil/gloss"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/tokenize"
 )
@@ -19,7 +18,7 @@ import (
 //	romanization ─tokenize→ FormativeWord
 //	         ─fullparse→ grammar.Formative
 //	         ─gloss(Canonical)→ G1
-//	         ─compose.Formative→ Formative'
+//	         ─ParseFormative→ Formative'
 //	         ─gloss(Canonical)→ G2
 //
 // G1 must equal G2 — compose is the inverse of canonical gloss on
@@ -32,7 +31,7 @@ func TestFullDistance_MorphologyCorpus(t *testing.T) {
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}
-	gl := &gloss.Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex, Canonical: true}
 
 	for _, w := range morphologyCorpusWords {
 		t.Run(w, func(t *testing.T) {
@@ -48,9 +47,9 @@ func TestFullDistance_MorphologyCorpus(t *testing.T) {
 				t.Skipf("fullparse rejects %q: %v", w, err)
 			}
 			s1 := gl.Formative(f)
-			f2, err := Formative(s1, lex.Affixes)
+			f2, err := ParseFormative(s1, lex.Affixes)
 			if err != nil {
-				t.Fatalf("compose.Formative(%q): %v\n  formative: %+v", s1, err, f)
+				t.Fatalf("ParseFormative(%q): %v\n  formative: %+v", s1, err, f)
 			}
 			s2 := gl.Formative(f2)
 			if s1 != s2 {
@@ -117,14 +116,4 @@ var morphologyCorpusWords = []string{
 	"ksalirsa", "gzalui", "walẓärs",
 	"cpalärsa", "wapcui", "wansorsë'i", "cpalörs",
 	"wallärsa",
-}
-
-// readWord reads one word or fails the test.
-func readWord(t *testing.T, word string) g.Word {
-	t.Helper()
-	w, err := tokenize.ClassifyWord(word)
-	if err != nil {
-		t.Fatalf("ClassifyWord(%q): %v", word, err)
-	}
-	return w
 }

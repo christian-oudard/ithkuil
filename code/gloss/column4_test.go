@@ -1,9 +1,8 @@
-package compose_test
+package gloss_test
 
 import (
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/gloss"
 	"github.com/christian-oudard/ithkuil/phonology"
@@ -29,7 +28,7 @@ func TestColumn4_RoundTrip(t *testing.T) {
 		// A multi-referent cluster, and an effect on one of them.
 		"ml-(1m+2p/BEN)/DAT-ERG",
 	} {
-		f, err := compose.Formative(in, nil)
+		f, err := gloss.ParseFormative(in, nil)
 		if err != nil {
 			t.Errorf("compose(%q): %v", in, err)
 			continue
@@ -52,7 +51,7 @@ func TestColumn4_RoundTrip(t *testing.T) {
 // Only the nine Transrelative cases have a Column-4 form. Asking for
 // any of the other 59 has to fail rather than silently pick one.
 func TestColumn4_RejectsNonTransrelativeCase(t *testing.T) {
-	if _, err := compose.Formative("ml-(1m)/PRP-ERG", nil); err == nil {
+	if _, err := gloss.ParseFormative("ml-(1m)/PRP-ERG", nil); err == nil {
 		t.Error("compose accepted PRP as a Column-4 case, want an error")
 	}
 }

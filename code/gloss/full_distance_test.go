@@ -1,11 +1,10 @@
-package compose
+package gloss
 
 import (
 	"path/filepath"
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/fullparse"
-	"github.com/christian-oudard/ithkuil/gloss"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/slots"
 )
@@ -27,7 +26,7 @@ func TestFullDistance_SlotsCorpus(t *testing.T) {
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}
-	gl := &gloss.Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex, Canonical: true}
 
 	for _, w := range slots.FormativeCorpus {
 		t.Run(w, func(t *testing.T) {
@@ -42,9 +41,9 @@ func TestFullDistance_SlotsCorpus(t *testing.T) {
 			// shortcut equivalents) differs from the input. That's
 			// by design; see TestCanonicalize in slots/.
 			s1 := gl.Formative(f)
-			f2, err := Formative(s1, lex.Affixes)
+			f2, err := ParseFormative(s1, lex.Affixes)
 			if err != nil {
-				t.Fatalf("compose.Formative(%q): %v\n  formative: %+v", s1, err, f)
+				t.Fatalf("ParseFormative(%q): %v\n  formative: %+v", s1, err, f)
 			}
 			s2 := gl.Formative(f2)
 			if s1 != s2 {

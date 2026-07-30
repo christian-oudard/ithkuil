@@ -1,9 +1,9 @@
-package compose_test
+package gloss_test
 
 import (
+	"github.com/christian-oudard/ithkuil/gloss"
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/store"
 )
@@ -48,7 +48,7 @@ func TestDocumentedSyntaxExamples(t *testing.T) {
 		"(CTR)/1",           // "()" around a Cs root
 		"ml-DEV/3-{Ca}-t/1", // "{}" as the Slot V/VII boundary
 	} {
-		if _, err := compose.Formative(in, lex.Affixes); err != nil {
+		if _, err := gloss.ParseFormative(in, lex.Affixes); err != nil {
 			t.Errorf("documented example %q does not compose: %v", in, err)
 		}
 	}
@@ -64,7 +64,7 @@ func TestDocumentedSyntaxExamples(t *testing.T) {
 		"1m-THM-[2m]/IND",  // "/" binds the second referent's own case
 		"1m-THM-ERG",       // a stacked second case, which binds to nothing
 	} {
-		if _, err := compose.ParseToken(in, lex); err != nil {
+		if _, err := gloss.ParseWord(in, lex); err != nil {
 			t.Errorf("documented example %q does not parse: %v", in, err)
 		}
 	}

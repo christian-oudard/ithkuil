@@ -8,13 +8,13 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/dictionary"
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/search"
 	"github.com/christian-oudard/ithkuil/slots"
 	"github.com/christian-oudard/ithkuil/tokenize"
 	"github.com/christian-oudard/ithkuil/view"
@@ -381,7 +381,7 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 	if expr == "" {
 		return nil, composeOut{}, fmt.Errorf("expression is required")
 	}
-	tok, err := compose.ParseToken(expr, s.lex)
+	tok, err := gloss.ParseWord(expr, s.lex)
 	if err != nil {
 		return nil, composeOut{}, err
 	}
@@ -479,7 +479,7 @@ type searchOut struct {
 func (s *server) search(_ context.Context, _ *mcp.CallToolRequest, in searchIn) (*mcp.CallToolResult, searchOut, error) {
 	query := strings.TrimSpace(in.Query)
 	if query == "" && in.Category == "" {
-		return nil, searchOut{Categories: compose.Categories()}, nil
+		return nil, searchOut{Categories: search.Categories()}, nil
 	}
 	if in.Form && query == "" {
 		return nil, searchOut{}, fmt.Errorf("form=true requires a query")
@@ -487,7 +487,7 @@ func (s *server) search(_ context.Context, _ *mcp.CallToolRequest, in searchIn) 
 
 	var out searchOut
 	if in.Form {
-		hits := compose.LookupForm(query)
+		hits := search.LookupForm(query)
 		if in.Category != "" {
 			hits = filterEntriesByCategory(hits, in.Category)
 		}
@@ -496,7 +496,7 @@ func (s *server) search(_ context.Context, _ *mcp.CallToolRequest, in searchIn) 
 		// answer to what a vowel encodes.
 		return nil, out, nil
 	}
-	out.Entries = toGrammarEntries(compose.Filter(in.Category, query, in.Exact))
+	out.Entries = toGrammarEntries(search.Filter(in.Category, query, in.Exact))
 
 	if query == "" {
 		return nil, out, nil
@@ -543,7 +543,7 @@ func (s *server) search(_ context.Context, _ *mcp.CallToolRequest, in searchIn) 
 	return nil, out, nil
 }
 
-func toGrammarEntries(hits []compose.Entry) []grammarEntryOut {
+func toGrammarEntries(hits []search.Entry) []grammarEntryOut {
 	out := make([]grammarEntryOut, len(hits))
 	for i, e := range hits {
 		out[i] = grammarEntryOut{
@@ -557,13 +557,13 @@ func toGrammarEntries(hits []compose.Entry) []grammarEntryOut {
 	return out
 }
 
-func filterEntriesByCategory(in []compose.Entry, cat string) []compose.Entry {
-	allowed := compose.Filter(cat, "", false)
+func filterEntriesByCategory(in []search.Entry, cat string) []search.Entry {
+	allowed := search.Filter(cat, "", false)
 	want := make(map[string]struct{}, len(allowed))
 	for _, e := range allowed {
 		want[e.Category+"|"+e.Abbrev] = struct{}{}
 	}
-	out := make([]compose.Entry, 0, len(in))
+	out := make([]search.Entry, 0, len(in))
 	for _, e := range in {
 		if _, ok := want[e.Category+"|"+e.Abbrev]; ok {
 			out = append(out, e)

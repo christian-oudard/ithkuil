@@ -1,4 +1,4 @@
-package compose
+package gloss
 
 import (
 	"math/rand"
@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/allomorph"
-	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
@@ -20,9 +19,9 @@ import (
 //
 //	random Formative
 //	  → gloss (Canonical: true)
-//	  → compose.Formative
+//	  → ParseFormative
 //	  → re-gloss (Canonical: true)
-//	must equal the first gloss.
+//	must equal the first
 //
 // The Canonical flag strips the display-only annotations: the quoted
 // ' meaning' after the root cluster, and the category code that
@@ -39,16 +38,16 @@ func TestFuzz_GlossComposeRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}
-	gl := &gloss.Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex, Canonical: true}
 
 	const iterations = 1000
 	rng := rand.New(rand.NewSource(2026_05_21))
 	for i := 0; i < iterations; i++ {
 		f := randomFormative(rng, lex)
 		s1 := gl.Formative(f)
-		f2, err := Formative(s1, lex.Affixes)
+		f2, err := ParseFormative(s1, lex.Affixes)
 		if err != nil {
-			t.Errorf("iter %d: compose.Formative(%q): %v\n  formative: %+v",
+			t.Errorf("iter %d: ParseFormative(%q): %v\n  formative: %+v",
 				i, s1, err, f)
 			continue
 		}

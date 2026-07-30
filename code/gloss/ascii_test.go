@@ -12,7 +12,7 @@ import (
 )
 
 // The canonical gloss is an authoring syntax, not only an output
-// format: compose.Formative reads back what Canonical=true writes. So
+// format: gloss.ParseFormative reads back what Canonical=true writes. So
 // every character in it has to be typable on an ordinary keyboard,
 // which is why the root is spelled in ASCII digraphs and the affix
 // type is "_2" rather than the "₂" display mode uses.

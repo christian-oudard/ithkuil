@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/tokenize"
@@ -26,7 +25,7 @@ import (
 //	[CAR]
 //
 // Every word class is accepted, not only formatives. Routing this
-// through compose.Formative meant a referential gloss like "1m-ERG"
+// through gloss.ParseFormative meant a referential gloss like "1m-ERG"
 // was read as a formative whose root is the cluster "1m", which built
 // the unpronounceable "wa1mo" and reported success.
 func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
@@ -47,7 +46,7 @@ func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 		return 2
 	}
 	lex := loadLex(dataFile, stderr)
-	tok, err := compose.ParseToken(rest[0], lex)
+	tok, err := gloss.ParseWord(rest[0], lex)
 	if err != nil {
 		fmt.Fprintf(stderr, "compose: %v\n", err)
 		return 2

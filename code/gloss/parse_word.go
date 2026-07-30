@@ -1,4 +1,4 @@
-package compose
+package gloss
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ import (
 // (leading bracket, trailing colon, bare uppercase, and so on), which
 // is what the one-job-per-mark rule in SPEC.md buys. No lookup is
 // needed to decide which kind of word a token is.
-func ParseToken(s string, lex *lexicon.Lexicon) (g.Word, error) {
+func ParseWord(s string, lex *lexicon.Lexicon) (g.Word, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
 		return nil, fmt.Errorf("empty token")
@@ -83,7 +83,7 @@ func ParseToken(s string, lex *lexicon.Lexicon) (g.Word, error) {
 	// affix written as a raw Cs cluster but not one written as an
 	// abbreviation, and says so. Refusing the whole token for want of a
 	// lexicon would fail every root as well.
-	f, err := Formative(s, affixes)
+	f, err := ParseFormative(s, affixes)
 	if err != nil {
 		return nil, fmt.Errorf("formative parse failed: %w", err)
 	}
@@ -462,11 +462,11 @@ func looksLikeAffixual(s string) bool {
 // ParseSentence splits a canonical-gloss sentence on whitespace and
 // dispatches each token via ParseToken. Returns the slice of tokens
 // in order; errors include the failing token's index and content.
-func ParseSentence(s string, lex *lexicon.Lexicon) ([]g.Word, error) {
+func ParseText(s string, lex *lexicon.Lexicon) ([]g.Word, error) {
 	fields := strings.Fields(s)
 	out := make([]g.Word, 0, len(fields))
 	for i, f := range fields {
-		tok, err := ParseToken(f, lex)
+		tok, err := ParseWord(f, lex)
 		if err != nil {
 			return nil, fmt.Errorf("token %d (%q): %w", i, f, err)
 		}

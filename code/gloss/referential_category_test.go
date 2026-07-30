@@ -1,10 +1,9 @@
-package compose
+package gloss
 
 import (
 	"path/filepath"
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 )
@@ -23,7 +22,7 @@ func TestReferentialCategory_RoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	gl := &gloss.Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex, Canonical: true}
 
 	// §4.6 attaches the category affix on whichever side is
 	// "phonotactically permissible", so which words exist is decided by
@@ -44,7 +43,7 @@ func TestReferentialCategory_RoundTrip(t *testing.T) {
 			continue
 		}
 		s := gl.Token(tok)
-		back, err := ParseToken(s, lex)
+		back, err := ParseWord(s, lex)
 		if err != nil {
 			t.Errorf("%q glosses to %q, which does not parse back: %v", w, s, err)
 			continue
@@ -62,7 +61,7 @@ func TestReferentialCategory_EveryCategory(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	gl := &gloss.Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex, Canonical: true}
 	erg := g.ERG
 
 	for _, cat := range []g.RefCategory{g.Agglomerative, g.Nomic, g.Abstract} {
@@ -75,7 +74,7 @@ func TestReferentialCategory_EveryCategory(t *testing.T) {
 			Case: erg,
 		}
 		s := gl.Token(want)
-		back, err := ParseToken(s, lex)
+		back, err := ParseWord(s, lex)
 		if err != nil {
 			t.Errorf("%v: gloss %q does not parse: %v", cat, s, err)
 			continue
@@ -106,7 +105,7 @@ func TestCombinationReferential_KeepsItsTail(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	gl := &gloss.Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex, Canonical: true}
 	dat := g.DAT
 
 	for _, want := range []g.CombinationReferential{
@@ -139,7 +138,7 @@ func TestCombinationReferential_KeepsItsTail(t *testing.T) {
 		},
 	} {
 		s := gl.Token(want)
-		back, err := ParseToken(s, lex)
+		back, err := ParseWord(s, lex)
 		if err != nil {
 			t.Errorf("gloss %q does not parse: %v", s, err)
 			continue

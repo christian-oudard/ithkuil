@@ -1,6 +1,14 @@
-// Package gloss produces a human-readable morphological gloss of a
-// grammar.Formative. The output format is hyphen-separated slot
-// abbreviations with grammatical defaults suppressed, e.g.
+// Package gloss is the gloss arm: grammar to gloss and back. The two
+// directions live together because they encode one syntax, and while
+// they lived in separate packages that syntax drifted — the glosser
+// emitted "NOM:1m" for a referent category the parser had no rule
+// for, and nothing could notice.
+//
+// Formative, Word and Text write a gloss; ParseFormative, ParseWord
+// and ParseText read one.
+//
+// The format is hyphen-separated slot abbreviations with grammatical
+// defaults suppressed, e.g.
 //
 //	S2.PRC-ml-DYN.OBJ-MSS.G-ERG
 //
@@ -45,7 +53,7 @@ type Glosser struct {
 	// the degree on affixes like MCS ("MCS:SUB" for "MCS/1"). Both are
 	// derivable from what remains, so dropping them loses nothing and
 	// keeps one spelling per Formative. The result is exactly what
-	// compose.Formative accepts, so set Canonical=true for round-tripping.
+	// ParseFormative accepts, so set Canonical=true for round-tripping.
 	Canonical bool
 }
 

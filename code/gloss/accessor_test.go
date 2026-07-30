@@ -1,9 +1,8 @@
-package compose_test
+package gloss_test
 
 import (
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
@@ -30,7 +29,7 @@ func TestAccessor_RoundTrip(t *testing.T) {
 		"ml-IAC/PRP_3-ERG",   // inverse Type-3, high increment
 		"ml-CST/THM-t/1-ERG", // alongside an ordinary affix
 	} {
-		f, err := compose.Formative(in, nil)
+		f, err := gloss.ParseFormative(in, nil)
 		if err != nil {
 			t.Errorf("compose(%q): %v", in, err)
 			continue

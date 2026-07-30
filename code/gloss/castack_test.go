@@ -1,9 +1,8 @@
-package compose_test
+package gloss_test
 
 import (
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/compose"
 	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/gloss"
 	"github.com/christian-oudard/ithkuil/phonology"
@@ -31,7 +30,7 @@ func TestCaStack_RoundTrip(t *testing.T) {
 		// Slot V, where the affix is reversed to Cs-Vx on the romanization.
 		{"m-Ca:ASO.PRX-{Ca}-t/1_2", "maldüöllait"},
 	} {
-		f, err := compose.Formative(tc.in, nil)
+		f, err := gloss.ParseFormative(tc.in, nil)
 		if err != nil {
 			t.Errorf("compose(%q): %v", tc.in, err)
 			continue
@@ -59,7 +58,7 @@ func TestCaStack_RoundTrip(t *testing.T) {
 // affixes after it would land in Slot VII instead of Slot V and the
 // scope would silently invert.
 func TestCaStack_DoesNotClaimTheSlotVICa(t *testing.T) {
-	f, err := compose.Formative("ml-Ca:PRX-t/1-ERG", nil)
+	f, err := gloss.ParseFormative("ml-Ca:PRX-t/1-ERG", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

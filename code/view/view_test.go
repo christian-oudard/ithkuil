@@ -505,7 +505,7 @@ func TestSubscript_OutOfRange(t *testing.T) {
 }
 
 func TestCategoryForCode_Fallback(t *testing.T) {
-	// A code that compose.LookupGrammar won't find triggers the
+	// A code that search.LookupGrammar won't find triggers the
 	// categoryForSlot fallback.
 	got := categoryForCode("ZZZ-not-a-code", "Vc")
 	if got != "case" {
