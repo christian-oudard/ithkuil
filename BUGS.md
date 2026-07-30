@@ -6,7 +6,7 @@ Defects in this code. Defects in Quijada's published sources go in
 Each entry is a pointer, not the record. Where a bug has a skipped test,
 that test holds the detail: the section it rests on, and why the obvious
 fix is wrong. `go test ./... -v | grep SKIP` lists them directly.
-Compose's 38 skipped subtests are not defects; they are corpus words
+Gloss's 38 skipped subtests are not defects; they are corpus words
 that are not formatives, skipped by design.
 
 ## a concatenated chain cannot be composed back into a chain
@@ -36,18 +36,18 @@ here.
 `gloss/corpus_gloss_test.go`'s `TestCorpusGloss_ComposesBack` holds the
 count of chains at nineteen, so the gap cannot widen quietly.
 
-## render cannot write ëztewim
+## roman cannot write ëztewim
 
-`render.Referential` picks the §4.6.1 Slot 3 w/y separator by validating
+`roman.Referential` picks the §4.6.1 Slot 3 w/y separator by validating
 the prefix-less body, and only adds the epenthetic `-ë-` afterwards. For
 a head cluster that needs the prefix, both candidates it weighs are
 unpronounceable for the reason the prefix would have fixed, and the
 render fails outright. §4.6.1's own example does not survive
 read to write.
 
-`render.TestReferential_EpentheticPrefixWithSecondReferent`
+`roman.TestReferential_EpentheticPrefixWithSecondReferent`
 
-## render never writes the §1.7 Rule 1 glottal
+## roman never writes the §1.7 Rule 1 glottal
 
 §1.7 gives two placements for a case vowel's glottal stop, and the
 renderer writes Rule 3's epenthetic spelling in every slot, including
@@ -56,7 +56,7 @@ the ones Rule 1 serves. §4.6.1's printed `fo'we'is` comes back
 right value, so the round-trip closes over them and nothing else catches
 it. The parse arm reads both placements.
 
-`render.TestReferential_Rule1GlottalPlacement`
+`roman.TestReferential_Rule1GlottalPlacement`
 
 ## phonology enforces an unsourced "2.23"
 
@@ -69,18 +69,46 @@ stays enforced. `allomorph/substitutions.go` rests on the same decision.
 
 `phonology.TestCheckProhibitedPair_Rule223_IsUnsourced`
 
-## fullparse cannot read an epenthetic ë inside a C_1 cluster
+## roman cannot read an epenthetic ë inside a C_1 cluster
 
 §4.6.1 puts the epenthetic vowel "before or within C_1 combinations",
 and gives `zëmse` as its example. Only the leading position is read.
 
-`fullparse.TestReferential_EpentheticVowelWithinC1`
+`roman.TestReferential_EpentheticVowelWithinC1`
+
+## a modular adjunct's gloss does not compose back
+
+Every distinct modular gloss in the corpus fails to read back, so the
+class is write-only through the gloss arm:
+
+```
+a           RTR                        no root in "RTR"
+ä           PRS                        no root in "PRS"
+wähňainui   PRL.HYP-RSM-IRP-{parent}   root "{parent}": non-Ithkuil characters
+```
+
+Three separate holes, not one. A lone-aspect modular glosses to a bare
+category abbreviation, which `looksLikeModular` accepts only when a
+scope or reach tail was stripped first, so it falls through to the
+formative parser. A multi-pair modular has hyphen-separated slots and
+the scope tail is trimmed before the body is split, leaving `{parent}`
+looking like another slot. An all-default modular glosses to `MOD`,
+which composes to a value the renderer then refuses because §4.3 Slot
+4 is mandatory — the two directions disagree about whether such a word
+exists.
+
+Widening the recogniser is not enough on its own: a bare `RTR` is
+shape-identical to a bias or register abbreviation, and SPEC's
+one-job-per-mark rule says a token's kind should follow from its shape
+rather than from consulting three inventories in order.
+
+`gloss.TestModularAdjunct_GlossDoesNotCompose`
 
 ## Words we cannot read
 
 Two drift guards fail when the set changes in either direction, so they
 are the live list rather than anything written here:
 
-- `tokenize/corpus_test.go`, official examples that do not classify.
+- `roman/corpus_test.go`, official examples that do not classify.
 - `corpus/discord_examples.txt`, community words, where a leading `!`
   marks one we disagree with.
