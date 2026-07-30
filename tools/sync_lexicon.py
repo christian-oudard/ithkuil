@@ -422,6 +422,29 @@ def write_data(roots: list[dict], affixes: list[dict], path: Path) -> int:
     return version
 
 
+def drop_retired(roots: list[dict]) -> list[dict]:
+    """Discard entries the sheet has retired.
+
+    A trailing dagger on the Stem 0 gloss is upstream's mark for a word
+    that is no longer part of the language: five grammar-metalanguage
+    roots (mps "relative clause head", mpx "case scope" and their like)
+    and fifty-one household-appliance roots that a later scheme
+    replaced. They are not alternative meanings, they are withdrawn
+    ones, so nothing downstream should be able to reach them.
+
+    Keeping them was not free. They were the only roots in the lexicon
+    that broke §2.13, so the phonotactic sweep needed a named exclusion
+    list to stay green, and ksmy "oven" was one of two entries competing
+    for a single C_R key.
+
+    roots.tsv still carries them: it mirrors the sheet, and the point of
+    the mirror is to diff against upstream.
+    """
+    live = [r for r in roots if not r.get("stem0", "").rstrip().endswith("†")]
+    print(f"  dropping {len(roots) - len(live)} retired entries")
+    return live
+
+
 def main() -> int:
     data_path = DATA_DIR / "data.json"
 
@@ -436,7 +459,7 @@ def main() -> int:
 
     write_roots_tsv(roots, DATA_DIR / "roots.tsv")
     write_affixes_tsv(affixes, DATA_DIR / "affixes.tsv")
-    version = write_data(roots, affixes, data_path)
+    version = write_data(drop_retired(roots), affixes, data_path)
     print(f"Wrote roots.tsv, affixes.tsv, data.json (version v{version})")
     return 0
 

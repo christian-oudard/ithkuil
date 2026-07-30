@@ -9,21 +9,17 @@ import (
 	"github.com/christian-oudard/ithkuil/store"
 )
 
-// Four roots in the community lexicon cannot be pronounced. The spec
-// names two of them outright: §2.13 gives \*mps and \*mpš in its own
-// list of prohibited nasal-stop-sibilant conjuncts, and §2.16 bars ň
-// before k and before y. No formative built on these can be a legal
+// Two roots in the shipped lexicon cannot be pronounced: §2.16 bars ň
+// before k and before y. No formative built on either can be a legal
 // word, whatever else it holds, so they are excluded from the sweep
 // rather than allowed to bury a real regression.
 //
-// mps and mpš are daggered upstream, the sheet's mark for a retired
-// word, and every other §2.13 violator in the lexicon is daggered too.
-// ňkhw and řẓňy are not, so those two read as typos rather than as
-// deliberate exceptions. Removing a root from this map is the test that
-// the lexicon has been repaired.
+// Every other rule-violating root upstream is retired — \*mps and
+// \*mpš, which §2.13 names in its own list of prohibited
+// nasal-stop-sibilant conjuncts, and mpm, mpn, mpx with them — and
+// retired entries no longer reach the store. These two are not marked
+// retired, so they read as typos rather than as deliberate exceptions.
 var unpronounceableRoots = map[string]bool{
-	"mps":  true, // §2.13, named in the spec as \*mps; retired but still shipped
-	"mpš":  true, // §2.13, named in the spec as \*mpš; retired but still shipped
 	"ňkhw": true, // §2.16, ň before k
 	"řẓňy": true, // §2.16, ň before y
 }

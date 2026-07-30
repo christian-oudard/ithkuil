@@ -27,7 +27,7 @@ def default_db_path() -> Path:
 
 SCHEMA = """
 CREATE TABLE grammar (
-    abbrev      TEXT PRIMARY KEY,
+    abbrev      TEXT NOT NULL PRIMARY KEY CHECK (abbrev <> ''),
     name        TEXT NOT NULL DEFAULT '',
     category    TEXT NOT NULL DEFAULT '',
     form        TEXT NOT NULL DEFAULT '',
@@ -36,7 +36,7 @@ CREATE TABLE grammar (
 );
 
 CREATE TABLE roots (
-    cr            TEXT PRIMARY KEY,
+    cr            TEXT NOT NULL PRIMARY KEY CHECK (cr <> ''),
     stem0         TEXT NOT NULL DEFAULT '',
     stem1         TEXT NOT NULL DEFAULT '',
     stem2         TEXT NOT NULL DEFAULT '',
@@ -50,7 +50,7 @@ CREATE TABLE roots (
 );
 
 CREATE TABLE affixes (
-    cs          TEXT PRIMARY KEY,
+    cs          TEXT NOT NULL PRIMARY KEY CHECK (cs <> ''),
     abbrev      TEXT NOT NULL DEFAULT '',
     description TEXT NOT NULL DEFAULT '',
     type        TEXT NOT NULL DEFAULT '',
@@ -70,36 +70,40 @@ CREATE VIRTUAL TABLE affixes_fts USING fts5(
 """
 
 
-# Five C_R clusters carry two unrelated meanings in the community
-# lexicon, and the roots table is keyed on C_R, so one meaning of each
-# pair cannot be stored. Only ksmy resolves: its "oven" entry is
-# daggered, the sheet's mark for a retired word, so the live "jagged
-# line" is the one to keep. The other four are live homonyms with
-# nothing to choose between them, and the entry kept is simply the
-# first.
+# A C_R names one root, so the roots table is keyed on it and the key
+# is unique. Four clusters carry two unrelated live meanings upstream,
+# which the key cannot express:
 #
-# Listed rather than tolerated so the loss is deliberate. A new
-# collision, or one of these being repaired upstream, fails the build.
-KNOWN_DUPLICATE_ROOTS = {"cfw", "ksmy", "lzbḑ", "nļt", "rţnw"}
+#   cfw   magnoliaceae            / myristicaceae
+#   lzbḑ  psychodomorph           / tabanid fly
+#   nļt   groin undergarment      / cicadomorphic bug
+#   rţnw  vitaceae 2              / rosoideae 7
+#
+# Neither side is marked retired, so there is nothing to choose between
+# them and the first is kept. A fifth, ksmy "oven" against "jagged
+# line", used to be here and is gone: the sheet had daggered the oven
+# sense and sync_lexicon now drops retired entries before they reach
+# data.json.
+#
+# Listed rather than tolerated, so the loss is deliberate rather than
+# whatever INSERT OR REPLACE happened to do. A new collision, or one of
+# these being repaired upstream, fails the build.
+KNOWN_DUPLICATE_ROOTS = {"cfw", "lzbḑ", "nļt", "rţnw"}
 
 
 def dedupe_roots(roots: list[dict]) -> list[dict]:
-    kept: dict[str, dict] = {}
-    for r in roots:
-        prior = kept.get(r["cr"])
-        if prior is None or prior.get("stem0", "").endswith("†"):
-            kept[r["cr"]] = r
-    seen = Counter(r["cr"] for r in roots)
-    collisions = {cr for cr, n in seen.items() if n > 1}
+    collisions = {cr for cr, n in Counter(r["cr"] for r in roots).items() if n > 1}
     if collisions != KNOWN_DUPLICATE_ROOTS:
         raise ValueError(
             f"duplicate C_R set changed: {sorted(collisions)} "
             f"!= {sorted(KNOWN_DUPLICATE_ROOTS)}"
         )
-    for cr in sorted(collisions):
-        dropped = [r for r in roots if r["cr"] == cr and r is not kept[cr]]
-        for d in dropped:
-            print(f"  duplicate C_R {cr}: dropping {d.get('stem0', '')!r}")
+    kept: dict[str, dict] = {}
+    for r in roots:
+        if r["cr"] in kept:
+            print(f"  duplicate C_R {r['cr']}: dropping {r.get('stem0', '')!r}")
+            continue
+        kept[r["cr"]] = r
     return list(kept.values())
 
 
@@ -150,7 +154,7 @@ def build(data_path: Path, db_path: Path) -> None:
     conn.execute('INSERT INTO roots_fts(roots_fts) VALUES ("rebuild")')
 
     conn.executemany(
-        "INSERT OR REPLACE INTO affixes VALUES (?,?,?,?,?)",
+        "INSERT INTO affixes VALUES (?,?,?,?,?)",
         [
             (
                 a["cs"],
