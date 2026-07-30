@@ -13,9 +13,11 @@
 // documented in that grammar's ch. 13. The simplest pattern,
 // illustrated by *ksalirsa gzalui walẓärs* = 4229, is a chain of
 // [count, magnitude-in-PAR] pairs followed by a trailing ones-block
-// (0-99). The richer ch. 13 patterns involving
-// COMITATIVE linkers and the COO/1 coordinative affix are not yet
-// produced by the encoder, but the decoder accepts them.
+// (0-99). Phrase assigns the COMITATIVE
+// linker itself. The ch. 13 COO/1 coordinative affix is handled by
+// neither direction: Phrase never writes one, and Decode reads a
+// single number formative rather than a phrase, so it never meets
+// one. That pattern is unimplemented, not half-implemented.
 package numbers
 
 import (

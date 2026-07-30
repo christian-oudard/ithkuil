@@ -14,8 +14,10 @@ package grammar
 //     meanings. Stem is implicitly S1 and Specification implicitly
 //     BSC — both omitted here. Function comes from the special Vv
 //     marker at render time but is stored as a grammatical field.
-//   - RefRoot: referential formative (§5.3). C1 is a referential
-//     consonant. Stem implicitly S1, otherwise structurally the same
+//   - RefRoot: referential formative (§4.6.4). Refs is the chain of
+//     personal references the root names, which is what §4.6.4 means
+//     by "a combination Referential affix" — not the cluster that
+//     spells it. Stem implicitly S1, otherwise structurally the same
 //     as CrRoot.
 //
 // Both specialized constructions replace Slot II's eight-value Stem ×
