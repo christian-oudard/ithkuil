@@ -26,7 +26,7 @@ import (
 // gloss keeps "MOD", where a human reads the label rather than the
 // content.
 func TestModularAdjunct_GlossComposesBack(t *testing.T) {
-	gl := &gloss.Glosser{Canonical: true}
+	gl := &gloss.Glosser{}
 	for _, w := range corpus.Words() {
 		word, err := roman.ParseWord(w)
 		if err != nil {
@@ -59,7 +59,7 @@ func TestModularAdjunct_GlossComposesBack(t *testing.T) {
 // beside a typed one.
 func TestModularAdjunct_DefaultContentSurvivesTheGloss(t *testing.T) {
 	mno := g.VnCnValence{Valence: g.MNO, MoodScope: g.FAC}
-	gl := &gloss.Glosser{Canonical: true}
+	gl := &gloss.Glosser{}
 	for _, want := range []g.ModularAdjunct{
 		{Content: []g.SlotVIII{mno}},
 		{Content: []g.SlotVIII{mno, mno}},

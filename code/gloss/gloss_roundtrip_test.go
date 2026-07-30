@@ -18,9 +18,9 @@ import (
 // identity at the canonical (meaning-suppressed) gloss level:
 //
 //	random Formative
-//	  → gloss (Canonical: true)
+//	  → gloss ()
 //	  → ParseFormative
-//	  → re-gloss (Canonical: true)
+//	  → re-gloss ()
 //	must equal the first
 //
 // The Canonical flag strips the display-only annotations: the quoted
@@ -38,7 +38,7 @@ func TestFuzz_GlossComposeRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}
-	gl := &Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex}
 
 	const iterations = 1000
 	rng := rand.New(rand.NewSource(2026_05_21))

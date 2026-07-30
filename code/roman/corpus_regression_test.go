@@ -44,7 +44,7 @@ func roundTrips(t *testing.T, word string) bool {
 
 func roundTripsOne(t *testing.T, word string) bool {
 	t.Helper()
-	gl := &gloss.Glosser{Canonical: true}
+	gl := &gloss.Glosser{}
 	f, err := roman.ParseFormative(word)
 	if err != nil {
 		t.Errorf("%s: parse: %v", word, err)

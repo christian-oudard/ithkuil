@@ -254,7 +254,7 @@ func TestFormative_SlotVAffixes(t *testing.T) {
 // fails the moment the gloss stops carrying the Ca boundary.
 func TestFormative_MaţřëullaitRoundTrip(t *testing.T) {
 	lex := mustLex(t)
-	gl := &Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex}
 	cases := []struct{ rom, want, canonical string }{
 		// Slot V forces a §3.6.2 glottal into the shortcut encoding
 		// ("wamëu'ţřait"), which the plain form doesn't pay, so the

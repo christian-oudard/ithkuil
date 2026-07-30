@@ -39,8 +39,8 @@ func TestCanonicalGlossIsASCII(t *testing.T) {
 		name string
 		gl   *gloss.Glosser
 	}{
-		{"no lexicon", &gloss.Glosser{Canonical: true}},
-		{"with lexicon", &gloss.Glosser{Lex: lex, Canonical: true}},
+		{"no lexicon", &gloss.Glosser{}},
+		{"with lexicon", &gloss.Glosser{Lex: lex}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			for _, w := range corpus.Words() {

@@ -37,7 +37,7 @@ func cmdDefine(args []string, stdout, stderr io.Writer, dataFile string) int {
 		return 1
 	}
 
-	gl := &gloss.Glosser{Canonical: true}
+	gl := &gloss.Glosser{}
 	fmt.Fprintf(stdout, "%s\n", word)
 	for i, s := range senses {
 		if i == *limit {

@@ -18,7 +18,7 @@ import (
 // validated: a round trip alone cannot tell that what we emitted was
 // an impossible word.
 func TestCaStack_RoundTrip(t *testing.T) {
-	gl := &gloss.Glosser{Canonical: true}
+	gl := &gloss.Glosser{}
 	for _, tc := range []struct{ in, want string }{
 		{"ml-Ca:PRX-ERG", "mlalüödo"},
 		{"ml-MSS.G-Ca:DPX.COA-ERG", "mlatrüörso"},

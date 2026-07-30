@@ -21,7 +21,7 @@ import (
 // invents grammar, which for referentials nothing could catch before,
 // there having been no renderer to check.
 func TestToken_CorpusRoundTrip(t *testing.T) {
-	gl := &gloss.Glosser{Canonical: true}
+	gl := &gloss.Glosser{}
 	var rendered, skipped int
 	for _, w := range corpus.Words() {
 		tok, err := roman.ParseWord(w)
@@ -63,7 +63,7 @@ func TestToken_CorpusRoundTrip(t *testing.T) {
 // The referential classes specifically, which are the ones that had no
 // renderer at all.
 func TestToken_CorpusReferentials(t *testing.T) {
-	gl := &gloss.Glosser{Canonical: true}
+	gl := &gloss.Glosser{}
 	var n int
 	for _, w := range corpus.Words() {
 		tok, err := roman.ParseWord(w)

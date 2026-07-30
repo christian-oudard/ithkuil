@@ -1,6 +1,7 @@
 package gloss_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/gloss"
@@ -30,8 +31,7 @@ func TestCategoryValuedAffixesRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	canonical := &gloss.Glosser{Lex: lex, Canonical: true}
-	display := &gloss.Glosser{Lex: lex}
+	canonical := &gloss.Glosser{Lex: lex}
 
 	for _, abbrev := range []string{"MCS", "PHS", "LVL", "VAL", "IVL", "AP1", "AP2"} {
 		cs := csFor(lex, abbrev)
@@ -46,11 +46,12 @@ func TestCategoryValuedAffixesRoundTrip(t *testing.T) {
 		if _, err := gloss.ParseFormative(got, lex.Affixes); err != nil {
 			t.Errorf("%s: canonical gloss %q does not compose back: %v", abbrev, got, err)
 		}
-		// Display mode is where the category code belongs, and it must
-		// still be there — this is not a licence to drop it.
-		if d := display.Formative(f); d == got {
-			t.Errorf("%s: display gloss %q is the same as canonical; the category code was lost",
-				abbrev, d)
+		// The gloss writes the degree, never the category code: the
+		// code is derived from (Cs, degree, type), so writing it would
+		// give one Formative two spellings.
+		if strings.Contains(got, ":") {
+			t.Errorf("%s: gloss %q writes a category code; the degree is the canonical form",
+				abbrev, got)
 		}
 	}
 }

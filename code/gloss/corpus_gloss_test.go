@@ -26,7 +26,7 @@ func TestCorpusGloss_ComposesBack(t *testing.T) {
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}
-	gl := &Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex}
 	var chains, ok int
 	for _, w := range corpus.Words() {
 		word, err := roman.ParseWord(w)

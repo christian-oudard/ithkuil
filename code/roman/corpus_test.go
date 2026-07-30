@@ -58,11 +58,11 @@ func TestCorpus_Classification(t *testing.T) {
 // Glossed without a lexicon, so the affix shows as its raw cluster.
 func TestCorpus_WHQuestions(t *testing.T) {
 	cases := []struct{ word, gloss string }{
-		{"Mmiexinļ", "REF[PVS]-PUR.BSC-nļ/4"},     // Why?
-		{"Mma'oxinļ", "REF[PVS]-CNR.BSC-nļ/4"},    // When?
-		{"Nnioxinļ", "REF[PVS/BEN]-TRA.BSC-nļ/4"}, // To/for whose benefit?
-		{"Ňňeöxinļ", "REF[PVS/DET]-RSL.BSC-nļ/4"}, // Resulting detrimentally in what?
-		{"Mmauxinļ", "REF[PVS]-PRP.BSC-nļ/4"},     // Whose?
+		{"Mmiexinļ", "PVS-PUR-BSC-nl,/4"},     // Why?
+		{"Mma'oxinļ", "PVS-CNR-BSC-nl,/4"},    // When?
+		{"Nnioxinļ", "PVS/BEN-TRA-BSC-nl,/4"}, // To/for whose benefit?
+		{"Ňňeöxinļ", "PVS/DET-RSL-BSC-nl,/4"}, // Resulting detrimentally in what?
+		{"Mmauxinļ", "PVS-PRP-BSC-nl,/4"},     // Whose?
 	}
 	gl := &gloss.Glosser{}
 	for _, c := range cases {

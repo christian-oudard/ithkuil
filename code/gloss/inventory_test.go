@@ -23,7 +23,7 @@ func inventoryGlosser(t *testing.T) *gloss.Glosser {
 	if err != nil {
 		t.Fatalf("load lexicon: %v", err)
 	}
-	return &gloss.Glosser{Lex: lex, Canonical: true}
+	return &gloss.Glosser{Lex: lex}
 }
 
 // TestInventory_GlossNamesTheValue requires the gloss of a marked value

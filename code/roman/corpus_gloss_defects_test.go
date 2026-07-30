@@ -35,13 +35,13 @@ var misglossedChildRoots = []struct {
 	// §4.8.4 and §6.1.3 carry the same sentence, glossed
 	// 'child'-G-VOC. G Perspective under a w- shortcut also needs a
 	// series-2 V_V, so ei- rather than e-.
-	{"4.8.4", "Weru'i", "r", "Weilu'i", "S2.PRC--l-'human child'-G-VOC"},
+	{"4.8.4", "Weru'i", "r", "Weilu'i", "S2.PRC-l-G-VOC"},
 
 	// Glossed [default CA]-stem2/prc-'child'-DPX-IND, which contradicts
 	// itself as well: DPX is a Configuration, so a formative carrying
 	// it does not have a default C_A. Without the shortcut the word
 	// needs its Slot IV V_R, hence -a- rather than nothing.
-	{"5.1.6", "wesu", "s", "elasu", "S2.PRC--l-'human child'-DPX-IND"},
+	{"5.1.6", "wesu", "s", "elasu", "S2.PRC-l-DPX-IND"},
 }
 
 func TestCorpusMisglossedChildRoots(t *testing.T) {

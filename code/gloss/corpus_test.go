@@ -149,7 +149,7 @@ func TestCorpus_Imminent_Potentiative_Size7(t *testing.T) {
 
 func TestCorpus_Functive_TemporalPlacement6(t *testing.T) {
 	g := glossOne(t, "wafsöţpao")
-	assertContains(t, "wafsöţpao", g, "ţp/6")
+	assertContains(t, "wafsöţpao", g, "t,p/6")
 	assertContains(t, "wafsöţpao", g, "FUN")
 }
 

@@ -22,7 +22,7 @@ func TestReferentialCategory_RoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	gl := &Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex}
 
 	// §4.6 attaches the category affix on whichever side is
 	// "phonotactically permissible", so which words exist is decided by
@@ -61,7 +61,7 @@ func TestReferentialCategory_EveryCategory(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	gl := &Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex}
 	erg := g.ERG
 
 	for _, cat := range []g.RefCategory{g.Agglomerative, g.Nomic, g.Abstract} {
@@ -105,7 +105,7 @@ func TestCombinationReferential_KeepsItsTail(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	gl := &Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex}
 	dat := g.DAT
 
 	for _, want := range []g.CombinationReferential{

@@ -18,7 +18,7 @@ import (
 // case is three uppercase letters and a degree is one digit, so the
 // two token shapes cannot collide.
 func TestColumn4_RoundTrip(t *testing.T) {
-	gl := &gloss.Glosser{Canonical: true}
+	gl := &gloss.Glosser{}
 	for _, in := range []string{
 		"ml-(1m)/AFF-ERG",
 		// Alongside an ordinary affix, which the Type-3 shortcut would

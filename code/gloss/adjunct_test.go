@@ -16,7 +16,7 @@ func canonicalGlosser(t *testing.T) *Glosser {
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}
-	return &Glosser{Lex: lex, Canonical: true}
+	return &Glosser{Lex: lex}
 }
 
 func TestParseWord_Bias(t *testing.T) {
@@ -371,7 +371,7 @@ func TestParseWord_CombinationRef(t *testing.T) {
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}
-	gl := &Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex}
 	dative := g.DAT
 	want := g.CombinationReferential{
 		Head:    g.PersonalHead{Refs: []g.PersonalRef{{Referent: g.R1m, Effect: g.NEU}}},

@@ -27,7 +27,7 @@ func modular(scope g.ModularScope, reach g.ModularReach) g.ModularAdjunct {
 // written, so a marker would claim a distinction the word does not
 // make.
 func TestModularScopeSuffix_EveryValue(t *testing.T) {
-	gl := &gloss.Glosser{Canonical: true}
+	gl := &gloss.Glosser{}
 	for _, c := range []struct {
 		scope g.ModularScope
 		want  string
@@ -54,7 +54,7 @@ func TestModularScopeSuffix_EveryValue(t *testing.T) {
 // TestModularReachSuffix_EveryValue walks all five reaches. None is
 // the absent-V_H case and prints nothing, for the same reason.
 func TestModularReachSuffix_EveryValue(t *testing.T) {
-	gl := &gloss.Glosser{Canonical: true}
+	gl := &gloss.Glosser{}
 	for _, reach := range g.AllModularReaches {
 		t.Run(reach.String(), func(t *testing.T) {
 			got := gl.Word(modular(g.ModularScopeDefault, reach), nil, 0)
@@ -76,7 +76,7 @@ func TestModularReachSuffix_EveryValue(t *testing.T) {
 // each other when both are set, which is the only interaction between
 // them and the case a single-value test cannot reach.
 func TestModularSuffixes_Combine(t *testing.T) {
-	gl := &gloss.Glosser{Canonical: true}
+	gl := &gloss.Glosser{}
 	got := gl.Word(modular(g.ModularScopeParent, g.ModularReachAdjacent), nil, 0)
 	for _, want := range []string{
 		"-{" + g.ModularScopeParent.String() + "}",

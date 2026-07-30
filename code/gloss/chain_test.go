@@ -19,7 +19,7 @@ func TestParseText_RejoinsAChain(t *testing.T) {
 	if err != nil {
 		t.Skip("no lexicon")
 	}
-	gl := gloss.Glosser{Lex: lex, Canonical: true}
+	gl := gloss.Glosser{Lex: lex}
 	for _, word := range []string{
 		"hakšiţé-alcialu'a",
 		"hlešvie-galoktähá",

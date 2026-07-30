@@ -36,7 +36,6 @@ import (
 	"github.com/christian-oudard/ithkuil/allomorph"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/numbers"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/semantics"
@@ -47,14 +46,6 @@ import (
 // package-level Formative function.
 type Glosser struct {
 	Lex *lexicon.Lexicon
-	// Canonical suppresses display-only annotations that aren't part of
-	// the compose authoring syntax: the quoted lexicon meaning after the
-	// root ("-ml- 'gold (color)'"), and the category code that replaces
-	// the degree on affixes like MCS ("MCS:SUB" for "MCS/1"). Both are
-	// derivable from what remains, so dropping them loses nothing and
-	// keeps one spelling per Formative. The result is exactly what
-	// ParseFormative accepts, so set Canonical=true for round-tripping.
-	Canonical bool
 }
 
 // Formative renders a one-line gloss of f. Components at their default
@@ -124,10 +115,7 @@ func (gl *Glosser) rootBody(f g.Formative) string {
 	case g.CsRoot:
 		return gl.csRootLabel(x)
 	case g.RefRoot:
-		open, close := "-(", ")-"
-		if gl.Canonical {
-			open, close = "(", ")"
-		}
+		open, close := "(", ")"
 		parts := make([]string, len(x.Refs))
 		for i, pr := range x.Refs {
 			s := pr.Referent.String()
@@ -167,78 +155,10 @@ func (gl *Glosser) crRootLabel(x g.CrRoot, f g.Formative) string {
 	if x.Cluster == "" {
 		return ""
 	}
-	cluster := x.Cluster
-	if gl.Canonical {
-		// Canonical mode emits the bare cluster: the parser identifies
-		// it by shape (no slashes, no parens) and the surrounding "-"
-		// from the slot join is enough. Display mode wraps with "-X-"
-		// to make the root visually prominent in human-read output.
-		return phonology.ToASCII(cluster)
-	}
-	// Number roots are interpreted from the centesimal system table
-	// (§8.0), not from the lexicon. Decode reads Slot VII as well, so
-	// 11-99 fold the TNX tens-affix into the displayed value.
-	if numbers.IsNumberRoot(x.Cluster) {
-		if n, ok := numbers.Decode(f); ok {
-			// SPT affix in Slot VII upgrades the bare integer gloss to a
-			// date/time label per §6: "8th hour", "15th of month", etc.
-			if d, hasSPT := numbers.SPTDegree(f); hasSPT {
-				if lbl := numbers.SPTDegreeLabel(d); lbl != "" {
-					return fmt.Sprintf("-%s-'%dth %s'", cluster, n.Value, lbl)
-				}
-			}
-			return fmt.Sprintf("-%s-'%d'", cluster, n.Value)
-		}
-	}
-	if gl.Lex != nil {
-		if entry, ok := gl.Lex.Roots[x.Cluster]; ok {
-			if meaning := rootMeaning(entry, x); meaning != "" {
-				return "-" + cluster + "-'" + meaning + "'"
-			}
-		}
-	}
-	return "-" + cluster + "-"
-}
-
-// rootMeaning picks the best gloss string for a CrRoot, consulting
-// the entry's specialization variants in order of specificity:
-//
-//	spec=OBJ → Objective[stem-1]    (per-stem alternate)
-//	spec=CTE → Contential           (stem-independent)
-//	spec=CSV → Constitutive         (stem-independent)
-//	fn=DYN   → Dynamic              (stem-independent)
-//	ver=CPT  → Completive[stem-1]   (per-stem alternate)
-//	default  → Stem(stem)
-//
-// Spec variants override completion-based ones because the spec
-// reshapes what the root denotes; completion just marks completeness.
-// Each branch falls through to the next when the relevant variant is
-// empty, so unannotated roots still get a sensible default.
-func rootMeaning(entry lexicon.RootEntry, x g.CrRoot) string {
-	stem := stemIndex(x.Stem)
-	switch x.SlotIV.Specification {
-	case g.OBJ:
-		if v := stemTriple(entry.Objective, stem); v != "" {
-			return v
-		}
-	case g.CTE:
-		if entry.Contential != "" {
-			return entry.Contential
-		}
-	case g.CSV:
-		if entry.Constitutive != "" {
-			return entry.Constitutive
-		}
-	}
-	if x.SlotIV.Function == g.DYN && entry.Dynamic != "" {
-		return entry.Dynamic
-	}
-	if x.Version == g.CPT {
-		if v := stemTriple(entry.Completive, stem); v != "" {
-			return v
-		}
-	}
-	return entry.Stem(stem)
+	// The bare cluster: the parser identifies a root by shape — no
+	// slashes, no parens — and the surrounding "-" from the slot join
+	// is enough to set it off.
+	return phonology.ToASCII(x.Cluster)
 }
 
 func stemTriple(ss []string, stem int) string {
@@ -480,20 +400,11 @@ func (gl *Glosser) affix(a g.Affix) string {
 	if gl.Lex != nil {
 		if entry, ok := gl.Lex.Affixes[a.Consonant]; ok {
 			// Category-valued affixes (MCS, PHS, AP1-4, IVL, LVL, VAL)
-			// carry a category code in place of a degree meaning, and
-			// display mode shows that code: "MCS:SUB" rather than
-			// "MCS/1".
-			//
-			// Canonical mode keeps the degree. The code is derived from
-			// (Cs, degree, type), so writing it is redundant, and a
-			// canonical form that admits two spellings of one Formative
-			// is not canonical. It also keeps ":" doing the single job
-			// it has here, tagging a "Ca:" body; "ABBREV:CAT" would be a
-			// second sense of the same mark, and the last time two
-			// constructs shared a shape the round trip broke on it.
-			if cat := entry.CategoryValue(a.Degree, int(a.Type)+1); cat != "" && !gl.Canonical {
-				return fmt.Sprintf("%s:%s", entry.Abbrev, cat)
-			}
+			// carry a category code in place of a degree meaning. The
+			// gloss writes the degree anyway: the code is derived from
+			// (Cs, degree, type), so writing it would admit two
+			// spellings of one Formative, and it would give ":" a
+			// second job beside tagging a "Ca:" body.
 			return fmt.Sprintf("%s/%d%s", entry.Abbrev, a.Degree, gl.affixTypeSuffix(a.Type))
 		}
 	}

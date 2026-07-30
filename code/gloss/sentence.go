@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/roman"
 	"github.com/christian-oudard/ithkuil/semantics"
@@ -56,11 +55,7 @@ func (gl *Glosser) Word(t g.Word, span g.Text, i int) string {
 		for _, f := range v.Formatives() {
 			parts = append(parts, gl.Formative(f))
 		}
-		sep := " >> "
-		if gl.Canonical {
-			sep = " "
-		}
-		return strings.Join(parts, sep)
+		return strings.Join(parts, " ")
 	case g.Bias:
 		return gl.biasLabel(v)
 	case g.RegisterMarker:
@@ -87,56 +82,38 @@ func (gl *Glosser) Word(t g.Word, span g.Text, i int) string {
 	case g.CombinationReferential:
 		return gl.combinationRefLabel(v)
 	case g.Foreign:
-		// Canonical: wrap in double quotes so the parser can recognize
-		// foreign text without confusing it for an Ithkuil word.
-		// Display: bare text matches existing display-side expectations.
-		if gl.Canonical {
-			return `"` + v.Text + `"`
-		}
-		return v.Text
+		// Quoted so the parser can tell foreign text from an Ithkuil
+		// word.
+		return `"` + v.Text + `"`
 	}
 	return "?"
 }
 
-// singleAffixLabel formats a single-affix adjunct. Display mode:
-// "AFFIX[Cs/N]{scope}". Canonical mode (zsnout-aligned):
-// "Cs/N" plus an optional "-{scope}" tail when scope is non-default.
+// singleAffixLabel formats a single-affix adjunct as "Cs/N" plus an
+// optional "-{scope}" tail when the scope is not the default.
 func (gl *Glosser) singleAffixLabel(a g.SingleAffixAdjunct) string {
 	body := gl.affixPart(a.Affix)
-	if gl.Canonical {
-		if a.Scope == g.ScopeVDom {
-			return body
-		}
-		return body + "-{" + a.Scope.String() + "}"
+	if a.Scope == g.ScopeVDom {
+		return body
 	}
-	return fmt.Sprintf("AFFIX[%s]{%s}", body, a.Scope.String())
+	return body + "-{" + a.Scope.String() + "}"
 }
 
-// multiAffixLabel formats a multi-affix adjunct. Display mode:
-// "AFFIXES[a1,a2,...]{first>rest}". Canonical mode (zsnout-aligned):
-// "a1[-{first}]-a2-a3-...-aN[-{rest}]" — first scope follows the
-// first affix, rest scope trails the last affix, defaults elided.
+// multiAffixLabel formats a multi-affix adjunct as
+// "a1[-{first}]-a2-...-aN[-{rest}]": the first scope follows the first
+// affix, the rest scope trails the last, and defaults are elided.
 func (gl *Glosser) multiAffixLabel(a g.MultipleAffixAdjunct) string {
-	if gl.Canonical {
-		parts := []string{gl.affixPart(a.First)}
-		if a.FirstScope != g.ScopeVDom {
-			parts = append(parts, "{"+a.FirstScope.String()+"}")
-		}
-		for _, p := range a.Rest {
-			parts = append(parts, gl.affixPart(p))
-		}
-		if a.RestScope != g.ScopeVDom && a.RestScope != a.FirstScope {
-			parts = append(parts, "{"+a.RestScope.String()+"}")
-		}
-		return strings.Join(parts, "-")
-	}
 	parts := []string{gl.affixPart(a.First)}
+	if a.FirstScope != g.ScopeVDom {
+		parts = append(parts, "{"+a.FirstScope.String()+"}")
+	}
 	for _, p := range a.Rest {
 		parts = append(parts, gl.affixPart(p))
 	}
-	return fmt.Sprintf("AFFIXES[%s]{%s→%s}",
-		strings.Join(parts, ","),
-		a.FirstScope.String(), a.RestScope.String())
+	if a.RestScope != g.ScopeVDom && a.RestScope != a.FirstScope {
+		parts = append(parts, "{"+a.RestScope.String()+"}")
+	}
+	return strings.Join(parts, "-")
 }
 
 // affixPart renders one affix as "<abbrev>/<deg><type>" using the
@@ -158,10 +135,7 @@ func (gl *Glosser) affixLabel(cs string) string {
 			return entry.Abbrev
 		}
 	}
-	if gl.Canonical {
-		return phonology.ToASCII(cs)
-	}
-	return cs
+	return phonology.ToASCII(cs)
 }
 
 // affixTypeSuffix renders an affix's Type. Type 1 (the unmarked
@@ -169,20 +143,11 @@ func (gl *Glosser) affixLabel(cs string) string {
 // Unicode subscript (display mode) or the ASCII-clean "_N" suffix
 // (Canonical mode, parsed by compose).
 func (gl *Glosser) affixTypeSuffix(t g.AffixType) string {
-	if gl.Canonical {
-		switch t {
-		case g.Type2Affix:
-			return "_2"
-		case g.Type3Affix:
-			return "_3"
-		}
-		return ""
-	}
 	switch t {
 	case g.Type2Affix:
-		return "₂"
+		return "_2"
 	case g.Type3Affix:
-		return "₃"
+		return "_3"
 	}
 	return ""
 }
@@ -191,32 +156,19 @@ func (gl *Glosser) affixTypeSuffix(t g.AffixType) string {
 // expression in parens; canonical mode emits the bare abbreviation
 // (suitable for input parsing).
 func (gl *Glosser) biasLabel(b g.Bias) string {
-	if gl.Canonical {
-		return b.String()
-	}
-	expr := g.BiasExpression(b)
-	if expr == "" {
-		return b.String()
-	}
-	return fmt.Sprintf("%s(%s)", b.String(), expr)
+	return b.String()
 }
 
 // registerStartLabel formats a register-start adjunct.
 // Display: "REG-DSV". Canonical: bare "DSV" (zsnout style).
 func (gl *Glosser) registerStartLabel(r g.Register) string {
-	if gl.Canonical {
-		return r.String()
-	}
-	return "REG-" + r.String()
+	return r.String()
 }
 
 // registerEndLabel formats a register-end adjunct.
 // Display: "REG-DSV-END". Canonical: "DSV_END" (zsnout style).
 func (gl *Glosser) registerEndLabel(r g.Register) string {
-	if gl.Canonical {
-		return r.String() + "_END"
-	}
-	return "REG-" + r.String() + "-END"
+	return r.String() + "_END"
 }
 
 // carrierLabel formats a carrier adjunct.
@@ -224,57 +176,33 @@ func (gl *Glosser) registerEndLabel(r g.Register) string {
 // type is shown as a 3-letter abbreviation and the Vc vowel is decoded
 // to its case name (zsnout-style suppletive form).
 func (gl *Glosser) carrierLabel(c g.CarrierAdjunct) string {
-	if gl.Canonical {
-		head := "[" + c.Type.Abbrev() + "]"
-		if c.Case == g.THM {
-			return head
-		}
-		return head + "-" + c.Case.String()
+	head := "[" + c.Type.Abbrev() + "]"
+	if c.Case == g.THM {
+		return head
 	}
-	return "CARR-" + c.Type.String() + "(" + parse.CaseToVc(c.Case) + ")"
+	return head + "-" + c.Case.String()
 }
 
-// modularLabel formats a parsed modular adjunct.
-//
-// Display: "MOD(<vn>.<cn>)" with "MOD" alone when both default.
-//
-// Canonical: the Vn.Cn content bare ("RTR.SUB"), or "MOD" if both
-// are at their defaults.
+// modularLabel formats a parsed modular adjunct as its Vn.Cn content,
+// e.g. "RTR.SUB".
 //
 // marksMood comes from the tokenizer's cross-formative scan: when the
 // next formative is verbal it's *true (Cn → Mood); when it's nominal
 // or framed-verbal it's *false (Cn → CaseScope); when no neighbor was
 // found it's nil and we fall back to the Vn-pattern heuristic.
 func (gl *Glosser) modularLabel(m g.ModularAdjunct, marksMood *bool) string {
-	var inner string
-	if len(m.Content) > 0 {
-		// Single-pair case (the common shape): emit Vn.Cn content.
-		// Multi-pair modulars (§4.3) join their slot-VIII labels with
-		// "-" for display, comma for canonical compactness.
-		parts := make([]string, len(m.Content))
-		for i, s := range m.Content {
-			parts[i] = slotVIII(s, semantics.ModularIsVerbal(s, marksMood))
-		}
-		inner = strings.Join(parts, "-")
+	// slotVIII suppresses MNO and FAC, which reads as "default" in a
+	// formative because the slot keeps its position either way. A
+	// modular adjunct's content is the whole word and its entries are
+	// told apart by their order in a hyphen list, so an empty entry
+	// erases one: two default slots would gloss to a bare "-". Every
+	// entry is named here.
+	parts := make([]string, len(m.Content))
+	for i, s := range m.Content {
+		parts[i] = canonicalSlotVIII(s, semantics.ModularIsVerbal(s, marksMood))
 	}
-	if gl.Canonical {
-		// slotVIII suppresses MNO and FAC, which reads as "default" in
-		// a formative because the slot keeps its position either way.
-		// A modular adjunct's content is the whole word and its
-		// entries are told apart by their order in a hyphen list, so
-		// an empty entry erases one: two default slots glossed to a
-		// bare "-". Canonical output names every entry.
-		parts := make([]string, len(m.Content))
-		for i, s := range m.Content {
-			parts[i] = canonicalSlotVIII(s, semantics.ModularIsVerbal(s, marksMood))
-		}
-		return strings.Join(parts, "-") +
-			modularScopeSuffix(m.Scope) + modularReachSuffix(m.Reach)
-	}
-	if inner == "" {
-		return "MOD"
-	}
-	return "MOD(" + inner + ")"
+	return strings.Join(parts, "-") +
+		modularScopeSuffix(m.Scope) + modularReachSuffix(m.Reach)
 }
 
 // modularScopeSuffix returns the canonical "-{parent}" / "-{concat}"
@@ -305,11 +233,7 @@ func modularReachSuffix(r g.ModularReach) string {
 func (gl *Glosser) combinationRefLabel(c g.CombinationReferential) string {
 	comb := c
 	head := gl.refHead(comb.Head)
-	sep := "-"
-	if !gl.Canonical {
-		sep = "."
-	}
-	out := head + "-" + comb.Case.String() + sep + comb.Spec.String()
+	out := head + "-" + comb.Case.String() + "-" + comb.Spec.String()
 	for _, a := range comb.Affixes {
 		out += "-" + gl.affixPart(a)
 	}
@@ -317,11 +241,7 @@ func (gl *Glosser) combinationRefLabel(c g.CombinationReferential) string {
 		out += "-" + comb.Case2.String()
 	}
 	if comb.RpvEssence {
-		if gl.Canonical {
-			out += "-RPV"
-		} else {
-			out += "\\RPV"
-		}
+		out += "-RPV"
 	}
 	return out
 }
@@ -346,11 +266,7 @@ func (gl *Glosser) refLabel(r g.Referential) string {
 		}
 	}
 	if ref.RpvEssence {
-		if gl.Canonical {
-			label += "-RPV"
-		} else {
-			label += "\\RPV"
-		}
+		label += "-RPV"
 	}
 	return label
 }
@@ -361,19 +277,13 @@ func (gl *Glosser) refLabel(r g.Referential) string {
 func (gl *Glosser) refHead(head g.RefHead) string {
 	switch h := head.(type) {
 	case g.SuppletiveHead:
-		if gl.Canonical {
-			return "[" + h.Type.Abbrev() + "]"
-		}
-		return "CARR[" + h.Type.String() + "]"
+		return "[" + h.Type.Abbrev() + "]"
 	case g.PersonalHead:
 		listed := formatRefList(h.Refs, len(h.Refs) > 1)
 		if h.Category != nil {
 			listed = h.Category.String() + ":" + listed
 		}
-		if gl.Canonical {
-			return listed
-		}
-		return "REF[" + strings.TrimPrefix(strings.TrimSuffix(listed, "]"), "[") + "]"
+		return listed
 	}
 	return "?"
 }

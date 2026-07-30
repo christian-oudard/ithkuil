@@ -20,7 +20,7 @@ import (
 // "standard Type-3 VxCs affix" together, so the suffix is the same
 // Type suffix rather than a lookalike.
 func TestAccessor_RoundTrip(t *testing.T) {
-	gl := &gloss.Glosser{Canonical: true}
+	gl := &gloss.Glosser{}
 	for _, in := range []string{
 		"ml-CST/ERG-ERG",     // case-stacking, low increment
 		"ml-ACC/INS-ERG",     // case-accessor, Type 1

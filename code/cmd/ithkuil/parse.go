@@ -113,7 +113,7 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 	// with Unicode subscripts and spelled-out English, but it is not
 	// the gloss syntax and nothing can parse it, so showing it here
 	// would be showing the user a form they cannot use.
-	canonical := gloss.Glosser{Lex: lex, Canonical: true}
+	canonical := gloss.Glosser{Lex: lex}
 
 	// Phonotactics are checked per token rather than through a map
 	// built from strings.Fields. The map was keyed by the raw word but

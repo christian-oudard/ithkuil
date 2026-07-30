@@ -26,7 +26,7 @@ func TestFullDistance_SlotsCorpus(t *testing.T) {
 	if err != nil {
 		t.Fatalf("load lex: %v", err)
 	}
-	gl := &Glosser{Lex: lex, Canonical: true}
+	gl := &Glosser{Lex: lex}
 
 	for _, w := range slots.FormativeCorpus {
 		t.Run(w, func(t *testing.T) {

@@ -25,10 +25,10 @@ func loadLex(t *testing.T) *lexicon.Lexicon {
 
 func TestFormative_Minimal(t *testing.T) {
 	// MinimalFormative("ml") is all defaults except the root.
-	// Gloss should just be "-ml-".
+	// Gloss should just be "ml".
 	f := g.MinimalFormative("ml")
 	got := Formative(f)
-	want := "-ml-"
+	want := "ml"
 	if got != want {
 		t.Errorf("Formative(minimal) = %q, want %q", got, want)
 	}
@@ -41,7 +41,7 @@ func TestFormative_NonDefaultSlotII(t *testing.T) {
 	cr.Version = g.CPT
 	f.Root = cr
 	got := Formative(f)
-	want := "S2.CPT--ml-"
+	want := "S2.CPT-ml"
 	if got != want {
 		t.Errorf("Formative(S2.CPT) = %q, want %q", got, want)
 	}
@@ -53,7 +53,7 @@ func TestFormative_NonDefaultSlotIV(t *testing.T) {
 	cr.SlotIV = g.SlotIV{Function: g.DYN, Specification: g.OBJ, Context: g.EXS}
 	f.Root = cr
 	got := Formative(f)
-	want := "-ml--DYN.OBJ.EXS"
+	want := "ml-DYN.OBJ.EXS"
 	if got != want {
 		t.Errorf("Formative(DYN.OBJ.EXS) = %q, want %q", got, want)
 	}
@@ -67,7 +67,7 @@ func TestFormative_NonDefaultCa(t *testing.T) {
 		Perspective: g.G_, Extension: g.DEL, Essence: g.NRM,
 	}
 	got := Formative(f)
-	want := "-ml--MSS.G"
+	want := "ml-MSS.G"
 	if got != want {
 		t.Errorf("Formative(MSS/G) = %q, want %q", got, want)
 	}
@@ -77,7 +77,7 @@ func TestFormative_ErgCase(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.Final = g.UnframedNominal{Case: g.ERG}
 	got := Formative(f)
-	want := "-ml--ERG"
+	want := "ml-ERG"
 	if got != want {
 		t.Errorf("Formative(ERG) = %q, want %q", got, want)
 	}
@@ -87,14 +87,14 @@ func TestFormative_Verbal(t *testing.T) {
 	f := g.MinimalFormative("ml")
 	f.Final = g.UnframedVerbal{Vk: g.Directive{}}
 	got := Formative(f)
-	want := "-ml--DIR-ULT"
+	want := "ml-DIR-ULT"
 	if got != want {
 		t.Errorf("Formative(DIR) = %q, want %q", got, want)
 	}
 	// Non-default validation should appear.
 	f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.INF}}
 	got = Formative(f)
-	want = "-ml--ASR.INF-ULT"
+	want = "ml-ASR.INF-ULT"
 	if got != want {
 		t.Errorf("Formative(ASR.INF) = %q, want %q", got, want)
 	}
@@ -109,7 +109,7 @@ func TestFormative_SlotVIIIValence(t *testing.T) {
 		MoodScope: g.FAC, // FAC/CCN suppressed
 	}
 	got := Formative(f)
-	want := "-ml--PRL"
+	want := "ml-PRL"
 	if got != want {
 		t.Errorf("Formative(PRL/FAC) = %q, want %q", got, want)
 	}
@@ -119,14 +119,14 @@ func TestFormative_SlotVIIIValence(t *testing.T) {
 		MoodScope: g.SUB,
 	}
 	got = Formative(f)
-	want = "-ml--PRL.CCA"
+	want = "ml-PRL.CCA"
 	if got != want {
 		t.Errorf("Formative(PRL/CCA) = %q, want %q", got, want)
 	}
 	// Verbal context labels the same MoodScope as Mood: SUB.
 	f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}
 	got = Formative(f)
-	want = "-ml--PRL.SUB-ASR-ULT"
+	want = "ml-PRL.SUB-ASR-ULT"
 	if got != want {
 		t.Errorf("Formative(verbal PRL/SUB) = %q, want %q", got, want)
 	}
@@ -140,7 +140,7 @@ func TestFormative_SlotVIIIAspect(t *testing.T) {
 	}
 	// Nominal context → CaseScope label.
 	got := Formative(f)
-	want := "-ml--RTR.CCA"
+	want := "ml-RTR.CCA"
 	if got != want {
 		t.Errorf("Formative(nominal RTR/CCA) = %q, want %q", got, want)
 	}
@@ -154,7 +154,7 @@ func TestFormative_FramedVerbal_SlotVIIIAsCaseScope(t *testing.T) {
 	f.Final = g.FramedVerbal{Case: g.THM}
 	f.SlotVIII = g.VnCnValence{Valence: g.PRL, MoodScope: g.SUB}
 	got := Formative(f)
-	want := "-ml--PRL.CCA-ANT"
+	want := "ml-PRL.CCA-ANT"
 	if got != want {
 		t.Errorf("Formative(framed PRL/SUB) = %q, want %q", got, want)
 	}
@@ -166,9 +166,9 @@ func TestFormative_FinalTag(t *testing.T) {
 		final g.Final
 		want  string
 	}{
-		{"nominal", g.UnframedNominal{Case: g.THM}, "-ml-"},
-		{"verbal", g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}, "-ml--ASR-ULT"},
-		{"framed", g.FramedVerbal{Case: g.THM}, "-ml--ANT"},
+		{"nominal", g.UnframedNominal{Case: g.THM}, "ml"},
+		{"verbal", g.UnframedVerbal{Vk: g.Assertive{Validation: g.OBS}}, "ml-ASR-ULT"},
+		{"framed", g.FramedVerbal{Case: g.THM}, "ml-ANT"},
 	}
 	for _, c := range cases {
 		f := g.MinimalFormative("ml")
@@ -185,27 +185,26 @@ func TestFormative_Concatenation(t *testing.T) {
 	t1 := g.Type1
 	f.Concat = t1
 	got := Formative(f)
-	want := "T1--ml-"
+	want := "T1-ml"
 	if got != want {
 		t.Errorf("Formative(T1) = %q, want %q", got, want)
 	}
 }
 
-func TestGlosser_RootWithLexicon(t *testing.T) {
-	lex := loadLex(t)
-	gl := &Glosser{Lex: lex}
-
+// A root glosses to its cluster whether or not a lexicon is at hand.
+// The gloss used to inline the English meaning when one was — "-m-
+// 'linguistic utterance for communication'" — which made the gloss of
+// a formative depend on which lexicon was loaded, and produced a
+// string nothing could read back.
+func TestGlosser_RootIsLexiconIndependent(t *testing.T) {
 	f := g.MinimalFormative("m")
-	// S1/PRC is default, so it doesn't appear; the root for "m" at
-	// stem 1 should show its lexicon meaning.
-	got := gl.Formative(f)
-	entry, ok := lex.Roots["m"]
-	if !ok {
-		t.Fatal("lexicon missing root \"m\"")
+	withLex := (&Glosser{Lex: loadLex(t)}).Formative(f)
+	withoutLex := (&Glosser{}).Formative(f)
+	if withLex != withoutLex {
+		t.Errorf("lexicon changed the gloss: %q with, %q without", withLex, withoutLex)
 	}
-	want := "-m-'" + entry.Stem1 + "'"
-	if got != want {
-		t.Errorf("ParseFormative(m, with lex) = %q, want %q", got, want)
+	if withLex != "m" {
+		t.Errorf("gloss = %q, want %q", withLex, "m")
 	}
 }
 
@@ -217,8 +216,7 @@ func TestGlosser_RootDifferentStem(t *testing.T) {
 	cr.Stem = g.S3
 	f.Root = cr
 	got := gl.Formative(f)
-	entry := lex.Roots["m"]
-	want := "S3.PRC--m-'" + entry.Stem3 + "'"
+	want := "S3.PRC-m"
 	if got != want {
 		t.Errorf("ParseFormative(m, S3) = %q, want %q", got, want)
 	}
@@ -235,9 +233,9 @@ func TestGlosser_AffixWithLexicon(t *testing.T) {
 	if !ok {
 		t.Fatal("lexicon missing affix \"b\"")
 	}
-	// "m" root has a meaning, affix shows ABBREV/degree.
-	mEntry := lex.Roots["m"]
-	want := "-m-'" + mEntry.Stem1 + "'-" + entry.Abbrev + "/1"
+	// The lexicon supplies the affix abbreviation; the degree follows
+	// it, and the root stays the bare cluster.
+	want := "m-" + entry.Abbrev + "/1"
 	if got != want {
 		t.Errorf("Formative(m + b:a) = %q, want %q", got, want)
 	}
@@ -252,12 +250,12 @@ func TestGlosser_CategoryValuedAffix(t *testing.T) {
 		degree int
 		want   string
 	}{
-		{"bẓ", g.Type1Affix, 3, "MCS:SPC"},
-		{"bž", g.Type1Affix, 1, "PHS:PCT"},
-		{"mc", g.Type1Affix, 1, "AP1:RTR"},
-		{"nļ", g.Type1Affix, 1, "IVL:ASR"},
-		{"nļ", g.Type2Affix, 1, "IVL:OBS"}, // bracketed type-2 alternate
-		{"ẓk", g.Type1Affix, 1, "VAL:MNO"},
+		{"bẓ", g.Type1Affix, 3, "MCS/3"},
+		{"bž", g.Type1Affix, 1, "PHS/1"},
+		{"mc", g.Type1Affix, 1, "AP1/1"},
+		{"nļ", g.Type1Affix, 1, "IVL/1"},
+		{"nļ", g.Type2Affix, 1, "IVL/1_2"}, // bracketed type-2 alternate
+		{"ẓk", g.Type1Affix, 1, "VAL/1"},
 		// Non-category-valued affix still shows degree
 		{"b", g.Type1Affix, 1, "DEV/1"},
 	}
@@ -271,52 +269,12 @@ func TestGlosser_CategoryValuedAffix(t *testing.T) {
 	}
 }
 
-func TestGlosser_VariantAwareRootMeaning(t *testing.T) {
-	lex := loadLex(t)
-	gl := &Glosser{Lex: lex}
-	tEntry := lex.Roots["t"]
-	// Confirm fixture: "t" carries Objective alternates.
-	if len(tEntry.Objective) != 3 || tEntry.Objective[0] == "" {
-		t.Skipf("fixture root \"t\" lacks Objective variants: %+v", tEntry)
-	}
-	// Default spec (BSC) uses Stem(n).
-	f := g.MinimalFormative("t")
-	cr := f.Root.(g.CrRoot)
-	cr.Stem = g.S1
-	f.Root = cr
-	got := gl.Formative(f)
-	if !strings.Contains(got, "'"+tEntry.Stem1+"'") {
-		t.Errorf("BSC gloss = %q, expected Stem1=%q", got, tEntry.Stem1)
-	}
-	// Spec=OBJ should pick the Objective alternate for the stem.
-	cr.SlotIV.Specification = g.OBJ
-	f.Root = cr
-	got = gl.Formative(f)
-	if !strings.Contains(got, "'"+tEntry.Objective[0]+"'") {
-		t.Errorf("OBJ gloss = %q, expected Objective[0]=%q", got, tEntry.Objective[0])
-	}
-	// A root without the alternate should still fall back to Stem.
-	mlEntry := lex.Roots["ml"]
-	if len(mlEntry.Objective) > 0 {
-		t.Skip("ml unexpectedly has Objective variants")
-	}
-	f2 := g.MinimalFormative("ml")
-	cr2 := f2.Root.(g.CrRoot)
-	cr2.Stem = g.S1
-	cr2.SlotIV.Specification = g.OBJ
-	f2.Root = cr2
-	got2 := gl.Formative(f2)
-	if !strings.Contains(got2, "'"+mlEntry.Stem1+"'") {
-		t.Errorf("OBJ fallback gloss = %q, expected Stem1=%q", got2, mlEntry.Stem1)
-	}
-}
-
 func TestGlosser_UnknownClusterFallsBack(t *testing.T) {
 	lex := loadLex(t)
 	gl := &Glosser{Lex: lex}
 	f := g.MinimalFormative("zzzzz") // fictional root
 	got := gl.Formative(f)
-	want := "-zzzzz-"
+	want := "zzzzz"
 	if got != want {
 		t.Errorf("ParseFormative(unknown root, with lex) = %q, want %q", got, want)
 	}
@@ -336,8 +294,8 @@ func TestFormative_CanonicalWord(t *testing.T) {
 	// what keeps the two glosses apart. Type 2 emits a "₂" subscript in
 	// display mode (silent in canonical mode); Type 1 stays silent.
 	cases := []struct{ rom, want string }{
-		{"maţřëullait", "-m--ţř/5₂-{Ca}-t/1₂"},
-		{"malëuţřait", "-m--ţř/5₂-t/1₂"},
+		{"maţřëullait", "m-t,rq/5_2-{Ca}-t/1_2"},
+		{"malëuţřait", "m-t,rq/5_2-t/1_2"},
 	}
 	for _, c := range cases {
 		parsed, err := roman.ParseFormative(c.rom)
@@ -371,10 +329,10 @@ func TestGlosser_SlotVDistinctFromSlotVII(t *testing.T) {
 	if gotInner == gotOuter {
 		t.Fatalf("Slot V and Slot VII gloss identically: %q", gotInner)
 	}
-	if want := "-m--ţř/5₂-{Ca}"; gotInner != want {
+	if want := "m-t,rq/5_2-{Ca}"; gotInner != want {
 		t.Errorf("Slot V gloss = %q, want %q", gotInner, want)
 	}
-	if want := "-m--ţř/5₂"; gotOuter != want {
+	if want := "m-t,rq/5_2"; gotOuter != want {
 		t.Errorf("Slot VII gloss = %q, want %q", gotOuter, want)
 	}
 }
@@ -389,7 +347,7 @@ func TestGlosser_SlotVWithNonDefaultCa(t *testing.T) {
 		Configuration: g.MSS, Affiliation: g.CSL,
 		Perspective: g.G_, Extension: g.DEL, Essence: g.NRM,
 	}
-	if want, got := "-m--ţř/5₂-MSS.G", gl.Formative(f); got != want {
+	if want, got := "m-t,rq/5_2-MSS.G", gl.Formative(f); got != want {
 		t.Errorf("Formative = %q, want %q", got, want)
 	}
 }
