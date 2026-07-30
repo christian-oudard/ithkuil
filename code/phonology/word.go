@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/christian-oudard/ithkuil/fault"
 )
 
 // ithkuilRunes is the set of characters that may appear in well-formed
@@ -59,42 +61,20 @@ func (w Word) Stress() Stress { return w.stress }
 // with glottal-stop vowel forms merged.
 func (w Word) Conjuncts() []string { return append([]string(nil), w.conjs...) }
 
-// Violation is one phonotactic rule a word breaks.
-type Violation struct {
-	Rule    string // short rule identifier ("2.1", "chars", "stress", …)
-	Cluster string // the offending pair or triple
-	Reason  string // human-readable explanation
-}
-
-func (v Violation) String() string {
-	if v.Cluster == "" {
-		return v.Rule + ": " + v.Reason
-	}
-	return v.Rule + ": " + v.Reason + " (cluster " + v.Cluster + ")"
-}
-
-// Illegal is what ParseWord returns for text that isn't pronounceable
-// Ithkuil. It carries every rule the word breaks, not just the first,
-// because a reader fixing the word wants the whole list.
-type Illegal struct {
-	Word       string
-	Violations []Violation
-}
-
-func (e Illegal) Error() string {
-	parts := make([]string, len(e.Violations))
-	for i, v := range e.Violations {
-		parts[i] = v.String()
-	}
-	return e.Word + ": " + strings.Join(parts, "; ")
+// sound builds a Sound-stage fault. Every §2 rule, every stress mark
+// and every vowel sequence in this package fails at that one stage, so
+// naming it at each site would be noise; the exception is CheckChars,
+// which is a stage earlier and says so itself.
+func sound(rule, cluster, reason string) fault.Fault {
+	return fault.Fault{Stage: fault.Sound, Code: rule, Found: cluster, Fix: reason}
 }
 
 // CheckChars reports any character in text that isn't part of the V4
 // alphabet (consonants, vowels with diacritic variants, glottal,
 // hyphen). Capital letters are folded to lowercase first — case is
-// orthographic in V4, not phonemic. The violation names each offending
+// orthographic in V4, not phonemic. The fault names each offending
 // rune with its codepoint.
-func CheckChars(word string) []Violation {
+func CheckChars(word string) []fault.Fault {
 	var bad []rune
 	for _, r := range strings.ToLower(word) {
 		if !ithkuilRunes[r] {
@@ -108,14 +88,15 @@ func CheckChars(word string) []Violation {
 	for _, r := range bad {
 		parts = append(parts, fmt.Sprintf("%q (U+%04X)", r, r))
 	}
-	// Cluster stays empty. This rule is about the whole word, not a
+	// Found stays empty. This rule is about the whole word, not a
 	// conjunct in it, and filling the field made reports read
 	// "non-Ithkuil characters: 'q' (U+0071) (cluster akxq)" — calling
 	// the entire word a cluster. The offending runes are named in the
-	// reason already.
-	return []Violation{{
-		Rule:   "chars",
-		Reason: "non-Ithkuil characters: " + strings.Join(parts, ", "),
+	// fix already.
+	return []fault.Fault{{
+		Stage: fault.Chars,
+		Code:  "chars",
+		Fix:   "remove the non-Ithkuil characters: " + strings.Join(parts, ", "),
 	}}
 }
 
@@ -135,16 +116,11 @@ func CheckChars(word string) []Violation {
 // ParseChain for text that may hold a hyphen.
 func ParseWord(text string) (Word, error) {
 	if text == "" {
-		return Word{}, Illegal{Word: text, Violations: []Violation{{
-			Rule: "empty", Reason: "empty word",
-		}}}
+		return Word{}, fault.One(text, sound("empty", "", "a word needs at least one conjunct"))
 	}
 	if strings.Contains(text, "-") {
-		return Word{}, Illegal{Word: text, Violations: []Violation{{
-			Rule:    "chain",
-			Reason:  "a hyphen joins a concatenation chain; parse each link on its own",
-			Cluster: text,
-		}}}
+		return Word{}, fault.One(text, sound("chain", text,
+			"a hyphen joins a concatenation chain; read each link on its own"))
 	}
 	// Compose and lowercase before anything reads the letters, so every
 	// rule sees one spelling; see Normalize.
@@ -154,14 +130,12 @@ func ParseWord(text string) (Word, error) {
 	// report them alone rather than a pile of downstream cluster and
 	// stress complaints derived from garbage.
 	if v := CheckChars(word); v != nil {
-		return Word{}, Illegal{Word: word, Violations: v}
+		return Word{}, fault.Faults{Word: word, List: v}
 	}
 
 	bare, stress := Strip(word)
 	if stress == InvalidStress {
-		return Word{}, Illegal{Word: word, Violations: []Violation{{
-			Rule: "stress", Cluster: word, Reason: DoubleMarkedStress.Error(),
-		}}}
+		return Word{}, fault.One(word, sound("stress", word, DoubleMarkedStress.Error()))
 	}
 	return Word{
 		text:   word,
@@ -176,13 +150,13 @@ func ParseWord(text string) (Word, error) {
 func ParseChain(text string) ([]Word, error) {
 	parts := strings.Split(text, "-")
 	words := make([]Word, 0, len(parts))
-	var vs []Violation
+	var vs []fault.Fault
 	for _, part := range parts {
 		w, err := ParseWord(part)
 		if err != nil {
-			var ill Illegal
+			var ill fault.Faults
 			if errors.As(err, &ill) {
-				vs = append(vs, ill.Violations...)
+				vs = append(vs, ill.List...)
 				continue
 			}
 			return nil, err
@@ -190,7 +164,7 @@ func ParseChain(text string) ([]Word, error) {
 		words = append(words, w)
 	}
 	if len(vs) > 0 {
-		return nil, Illegal{Word: text, Violations: vs}
+		return nil, fault.Faults{Word: text, List: vs}
 	}
 	return words, nil
 }
@@ -202,11 +176,11 @@ func ParseChain(text string) ([]Word, error) {
 //
 // This is a judgment about a word already read, not part of reading it.
 // See ParseWord for why the two are separate.
-func (w Word) Violations() []Violation {
-	var vs []Violation
+func (w Word) Violations() []fault.Fault {
+	var vs []fault.Fault
 	if _, err := ValidateStress(w.text); err != nil {
 		if se, ok := err.(StressError); ok {
-			vs = append(vs, Violation{Rule: "stress", Cluster: w.text, Reason: se.Error()})
+			vs = append(vs, sound("stress", w.text, se.Error()))
 		}
 	}
 	return append(vs, clusterViolations(w.bare)...)
@@ -236,12 +210,12 @@ func CheckText(text string) error {
 	if err != nil {
 		return err
 	}
-	var vs []Violation
+	var vs []fault.Fault
 	for _, w := range words {
 		vs = append(vs, w.Violations()...)
 	}
 	if len(vs) > 0 {
-		return Illegal{Word: text, Violations: vs}
+		return fault.Faults{Word: text, List: vs}
 	}
 	return nil
 }
@@ -249,7 +223,7 @@ func CheckText(text string) error {
 // clusterViolations walks a bare word's conjuncts and collects what
 // each one breaks: vowel sequences by their own rules, consonant
 // clusters by the rules for the position they sit in.
-func clusterViolations(bare string) []Violation {
+func clusterViolations(bare string) []fault.Fault {
 	conjs := SplitConjuncts(bare)
 
 	// Single-consonant-conjunct words are stand-alone Bias adjuncts;
@@ -286,7 +260,7 @@ func clusterViolations(bare string) []Violation {
 		}
 	}
 
-	var vs []Violation
+	var vs []fault.Fault
 	for i, c := range conjs {
 		if c == "" {
 			continue

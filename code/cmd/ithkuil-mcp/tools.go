@@ -9,6 +9,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
 	"github.com/christian-oudard/ithkuil/dictionary"
+	"github.com/christian-oudard/ithkuil/fault"
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
@@ -112,10 +113,15 @@ type glossaryRow struct {
 	Meaning  string `json:"meaning,omitempty"`
 }
 
+// validationOut is one fault, as JSON. Stage and code are what a
+// caller branches on; fix is the sentence it shows a person. All four
+// are carried because a client that only got the prose would have to
+// pattern-match English to act on a failure.
 type validationOut struct {
-	Rule    string `json:"rule"`
-	Cluster string `json:"cluster"`
-	Reason  string `json:"reason"`
+	Stage string `json:"stage"`
+	Code  string `json:"code"`
+	Found string `json:"found,omitempty"`
+	Fix   string `json:"fix"`
 }
 
 type rootHead struct {
@@ -218,13 +224,13 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 				}
 			}
 		}
-		var ill phonology.Illegal
+		var ill fault.Faults
 		err := phonology.CheckText(r.Romanization)
 		w.Valid = err == nil
 		if errors.As(err, &ill) {
-			for _, v := range ill.Violations {
+			for _, v := range ill.List {
 				w.Violations = append(w.Violations, validationOut{
-					Rule: v.Rule, Cluster: v.Cluster, Reason: v.Reason,
+					Stage: v.Stage.String(), Code: v.Code, Found: v.Found, Fix: v.Fix,
 				})
 			}
 		}

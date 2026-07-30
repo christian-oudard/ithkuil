@@ -7,6 +7,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/christian-oudard/ithkuil/fault"
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/phonology"
@@ -124,7 +125,7 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 	exit := 0
 	if *short {
 		for i, r := range results {
-			var ill phonology.Illegal
+			var ill fault.Faults
 			if errors.As(phonology.CheckText(r.Romanization), &ill) {
 				renderValidationError(stderr, r.Romanization, asTyped[r.Romanization], ill)
 				exit = 1
@@ -159,7 +160,7 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 		if i > 0 {
 			fmt.Fprintln(stdout)
 		}
-		var ill phonology.Illegal
+		var ill fault.Faults
 		if errors.As(phonology.CheckText(r.Romanization), &ill) {
 			renderValidationError(stderr, r.Romanization, asTyped[r.Romanization], ill)
 			exit = 1
@@ -182,15 +183,15 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 // rewrote it — "aaaa" into "ää" — both are shown, so the message names
 // their input and shows what we read it as instead of silently
 // substituting a word they never typed.
-func renderValidationError(w io.Writer, word, typed string, ill phonology.Illegal) {
+func renderValidationError(w io.Writer, word, typed string, ill fault.Faults) {
 	subject := word
 	if typed != "" && typed != word {
 		subject = fmt.Sprintf("%s → %s", typed, word)
 	}
-	for _, v := range ill.Violations {
-		fmt.Fprintf(w, "%s  %s: %s", subject, v.Rule, v.Reason)
-		if v.Cluster != "" {
-			fmt.Fprintf(w, " (cluster %s)", v.Cluster)
+	for _, v := range ill.List {
+		fmt.Fprintf(w, "%s  %s: %s", subject, v.Code, v.Fix)
+		if v.Found != "" && v.Found != word {
+			fmt.Fprintf(w, " (in %s)", v.Found)
 		}
 		fmt.Fprintln(w)
 	}

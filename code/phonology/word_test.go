@@ -3,6 +3,8 @@ package phonology
 import (
 	"strings"
 	"testing"
+
+	"github.com/christian-oudard/ithkuil/fault"
 )
 
 func TestParseWord_KeepsWhatItRead(t *testing.T) {
@@ -52,16 +54,16 @@ func TestParseWord_NonIthkuilCharacters(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected a chars violation for 'møl'")
 	}
-	ill, ok := err.(Illegal)
+	ill, ok := err.(fault.Faults)
 	if !ok {
-		t.Fatalf("error %v is not Illegal", err)
+		t.Fatalf("error %v is not fault.Faults", err)
 	}
-	if len(ill.Violations) != 1 {
-		t.Fatalf("violations = %v, want the chars one alone", ill.Violations)
+	if len(ill.List) != 1 {
+		t.Fatalf("violations = %v, want the chars one alone", ill.List)
 	}
 	for _, want := range []string{`'ø'`, `(U+00F8)`} {
-		if !strings.Contains(ill.Violations[0].Reason, want) {
-			t.Errorf("reason %q missing %q", ill.Violations[0].Reason, want)
+		if !strings.Contains(ill.List[0].Fix, want) {
+			t.Errorf("reason %q missing %q", ill.List[0].Fix, want)
 		}
 	}
 }
@@ -79,8 +81,8 @@ func TestParseWord_ReadsWhatTheRulesReject(t *testing.T) {
 	if len(vs) == 0 {
 		t.Fatal("akx should break a cluster rule")
 	}
-	if vs[0].Rule != "2.3" {
-		t.Errorf("rule = %q, want 2.3", vs[0].Rule)
+	if vs[0].Code != "2.3" {
+		t.Errorf("rule = %q, want 2.3", vs[0].Code)
 	}
 }
 
@@ -155,7 +157,7 @@ func TestCheckText_ReportsEveryLinkOfAChain(t *testing.T) {
 	// clusters.
 	if err := CheckText("akx-akx"); err == nil {
 		t.Fatal("expected violations from both links")
-	} else if ill, ok := err.(Illegal); !ok || len(ill.Violations) != 2 {
+	} else if ill, ok := err.(fault.Faults); !ok || len(ill.List) != 2 {
 		t.Errorf("violations = %v, want one per link", err)
 	}
 }

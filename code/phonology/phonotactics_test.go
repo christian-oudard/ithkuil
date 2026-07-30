@@ -1,6 +1,10 @@
 package phonology
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/christian-oudard/ithkuil/fault"
+)
 
 func TestCheckProhibitedPair_Rule21(t *testing.T) {
 	// Consonant + glottal stop.
@@ -255,7 +259,7 @@ func TestValidateClusterAt_Length(t *testing.T) {
 	// (May still flag pair errors but length isn't the problem.)
 	var lengthErr bool
 	for _, e := range r {
-		if e.Rule == "length" {
+		if e.Code == "length" {
 			lengthErr = true
 		}
 	}
@@ -274,7 +278,7 @@ func TestValidateClusterAt_Rule212_Triples(t *testing.T) {
 		}
 		found := false
 		for _, e := range r {
-			if e.Rule == "2.12" {
+			if e.Code == "2.12" {
 				found = true
 				break
 			}
@@ -290,7 +294,7 @@ func TestValidateClusterAt_Rule212_Triples(t *testing.T) {
 	// nkţ is fine — but our existing pair checks may complain about
 	// other things, so test only that 2.12 doesn't fire.
 	for _, e := range ClusterViolationsAt(Medial, "nkţ") {
-		if e.Rule == "2.12" {
+		if e.Code == "2.12" {
 			t.Errorf("nkţ should not trigger 2.12: %v", e)
 		}
 	}
@@ -321,7 +325,7 @@ func TestValidateClusterAt_Rule51_IntervocalicLam(t *testing.T) {
 	}
 	// Same letter in cluster is fine if not alone.
 	for _, e := range ClusterViolationsAt(Medial, "pļ") {
-		if e.Rule == "5.1" {
+		if e.Code == "5.1" {
 			t.Errorf("pļ should not trigger 5.1: %v", e)
 		}
 	}
@@ -336,7 +340,7 @@ func TestValidateClusterAt_Final(t *testing.T) {
 	// l word-final is fine.
 	r = ClusterViolationsAt(Final, "ml")
 	for _, e := range r {
-		if e.Rule == "4.1" {
+		if e.Code == "4.1" {
 			t.Errorf("final ml should not trigger 4.1, got %v", e)
 		}
 	}
@@ -378,7 +382,7 @@ func TestValidateClusterAt_Rule213(t *testing.T) {
 	}
 	var hit bool
 	for _, e := range r {
-		if e.Rule == "2.13" {
+		if e.Code == "2.13" {
 			hit = true
 		}
 	}
@@ -395,7 +399,7 @@ func TestValidateClusterAt_Rule215(t *testing.T) {
 	}
 	var hit bool
 	for _, e := range r {
-		if e.Rule == "2.15" {
+		if e.Code == "2.15" {
 			hit = true
 		}
 	}
@@ -436,14 +440,18 @@ func TestValidateVowelSequence(t *testing.T) {
 	}
 }
 
-func TestError_String(t *testing.T) {
-	e := Violation{Rule: "1.2", Cluster: "xy", Reason: "test reason"}
-	if got := e.String(); got != "1.2: test reason (cluster xy)" {
-		t.Errorf("Error.String() = %q, want with cluster", got)
+// How a fault prints is the fault package's contract, and tested
+// there. What this package owes is the classification: everything it
+// raises through sound is a Sound-stage fault, so a caller ranking
+// several failed readings by how far each got can trust the stage.
+func TestSound_IsAlwaysTheSoundStage(t *testing.T) {
+	for _, f := range ClusterViolationsAt(Medial, "ngḑ") {
+		if f.Stage != fault.Sound {
+			t.Errorf("%q is stage %v, want sound", f.Code, f.Stage)
+		}
 	}
-	e = Violation{Rule: "1.2", Reason: "test reason"}
-	if got := e.String(); got != "1.2: test reason" {
-		t.Errorf("Error.String() = %q, want without cluster", got)
+	if f := sound("1.2", "xy", "test reason"); f.Code != "1.2" || f.Found != "xy" {
+		t.Errorf("sound dropped a field: %+v", f)
 	}
 }
 

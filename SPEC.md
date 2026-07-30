@@ -72,6 +72,23 @@ Headwords are read out of the gloss text by a fixed rule. A semicolon separates 
 
 Coverage of English is partial and stays that way. The index says what the lexicon already happens to name in English; it is a measurement of that, not a claim to be a dictionary of English.
 
+## Reading failures
+
+Reading a romanization passes through four stages, each of which presupposes the one before it. A failure belongs to exactly one stage, and naming that stage is most of the diagnosis.
+
+1. **Characters.** A character outside the V4 alphabet. Nothing after this point can be trusted, so a character fault is reported on its own rather than followed by the cluster and stress complaints that reading garbage would produce.
+2. **Sound.** Legal letters in an arrangement that cannot be pronounced: a §2 cluster rule, or a stress mark that cannot be read.
+3. **Shape.** A pronounceable word that no word class can cut into slots.
+4. **Value.** A word that cuts into slots cleanly, but where some slot holds a form its table does not list.
+
+Every fault carries three things: a code naming the rule or slot at fault, the text that caused it, and a sentence saying what would have to change. The code is for a program and the sentence is for a reader, and neither stands in for the other. A fault never guesses at intent: it says what was found and what is admissible there, and stops.
+
+The stages differ in how much they can report. A character fault knows every offending character, and a sound fault knows every rule the word breaks, because both judge a whole word at once. A shape fault knows only where the cut stopped, since there is nothing past that point to judge. A value fault reports every slot whose content is unlisted, not the first, because by then the word is fully divided and each slot decodes on its own.
+
+That last case is the one worth reporting well, because the word is well-formed and only its content is wrong. The slots that read correctly stay visible beside the ones that did not, so the reader sees the parse that was achieved and the single place it failed.
+
+Word class is decided by attempting each class in turn, so a word that no class claims has failed several times over. Reporting all of those attempts would bury the answer: the useful fault is the one from the class that read furthest before giving up, and that is what a reader is shown.
+
 ## Cross-format conversion
 
 Any format-to-format trip (e.g. gloss → romanization) is the composition of two single-arm trips through the in-memory center. There is no direct format-to-format converter and no need for one. N arms give N² round-trip pairs from N converter pairs.

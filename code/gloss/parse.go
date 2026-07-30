@@ -222,7 +222,7 @@ func validateRootCluster(cluster string) error {
 // roots or 528 affixes, so nothing attested is at risk.
 func validateCluster(kind, cluster string) error {
 	if v := phonology.CheckChars(cluster); len(v) > 0 {
-		return fmt.Errorf("%s %q: %s", kind, cluster, v[0].Reason)
+		return fmt.Errorf("%s %q: %s", kind, cluster, v[0].Fix)
 	}
 	if phonology.HasTripleConsonant(cluster) {
 		return fmt.Errorf("%s %q: 1.7: triple consonant", kind, cluster)
