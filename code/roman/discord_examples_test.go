@@ -8,17 +8,28 @@ import (
 )
 
 // TestDiscordExamples checks the parser against the curated verdicts in
-// corpus/discord_examples.txt. The verdicts are about the words; this
-// asserts we agree with them.
+// the Discord word list. The verdicts are about the words; this asserts
+// we agree with them.
 //
 // A correct word must classify as something, and an incorrect one must
 // not. An entry marked with a leading "!" is one we already know we
 // disagree with, so it is reported rather than failed. If such an entry
 // starts agreeing, the test says so: the defect is fixed and the marker
 // should come off.
+//
+// The list is a testing record kept outside the repo, so a checkout
+// without it skips here rather than failing. See
+// corpus.DiscordExamplesPath.
 func TestDiscordExamples(t *testing.T) {
+	examples, err := corpus.DiscordExamples()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(examples) == 0 {
+		t.Skipf("no curated word list at %s", corpus.DiscordExamplesPath())
+	}
 	counts := map[corpus.Verdict]int{}
-	for _, ex := range corpus.DiscordExamples() {
+	for _, ex := range examples {
 		counts[ex.Verdict]++
 		_, err := ParseWord(ex.Word)
 		unreadable := err != nil
@@ -42,7 +53,7 @@ func TestDiscordExamples(t *testing.T) {
 		}
 	}
 	if counts[corpus.Correct] == 0 || counts[corpus.Incorrect] == 0 {
-		t.Fatalf("discord_examples.txt needs both verdicts; got %v", counts)
+		t.Fatalf("%s needs both verdicts; got %v", corpus.DiscordExamplesPath(), counts)
 	}
 	t.Logf("verdicts: %d correct, %d incorrect", counts[corpus.Correct], counts[corpus.Incorrect])
 }

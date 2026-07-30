@@ -79,7 +79,7 @@ relative to `code/`.
 - `lexicon/` - Roots and affixes in memory. `LoadFromStore(*store.Store)` is the normal path; `Load(path)` reads the JSON source directly (used by tests).
 - `dictionary/` - The English index: reads the lexicon's English glosses backwards into a headword-to-lexical-core map. `english_doc_test.go` checks every claim made in `docs/dictionary/english.md` by composing it.
 - `corpus/` - The 384 example sentences published on ithkuil.net, with Quijada's English translations, embedded as test data. Their section numbers follow the site's chapters rather than the Grammar Design PDF, and most do not appear in it; see the head of `examples.txt` before citing one as a passage of the grammar. `corpus.Examples()` and `corpus.Words()`. `roman/corpus_test.go` guards the set of words we still fail to classify.
-  `discord_examples.txt` + `corpus.DiscordExamples()` hold curated words from the community Discord archive, each marked `correct` or `incorrect` with the rule it rests on. The archive is usage, not authority, so a word cited as evidence should appear there first. A leading `!` marks a word we currently disagree with (a filed defect). `roman/discord_examples_test.go` checks we agree.
+  `corpus.DiscordExamples()` reads curated words from the community Discord archive, each marked `correct` or `incorrect` with the rule it rests on. The archive is usage, not authority, so a word cited as evidence should appear there first. A leading `!` marks a word we currently disagree with (a filed defect). `roman/discord_examples_test.go` checks we agree, and skips where the list is absent. The list is not in the repo: its words are other people's chat messages rather than published grammar, so it is a testing record beside the mirror it came from, at `corpus.DiscordExamplesPath()`.
 - `inventory/` - The other half of the test material, and the complement of `corpus/`: one minimal word per grammatical value, differing from a fixed baseline in that value alone. A corpus can only show what people happen to say, so `roman/inventory_test.go` and `gloss/inventory_test.go` sweep this instead to check each arm over the whole grammar. `inventory`'s own test holds the sample set against `search.Table`, whose test holds that against the store, so "every value" is checked at each link.
 
 Command-line entrypoints under `cmd/`:
@@ -148,6 +148,6 @@ so nothing here has to carry it to keep a document whole.
 nothing more: the record itself is a skipped test next to the code it concerns,
 carrying the section it rests on and why the obvious fix is wrong, and
 `go test ./... -v | grep SKIP` lists those directly. Words we cannot read live
-in the drift guards (`roman/corpus_test.go`, `corpus/discord_examples.txt`),
+in the drift guards (`roman/corpus_test.go`, the Discord word list),
 which fail when the set changes in either direction. Defects in the published
 sources go in `docs/reference/ISSUES.md`.

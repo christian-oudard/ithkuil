@@ -5,6 +5,10 @@ package corpus
 
 import (
 	_ "embed"
+	"errors"
+	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -70,8 +74,28 @@ func isSeparator(r rune) bool {
 	return false
 }
 
-//go:embed discord_examples.txt
-var discordFile string
+// DiscordExamplesPath returns where the curated word list lives:
+// $XDG_DATA_HOME/ithkuil/discord/examples.txt, or the same under
+// ~/.local/share when XDG_DATA_HOME is unset, which is the directory
+// tools/discord_archive writes its mirror and extracts to.
+//
+// The list is not in the repo. Its words are other people's Discord
+// messages, quoted for a verdict, and where the sentences in
+// examples.txt are Quijada's published grammar this is a private
+// archive of a chat server. It is a testing record kept beside the
+// mirror it was drawn from, so a checkout without it is expected and
+// the tests over it skip rather than fail.
+func DiscordExamplesPath() string {
+	root := os.Getenv("XDG_DATA_HOME")
+	if root == "" {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return ""
+		}
+		root = filepath.Join(home, ".local", "share")
+	}
+	return filepath.Join(root, "ithkuil", "discord", "examples.txt")
+}
 
 // Verdict says whether a word from the community Discord archive is
 // well-formed Ithkuil. It is a judgment about the word, not about
@@ -88,8 +112,9 @@ const (
 )
 
 // DiscordExample is one curated word from the archive. See
-// discord_examples.txt for the reasoning behind each entry and for why
-// the archive is treated as usage rather than authority.
+// DiscordExamplesPath for where the list lives and why it is not in
+// the repo; the head of the file itself carries the reasoning behind
+// each entry, and why the archive is usage rather than authority.
 type DiscordExample struct {
 	Verdict Verdict
 	Word    string
@@ -101,17 +126,28 @@ type DiscordExample struct {
 	Defect bool
 }
 
-// DiscordExamples returns every curated word in file order.
-func DiscordExamples() []DiscordExample {
+// DiscordExamples returns every curated word in file order, and nil
+// when the list is not on this machine. Absence is the ordinary state
+// of a fresh checkout and not an error; a list that is present but
+// malformed is, and says which line.
+func DiscordExamples() ([]DiscordExample, error) {
+	path := DiscordExamplesPath()
+	b, err := os.ReadFile(path)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
 	var out []DiscordExample
-	for _, line := range strings.Split(discordFile, "\n") {
+	for _, line := range strings.Split(string(b), "\n") {
 		line = strings.TrimSpace(line)
 		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
 		f := strings.SplitN(line, "|", 4)
 		if len(f) != 4 {
-			panic("corpus: malformed discord_examples.txt line: " + line)
+			return nil, fmt.Errorf("%s: malformed line: %s", path, line)
 		}
 		v := strings.TrimSpace(f[0])
 		defect := strings.HasPrefix(v, "!")
@@ -119,7 +155,7 @@ func DiscordExamples() []DiscordExample {
 		switch Verdict(v) {
 		case Correct, Incorrect:
 		default:
-			panic("corpus: unknown verdict " + v + " in: " + line)
+			return nil, fmt.Errorf("%s: unknown verdict %q in: %s", path, v, line)
 		}
 		out = append(out, DiscordExample{
 			Verdict: Verdict(v),
@@ -129,5 +165,5 @@ func DiscordExamples() []DiscordExample {
 			Defect:  defect,
 		})
 	}
-	return out
+	return out, nil
 }

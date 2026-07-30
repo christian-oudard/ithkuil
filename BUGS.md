@@ -15,5 +15,5 @@ Two drift guards fail when the set changes in either direction, so they
 are the live list rather than anything written here:
 
 - `roman/corpus_test.go`, official examples that do not classify.
-- `corpus/discord_examples.txt`, community words, where a leading `!`
+- the Discord word list, community words, where a leading `!`
   marks one we disagree with.

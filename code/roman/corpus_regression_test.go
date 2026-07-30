@@ -205,7 +205,7 @@ func TestFormat_EveryCase(t *testing.T) {
 // of its own. So every "'h" and "'l" here is a Slot VIII C_N, and
 // "'kšš", "'gzz" and "'žžg" are the CTP, EUH and DEJ biases. The forms
 // did not change, only their attachment, so the update is to split the
-// suffix off into its own word. corpus/discord_examples.txt carries
+// suffix off into its own word. The Discord word list carries
 // the readings and the modernised forms.
 //
 // Nothing in the language we do implement pays for the rule: across

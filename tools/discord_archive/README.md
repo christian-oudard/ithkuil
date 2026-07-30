@@ -11,6 +11,16 @@ under `$XDG_DATA_HOME/ithkuil/discord/` (`~/.local/share/ithkuil/discord/`
 when `XDG_DATA_HOME` is unset). Set `ITHKUIL_DISCORD_DIR` to move it.
 See `paths.py`.
 
+`examples.txt` in that same directory is the curated word list: the
+words worth a verdict, each marked `correct` or `incorrect` with the
+rule it rests on, read by `corpus.DiscordExamples()`. It is authored
+rather than scraped, but it is not in the repo either, for the reason
+the mirror is not. Its words are other people's chat messages, quoted
+for a verdict, where the sentences in `corpus/examples.txt` are
+Quijada's published grammar. It is a testing record kept beside the
+mirror it was drawn from, so `roman/discord_examples_test.go` skips
+where it is absent and a checkout without it is expected.
+
 ## Getting a token
 
 The Discord REST API wants a *user* token, not a bot token. Discord
