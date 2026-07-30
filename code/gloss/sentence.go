@@ -275,10 +275,18 @@ func (gl *Glosser) modularLabel(m g.ModularAdjunct, marksMood *bool) string {
 		inner = strings.Join(parts, "-")
 	}
 	if gl.Canonical {
-		if inner == "" {
-			return "MOD" + modularScopeSuffix(m.Scope) + modularReachSuffix(m.Reach)
+		// slotVIII suppresses MNO and FAC, which reads as "default" in
+		// a formative because the slot keeps its position either way.
+		// A modular adjunct's content is the whole word and its
+		// entries are told apart by their order in a hyphen list, so
+		// an empty entry erases one: two default slots glossed to a
+		// bare "-". Canonical output names every entry.
+		parts := make([]string, len(m.Content))
+		for i, s := range m.Content {
+			parts[i] = canonicalSlotVIII(s, semantics.ModularIsVerbal(s, marksMood))
 		}
-		return inner + modularScopeSuffix(m.Scope) + modularReachSuffix(m.Reach)
+		return strings.Join(parts, "-") +
+			modularScopeSuffix(m.Scope) + modularReachSuffix(m.Reach)
 	}
 	if inner == "" {
 		return "MOD"
@@ -404,4 +412,16 @@ func formatRefList(refs []g.PersonalRef, brackets bool) string {
 		return "[" + joined + "]"
 	}
 	return joined
+}
+
+// canonicalSlotVIII labels one modular-adjunct content entry for the
+// canonical gloss, naming the V_N value even where slotVIII would
+// suppress it. MNO Valence and FAC Mood/Case-Scope are the defaults a
+// formative leaves unwritten; here the entry is the word.
+func canonicalSlotVIII(s g.SlotVIII, isVerbal bool) string {
+	vn := g.SlotVIIIVnLabel(s)
+	if mood := g.SlotVIIIMoodScope(s); mood != g.FAC {
+		return joinDot(vn, semantics.MoodOrCaseScope(mood, isVerbal))
+	}
+	return vn
 }

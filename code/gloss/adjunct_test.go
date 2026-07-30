@@ -211,8 +211,12 @@ func TestParseWord_Referential(t *testing.T) {
 
 func TestParseWord_Modular(t *testing.T) {
 	gl := canonicalGlosser(t)
-	// All-default: empty body, MNO/FAC.
-	allDefault := g.ModularAdjunct{Scope: g.ModularScopeDefault}
+	// All-default: the MNO Valence at the FAC Mood/Case-Scope, which
+	// is the word "ah". Its content is not empty — §4.3 Slot 4 is
+	// mandatory, so a modular adjunct with no content is not a word.
+	allDefault := g.ModularAdjunct{
+		Content: []g.SlotVIII{g.VnCnValence{Valence: g.MNO, MoodScope: g.FAC}},
+	}
 	// Typed: aspect + mood.
 	typed := g.ModularAdjunct{
 		Content: []g.SlotVIII{g.VnCnAspect{Aspect: g.RTR, MoodScope: g.SUB}},

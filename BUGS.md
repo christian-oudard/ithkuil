@@ -20,34 +20,6 @@ stays enforced. `allomorph/substitutions.go` rests on the same decision.
 
 `phonology.TestCheckProhibitedPair_Rule223_IsUnsourced`
 
-## a modular adjunct's gloss does not compose back
-
-Every distinct modular gloss in the corpus fails to read back, so the
-class is write-only through the gloss arm:
-
-```
-a           RTR                        no root in "RTR"
-ä           PRS                        no root in "PRS"
-wähňainui   PRL.HYP-RSM-IRP-{parent}   root "{parent}": non-Ithkuil characters
-```
-
-Three separate holes, not one. A lone-aspect modular glosses to a bare
-category abbreviation, which `looksLikeModular` accepts only when a
-scope or reach tail was stripped first, so it falls through to the
-formative parser. A multi-pair modular has hyphen-separated slots and
-the scope tail is trimmed before the body is split, leaving `{parent}`
-looking like another slot. An all-default modular glosses to `MOD`,
-which composes to a value the renderer then refuses because §4.3 Slot
-4 is mandatory — the two directions disagree about whether such a word
-exists.
-
-Widening the recogniser is not enough on its own: a bare `RTR` is
-shape-identical to a bias or register abbreviation, and SPEC's
-one-job-per-mark rule says a token's kind should follow from its shape
-rather than from consulting three inventories in order.
-
-`gloss.TestModularAdjunct_GlossDoesNotCompose`
-
 ## Words we cannot read
 
 Two drift guards fail when the set changes in either direction, so they
