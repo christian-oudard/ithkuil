@@ -1,33 +1,36 @@
 # English to Ithkuil
 
-What an English word becomes in Ithkuil. Alphabetical; which word is
-written next is decided by frequency in `tools/worklist.py`.
+What an English word becomes in Ithkuil. One entry per English
+word, alphabetical; `tools/worklist.py` decides which is written next.
 
 ## action
 
 Root _Cr_=`-psm-`: Step
-- step/action/phenomenon/incident: **opsmal**
-- step/action: **psmala**
-- phenomenon: **epsmal**
-- incident: **upsmal**
+- an action, a step: **psmala**
+
+## adult
+
+Root _Cr_=`-l-`: Human Being
+- an adult: **lala**
 
 ## age
 
 Root _Cr_=`-mt-`: Age
-- age/life-stage/phase: **omtal**
+- age, a life-stage: **omtal**
 - aging: **amtal**
-- stage/phase in life: **emtal**
-- birthday celebration: **umtal**
+
+## answer
+
+Root _Cr_=`-nd-`: Question
+- an answer: **undal**
+- answering, responding: **undal**
 
 ## back
 
 Root _Cr_=`-kf-`: Back
-- back/rear: **okfal**
-- back: **kfala**
-- built-in back: **ekfal**
-- separable back: **ukfal**
+- the back, the rear: **kfala**
 
-## big, large
+## big
 
 Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a big house: **wurmox**
@@ -72,6 +75,12 @@ Root _Cr_=`-mfl-`: Union
 Root _Cr_=`-šh-`: Importance
 - a big shot, a big name, a prominent one: **ušhal**
 
+## boy
+
+Root _Cr_=`-l-`: Human Being
+Affix _Cs_=`-š-` SEX: Biological Sex
+- a boy: **weleš**
+
 ## business
 
 Root _Cr_=`-dň-`: Commercial Enterprise
@@ -80,12 +89,18 @@ Root _Cr_=`-dň-`: Commercial Enterprise
 - making a product available for purchase: **edňal**
 - an industrial enterprise: **udňal**
 
-## car, vehicle
+## car
 
 Root _Cr_=`-ddl-`: Conveying In Ground Vehicle
-- travelling in an open-air wheeled vehicle: **addlal**
-- travelling in an enclosed wheeled vehicle: **eddlal**
-- travelling in a non-wheeled vehicle: **uddlal**
+- a car, a bus, an enclosed wheeled vehicle: **eddlal**
+
+## child
+
+Root _Cr_=`-l-`: Human Being
+- a child, a young human: **elal**
+
+Root _Cr_=`-mp-`: Nuclear Family Member
+- a child, an offspring: **empal**
 
 ## city
 
@@ -103,17 +118,19 @@ Root _Cr_=`-ksm-`: Country
 - province: **eksmal**
 - cultural region: **uksmal**
 
-## day, week, month, year
+## daughter
+
+Root _Cr_=`-mp-`: Nuclear Family Member
+Affix _Cs_=`-š-` SEX: Biological Sex
+- a daughter: **wempaš**
+
+## day
 
 Root _Cr_=`-ř-`: Conventionalized Time Period
 - a day, a 24-hour period: **řala**
-- a week: **eřal**
-- a month, a lunar period: **uřal**
 
-Root _Cr_=`-rn-`: Longer Time Periods
-- a calendar year: **arnal**
-- a decade: **ernal**
-- a lifetime, an expected span: **urnal**
+Root _Cr_=`-ln-`: Time Of Day
+- daytime, the light part of a day: **alnal**
 
 ## development
 
@@ -131,14 +148,22 @@ Root _Cr_=`-zv-`: Common Canine
 - 🐺 gray wolf: **ezval**
 - coyote/american jackal: **uzval**
 
-## eat, drink
+## drink
 
 Root _Cr_=`-tx-`: Eat
-- consuming: **txala**
-- eating food: **etxal**
 - drinking liquid: **utxal**
-- eats, is eating: **etxulá**
 - drinks, is drinking: **utxulá**
+
+## duty
+
+Root _Cr_=`-šj-`: Being Busy
+- a duty, an obligation: **ušjal**
+
+## eat
+
+Root _Cr_=`-tx-`: Eat
+- eating food: **etxal**
+- eats, is eating: **etxulá**
 
 ## effort
 
@@ -156,27 +181,24 @@ Root _Cr_=`-lž-`: Face
 - face: **elžal**
 - face/visage: **ulžal**
 
-## family, parent, child
-
-Root _Cr_=`-mp-`: Nuclear Family Member
-- a nuclear family member: **ompal**
-- a parent: **ampal**
-- a child, in the sense of offspring: **empal**
-- a grandparent: **umpal**
+## family
 
 Root _Cr_=`-bč-`: Kin
-- kin, extended family relation: **občal**
+- a family, kin: **občal**
 - a family relation: **abčal**
-- a genetic or marital relation: **ebčal**
-- an adoptive relation: **ubčal**
+- a relation by blood or marriage: **ebčal**
+- a relation by adoption: **ubčal**
 
-## find, meet
+## father
+
+Root _Cr_=`-mp-`: Nuclear Family Member
+Affix _Cs_=`-š-` SEX: Biological Sex
+- a father: **wampeš**
+
+## find
 
 Root _Cr_=`-fh-`: Find
-- finding, encountering, meeting: **ofhal**
 - finding, discovering by chance: **afhal**
-- encountering, coming across by chance: **efhal**
-- meeting by chance: **ufhal**
 - finds: **afhulá**
 
 ## fire
@@ -211,14 +233,24 @@ Root _Cr_=`-pš-`: Four
 - something with four aspects/facets: **epšal**
 - fourth entity in a sequence: **upšal**
 
-## give, receive
+## girl
+
+Root _Cr_=`-l-`: Human Being
+Affix _Cs_=`-š-` SEX: Biological Sex
+- a girl: **welaš**
+
+## give
 
 Root _Cr_=`-n-`: Transfer Of Possession
-- a transfer of possession: **nala**
 - giving: **enal**
-- receiving: **unal**
 - gives: **enulá**
-- receives: **unulá**
+
+## go
+
+Root _Cr_=`-g-`: Ambulation
+- walking or crawling: **gala**
+- running or galloping: **egal**
+- limping or staggering: **ugal**
 
 ## good
 
@@ -279,17 +311,16 @@ Root _Cr_=`-nn-`: Help
 - supporting, advocating: **unnal**
 - helps: **nnul**
 
-## house, home
-
-Root _Cr_=`-rm-`: Dwelling
-- a dwelling, where an entity lives: **armal**
-- a domicile, an artificial dwelling for protection: **ermal**
-- a house, a constructed residence with conveniences: **urmal**
+## home
 
 Root _Cr_=`-nkr-`: One's Surroundings
 - home: **ankral**
-- environmental circumstances: **enkral**
-- the world: **unkral**
+
+## house
+
+Root _Cr_=`-rm-`: Dwelling
+- a house: **urmal**
+- a dwelling: **armal**
 
 ## idea
 
@@ -307,18 +338,18 @@ Root _Cr_=`-ļc-`: Curiosity
 - feeling interest: **eļcal**
 - feeling intrigue: **uļcal**
 
-## job, duty
+## job
 
 Root _Cr_=`-šj-`: Being Busy
-- being busy/occupy oneself/activity/duty/job/obligation: **ošjal**
-- being busy/occupy oneself: **ašjal**
-- activity: **ešjal**
-- duty/job/obligation: **ušjal**
+- a job, a duty, an obligation: **ušjal**
 
-## kind, type
+Root _Cr_=`-rtm-`: Work
+- a job, work: **ortmal**
+
+## kind
 
 Root _Cr_=`-žw-`: Categorization
-- a category, a kind: **žwala**
+- a kind, a category: **žwala**
 
 ## know
 
@@ -329,6 +360,29 @@ Root _Cr_=`-ţt-`: Fact
 - knowing from experience: **uţtal**
 - knows: **ţtul**
 
+## lake
+
+Root _Cr_=`-lz-`: Body Of Fresh Water
+- a lake, a pond: **alzal**
+
+## large
+
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a large house: **wurmox**
+- a large adult: **lalox**
+- a large child: **welox**
+- a large tree: **walḑox**
+- a large mountain: **jlalox**
+- a large river: **welzox**
+- a large dog: **zvalox**
+- a large fire: **wažxox**
+- a large meal: **walksox**
+- a large gathering: **dalox**
+- a large family: **wabčox**
+- a large number: **wanthox**
+- a large part: **thwalox**
+- a large amount of water: **ţrarox**
+
 ## law
 
 Root _Cr_=`-ẓt-`: Law
@@ -337,13 +391,11 @@ Root _Cr_=`-ẓt-`: Law
 - legal compliance: **eẓtal**
 - rule of law: **uẓtal**
 
-## learn, study
+## learn
 
 Root _Cr_=`-rţt-`: Study
-- study/learn/knowledge source: **orţtal**
-- studying: **arţtal**
-- practice: **erţtal**
-- source of knowledge: **urţtal**
+- learning: **arţtal**
+- a source of knowledge: **urţtal**
 
 ## life
 
@@ -352,6 +404,15 @@ Root _Cr_=`-šw-`: Lifeform
 - a living being, a lifeform: **šwala**
 - vitality, activity consistent with being alive: **ešwal**
 - being brought to life, biological reproduction: **ušwal**
+
+## little
+
+Affix _Cs_=`-x-` SIZ: Degree Of Size
+- a little house: **wurmex**
+- a little adult: **lalex**
+- a little child: **welex**
+- a little tree: **walḑex**
+- a little dog: **zvalex**
 
 ## love
 
@@ -370,14 +431,17 @@ Root _Cr_=`-ţk-`: Make
 - organizing disparate parts into a whole: **uţkal**
 - makes: **ţkul**
 
-## man, woman, boy, girl
+## man
 
 Root _Cr_=`-l-`: Human Being
 Affix _Cs_=`-š-` SEX: Biological Sex
 - a man: **laleš**
-- a woman: **lalaš**
-- a boy: **weleš**
-- a girl: **welaš**
+
+## meet
+
+Root _Cr_=`-fh-`: Find
+- meeting by chance: **ufhal**
+- encountering, coming across: **efhal**
 
 ## mistake
 
@@ -390,10 +454,7 @@ Root _Cr_=`-cc-`: Mistake
 ## moment
 
 Root _Cr_=`-rv-`: Temporary Duration
-- temporary duration: **orval**
-- moment/instant: **arval**
-- “while”: **erval**
-- portion of a day: **urval**
+- a moment, an instant: **rvala**
 
 ## money
 
@@ -403,14 +464,16 @@ Root _Cr_=`-šč-`: Money
 - money, currency: **eščal**
 - a quasi-contractual document: **uščal**
 
-## mother, father, son, daughter
+## month
+
+Root _Cr_=`-ř-`: Conventionalized Time Period
+- a month, a lunar period: **uřal**
+
+## mother
 
 Root _Cr_=`-mp-`: Nuclear Family Member
 Affix _Cs_=`-š-` SEX: Biological Sex
 - a mother: **wampaš**
-- a father: **wampeš**
-- a daughter: **wempaš**
-- a son: **wempeš**
 
 ## mountain
 
@@ -423,10 +486,8 @@ Root _Cr_=`-jl-`: Mountainous Topography
 ## name
 
 Root _Cr_=`-dn-`: Name
-- name/designation/title: **odnal**
-- name: **adnal**
-- designation/reference: **ednal**
-- label: **udnal**
+- a name: **dnala**
+- a designation, a reference: **ednal**
 
 ## night
 
@@ -440,6 +501,17 @@ Root _Cr_=`-nth-`: Number
 - a number, expressing numerically: **anthal**
 - an integer: **enthal**
 - a rational number: **unthal**
+
+## origin
+
+Root _Cr_=`-çn-`: Source
+- an origin, a source: **açnal**
+
+## parent
+
+Root _Cr_=`-mp-`: Nuclear Family Member
+- a parent: **ampal**
+- a grandparent: **umpal**
 
 ## part
 
@@ -460,21 +532,9 @@ Root _Cr_=`-ppļ-`: Celebration
 ## person
 
 Root _Cr_=`-l-`: Human Being
-- a person, a human being: **olal**
-- an adult: **lala**
-- a child: **elal**
-- an adolescent: **ulal**
+- a person: **olal**
 - people, any number of them: **lara**
 - two or more people: **lalöks**
-- a man: **laleš**
-- a woman: **lalaš**
-
-Root _Cr_=`-žv-`: Good
-- a morally good person: **ežval**
-
-Affix _Cs_=`-th-` QUA: Degree Of Quality
-- a good person, an effective one: **lalöth**
-- a bad person: **laleth**
 
 Affix _Cs_=`-vẓ-` PSA: Personal Association
 - a lawyer, one whose profession is law: **waẓtavẓ**
@@ -530,21 +590,16 @@ Root _Cr_=`-ňf-`: Problem
 - mystery/puzzling situation: **eňfal**
 - irksome/annoying: **uňfal**
 
-## process, step
+## process
 
 Root _Cr_=`-rš-`: Stage
-- stage/step/phase of a process: **oršal**
-- step/stage/phase in a process: **aršal**
-- degree/grade on a progressive/scalar gradient: **eršal**
-- section/sub-unit/discernible potion of a structured entity: **uršal**
+- a process: **oršal**
 
-## question, answer
+## question
 
 Root _Cr_=`-nd-`: Question
-- question/answer/inquiry: **ondal**
-- question & answer: **andal**
-- questioning/querying: **endal**
-- answering/responding: **undal**
+- a question: **andal**
+- questioning, querying: **endal**
 
 ## read
 
@@ -554,6 +609,12 @@ Root _Cr_=`-pç-`: Read
 - reading aloud/reciting: **epçal**
 - acquiring knowledge/expertise via reading: **upçal**
 
+## receive
+
+Root _Cr_=`-n-`: Transfer Of Possession
+- receiving: **unal**
+- receives: **unulá**
+
 ## report
 
 Root _Cr_=`-ţrr-`: Announcement
@@ -562,13 +623,10 @@ Root _Cr_=`-ţrr-`: Announcement
 - report: **eţrral**
 - declaration/pronouncement/proclamation: **uţrral**
 
-## river, lake
+## river
 
 Root _Cr_=`-lz-`: Body Of Fresh Water
-- body of fresh water: **olzal**
-- pond/lake: **alzal**
-- stream/river: **elzal**
-- freshwater inland sea: **ulzal**
+- a river, a stream: **elzal**
 
 ## room
 
@@ -578,11 +636,16 @@ Root _Cr_=`-sř-`: Room
 - compartment: **esřal**
 - cubicle/partitioned section of a larger room: **usřal**
 
-## say, speak
+## run
+
+Root _Cr_=`-g-`: Ambulation
+- running, galloping: **egal**
+
+## say
 
 Root _Cr_=`-m-`: Linguistic Communication
+- says something: **mul**
 - an utterance: **mala**
-- speaks, says something: **mul**
 
 ## see
 
@@ -609,7 +672,7 @@ Root _Cr_=`-cp-`: Six
 - something with six aspects/facets: **ecpal**
 - sixth entity in a sequence: **ucpal**
 
-## small, little
+## small
 
 Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a small house: **wurmex**
@@ -618,13 +681,32 @@ Affix _Cs_=`-x-` SIZ: Degree Of Size
 - a small tree: **walḑex**
 - a small dog: **zvalex**
 
-## start, origin
+## son
+
+Root _Cr_=`-mp-`: Nuclear Family Member
+Affix _Cs_=`-š-` SEX: Biological Sex
+- a son: **wempeš**
+
+## speak
+
+Root _Cr_=`-m-`: Linguistic Communication
+- speaks: **mul**
+
+## start
 
 Root _Cr_=`-çn-`: Source
-- source/origin: **oçnal**
-- origin/source of something: **açnal**
-- beginning/start point of something: **eçnal**
-- direct/primary cause: **uçnal**
+- a start, a beginning: **eçnal**
+
+## step
+
+Root _Cr_=`-rš-`: Stage
+- a step, a stage: **aršal**
+
+## study
+
+Root _Cr_=`-rţt-`: Study
+- studying: **arţtal**
+- practice: **erţtal**
 
 ## think
 
@@ -670,6 +752,11 @@ Root _Cr_=`-ks-`: Two
 - something with two aspects/facets: **eksal**
 - second entity in a sequence: **uksal**
 
+## type
+
+Root _Cr_=`-žw-`: Categorization
+- a type, a category: **žwala**
+
 ## use
 
 Root _Cr_=`-ksf-`: Use
@@ -679,6 +766,13 @@ Root _Cr_=`-ksf-`: Use
 - consumption, using up: **uksfal**
 - uses: **ksful**
 
+## vehicle
+
+Root _Cr_=`-ddl-`: Conveying In Ground Vehicle
+- an open-air wheeled vehicle: **addlal**
+- an enclosed wheeled vehicle: **eddlal**
+- a non-wheeled vehicle: **uddlal**
+
 ## voice
 
 Root _Cr_=`-ḑx-`: Voice
@@ -687,13 +781,10 @@ Root _Cr_=`-ḑx-`: Voice
 - making a typical vocalization: **eḑxal**
 - making a less common sound made by an entity: **uḑxal**
 
-## walk, run, go
+## walk
 
 Root _Cr_=`-g-`: Ambulation
-- ambulation: **ogal**
-- natural ambulation, walking or crawling: **gala**
-- rapid ambulation, running or galloping: **egal**
-- unnatural ambulation, limping or staggering: **ugal**
+- walking: **gala**
 - walks: **gul**
 
 ## want
@@ -729,13 +820,21 @@ Root _Cr_=`-žw-`: Categorization
 - genre/style: **ežwal**
 - way/manner/mode: **užwal**
 
+## week
+
+Root _Cr_=`-ř-`: Conventionalized Time Period
+- a week: **eřal**
+
+## woman
+
+Root _Cr_=`-l-`: Human Being
+Affix _Cs_=`-š-` SEX: Biological Sex
+- a woman: **lalaš**
+
 ## word
 
 Root _Cr_=`-mpř-`: Lexical Component
-- lexical component: **ompřal**
 - lexeme: **ampřal**
-- potential root/affix: **empřal**
-- allolex: **umpřal**
 
 ## work
 
@@ -751,3 +850,10 @@ Root _Cr_=`-ň-`: Write
 - writing down: **ňala**
 - composing in writing: **eňal**
 - written character/glyph/symbol: **uňal**
+
+## year
+
+Root _Cr_=`-rn-`: Longer Time Periods
+- a year: **arnal**
+- a decade: **ernal**
+- a lifetime: **urnal**
