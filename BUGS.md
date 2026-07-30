@@ -47,13 +47,6 @@ stays enforced. `allomorph/substitutions.go` rests on the same decision.
 
 `phonology.TestCheckProhibitedPair_Rule223_IsUnsourced`
 
-## roman cannot read an epenthetic ë inside a C_1 cluster
-
-§4.6.1 puts the epenthetic vowel "before or within C_1 combinations",
-and gives `zëmse` as its example. Only the leading position is read.
-
-`roman.TestReferential_EpentheticVowelWithinC1`
-
 ## a modular adjunct's gloss does not compose back
 
 Every distinct modular gloss in the corpus fails to read back, so the

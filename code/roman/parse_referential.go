@@ -33,7 +33,8 @@ func ParseReferential(word string) (g.Referential, error) {
 	if stress == phonology.InvalidStress {
 		return g.Referential{}, errNotReferential
 	}
-	conjs := absorbRule1Glottals(phonology.MergeGlottalVowels(phonology.SplitConjuncts(bare)))
+	conjs := absorbClusterEpenthesis(
+		absorbRule1Glottals(phonology.MergeGlottalVowels(phonology.SplitConjuncts(bare))))
 	if len(conjs) < 2 {
 		return g.Referential{}, errNotReferential
 	}
@@ -282,4 +283,33 @@ func hasDoubledLetter(s string) bool {
 		prev = r
 	}
 	return false
+}
+
+// absorbClusterEpenthesis rejoins a referent cluster that §4.6.1's
+// epenthetic -ë- has split in two.
+//
+// The vowel "appears before or within C_1 combinations if necessary due
+// to phonotactic rules", and §4.6.1's own "zëmse" is the within case:
+// the referent chain is z+m+s, which cannot be said as "zms", so the
+// vowel sits inside it. SplitConjuncts sees three conjuncts there and
+// the chain has to be put back before it can be decomposed.
+//
+// A consonant on each side is what marks it as padding rather than a
+// case. §4.6.1's shape is [ë] C_1 V_C1 [w/y V_C2 [C_2 [ë]]], so what
+// follows a real V_C1 is a w, a y, or the end of the word, never a
+// consonant cluster. An -ë- with consonants on both sides is therefore
+// never the case vowel, and merging costs no reading.
+func absorbClusterEpenthesis(conjs []string) []string {
+	out := make([]string, 0, len(conjs))
+	for i := 0; i < len(conjs); i++ {
+		if len(out) > 0 && conjs[i] == "ë" && i+1 < len(conjs) &&
+			phonology.IsConsonantConjunct(out[len(out)-1]) &&
+			phonology.IsConsonantConjunct(conjs[i+1]) {
+			out[len(out)-1] += conjs[i+1]
+			i++
+			continue
+		}
+		out = append(out, conjs[i])
+	}
+	return out
 }

@@ -130,22 +130,22 @@ func TestReferential_SourceExamples(t *testing.T) {
 
 // §4.6.1 says the epenthetic -ë- appears "before or within C_1
 // combinations if necessary due to phonotactic rules", and gives
-// "zëmse" as its own example: the referent chain is z+m+s, with the
-// vowel sitting inside the cluster rather than in front of it. We read
-// only a leading -ë-, so the word comes apart as C1="z", V_C1="ë",
-// and then fails on the leftover "mse".
-//
-// The fix is not to strip every "ë" before decomposing: that vowel is
-// a real Vc value elsewhere, and "ëztewim" three examples earlier is
-// the leading case we do handle. What is needed is for the C1
-// decomposition to be allowed to consume an interior "ë" as cluster
-// padding, which means it has to run over the conjunct boundary that
-// SplitConjuncts puts there.
+// "zëmse" as its own example of the within case: the referent chain is
+// z+m+s, unsayable as "zms", so the vowel sits inside the cluster and
+// SplitConjuncts hands back three conjuncts where one referent chain
+// belongs.
 func TestReferential_EpentheticVowelWithinC1(t *testing.T) {
-	t.Skip("§4.6.1 epenthetic -ë- inside the C_1 cluster is not read; see the comment above")
-
-	if _, err := ParseReferential("zëmse"); err != nil {
-		t.Errorf("Referential(zëmse): %v", err)
+	r, err := ParseReferential("zëmse")
+	if err != nil {
+		t.Fatalf("ParseReferential(zëmse): %v", err)
+	}
+	head, ok := r.Head.(g.PersonalHead)
+	if !ok {
+		t.Fatalf("head = %T, want a personal head", r.Head)
+	}
+	if len(head.Refs) != 3 {
+		t.Errorf("zëmse has %d referents, want the three of z+m+s: %+v",
+			len(head.Refs), head.Refs)
 	}
 }
 

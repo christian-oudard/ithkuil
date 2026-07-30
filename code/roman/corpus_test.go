@@ -30,7 +30,6 @@ var corpusUnclassified = []string{
 	"hakšilaölwie-addyëubzattuo",
 
 	// Unexplained.
-	"zëmse",   // §9.1, a three-referent referential
 	"étkwö'e", // §6.2.2; still fails with the stress mark or the glottal removed
 }
 

@@ -66,12 +66,11 @@ func TestMorphologyCorpus_Sec4_6_1_Referential(t *testing.T) {
 			"triwejvë", "sme'e", "ka'u", "fo'we'is",
 			"smlo", "püwüp", "zäwiez",
 		},
-		// fo'we'is carries a glottal-stop in each of its two case slots,
-		// one per §1.7 placement: V_C1 takes Rule 1 ("o'", before the
-		// Slot 3 w) and V_C2 takes Rule 3 ("e'i"). It reads as
-		// PRD-ESS. Still falling through: zëmse, a 3-conjunct cluster
-		// shape our referential matcher doesn't yet accept.
-		unknown: []string{"zëmse"},
+		// Every §4.6.1 example reads. Two of them are why: fo'we'is
+		// carries a glottal-stop in each of its two case slots, one
+		// per §1.7 placement, V_C1 by Rule 1 before the Slot 3 w and
+		// V_C2 by Rule 3; and zëmse pads its z+m+s referent chain with
+		// the epenthetic -ë- §4.6.1 puts "within C_1 combinations".
 	})
 }
 
