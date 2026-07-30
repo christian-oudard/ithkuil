@@ -490,6 +490,50 @@ func ParseText(s string, lex *lexicon.Lexicon) ([]g.Word, error) {
 		}
 		out = append(out, tok)
 	}
+	return joinChains(out)
+}
+
+// joinChains gathers concatenated formatives back into the chain they
+// were glossed from.
+//
+// A chain is one word written with hyphens, but its canonical gloss is
+// its members separated by a space, so ParseToken cannot see it: it is
+// handed one member at a time. What survives the split is the Slot I
+// marker each dependent carries, and §3.1.7 makes it enough. A
+// dependent has a Cc and the parent has none, so a run of dependents
+// closed by a plain formative is exactly one chain.
+func joinChains(words []g.Word) ([]g.Word, error) {
+	out := make([]g.Word, 0, len(words))
+	var pending []g.Formative
+	for _, w := range words {
+		f, isFormative := w.(g.Formative)
+		if !isFormative || f.Concat == g.ConcatNone {
+			if len(pending) > 0 {
+				if !isFormative {
+					return nil, fmt.Errorf(
+						"concatenated formative is followed by %T rather than the parent it needs", w)
+				}
+				chain := g.NewChain(f)
+				for _, d := range pending {
+					switch d.Concat {
+					case g.Type1:
+						chain.AddType1(d)
+					case g.Type2:
+						chain.AddType2(d)
+					}
+				}
+				out = append(out, chain)
+				pending = nil
+				continue
+			}
+			out = append(out, w)
+			continue
+		}
+		pending = append(pending, f)
+	}
+	if len(pending) > 0 {
+		return nil, fmt.Errorf("%d concatenated formatives with no parent after them", len(pending))
+	}
 	return out, nil
 }
 
