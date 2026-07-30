@@ -6,9 +6,8 @@ import (
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/roman"
 	"github.com/christian-oudard/ithkuil/slots"
-	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
 // Block is one formative's parsed breakdown, in the same three pieces
@@ -50,7 +49,7 @@ type Side struct {
 // Referentials and the rest have no slot structure at all, and are an
 // error here. Phonotactic validation is the caller's to run first.
 func BuildSide(word string, lex *lexicon.Lexicon) (Side, error) {
-	results := tokenize.Tokenize(word)
+	results := roman.Tokenize(word)
 	if len(results) != 1 {
 		return Side{}, fmt.Errorf("%s: expected one word, got %d", word, len(results))
 	}
@@ -112,7 +111,7 @@ func chainBlocks(cw *g.Chain, lex *lexicon.Lexicon) []Block {
 		if f.Concat != g.ConcatNone {
 			role = f.Concat.String() + " dependent"
 		}
-		rom := render.Formative(f)
+		rom := roman.Formative(f)
 		blocks = append(blocks, FormativeBlock(rom, f, role, lex))
 	}
 	return blocks

@@ -5,10 +5,9 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/fullparse"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/roman"
 )
 
 func mustLex(t *testing.T) *lexicon.Lexicon {
@@ -49,7 +48,7 @@ func TestFormative_RoundTripGloss(t *testing.T) {
 				t.Fatalf("Formative(%q): %v", c.in, err)
 			}
 			// Sanity: must render to a non-empty romanization.
-			if surf := render.Formative(f); surf == "" {
+			if surf := roman.Formative(f); surf == "" {
 				t.Errorf("rendered to empty string")
 			}
 			// And the resulting formative must gloss to a non-empty
@@ -174,7 +173,7 @@ func TestFormative_AbbrevNeedsLexicon(t *testing.T) {
 	if err != nil {
 		t.Fatalf(`ParseFormative("m-b/3", nil) = %v, want success`, err)
 	}
-	if got := render.Formative(f); got != "maleb" {
+	if got := roman.Formative(f); got != "maleb" {
 		t.Errorf("bare Cs on the nil-lexicon path = %q, want %q", got, "maleb")
 	}
 }
@@ -263,9 +262,9 @@ func TestFormative_MaţřëullaitRoundTrip(t *testing.T) {
 		{"malëuţřait", "m-SYS/5_2-DCD/1_2", "malëuţřait"},
 	}
 	for _, c := range cases {
-		f, err := fullparse.Formative(c.rom)
+		f, err := roman.ParseFormative(c.rom)
 		if err != nil {
-			t.Fatalf("fullparse.Formative(%q): %v", c.rom, err)
+			t.Fatalf("roman.ParseFormative(%q): %v", c.rom, err)
 		}
 		got := gl.Formative(f)
 		if got != c.want {
@@ -278,7 +277,7 @@ func TestFormative_MaţřëullaitRoundTrip(t *testing.T) {
 		if again := gl.Formative(back); again != got {
 			t.Errorf("round-trip of %q: %q → %q", c.rom, got, again)
 		}
-		if surf := render.Formative(back); surf != c.canonical {
+		if surf := roman.Formative(back); surf != c.canonical {
 			t.Errorf("render(%q) = %q, want %q", got, surf, c.canonical)
 		}
 	}

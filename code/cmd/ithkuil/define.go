@@ -7,7 +7,7 @@ import (
 
 	"github.com/christian-oudard/ithkuil/dictionary"
 	"github.com/christian-oudard/ithkuil/gloss"
-	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/roman"
 )
 
 // cmdDefine looks an English word up in the lexicon's glosses and shows
@@ -45,7 +45,7 @@ func cmdDefine(args []string, stdout, stderr io.Writer, dataFile string) int {
 			break
 		}
 		f := s.Formative()
-		fmt.Fprintf(stdout, "  %-16s %-20s %s\n", render.Formative(f), gl.Formative(f), s.Gloss)
+		fmt.Fprintf(stdout, "  %-16s %-20s %s\n", roman.Formative(f), gl.Formative(f), s.Gloss)
 	}
 	return 0
 }

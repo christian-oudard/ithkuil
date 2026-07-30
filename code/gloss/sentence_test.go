@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/tokenize"
+	"github.com/christian-oudard/ithkuil/roman"
 )
 
 func TestSentence_MixedTokens(t *testing.T) {
@@ -401,7 +401,7 @@ func TestToken_Unknown(t *testing.T) {
 	// arrangement; nothing claims it.
 	// It never becomes a Word at all, so there is nothing to gloss;
 	// the reason comes back from the reader instead.
-	if w, err := tokenize.ClassifyWord("qpqp"); err == nil {
+	if w, err := roman.ParseWord("qpqp"); err == nil {
 		t.Errorf("ClassifyWord(\"qpqp\") = %T, want an error", w)
 	}
 	// A whole span still glosses, marking the word it could not read.

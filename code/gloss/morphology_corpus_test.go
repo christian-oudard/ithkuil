@@ -2,12 +2,11 @@ package gloss
 
 import (
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/roman"
 	"path/filepath"
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
 // TestFullDistance_MorphologyCorpus extends the gloss ↔ compose
@@ -35,14 +34,14 @@ func TestFullDistance_MorphologyCorpus(t *testing.T) {
 
 	for _, w := range morphologyCorpusWords {
 		t.Run(w, func(t *testing.T) {
-			tok, err := tokenize.ClassifyWord(w)
+			tok, err := roman.ParseWord(w)
 			if err != nil {
 				t.Skipf("not readable: %v", err)
 			}
 			if _, ok := tok.(g.Formative); !ok {
 				t.Skipf("not a formative: %T", tok)
 			}
-			f, err := fullparse.Formative(w)
+			f, err := roman.ParseFormative(w)
 			if err != nil {
 				t.Skipf("fullparse rejects %q: %v", w, err)
 			}

@@ -2,10 +2,9 @@ package gloss
 
 import (
 	g "github.com/christian-oudard/ithkuil/grammar"
+	"github.com/christian-oudard/ithkuil/roman"
 	"strings"
 	"testing"
-
-	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
 // Corpus tests over concrete Ithkuil forms. Each test parses a form and
@@ -19,7 +18,7 @@ import (
 // specific lexicon entries.
 func glossOne(t *testing.T, word string) string {
 	gl := &Glosser{}
-	w, err := tokenize.ClassifyWord(word)
+	w, err := roman.ParseWord(word)
 	if err != nil {
 		return "?" + word
 	}
@@ -67,7 +66,7 @@ func TestCorpus_Referential_1m_Dative(t *testing.T) {
 
 // Counter-example: malformed verbal forms must NOT parse as a Formative.
 func TestCorpus_VerbalFormRequiresPrefix(t *testing.T) {
-	tok, err := tokenize.ClassifyWord("aḑḑái")
+	tok, err := roman.ParseWord("aḑḑái")
 	if err != nil {
 		return // not read at all, which is stronger than not a formative
 	}
@@ -210,7 +209,7 @@ func TestCorpus_BiasAdjuncts(t *testing.T) {
 // readWord reads one word or fails the test.
 func readWord(t *testing.T, word string) g.Word {
 	t.Helper()
-	w, err := tokenize.ClassifyWord(word)
+	w, err := roman.ParseWord(word)
 	if err != nil {
 		t.Fatalf("ClassifyWord(%q): %v", word, err)
 	}

@@ -20,7 +20,7 @@ package numbers
 
 import (
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/roman"
 )
 
 // DigitRoots holds the root consonants for digits 0-10. Index n is the
@@ -275,13 +275,13 @@ func PowerFormative(i int, stem Stem, ver Version, c g.Case) (g.Formative, bool)
 
 // Render builds the formative for n with the given Stem/Version/Case
 // and returns its romanization. Convenience wrapper around Formative
-// + render.Formative.
+// + roman.Formative.
 func Render(n int, stem Stem, ver Version, c g.Case) (string, bool) {
 	f, ok := Formative(n, stem, ver, c)
 	if !ok {
 		return "", false
 	}
-	return render.Formative(f), true
+	return roman.Formative(f), true
 }
 
 // Decode inspects a parsed Formative and, if its Cr is a number root,
@@ -441,7 +441,7 @@ func powerWord(i int, stem Stem, ver Version) (string, bool) {
 	if !ok {
 		return "", false
 	}
-	return render.Formative(f), true
+	return roman.Formative(f), true
 }
 
 // MonthAffixes lists the dedicated affix forms for months 1-12. Index 0
@@ -538,7 +538,7 @@ func RenderSPT(n int, sptDegree int, stem Stem, ver Version) (string, bool) {
 	if !ok {
 		return "", false
 	}
-	return render.Formative(f), true
+	return roman.Formative(f), true
 }
 
 // SPTDegreeLabel returns a human-readable label for an SPT degree, e.g.

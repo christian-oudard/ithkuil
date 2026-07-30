@@ -10,9 +10,8 @@ import (
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/roman"
 	"github.com/christian-oudard/ithkuil/slots"
-	"github.com/christian-oudard/ithkuil/tokenize"
 	"github.com/christian-oudard/ithkuil/view"
 )
 
@@ -102,12 +101,12 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 		}
 	}
 
-	results := tokenize.Tokenize(text)
+	results := roman.Tokenize(text)
 	if len(results) == 0 {
 		return 0
 	}
 	lex := loadLex(dataFile, stderr)
-	span := tokenize.Words(results)
+	span := roman.Words(results)
 	glosser := gloss.Glosser{Lex: lex}
 	// The gloss this command prints is the canonical one, the same
 	// string compose reads back. There is a second, prettier rendering
@@ -201,7 +200,7 @@ func renderValidationError(w io.Writer, word, typed string, ill phonology.Illega
 // gloss, and then the working underneath. Leading with the gloss makes
 // the detailed view the short view plus evidence, rather than a
 // separate answer in a notation the short view never shows.
-func renderDetailed(w io.Writer, r tokenize.Result, span g.Text, i int,
+func renderDetailed(w io.Writer, r roman.Result, span g.Text, i int,
 	lex interface{}, glosser, canonical gloss.Glosser,
 ) {
 	gl := canonical.Word(r.Word, span, i)
@@ -212,7 +211,7 @@ func renderDetailed(w io.Writer, r tokenize.Result, span g.Text, i int,
 		renderConcatenated(w, r.Romanization, tt, glosser, gl)
 	case g.ModularAdjunct:
 		var marksMood *bool
-		if verbal, found := tokenize.ModularIsVerbal(span, i); found {
+		if verbal, found := roman.ModularIsVerbal(span, i); found {
 			marksMood = &verbal
 		}
 		renderModular(w, r.Romanization, tt, marksMood, gl)
@@ -313,7 +312,7 @@ func renderConcatenated(w io.Writer, rom string, cw *g.Chain, glosser gloss.Glos
 			label = fmt.Sprintf("[%s dependent]", f.Concat.String())
 		}
 		fmt.Fprintln(iw, label)
-		renderFormativeBlock(iw, render.Formative(f), f, glosser, glosser.Formative(f))
+		renderFormativeBlock(iw, roman.Formative(f), f, glosser, glosser.Formative(f))
 	}
 }
 

@@ -66,22 +66,20 @@ relative to `code/`.
 - `parse/` - Grammatical decoders for individual slot positions, plus all lookup tables (Vv, Vr, Vc, Vn, Cn). Nothing text-level.
 - `allomorph/` - Slot VI Ca complex construction and parsing. Pre-generates all Ca forms from component tables with allomorphic substitutions, stores bidirectional lookup.
 - `semantics/` - Context-dependent labels derived from grammar values: Mood vs CaseScope, V_N vs V_H, the Vn category for a given Cn. Never looks at the romanization.
-- `fullparse/` - Turns a romanization into a grammar value, handling stress and returning errors. `Formative` is `slots.Parse` ∘ `slots.ToGrammar`; `Referential` and `CombinationReferential` decode §4.6 and run the phonotactic checks, so a word the validator rejects is not classified as one.
-- `render/` - Renders a grammar value back to a romanization. `Formative` is `slots.FromGrammar` ∘ `slots.Render`; `Referential` and `CombinationReferential` mirror the fullparse entry points. `tokenize.Render` dispatches over the whole word-class sum (it lives there, not here, because the sum type does); `adjunct.go` covers the four §4.1/§4.3/§4.8 adjunct classes.
+- `roman/` - The romanization arm, both directions in one package, because they encode one thing — which letters spell which grammar — and splitting them by direction is what lets them drift. Reading takes a `Parse` prefix and writing keeps the noun: `ParseFormative`/`Formative`, `ParseReferential`/`Referential`, `ParseWord`/`Word`, `ParseText`/`Text`. `Tokenize` is the per-word report, pairing each romanization with the word it produced or the reason there is none. `Stressless` writes stress as a §4.8 parsing adjunct instead of a diacritic. Absorbed `fullparse`, `render` and `tokenize`.
 - `serialize/` - Binary encoding of parsed tokens. Default-eliding and
   byte-aligned; no lexicon indices, so files outlive lexicon updates.
   `formative.go` documents why the layout is shaped the way it is.
-- `gloss/` - Human-readable morphological glossing.
-- `tokenize/` - Classifies words in a sentence into formatives, referentials, bias adjuncts, etc. Each `WordToken` variant is a thin `{Text, payload}` wrapper over the grammar type for its class; `Text` records what was typed and is empty on a synthesized token, so derive the romanization with `tokenize.Render` rather than reading it.
+- `gloss/` - The gloss arm, both directions in one package. `Formative`/`Word`/`Text` write a gloss; `ParseFormative`/`ParseWord`/`ParseText` read one. They belong together because they encode one syntax, and while they were split it drifted — the glosser emitted `NOM:1m` for a §4.6 referent category the parser had no rule for.
 - `concatenation/` - Type 1/2 compound formative chains.
 - `numbers/` - Centesimal/base-100 number system.
-- `compose/` - Builds words from grammatical specifications + lexicon search helpers. `ParseToken` covers every word class and is what the CLI and MCP call; `Formative` is the formative-only path it falls back to.
+- `search/` - Reverse lookup over the grammar inventory and the lexicon: by abbreviation, written form, or meaning keyword. Backs the `search` subcommand, and was in `compose` only because that subcommand grew around it.
 - `view/` - Presentation layer for parsed tokens: the per-token type tag (`view.Type`), the phonetic-segment + glossary breakdown (`view.Segments`, `view.Headword`, `view.Glossary`), and the two-word comparison model (`view.BuildSide`, `view.PairSides`, `view.SlotDiff`, `view.GlossDiff`). Both the CLI and the MCP server build on it; only the table drawing lives in `cmd/ithkuil/compare.go`.
 - `store/` - Read-only SQLite access to `data/data.db` (roots, affixes, grammar tables).
 - `lexicon/` - Roots and affixes in memory. `LoadFromStore(*store.Store)` is the normal path; `Load(path)` reads the JSON source directly (used by tests).
 - `dictionary/` - The English index: reads the lexicon's English glosses backwards into a headword-to-lexical-core map. `english_doc_test.go` checks every claim made in `docs/dictionary/english.md` by composing it.
-- `corpus/` - The 384 example sentences published on ithkuil.net, with Quijada's English translations, embedded as test data. Their section numbers follow the site's chapters rather than the Grammar Design PDF, and most do not appear in it; see the head of `examples.txt` before citing one as a passage of the grammar. `corpus.Examples()` and `corpus.Words()`. `tokenize/corpus_test.go` guards the set of words we still fail to classify.
-  `discord_examples.txt` + `corpus.DiscordExamples()` hold curated words from the community Discord archive, each marked `correct` or `incorrect` with the rule it rests on. The archive is usage, not authority, so a word cited as evidence should appear there first. A leading `!` marks a word we currently disagree with (a filed defect). `fullparse/discord_examples_test.go` checks we agree.
+- `corpus/` - The 384 example sentences published on ithkuil.net, with Quijada's English translations, embedded as test data. Their section numbers follow the site's chapters rather than the Grammar Design PDF, and most do not appear in it; see the head of `examples.txt` before citing one as a passage of the grammar. `corpus.Examples()` and `corpus.Words()`. `roman/corpus_test.go` guards the set of words we still fail to classify.
+  `discord_examples.txt` + `corpus.DiscordExamples()` hold curated words from the community Discord archive, each marked `correct` or `incorrect` with the rule it rests on. The archive is usage, not authority, so a word cited as evidence should appear there first. A leading `!` marks a word we currently disagree with (a filed defect). `roman/discord_examples_test.go` checks we agree.
 
 Command-line entrypoints under `cmd/`:
 
@@ -149,6 +147,6 @@ so nothing here has to carry it to keep a document whole.
 nothing more: the record itself is a skipped test next to the code it concerns,
 carrying the section it rests on and why the obvious fix is wrong, and
 `go test ./... -v | grep SKIP` lists those directly. Words we cannot read live
-in the drift guards (`tokenize/corpus_test.go`, `corpus/discord_examples.txt`),
+in the drift guards (`roman/corpus_test.go`, `corpus/discord_examples.txt`),
 which fail when the set changes in either direction. Defects in the published
 sources go in `docs/reference/ISSUES.md`.

@@ -28,7 +28,7 @@ func TestAffixVowel_AllTypes(t *testing.T) {
 
 // TestAffixVowel_RejectsOutOfRange pins the panic. Returning "" here
 // used to splice a vowel-less affix into the romanization, so
-// render.Formative silently produced a different, valid word.
+// roman.Formative silently produced a different, valid word.
 func TestAffixVowel_RejectsOutOfRange(t *testing.T) {
 	for _, degree := range []int{-1, 10, 20} {
 		func() {

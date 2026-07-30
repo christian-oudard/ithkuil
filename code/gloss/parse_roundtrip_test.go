@@ -4,9 +4,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/roman"
 )
 
 // TestFormative_FullRoundTrip composes a formative from a gloss
@@ -42,11 +41,11 @@ func TestFormative_FullRoundTrip(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Formative: %v", err)
 			}
-			surf := render.Formative(f)
+			surf := roman.Formative(f)
 			if surf == "" {
 				t.Fatalf("rendered empty")
 			}
-			parsed, err := fullparse.Formative(surf)
+			parsed, err := roman.ParseFormative(surf)
 			if err != nil {
 				t.Fatalf("re-parse %q: %v", surf, err)
 			}

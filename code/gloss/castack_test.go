@@ -3,10 +3,9 @@ package gloss_test
 import (
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/gloss"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/roman"
 )
 
 // §3.5/§3.7 Ca-stacking: the specialized Vx -üö- marks the following
@@ -35,7 +34,7 @@ func TestCaStack_RoundTrip(t *testing.T) {
 			t.Errorf("compose(%q): %v", tc.in, err)
 			continue
 		}
-		got := render.Formative(f)
+		got := roman.Formative(f)
 		if got != tc.want {
 			t.Errorf("render(compose(%q)) = %q, want %q", tc.in, got, tc.want)
 		}
@@ -43,7 +42,7 @@ func TestCaStack_RoundTrip(t *testing.T) {
 			t.Errorf("%q renders to %q, which our own phonotactics reject: %v",
 				tc.in, got, err)
 		}
-		back, err := fullparse.Formative(got)
+		back, err := roman.ParseFormative(got)
 		if err != nil {
 			t.Errorf("parse(%q) from %q: %v", got, tc.in, err)
 			continue

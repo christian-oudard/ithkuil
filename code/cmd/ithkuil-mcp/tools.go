@@ -13,10 +13,9 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/roman"
 	"github.com/christian-oudard/ithkuil/search"
 	"github.com/christian-oudard/ithkuil/slots"
-	"github.com/christian-oudard/ithkuil/tokenize"
 	"github.com/christian-oudard/ithkuil/view"
 )
 
@@ -146,8 +145,8 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 		return nil, parseOut{}, fmt.Errorf("text is required")
 	}
 	text = phonology.FromASCII(text)
-	results := tokenize.Tokenize(text)
-	span := tokenize.Words(results)
+	results := roman.Tokenize(text)
+	span := roman.Words(results)
 	glosser := gloss.Glosser{Lex: s.lex}
 
 	out := make([]parseWord, len(results))
@@ -200,7 +199,7 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 			}
 		case g.ModularAdjunct:
 			var marksMood *bool
-			if verbal, found := tokenize.ModularIsVerbal(span, i); found {
+			if verbal, found := roman.ModularIsVerbal(span, i); found {
 				marksMood = &verbal
 			}
 			segs := view.SegmentsModular(r.Romanization, tt, marksMood)
@@ -385,7 +384,7 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 	if err != nil {
 		return nil, composeOut{}, err
 	}
-	rom, err := tokenize.Render(tok)
+	rom, err := roman.Word(tok)
 	if err != nil {
 		return nil, composeOut{}, err
 	}
@@ -618,7 +617,7 @@ func (s *server) define(_ context.Context, _ *mcp.CallToolRequest, in defineIn) 
 		}
 		f := sense.Formative()
 		out.Senses = append(out.Senses, senseOut{
-			Romanization: render.Formative(f),
+			Romanization: roman.Formative(f),
 			Gloss:        glosser.Formative(f),
 			Meaning:      sense.Gloss,
 		})

@@ -4,10 +4,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/fullparse"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/roman"
 )
 
 func TestMCSDegreeForMood(t *testing.T) {
@@ -62,8 +61,8 @@ func TestWithMCSMood_RoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("WithMCSMood: %v", err)
 	}
-	surf := render.Formative(f)
-	back, err := fullparse.Formative(surf)
+	surf := roman.Formative(f)
+	back, err := roman.ParseFormative(surf)
 	if err != nil {
 		t.Fatalf("Formative(%q): %v", surf, err)
 	}
@@ -104,8 +103,8 @@ func TestWithCHC_RoundTrip(t *testing.T) {
 			t.Errorf("WithCHC(%d): %v", deg, err)
 			continue
 		}
-		surf := render.Formative(f)
-		back, err := fullparse.Formative(surf)
+		surf := roman.Formative(f)
+		back, err := roman.ParseFormative(surf)
 		if err != nil {
 			t.Errorf("Formative(%q): %v", surf, err)
 			continue

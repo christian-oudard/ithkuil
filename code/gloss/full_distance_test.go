@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/roman"
 	"github.com/christian-oudard/ithkuil/slots"
 )
 
@@ -30,7 +30,7 @@ func TestFullDistance_SlotsCorpus(t *testing.T) {
 
 	for _, w := range slots.FormativeCorpus {
 		t.Run(w, func(t *testing.T) {
-			f, err := fullparse.Formative(w)
+			f, err := roman.ParseFormative(w)
 			if err != nil {
 				t.Skipf("fullparse rejects %q: %v", w, err)
 			}

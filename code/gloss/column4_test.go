@@ -3,10 +3,9 @@ package gloss_test
 import (
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/fullparse"
 	"github.com/christian-oudard/ithkuil/gloss"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/roman"
 )
 
 // §4.6.5's Column-4 shortcut: a Column-4 vowel from the Standard Vowel
@@ -33,11 +32,11 @@ func TestColumn4_RoundTrip(t *testing.T) {
 			t.Errorf("compose(%q): %v", in, err)
 			continue
 		}
-		w := render.Formative(f)
+		w := roman.Formative(f)
 		if err := phonology.CheckText(w); err != nil {
 			t.Errorf("%q renders to %q, which our own phonotactics reject: %v", in, w, err)
 		}
-		back, err := fullparse.Formative(w)
+		back, err := roman.ParseFormative(w)
 		if err != nil {
 			t.Errorf("parse(%q) from %q: %v", w, in, err)
 			continue

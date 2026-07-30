@@ -13,10 +13,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/fullparse"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/phonology"
+	"github.com/christian-oudard/ithkuil/roman"
 )
 
 func loadLexicon(t *testing.T) *lexicon.Lexicon {
@@ -82,7 +82,7 @@ func TestEnglishDocWords(t *testing.T) {
 		}
 		prev = "entry"
 		word := m[1]
-		f, err := fullparse.Formative(word)
+		f, err := roman.ParseFormative(word)
 		if err != nil {
 			t.Errorf("line %d: %q does not parse: %v", i+1, word, err)
 			continue

@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/tokenize"
+	"github.com/christian-oudard/ithkuil/roman"
 )
 
 func TestPhoneme_RoundTrip(t *testing.T) {
@@ -650,7 +650,7 @@ func TestModularMood_Restored(t *testing.T) {
 		// Whether the adjunct's neighbour is verbal is asked of the
 		// span, not stored, so it survives the trip by being derived
 		// from the words either side rather than by being encoded.
-		if verbal, found := tokenize.ModularIsVerbal(got, 0); !found || verbal != tc.want {
+		if verbal, found := roman.ModularIsVerbal(got, 0); !found || verbal != tc.want {
 			t.Errorf("%s: verbal = %v (found %v), want %v", tc.name, verbal, found, tc.want)
 		}
 		if !reflect.DeepEqual(got, tokens) {

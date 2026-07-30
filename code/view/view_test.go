@@ -7,9 +7,8 @@ import (
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
-	"github.com/christian-oudard/ithkuil/render"
+	"github.com/christian-oudard/ithkuil/roman"
 	"github.com/christian-oudard/ithkuil/slots"
-	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
 func tok(t *testing.T, w string) g.Word {
@@ -105,7 +104,7 @@ func TestSegments_WithSlotV_AndConcat(t *testing.T) {
 		{Type: g.Type1Affix, Degree: 5, Consonant: "r"},
 		{Type: g.Type1Affix, Degree: 5, Consonant: "r"},
 	}
-	rom := render.Formative(f)
+	rom := roman.Formative(f)
 	segs := Segments(rom, f, nil)
 	if len(segs) == 0 {
 		t.Fatal("Segments for Slot V formative returned empty")
@@ -114,7 +113,7 @@ func TestSegments_WithSlotV_AndConcat(t *testing.T) {
 	t1 := g.Type1
 	f2 := g.MinimalFormative("ml")
 	f2.Concat = t1
-	rom = render.Formative(f2)
+	rom = roman.Formative(f2)
 	segs = Segments(rom, f2, nil)
 	if len(segs) == 0 {
 		t.Fatal("Segments for concat formative returned empty")
@@ -158,7 +157,7 @@ func TestGlossary_WithLexicon(t *testing.T) {
 	// Build a formative with a lexicon-known affix in Slot VII.
 	f := g.MinimalFormative("ml")
 	f.SlotVII = []g.Affix{{Type: g.Type1Affix, Degree: 5, Consonant: "r"}}
-	rom := render.Formative(f)
+	rom := roman.Formative(f)
 	segs := Segments(rom, f, lex)
 	glossary := Glossary(rom, f, segs, lex)
 	if len(glossary) == 0 {
@@ -516,7 +515,7 @@ func TestCategoryForCode_Fallback(t *testing.T) {
 // readWord reads one word or fails the test.
 func readWord(t *testing.T, word string) g.Word {
 	t.Helper()
-	w, err := tokenize.ClassifyWord(word)
+	w, err := roman.ParseWord(word)
 	if err != nil {
 		t.Fatalf("ClassifyWord(%q): %v", word, err)
 	}

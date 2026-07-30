@@ -7,23 +7,23 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
+	"github.com/christian-oudard/ithkuil/roman"
 	"github.com/christian-oudard/ithkuil/semantics"
-	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
 // Sentence runs the tokenizer over a sentence and returns one gloss
 // string per word. A word that cannot be read glosses as "?" and the
 // romanization, which says only that it was not read; callers wanting
-// the reason should use tokenize.Tokenize and report it themselves.
+// the reason should use roman.Tokenize and report it themselves.
 func (gl *Glosser) Sentence(sentence string) []string {
-	results := tokenize.Tokenize(sentence)
+	results := roman.Tokenize(sentence)
 	out := make([]string, len(results))
 	for i, r := range results {
 		if r.Err != nil {
 			out[i] = "?" + r.Romanization
 			continue
 		}
-		out[i] = gl.Word(r.Word, tokenize.Words(results), i)
+		out[i] = gl.Word(r.Word, roman.Words(results), i)
 	}
 	return out
 }
@@ -73,7 +73,7 @@ func (gl *Glosser) Word(t g.Word, span g.Text, i int) string {
 	case g.ModularAdjunct:
 		var marksMood *bool
 		if span != nil {
-			if verbal, found := tokenize.ModularIsVerbal(span, i); found {
+			if verbal, found := roman.ModularIsVerbal(span, i); found {
 				marksMood = &verbal
 			}
 		}

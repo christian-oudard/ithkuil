@@ -6,7 +6,7 @@ import (
 
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/tokenize"
+	"github.com/christian-oudard/ithkuil/roman"
 )
 
 // cmdCompose builds a word from a gloss expression and prints the
@@ -53,9 +53,9 @@ func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 	}
 	var word string
 	if *stressless {
-		word, err = tokenize.RenderStressless(g.Text{tok})
+		word, err = roman.Stressless(g.Text{tok})
 	} else {
-		word, err = tokenize.Render(tok)
+		word, err = roman.Word(tok)
 	}
 	if err != nil {
 		fmt.Fprintf(stderr, "compose: %v\n", err)

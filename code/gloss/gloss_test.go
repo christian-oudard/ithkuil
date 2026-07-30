@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/fullparse"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/roman"
 )
 
 func dataPath(name string) string {
@@ -340,7 +340,7 @@ func TestFormative_CanonicalWord(t *testing.T) {
 		{"malëuţřait", "-m--ţř/5₂-t/1₂"},
 	}
 	for _, c := range cases {
-		parsed, err := fullparse.Formative(c.rom)
+		parsed, err := roman.ParseFormative(c.rom)
 		if err != nil {
 			t.Fatalf("parse %q: %v", c.rom, err)
 		}

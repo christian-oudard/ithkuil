@@ -7,8 +7,8 @@ import (
 	"github.com/christian-oudard/ithkuil/corpus"
 	"github.com/christian-oudard/ithkuil/gloss"
 	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/roman"
 	"github.com/christian-oudard/ithkuil/store"
-	"github.com/christian-oudard/ithkuil/tokenize"
 )
 
 // The canonical gloss is an authoring syntax, not only an output
@@ -44,7 +44,7 @@ func TestCanonicalGlossIsASCII(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			for _, w := range corpus.Words() {
-				tok, err := tokenize.ClassifyWord(w)
+				tok, err := roman.ParseWord(w)
 				if err != nil {
 					continue
 				}
