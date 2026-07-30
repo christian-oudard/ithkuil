@@ -25,16 +25,25 @@ import (
 // failure reads as a coordinate in the published tables rather than as
 // a Go struct.
 //
-// Unwritten marks a value that is real grammar but has no romanization:
-// NRR is the unmarked register, so a stretch of narrative is in it by
-// saying nothing. Such a value still glosses, so it is a sample rather
-// than an omission, and stating it here keeps the romanization sweep
-// from having to carry a hardcoded exception.
+// Two kinds of value are real grammar expressed by saying nothing, and
+// a sweep that did not know which would demand a mark that should not
+// be there.
+//
+// Unwritten: the value has no romanization at all. NRR is the unmarked
+// register, so a stretch of narrative is in it by never being marked
+// out of it. It still glosses, as NRR, so it is a sample and not an
+// omission.
+//
+// Unmarked: the value is its category's default, so the gloss shows
+// nothing for it. Its carrier is the baseline word untouched, which is
+// how the language says it: a formative at THM, S1, PRC and the rest is
+// written and glossed as though none of them had been chosen.
 type Sample struct {
 	Category  string
 	Abbrev    string
 	Word      g.Word
 	Unwritten bool
+	Unmarked  bool
 }
 
 // Cr is the root every formative sample is built on. Any attested root
@@ -71,6 +80,15 @@ func Samples() []Sample {
 	add := func(category, abbrev string, w g.Word) {
 		out = append(out, Sample{Category: category, Abbrev: abbrev, Word: w})
 	}
+	// addIf records a value that may be its category's default. A
+	// default's carrier is the baseline untouched, never a formative
+	// with the default written into it: the two are the same grammar,
+	// and the baseline is the only one either arm produces.
+	addIf := func(isDefault bool, category, abbrev string, w g.Word) {
+		out = append(out, Sample{
+			Category: category, Abbrev: abbrev, Word: w, Unmarked: isDefault,
+		})
+	}
 
 	// Case (§4.4). The nine groups are one category to the grammar and
 	// nine to the tables; keep the table's names so a failure points at
@@ -78,60 +96,71 @@ func Samples() []Sample {
 	for _, c := range g.AllCases {
 		f := nominal()
 		f.Final = g.UnframedNominal{Case: c}
-		add("Case/"+c.Group().String(), c.String(), f)
+		addIf(c == g.THM, "Case/"+c.Group().String(), c.String(), f)
 	}
 
 	// Slot II: stem and version.
-	for _, s := range []g.Stem{g.S1, g.S2, g.S3, g.S0} {
-		add("Stem", s.String(), withRoot(nominal(), func(r *g.CrRoot) { r.Stem = s }))
+	for _, x := range []g.Stem{g.S1, g.S2, g.S3, g.S0} {
+		f := withRoot(nominal(), func(r *g.CrRoot) { r.Stem = x })
+		addIf(x == g.S1, "Stem", x.String(), f)
 	}
-	for _, v := range []g.Version{g.PRC, g.CPT} {
-		add("Version", v.String(), withRoot(nominal(), func(r *g.CrRoot) { r.Version = v }))
+	for _, x := range []g.Version{g.PRC, g.CPT} {
+		f := withRoot(nominal(), func(r *g.CrRoot) { r.Version = x })
+		addIf(x == g.PRC, "Version", x.String(), f)
 	}
 
 	// Slot IV: function, specification, context.
 	for _, x := range []g.Function{g.STA, g.DYN} {
-		add("Function", x.String(), withRoot(nominal(), func(r *g.CrRoot) { r.SlotIV.Function = x }))
+		f := withRoot(nominal(), func(r *g.CrRoot) { r.SlotIV.Function = x })
+		addIf(x == g.STA, "Function", x.String(), f)
 	}
 	for _, x := range []g.Specification{g.BSC, g.CTE, g.CSV, g.OBJ} {
-		add("Specification", x.String(), withRoot(nominal(), func(r *g.CrRoot) { r.SlotIV.Specification = x }))
+		f := withRoot(nominal(), func(r *g.CrRoot) { r.SlotIV.Specification = x })
+		addIf(x == g.BSC, "Specification", x.String(), f)
 	}
 	for _, x := range []g.Context{g.EXS, g.FNC, g.RPS, g.AMG} {
-		add("Context", x.String(), withRoot(nominal(), func(r *g.CrRoot) { r.SlotIV.Context = x }))
+		f := withRoot(nominal(), func(r *g.CrRoot) { r.SlotIV.Context = x })
+		addIf(x == g.EXS, "Context", x.String(), f)
 	}
 
-	// Slot VI: the five Ca components.
+	// Slot VI: the five Ca components, whose defaults are the unmarked
+	// Ca that g.DefaultSlotVI holds.
+	d := g.DefaultSlotVI
 	for _, x := range g.AllConfigurations {
 		f := nominal()
 		f.SlotVI.Configuration = x
-		add("Configuration", x.String(), f)
+		addIf(x == d.Configuration, "Configuration", x.String(), f)
 	}
 	for _, x := range g.AllAffiliations {
 		f := nominal()
 		f.SlotVI.Affiliation = x
-		add("Affiliation", x.String(), f)
+		addIf(x == d.Affiliation, "Affiliation", x.String(), f)
 	}
 	for _, x := range g.AllPerspectives {
 		f := nominal()
 		f.SlotVI.Perspective = x
-		add("Perspective", x.String(), f)
+		addIf(x == d.Perspective, "Perspective", x.String(), f)
 	}
 	for _, x := range g.AllExtensions {
 		f := nominal()
 		f.SlotVI.Extension = x
-		add("Extension", x.String(), f)
+		addIf(x == d.Extension, "Extension", x.String(), f)
 	}
 	for _, x := range g.AllEssences {
 		f := nominal()
 		f.SlotVI.Essence = x
-		add("Essence", x.String(), f)
+		addIf(x == d.Essence, "Essence", x.String(), f)
 	}
 
-	// Slot VIII, V_N half: the five series, one sample per value.
+	// Slot VIII, V_N half: the five series, one sample per value. Only
+	// the valence series has a default, MNO, which is why the other four
+	// always take a written slot.
 	for _, x := range g.AllValences {
 		f := nominal()
-		f.SlotVIII = g.VnCnValence{Valence: x}
-		add("Valence", x.String(), f)
+		if x != g.MNO {
+			f.SlotVIII = g.VnCnValence{Valence: x}
+		}
+		addIf(x == g.MNO, "Valence", x.String(), f)
 	}
 	for _, x := range g.AllPhases {
 		f := nominal()
@@ -159,17 +188,23 @@ func Samples() []Sample {
 	// verbal carrier and case-scope a nominal one.
 	for _, x := range g.AllMoods {
 		f := verbal()
-		f.SlotVIII = g.VnCnValence{MoodScope: x}
-		add("Mood", x.String(), f)
+		if x != g.FAC {
+			f.SlotVIII = g.VnCnValence{MoodScope: x}
+		}
+		addIf(x == g.FAC, "Mood", x.String(), f)
 	}
 	for _, x := range g.AllCaseScopes {
 		f := nominal()
-		f.SlotVIII = g.VnCnValence{MoodScope: g.CaseScopeToMood(x)}
-		add("CaseScope", x.String(), f)
+		if x != g.CCN {
+			f.SlotVIII = g.VnCnValence{MoodScope: g.CaseScopeToMood(x)}
+		}
+		addIf(x == g.CCN, "CaseScope", x.String(), f)
 	}
 
 	// Slot IX on a verbal formative: illocution, and the validations
-	// that only the assertive takes.
+	// that only the assertive takes. ASR is the default illocution but
+	// is written anyway, the ending being what makes a formative verbal
+	// at all; OBS is the default validation and is not.
 	for _, vk := range g.AllVk {
 		f := verbal()
 		f.Final = g.UnframedVerbal{Vk: vk}
@@ -178,7 +213,7 @@ func Samples() []Sample {
 	for _, x := range g.AllValidations {
 		f := verbal()
 		f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: x}}
-		add("Validation", x.String(), f)
+		addIf(x == g.OBS, "Validation", x.String(), f)
 	}
 
 	// Word classes that are their own carrier.
@@ -188,7 +223,8 @@ func Samples() []Sample {
 	// A register is opened by an adjunct and closed by another, and two
 	// of the seven exist at one end only: END is the closer shared by
 	// every register and has no opening form, and NRR is the unmarked
-	// default with neither.
+	// default with neither. NRR is still named in a gloss, so it is
+	// Unwritten without being Unmarked.
 	for _, r := range g.AllRegisters {
 		s := Sample{Category: "Register", Abbrev: r.String()}
 		switch r {
