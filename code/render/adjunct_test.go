@@ -160,3 +160,161 @@ func TestModularAdjunct_Empty(t *testing.T) {
 		t.Error("expected an error with no content")
 	}
 }
+
+// The examples above are what Quijada printed, which is the right
+// starting point and a thin one: between them they witness one affix
+// scope out of six and no V_H reach at all. The dimensions each of
+// these three words exists to carry are enumerated below.
+
+func TestSingleAffixAdjunct_EveryScope(t *testing.T) {
+	affix := g.Affix{Type: g.Type1Affix, Degree: 5, Consonant: "r"}
+	for _, scope := range g.AllAffixScopes {
+		want := g.SingleAffixAdjunct{Affix: affix, Scope: scope}
+		word, err := SingleAffixAdjunct(want)
+		if err != nil {
+			t.Errorf("scope %v: %v", scope, err)
+			continue
+		}
+		got, err := parse.ParseSingleAffix(word)
+		if err != nil {
+			t.Errorf("scope %v wrote %q, which does not parse: %v", scope, word, err)
+			continue
+		}
+		if got != want {
+			t.Errorf("scope %v wrote %q, which reads back as %+v", scope, word, got)
+		}
+	}
+}
+
+// §4.1.2 scopes the first affix with C_Z and the rest with V_Z, and
+// lets V_Z go unwritten when the two agree. Both halves, every pair.
+func TestMultipleAffixAdjunct_EveryScopePair(t *testing.T) {
+	first := g.Affix{Type: g.Type1Affix, Degree: 3, Consonant: "r"}
+	rest := []g.Affix{{Type: g.Type2Affix, Degree: 5, Consonant: "kt"}}
+	for _, fs := range g.AllAffixScopes {
+		for _, rs := range g.AllAffixScopes {
+			want := g.MultipleAffixAdjunct{
+				First: first, Rest: rest, FirstScope: fs, RestScope: rs,
+			}
+			word, err := MultipleAffixAdjunct(want)
+			if err != nil {
+				t.Errorf("scopes %v/%v: %v", fs, rs, err)
+				continue
+			}
+			got, err := parse.ParseMultipleAffix(word)
+			if err != nil {
+				t.Errorf("scopes %v/%v wrote %q, which does not parse: %v", fs, rs, word, err)
+				continue
+			}
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("scopes %v/%v wrote %q, which reads back as %+v", fs, rs, word, got)
+			}
+		}
+	}
+}
+
+// Slot 2 is the one position with a C_N of its own, so it is the only
+// one that can carry a Mood/Case-Scope. Every V_N category against
+// every mood.
+func TestModularAdjunct_EveryCategoryAndMood(t *testing.T) {
+	for _, mood := range g.AllMoods {
+		for _, c := range []g.SlotVIII{
+			g.VnCnValence{Valence: g.PRL, MoodScope: mood},
+			g.VnCnPhase{Phase: g.ITR, MoodScope: mood},
+			g.VnCnEffect{Effect: g.BEN2, MoodScope: mood},
+			g.VnCnLevel{Level: g.SBE, MoodScope: mood},
+			g.VnCnAspect{Aspect: g.AllAspects[3], MoodScope: mood},
+		} {
+			want := g.ModularAdjunct{Content: []g.SlotVIII{c}}
+			word, err := ModularAdjunct(want)
+			if err != nil {
+				t.Errorf("%T mood %v: %v", c, mood, err)
+				continue
+			}
+			got, err := parse.ParseModular(word)
+			if err != nil {
+				t.Errorf("%T mood %v wrote %q, which does not parse: %v", c, mood, word, err)
+				continue
+			}
+			if !reflect.DeepEqual(got.Content, want.Content) {
+				t.Errorf("%T mood %v wrote %q, which reads back as %+v", c, mood, word, got.Content)
+			}
+		}
+	}
+}
+
+func TestModularAdjunct_EveryScope(t *testing.T) {
+	for _, scope := range g.AllModularScopes {
+		want := g.ModularAdjunct{
+			Scope:   scope,
+			Content: []g.SlotVIII{g.VnCnValence{Valence: g.PRL, MoodScope: g.SUB}},
+		}
+		word, err := ModularAdjunct(want)
+		if err != nil {
+			t.Errorf("scope %v: %v", scope, err)
+			continue
+		}
+		got, err := parse.ParseModular(word)
+		if err != nil {
+			t.Errorf("scope %v wrote %q, which does not parse: %v", scope, word, err)
+			continue
+		}
+		if got.Scope != scope {
+			t.Errorf("scope %v wrote %q, which reads back as %v", scope, word, got.Scope)
+		}
+	}
+}
+
+// The V_H reach, which no corpus word and no printed example carries.
+// §4.3 reads the trailing vowel as a reach only under ultimate stress,
+// so the stress mark is half of what is being checked here.
+func TestModularAdjunct_EveryReach(t *testing.T) {
+	for _, reach := range g.AllModularReaches {
+		if reach == g.ModularReachNone {
+			continue
+		}
+		want := g.ModularAdjunct{
+			Reach:   reach,
+			Content: []g.SlotVIII{g.VnCnValence{Valence: g.PRL, MoodScope: g.SUB}},
+		}
+		word, err := ModularAdjunct(want)
+		if err != nil {
+			t.Errorf("reach %v: %v", reach, err)
+			continue
+		}
+		got, err := parse.ParseModular(word)
+		if err != nil {
+			t.Errorf("reach %v wrote %q, which does not parse: %v", reach, word, err)
+			continue
+		}
+		if got.Reach != reach {
+			t.Errorf("reach %v wrote %q, which reads back as %v", reach, word, got.Reach)
+		}
+		if !reflect.DeepEqual(got.Content, want.Content) {
+			t.Errorf("reach %v wrote %q, whose content reads back as %+v", reach, word, got.Content)
+		}
+	}
+}
+
+// A lone aspect at the default mood is Slot 4 by itself, and every
+// aspect has to survive being written there.
+func TestModularAdjunct_EveryLoneAspect(t *testing.T) {
+	for _, a := range g.AllAspects {
+		want := g.ModularAdjunct{Content: []g.SlotVIII{
+			g.VnCnAspect{Aspect: a, MoodScope: g.FAC},
+		}}
+		word, err := ModularAdjunct(want)
+		if err != nil {
+			t.Errorf("aspect %v: %v", a, err)
+			continue
+		}
+		got, err := parse.ParseModular(word)
+		if err != nil {
+			t.Errorf("aspect %v wrote %q, which does not parse: %v", a, word, err)
+			continue
+		}
+		if !reflect.DeepEqual(got.Content, want.Content) {
+			t.Errorf("aspect %v wrote %q, which reads back as %+v", a, word, got.Content)
+		}
+	}
+}
