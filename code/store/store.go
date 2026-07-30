@@ -92,20 +92,6 @@ func (s *Store) Grammar(abbrev string) (*GrammarEntry, error) {
 	return &e, nil
 }
 
-// GrammarBatch returns entries for each abbreviation in abbrevs, in the
-// same order. Missing abbreviations produce a nil entry at that index.
-func (s *Store) GrammarBatch(abbrevs []string) ([]*GrammarEntry, error) {
-	out := make([]*GrammarEntry, len(abbrevs))
-	for i, a := range abbrevs {
-		e, err := s.Grammar(a)
-		if err != nil {
-			return nil, err
-		}
-		out[i] = e
-	}
-	return out, nil
-}
-
 // GrammarCategory returns all entries whose category starts with prefix
 // (e.g. "Case" matches "Case/Transrelative", "Case/Appositive", ...).
 func (s *Store) GrammarCategory(prefix string) ([]GrammarEntry, error) {
@@ -248,22 +234,6 @@ type AffixEntry struct {
 	Description string
 	Type        string
 	Degrees     []string
-}
-
-// Affix returns the entry for Cs, or nil if not found.
-func (s *Store) Affix(cs string) (*AffixEntry, error) {
-	row := s.db.QueryRow(
-		`SELECT cs, abbrev, description, type, degrees FROM affixes WHERE cs = ?`, cs)
-	var e AffixEntry
-	var deg string
-	if err := row.Scan(&e.Cs, &e.Abbrev, &e.Description, &e.Type, &deg); err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
-		return nil, err
-	}
-	json.Unmarshal([]byte(deg), &e.Degrees)
-	return &e, nil
 }
 
 // AllAffixes returns every affix entry in insertion order.

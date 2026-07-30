@@ -195,8 +195,8 @@ func TestMCPParse_Violations(t *testing.T) {
 		t.Fatal("an invalid word names the rules it breaks")
 	}
 	for _, v := range w.Violations {
-		if v.Rule == "" || v.Reason == "" {
-			t.Errorf("violation missing rule or reason: %+v", v)
+		if v.Code == "" || v.Fix == "" {
+			t.Errorf("violation missing the rule it breaks or what would fix it: %+v", v)
 		}
 	}
 }
