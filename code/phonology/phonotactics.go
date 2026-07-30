@@ -176,22 +176,30 @@ func CheckProhibitedPair(a, b rune) (rule, reason string) {
 		return "2.22", string(a) + " not at end of conjunct"
 	}
 
-	// "2.23" is likewise unsourced (G37), but unlike the çç/ļļ rule its
-	// content is corroborated: none of ḑs, ḑš, ḑz, ḑž or nň occurs in
-	// any root or affix Cs in the lexicon. Kept, under its invented
-	// number, until the rule is found or the constraint is disproved.
-	// 2.23: ḑ + sibilant; n + ň
+	// ḑ + sibilant, and n + ň. Both were prose rules in phonotaxis v0.3
+	// and v0.4, §2.6 and the last sentence of §2.15, and neither
+	// survived the renumbering that took §2 from twenty-three rules to
+	// twenty-two in v0.5.0. The constraints did: §8's matrix of
+	// permissible bi-consonantal conjuncts marks all five impermissible
+	// in v0.5.4, and §3.6 still carries ngn → ňn, an exception whose
+	// only effect is to keep a derivation off nň. See G44 in ISSUES.md.
+	//
+	// The number is the part that was ours. v0.3's own 2.23 is the w/y
+	// rule that survives as today's 2.22, so citing "2.23" for these
+	// named a section belonging to something else, and the two rules
+	// were merged under it. They are cited by the table that carries
+	// them now.
 	if a == 'ḑ' && strings.ContainsRune("sšzž", b) {
-		return "2.23", "ḑ + sibilant"
+		return "8", "ḑ + sibilant"
 	}
 	if a == 'n' && b == 'ň' {
-		return "2.23", "n + ň"
+		return "8", "n + ň"
 	}
 
 	// Nothing bars çç or ļļ. Our phonotactics markdown carried a
-	// "§2.24" prohibiting them, but Quijada's §2 ends at 2.22 and the
-	// rule appears in no published document — see G37 and G1 in
-	// ISSUES.md. His own material never behaves as though it exists:
+	// "§2.24" prohibiting them, but no version of the phonotaxis states
+	// it and v0.3's tables list ļļ as a permitted form — see G1 and G44
+	// in ISSUES.md. His own material never behaves as though it exists:
 	// §3.6.1 rule 4 geminates a sibilant "in any position" and gives
 	// çkl → ççkl as its worked example, rule 6 gives tçkl → tççkl, the
 	// bias-adjunct table holds pļļ (CMD) and kçç (EXA), and 39 corpus

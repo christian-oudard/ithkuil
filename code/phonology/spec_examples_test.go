@@ -32,7 +32,8 @@ type clusterCase struct {
 
 // section2 covers the general prohibitions, which hold in any
 // position. Every numbered rule from §2.2 to §2.22 appears, plus the
-// unsourced "2.23" the validator still enforces (G37 in ISSUES.md).
+// two constraints §8's table carries that §2's prose no longer states
+// (G44 in ISSUES.md).
 var section2 = []clusterCase{
 	// §2.2 dental stop + any sibilant, and + its own fricative
 	// counterpart.
@@ -254,12 +255,14 @@ var section2 = []clusterCase{
 	{"2.22", Medial, "lw", true},
 	{"2.22", Medial, "ly", true},
 
-	// §2.23 the awkward set.
-	{"2.23", Medial, "ḑs", false},
-	{"2.23", Medial, "ḑš", false},
-	{"2.23", Medial, "ḑz", false},
-	{"2.23", Medial, "ḑž", false},
-	{"2.23", Medial, "nň", false},
+	// The two constraints that moved out of §2's prose in the v0.5.0
+	// renumbering and are carried by §8's table alone. Prose rules
+	// §2.6 and §2.15 in v0.3 and v0.4.
+	{"8", Medial, "ḑs", false},
+	{"8", Medial, "ḑš", false},
+	{"8", Medial, "ḑz", false},
+	{"8", Medial, "ḑž", false},
+	{"8", Medial, "nň", false},
 }
 
 // derived covers clusters the morphology itself builds. They are not
@@ -273,7 +276,8 @@ var derived = []clusterCase{
 	// corpus words use one or the other, among them formatives whose
 	// geminated Ca marks the end of Slot V: wiapļļalká,
 	// hamphelsuirççaité. Our markdown once carried a "§2.24" barring
-	// both; it is in no published document (G1, G37 in ISSUES.md).
+	// both; no version of the phonotaxis states it (G1, G44 in
+	// ISSUES.md).
 	{"3.6.1", Medial, "çç", true},
 	{"3.6.1", Medial, "ļļ", true},
 }

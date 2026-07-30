@@ -179,35 +179,40 @@ func TestCheckProhibitedPair_GeminatesAreAllowed(t *testing.T) {
 	}
 }
 
-// "2.23" is ours, not Quijada's: §2 of phonotaxis v0.5.4 ends at 2.22,
-// and neither the grammar, affix, lexicon nor script documents state
-// it (G37 in ISSUES.md). The obvious response to a rule with no source
-// is to stop enforcing it, and that is what this test asserts.
-//
-// It is skipped because the evidence points the other way from the
-// provenance. The constraint holds without exception across all 5,946
-// roots and 528 affixes in the lexicon — no C_R or C_S contains ḑs, ḑš,
-// ḑz, ḑž or nň. That is what a real rule from a source we have not read
-// looks like, and equally what someone inferring the pattern from the
-// lexicon and writing it down as a rule looks like. The documents
-// cannot separate the two readings, so the constraint stays enforced
-// under its invented number until something can.
-//
-// This is the same provenance as the phantom "2.24" and the opposite
-// evidence: that one is contradicted by Quijada's own worked examples,
-// and validation has never enforced it. The two should not be decided
-// together.
-//
-// allomorph/substitutions.go rests on the same decision: it carries a
-// substitution whose only purpose is to avoid composing nň.
-func TestCheckProhibitedPair_Rule223_IsUnsourced(t *testing.T) {
-	t.Skip("unsourced \"2.23\" is still enforced; see the comment above")
-
+// ḑ + sibilant and n + ň are enforced on the strength of §8's matrix
+// of permissible bi-consonantal conjuncts, which marks all five
+// impermissible in v0.5.4. They were prose rules too, §2.6 and the
+// last sentence of §2.15, until the v0.5.0 renumbering dropped them
+// and left the tables carrying the constraint alone (G44 in
+// ISSUES.md). This pins the enforcement against the row totals the
+// document prints beside the matrix.
+func TestCheckProhibitedPair_TableConstraints(t *testing.T) {
 	for _, p := range []struct{ a, b rune }{
 		{'ḑ', 's'}, {'ḑ', 'š'}, {'ḑ', 'z'}, {'ḑ', 'ž'}, {'n', 'ň'},
 	} {
-		if rule, _ := CheckProhibitedPair(p.a, p.b); rule != "" {
-			t.Errorf("%s%s: rule = %q, want none", string(p.a), string(p.b), rule)
+		if rule, _ := CheckProhibitedPair(p.a, p.b); rule != "8" {
+			t.Errorf("%s%s: rule = %q, want the §8 table",
+				string(p.a), string(p.b), rule)
+		}
+	}
+	// The two rows the constraint lives in, counted against the
+	// totals printed in the document: 25 of 30 for ḑ, 23 for n.
+	seconds := []rune{'p', 't', 'k', 'b', 'd', 'g', 'f', 'ţ', 'ç', 'x',
+		'v', 'ḑ', 'ļ', 's', 'š', 'z', 'ž', 'c', 'č', 'ẓ', 'j', 'l', 'r',
+		'ř', 'm', 'n', 'ň', 'w', 'y', 'h'}
+	for _, row := range []struct {
+		c     rune
+		total int
+	}{{'ḑ', 25}, {'n', 23}} {
+		ok := 0
+		for _, b := range seconds {
+			if rule, _ := CheckProhibitedPair(row.c, b); rule == "" {
+				ok++
+			}
+		}
+		if ok != row.total {
+			t.Errorf("%c heads %d permissible conjuncts, and §8 gives %d",
+				row.c, ok, row.total)
 		}
 	}
 }
@@ -560,8 +565,8 @@ func TestCheckProhibitedPair_RemainingRules(t *testing.T) {
 		{'h', 'ř', "2.20"},
 		{'ř', 'r', "2.21"},
 		{'w', 'p', "2.22"},
-		{'ḑ', 's', "2.23"},
-		{'n', 'ň', "2.23"},
+		{'ḑ', 's', "8"},
+		{'n', 'ň', "8"},
 	}
 	for _, c := range cases {
 		rule, reason := CheckProhibitedPair(c.a, c.b)

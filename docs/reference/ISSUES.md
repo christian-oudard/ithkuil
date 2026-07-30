@@ -351,3 +351,50 @@ sentence at its word and call the printed example a slip.
 
 This code follows §1.7 and the printed example: a V_C1 with a Slot 3
 behind it is written by Rule 1, and a word-final one by Rule 3.
+
+### G44. Two §2 rules moved from the prose into the tables, and we called them invented
+
+*A correction to this list, not a defect in the source.*
+
+`phonotactics.md` carried a rule barring **ḑs**, **ḑš**, **ḑz**, **ḑž**
+and **nň**, numbered 2.23. G37 could not find it in phonotaxis v0.5.4
+and concluded it had been invented in transcription. Only the newest
+version's prose was read. Both halves are Quijada's.
+
+They were prose rules in the two editions before v0.5.4:
+
+> **v0.3 / v0.4 §2.6.** The voiced interdental fricative -ḑ- cannot be
+> followed by any of the four sibilant fricatives.
+>
+> **v0.3 / v0.4 §2.15.** The nasal n- cannot be followed by the labial
+> stops -p and -b, as they are too likely to assimilate to -mp- and
+> -mb-. Nor can -n- be followed by -ň-.
+
+Between v0.4 (June 2019) and v0.5.0 (January 2021) §2 was renumbered
+from twenty-three rules to twenty-two. The ḑ rule went; the n rule
+survives as v0.5.4's 2.14 word for word, less its final sentence.
+
+The constraints did not go with them. §8's matrix of permissible
+bi-consonantal conjuncts, in v0.5.4, marks every one of the five as
+impermissible: the **ḑ** row's blue squares are ţ, s, š, z and ž, and
+the **n** row's are p, b, c, č, ẓ, j and ň. The row totals in the
+document confirm the count without reading the colour, 25 of 30 for
+**ḑ** and 23 of 30 for **n**. §3.6's substitution table says the same
+from the other side, carrying **ngn → ňn** as a named exception to
+**[C]gn → [C]ň** whose only effect is to keep a derivation off **nň**.
+
+So the rules were not dropped, they were moved from prose into tables,
+and what we enforce is what the current document says. The lexicon
+agrees: across 5,946 roots and 528 affixes, **ḑ** heads 152 clusters
+over at least eight following consonants and never a sibilant, and
+**n** heads 748 and freely takes s, z, š and ž but never **ň**.
+
+What was ours is the number. v0.3 and v0.4 both end at 2.23, and their
+2.23 is the w/y rule that survives as today's 2.22, so the transcription
+merged two rules under a number belonging to a third.
+
+**2.24 is not the same case.** Neither v0.3 nor v0.4 prohibits **çç**
+or **ļļ**, and **ļļ** appears in their tables as a permitted form. That
+one was invented, so G1's withdrawal stands. Identical provenance,
+opposite answer, which is why they should not have been decided
+together.

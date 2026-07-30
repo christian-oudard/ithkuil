@@ -31,7 +31,7 @@ func allSlotVI(yield func(g.SlotVI)) {
 // substitutions in §3.6 exist precisely to keep the composed cluster
 // sayable, so a form that fails here means a substitution is missing
 // or wrong — which is how the absent ngn → ňn rule let MSC compose to
-// the §2.23-prohibited "nň".
+// the §8-prohibited "nň".
 //
 // The space is small enough to enumerate outright. Sampling it, as the
 // fullparse fuzz does, reaches a form like that only by chance.

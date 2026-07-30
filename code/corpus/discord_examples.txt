@@ -32,6 +32,54 @@
 # isn't here due to lax phonotactic rules".
 incorrect | hoňkoň | §4.5 | foreign name (Hong Kong), not an Ithkuil word.
 incorrect | höňkoň | §4.5 | foreign name (Hong Kong), not an Ithkuil word.
+#
+# These are not unmarked. Almost every one follows a carrier adjunct,
+# which is the language marking the next word as not-Ithkuil exactly as
+# §4.4 and §4.5 provide for: "hli'o väňkuvrë", "hli'a starbëks",
+# "hlu'i kartër", "hlä âpëlpei", "hi faindër". The mark is a separate
+# word, so a classifier working one word at a time cannot see it, and
+# the name arrives looking like a formative that will not parse. Failing
+# on them is right; they are listed so the failure is accounted for
+# rather than sitting in the unexplained pile.
+incorrect | väňkuvrë | §4.5 | place name (Vancouver), carried by "hli'o".
+incorrect | starbëks | §4.5 | brand name (Starbucks), carried by "hli'a".
+incorrect | känëdë | §4.5 | place name (Canada), carried by "hli'a".
+incorrect | kartër | §4.5 | personal name (Carter), carried by "hlu'i".
+incorrect | päatričä | §4.5 | personal name (Patricia), carried by "hla".
+incorrect | âpëlpei | §4.5 | brand name (Apple Pay), carried by "hlä".
+incorrect | doňki | §4.5 | title (Donkey Kong), carried by "hi".
+incorrect | mädnës | §4.5 | same title, carried by "hi".
+incorrect | drägën | §4.5 | loanword (dragon), carried by "hü".
+incorrect | sërvër | §4.5 | loanword (server).
+incorrect | aļlátnie | §4.5 | name, appearing beside "hli'a höňkoň".
+
+# One 2024 thread names software and sci-fi materials, each carried by
+# "hi" and glossed with a link to the article it refers to. That makes
+# the intent unambiguous, so they are filed together.
+incorrect | faindër | §4.5 | software name (Finder), carried by "hi".
+incorrect | eksplorër | §4.5 | software name (File Explorer), carried by "hi".
+incorrect | nótilës | §4.5 | software name (Nautilus), carried by "hi".
+incorrect | failmânëjër | §4.5 | software name (File Manager), carried by "hi".
+incorrect | mäkouestén | §4.5 | software name (macOS), carried by "hi".
+incorrect | ënëbtéiniëm | §4.5 | coined material (unobtainium), carried by "hi".
+incorrect | lúnërkrit | §4.5 | coined material (lunarcrete), carried by "hi".
+incorrect | ţëiëunáit | §4.5 | coined material (thionite), carried by "hi".
+incorrect | tränspâristil | §4.5 | coined material (transparisteel), carried by "hi".
+
+# ── not Ithkuil text at all ─────────────────────────────────────────
+# A different failure from the one above: these were never Ithkuil, and
+# no carrier adjunct claims them. They are ordinary prose, or discussion
+# about spelling, that the word extractor could not tell apart from
+# Ithkuil because they are written in the same alphabet. Rejecting them
+# is right, and there is no rule of ours they bear on.
+incorrect | français | §1 | French prose ("je ne parle pas français").
+incorrect | trött | §1 | Swedish prose ("Sisådär trött, annars bra").
+incorrect | ḑifference | §1 | English word inside an English sentence.
+incorrect | singlë | §1 | English thread on how to romanize "single".
+incorrect | singël | §1 | the alternative spelling offered in that thread.
+incorrect | biëtrës | §1 | English thread on how to romanize "Beatrice".
+incorrect | üzgü | §1 | English question about how a vowel was pronounced.
+incorrect | hëhë | §1 | laughter, written out.
 
 # ── chains quoted as fragments ──────────────────────────────────────
 # §3.1.8 joins a chain with a hyphen, so a Slot I C_C marker always has
