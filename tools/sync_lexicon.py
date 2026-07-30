@@ -173,7 +173,7 @@ SHIFTED_DEGREES = {
 # GPB through GPG carry a C_S, an abbreviation and a description upstream
 # and nine empty degree cells apiece. They are not empty in Quijada: his
 # affix document populates all six, and these are extracted from it by
-# column geometry (see docs/reference/issues.md, A5).
+# column geometry (see docs/reference/ISSUES.md, A5).
 #
 # The extraction was checked against the three groups the sheet does
 # carry. GPJ came back identical in all nine degrees; GPA and GPH differ

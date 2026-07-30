@@ -32,7 +32,7 @@ type clusterCase struct {
 
 // section2 covers the general prohibitions, which hold in any
 // position. Every numbered rule from §2.2 to §2.22 appears, plus the
-// unsourced "2.23" the validator still enforces (G37 in issues.md).
+// unsourced "2.23" the validator still enforces (G37 in ISSUES.md).
 var section2 = []clusterCase{
 	// §2.2 dental stop + any sibilant, and + its own fricative
 	// counterpart.
@@ -273,7 +273,7 @@ var derived = []clusterCase{
 	// corpus words use one or the other, among them formatives whose
 	// geminated Ca marks the end of Slot V: wiapļļalká,
 	// hamphelsuirççaité. Our markdown once carried a "§2.24" barring
-	// both; it is in no published document (G1, G37 in issues.md).
+	// both; it is in no published document (G1, G37 in ISSUES.md).
 	{"3.6.1", Medial, "çç", true},
 	{"3.6.1", Medial, "ļļ", true},
 }

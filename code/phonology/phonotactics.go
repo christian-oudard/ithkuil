@@ -191,7 +191,7 @@ func CheckProhibitedPair(a, b rune) (rule, reason string) {
 	// Nothing bars çç or ļļ. Our phonotactics markdown carried a
 	// "§2.24" prohibiting them, but Quijada's §2 ends at 2.22 and the
 	// rule appears in no published document — see G37 and G1 in
-	// issues.md. His own material never behaves as though it exists:
+	// ISSUES.md. His own material never behaves as though it exists:
 	// §3.6.1 rule 4 geminates a sibilant "in any position" and gives
 	// çkl → ççkl as its worked example, rule 6 gives tçkl → tççkl, the
 	// bias-adjunct table holds pļļ (CMD) and kçç (EXA), and 39 corpus

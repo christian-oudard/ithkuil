@@ -171,7 +171,7 @@ func TestCheckProhibitedPair_GeminatesAreAllowed(t *testing.T) {
 	// worked examples are çkl → ççkl and tçkl → tççkl — and the corpus
 	// attests them (wiapļļalká, hamphelsuirççaité). The "§2.24" that
 	// prohibited them was ours, not Quijada's: see G1 and G37 in
-	// issues.md.
+	// ISSUES.md.
 	for _, r := range []rune{'ç', 'ļ'} {
 		if rule, _ := CheckProhibitedPair(r, r); rule != "" {
 			t.Errorf("%c%c should be allowed, got %s", r, r, rule)
@@ -181,7 +181,7 @@ func TestCheckProhibitedPair_GeminatesAreAllowed(t *testing.T) {
 
 // "2.23" is ours, not Quijada's: §2 of phonotaxis v0.5.4 ends at 2.22,
 // and neither the grammar, affix, lexicon nor script documents state
-// it (G37 in issues.md). The obvious response to a rule with no source
+// it (G37 in ISSUES.md). The obvious response to a rule with no source
 // is to stop enforcing it, and that is what this test asserts.
 //
 // It is skipped because the evidence points the other way from the

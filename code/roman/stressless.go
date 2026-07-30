@@ -36,7 +36,7 @@ func Stressless(t g.Text) (string, error) {
 		// it. Whether a link counts as "any word to be parsed" in the
 		// sense of §2.3 ¶5, and may take an adjunct of its own, the
 		// source does not say — so refuse rather than invent a
-		// spelling. See docs/reference/issues.md.
+		// spelling. See docs/reference/ISSUES.md.
 		if _, isChain := w.(*g.Chain); isChain {
 			return "", fmt.Errorf(
 				"a concatenation chain carries one stress per link, which a single parsing adjunct cannot declare")
