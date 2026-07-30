@@ -69,6 +69,10 @@ func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 		return 2
 	}
 	fmt.Fprintln(stdout, word)
-	fmt.Fprintln(stdout, (&gloss.Glosser{Lex: lex}).Token(tok))
+	// The canonical gloss, not the display rendering: what compose
+	// prints has to be what compose accepts. It used to echo
+	// "S2.CPT--ml-'gold (color)'-ERG" for the input "S2.CPT-ml-ERG",
+	// a string neither compose nor parse would take.
+	fmt.Fprintln(stdout, (&gloss.Glosser{Lex: lex, Canonical: true}).Token(tok))
 	return 0
 }

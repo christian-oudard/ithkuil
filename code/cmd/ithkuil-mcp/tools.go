@@ -153,7 +153,10 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 	text = phonology.FromASCII(text)
 	results := roman.Tokenize(text)
 	span := roman.Words(results)
-	glosser := gloss.Glosser{Lex: s.lex}
+	// Canonical: the gloss field is an API value, so it has to be
+	// the string compose reads back rather than the display
+	// rendering, which nothing parses.
+	glosser := gloss.Glosser{Lex: s.lex, Canonical: true}
 
 	out := make([]parseWord, len(results))
 	for i, r := range results {
@@ -405,7 +408,10 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 	if err != nil {
 		return nil, composeOut{}, err
 	}
-	glosser := gloss.Glosser{Lex: s.lex}
+	// Canonical: the gloss field is an API value, so it has to be
+	// the string compose reads back rather than the display
+	// rendering, which nothing parses.
+	glosser := gloss.Glosser{Lex: s.lex, Canonical: true}
 	out := composeOut{
 		Romanization: rom,
 		Gloss:        glosser.Token(tok),

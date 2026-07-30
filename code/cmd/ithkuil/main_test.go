@@ -847,3 +847,48 @@ func TestCompose_StresslessMatchesNormal(t *testing.T) {
 		}
 	}
 }
+
+// What compose prints has to be what compose accepts, and what parse
+// prints for the same word.
+//
+// compose used to echo the display rendering: given "S2.CPT-ml-ERG" it
+// answered "S2.CPT--ml-'gold (color)'-ERG", which neither command
+// takes and which disagreed with parse. The same divergence was fixed
+// in parse earlier and left here, and in the MCP server's gloss field.
+func TestCompose_EchoesTheGlossItAccepts(t *testing.T) {
+	for _, expr := range []string{
+		"ml", "S2.CPT-ml-ERG", "1m-ERG", "[CAR]",
+		"m-SYS/5_2-{Ca}-DCD/1_2",
+	} {
+		out, errOut, code := runCLI("-data", dataFile(), "compose", expr)
+		if code != 0 {
+			t.Errorf("compose %q: exit %d: %s", expr, code, errOut)
+			continue
+		}
+		lines := strings.SplitN(strings.TrimSpace(out), "\n", 2)
+		if len(lines) != 2 {
+			t.Errorf("compose %q printed %d lines, want the word and its gloss", expr, len(lines))
+			continue
+		}
+		word, echoed := lines[0], strings.TrimSpace(lines[1])
+
+		// The echo composes to the same word.
+		back, errOut, code := runCLI("-data", dataFile(), "compose", echoed)
+		if code != 0 {
+			t.Errorf("compose %q echoed %q, which compose rejects: %s", expr, echoed, errOut)
+			continue
+		}
+		if got := strings.SplitN(strings.TrimSpace(back), "\n", 2)[0]; got != word {
+			t.Errorf("%q echoed %q, which composes to %q not %q", expr, echoed, got, word)
+		}
+
+		// And parse says the same thing about that word.
+		p, _, code := runCLI("-data", dataFile(), "parse", "--short", word)
+		if code != 0 {
+			continue
+		}
+		if got := strings.TrimSpace(p); got != echoed {
+			t.Errorf("compose %q echoed %q but parse says %q", expr, echoed, got)
+		}
+	}
+}

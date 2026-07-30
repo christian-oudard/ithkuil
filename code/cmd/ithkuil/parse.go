@@ -108,7 +108,6 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 	}
 	lex := loadLex(dataFile, stderr)
 	span := roman.Words(results)
-	glosser := gloss.Glosser{Lex: lex}
 	// The gloss this command prints is the canonical one, the same
 	// string compose reads back. There is a second, prettier rendering
 	// with Unicode subscripts and spelled-out English, but it is not
@@ -169,7 +168,7 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 			renderUnknown(stdout, r.Romanization, r.Err)
 			continue
 		}
-		renderDetailed(stdout, r, span, i, lex, glosser, canonical)
+		renderDetailed(stdout, r, span, i, canonical)
 	}
 	return exit
 }
@@ -201,14 +200,14 @@ func renderValidationError(w io.Writer, word, typed string, ill fault.Faults) {
 // the detailed view the short view plus evidence, rather than a
 // separate answer in a notation the short view never shows.
 func renderDetailed(w io.Writer, r roman.Result, span g.Text, i int,
-	lex interface{}, glosser, canonical gloss.Glosser,
+	canonical gloss.Glosser,
 ) {
 	gl := canonical.Word(r.Word, span, i)
 	switch tt := r.Word.(type) {
 	case g.Formative:
-		renderFormativeBlock(w, r.Romanization, tt, glosser, gl)
+		renderFormativeBlock(w, r.Romanization, tt, canonical, gl)
 	case *g.Chain:
-		renderConcatenated(w, r.Romanization, tt, glosser, gl)
+		renderConcatenated(w, r.Romanization, tt, canonical, gl)
 	case g.ModularAdjunct:
 		var marksMood *bool
 		if verbal, found := roman.ModularIsVerbal(span, i); found {
@@ -314,10 +313,10 @@ func renderModular(w io.Writer, rom string, m g.ModularAdjunct, marksMood *bool,
 // renderFormativeBlock prints the romanization, headword, phonetic table,
 // and glossary for one formative. The romanization sits at column 0
 // and everything below is indented under it.
-func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss.Glosser, gl string) {
-	head := view.Headword(f, glosser.Lex)
-	segs := view.Segments(text, f, glosser.Lex)
-	glossary := view.Glossary(text, f, segs, glosser.Lex)
+func renderFormativeBlock(w io.Writer, text string, f g.Formative, canonical gloss.Glosser, gl string) {
+	head := view.Headword(f, canonical.Lex)
+	segs := view.Segments(text, f, canonical.Lex)
+	glossary := view.Glossary(text, f, segs, canonical.Lex)
 
 	wordHeader(w, text, gl)
 	iw := indented(w, "  ")
@@ -338,7 +337,7 @@ func renderFormativeBlock(w io.Writer, text string, f g.Formative, glosser gloss
 // rendering each as its own block with a section marker. The chain's
 // romanization is hyphen-joined; we split on "-" to recover each piece's
 // individual romanization for the phonetic table.
-func renderConcatenated(w io.Writer, rom string, cw *g.Chain, glosser gloss.Glosser, gl string) {
+func renderConcatenated(w io.Writer, rom string, cw *g.Chain, canonical gloss.Glosser, gl string) {
 	wordHeader(w, rom, gl)
 	iw := indented(w, "  ")
 	fmt.Fprintln(iw, stylize(ansiDim, "(concatenated chain)"))
@@ -351,7 +350,7 @@ func renderConcatenated(w io.Writer, rom string, cw *g.Chain, glosser gloss.Glos
 			label = fmt.Sprintf("[%s dependent]", f.Concat.String())
 		}
 		fmt.Fprintln(iw, label)
-		renderFormativeBlock(iw, roman.Formative(f), f, glosser, glosser.Formative(f))
+		renderFormativeBlock(iw, roman.Formative(f), f, canonical, canonical.Formative(f))
 	}
 }
 
