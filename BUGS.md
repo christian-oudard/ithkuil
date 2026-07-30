@@ -9,6 +9,26 @@ fix is wrong. `go test ./... -v | grep SKIP` lists them directly.
 Compose's 38 skipped subtests are not defects; they are corpus words
 that are not formatives, skipped by design.
 
+## a concatenated chain cannot be composed back into a chain
+
+The canonical gloss of a `grammar.Chain` is its members separated by a
+space, so it is not one whitespace-delimited token and
+`compose.ParseToken` never sees it. `compose.ParseSentence` reads the
+members as independent formatives, and the chain they belonged to is
+gone:
+
+```
+hakšiţé-alcialu'a
+  -> T1-ksq-STA.OBJ.EXS-MDS-COR lc-STA.BSC.RPS-NAV
+  -> two grammar.Formative, not one grammar.Chain
+```
+
+Nothing is lost from the members themselves, the T1 marker survives on
+the first, so what is missing is the reassembly. Every other word class
+round-trips through compose; this is the one that does not.
+
+No skipped test yet.
+
 ## render cannot write ëztewim
 
 `render.Referential` picks the §4.6.1 Slot 3 w/y separator by validating
