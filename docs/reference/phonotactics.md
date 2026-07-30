@@ -460,12 +460,515 @@ The rows enumerate **5021** conjuncts. The source's printed row totals sum to **
 
 ## 10. Permissible Tetra-Consonantal Conjuncts Which Can Be Roots
 
-Total permissible tetra-consonantal root conjuncts: **15034**
+Each row gives a set of permitted consonants for each of the four positions: every combination is a permissible conjunct. `count` is the row's own arithmetic; `printed` is the total the source gives, bolded where the two disagree.
 
-The full table is available in the PDF source.
+| 1st | 2nd | 3rd | 4th | count | printed |
+|---|---|---|---|---|---|
+| rřl | m | p | mnlrwyhļřç | 30 | 30 |
+| rř | ň | p | ţlrwyļřhç | 18 | 18 |
+| rřl | pktcčgdẓjzž | p | fţsšlrwyļřhç | 396 | 396 |
+| ptkrřlçmnň | ç | p | fţlrwyļřhç | 100 | 100 |
+| f | ç | p | lrwyļřhç | 8 | 8 |
+| spkrřlmnň | sš | p | fţsšlrwyļřhç | 216 | 216 |
+| fţ | sš | p | fţsšlrwyļřhç | 48 | 48 |
+| m | zžfx | p | fţlrwyļřhç | 40 | 40 |
+| n | ktzžx | p | fţlrwyļřhç | 50 | 50 |
+| ň | tzžf | p | fţlrwyļřhç | 40 | 40 |
+| mnň | ţ | p | fţlsšrwyļřhç | 36 | 36 |
+| rř | fvxţḑ | p | lrwyļřhç | 80 | 80 |
+| l | fxţ | p | lrwyļřhç | 24 | 24 |
+| tmnrř | ļ | p | lrwyřhç | 35 | 35 |
+| zbgv | z | p | flrwyļřhç | 36 | 36 |
+| žbgv | ž | p | flrwyļřhç | 36 | 36 |
+| pk | fţ | p | lrwyļřhç | 32 | 32 |
+| r | r | p | fţsšlrwyļhç | 11 | 11 |
+| ř | ř | p | fţsšlwyļřhç | 11 | 11 |
+| l | l | p | fţsšlrwyļřhç | 12 | 12 |
+| m | m | p | ţsšlrwyļřhç | 11 | 11 |
+| ň | ň | p | fţsšlrwyļřhç | 12 | 12 |
+| rř | n | t | pkbgfvmnlrwyhļřç | 32 | 32 |
+| rř | ň | t | fvmnlrwyļřhç | 24 | 24 |
+| rřl | m | t | fvlrwyļřhç | 30 | 30 |
+| ptkrřlçmnň | ç | t | fvmnlrwyļřhç | 120 | 120 |
+| f | ç | t | lrwyļřhç | 8 | 8 |
+| fţspkrřlmnň | s | t | fvmnlrwyļřhç | 132 | 132 |
+| fţšpkrřlmnň | š | t | fvmnlrwyļřhç | 132 | 132 |
+| rř | pktcčgbẓjzžfvxţ | t | lrwyļřhç | 240 | 240 |
+| l | pktcčzž | t | lrwyļřhç | 56 | 56 |
+| m | zžpfxţm | t | lrwyļřhç | 56 | 56 |
+| n | zžkxţn | t | lrwyļřhç | 48 | 48 |
+| ň | zžfţň | t | lrwyļřhç | 40 | 40 |
+| l | fxţ | t | lrwyļřhç | 24 | 24 |
+| pmnrřļ | ļ | t | lrwyřhç | 42 | 42 |
+| t | ļ | t | rwyřhç | 6 | 6 |
+| zbgv | z | t | flrwyļřhç | 36 | 36 |
+| žbgv | ž | t | flrwyļřhç | 36 | 36 |
+| pk | fţ | t | lrwyļřhç | 32 | 32 |
+| r | r | t | pkbgfvlrwyļhç | 13 | 13 |
+| ř | ř | t | pkbgfvlwyļřhç | 13 | 13 |
+| l | l | t | kgfvlrwyļřhç | 12 | 12 |
+| m | m | t | kgfvmnlrwyhļřç | 14 | 14 |
+| n | n | t | kgfvmnlrwyhļřç | 14 | 14 |
+| ň | ň | t | kgfvmnlrwyhļřç | 14 | 14 |
+| rř | n | k | ptbdfţvḑcčẓjmnlrwyhřç | 42 | 42 |
+| rřl | pmfvţ | k | fţsšlrwyřhç | 165 | 165 |
+| nrřl | t | k | fţvlrwyřhç | 40 | 40 |
+| m | fţm | k | fţvsšmnlrwyřhç | 42 | 42 |
+| n | ţn | k | fţvsšmnlrwyřhç | 28 | 28 |
+| ň | fţň | k | fţvsšmnlrwyřhç | 42 | 42 |
+| ptkrřlçmnň | ç | k | fţvmnlrwyřhç | 120 | 120 |
+| f | ç | k | vlrwyřhç | 8 | 8 |
+| pkfţmnňrřl | sš | k | fţvmnlrwyřhç | 240 | 240 |
+| rřl | kbdḑcčẓjzž | k | fţvlrwyřhç | 300 | 300 |
+| rřl | ptbd | k | sš | 24 | 24 |
+| s | s | k | fţvmnlrwyřhç | 12 | 12 |
+| š | š | k | fţvmnlrwyřhç | 12 | 12 |
+| zbgmnňv | z | k | fţvmnlrwyřhç | 84 | 84 |
+| žbgmnňv | ž | k | fţvmnlrwyřhç | 84 | 84 |
+| tmnrř | ļ | k | fţvmnlrwyřhç | 60 | 60 |
+| pk | fţ | k | fţvmnlrwyřhç | 48 | 48 |
+| r | r | k | fţvḑsšmnlrwyhřç | 15 | 15 |
+| ř | ř | k | fţvḑsšmnlrwyhřç | 15 | 15 |
+| l | l | k | fţvḑsšmnlrwyhřç | 15 | 15 |
+| m | m | k | fţvḑsšmnlrwyhřç | 15 | 15 |
+| n | n | k | fţvḑmnlrwyhřç | 13 | 13 |
+| rřl | msšzžktcčẓjfvxţ | b | lrwyř | 225 | 225 |
+| rř | ňbgdḑ | b | lrwyř | 50 | 50 |
+| m | sšzžfvxţ | b | lrwyř | 40 | 40 |
+| n | ktdḑsšzžxţ | b | lrwyř | 50 | 50 |
+| pk | fţ | b | lrwyř | 20 | 20 |
+| spkfţ | s | b | lrwyř | 25 | 25 |
+| špkfţ | š | b | lrwyř | 25 | 25 |
+| zbgv | z | b | vlrwyř | 24 | 24 |
+| žbgv | ž | b | vlrwyř | 24 | 24 |
+| ptkrřlmnň | ç | b | lrwyř | 45 | 45 |
+| tmnrř | ļ | b | lrwyř | 25 | 25 |
+| dgv | v | b | lrwyř | 15 | 15 |
+| bg | ḑ | b | vlrwyř | 12 | 12 |
+| r | r | b | vḑlrwyř | 7 | 7 |
+| ř | ř | b | vḑlrwyř | 7 | 7 |
+| l | l | b | vḑlrwyř | 7 | 7 |
+| m | m | b | ḑlrwyř | 6 | 6 |
+| ň | ň | b | vḑlrwyř | 7 | 7 |
+| rř | n | d | vmlrwyř | 14 | 14 |
+| rř | ň | d | vlrwyř | 12 | 12 |
+| rř | bg | d | vlrwyř | 24 | 24 |
+| rřl | mzžẓj | d | vlrwyř | 90 | 90 |
+| rřl | pkdsškcčfvxţḑ | d | lrwyř | 195 | 195 |
+| m | psšfvxţzžḑ | d | lrwyř | 50 | 50 |
+| n | ksšxţzžḑ | d | lrwyř | 40 | 40 |
+| ň | sšfvţzžḑ | d | lrwyř | 40 | 40 |
+| fpk | f | d | lrwyř | 15 | 15 |
+| ţpk | ţ | d | lrwyř | 15 | 15 |
+| spkfţ | s | d | lrwyř | 25 | 25 |
+| špkfţ | š | d | lrwyř | 25 | 25 |
+| zbgv | z | d | lrwyř | 20 | 20 |
+| žbgv | ž | d | lrwyř | 20 | 20 |
+| ptkrřlmnň | ç | d | lrwyř | 45 | 45 |
+| tmnrř | ļ | d | lrwyř | 25 | 25 |
+| bgv | v | d | lrwyř | 15 | 15 |
+| bg | ḑ | d | vlrwyř | 12 | 12 |
+| r | r | d | vlrwyř | 6 | 6 |
+| ř | ř | d | vlrwyř | 6 | 6 |
+| l | l | d | vlrwyř | 6 | 6 |
+| m | m | d | vlrwyř | 6 | 6 |
+| n | n | d | vlrwyř | 6 | 6 |
+| ň | ň | d | vlrwyř | 6 | 6 |
+| rřl | m | g | vḑzžlrwyř | 27 | 27 |
+| rř | n | g | lrwyř | 10 | 10 |
+| rřl | ptbdgfvţcčẓjḑç | g | lrwyř | 210 | 210 |
+| rřlmnň | sšzž | g | vḑlmnrwyř | 216 | 216 |
+| m | ptfvţḑ | g | lrwyř | 30 | 30 |
+| n | tdţḑ | g | lrwyř | 20 | 20 |
+| pk | fţ | g | lrwyř | 20 | 20 |
+| spkfţ | s | g | lrwyř | 25 | 25 |
+| špkfţ | š | g | lrwyř | 25 | 25 |
+| zbgv | z | g | vḑzžmnlrwyř | 44 | 44 |
+| žbgv | ž | g | vḑžmnlrwyř | 40 | 40 |
+| tmnrř | ļ | g | lrwyř | 25 | 25 |
+| ptkrřlmnň | ç | g | lrwyř | 45 | 45 |
+| bg | ḑ | g | vlrwyř | 12 | 12 |
+| bdv | v | g | vḑlrwyř | 21 | 21 |
+| r | r | g | vḑlrwyř | 7 | 7 |
+| ř | ř | g | vḑlrwyř | 7 | 7 |
+| l | l | g | vḑlrwyř | 7 | 7 |
+| m | m | g | vḑlrwyř | 7 | 7 |
+| n | n | g | vḑlrwyř | 7 | 7 |
+| rřln | k | f | ptkbdgfmnňlrwyř | 60 | 60 |
+| rřl | p | f | tkbdgfmnňlrwyř | 42 | 42 |
+| rřlmnň | tţsšzžç | f | mnňlrwyř | 336 | 336 |
+| m | k | f | lrwyř | 5 | 5 |
+| rřlmň | f | f | ptkbdgţxsšḑzžcčẓjmnňlrwyļř | 130 | 130 |
+| rřlmn | x | f | lrwyř | 25 | 25 |
+| rřl | bdgcčẓj | f | mnňlrwyř | 168 | 168 |
+| spkfţ | s | f | mnňlrwyř | 40 | 40 |
+| špkfţ | š | f | mnňlrwyř | 40 | 40 |
+| zbgv | z | f | mnňlrwyř | 32 | 32 |
+| žbgv | ž | f | mnňlrwyř | 32 | 32 |
+| tmnrř | ļ | f | lrwyř | 25 | 25 |
+| pkţ | ţ | f | lrwyř | 15 | 15 |
+| r | r | f | ptkţxsšzžmnňlrwyř | 17 | 17 |
+| ř | ř | f | ptkţxsšzžmnňlrwyř | 17 | 17 |
+| l | l | f | ptkţxsšzžmnňlrwyř | 17 | 17 |
+| m | m | f | ptkţxsšzžmnňlrwyř | 17 | 17 |
+| ň | ň | f | ptkţxsšzžmnňlrwyř | 17 | 17 |
+| rřl | nň | ţ | ptkbdgfţxvcčmnňlrwyhř | 126 | 126 |
+| rřl | m | ţ | tkdgfţxvcčmnňlrwyř | 54 | 54 |
+| rřl | p | ţ | tkdgfţxvmnňlrwyř | 48 | 48 |
+| rřl | k | ţ | ptkbdgfţxvmnňlrwyř | 54 | 54 |
+| pkrřlmnň | ţ | ţ | ptkbdgfxsšvcčẓjmnňlrwyř | 184 | 184 |
+| rřln | x | ţ | lrwyř | 20 | 20 |
+| rřl | bg | ţ | lrwyř | 30 | 30 |
+| rřlmnň | sšzž | ţ | rw | 48 | 48 |
+| spkfţ | s | ţ | rw | 10 | 10 |
+| špkfţ | š | ţ | rw | 10 | 10 |
+| zbgv | z | ţ | rw | 8 | 8 |
+| žbgv | ž | ţ | rw | 8 | 8 |
+| sšzžmn | pk | ţ | lrwyř | 60 | 60 |
+| r | r | ţ | ptkxsšvcčẓjmnňlrwyř | 19 | 19 |
+| ř | ř | ţ | ptkxsšvcčẓjmnňlrwyř | 19 | 19 |
+| l | l | ţ | ptkxsšvcčẓjmnňlrwyř | 19 | 19 |
+| m | m | ţ | ptkxsšvcčẓjmnňlrwyř | 19 | 19 |
+| n | n | ţ | ptkxsšvcčẓjmnňlrwyř | 19 | 19 |
+| ň | ň | ţ | ptkxsšvcčẓjmnňlrwyř | 19 | 19 |
+| rř | mn | x | ptkbdxvmnlrw | 48 | 48 |
+| rřln | x | x | ptkbdxvmnlrw | 48 | 48 |
+| rřlm | ptfvţḑ | x | xmnlrw | 144 | 144 |
+| rř | bd | x | xmnlrw | 24 | 24 |
+| n | ţḑ | x | xmnlrw | 12 | 12 |
+| spkfrřlmnň | s | x | xmnlrw | 60 | 60 |
+| zbgvrřlmnň | z | x | xmnlrw | 60 | 60 |
+| žbgvrřlmnň | ž | x | xmnlrw | 60 | 60 |
+| pk | fţ | x | xmnlrw | 24 | 24 |
+| r | r | x | ptmnlrw | 7 | 7 |
+| ř | ř | x | ptmnlrw | 7 | 7 |
+| l | l | x | ptmnlrw | 7 | 7 |
+| m | m | x | ptmnlrw | 7 | 7 |
+| n | n | x | ptmnlrw | 7 | 7 |
+| pkfs | s | l | wy | 8 | 8 |
+| pkfš | š | l | wy | 8 | 8 |
+| bgvz | z | l | wy | 8 | 8 |
+| bgvž | ž | l | wy | 8 | 8 |
+| r | ļ | ļ | ptkbdgfţxvḑcčẓjmnňrwř | 21 | 21 |
+| mnň | ļ | ļ | ptkbdgfxvmnňrwř | 45 | 45 |
+| rřln | t | ļ | ptkbdgfxvmnňrwř | 60 | **64** |
+| rřl | cčẓjsšzžfţv | ļ | ļ | 33 | 33 |
+| mnň | sšzžţ | ļ | ļ | 15 | 15 |
+| mň | f | ļ | ļ | 2 | 2 |
+| rřl | ptm | ļ | ļ | 9 | **6** |
+| rř | mnňpkf | s | ptkbdgfţxsvḑcčjmnňlrwyhř | 288 | 288 |
+| l | mpkf | s | ptkbdgfţxsvḑcčjmnňlrwyhř | 96 | 96 |
+| m | f | s | ptkbdgfţxsvḑcčjmnňlrwyhř | 24 | 24 |
+| pkrřlmnň | ţ | s | ptkbdgfsvmnňlrwyhř | 144 | 144 |
+| rř | bgv | s | ptkfţxscč | 54 | 54 |
+| pkrřlmnň | s | s | ptkbdgfţxvḑcčjmnňlrwyļř | 184 | 184 |
+| r | r | s | ptkbdgfţxvḑcčjmnňlrwyhř | 23 | 23 |
+| ř | ř | s | ptkbdgfţxvḑcčjmnňlrwyhř | 23 | 23 |
+| l | l | s | ptkbdgfţxvḑcčjmnňlrwyhř | 23 | 23 |
+| m | m | s | ptkbdgfţxvḑcčjmnňlrwyhř | 23 | 23 |
+| n | n | s | ptkbdgfţxvḑcčjmnňlrwyhř | 23 | 23 |
+| ň | ň | s | ptkbdgfţxvḑcčjmnňlrwyhř | 23 | 23 |
+| rř | mnňpkf | š | ptkbdgfţxšvḑčjmnňlrwyhř | 276 | 276 |
+| l | mpkf | š | ptkbdgfţxšvḑčjmnňlrwyhř | 92 | 92 |
+| m | f | š | ptkbdgfţxšvḑčjmnňlrwyhř | 23 | 23 |
+| pkrřlmnň | ţ | š | ptkbdgfšvmnňlrwyhř | 144 | 144 |
+| rř | bgv | š | ptkfţxščwyhlř | 78 | 78 |
+| pkrřlmnň | š | š | ptkbdgfţxvḑčjmnňlrwyļř | 176 | 176 |
+| r | r | š | ptkbdgfţxvḑčjmnňlrwyļř | 22 | 22 |
+| ř | ř | š | ptkbdgfţxvḑčjmnňlrwyļř | 22 | 22 |
+| l | l | š | ptkbdgfţxvḑčjmnňlrwyļř | 22 | 22 |
+| m | m | š | ptkbdgfţxvḑčjmnňlrwyļř | 22 | 22 |
+| n | n | š | ptkbdgfţxvḑčjmnňlrwyļř | 22 | 22 |
+| ň | ň | š | ptkbdgfţxvḑčjmnňlrwyļř | 22 | 22 |
+| bgvz | z | v | vlrwyř | 24 | 24 |
+| bgvž | ž | v | vlrwyř | 24 | 24 |
+| mnrřl | tkdţsšzž | v | vlrwyř | 240 | 240 |
+| ň | tdţsšzž | v | vlrwyř | 42 | **48** |
+| rř | mňg | v | vlrwyř | 36 | 36 |
+| rřl | mpzžẓjb | v | vlrwyř | 126 | 126 |
+| rřlmň | v | v | ptkbdgţxsšḑzžcčẓjmnňlrwyļř | 130 | 130 |
+| pkţ | ţ | v | vlrwyř | 18 | 18 |
+| pkfmnň | sš | v | vlrwyř | 72 | **60** |
+| rřmnň | ļ | v | wy | 10 | 10 |
+| r | r | v | bdgţxsšḑzžcčẓjmnňlrwyļř | 23 | 23 |
+| ř | ř | v | bdgţxsšḑzžcčẓjmnňlrwyļř | 23 | 23 |
+| l | l | v | bdgţxsšḑzžcčẓjmnňlrwyļř | 23 | 23 |
+| m | m | v | bdgţxsšḑzžcčẓjmnňlrwyļř | 23 | 23 |
+| ň | ň | v | bdgţxsšḑzžcčẓjmnňlrwyļř | 23 | 23 |
+| rřl | pk | ḑ | ḑrwyř | 30 | 30 |
+| rř | bgmn | ḑ | bdgḑmnlrwyř | 88 | 88 |
+| l | bgm | ḑ | bdgḑmnlrwyř | 33 | 33 |
+| rřlmnň | zž | ḑ | ḑrwyř | 60 | 60 |
+| rřl | ḑ | ḑ | ptkbdgfxvcčẓjmnňlrwyļř | 66 | 66 |
+| ļrř | ļ | ḑ | wy | 6 | 6 |
+| r | r | ḑ | ptkbdgfxvcčẓjmnňlrwyļř | 22 | 22 |
+| ř | ř | ḑ | ptkbdgfxvcčẓjmnňlrwyļř | 22 | 22 |
+| l | l | ḑ | ptkbdgfxvcčẓjmnňlrwyļř | 22 | 22 |
+| m | m | ḑ | ptkbdgfxvcčẓjmnňlrwyļř | 22 | 22 |
+| n | n | ḑ | ptkbdgfxvcčẓjmnňlrwyļř | 22 | 22 |
+| ň | ň | ḑ | ptkbdgfxvcčẓjmnňlrwyļř | 22 | 22 |
+| rř | nň | z | ptkbdgfţxvḑzjmnňlrwyř | 84 | 84 |
+| rřl | m | z | ptkbdgfţxvḑzjmnňlrwyř | 63 | 63 |
+| rřl | bgv | z | bdgvḑzjmnňlrwyhř | 144 | **64** |
+| rřlmnň | z | z | ptkbdgfţxvḑjmnňlrwyļř | 126 | 126 |
+| bg | z | z | ptkbdgvxḑjmnňlrwyř | 36 | 36 |
+| r | r | z | ptkbdgvxḑjmnňlrwyř | 18 | 18 |
+| ř | ř | z | ptkbdgvxḑjmnňlrwyř | 18 | 18 |
+| l | l | z | ptkbdgvxḑjmnňlrwyř | 18 | 18 |
+| m | m | z | ptkbdgvxḑjmnňlrwyř | 18 | 18 |
+| n | n | z | ptkbdgvxḑjmnňlrwyř | 18 | 18 |
+| ň | ň | z | ptkbdgvxḑjmnňlrwyř | 18 | 18 |
+| rř | nň | ž | ptkbdgfţxvḑžjmnňlrwyř | 84 | 84 |
+| rřl | m | ž | ptkbdgfţxvḑžjmnňlrwyř | 63 | 63 |
+| rř | bg | ž | bdgvḑžjmnňlrwyhř | 64 | 64 |
+| rřl | v | ž | bdgvḑžjmnňlrwyhř | 48 | 48 |
+| rřlmnň | ž | ž | ptkbdgfţxvḑjmnňlrwyļř | 126 | 126 |
+| bg | ž | ž | ptkbdgxvḑjmnňlrwyř | 36 | 36 |
+| r | r | ž | ptkbdgxvḑjmnňlrwyř | 18 | 18 |
+| ř | ř | ž | ptkbdgxvḑjmnňlrwyř | 18 | 18 |
+| l | l | ž | ptkbdgxvḑjmnňlrwyř | 18 | 18 |
+| m | m | ž | ptkbdgxvḑjmnňlrwyř | 18 | 18 |
+| n | n | ž | ptkbdgxvḑjmnňlrwyř | 18 | 18 |
+| ň | ň | ž | ptkbdgxvḑjmnňlrwyř | 18 | 18 |
+| ptkrřlçmnň | ç | c | mnňhlrřwy | 90 | 90 |
+| ptkrřlmnň | ţ | c | mnňwy | 45 | 45 |
+| mnňļ | ļ | c | mnňwy | 20 | 20 |
+| r | r | c | mnňhlrřwy | 9 | 9 |
+| ř | ř | c | mnňhlrřwy | 9 | 9 |
+| l | l | c | mnňhlrřwy | 9 | 9 |
+| m | m | c | mnňhlrřwy | 9 | 9 |
+| ň | ň | c | mnňhlrřwy | 9 | 9 |
+| ptkrřlçmnň | ç | č | mnňhlrřwy | 90 | 90 |
+| ptkrřlmnň | ţ | č | mnňwy | 45 | 45 |
+| mnňļ | ļ | č | mnňwy | 20 | 20 |
+| r | r | č | mnňhlrřwy | 9 | 9 |
+| ř | ř | č | mnňhlrřwy | 9 | 9 |
+| l | l | č | mnňhlrřwy | 9 | 9 |
+| m | m | č | mnňhlrřwy | 9 | 9 |
+| ň | ň | č | mnňhlrřwy | 9 | 9 |
+| r | r | ẓ | mnňlrřwy | 8 | 8 |
+| ř | ř | ẓ | mnňlrřwy | 8 | 8 |
+| l | l | ẓ | mnňlrřwy | 8 | 8 |
+| r | r | j | mnňlrřwy | 8 | 8 |
+| ř | ř | j | mnňlrřwy | 8 | 8 |
+| l | l | j | mnňlrřwy | 8 | 8 |
+| rřl | m | m | ptkbdgfţxsšvḑzžcčẓjnlrwyhļřç | 84 | 84 |
+| rř | ptkbdgfvţḑsšzžxļcčẓjç | m | lrřwy | 210 | 210 |
+| l | ptkfţsšzžxļcčẓjç | m | lrřwy | 80 | **75** |
+| m | fvţḑsšzžxļç | m | lrřwy | 55 | 55 |
+| n | tkdţḑsšzžxļç | m | lrřwy | 60 | 60 |
+| ň | tdţḑsšzžļç | m | lrřwy | 50 | 50 |
+| spkfţ | s | m | lrřwy | 25 | 25 |
+| špkfţ | š | m | lrřwy | 25 | 25 |
+| zbgv | z | m | lrřwy | 20 | 20 |
+| žbgv | ž | m | lrřwy | 20 | 20 |
+| ptkç | ç | m | lrřwy | 20 | 20 |
+| pkţ | ţ | m | lrřwy | 15 | 15 |
+| çsšf | t | m | wy | 8 | 8 |
+| çsš | k | m | wy | 6 | 6 |
+| ptļ | ļ | m | wy | 6 | 6 |
+| r | r | m | ptkbdgfţxsšvḑzžcčẓjnlrwyhļř | 27 | 27 |
+| ř | ř | m | ptkbdgfţxsšvḑzžcčẓjnlrwyhļř | 27 | 27 |
+| l | l | m | ptkbdgfţxsšvḑzžcčẓjnlrwyhļř | 27 | 27 |
+| rřl | n | n | tkdgfţxsšvḑzžmlrwyhļřç | 66 | 66 |
+| rř | ptkbdgfvţḑsšzžxļcčẓjç | n | wy | 84 | **42** |
+| l | ptkfţsšzžxļcčẓjç | n | wy | 32 | 32 |
+| m | fvţsšzžxļç | n | wy | 20 | 20 |
+| n | tkdţḑsšzžxļç | n | wy | 24 | 24 |
+| ň | tţḑsšzžļç | n | wy | 18 | 18 |
+| spkfţ | s | n | wy | 10 | 10 |
+| špkfţ | š | n | wy | 10 | 10 |
+| zbgv | z | n | wy | 8 | 8 |
+| žbgv | ž | n | wy | 8 | 8 |
+| çsšf | t | n | wy | 8 | 8 |
+| çsš | k | n | wy | 6 | 6 |
+| ptkmnňrřlç | ç | n | wy | 20 | 20 |
+| ptmnňrř | ļ | n | wy | 14 | 14 |
+| pkţ | ţ | n | wy | 6 | 6 |
+| r | r | n | tkdgfţxsšvḑzžmlrwyhļř | 21 | 21 |
+| ř | ř | n | tkdgfţxsšvḑzžmlrwyhļř | 21 | 21 |
+| l | l | n | lrwyļř | 6 | 6 |
+| rř | ň | ň | ptbdfţsšvḑzžcčẓjmnlrwhļř | 48 | 48 |
+| srřl | s | ň | w | 4 | 4 |
+| šrřl | š | ň | w | 4 | 4 |
+| zrřl | z | ň | w | 4 | 4 |
+| žrřl | ž | ň | w | 4 | 4 |
+| ptkmnňrřlç | ç | ň | w | 10 | 10 |
+| pkm | f | ň | w | 3 | 3 |
+| pkn | ţ | ň | w | 3 | 3 |
+| ptmnňrř | ļ | ň | w | 7 | 7 |
+| pkţ | ţ | ň | w | 3 | 3 |
+| r | r | ň | ptbdfţsšvḑzžcčẓjmnlrwhļř | 24 | 24 |
+| ř | ř | ň | ptbdfţsšvḑzžcčẓjmnlrwhļř | 24 | 24 |
+| l | l | ň | w | 1 | 1 |
+| rřlm | ptkcč | h | w | 20 | 20 |
+| n | tk | h | w | 2 | 2 |
+| ň | ptcč | h | w | 4 | 4 |
+| rřl | mnň | h | wr | 18 | 18 |
+| r | lr | h | mnw | 6 | 6 |
+| l | l | h | mnw | 3 | 3 |
+| ř | ř | h | mnw | 3 | 3 |
+| m | m | h | w | 1 | 1 |
+| n | n | h | w | 1 | 1 |
+| ň | ň | h | w | 1 | 1 |
+| rř | ptkmnň | ç | ptkbdgfvcčmnňlrwřç | 216 | 216 |
+| l | ptkm | ç | ptkbdgfvcčmnňlrwřç | 72 | 72 |
+| mnňlrř | ç | ç | ptkbdgfvcčmnňlrwř | 102 | 102 |
+| mlrř | f | ç | ptkbdgfvcčmnňlrwřç | 72 | 72 |
+| r | r | ç | ptkbdgfvcčmnňlrwř | 17 | 17 |
+| ř | ř | ç | ptkbdgfvcčmnňlrwř | 17 | 17 |
+| l | l | ç | ptkbdgfvcčmnňlrwř | 17 | 17 |
+| m | m | ç | ptkbdgfvcčmnňlrwř | 17 | 17 |
+| n | n | ç | ptkbdgfvcčmnňlrwř | 17 | 17 |
+| ň | ň | ç | ptkbdgfvcčmnňlrwř | 17 | 17 |
+
+The rows enumerate **15106** conjuncts against a stated total of **15034**; the printed row totals sum to **14974**. 7 of the 357 rows disagree with their own contents.
 
 ## 11. Permissible Penta-Consonantal Conjuncts Which Can Be Roots
 
-Total permissible penta-consonantal root conjuncts: **12271**
+Each row gives a set of permitted consonants for each of the five positions.
 
-The full table is available in the PDF source.
+| 1st | 2nd | 3rd | 4th | 5th | count | printed |
+|---|---|---|---|---|---|---|
+| lrř | pkfţ | sš | ptkbdg | lrřwy | 720 | 720 |
+| lrř | pkfţ | sš | ptk | ţçh | 216 | 216 |
+| lrř | pkfţ | sš | bg | ḑv | 96 | 96 |
+| lrř | pkf | sš | mn | wy | 72 | 72 |
+| lrř | pkf | sš | ň | w | 18 | 18 |
+| lrř | pk | fţ | ptkbdg | lrřwy | 360 | 360 |
+| lrř | pk | fţ | ptk | h | 36 | 36 |
+| lrř | pkf | sš | fţ | lrřwy | 180 | 180 |
+| lrmnň | sšç | pk | f | lrřwy | 150 | 150 |
+| lrř | m | sšzžç | ţf | lrřwy | 150 | 150 |
+| lrř | m | sšzžţfç | ptkbdg | lrřwy | 630 | 630 |
+| lrř | m | sšzžţfç | ptk | hf | 126 | **63** |
+| lrř | m | sšzžç | pk | ţ | 30 | **60** |
+| l | m | sšzžç | pt | ļ | 10 | 10 |
+| lrř | pt | ļ | ptkbdg | lrřwy | 180 | 180 |
+| lrř | pt | ļ | ptk | h | 18 | 18 |
+| lrř | ptk | ç | ptkbdgf | lrřwy | 315 | 315 |
+| lrř | ptk | ç | ptk | h | 27 | 27 |
+| lrř | v | zž | ptkbdg | lrřwy | 180 | 180 |
+| lrř | v | zž | ptk | h | 18 | 18 |
+| lrř | v | zž | pk | ţf | 24 | 24 |
+| rř | nň | sšzžţç | ptkbdg | lrřwy | 720 | 720 |
+| rř | nň | sšzžţç | ptk | h | 72 | 72 |
+| rř | ň | f | ptkbdg | lrřwy | 60 | 60 |
+| rř | ň | f | ptk | h | 6 | 6 |
+| rř | nň | sšzžç | pk | ţf | 80 | 80 |
+| rř | mnň | sšzžç | pt | ļ | 60 | 60 |
+| rř | nň | sšzžç | ţf | lrřwy | 200 | 200 |
+| rř | nň | ḑ | bg | lrřwy | 40 | 40 |
+| rř | n | t | pk | lrřhwy | 24 | 24 |
+| rř | n | k | pt | lrřhwy | 24 | 24 |
+| pkfmnňlrř | s | s | ptkf | lrřhwy | 216 | 216 |
+| pkfmnňlrř | s | s | mn | wy | 36 | 36 |
+| pkfmnňlrř | s | s | ň | w | 9 | 9 |
+| pkfmnňlrř | š | š | ptkf | lrřhwy | 216 | 216 |
+| pkfmnňlrř | š | š | mn | wy | 36 | 36 |
+| pkfmnňlrř | š | š | ň | w | 9 | 9 |
+| pt | sšç | ptk | h | w | 18 | 18 |
+| pk | ţ | ptk | h | w | 6 | 6 |
+| lrř | pkm | s | s | ptkmnňlrřwy | 99 | 99 |
+| rř | nň | s | s | ptkmnňlrřwy | 44 | 44 |
+| lrř | pkm | š | š | ptkmnňlrřwy | 99 | 99 |
+| rř | nň | š | š | ptkmnňlrřwy | 44 | 44 |
+| lrř | ţf | pk | s | s | 12 | 12 |
+| lrř | mn | k | s | s | 6 | 6 |
+| lrř | ţf | pk | š | š | 12 | 12 |
+| lrř | mn | k | š | š | 6 | 6 |
+| pkmnňlrř | ç | ç | ptk | lrřhwy | 144 | 144 |
+| pkmnňlrř | ç | ç | mn | wy | 32 | 32 |
+| lrř | ptkm | ç | ç | ptkmnňlrřw | 120 | 120 |
+| rř | nň | ç | ç | ptkmnňlrřw | 40 | 40 |
+| lrř | ţ | pk | ç | ç | 6 | 6 |
+| lrř | f | ptk | ç | ç | 9 | 9 |
+| lrř | mn | tk | ç | ç | 12 | 12 |
+| m | m | sšçfţzžvḑ | ptk | lrřhwy | 162 | 162 |
+| n | n | sšçţzžḑ | ptk | lrřhwy | 126 | 126 |
+| ň | ň | sšçfţzžvḑ | ptk | lrřhwy | 162 | 162 |
+| m | m | sšçfţzžvḑ | bdg | lrřwy | 135 | 135 |
+| n | n | sšçţzžḑ | bdg | lrřwy | 105 | 105 |
+| ň | ň | sšçfţzžvḑ | bdg | lrřwy | 135 | 135 |
+| m | m | sšzž | v | lrřwy | 20 | 20 |
+| n | n | sšzž | v | lrřwy | 20 | 20 |
+| ň | ň | sšzž | v | lrřwy | 20 | 20 |
+| lrř | m | m | k | sšçlrřhwy | 27 | 27 |
+| lrř | m | m | pt | ļlrřhwy | 42 | 42 |
+| lrř | m | m | sšçfţ | ptklrřwy | 120 | 120 |
+| lrř | m | m | sšçfţ | mnňx | 60 | 60 |
+| lrř | m | m | sšç | fţv | 27 | 27 |
+| lrř | m | m | f | ţ | 3 | 3 |
+| lrř | n | n | k | lrřhwy | 18 | 18 |
+| lrř | n | n | t | ļlrřhwy | 21 | 21 |
+| lrř | n | n | sšçţ | ptklrřwy | 96 | 96 |
+| lrř | n | n | sšçţ | mnňfvx | 72 | 72 |
+| lrř | n | n | sšç | ţ | 9 | 9 |
+| lrř | ň | ň | pt | ļlrřhwy | 42 | 42 |
+| lrř | ň | ň | sšçfţ | ptklrřwy | 120 | 120 |
+| lrř | ň | ň | sšçfţ | mnňx | 60 | 60 |
+| lrř | ň | ň | sšç | fţv | 27 | 27 |
+| lrř | ň | ň | f | ţ | 3 | 3 |
+| l | l | sšçfţ | ptk | ļlrřhwy | 105 | 105 |
+| l | l | sšçfţ | k | lrřhwy | 30 | 30 |
+| l | l | sšçfţ | mn | wy | 20 | 20 |
+| l | l | sšçfţ | ň | w | 5 | 5 |
+| l | l | sšçfţ | bdg | lrřwy | 75 | 75 |
+| l | l | m | sšçfţ | ptkbdglrřwy | 55 | 55 |
+| l | l | m | sšç | fţv | 9 | 9 |
+| r | r | sšçfţ | ptk | ļlrřhwy | 105 | 105 |
+| r | r | sšçfţ | k | lrřhwy | 30 | 30 |
+| r | r | sšçfţ | mnň | wy | 30 | 30 |
+| r | r | mnň | sšçfţ | ptkbdglrřwy | 165 | 165 |
+| r | r | mnň | sšç | fţv | 27 | 27 |
+| ř | ř | sšçfţ | ptk | ļlrřhwy | 105 | 105 |
+| ř | ř | sšçfţ | k | lrřhwy | 30 | 30 |
+| ř | ř | sšçfţ | mnň | wy | 30 | 30 |
+| ř | ř | mnň | sšçfţ | ptkbdglrřwy | 165 | 165 |
+| ř | ř | mnň | sšç | fţv | 27 | 27 |
+| lrř | bgv | zž | ptkbdg | lrřwy | 540 | 540 |
+| lrř | bgv | zž | ptk | h | 54 | 54 |
+| lrř | bg | vḑ | bdg | lrřwy | 180 | 180 |
+| lrř | bgv | zž | v | lrřwy | 90 | 90 |
+| lrř | mnň | zž | bg | vḑ | 72 | 72 |
+| lrř | mnň | zž | d | v | 18 | 18 |
+| lrř | mň | v | bdg | lrřwy | 90 | 90 |
+| lrř | n | ḑ | bdg | lrřwy | 45 | 45 |
+| bgvmnňlrř | z | z | ptk | lrřhwy | 162 | **135** |
+| bgvmnňlrř | z | z | bdgfv | lrřwy | 225 | 225 |
+| bgvmnňlrř | z | z | mn | wy | 36 | **45** |
+| bgvmnňlrř | z | z | ň | w | 9 | 9 |
+| bgvmnňlrř | ž | ž | ptk | lrřhwy | 162 | **135** |
+| bgvmnňlrř | ž | ž | bdgfv | lrřwy | 225 | 225 |
+| bgvmnňlrř | ž | ž | mn | wy | 36 | 36 |
+| bgvmnňlrř | ž | ž | ň | w | 9 | 9 |
+| lrř | bgm | z | z | ptkbdgmnňlrřwy | 126 | 126 |
+| rř | nň | z | z | ptkbdgmnňlrřwy | 56 | 56 |
+| lrř | bgm | ž | ž | ptkbdgmnňlrřwy | 126 | 126 |
+| rř | nň | ž | ž | ptkbdgmnňlrřwy | 56 | 56 |
+| lrř | m | m | bg | zžlrřwy | 42 | 42 |
+| lrř | m | m | zžvḑ | ptkbdglrřwy | 132 | 132 |
+| lrř | m | m | zž | mnňxfţvḑ | 48 | 48 |
+| lrř | m | m | v | mnňxţḑ | 18 | 18 |
+| lrř | m | m | ḑ | mnň | 9 | 9 |
+| lrř | n | n | g | lrřwy | 15 | 15 |
+| lrř | n | n | zžvḑ | ptkbdglrřwy | 132 | 132 |
+| lrř | n | n | zž | mnňxfţvḑ | 48 | 48 |
+| lrř | n | n | ḑ | mnň | 9 | 9 |
+| lrř | ň | ň | bd | lrřwy | 30 | 30 |
+| lrř | ň | ň | zžvḑ | ptkbdglrřwy | 132 | 132 |
+| lrř | ň | ň | zž | mnňxfţvḑ | 48 | 48 |
+| lrř | ň | ň | v | mnňxţḑ | 18 | 18 |
+| lrř | ň | ň | ḑ | mnň | 9 | 9 |
+| l | l | zžvḑ | ptk | ļlrřhwy | 84 | 84 |
+| l | l | zžvḑ | k | lrřhwy | 24 | 24 |
+| l | l | zžvḑ | mn | wy | 16 | 16 |
+| l | l | zžvḑ | ň | w | 4 | 4 |
+| l | l | zžvḑ | bdg | lrřwy | 60 | 60 |
+| l | l | m | zžvḑ | ptkbdglrřwy | 44 | 44 |
+| l | l | m | zž | fţvḑ | 8 | 8 |
+| r | r | zžvḑ | ptk | ļlrřhwy | 84 | 84 |
+| r | r | zžvḑ | k | lrřhwy | 24 | 24 |
+| r | r | zžvḑ | mn | wy | 16 | 16 |
+
+The rows enumerate **12089** conjuncts against a stated total of **12271**; the printed row totals sum to **12011**. 5 of the 140 rows disagree with their own contents.
