@@ -444,3 +444,71 @@ conjunct from the cluster rules, and the sweep in
 `roman/inventory_test.go` holds the adjunct classes to §1's vowel rules
 but not §2's and §3's cluster rules. It is a reading, not something the
 source states, and the alternative is that §3.2.7 simply omits -ň.
+### G47. §2.10 and the §8 grid disagree about ç before a voiced affricate
+
+§2.10 states the rule in prose, with a reason:
+
+> The voiceless palatal fricative -**ç**- cannot be preceded or followed
+> by a a sibilant fricative (**s**, **z**, **š**, **ž**), nor preceded
+> by a sibilant affricate (**c**, **ẓ**, **č**, **j**), nor followed by
+> a voiced sibilant affricate (**ẓ**, **j**).
+
+§8's grid, which tabulates the bi-consonantal conjuncts that can be a
+C_R root or a C_S affix, marks **çẓ** and **çj** permissible. Those are
+exactly the two forms the last clause bars.
+
+The grid is not casual about ç elsewhere in the same row: `çs`, `çš`,
+`çz`, `çž`, `çļ` and `çh` are all marked impermissible, matching the
+other clauses of §2.10 exactly. Only the voiced-affricate clause is
+contradicted, and it is the one clause with a stated phonetic reason.
+
+This is the whole of the disagreement between §8 and §§1-7. Generating
+the grid from the other rules reproduces it cell for cell in 26 of the
+27 rows — 810 checks — and the ç row is the single exception.
+`phonology.TestSection8GridMatchesRules` pins that, and follows the
+prose, so `çẓ` and `çj` are rejected.
+
+### G48. None of the four conjunct tables agrees with its own arithmetic
+
+§§8-11 tabulate the permissible consonant conjuncts. Each is derived
+from the rules in §§1-7, and each carries per-row totals and a grand
+total. In all four the rows, the row totals and the grand total are
+three different answers.
+
+| | rows enumerate | printed row totals | stated total | rows disagreeing |
+|---|---|---|---|---|
+| §8 bi-consonantal | 684 | 679 | 679 | 5 of 27 |
+| §9 tri-consonantal | 5021 | 5183 | 5183 | 4 of 129 |
+| §10 tetra-consonantal | 15106 | 14974 | 15034 | 7 of 357 |
+| §11 penta-consonantal | 12089 | 12011 | 12271 | 5 of 140 |
+
+§8 is a grid of coloured cells, and its five short rows — ç, c, č, ẓ
+and j — each hold one more permissible cell than the total printed
+beside them. Nothing marks which cell is meant to be excluded.
+
+§§9-11 are product-of-sets tables: a row gives a permitted consonant
+set per position, and its total should be the product of the set sizes.
+485 of the 497 rows are exactly that. The twelve that are not were each
+checked against the rendered page, so the sets are as printed and the
+arithmetic is the source's:
+
+- **A dropped factor, twice.** §9's `rř` + **ḑ** row prints 24, which
+  is its third-consonant count alone; §10's `rř` + 21-consonant +
+  **n** + `wy` row prints 42, which is 21 x 2. Both omit the leading
+  `r ř` from the product, and in both cases the neighbouring rows with
+  a single-consonant first column are correct.
+- **A digit typo.** §9's `c` + **c** row prints **223** where its
+  contents give 23. On its own that accounts for 200 of §9's 162-form
+  gap; correct it and the printed totals sum to 4983.
+- **Parallel blocks that disagree.** §11 tabulates **z** and **ž** in
+  blocks with identical set structure. The `mn`/`wy` row prints 45 in
+  the z block and 36 in the ž block; 36 is the product.
+- The other eight are off by amounts with no evident cause, the largest
+  being §10's `rřl` + `bgv` + **z** row, printed 64 where its sets give
+  144.
+
+Nothing here changes what is permissible: the rows say which conjuncts
+exist, and the totals are commentary on them. It does mean no count
+Quijada prints for these tables can be quoted as authoritative, and
+that the widely-cited "679 bi-consonantal conjuncts" is one of the
+five-row disagreements rather than a figure the grid supports.

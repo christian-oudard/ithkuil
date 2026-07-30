@@ -822,7 +822,15 @@ Each row gives a set of permitted consonants for each of the four positions: eve
 | n | n | ç | ptkbdgfvcčmnňlrwř | 17 | 17 |
 | ň | ň | ç | ptkbdgfvcčmnňlrwř | 17 | 17 |
 
-The rows enumerate **15106** conjuncts against a stated total of **15034**; the printed row totals sum to **14974**. 7 of the 357 rows disagree with their own contents.
+The rows enumerate **15106** conjuncts against a stated total of **15034**; the printed row totals sum to **14974**. Seven of the 357 rows disagree with their own contents, each checked against the rendered page so that the sets are as printed:
+
+- `rřln` + **t** + `ļ`: 4 x 15 = 60, printed 64.
+- `rřl` + `ptm` + `ļ` + `ļ`: 3 x 3 = 9, printed 6.
+- `ň` + `tdţsšzž` + **v**: 7 x 6 = 42, printed 48.
+- `pkfmnň` + `sš` + **v**: 6 x 2 x 6 = 72, printed 60.
+- `rřl` + `bgv` + **z**: 3 x 3 x 16 = 144, printed 64. Its neighbours, `rř` + `nň` + **z** at 84 and `rřl` + `m` + **z** at 63, are both exact.
+- `l` + 16 consonants + **m** + `lrřwy`: 80, printed 75.
+- `rř` + 21 consonants + **n** + `wy`: 84, printed 42, which is 21 x 2. The leading `rř` is not multiplied in, the same omission §9 makes in its `rř` + **ḑ** row.
 
 ## 11. Permissible Penta-Consonantal Conjuncts Which Can Be Roots
 
@@ -971,4 +979,12 @@ Each row gives a set of permitted consonants for each of the five positions.
 | r | r | zžvḑ | k | lrřhwy | 24 | 24 |
 | r | r | zžvḑ | mn | wy | 16 | 16 |
 
-The rows enumerate **12089** conjuncts against a stated total of **12271**; the printed row totals sum to **12011**. 5 of the 140 rows disagree with their own contents.
+The rows enumerate **12089** conjuncts against a stated total of **12271**; the printed row totals sum to **12011**. Five of the 140 rows disagree with their own contents:
+
+- `lrř` + `m` + `sšzžţfç` + `ptk` + `hf`: 3 x 7 x 3 x 2 = 126, printed 63, which is half.
+- `lrř` + `m` + `sšzžç` + `pk` + `ţ`: 30, printed 60, which is double.
+- `bgvmnňlrř` + `z` + `z` + `ptk` + `lrřhwy`: 9 x 3 x 6 = 162, printed 135, which is 9 x 3 x 5. The same row in the parallel `ž` block prints 135 too.
+- `bgvmnňlrř` + `z` + `z` + `mn` + `wy`: 36, printed 45. The identical row in the `ž` block prints 36.
+- `bgvmnňlrř` + `ž` + `ž` + `ptk` + `lrřhwy`: 162, printed 135.
+
+The z and ž blocks are tabulated with identical set structure throughout, so where the two print different totals for the same shape, one of them is wrong on the source's own terms.
