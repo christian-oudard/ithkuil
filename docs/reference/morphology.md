@@ -872,7 +872,7 @@ Validation refers to the evidential basis for a statement in ASSERTIVE illocutio
 | **DIR** | DIRECTIVE Illocution | ái |
 | **DEC** | DECLARATIVE Illocution | áu |
 | **IRG** | INTERROGATIVE Illocution | éi |
-| **VRF** | VERIFICATIVE Illocution | éu |
+| **VER** | VERIFICATIVE Illocution | éu |
 | **ADM** | ADMONITIVE Illocution | óu |
 | **POT** | POTENTIATIVE Illocution | ói |
 | **HOR** | HORTATIVE Illocution | íu |

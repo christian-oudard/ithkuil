@@ -276,21 +276,29 @@ than list their names.
 
 ### G41. VRF abbreviates both an illocution and an affix
 
-The morphology document gives VRF to the VERIFICATIVE illocution, in
-all three places it appears (§3.9.3.1's table, §3.9.3.3's V_K list, and
-the illocution/validation matrix). The affix document gives the same
-three letters to -**ňç** "Verifiability of Info & Trustworthiness of
-its Source", and reprints the illocution matrix with VRF in it, so both
-senses appear on one page.
+The morphology document cannot make up its mind. §3.9.3.1's table and
+the illocution/validation matrix both say VRF; §3.9.3.2's V_K list says
+**VER**; and the v1.3.2 version history says "The 3-letter abbreviation
+for VERIFICATIVE Illocution has beeb changed to VER." So the rename was
+made, announced, and then applied to one of the three places.
+
+Our transcription had VRF in all three, having missed the one VER. That
+is corrected: `morphology.md` now reads VER where the source does.
+
+The collision is what the rename is presumably for. The affix document
+gives the same three letters to -**ňç** "Verifiability of Info &
+Trustworthiness of its Source", and reprints the illocution matrix with
+VRF in it, so both senses appear on one page.
 
 A gloss is a sequence of abbreviations with no per-token type, so the
 two cannot be told apart in one: `VRF/3` is the affix at degree 3 and a
 bare `VRF` is the illocution, but only because affixes are the ones
 that carry a degree. The illocution list is otherwise collision-free.
 
-This code writes the illocution **VER** for that reason, and it is the
-only abbreviation here that departs from the source. The transcription
-in `morphology.md` keeps VRF, as it should.
+This code writes the illocution **VER**, which is what the version
+history instructs and what one of the three tables already does. It is
+not a departure from the source, as this entry previously recorded, but
+a choice between two things the source says.
 
 ### G42. §2.3 ¶5 does not say whether a chain link may take a parsing adjunct
 
