@@ -122,6 +122,11 @@ Ithkuil, authored rather than derived — see the "English index" section
 of SPEC.md, and the head of `english.md` for what earns an entry.
 `README.md`, `SPEC.md`, and this file stay at the root by convention.
 
+`docs/grammar_explanations.md` sits outside `reference/` on purpose: it
+is authored rather than transcribed, and says how each category lands in
+English, which is not a claim about the language and not something the
+sources set out to answer.
+
 - `docs/reference/morphology.md` - Canonical V4 grammar reference (phonology, morphology, slots, cases, adjuncts, syntax, numbers)
 - `docs/reference/affixes_reference.md` - All 528 affixes with gradient types and 9 degrees
 - `docs/reference/phonotactics.md` - Detailed consonant cluster rules
