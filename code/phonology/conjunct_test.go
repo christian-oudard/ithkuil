@@ -131,3 +131,25 @@ func TestGlottalizeVowel(t *testing.T) {
 		}
 	}
 }
+
+// DissimilateGlides is §1.6's footnote applied to a whole word. A Cr
+// ending in -y or -w puts a glide directly before Slot IV's Vr, which
+// is Series 3 whenever the Context is RPS, so this is reachable without
+// any Slot I shortcut.
+func TestDissimilateGlides(t *testing.T) {
+	cases := []struct{ in, want string }{
+		{"lyiala", "lyuäla"}, // y + ia
+		{"lwuala", "lwiäla"}, // w + ua
+		{"lwiala", "lwiala"}, // w + i-initial: untouched
+		{"lyuala", "lyuala"}, // y + u-initial: untouched
+		{"lyuäla", "lyuäla"}, // idempotent
+		{"člala", "člala"},   // no glide
+		{"lyëila", "lyëila"}, // series 1 form 5 after a glide
+		{"", ""},
+	}
+	for _, c := range cases {
+		if got := DissimilateGlides(c.in); got != c.want {
+			t.Errorf("DissimilateGlides(%q) = %q, want %q", c.in, got, c.want)
+		}
+	}
+}

@@ -134,7 +134,7 @@ func finishReferential(bodies []string, head g.RefHead, suppletivePrefix string,
 		}
 		word = marked
 	}
-	return word, nil
+	return phonology.DissimilateGlides(word), nil
 }
 
 // pickValid returns the first candidate that can be said.
@@ -172,7 +172,7 @@ func refChainForm(refs []g.PersonalRef) string {
 	for _, r := range refs {
 		b.WriteString(parse.RefC1(r))
 	}
-	return b.String()
+	return phonology.DissimilateGlides(b.String())
 }
 
 // categoryForm attaches a §4.6 category affix to a referent chain.

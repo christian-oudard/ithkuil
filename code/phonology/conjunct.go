@@ -170,3 +170,46 @@ func Rule1Glottal(v string) (string, bool) {
 	}
 	return "", false
 }
+
+// DissimilateGlides applies §1.6's footnote to an assembled
+// romanization: a Series-3 vowel-form written after y- or w- takes its
+// alternate spelling when it begins with the vowel that matches the
+// glide. yia becomes yuä; wua becomes wiä.
+//
+// It runs here rather than in the encoders because it is the one rule
+// about a vowel-form that depends on what precedes it, and only the
+// assembled word knows that. Threading the preceding consonant into
+// every Vv, Vr and Vx encoder would put an adjacency question in six
+// places that cannot answer it.
+//
+// It walks conjuncts rather than matching substrings so that the vowel
+// it tests is a whole vowel-form. A run of vowels in a well-formed word
+// is exactly one form, so there is no case where the y and the -i-
+// belong to different morphemes.
+//
+// Scope: bare vowel-forms only. §1.6's footnote gives its examples that
+// way, and a Series-3 case-vowel carrying a §1.7 glottal-stop (i'a) is
+// left alone rather than dissimilated on a rule the source does not
+// state.
+func DissimilateGlides(word string) string {
+	conjs := SplitConjuncts(word)
+	changed := false
+	for i := 1; i < len(conjs); i++ {
+		prev := conjs[i-1]
+		if prev == "" {
+			continue
+		}
+		last, _ := utf8.DecodeLastRuneInString(prev)
+		if last != 'y' && last != 'w' {
+			continue
+		}
+		if alt := VowelFormAfterGlide(last, conjs[i]); alt != conjs[i] {
+			conjs[i] = alt
+			changed = true
+		}
+	}
+	if !changed {
+		return word
+	}
+	return strings.Join(conjs, "")
+}

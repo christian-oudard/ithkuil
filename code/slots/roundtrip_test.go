@@ -1,6 +1,10 @@
 package slots
 
-import "testing"
+import (
+	"testing"
+
+	g "github.com/christian-oudard/ithkuil/grammar"
+)
 
 // FormativeCorpus is defined in corpus.go so the same test set can
 // be consumed by higher-layer tests (fullparse, compose) that need
@@ -45,5 +49,40 @@ func TestLayout_SentencePrefix_csFamily(t *testing.T) {
 	// a sentence prefix per §5.8.8 (cse- is required there).
 	if body := stripSentencePrefix("csmalal"); body != "csmalal" {
 		t.Errorf("stripSentencePrefix(%q) = %q, want unchanged", "csmalal", body)
+	}
+}
+
+// A Cr ending in a glide puts §1.6's footnote in play: Slot IV's Vr is
+// Series 3 in RPS Context, so it sits directly after the y- or w- and
+// dissimilates. Render has to apply that and Parse has to read it back,
+// or the two arms disagree about a form the corpus attests (yuä, wöë).
+func TestRoundTrip_GlideDissimilation(t *testing.T) {
+	specs := []struct {
+		fn   g.Function
+		sp   g.Specification
+		want string
+	}{
+		{g.STA, g.BSC, "lyuäla"}, // form 1: ia -> uä after y
+		{g.STA, g.OBJ, "lyüëla"}, // form 4: iö -> üë
+		{g.DYN, g.BSC, "lyuala"}, // form 9: ua is u-initial, unchanged
+	}
+	for _, s := range specs {
+		f := g.MinimalFormative("ly")
+		r := f.Root.(g.CrRoot)
+		r.SlotIV = g.SlotIV{Function: s.fn, Specification: s.sp, Context: g.RPS}
+		f.Root = r
+		got := Render(FromGrammar(f))
+		if got != s.want {
+			t.Errorf("%v/%v render = %q, want %q", s.fn, s.sp, got, s.want)
+		}
+		l, err := Parse(got)
+		if err != nil {
+			t.Errorf("%q: %v", got, err)
+			continue
+		}
+		back, _ := ToGrammar(l)
+		if again := Render(FromGrammar(back)); again != got {
+			t.Errorf("%q round-tripped to %q", got, again)
+		}
 	}
 }

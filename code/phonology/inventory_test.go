@@ -62,3 +62,52 @@ func TestVowelFormLookup(t *testing.T) {
 		}
 	}
 }
+
+// TestVowelFormTableSpellings pins which cells carry two spellings.
+// Series 3 is the only one the source prints as "x / y", and its form 5
+// (eë) is the one cell in that row with a single spelling.
+func TestVowelFormTableSpellings(t *testing.T) {
+	for s, row := range VowelFormTable {
+		for f, cell := range row {
+			if cell[0] == "" {
+				t.Errorf("series %d form %d: no primary spelling", s+1, f+1)
+			}
+			want := s+1 == 3 && f+1 != 5
+			if got := cell[1] != ""; got != want {
+				t.Errorf("series %d form %d: alternate=%v (%q), want %v",
+					s+1, f+1, got, cell[1], want)
+			}
+		}
+	}
+}
+
+// §1.6's footnote: a Series-3 form beginning with -i- dissimilates after
+// y-, and one beginning with -u- after w-. Nothing else moves, and
+// neither glide touches a form whose initial does not match it.
+func TestVowelFormAfterGlide(t *testing.T) {
+	cases := []struct {
+		prev rune
+		in   string
+		want string
+	}{
+		{'y', "ia", "uä"}, // the footnote's own example
+		{'w', "ua", "iä"}, // the footnote's other example
+		{'y', "iö", "üë"},
+		{'w', "uö", "öë"},
+		{'y', "ua", "ua"},   // u-initial after y: nothing to dissimilate
+		{'w', "ia", "ia"},   // i-initial after w: likewise
+		{'y', "eë", "eë"},   // series 3 form 5 has no alternate
+		{'y', "uä", "uä"},   // already dissimilated: idempotent
+		{'l', "ia", "ia"},   // not a glide
+		{'y', "a", "a"},     // series 1
+		{'y', "ai", "ai"},   // series 2
+		{'y', "ao", "ao"},   // series 4
+		{'y', "zzz", "zzz"}, // not a vowel-form at all
+	}
+	for _, c := range cases {
+		if got := VowelFormAfterGlide(c.prev, c.in); got != c.want {
+			t.Errorf("VowelFormAfterGlide(%q, %q) = %q, want %q",
+				c.prev, c.in, got, c.want)
+		}
+	}
+}

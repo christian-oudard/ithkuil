@@ -17,7 +17,10 @@ func SingleAffixAdjunct(a g.SingleAffixAdjunct) (string, error) {
 	if a.Affix.Consonant == "" {
 		return "", fmt.Errorf("single-affix adjunct: affix has no Cs cluster")
 	}
-	return parse.AffixVowel(a.Affix.Type, a.Affix.Degree) + a.Affix.Consonant + parse.VsForm(a.Scope), nil
+	// §1.6's footnote depends on what precedes the vowel, so it
+	// applies to the assembled word. See phonology.DissimilateGlides.
+	return phonology.DissimilateGlides(
+		parse.AffixVowel(a.Affix.Type, a.Affix.Degree) + a.Affix.Consonant + parse.VsForm(a.Scope)), nil
 }
 
 // MultipleAffixAdjunct writes a §4.1.2 multiple-affix adjunct,
@@ -49,7 +52,7 @@ func MultipleAffixAdjunct(a g.MultipleAffixAdjunct) (string, error) {
 	// guessing which clusters those are.
 	word := b.String()
 	if phonology.Legal(word) {
-		return word, nil
+		return phonology.DissimilateGlides(word), nil
 	}
 	if prefixed := "ë" + word; phonology.Legal(prefixed) {
 		return prefixed, nil
@@ -118,14 +121,14 @@ func ModularAdjunct(m g.ModularAdjunct) (string, error) {
 	if slot4 >= 0 {
 		vn, _ := slots.VnCnFromSlotVIII(m.Content[slot4])
 		b.WriteString(vn)
-		return b.String(), nil
+		return phonology.DissimilateGlides(b.String()), nil
 	}
 	if m.Reach == g.ModularReachNone {
-		return b.String(), nil
+		return phonology.DissimilateGlides(b.String()), nil
 	}
 	// §4.3: the trailing vowel reads as V_H only under ultimate stress.
 	b.WriteString(reachVH(m.Reach))
-	return phonology.Apply(b.String(), phonology.Ultimate), nil
+	return phonology.Apply(phonology.DissimilateGlides(b.String()), phonology.Ultimate), nil
 }
 
 // fitsSlot4 reports whether a value can be written as §4.3's bare Slot 4

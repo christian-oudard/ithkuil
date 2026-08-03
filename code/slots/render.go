@@ -75,7 +75,10 @@ func Render(l Layout) string {
 	}
 	b.WriteString(l.Vc)
 
-	return phonology.Apply(b.String(), l.Stress)
+	// §1.6's footnote is the one vowel-form rule that depends on what
+	// precedes, so it applies to the assembled word rather than in any
+	// single encoder.
+	return phonology.Apply(phonology.DissimilateGlides(b.String()), l.Stress)
 }
 
 // applyVvGlottal re-inserts the §3.5.1 glottal-stop into Vv when the

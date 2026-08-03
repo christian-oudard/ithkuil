@@ -151,43 +151,78 @@ var Vowels = []PhonemeEntry{
 	{Vowel{Low, Back, Unrounded}, 'A', "ä"},
 }
 
-// VowelFormTable holds the 4 series x 9 forms used to encode grammatical
-// categories (rows 0..3 are series 1..4; columns 0..8 are forms 1..9).
-var VowelFormTable = [4][9]string{
-	{"a", "ä", "e", "i", "ëi", "ö", "o", "ü", "u"},
-	{"ai", "au", "ei", "eu", "ëu", "ou", "oi", "iu", "ui"},
-	{"ia", "ie", "io", "iö", "eë", "uö", "uo", "ue", "ua"},
-	{"ao", "aö", "eo", "eö", "oë", "öe", "oe", "öa", "oa"},
+// VowelFormTable holds §1.6's 4 series x 9 forms, the pattern that
+// populates Slots II, IV, V/VII, VIII and IX (rows 0..3 are series 1..4,
+// columns 0..8 are forms 1..9).
+//
+// Series 3 is printed with two spellings in a cell — the source writes
+// "ia / uä" — and they are one form written two ways, not two values.
+// Which one is written is fixed, not free: see VowelFormAfterGlide.
+// Cells with only one spelling leave the second entry empty, which is
+// every cell outside Series 3 and Series 3's own form 5.
+var VowelFormTable = [4][9][2]string{
+	{{"a"}, {"ä"}, {"e"}, {"i"}, {"ëi"}, {"ö"}, {"o"}, {"ü"}, {"u"}},
+	{{"ai"}, {"au"}, {"ei"}, {"eu"}, {"ëu"}, {"ou"}, {"oi"}, {"iu"}, {"ui"}},
+	{
+		{"ia", "uä"}, {"ie", "uë"}, {"io", "üä"}, {"iö", "üë"}, {"eë"},
+		{"uö", "öë"}, {"uo", "öä"}, {"ue", "ië"}, {"ua", "iä"},
+	},
+	{{"ao"}, {"aö"}, {"eo"}, {"eö"}, {"oë"}, {"öe"}, {"oe"}, {"öa"}, {"oa"}},
 }
 
-// series3Alternates lists the alternate Series-3 forms used after y-/w-
-// glides. Keyed by form number (1-indexed).
-var series3Alternates = map[int]string{
-	1: "uä", 2: "uë", 3: "üä", 4: "üë",
-	6: "öë", 7: "öä", 8: "ië", 9: "iä",
-}
-
-// VowelForm returns the vowel for a given series (1..4) and form (1..9).
-// Out-of-range arguments panic — invalid grammatical indices are programmer
-// errors, not parse-time failures.
+// VowelForm returns the primary spelling of a given series (1..4) and
+// form (1..9). Out-of-range arguments panic — invalid grammatical
+// indices are programmer errors, not parse-time failures.
+//
+// For Series 3 this is the spelling printed on the left of the cell. It
+// is the right one everywhere except after a glide, where
+// VowelFormAfterGlide applies.
 func VowelForm(series, form int) string {
-	return VowelFormTable[series-1][form-1]
+	return VowelFormTable[series-1][form-1][0]
 }
 
-// VowelFormLookup returns the (series, form) coordinates that produce v.
-// Series 3 alternates resolve to series=3 with their canonical form number.
-// ok is false if v is not a recognized vowel form.
+// VowelFormAlternate returns the second spelling of a vowel-form, or ""
+// where the form has only one.
+func VowelFormAlternate(series, form int) string {
+	return VowelFormTable[series-1][form-1][1]
+}
+
+// VowelFormAfterGlide returns the spelling of a Series-3 vowel-form to
+// write after the consonant prev, applying §1.6's footnote:
+//
+//	When preceded by y-, Series 3 forms beginning with -i use their
+//	alternate forms instead (e.g., yuä, not yia), while Series 3 forms
+//	beginning with -u use their alternate forms if preceded by w-
+//	(e.g., wiä, not wua).
+//
+// It is dissimilation: a glide is not written before the vowel that
+// matches it. Anything with no alternate, or already dissimilated, or
+// not after a glide, comes back unchanged.
+func VowelFormAfterGlide(prev rune, v string) string {
+	series, form, ok := VowelFormLookup(v)
+	if !ok || series != 3 {
+		return v
+	}
+	alt := VowelFormAlternate(series, form)
+	if alt == "" {
+		return v
+	}
+	first := []rune(v)[0]
+	if (prev == 'y' && first == 'i') || (prev == 'w' && first == 'u') {
+		return alt
+	}
+	return v
+}
+
+// VowelFormLookup returns the (series, form) coordinates that produce v,
+// accepting either spelling of a two-spelling cell. ok is false if v is
+// not a recognized vowel form.
 func VowelFormLookup(v string) (series, form int, ok bool) {
 	for s, row := range VowelFormTable {
-		for f, vf := range row {
-			if vf == v {
+		for f, cell := range row {
+			if cell[0] == v || (cell[1] != "" && cell[1] == v) {
 				return s + 1, f + 1, true
 			}
-		}
-	}
-	for f, alt := range series3Alternates {
-		if alt == v {
-			return 3, f, true
 		}
 	}
 	return 0, 0, false

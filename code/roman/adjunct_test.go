@@ -318,3 +318,43 @@ func TestModularAdjunct_EveryLoneAspect(t *testing.T) {
 		}
 	}
 }
+
+// §1.6's footnote reaches beyond the formative. A multiple-affix
+// adjunct writes its first C_S before the V_X, so an affix cluster
+// ending in -w or -y puts a glide directly against a Type-3 (Series 3)
+// affix vowel. Only the matching initial dissimilates: w- moves a
+// u-initial form and leaves an i-initial one, and y- the reverse.
+func TestMultipleAffixAdjunct_GlideDissimilation(t *testing.T) {
+	cases := []struct {
+		cs     string
+		degree int
+		want   string
+	}{
+		{"cw", 1, "cwiahask"}, // w + ia: i-initial, untouched
+		{"cw", 9, "cwiähask"}, // w + ua -> iä
+		{"dy", 1, "dyuähask"}, // y + ia -> uä
+		{"dy", 9, "dyuahask"}, // y + ua: u-initial, untouched
+	}
+	for _, c := range cases {
+		a := g.MultipleAffixAdjunct{
+			First: g.Affix{Consonant: c.cs, Type: g.Type3Affix, Degree: c.degree},
+			Rest:  []g.Affix{{Consonant: "sk", Type: g.Type1Affix, Degree: 1}},
+		}
+		got, err := MultipleAffixAdjunct(a)
+		if err != nil {
+			t.Errorf("%s/%d: %v", c.cs, c.degree, err)
+			continue
+		}
+		if got != c.want {
+			t.Errorf("%s/%d = %q, want %q", c.cs, c.degree, got, c.want)
+		}
+		w, err := ParseWord(got)
+		if err != nil {
+			t.Errorf("%q does not parse back: %v", got, err)
+			continue
+		}
+		if again, _ := Word(w); again != got {
+			t.Errorf("%q round-tripped to %q", got, again)
+		}
+	}
+}
