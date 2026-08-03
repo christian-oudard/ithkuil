@@ -248,9 +248,7 @@ func clusterViolations(bare string) []fault.Fault {
 	// So the table is taken as authoritative and §3's word-initial rules
 	// as scoped to words that have a vowel in them.
 	//
-	// Two forms stay unsettled and are simply admitted with the rest.
-	// SAT's spelling is itself in dispute — the grammar prints lţ,
-	// data.json has ļţ, the corpus uses both — and neither is licensed.
+	// One form stays unsettled and is simply admitted with the rest.
 	// ARB xtļ is neither permitted nor prohibited: §3.2.3 licenses xt
 	// word-initially but §3.3 grants no triple beginning with x-.
 	if len(conjs) == 1 {

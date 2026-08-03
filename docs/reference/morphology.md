@@ -38,7 +38,7 @@ This document assumes the reader is familiar with Ithkuil 2011 (i.e., Ithkuil II
 
 The tables on the previous page indicate the romanization system. The following alternatives are available for writing the language in romanized script: The character **ţ** may be written as **ṭ** or **ŧ**, the character **ḑ** may be written as **ḍ** or **đ**, the character **ň** may be written as **ṇ** or **ŋ**, the character **ř** may be written as **ṛ** or **ṙ**, and the character **ļ** may be written as **ł** or **ḷ**.
 
-**1.3.1 Indicating Syllabic Stress:** Penultimate stress is unmarked; non-penultimate stress is marked by a diacritic on the vowel carrying the stress, as follows: a vowel with no diacritic takes the acute accent; a vowel with dieresis changes it to a circumflex accent (e.g., ö → ô). The grave accent is used over the vowel -**i**- when it is unstressed as the initial member of a vocalic conjunct following a consonant (e.g., -C**ì**a-, -C**ì**o, etc.) — this is to remind the speaker/reader that this -**i**- is to be pronounced long /iː/ in order to distinguish such syllables from the form **Cy+V** (e.g., *karesya* vs. *karésia*, *velkyo* vs. *vélkio*). A grave accent may similarly be used over the vowel -**u**- to remind the speaker/reader not to collapse the /u/-sound into /w/ in words like *ehùá*.
+**1.3.1 Indicating Syllabic Stress:** Penultimate stress is unmarked; non-penultimate stress is marked by a diacritic on the vowel carrying the stress, as follows: a vowel with no diacritic takes the acute accent; a vowel with dieresis changes it to a circumflex accent (e.g., ö → ô). The grave accent is used over the vowel -**i**- when it is unstressed as the initial member of a vocalic conjunct following a consonant (e.g., -C**ì**a-, -C**ì**o, etc.) — this is to remind the speaker/reader that this -**ì**- is to be pronounced long /i:/ in order to distinguish such syllables from syllables of the form **Cy+V** (e.g., *karesya* vs. *karésìa*, *velkyo* vs. *vélkìo*). A grave accent may similarly be used over the vowel -**u**- to remind the speaker/reader not to collapse the /u/-sound into /w/ in words like *ehùá*.
 
 **1.3.2 Written juncture affixes/adjuncts:** In regard to parsing adjuncts (see Sec. 2.3, No. 5) and the **ç(ë)**- sentence-juncture affix (see Sec. 5.8, No. 8), these are normally never written in either the romanization scheme or the native New Ithkuil script, given that their occurrence is entirely dependent on the specific way any given individual utters a sentence or group of sentences on any particular occasion. The exception would be in the narrow context of a scripted utterance (e.g., a script for a play or screenplay), in poetry, in a rhetorical recital, or in singing instructions, where explicit direction of the exact vocalization is crucial.
 
@@ -1237,7 +1237,7 @@ Each Bias adjunct has the same consonant-form as an associated lexico-semantic r
 | **RSG** | RESIGNATIVE | msf | *'So much for...!' 'There goes...!'* |
 | **RPU** | REPULSIVE | šštļ | *'Yuck! Ew! How gross!'* |
 | **RVL** | REVELATIVE | mmļ | *'No wonder…!' or 'So that's why…!' 'A-ha!….' 'Well, well, well!….'* |
-| **SAT** | SATIATIVE | lţ | *'How satisfying...!' 'At last, the pleasure of knowing/being/seeing/doing....' [psychological/emotional pleasure/satiety only]* |
+| **SAT** | SATIATIVE | ļţ | *'How satisfying...!' 'At last, the pleasure of knowing/being/seeing/doing....' [psychological/emotional pleasure/satiety only]* |
 | **SGS** | SUGGESTIVE | ltç | *'How about...' 'We could...' 'Might I suggest...'* |
 | **SKP** | SKEPTICAL | rnž | *'Yeah, right!' 'Oh, sure! Like anyone's supposed to believe that!'* |
 | **SOL** | SOLICITATIVE | ňňs | *'please'* |
@@ -1363,29 +1363,29 @@ Because of the existence of the RELATIVE case and the DESCRIPTIVE case, relative
 *A clown wrote the book I just finished reading.*
 [More literally: *A clown wrote what I just finished reading -- a book.*]
 
-1b. **Weňayá kšilo eňtyarkena apcoloyu lu thaxač.**
+1b. **Weňayá kšilo eňtyarkena äpçólö'yu lu thaxač.**
 'compose.in.writing'-RTR 'clown'-STA/OBJ-ERG 'written.page'-MSC/COA-TPF/3-THM FRAMED:CPT-'read'-DYN/CSV-PCS-RLT 1m-IND Rdp-SWR/1-THM
 *A clown wrote the book I just finished reading.*
 
 The following two sentences utilize a RELATIVE case-frame:
 
-2a. **Zala li kšilenëi malihu welu.**
+2a. **Ẓalá li kšilenëi máli'hu welu.**
 'see' 1m/NEU-AFF 'clown'-STA/OBJ-TPF/3-STM FRAMED:'talk'-RCP-FAC-RLT 'child'-IND
 *'I see a clown (who is) talking with a child.'*
 
-2b. **Erčädókh elavöte zzjaduu kšivëi.**
+2b. **Erčädókh elavöte žžjádu'u kšivëi.**
 'state.of.being.corrupted'-STA/CTE-PRX-SBT/7 'child'-N-DCD/6-ABS FRAMED:'feel.fascination'-STA/BSC-PRX-RLT 'clown'-STA/OBJ-N-STM
 *'Children who like clowns have obviously been corrupted.'*
 
 The following sentence utilizes a noun in the DESCRIPTIVE case, which operates like RELATIVE case for adjectival clauses:
 
-3. **Erčuláfs elaţwe ainsaida kšivöto hlarrnëi-yurkuu.**
-'corrupt'-DYN/BSC-ATI/1 'child'-MDS/N-ABS NEG/4-FNC-'be.well.behaved'-PRX-DSP 'clown'-STA/OBJ-N-DCD/6-ERG concat.stem:'ocelot'-STM-FRAMED:parent.stem:'own'-PRX-RLT
+3. **Erčuláfs elaţwe ainšai'dä kšivöto hlarrnëi-yúřku'u.**
+'corrupt'-DYN/BSC-ATI/1 'child'-MDS/N-ABS NEG/4-FNC-'be.well-behaved'-PRX-DSP 'clown'-STA/OBJ-N-DCD/6-ERG concat.stem:'ocelot'-STM-FRAMED:parent.stem:'own'-PRX-RLT
 *'Ocelot-owning clowns tend to corrupt children who are naughty.'*
 
 The following sentence utilizes a carrier adjunct marked for RELATIVE case:
 
-4. **Yuřká warrnernei kšila hluu Bubu.**
+4. **Yuřká warrnenëi kšila hlu'u Bubu.**
 'own'-PRX 'ocelot'-TPF/3-STM 'clown'-STA/OBJ-THM CARRIER-RLT 'Bubu'
 *'The clown owns an ocelot named Boo-boo.'*
 
@@ -1397,13 +1397,13 @@ Determining the semantic role of the "head" of a relative clause depends on the 
 
 However, in sentence 5b below, the head of the relative clause is not contained within the case-frame, therefore its semantic role within the case-frame remains implied only, since the case-frame must be marked for RELATIVE case.
 
-5b. **Umňälá lo welene malihu kšivu.**
+5b. **Umňälá lo welene máli'hu kšivu.**
 'scream'-STA/CTE 1m-ERG 'child'-TPF/3-ABS FRAMED:'talk'-RCP-FAC-RLT 'clown'-N-IND
 *'I made the child who talks with clowns scream.'*
 
 If necessary for disambiguation, the semantic role of the head in such a sentence can be marked using a Reduplicative Referential as shown in Sentence 5c below (as well as Sentence 1b above).
 
-5c. **Umňälá lo welene malihu thu kšivu.**
+5c. **Umňälá lo welene máli'hu thu kšivu.**
 'scream'-STA/CTE 1m-ERG 'child'-TPF/3-ABS FRAMED:'talk'-RCP-FAC-RLT Rdp-IND 'clown'-N-IND
 *'I made the child who talks with clowns scream.'*
 
@@ -1421,19 +1421,19 @@ The following examples illustrate how the ATTENDANT is used to imply contexts of
 
 | [with second party in DATIVE case:] | [with second party in ATTENDANT case:] |
 |---|---|
-| **Muliuţmá mu hlu Jon hma ažxíp.** *'She shouted "fire!" to John'* | **Muliuţmá mu hlie Jon hma ažxíp.** *'She shouted "fire!" in John's presence' / 'She shouted "fire!" with John nearby'* (thus causing John to do something, e.g., run for a fire extinguisher, run out of the building, etc.) |
+| **Muliuţmá mu hlü Jon hma ažxíp.** *'She shouted "fire!" to John'* | **Muliuţmá mu hli'e Jon hma ažxíp.** *'She shouted "fire!" in John's presence' / 'She shouted "fire!" with John nearby'* (thus causing John to do something, e.g., run for a fire extinguisher, run out of the building, etc.) |
 | [with second party in COMITATIVE case:] | [with second party in ATTENDANT case:] |
-| **Wanzvihá mu welei.** *'She is playing a game with the child.'* | **Wanzvihá mu welie.** *'She is playing a game [with someone] while the child watches/while the child sits nearby/in the child's presence.'* |
+| **Wanzvihá mu welë'i.** *'She is playing a game with the child.'* | **Wanzvihá mu weli'e.** *'She is playing a game [with someone] while the child watches/while the child sits nearby/in the child's presence.'* |
 
 Also, for sentences where the semantic role of the external head of a relative clause is left unstated (as in the left-hand sentence below or in Sentence 5b in the previous section), the implied case would be ATTENDANT. Thus, the two sentences below are semantically equivalent.
 
-| [with semantic role of head of a relative clause implied:] | [with the head of a relative clause marked by ATTENDANT case:] |
+| [with semantic role of the head of a relative clause implied:] | [with the head of a relative clause marked by ATTENDANT case:] |
 |---|---|
-| **Zala li welenëi malihu kšivu.** *'I see the child who talks with clowns.'* | **Zala li welenëi malihu thie kšivu.** *'I see the child who talks with clowns.'* |
+| **Ẓalá li welenëi máli'hu kšivu.** *'I see the child who talks with clowns.'* | **Ẓalá li welenëi máli'hu thi'e kšivu.** *'I see the child who talks with clowns.'* |
 
 ### 5.6 Equivalents to English WH-Interrogatives
 
-Although WH-questions can be handled as in Ithkuil 2011 using a verb such as 'state' or 'say/tell' in DIRECTIVE Illocution to express a command to provide the information being sought, one can also form the equivalent of WH-questions using the **PVS** Referential in conjunction with the **IVL1/4** affix -**in|** indicating INTERROGATIVE Illocution so that the PVS Referential functions much like an English interrogative pronoun. Examples: **Mmiexin|** *'Why?* [i.e., For what purpose?]', **Mma'oxin|** *'When?'*, **Nnioxin|** *'To/for whose benefit? / To the benefit of what?'*, **Nneoxin|** *'Resulting (detrimentally) in what? / With what undesirable result?'*, **Mmauxin|** *'Whose? / Belonging to what?'*
+Although WH-questions can be handled as in Ithkuil 2011 using a verb such as 'state' or 'say/tell' in DIRECTIVE Illocution to express a command to provide the information being sought, one can also form the equivalent of WH-questions using the **PVS** Referential in conjunction with the **IVL1/4** affix -**inļ** indicating INTERROGATIVE Illocution so that the PVS Referential functions much like an English interrogative pronoun. Examples: **Mmiexinļ** *'Why?* [i.e., For what purpose?]', **Mma'oxinļ** *'When?'*, **Nnioxinļ** *'To/for whose benefit? / To the benefit of what?'*, **Ňňeöxinļ** *'Resulting (detrimentally) in what? / With what undesirable result?'*, **Mmauxinļ** *'Whose? / Belonging to what?'*
 
 Finally, one can form the equivalent of WH-questions using INTERROGATIVE Illocution in conjunction with a formative affixed with Degrees 1, 2, 3, 8 or 9 of the **PTN** affix shown below. When used this way, the formative carrying the PTN affix must be marked as the semantic focus of the sentence (i.e., it must either immediately precede the verb in terms of word-order or it must carry the TPF/9 affix).
 
@@ -1454,7 +1454,7 @@ Finally, one can form the equivalent of WH-questions using INTERROGATIVE Illocut
 Examples:
 
 **Weilüsve erčuléi kšilo.** *'Which of the children did the clown corrupt?'*
-**Lalutikusvu utxoléi akftyäloë.** *'What kind of person drinks ammonia?'*
+**Laluţkusvu utxoléi akftyäloë.** *'What kind of person drinks ammonia?'*
 
 ### 5.7 Using Case on UNFRAMED Verbal Formatives
 
@@ -1462,8 +1462,8 @@ Using the case-stacking affix (see Sec. 3.9.2), a noun-case can be placed on an 
 
 DEPENDENT case: **Hre willyothoilyá utplaliör.** *'My self-esteem is dependent upon (my) singing this song well.'*
 
-POSTCURSIVE case: **A hrelu-azcoijhailloelya.** *'It was after the child pulled a tantrum.'*
-Intralinear analysis: RTR Type2.concatenated.root:'person'-Stem2-IND - parent.root:Stem1-'self.centered.behavior'-DYN/CSV-CRL2/1-default.C_A-PCR-ASR/OBS
+POSTCURSIVE case: **A hrelu-azčojhaillöelyá.** *'It was after the child pulled a tantrum.'*
+Intralinear analysis: RTR Type2.concatenated.root:'person'-Stem2-IND - parent.root:Stem1-'self-centered.behavior'-DYN/CSV-CRL2/1-default.C_A-PCR-ASR/OBS
 
 TRANSFORMATIVE case: **Kšölaölwáu wele.** *'The child is hereby transformed into a clown!'* (more literally: *'It is transformation into a clown that is declared to happen to the child!'*)
 
@@ -1487,33 +1487,33 @@ This affix is used to specify the exact semantic relationships between the parti
 
 **Example sentences using the verb 'eat':**
 
-| English Sentence | Ithkuil | Translation Notes |
+| English Sentence | Structure of Translation into New Ithkuil | Translation Notes |
 |---|---|---|
 | *The girl eats.* | **Etxulá welacu.** 'eat'-DYN 'child'-GID1/1-IND | |
-| *The girl is eating an apple.* | **Etxulá welacu wanzekcooe.** 'eat'-DYN 'child'-GID1/1-IND [C_A]-'apple.tree'-EPP1/3-CSM | |
-| *An apple gets eaten. / Someone eats an apple.* | **Itxulá wanzekcooe.** CPT-'eat'-DYN [C_A]-'apple.tree'-EPP1/3-CSM | LITERALLY: [someone] eats the apple. |
-| *The man feeds the girl an apple to eat.* | **Enulá laleco welacülwu wanzekcooe etxulie.** 'give'-DYN 'adult'-GID1/3-ERG 'child'-GID1/1-DAT/IND [C_A]-'apple.tree'-EPP1/3-CSM 'eat'-DYN-[C_A]-PUR | LITERALLY: The man gives the girl an apple to eat |
-| *The man gets the girl to eat an apple.* | **Etxulá laleco welac**ur**zu wanzekcooe.** 'eat'-DYN 'adult'-GID1/3-EFF 'child'-GID1/1-**CHC1/9**-IND [C_A]-'apple.tree'-EPP1/3-CSM | LITERALLY: The man gets convinced to eat an apple. |
-| *The girl is given an apple to eat.* | **Enulá wanzekcooe welacülwu etxulie.** 'give'-DYN [C_A]-'apple.tree'-EPP1/3-CSM 'child'-GID1/1-DAT/IND 'eat'-DYN-[C_A]-PUR | |
-| *The girl is/gets fed an apple.* | **Etxulá welac**ur**zu wanzekcooe.** 'eat'-DYN 'child'-GID1/1-**CHC1/9**-IND [C_A]-'apple.tree'-EPP1/3-CSM | LITERALLY: The girl gets convinced to eat an apple. |
-| *An apple gets fed to the girl.* | **Enulá wanzekcooe welac**ar**zulwu etxulie.** 'give'-DYN [C_A]-'apple.tree'-EPP1/3-CSM 'child'-GID1/1-**CHC1/2**-DAT/IND 'eat'-DYN-[C_A]-PUR | LITERALLY: An apple is given to the girl to eat. |
-| *The girl gets fed.* | **Etxulá welac**a**rzu.** 'eat'-DYN 'child'-GID1/1-**CHC1/2**-IND | |
-| *The girl gets eaten.* | **Etxulá welac**er**zooe.** 'eat'-DYN 'child'-GID1/1-**CHC1/3**-CSM | LITERALLY: [s.o./something] eats the girl (who tries but fails to stop it). |
-| *The girl eats herself.* | **Etxulá welaculwooe.** 'eat'-DYN 'child'-GID1/1-IND/CSM | |
-| *The girl gets herself eaten.* | **Etxulá welac**or**zooe.** 'eat'-DYN 'child'-GID1/1-**CHC1/7**-CSM | LITERALLY: [s.o./s.t.] eats the girl (who doesn't think to try to avoid it). |
-| *Feeding is taking place (i.e., someone is feeding someone/something else).* | **Etxul**a**rza.** 'eat'-DYN-**CHC1/2** | Being made to eat is taking place. |
-| *Feeding is taking place (i.e., someone is giving someone else food to eat).* | **Enulá hetxejie-etxitooe.** 'give'-DYN CONCATENATED:'eat'-CSV-A-PUR-PARENT:'food'-OBJ-MDS-CSM | Literally: Giving of food to eat is taking place. |
+| *The girl is eating an apple.* | **Etxulá welacu wanžekcoë.** 'eat'-DYN 'child'-GID1/1-IND [C_A]-'apple.tree'-EPP1/3-CSM | |
+| *An apple gets eaten. / Someone eats an apple.* | **Itxulá wanžekcoë.** CPT-'eat'-DYN [C_A]-'apple.tree'-EPP1/3-CSM | LITERALLY: [someone] eats the apple. |
+| *The man feeds the girl an apple.* | **Enulá laleco welacülwu wanžekcoë etxulie.** 'give'-DYN 'adult'-GID1/3-ERG 'child'-GID1/1-DAT/IND [C_A]-'apple.tree'-EPP1/3-CSM 'eat'-DYN-[C_A]-PUR | LITERALLY: The man gives the girl an apple to eat |
+| *The man gets the girl to eat an apple.* | **Etxulá lalecö welacurzu wanžekcoë.** 'eat'-DYN 'adult'-GID1/3-EFF 'child'-GID1/1-**CHC1/9**-IND [C_A]-'apple.tree'-EPP1/3-CSM | LITERALLY: The man convinces the girl to eat an apple. |
+| *The girl is given an apple to eat.* | **Enulá welacülwu wanžekcoë etxulie.** 'give'-DYN 'child'-GID1/1-DAT/IND [C_A]-'apple.tree'-EPP1/3-CSM 'eat'-DYN-[C_A]-PUR | LITERALLY: [someone] gives the girl an apple to eat |
+| *The girl is/gets fed an apple.* | **Etxulá welacurzu wanžekcoë.** 'eat'-DYN 'child'-GID1/1-**CHC1/9**-IND [C_A]-'apple.tree'-EPP1/3-CSM | LITERALLY: The girl gets convinced to eat an apple. |
+| *An apple gets fed to the girl.* | **Enulá wanžekcoë welacärzülwu etxulie.** 'give'-DYN [C_A]-'apple.tree'-EPP1/3-CSM 'child'-GID1/1-**CHC1/2**-DAT/IND 'eat'-DYN-[C_A]-PUR | LITERALLY: An apple is given to the girl to eat. |
+| *The girl gets fed.* | **Etxulá welacärzu.** 'eat'-DYN 'child'-GID1/1-**CHC1/2**-IND | LITERALLY: The girl acquiesces to being made to eat. |
+| *The girl gets eaten.* | **Etxulá welacerzoë.** 'eat'-DYN 'child'-GID1/1-**CHC1/3**-CSM | LITERALLY: [s.o./something] eats the girl (who tries but fails to stop it). |
+| *The girl eats herself.* | **Etxulá welaculwoë.** 'eat'-DYN 'child'-GID1/1-IND/CSM | |
+| *The girl gets herself eaten.* | **Etxulá welacorzoë.** 'eat'-DYN 'child'-GID1/1-**CHC1/7**-CSM | LITERALLY: [s.o./s.t.] eats the girl (who doesn't think to try to avoid it). |
+| *Feeding is taking place (i.e., someone is feeding someone/something else).* | **Etxulärzá.** 'eat'-DYN-**CHC1/2** | LITERALLY: Being made to eat is taking place. |
+| *Feeding is taking place (i.e., someone is giving someone else food to eat).* | **Enulá hetxejie-etxiţoë.** 'give'-DYN CONCATENATED:'eat'-CSV-A-PUR-PARENT:'food'-OBJ-MDS-CSM | LITERALLY: Giving of food to eat is taking place. |
 
-**Additional examples using the verb 'jump':**
+**Here are additional examples using the verb 'jump.'**
 
 | English Sentence | Ithkuil |
 |---|---|
 | *The boy jumps (up and down).* | **Aḑçulëuhá welecu.** 'jump'-DYN-RCT-OBS [default C_A]-'child'-GID1/3-IND |
-| *Mother makes the boy jump (up and down).* | **Aḑçulëuhá ampalaicooe welecu.** 'jump'-DYN-RCT-OBS 'parent'-GID2/1-EFF [default C_A]-'child'-GID1/3-IND |
-| *The boy is made to jump (up and down).* | **Aḑçulëuhá welec**a**rzu.** 'jump'-DYN-RCT-OBS [default C_A]-'child'-GID1/3-**CHC1/2**-IND |
+| *Mother makes the boy jump (up and down).* | **Aḑçulëuhá ampalaicö welecu.** 'jump'-DYN-RCT-OBS 'parent'-GID2/1-EFF [default C_A]-'child'-GID1/3-IND |
+| *The boy is made to jump (up and down).* | **Aḑçulëuhá welecärzu.** 'jump'-DYN-RCT-OBS [default C_A]-'child'-GID1/3-**CHC1/2**-IND |
 | *Jumping (up and down) takes place. / There's jumping (up and down) going on.* | **Yaḑçëuhá.** PRX-'jump'-(STA)-RCT-OBS |
 | *Someone's jumping (up and down). / There's someone jumping (up and down).* | **Aḑçulëuhá.** 'jump'-DYN-RCT-OBS |
-| *Someone's being made to jump (up and down).* | **Aḑçul**ä**rzëuhá.** 'jump'-DYN-**CHC1/2**-RCT-OBS |
+| *Someone's being made to jump (up and down).* | **Aḑçulärzëuhá.** 'jump'-DYN-**CHC1/2**-RCT-OBS |
 
 **Additional examples using the verb 'sing':**
 
@@ -1523,11 +1523,11 @@ This affix is used to specify the exact semantic relationships between the parti
 | *If there's an audience, the woman will sing a song.* | **Yubškirfúi ellyuhrú lalacu ellyila.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-DYN-ASM-INF 'adult'-GID1/1-IND 'song'-THM |
 | *If there's an audience, a song will be sung.* | **Yubškirfúi ellyuhrú ellyila.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-DYN-ASM-INF 'song'-THM |
 | *If there's an audience, there will be singing going on. / If there's an audience, someone will sing.* | **Yubškirfúi ellyahrú.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-STA-ASM-INF |
-| *If there's an audience, the woman will sing for someone.* | **Yubškirfúi ellyuleeihru lalacu.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-DYN-3:BEN-ASM-INF 'adult'-GID1/1-IND |
-| *I make the woman sing.* | **Ellyulá ro lalacu.** 'sing'-DYN-OBS 1m/BEN-EFF 'adult'-GID1/1-IND |
-| *I get the woman to sing.* | **Ellyu**ler**za ro lalacu.** 'sing'-DYN-**CHC1/3**-OBS 1m/BEN-EFF 'adult'-GID1/1-IND |
-| *I get singing to happen.* | **Ellya**ler**za ro.** 'sing'-STA-**CHC1/3**-OBS 1m/BEN-EFF |
-| *I make singing occur.* | **Ellyulá ro.** 'sing'-DYN-OBS 1m/BEN-EFF |
+| *If there's an audience, the woman will sing for someone.* | **Yubškirfúi ellyuleëhrú lalacu.** PRX-Stem.3-'audience.member'-PTW1/4-CNJ 'sing'-DYN-3:BEN-ASM-INF 'adult'-GID1/1-IND |
+| *I make the woman sing.* | **Ellyulá rö lalacu.** 'sing'-DYN-OBS 1m/BEN-EFF 'adult'-GID1/1-IND |
+| *I get the woman to sing.* | **Ellyulerzá rö lalacu.** 'sing'-DYN-**CHC1/3**-OBS 1m/BEN-EFF 'adult'-GID1/1-IND |
+| *I get singing to happen.* | **Ellyalerzá rö.** 'sing'-STA-**CHC1/3**-OBS 1m/BEN-EFF |
+| *I make singing occur.* | **Ellyulá rö.** 'sing'-DYN-OBS 1m/BEN-EFF |
 
 ### 5.9 Syntax
 
@@ -1570,15 +1570,15 @@ The new SPT Affix is now available for use in expressing the hour of day, day of
 | 9 | century |
 
 **Examples:**
-- 'the 15th of March, 1969' *wustarsëirwiaza walzarsao walzorsurwei*
-- 'on Saturday' *wucpirwao*
-- 'on Saturday of next week' *wucpirwoltao*
+- 'the 15th of March, 1969' *wustarsëirwiaza walẓarsa'o walẓörsürwë'i*
+- 'on Saturday' *wucpirwa'o*
+- 'on Saturday of next week' *wucpirwölţa'o*
 - 'the 21st century' *wullärsurya*
-- 'by the 34-second mark' *wupsersaryoa*
+- 'by the 34-second mark' *wupšersaryo'a*
 
 **Time of Day Using Degree 3 of the affix:**
 - '8:52 a.m.' *wučkerwa ksalëirsoň* [Note the use of COO/7 affix on the 2nd word; the phrase is literally 'eighth hour of the day and fifty-two (minutes)' with the SPT/3 affix on the first word implying the possibility of a following number of minutes]
-- '8:52 p.m. and 33 seconds' *wuvrärserwa ksalëirsoň wazersarwei* [literally: 'twentieth hour of the day and fifty-two (minutes) with thirty-three seconds of a minute']
+- '8:52 p.m. and 33 seconds' *wuvrärserwa ksalëirsoň wazersarwë'i* [literally: 'twentieth hour of the day and fifty-two (minutes) with thirty-three seconds of a minute']
 
 ### 6.1 Alternate Names of the Months
 
@@ -1643,7 +1643,7 @@ Africa: *usarça áfrika*, Antarctica: *usarça antárktika*, Asia: *usarça asy
 
 ### 7.2 Names of Oceans
 
-Preceded by the word *hluséi-bwala* [Carrier Stem 3 concatenated to Stem 1 of -**BW**- 'ocean'] meaning 'ocean named...'. The Southern Ocean (a.k.a. Antarctic) does not use the carrier stem, instead simply utilizing the Type-2 OCG/9 affix 'southern' with stem 1 of -**BW**- 'ocean'. As an alternative to incorporating the carrier stem, a carrier adjunct *hlei* or the SPF register adjunct *hi* may be used.
+Preceded by the word *hluséi-bwala* [Carrier Stem 3 concatenated to Stem 1 of -**BW**- 'ocean'] meaning 'ocean named...'. The Southern Ocean (a.k.a. Antarctic) does not use the carrier stem, instead simply utilizing the Type-2 OCG/9 affix 'southern' with stem 1 of -**BW**- 'ocean'. As an alternative to incorporating the carrier stem, a carrier adjunct with ESS case *hle'i* may be used or the SPF register adjunct *hi*.
 
 Pacific Ocean: *hluséi-bwala pasífika* OR *bwala hi pasífika*
 Atlantic Ocean: *hluséi-bwala atlantis* OR *bwala hi atlantis*
@@ -1653,7 +1653,7 @@ Southern/Antarctic Ocean: *bwaluidna*
 
 ### 7.3 Names of Seas and Lakes
 
-Preceded by the word *hluséi-bwaleuxa* ('smaller ocean named...') if referring to a large mostly landlocked salt-water sea (e.g., Mediterranean, Black, Azov), or *hlusé-bwalafta* ('section of an ocean named...') utilizing the **POR -- Portion or Section** affix -**ft**-) if referring to a section or sub-section of a larger sea or ocean (e.g., Baltic, South China, North).
+Preceded by the word *hluséi-bwaleuxa* ('smaller ocean named...') if referring to a large mostly landlocked salt-water sea (e.g., Mediterranean, Black, Azov), or *hlusé-bwalafta* ('section of an ocean named...' utilizing the **POR -- Portion or Section** affix -**ft**-) if referring to a section or sub-section of a larger sea or ocean (e.g., Baltic, South China, North).
 
 **POR -- Portion or Section** (form: -**ft**)
 
@@ -1664,45 +1664,45 @@ Preceded by the word *hluséi-bwaleuxa* ('smaller ocean named...') if referring 
 | 3 | small portion/section/amount of a larger whole |
 | 4 | somewhat small portion/section/amount of a larger whole |
 | 5 | a portion/section or amount of a larger whole |
-| 6 | a significantly large portion/section/amount of a larger whole |
+| 6 | a significantly-sized portion/section/amount of a larger whole |
 | 7 | (approximately) half of X in terms of portion/amount or the size of a section |
 | 8 | a majority-sized portion/section/amount of a whole |
-| 9 | almost the entire portion/section/amount of a whole |
+| 9 | almost the entire portion/amount of a whole |
 
 Mediterranean Sea: *hluséi-bwaloufta mediterra*
-Baltic Sea: *hluséi-bwaleufta balt*
+Baltic Sea: *hluséi-bwalëufta balt*
 Black Sea: *hraxmé-bwaleufta*
 Sea of Azov: *hluséi-bwaleifta azof*
-Caribbean Sea: *hluséi-bwaleufta karíb*
+Caribbean Sea: *hluséi-bwalëufta karíb*
 North Sea: *bwalaidneufta*
-Bering Sea: *hluséi-bwaleufta bering*
-Arabian Sea: *hluséi-bwaleufta arab*
+Bering Sea: *hluséi-bwalëufta bering*
+Arabian Sea: *hluséi-bwalëufta arab*
 
-Those examples above utilizing an incorporated carrier stem may alternately be expressed using the carrier adjunct *hlei* or the SPF register adjunct *hi*, i.e., *bwaloufta hi mediterra, bwaleufta hi balt, bwaleifta hi azof, bwaleufta hi karíb*, etc.
+Those examples above utilizing an incorporated carrier stem may alternately be expressed using the carrier adjunct *hle'i* or the SPF register adjunct *hi*, i.e., *bwaloufta hi mediterra, bwalëufta hi balt, bwaleifta hi azof, bwalëufta hi karíb*, etc.
 
 Large saltwater lakes not connected to the world ocean (e.g., Caspian Sea, Aral Sea) use Stem 3 of -**BW**- 'saltwater lake' rather than Stem 1 in conjunction with the appropriate **SIZ** affix -**x**-. Freshwater lakes use Stem 1 of -**LZ**- while freshwater inland seas use Stem 3 of -**LZ**-.
 
-Caspian Sea: *hluséi-wubwiuxa kaspi*, Aral Sea: *hluséi-wubwoixäkta aral*, Lake Baikal: *hluséi-wubwoixa baikál*, Lake Geneva: *hluséi-wubwoixa ženév*, Lake Erie: *hluséi-walziuxa erie*, Sea of Galilee: *hluséi-wulza kínneret*
+Caspian Sea: *hluséi-wubwiuxa kaspi*, Aral Sea: *hluséi-wubwoixäkta aral*, Lake Baikal: *hluséi-wubwoixa baikál*, Lake Geneva: *hluséi-wubwoixa ženév*, Lake Erie: *hluséi-walziuxa érìe*, Sea of Galilee: *hluséi-wulza kínneret*
 
-Progressively smaller sub-sections of oceans such as gulfs, bays, bights, and sounds attach various degrees of the POR affix to *hlusé-bwala* or *bwala hlei / hi*.
+Progressively smaller sub-sections of oceans such as gulfs, bays, bights, and sounds attach various degrees of the POR affix to *hlusé-bwala* or *bwala hle'i / hi*.
 
 Bay of Biscay: *hluséi-bwaleufta biskaya*, Bight of Benin: *hluséi-bwalaufta benín*, Gulf of Mexico: *hluséi-bwaleufta méxiko*, San Francisco Bay: *hluséi-bwalaifta sanfransisko*, Hudson Bay: *hluséi-bwaleufta hëdsën*, James Bay: *hluséi-bwaleifta jeimz*
 
 ### 7.4 Names of Terrestrial Landmarks
 
-The roots -**JL**- 'MOUNTAINOUS TOPOGRAPHY', -**ZH**- 'DESERT/STEPPE/TUNDRA', -**VN**- 'VALLEY/CANYON/GORGE' and -**LZW**- 'ESTUARY / RIVER DELTA' are likewise used with the carrier stem or carrier adjunct.
+The roots -**JL**- 'MOUNTAINOUS TOPOGRAPHY', -**ZH**- 'DESERT/STEPPE/TUNDRA', -**VŇ**- 'VALLEY/CANYON/GORGE' and -**LZW**- 'ESTUARY / RIVER DELTA' are likewise used with the carrier stem or carrier adjunct.
 
-Gobi Desert: *hluséi-wazha gob*, Andes Mountains: *hluséi-ejlarçta andes*, Central Asian Steppe: *hluséi-wezhoixidna asya*, Grand Canyon: *wevňiuxa*, Himalaya Mountains: *hluséi-ejlarçta himálaya*, Tibetan Plateau: *hluséi-wujlluxa pho*, Siberian Tundra: *hluséi-wuzha sibír*, Niagara Falls: *hluséi-urţrarfta nayagra*, Amazon River Delta: *hluséi-welzwa amazonas*
+Gobi Desert: *hluséi-wazha gob*, Andes Mountains: *hluséi-ejlarçta andes*, Central Asian Steppe: *hluséi-wezhoixidna asya*, Grand Canyon: *wevňiuxa*, Himalaya Mountains: *hluséi-ejlarçta himálaya*, Tibetan Plateau: *hluséi-wujliuxa phö*, Siberian Tundra: *hluséi-wuzha sibír*, Niagara Falls: *hluséi-urţrarfta nayagra*, Amazon River Delta: *hluséi-welzwa amazonas*
 
 ### 7.5 Names of Large Rivers
 
-The native names of rivers often vary depending on the various enthnographic domains they pass through. In some instances, the dominant ethnonymn has been chosen (e.g., *dijla* for the Tigris), in other instances combined names have been used (e.g., *caňpobrahmaputra* for the Brahmaputra), while in others a form derived from an underlying proto-language has been used (e.g., *purát* for the Euphrates, *danu* for the Danube). The following names are preceded by *hluséi-welza* OR *welza hlei / hi* 'river named...' (Carrier Stem 3 incorporated into Stem 2 of the root -**LZ**-).
+The native names of rivers often vary depending on the various enthnographic domains they pass through. In some instances, I have chosen the dominant ethonymn (e.g., *dijla* for the Tigris), in other instances I have combined names (e.g., *caňpobrahmaputra* for the Brahmaputra), while in others I have used a form derived from an underlying proto-language (e.g., *purát* for the Euphrates, *danu* for the Danube). The following names are preceded by *hluséi-welza* OR *welza hle'i / hi* 'river named...' (Carrier Stem 3 incorporated into Stem 2 of the root -**LZ**-).
 
 | River | Name | River | Name | River | Name |
 |---|---|---|---|---|---|
 | Nile | *nil* | Ob | *ob* | Tigris | *dijla* |
 | Amazon | *amazonas* | Irtysh | *irtiš* | Euphrates | *purát* |
-| Yangtze | *can* | Volga | *volga* | Danube | *danu* |
+| Yangtze | *caň* | Volga | *volga* | Danube | *danu* |
 | Mississippi | *misisipi* | Amur | *amur* | Ganges | *gënga* |
 | Missouri | *misuri* | Mekong | *mekoň* | Don | *don* |
 | Yenisei | *yeniséi* | Brahmaputra | *caňpobrahmaputra* | Rio Grande | *riogrande* |
@@ -1715,21 +1715,21 @@ The following names are preceded by *hluséi-phwär(a)* or *phwära hlei / hi* '
 | City | Name | City | Name | City | Name | City | Name |
 |---|---|---|---|---|---|---|---|
 | Tokyo | *tokyo* | Manila | *manila* | Bangkok | *kruňthép* | Dongguan | *tuňkwan* |
-| Delhi | *dilli* | Lagos | *eko* | Seoul | *seoul* | Hangzhou | *haňce* |
+| Delhi | *dilli* | Lagos | *eko* | Seoul | *sëúl* | Hangzhou | *haňce* |
 | Shanghai | *zaňhe* | Rio de Janeiro | *uhiujižëneiru* | Nagoya | *nagoya* | Foshan | *faččën* |
-| Sao Paulo | *saupaulu* | Tianjin | *tçenčin* | Hyderabad | *háidërëbad* | Shenyang | *šënyaň* |
+| São Paulo | *saupaulu* | Tianjin | *tçenčin* | Hyderabad | *háidërëbad* | Shenyang | *šënyaň* |
 | Mexico City | *méxiko* | Kinshasa | *kinšasa* | London | *lëndën* | Riyadh | *erriyáḑ* |
 | Cairo | *alkáhira* | Guangzhou | *kwoňcëu* | Tehran | *tehrán* | Baghdad | *bařdád* |
 | Mumbai | *mumbëi* | Los Angeles | *losânjeles* | Chicago | *šikago* | Santiago | *santyago* |
-| Beijing | *peičiň* | Moscow | *meskwa* | Chengdu | *chëňtu* | Surat | *surat* |
+| Beijing | *peičiň* | Moscow | *mëskvá* | Chengdu | *chëňtu* | Surat | *surat* |
 | Dhaka | *dhaka* | Shenzhen | *šënčën* | Nanjing | *nančin* | Madrid | *maḑríḑ* |
 | Osaka | *osaka* | Lahore | *lahór* | Wuhan | *uxán* | Suzhou | *sëucöü* |
 | New York City | *nuyórk* | Bangalore | *bengëluru* | Ho Chi Minh City | *hotçimín* | Pune | *pune* |
-| Buenos Aires | *bwenosaires* | Paris | *paří* | Luanda | *luanda* | Harbin | *háërbin* |
-| Chongqing | *choňčhin* | Bogotá | *bogotá* | Ahmendabad | *ámdavad* | Houston | *çustën* |
-| Istanbul | *istanbul* | Jakarta | *jakarta* | Kuala Lumpur | *kúalëlumpor* | Dallas | *dälës* |
-| Kolkata | *kolkata* | Lima | *lima* | Xi'an | *šián* | Toronto | *tërantou* |
-| Karachi | *kërači* | Chennai | *čennái* | Hong Kong | *höňkoň* | Dar Es Salaam | *daressalám* |
+| Karachi | *kërači* | Paris | *paří* | Luanda | *luanda* | Harbin | *háërbin* |
+| Buenos Aires | *bwenosaires* | Bogotá | *bogotá* | Ahmendabad | *ámdavad* | Houston | *çustën* |
+| Chongqing | *choňčhin* | Jakarta | *jakarta* | Kuala Lumpur | *kúalëlumpor* | Dallas | *dälës* |
+| Istanbul | *istanbul* | Chennai | *čennái* | Xi'an | *šián* | Toronto | *tërantou* |
+| Kolkata | *kolkata* | Lima | *lima* | Hong Kong | *höňkoň* | Dar Es Salaam | *daressalám* |
 
 ### 7.7 Names of Countries
 
@@ -1739,71 +1739,70 @@ For countries with multiple names due to multiple official languages (e.g., Swit
 
 | Country | Name | Country | Name | Country | Name |
 |---|---|---|---|---|---|
-| Afghanistan | *afgan* | Gabon | *gabón* | North Korea | [see Note below] |
-| Albania | *škyípëri* | Gambia | *kambi* | Norway | *noryë* |
-| Algeria | *jazair* | Georgia | *kartvel* | Oman | *omán* |
-| Andorra | *andorra* | Germany | *doič* | Pakistan | *pak* |
-| Angola | *angola* | Ghana | *gana* | Palau | *belau* |
-| Antigua & Barbuda | *antigwabarbuda* | Greece | *elaḑa / helás* | Palestine | *falaštín* |
-| Argentina | *arxentina* | Grenada | *greneida* | Panama | *panamá* |
-| Armenia | *haik* | Guatemala | *gwatemala* | Papua New Guinea | *papuanyugini* |
-| Australia | *ostralya* | Guinea | *giné* | Paraguay | *paragwái* |
-| Austria | *ôstëřaiç* | Guinea-Bissau | *ginebisó* | Peru | *perú* |
-| Azerbaijan | *azärbaiján* | Guyana | *gayana* | Philippines | *pilipinas* |
-| Bahamas | *bahama* | Haiti | *aití* | Poland | *polska* |
-| Bahrain | *bahráin* | Honduras | *onduras* | Portugal | *portugál* |
-| Bangladesh | *baňla* | Hungary | *madyar* | Qatar | *gatar* |
-| Barbados | *barbeidos* | Iceland | *is* | Romania | *romenia* |
-| Belarus | *byelarús* | India | *bharët* | Russia | *rasiya* |
-| Belgium | *belž* | Indonesia | *indonesia* | Rwanda | *rwanda* |
-| Belize | *belíz* | Iran | *irán* | Saint Kitts & Nevis | *seintkicannevis* |
-| Benin | *benín* | Iraq | *irák* | Saint Lucia | *seintlusya* |
-| Bhutan | *trukül* | Ireland | *eryë* | St. Vincent & the Grenadines | *seintvinsentangrénadinz* |
-| Bolivia | *bolivya* | Israel | *yisrael* | San Marino | *sanmarino* |
-| Bosnia & Herzegovina | *bosnaxercegovina* | Italy | *italya* | Sao Tomé & Príncipe | *sautumeeprinispe* |
-| Botswana | *bocwana* | Jamaica | *jameka* | Saudi Arabia | *arabiyaassudiya* |
-| Brazil | *brëzíu* | Japan | *nihon* | Senegal | *sénegal* |
-| Brunei | *brunai* | Jordan | *urdan* | Serbia | *sërp* |
-| Bulgaria | *bëlgáriya* | Kazakhstan | *kazak* | Seychelles | *sešél* |
-| Burkina Faso | *burkinafaso* | Kenya | *kenya* | Sierra Leone | *sieraleón* |
-| Burundi | *burundi* | Kiribati | *kíribas* | Somalia | *somáliya* |
-| Côte d'Ivoire | *kotëdivwář* | Kuwait | *kuwet* | South Korea | *hanguk* |
-| Cabo Verde | *kabuverdi* | Kyrgyzstan | *kerfez* | Spain | *espanya* |
-| Cambodia | *kampučië* | Laos | *lau* | Sri Lanka | *srilanka* |
-| Cameroon | *kamerún* | Latvia | *látviya* | Sudan | *sudán* |
-| Canada | *kánada* | Lebanon | *libnén* | Suriname | *sürinamë* |
-| Chad | *cad* | Lesotho | *sutu* | Sweden | *svériyë* |
-| Chile | *čile* | Liberia | *laibirya* | Switzerland | *švaic* |
-| China | *čuňkwo* | Libya | *líbiya* | Syria | *suriya* |
-| Colombia | *kolombya* | Liechtenstein | *líçtenštain* | Tajikistan | *tojikí* |
-| Comoros | *komori* | Lithuania | *lyetuvá* | Tanzania | *tanzania* |
-| Congo | *kongo* | Luxembourg | *leceiburs* | Thailand | *thai* |
-| Costa Rica | *kostarrika* | Madagascar | *madagaskyarë* | Tibet | *pho* |
-| Croatia | *xrvacka* | Malawi | *malavi* | Timor-Leste | *timorlešte* |
-| Cuba | *kuba* | Malaysia | *mëleisya* | Togo | *togo* |
-| Cyprus | *kipros* | Maldives | *divehi* | Tonga | *toňa* |
-| Czechia | *česko* | Mali | *mali* | Trinidad & Tobago | *trinidadantobago* |
-| Denmark | *tänmak* | Malta | *malta* | Tunisia | *tunisiya* |
-| Djibouti | *jibuti* | Marshall Islands | *mřazyel* | Turkey | *tûrkiye* |
-| Dominica | *domínika* | Mauritania | *muritániya* | Turkmenistan | *türkmen* |
-| Ecuador | *ekwadór* | Mauritius | *mořís* | Tuvalu | *tuvalu* |
-| Egypt | *misr* | Mexico | *méxiko* | Uganda | *uganda* |
-| El Salvador | *elsalbadór* | Micronesia | *mikronesya* | Ukraine | *ukrayina* |
-| Eritrea | *ertra* | Moldova | *moldova* | United Arab Emirates | [see Note below] |
-| Estonia | *esti* | Monaco | *monakó* | United Kingdom | [see Note below] |
-| Eswatini | *eswatini* | Mongolia | *mongol* | United States of America | [see Note below] |
-| Ethiopia | *ityoppya* | Montenegro | *cërnagora* | Uruguay | *uruguai* |
-| Fiji | *viči* | Morocco | *magrib* | Uzbekistan | *ozbek* |
-| Finland | *súomi* | Mozambique | *musambiki* | Vanuatu | *vanuatu* |
-| France | *fřans* | Myanmar | *myëmá* | Vatican City | *vatikano* |
-|  |  | Namibia | *namibya* | Venezuela | *beneswela* |
-|  |  | Nauru | *naoero* | Vietnam | *vietnám* |
-|  |  | Nepal | *nepál* | Yemen | *yaman* |
-|  |  | Netherlands | *néderland* | Zambia | *zambiya* |
-|  |  | New Zealand | *nyuziland* | Zimbabwe | *zimbabwe* |
-|  |  | Nicaragua | *nikaragwa* |  |  |
-|  |  | Niger | *nižéř* |  |  |
-|  |  | Nigeria | *naijeria* |  |  |
+| Afghanistan | *afgan* | Cameroon | *kamerún* | Gambia | *kambi* |
+| Albania | *škyípëri* | Canada | *kánada* | Georgia | *kartvel* |
+| Algeria | *jaza'ír* | Central African Republic | [see Note following the table] | Germany | *doič* |
+| Andorra | *andorra* | Chad | *čad* | Ghana | *gana* |
+| Angola | *angola* | Chile | *čile* | Greece | *elaḑa / helás* |
+| Antigua & Barbuda | *antigwabarbuda* | China | *čuňkwo* | Grenada | *greneida* |
+| Argentina | *arxentina* | Colombia | *kolombya* | Guatemala | *gwatemala* |
+| Armenia | *haik* | Comoros | *komori* | Guinea | *giné* |
+| Australia | *ostralya* | Congo | *kongo* | Guinea-Bissau | *ginebisó* |
+| Austria | *ôstëřaiç* | Costa Rica | *kostarrika* | Guyana | *gayana* |
+| Azerbaijan | *azärbaiján* | Croatia | *xrvacka* | Haiti | *aití* |
+| Bahamas | *bahama* | Cuba | *kuba* | Honduras | *onduras* |
+| Bahrain | *bahráin* | Cyprus | *kipros* | Hungary | *madyar* |
+| Bangladesh | *baňla* | Czechia | *česko* | Iceland | *is* |
+| Barbados | *barbeidos* | Democratic Republic of Congo | [see Note following the table] | India | *bharët* |
+| Belarus | *byelarús* | Denmark | *tänmak* | Indonesia | *indonésìa* |
+| Belgium | *belž* | Djibouti | *jibuti* | Iran | *irán* |
+| Belize | *belíz* | Dominica | *domínika* | Iraq | *irák* |
+| Benin | *benín* | Dominican Republic | [see Note following the table] | Ireland | *eryë* |
+| Bhutan | *trukül* | Ecuador | *ekwadór* | Israel | *yisra'él* |
+| Bolivia | *bolivya* | Egypt | *misr* | Italy | *italya* |
+| Bosnia & Herzegovina | *bosnaxercegovina* | El Salvador | *elsalbadór* | Jamaica | *jameka* |
+| Botswana | *bocwana* | Equatorial Guinea | [see Note following the table] | Japan | *nihon* |
+| Brazil | *brëzíu* | Eritrea | *ertra* | Jordan | *urdún* |
+| Brunei | *brunai* | Estonia | *esti* | Kazakhstan | *kazak* |
+| Bulgaria | *bëlgáriya* | Eswatini | *eswatini* | Kenya | *kenya* |
+| Burkina Faso | *burkinafaso* | Ethiopia | *ityoppya* | Kiribati | *kíribas* |
+| Burundi | *burundi* | Fiji | *viči* | Kuwait | *kuwet* |
+| Côte d'Ivoire | *kotëdivwář* | Finland | *súomi* | Kyrgyzstan | *kërřëz* |
+| Cabo Verde | *kabuverdi* | France | *fřans* | Laos | *lau* |
+| Cambodia | *kampučië* | Gabon | *gabón* | Latvia | *látviya* |
+| Lebanon | *libnén* | North Korea | *čosën* | Sri Lanka | *srilanka* |
+| Lesotho | *sutu* | North Macedonia | [see Note below] | Sudan | *sudán* |
+| Liberia | *laibirya* | Norway | *noryë* | Suriname | *sürinamë* |
+| Libya | *líbiya* | Oman | *omán* | Sweden | *svériyë* |
+| Liechtenstein | *líçtenštain* | Pakistan | *pak* | Switzerland | *švaic* |
+| Lithuania | *lyetuvá* | Palau | *belau* | Syria | *suriya* |
+| Luxembourg | *lêcëbuřš* | Palestine | *falaštín* | Tajikistan | *tojikí* |
+| Madagascar | *madagaskyarë* | Panama | *panamá* | Tanzania | *tanzania* |
+| Malawi | *malavi* | Papua New Guinea | *papuanyugini* | Thailand | *thai* |
+| Malaysia | *mëleisya* | Paraguay | *paragwái* | Tibet | *phö* |
+| Maldives | *divehi* | Peru | *perú* | Timor-Leste | *timorlešte* |
+| Mali | *mali* | Philippines | *pilipinas* | Togo | *togo* |
+| Malta | *malta* | Poland | *polska* | Tonga | *toňa* |
+| Marshall Islands | *mřazyel* | Portugal | *portugál* | Trinidad & Tobago | *trinidadantobago* |
+| Mauritania | *muritániya* | Qatar | *gatar* | Tunisia | *tunisiya* |
+| Mauritius | *mořís* | Romania | *romênìa* | Turkey | *tûrkiye* |
+| Mexico | *méxiko* | Russia | *rasiya* | Turkmenistan | *türkmen* |
+| Micronesia | *mikronesya* | Rwanda | *rwanda* | Tuvalu | *tuvalu* |
+| Moldova | *moldova* | Saint Kitts & Nevis | *seintkicannevis* | Uganda | *uganda* |
+| Monaco | *monakó* | Saint Lucia | *seintlusya* | Ukraine | *ukrayina* |
+| Mongolia | *mongol* | St. Vincent & the Grenadines | *seintvinsentangrénadinz* | United Arab Emirates | [see Note below] |
+| Montenegro | *cërnagora* | San Marino | *sanmarino* | United Kingdom | [see Note below] |
+| Morocco | *magrib* | São Tomé & Príncipe | *sautume'eprínsipë* | United States of America | [see Note below] |
+| Mozambique | *musambiki* | Saudi Arabia | *arabiya'assu'udiya* | Uruguay | *urugwái* |
+| Myanmar | *myëmá* | Senegal | *sénegal* | Uzbekistan | *ozbek* |
+| Namibia | *namibya* | Serbia | *sërp* | Vanuatu | *vanuatu* |
+| Nauru | *naoero* | Seychelles | *sešél* | Vatican City | *vatikano* |
+| Nepal | *nepál* | Sierra Leone | *sieraleón* | Venezuela | *beneswela* |
+| Netherlands | *néderland* | Somalia | *somáliya* | Vietnam | *vietnám* |
+| New Zealand | *nyuziland* | South Africa | [see Note below] | Yemen | *yaman* |
+| Nicaragua | *nikaragwa* | South Korea | *hanguk* | Zambia | *zámbìa* |
+| Niger | *nižéř* | South Sudan | [see Note below] | Zimbabwe | *zimbabwe* |
+| Nigeria | *naijérìa* | Spain | *espanya* |  |  |
 
 **NOTE:** For countries whose names contain governance structures (e.g., the Democratic Republic of Congo), such words are translated directly into New Ithkuil, with the carrier stem then being incorporated to reference the part of the name which is a proper noun. For countries whose names contain a directional or orientational word (e.g., South Sudan), the new **OGC** affix is employed on the carrier stem. The full names (including carrier-stem) of such countries are listed below:
 
@@ -1816,7 +1815,7 @@ South Africa: *wusuidna áfrika*
 South Sudan: *wusuidna sudán*
 United Arab Emirates: *hlellú-ellkina hi arab*
 United Kingdom (of Great Britain and North Ireland): *hlellú-allkila (hi britanya hiu wusadnuň eryë)*
-United States of America: *hluséi-eksmatsa amérika*
+United States of America: *hluséi-eksmaça amérika*
 
 The ten specialized names listed immediately above utilize stems from the following four roots:
 
