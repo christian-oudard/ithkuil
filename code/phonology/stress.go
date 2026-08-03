@@ -250,21 +250,6 @@ func Apply(word string, stress Stress) string {
 // vowelConjunctIndices returns the positions, within
 // SplitConjuncts(word), of conjuncts that begin with a vowel
 // rune. Each entry corresponds to one syllable.
-func vowelConjunctIndices(word string) []int {
-	conjs := SplitConjuncts(word)
-	var out []int
-	for i, c := range conjs {
-		if c == "" {
-			continue
-		}
-		r, _ := utf8.DecodeRuneInString(c)
-		if IsVowel(r) {
-			out = append(out, i)
-		}
-	}
-	return out
-}
-
 // markFirstVowel applies the stress diacritic to the first markable
 // vowel in s. Non-vowel runes and already-stressed vowels pass
 // through unchanged.

@@ -229,18 +229,6 @@ func SlotIVToVr(s g.SlotIV) string {
 	return phonology.VowelForm(series, form)
 }
 
-// ConcatMarker returns the romanization Slot I consonant for a
-// ConcatenationStatus, or "" for the None state.
-func ConcatMarker(s g.ConcatenationStatus) string {
-	switch s {
-	case g.Type1:
-		return "h"
-	case g.Type2:
-		return "hw"
-	}
-	return ""
-}
-
 // VsForm is the inverse of grammar.VsScope: the V_S vowel that writes a
 // scope on a §4.1.1 single-affix adjunct. ScopeVDom is the default and
 // writes nothing, which is what the source's parenthesised "(a)" marks.

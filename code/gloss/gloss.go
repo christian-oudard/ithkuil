@@ -160,13 +160,6 @@ func (gl *Glosser) crRootLabel(x g.CrRoot, f g.Formative) string {
 	return phonology.ToASCII(x.Cluster)
 }
 
-func stemTriple(ss []string, stem int) string {
-	if stem < 1 || stem > 3 || len(ss) < stem {
-		return ""
-	}
-	return ss[stem-1]
-}
-
 func (gl *Glosser) csRootLabel(x g.CsRoot) string {
 	return fmt.Sprintf("(%s)/%d", gl.affixLabel(x.Cs), x.Degree)
 }
@@ -214,19 +207,6 @@ func slotI(c g.ConcatenationStatus) string {
 
 // stemIndex converts the grammar.Stem enum to the 0-3 index expected
 // by RootEntry.Stem: S0→0, S1→1, S2→2, S3→3.
-func stemIndex(s g.Stem) int {
-	switch s {
-	case g.S1:
-		return 1
-	case g.S2:
-		return 2
-	case g.S3:
-		return 3
-	default:
-		return 0
-	}
-}
-
 func slotIV(s g.SlotIV) string {
 	if s == g.DefaultSlotIV {
 		return ""

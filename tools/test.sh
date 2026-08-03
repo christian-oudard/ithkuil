@@ -9,9 +9,18 @@
 # Flags (env vars):
 #   COVERAGE_THRESHOLD=NN  fail if total coverage drops below NN%
 #   SHOW_UNCOVERED=1       list functions still below 100% at the end
+#   SKIP_DEADCODE=1        skip the unreachable-function pass
 #
 # -coverpkg=./... is the important bit: every test contributes coverage
 # against every package, so cross-package tests are counted.
+#
+# The deadcode pass answers a question coverage cannot. A function at 0%
+# might be untested or might be unreachable, and the two want opposite
+# fixes: write a test, or delete the code. Go will not tell them apart
+# either, objecting to an unused local and never to an unused
+# package-level function, so a refactor that takes away the last caller
+# leaves the callee sitting there. Eight had accumulated that way before
+# this pass existed.
 
 set -euo pipefail
 
@@ -77,6 +86,23 @@ if [ "${SHOW_UNCOVERED:-}" = "1" ]; then
   else
     echo "$uncov"
   fi
+fi
+
+if [ "${SKIP_DEADCODE:-}" != "1" ]; then
+  echo
+  echo "=== Unreachable functions ==="
+  # -test counts a function called only from a test as reachable, which
+  # is what we want: a helper used by one test is live code. Reachability
+  # is computed from the three main packages and the test binaries, so
+  # this is "nothing in the tree calls it", not "no importer might".
+  dead=$(go tool deadcode -test ./... || true)
+  if [ -n "$dead" ]; then
+    echo "$dead" >&2
+    echo >&2
+    echo "FAIL: unreachable functions; delete them or call them" >&2
+    exit 1
+  fi
+  echo "  (none)"
 fi
 
 if [ -n "${COVERAGE_THRESHOLD:-}" ]; then

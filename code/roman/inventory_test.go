@@ -137,3 +137,40 @@ func TestInventory_RendersPronounceableWords(t *testing.T) {
 		t.Fatal("no sample was checked; the test is not exercising anything")
 	}
 }
+
+// TestText_RoundTripsASpan covers the whole-span pair the package doc
+// advertises, ParseText and Text, which nothing else in the tree calls:
+// the CLI and the MCP server both want the per-word report Tokenize
+// gives instead. An arm that is documented as a pair and used by nobody
+// is the arm that rots, and Text had no test at all.
+func TestText_RoundTripsASpan(t *testing.T) {
+	const sentence = "hi malëuţřait a mala"
+	span, err := roman.ParseText(sentence)
+	if err != nil {
+		t.Fatalf("ParseText(%q): %v", sentence, err)
+	}
+	if len(span) != 4 {
+		t.Fatalf("read %d words from %q, want 4", len(span), sentence)
+	}
+	out, err := roman.Text(span)
+	if err != nil {
+		t.Fatalf("Text: %v", err)
+	}
+	if out != sentence {
+		t.Errorf("span round-tripped to %q, want %q", out, sentence)
+	}
+}
+
+// TestText_ReportsTheWordThatFailed pins what a span does with a word
+// that cannot be written. Text stops at the first failure rather than
+// returning a partial sentence, since half a span read back as whole is
+// worse than an error.
+func TestText_ReportsTheWordThatFailed(t *testing.T) {
+	span := g.Text{
+		g.MinimalFormative("ml"),
+		g.ModularAdjunct{}, // §4.3 Slot 4 is mandatory; this cannot be written
+	}
+	if _, err := roman.Text(span); err == nil {
+		t.Fatal("a span holding an unwritable word should not render")
+	}
+}

@@ -1,7 +1,6 @@
 package roman
 
 import (
-	g "github.com/christian-oudard/ithkuil/grammar"
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/corpus"
@@ -59,11 +58,3 @@ func TestDiscordExamples(t *testing.T) {
 }
 
 // readWord reads one word or fails the test.
-func readWord(t *testing.T, word string) g.Word {
-	t.Helper()
-	w, err := ParseWord(word)
-	if err != nil {
-		t.Fatalf("ParseWord(%q): %v", word, err)
-	}
-	return w
-}

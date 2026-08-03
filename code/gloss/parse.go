@@ -193,24 +193,6 @@ var caAbbrevs = func() map[string]bool {
 // looks like one. Returns (nil, false, nil) when the token is clearly
 // not a root candidate. An error means the token *looked* like a root
 // but couldn't be decoded — that's a real parse failure.
-func tryParseRoot(tok string, affixes map[string]lexicon.AffixEntry) (g.Root, bool, error) {
-	if tok == "" {
-		return nil, false, nil
-	}
-	// Parens-wrapped: CsRoot "(ABBREV)/degree" or RefRoot "(refs)".
-	if strings.HasPrefix(tok, "(") {
-		return parseParensRoot(tok, affixes)
-	}
-	// Bare cluster: CrRoot.
-	if cluster, ok := isClusterToken(tok); ok {
-		if err := validateRootCluster(cluster); err != nil {
-			return nil, false, err
-		}
-		return g.DefaultCrRoot(cluster), true, nil
-	}
-	return nil, false, nil
-}
-
 // validateRootCluster rejects a Cr no root could be. isClusterToken
 // accepts any token carrying a lowercase letter, so without this
 // "qqq" composed to "aqqqal", which is not spelled in Ithkuil at all
