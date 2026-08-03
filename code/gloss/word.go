@@ -32,31 +32,6 @@ func Text(t g.Text) string {
 	return (&Glosser{}).Text(t)
 }
 
-// Sentence runs the tokenizer over a sentence and returns one gloss
-// string per word. It crosses arms on purpose: romanization in, gloss
-// out, one entry per romanized word, which is what an analyzer wants
-// and what Text deliberately is not. A word that cannot be read
-// glosses as "?" and the romanization, which says only that it was not
-// read; callers wanting the reason should use roman.Tokenize and
-// report it themselves.
-func (gl *Glosser) Sentence(sentence string) []string {
-	results := roman.Tokenize(sentence)
-	out := make([]string, len(results))
-	for i, r := range results {
-		if r.Err != nil {
-			out[i] = "?" + r.Romanization
-			continue
-		}
-		out[i] = gl.Word(r.Word, roman.Words(results), i)
-	}
-	return out
-}
-
-// Sentence is the no-lexicon convenience wrapper.
-func Sentence(sentence string) []string {
-	return (&Glosser{}).Sentence(sentence)
-}
-
 // Token glosses one word out of context.
 //
 // Every class but one reads the same alone as in a span. The exception

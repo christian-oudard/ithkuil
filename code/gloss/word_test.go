@@ -8,14 +8,31 @@ import (
 	"github.com/christian-oudard/ithkuil/roman"
 )
 
-func TestSentence_MixedTokens(t *testing.T) {
+// glossSpan reads a romanized span and glosses each word in context,
+// which is what the CLI and the MCP server both do. A word that does
+// not read is reported as "?" and its romanization, so a span with one
+// bad word still shows the rest.
+func glossSpan(sentence string) []string {
+	results := roman.Tokenize(sentence)
+	out := make([]string, len(results))
+	for i, r := range results {
+		if r.Err != nil {
+			out[i] = "?" + r.Romanization
+			continue
+		}
+		out[i] = (&Glosser{}).Word(r.Word, roman.Words(results), i)
+	}
+	return out
+}
+
+func TestSpan_MixedTokens(t *testing.T) {
 	// Mixed: bias, formative, register opener.
-	out := Sentence("řřx malëuţřait ha")
+	out := glossSpan("řřx malëuţřait ha")
 	if len(out) != 3 {
 		t.Fatalf("got %d glosses, want 3", len(out))
 	}
 	if out[0] != "DOL" {
-		t.Errorf("token 0 = %q, want \"DOL(Ow! Ouch!)\"", out[0])
+		t.Errorf("token 0 = %q, want \"DOL\"", out[0])
 	}
 	if !strings.HasPrefix(out[1], "m-") {
 		t.Errorf("token 1 = %q, want a formative gloss starting with m-", out[1])
@@ -25,9 +42,12 @@ func TestSentence_MixedTokens(t *testing.T) {
 	}
 }
 
-func TestSentence_Empty(t *testing.T) {
-	if out := Sentence(""); len(out) != 0 {
-		t.Errorf("Sentence(\"\") = %v, want empty", out)
+func TestSpan_Empty(t *testing.T) {
+	if out := glossSpan(""); len(out) != 0 {
+		t.Errorf("glossSpan(\"\") = %v, want empty", out)
+	}
+	if got := Text(nil); got != "" {
+		t.Errorf("Text(nil) = %q, want empty", got)
 	}
 }
 
@@ -100,10 +120,10 @@ func TestToken_ReferentialWithCase(t *testing.T) {
 	}
 }
 
-func TestSentence_CarrierForeign(t *testing.T) {
+func TestSpan_CarrierForeign(t *testing.T) {
 	// "hna John malá" — naming carrier (hn + a = NAM+THM) then John as
 	// the actual name (foreign word per §4.5.3), then malá continues.
-	out := Sentence("hna John malá")
+	out := glossSpan("hna John malá")
 	if len(out) != 3 {
 		t.Fatalf("got %d, want 3", len(out))
 	}
@@ -365,9 +385,9 @@ func TestToken_Unknown(t *testing.T) {
 		t.Errorf("ClassifyWord(\"qpqp\") = %T, want an error", w)
 	}
 	// A whole span still glosses, marking the word it could not read.
-	out := (&Glosser{}).Sentence("qpqp")
+	out := glossSpan("qpqp")
 	if len(out) != 1 || out[0] != "?qpqp" {
-		t.Errorf("Sentence(\"qpqp\") = %q, want [\"?qpqp\"]", out)
+		t.Errorf("glossSpan(\"qpqp\") = %q, want [\"?qpqp\"]", out)
 	}
 }
 
