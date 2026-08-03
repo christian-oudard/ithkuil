@@ -66,9 +66,9 @@ Due to difficulty/awkwardness in pronunciation, or because they are too phonetic
 
 **2.11.** Conjunction of a nasal with an affricate of the same or similar place of articulation is prohibited, as these are too phonetically indistinguishable from nasals followed by the corresponding sibilant fricative. Thus, the following conjuncts are prohibited: \***nc**, \***nč**, \***nż**, \***nj** in that they are too phonetically similar to **ns**, **nš**, **nz**, **nž**.
 
-**2.12.** Similarly to the above, conjuncts of -**m**- followed by a bilabial stop plus a bilabial or interdental fricative or dental stop are prohibited, as they are too phonetically indistinguishable from the same conjunct without the medial stop, e.g., \***mpf**, \***mbv**, \***mbḑ**, \***mpţ**, \***mbd** (vs. **mf**, **mv**, **mţ**, **mḑ**, **mt**, **md**). The combination \***ngḑ** is likewise prohibited (but not **nkţ**).
+**2.12.** Similarly to the above, conjuncts of -**m**- followed by a bilabial stop plus a bilabial or interdental fricative or dental stop are prohibited, as they are too phonetically indistinguishable from the same conjunct without the medial stop, e.g., \***mpf**, \***mbv**, \***mpţ**, \***mbḑ**, \***mpt**, \***mbd** (vs. **mf**, **mv**, **mţ**, **mḑ**, **mt**, **md**). The combination \***ngḑ** is likewise prohibited (but not **nkţ**).
 
-**2.13.** Again, similarly to the above, conjuncts of a nasal followed by a homologous stop plus sibilant are prohibited, as they are too phonetically indistinguishable from the same conjunct without the medial stop, e.g., \***mps**, \***mbz**, \***nks** [vs. **ňs**], \***ngz** [vs. **ňž**], \***mpš**, \***mbž**, \***nkš** [vs. **ňš**], \***ngž** [vs. **ňž**], etc.
+**2.13.** Again, similarly to the above, conjuncts of a nasal followed by a homologous stop plus sibilant are prohibited, as they are too phonetically indistinguishable from the same conjunct without the medial stop, e.g., \***mps**, \***mbz**, \***nks** [vs. **ňs**], \***ngz** [vs. **ňz**], \***mpš**, \***mbž**, \***nkš** [vs. **ňš**], \***ngž** [vs. **ňž**], etc.
 
 **2.14.** The nasal **n**- cannot be followed by the labial stops -**p** and -**b**, as they are too likely to assimilate to -**mp**- and -**mb**-.
 
@@ -120,7 +120,7 @@ A word-initial consonant-form contains from one to four consonants, #C(C)(C)(C)-
 
 > **3.3.2.** Word-initial voiceless stops followed by -**ç**- may be followed by -**m** or -**n** or -**ň**.
 
-> **3.3.3.** Bi-consonantal conjuncts beginning with **p**- or **k**- followed by -**f** or -**ţ** may take a following -**y** or -**w**. The forms **pļ**-, and **tļ**- may be followed by -**y**.
+> **3.3.3.** Bi-consonantal conjuncts beginning with **p**- or **k**- followed by -**f** or -**ţ** may take a following -**y** or -**w**. The forms **pļ**-, and **tļ**- may be followed by -**w** or -**y**.
 
 > **3.3.4.** Word-initial sibilant fricatives (**s**, **z**, **š**, **ž**) as well as **ç**- may be followed by any stop consonant of the same voicing, in which case the third consonant of the conjunct is limited to an approximant or a liquid. Word-initial sibilant fricatives and **ç**- may also be followed by any nasal, in which case the third consonant must be whichever semi-consonant(s) (-**w** or -**y**) is/are permitted to follow that nasal in a bi-consonantal conjunct per the rules above.
 

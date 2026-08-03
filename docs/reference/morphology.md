@@ -32,11 +32,11 @@ This document assumes the reader is familiar with Ithkuil 2011 (i.e., Ithkuil II
 
 **1.2.1 Vowels:** -**a**- is pronounced [a] or [ɑ] but only as [ɑ] when it is the second member of a disyllabic conjunct such as -**ia**-, -**ea**-, -**oa**-, etc. -**ä**- is pronounced [æ]. -**e**- is pronounced [ɛ] or [e] but only as [e] at the beginning of a vocalic conjunct such as -**ea**-, -**eo**-, etc.; -**ë**- is pronounced [ɤ] or [ʌ] or [ə]. -**i**- is pronounced [i] or [ɪ] but only as [i] at the beginning of a vocalic conjunct and only as [ɪ] when preceded or followed by -**y**-. -**o**- is pronounced [ɔ] or [o] but only as [o] at the beginning of a vocalic conjunct such as -**oa**-, -**oe**-, etc. -**ö**- is [œ] or [ø] but only [ø] at the beginning of a vocalic conjunct such as -**öa**-, -**öe**-, etc. -**u**- is [ʊ] or [u] but only [u] at the beginning of a vocalic conjunct such as -**ua**-, -**ur**-, -**uo**-, etc., and only as [ʊ] when preceded or followed by -**y**- or -**w**-. -**ü**- is pronounced as [ʉ] or [y] but only as [ʉ] when preceded by -**y**- or -**w**-. The permissible diphthongs (all are "falling") are: **ai, ei, ëi, oi, ui, au, eu, ëu, ou**, and **iu**. The two vowels of these diphthongs may be pronounced as separate syllables in the following circumstances: (1) when followed by -**l**, -**r** or -**ř** occurring in the same syllable for ease-of-pronunciation; (2) in song or poetry. Care should be taken not to accidentally introduce a glottal-stop between the two vowels when pronouncing a diphthong disyllabically.
 
-**1.2.2 Consonants:** The dental -**n**- assimilates to velar [ŋ] before -**k**-, -**g**-, and -**x**- (but not before -**ř**-); therefore, phonemic -**ň**- is not permitted before -**k**-, -**g**-, or -**x**-. The fricative -**x**- may be pronounced with either velar or uvular articulation [x ~ χ]. The apico-alveolar-retroflex rhotic -**r**- is a single tap/flap [ɾ], which becomes a trill [r] when geminated; when followed by a consonant in the same word, it may be pronounced as an apico-alveolar-retroflex approximant [ɻ], similar to (but further forward in the mouth than) the postalveolar [ɹ] of standard English. The uvular -**ř**- is an approximant [ʁ] as in colloquial French or German; when geminated it is either [ʁː] or can be strengthened to a uvular trill [ʀ]. Care should be taken to ensure the pronunciations of -**př**- and -**tř**- are differentiated from -**px**- and -**tx**-. Syllable-initial or word-final -**ph**-, -**th**-, -**kh**-, -**ch**-, -**čh**- are pronounced as aspirated stops/affricates [ pʰ, tʰ, kʰ, tsʰ, tʃʰ ]. Between two vowels, they are disyllabic and pronounced as in English *haphazard, at-hand, backhanded, it's here*, and *church hall*. The various specialized Slot I or Slot VIII conjuncts beginning with -**h**- are pronounced as follows: **hl** = [ɬ] or [hl], **hr** = [ɾ̥] or [hr], **hm** = [m̥] or [hm], **hn** = [ŋ̊] or [hn].
+**1.2.2 Consonants:** The dental -**n**- assimilates to velar [ŋ] before -**k**-, -**g**-, and -**x**- (but not before -**ř**-); therefore, phonemic -**ň**- is not permitted before -**k**-, -**g**-, or -**x**-. The fricative -**x**- may be pronounced with either velar or uvular articulation [x ~ χ]. The apico-alveolar-retroflex rhotic -**r**- is a single tap/flap [ɾ], which becomes a trill [r] when geminated; when followed by a consonant in the same word, it may be pronounced as an apico-alveolar-retroflex approximant [ɻ], similar to (but further forward in the mouth than) the postalveolar [ɹ] of standard English. The uvular -**ř**- is an approximant [ʁ] as in colloquial French or German; when geminated it is either [ʁː] or can be strengthened to a uvular trill [ʀ]. Care should be taken to ensure the pronunciations of -**př**- and -**tř**- are differentiated from -**px**- and -**tx**-. Syllable-initial or word-final -**ph**-, -**th**-, -**kh**-, -**ch**-, -**čh**- are pronounced as aspirated stops/affricates [ pʰ, tʰ, kʰ, tsʰ, tʃʰ ]. Between two vowels, they are disyllabic and pronounced as in English *haphazard, at-hand, backhanded, it's here*, and *church hall*. The various specialized Slot I or Slot VIII conjuncts beginning with -**h**- are pronounced as follows: **hl** = [ɬ] or [hl], **hr** = [ɾ̥] or [hɾ], **hm** = [m̥] or [hm], **hn** = [n̥] or [hn].
 
 ### 1.3 Orthographic Conventions
 
-The tables on the previous page indicate the romanization system. The following alternatives are available for writing the language in romanized script: The character **ţ** may be written as **ṭ** or **ŧ**, the character **ḑ** may be written as **ḍ** or **đ**, the character **ň** may be written as **ṇ** or **ŋ**, the character **ř** may be written as **ṛ** or **ṙ**, and the character **ļ** may be written as **ł** or **ḷ**.
+The tables on the previous page indicate the romanization system. The following alternatives are available for writing the language in romanized script: The character **ţ** may be written as **ṭ** or **ŧ**, the character **ḑ** may be written as **ḍ** or **đ**, the character **ň** may be written as **ņ** or **ṇ**, the character **ř** may be written as **ŗ** or **ṛ**, and the character **ļ** may be written as **ł** or **ḷ**.
 
 **1.3.1 Indicating Syllabic Stress:** Penultimate stress is unmarked; non-penultimate stress is marked by a diacritic on the vowel carrying the stress, as follows: a vowel with no diacritic takes the acute accent; a vowel with dieresis changes it to a circumflex accent (e.g., ö → ô). The grave accent is used over the vowel -**i**- when it is unstressed as the initial member of a vocalic conjunct following a consonant (e.g., -C**ì**a-, -C**ì**o, etc.) — this is to remind the speaker/reader that this -**ì**- is to be pronounced long /i:/ in order to distinguish such syllables from syllables of the form **Cy+V** (e.g., *karesya* vs. *karésìa*, *velkyo* vs. *vélkìo*). A grave accent may similarly be used over the vowel -**u**- to remind the speaker/reader not to collapse the /u/-sound into /w/ in words like *ehùá*.
 
@@ -126,7 +126,7 @@ The language employs a pitch accent system as the means by which word boundaries
 3. Once a pitch has been chosen for the stressed syllable, it must be pronounced continuously through to the end of the word without change to a different contour (i.e., each word will have only one non-MID pitch contour).
 
 4. If a word carries word-initial stress (i.e., it does not begin with neutral MID pitch) or is monosyllabic, and is not at the beginning of a breath group, then it must carry a pitch whose initial tone is different than the final tone of the previous word, so that two identical tones are not juxtaposed at the boundary between two words. In practice, this means the following rules apply between two adjacent words within the same breath group (i.e., they are not separated from each other by a pause in speech), where the second word carries word-initial stress or is monosyllabic:
-   - When preceded by a word with either FALLING, RISING-FALLING, or LOW pitch, a monosyllabic word or word with word-initial stress must have either FALLING-RISING, or HIGH pitch.
+   - When preceded by a word with either FALLING, RISING-FALLING, or LOW pitch, a monosyllabic word or word with word-initial stress must have either FALLING, FALLING-RISING, or HIGH pitch.
    - When preceded by a word with either HIGH, RISING, or FALLING-RISING pitch, a monosyllabic word or word with word-initial stress must have either RISING, RISING-FALLING, or LOW pitch.
 
 5. In unusual situations (e.g., singing a song) when pitch-accent is unavailable or undesirable as a means of parsing word boundaries and the placement of pauses between words is unrealistic, then a special parsing adjunct of the form **'V'** may be placed before any word to be parsed, where **'V'** represents a single vowel between two glottal stops, the particular vowel indicating the syllabic stress of the following word, as follows:
@@ -636,7 +636,7 @@ For UNFRAMED verbal formatives the Slot VIII C_N affix shows Mood, whereas for n
 | **CCP** PRECEDENT | hn | hnw | X's noun-case associates only with the immediately following formative |
 | **CCV** SUCCESSIVE | hň | hňw | X's noun-case associates only with the immediately preceding formative |
 
-**SPECIAL NOTE:** A noun in one of the Appositive or Relational Cases adjacent to another noun operates as an exception to the above rules. Because such Appositive/Associative/Relational cases naturally associate with an adjacent noun, default zero-marking on such a noun will be assumed to convey **CCP** status if the Appositive/Associative/Relational noun is the first of a pair of nouns, or **CCV** if it is the second of the pair.
+**SPECIAL NOTE:** A noun in one of the Appositive or Relational Cases adjacent to another noun operates as an exception to the above rules. Because such Appositive or Relational nouns naturally associate with an adjacent noun, default zero-marking on such a noun will be assumed to convey **CCP** status if the Appositive/Associative/Relational noun is the first of a pair of nouns, or **CCV** if it is the second of the pair.
 
 **3.8.1.1 Showing both Mood and Case-Scope on a FRAMED formative:** FRAMED formatives do not normally show Mood information to the main verb, so that Slot VIII C_N—Pattern 1 or 2 affix should be interpreted as showing Case-Scope rather than Mood. However, in certain circumstances, it may be advantageous to show both Mood and Case-Scope on a framed formative. To do so, use the MCS affix.
 
@@ -901,7 +901,7 @@ If desired to show V_K information on a FRAMED formative or a concatenated forma
 
 If a word does not have sufficient syllables to take antepenultimate stress, add syllables by filling Slots II and/or Slots VIII and IX with their default values.
 
-**NOTE:** A monosyllabic formative other than a concatenated formative is considered morphologically to have ultimate stress (i.e., it is an UNFRAMED verbal formative). Monosyllabic adjuncts are considered morphologically to have penultimate stress unless specified otherwise.
+**NOTE:** A monosyllabic formative other than a concatenated formative is considered to have the equivalent of ultimate stress (i.e., it is an UNFRAMED verbal formative). Monosyllabic adjuncts are considered morphologically to have penultimate stress unless specified otherwise.
 ---
 
 ## 4.0 ADJUNCTS
@@ -996,19 +996,23 @@ The structure of the adjunct is shown below. Slots 2 and 3 can be "mixed and mat
 
 ### 4.4 Register Adjunct
 
-These adjuncts are marked by a single vowel-form preceded by **h**-. A non-NARRATIVE register clause may be pronounced with low pitch on the last word of the clause, in which case the register clause does not require the end-register final adjunct listed below. If the word/phrase within the register is a proper name or foreign word/phrase, indicate this by ending the register clause using the CAR end-register adjunct *hü*, or pronounce the last word of the proper name/phrase with low tone.
+These adjuncts are marked by a single vowel-form preceded by **h**-. A non-NARRATIVE register clause may be pronounced with low pitch on the last word of the clause, in which case the register clause does not require the end-register final adjunct listed below. If the word/phrase within the register is a proper name or foreign word/phrase, indicate this by ending the register clause using the CAR end-register adjunct *hü*.
 
-| Register Adjunct | | Register | Initial Adjunct | Final Adjunct |
-|---|---|---|---|---|
-| | **NRR** | NARRATIVE (default register) | — | — |
-| | **DSV** | DISCURSIVE (direct speech) | ha | (hai) |
-| | **PNT** | PARENTHETICAL (parenthetical aside) | he | (hei) |
-| | **SPF** | SPECIFICATIVE (proper name of preceding referent) | hi | (hiu) |
-| | **EXM** | EXEMPLIFICATIVE ('for example, ...') | ho | (hoi) |
-| | **CGT** | COGITANT (silent/subjective thoughts) | hu | (hui) |
-| | **END** | CARRIER-END: end of term/phrase governed by carrier stem/adjunct | — | (hü) |
+| Register Adjunct | Register | Initial Adjunct | Final Adjunct |
+|---|---|---|---|
+| **NRR** | NARRATIVE (default register) | — | — |
+| **DSV** | DISCURSIVE (direct speech) | ha | (hai) |
+| **PNT** | PARENTHETICAL (parenthetical aside) | he | (hei) |
+| **SPF** | SPECIFICATIVE \* (proper name of preceding referent) | hi | (hiu) |
+| **EXM** | EXEMPLIFICATIVE ('for example, ...') | ho | (hoi) |
+| **CGT** | COGITANT (silent/subjective thoughts) | hu | (hui) |
+| **END** | CARRIER-END: end of term/phrase governed by carrier stem/adjunct | — | (hü) \*\* |
 
-**Note:** Since Sec. 1.5 external juncture rules do not apply to foreign names/words, insert a pause after uttering the name/words prior to the CAR adjunct *hü*, or pronounce the last word of the proper name/phrase with low tone.
+\* If the identification of the preceding referent is not a proper name, use PNT register instead.
+
+\*\* Use the CAR end-adjunct marker for any register where the referent within the register clause is a proper name or a foreign word/phrase.
+
+**Note:** Since Sec. 1.5 external juncture rules do not apply to foreign names/words, insert a pause after uttering the name/words prior to the CAR adjunct *hü* or the SPF final adjunct *hiu*, or pronounce the last word of the proper name/phrase with low tone.
 
 ### 4.5 Suppletive Adjuncts
 
@@ -1032,11 +1036,15 @@ Note that the last three examples above illustrate that Sec. 1.7, Rule 3, requir
 |-----|------|---|
 | **hm** | Same as Formative Slot IX | Examples: *hma, hmei, hmoa, hme'e, hma'u, hmi'a* |
 
-**4.5.3 NAM Naming Adjunct:** This adjunct indicates that the following word is a name being referred to as such, rather than referring to the entity that bears the name, i.e., it would be used before the name Emily in the sentence *'He said "Emily"'* as opposed to the sentence *'He said "tell Emily"'* which would use the Carrier adjunct, or *'He said to tell Emily'* which would use the Quotative adjunct.
+Note that the last three examples above illustrate that Sec. 1.7, Rule 3, requires Cases 37-40 and 42-44 add an epenthetic vowel after the glottal-stop and that Cases 41 and 45-52 become disyllabic by placing the glottal-stop intervocalically.
+
+**4.5.3 NAM Naming Adjunct:** This adjunct indicates that the following word is a name being referred to as such, rather than referring to the entity that bears the name, i.e., it would be used before the name Emily in the sentence *'He said "Emily"'* as opposed to the sentence *'He said "tell Emily"* which would use the Quotative adjunct, or *'He said to tell Emily'* which would use the Carrier adjunct.
 
 | C_P | V_C | |
 |-----|------|---|
-| **hn** | Same as Formative Slot IX | Examples: *hna, hňei, hnoa, hne'e, hna'u, hni'a* |
+| **hn** | Same as Formative Slot IX | Examples: *hna, hmei, hnoa, hne'e, hna'u, hni'a* |
+
+Note that the last three examples above illustrate that Sec. 1.7, Rule 3, requires Cases 37-40 and 42-44 add an epenthetic vowel after the glottal-stop and that Cases 41 and 45-52 become disyllabic by placing the glottal-stop intervocalically.
 
 **4.5.4 PHR Phrasal Adjunct:** This adjunct is essentially a specialized form of the carrier adjunct above to apply meta-level grammatical information to an entire subsequent phrase as a whole. This is similar to a case-frame, except that where case-frames function solely as an equivalent to subordinate clauses in Western languages, this adjunct causes the subsequent phrase to become a conventionalized, (quasi-)lexicalized gestalt. It thus serves as an equivalent to English phrasal gestalts (often hyphenated), as in the following examples:
 
@@ -1047,6 +1055,8 @@ Note that the last three examples above illustrate that Sec. 1.7, Rule 3, requir
 | C_P | V_C | |
 |-----|------|---|
 | **hň** | Same as Formative Slot IX | Examples: *hňa, hňei, hňo, hňe'e, hňa'u, hňi'a* |
+
+Note that the last three examples above illustrate that Sec. 1.7, Rule 3, requires Cases 37-40 and 42-44 add an epenthetic vowel after the glottal-stop and that Cases 41 and 45-52 become disyllabic by placing the glottal-stop intervocalically.
 
 ### 4.6 Referentials
 
@@ -1060,7 +1070,7 @@ There are ten Referentials (previously known as Personal-Reference Adjuncts), ea
 | **2p** | polyadic addressee | **n** | **t** | **d** | "you (pl.)" |
 | **ma** | monadic animate 3rd party | **m** | **p** | **b** | "he" / "she" / "they (sg.)" |
 | **pa** | polyadic animate 3rd party | **ň** | **k** | **g** | "they (pl.)" |
-| **mi** | monadic inanimate 3rd party | **z** | **ţ** | **đ** | "it" |
+| **mi** | monadic inanimate 3rd party | **z** | **ţ** | **ḑ** | "it" |
 | **pi** | polyadic inanimate 3rd party | **ẓ** | **f** | **v** | "these things / those things" |
 | **Mx** | mixed animate/inanimate 3rd party | **c** | **č** | **j** | mixed animate+inanimate, e.g., "s/he+it", "they+those", "it+they", "those+s/he", etc. |
 | **Rdp** | Reduplicative (i.e., resumptive) | **th** | **ph** | **kh** | referring back to the antecedent/previously named party (often used with SWR affix) |
@@ -1071,7 +1081,7 @@ There are ten Referentials (previously known as Personal-Reference Adjuncts), ea
 
 To show AGGLOMERATIVE or NOMIC or ABSTRACT categories as a Referential, add the following affixes immediately preceding or following one of the affixes above (as phonotactically permissible): AGGLOMERATIVE: -**ļ**- / -**tļ**- NOMIC: -**ç**- / -**x**- ABSTRACT: -**w** / -**y**
 
-The **IPa** and **IPi** Impersonal categories of previous versions of this document (i.e., "one", "someone", "something", "a thing", "things", etc.) will instead be shown by adding the NOMIC affix above to the **ma** or **mi** affixes above, depending on the intended meaning. Applying the ABSTRACT affix to a tangible Referential form gives a word meaning *"all that X is"* or *"everything about X"*, *"all about me"*, *"everything having to do with you"* or *"everything about it"*. When applied to the Mx Referential, the ABSTRACT affix gives the meaning *"everything and everyone"* or *"all that there is."*
+The **IPa** and **IPi** Impersonal categories of previous versions of this document (i.e., "one", "someone", "something", "a thing", "things", etc.) will instead be shown by adding the NOMIC affix above to the **ma** or **mi** affixes above, depending on the intended meaning. Applying the ABSTRACT affix to a tangible Referential form gives a word meaning *"all that X is"* or *"everything about X"* as in *"all about me"*, *"everything having to do with you"* or *"everything about it"*. When applied to the Mx Referential, the ABSTRACT affix gives the meaning *"everything and everyone"* or *"all that there is."*
 
 **Provisional Referential:** The PVS Provisional Referential refers to a vague, unspecified, potential, uncertain or unknown party/entity which can be marked for case. Ostensibly, the closest English translation would be "whatever." However, since the identity of the entity is provisional/potential/uncertain, the focus of the personal reference is on the case-relationship being expressed, so that the meaning of the case often determines the proper English translation. For example, in phrases/sentences using IRG Illocution, the Referential would correspond most closely to an English WH-interrogative pronoun such as PVS-LOC *where?* ("whatever location"), PVS-PUR *why?* ("whatever purpose"), PVS-PRP *'whose?'* ("whatever owner"), etc.
 
@@ -1213,7 +1223,6 @@ Each Bias adjunct has the same consonant-form as an associated lexico-semantic r
 | **EUP** | EUPHEMISTIC | vvt | *'Let's just say that….' or 'Well, let me put it this way….'* |
 | **EXA** | EXASPERATIVE | kçç | *'Dammit!' 'Look, don't you get it?…' 'Look, I'm trying to tell you….'* |
 | **EXG** | EXIGENT | rrs | *'It's now or never!'* |
-| **MNF** | MANIFESTIVE | pss | *'Ah!' 'Well, now!' 'So!' [Italian 'Allora!' ]* |
 | **FOR** | FORTUITOUS | lzp | *'It's just as well that…' or 'All's well that ends well…'* |
 | **FSC** | FASCINATIVE | žžj | *'Cool!' 'Wow!' 'Awesome!'* |
 | **GRT** | GRATIFICATIVE | mmh | *'Ah! What bliss...!' 'Oh, there's nothing like….' [physical pleasure only]* |
@@ -1225,6 +1234,7 @@ Each Bias adjunct has the same consonant-form as an associated lexico-semantic r
 | **ISP** | INSIPID | lçp | *'Meh... (said due to lack of interest)' 'How boring/tedious/dull!'* |
 | **IVD** | INVIDIOUS | řřn | *'Why does he/she/they get to... and I don't?!' 'How unfair (that I don't get to...)!'* |
 | **MAN** | MANDATORY | msk | *'take it or leave it,' 'this is your last chance,'* |
+| **MNF** | MANIFESTIVE | pss | *'Ah!' 'Well, now!' 'So!' [Italian 'Allora!' ]* |
 | **OPT** | OPTIMAL | ççk | *prolonged 'so' or 'totally' as in 'I so don't care!' or 'That is totally not what I meant.'* |
 | **PES** | PESSIMISTIC | ksp | *'Yeah, like it really matters that...' 'Pfft! What's it to me?'* |
 | **PPT** | PROPITIOUS | mll | *'it's a wonder that' as in It's a wonder that he didn't break a bone in that fall.* |
@@ -1582,7 +1592,7 @@ The new SPT Affix is now available for use in expressing the hour of day, day of
 
 ### 6.1 Alternate Names of the Months
 
-Name the first 4 months is via Degrees 1 through 4 of the Type-2 **SEQ** affix (-**nt**) attached to Stem No. 3 of -**RD**- (meaning 'calendrical month') to render words meaning 'first month', 'second month', 'third month', 'fourth month'. Likewise, the last four months may utilize Degrees 6 through 9 of the same affix. For the remaining months (and as alternates for the first four and last four months), use Degree 2 of the Type-2 **XX(#)** affixes. (Use non-decimal number base roots -**CG**- and -**JD**- for '11' and '12'.) Thus:
+Name the first 4 months is via Degrees 1 through 4 of the Type-2 **SEQ** affix (-**nt**) attached to Stem No. 3 of -**RḐ**- (meaning 'calendrical month') to render words meaning 'first month', 'second month', 'third month', 'fourth month'. Likewise, the last four months may utilize Degrees 6 through 9 of the same affix. For the remaining months (and as alternates for the first four and last four months), use Degree 2 of the Type-2 **XX(#)** affixes. (Use non-decimal number base roots -**CG**- and -**JD**- for '11' and '12'.) Thus:
 
 | Month | Names |
 |---|---|
@@ -1814,12 +1824,12 @@ North Macedonia: *wusaidna makedóniya*
 South Africa: *wusuidna áfrika*
 South Sudan: *wusuidna sudán*
 United Arab Emirates: *hlellú-ellkina hi arab*
-United Kingdom (of Great Britain and North Ireland): *hlellú-allkila (hi britanya hiu wusadnuň eryë)*
 United States of America: *hluséi-eksmaça amérika*
+United Kingdom (of Great Britain and North Ireland): *hlellú-allkila (hi britanya hiu wusadnuň eryë)*
 
 The ten specialized names listed immediately above utilize stems from the following four roots:
 
-**-DT- REPRESENTATIVE GOVERNANCE**
+**-ḐT- REPRESENTATIVE GOVERNANCE**
 
 | Spec. | Stem 1 | Stem 2 | Stem 3 |
 |---|---|---|---|
@@ -1837,7 +1847,7 @@ The ten specialized names listed immediately above utilize stems from the follow
 | **CSV** | (to be) a practice associated with monarchic governance; to perform/carry out an act associated with, or demonstrating monarchic governance, to reign | | |
 | **OBJ** | (to be) a society/group/party governed by means of monarchism/monarchy. | | |
 
-**-NTN- 'LATITUDINAL BASES [LATITUDINAL POLE / EQUATOR]'**
+**-NTŇ- 'LATITUDINAL BASES [LATITUDINAL POLE / EQUATOR]'**
 
 | Spec. | Stem 1 | Stem 2 | Stem 3 |
 |---|---|---|---|

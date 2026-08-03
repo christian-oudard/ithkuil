@@ -59,20 +59,40 @@ Specification tables (-Z- as the pattern for 2 and up, -VR-, -LL-, and
 the seven operation and number-theory roots), and the notes on -TVY-
 concatenation and the OAU affix.
 
-**Audited:** every table in `morphology.md` §3 has now been checked
-against the PDF — the 68 cases positionally and against the vowel-form
-table, the 32 V_N and 36 aspect cells, V_V, V_R, the 17 V_K values, and
-every section number. One transcription defect came out of it (G38),
-one misplaced heading (§3.9.3.3 had lost its title and its table), and
-one code defect (`parse` read the NAV alternate as `i'ë` where the
-vowel-form table gives `i'ä`). `phonotactics.md` §§8-11 summarise
-Quijada's combinatorial tables — 679, 5183, 15034 and 12271 permissible
-forms — rather than reproducing them; the totals match the document but
-the forms themselves are not here.
+**Audited.** `morphology.md` has now been checked against the PDF in
+three passes, each catching what the one before could not see:
+
+- Every table in §3, positionally and against the vowel-form table: the
+  68 cases, the 32 V_N and 36 aspect cells, V_V, V_R, the 17 V_K values
+  and every section number. It produced G38, a misplaced heading
+  (§3.9.3.3 had lost its title and its table) and a code defect
+  (`parse` read the NAV alternate as `i'ë` where the vowel-form table
+  gives `i'ä`).
+- Every Ithkuil form carrying a diacritic, both directions. 63 of 490
+  were wrong, in four ways: diacritics dropped, letters transliterated
+  to ASCII, glottal stops dropped, and §7's name tables reflowed out of
+  the source's grid and misaligned. `TestMorphologyFormsMatchSource`
+  keeps this one from coming back.
+- Every sentence of running prose, matched against its nearest
+  counterpart. It produced nine more, of which one changed a meaning
+  (§4.5.3 had the Carrier and Quotative adjuncts the wrong way round)
+  and two were letters that only a rendered page could settle (§1.2.2's
+  hr and hn, §1.3's ň and ř alternates).
+
+`phonotactics.md` §§8-11 now carry Quijada's four combinatorial tables
+in full rather than summarising them, and `TestSection8GridMatchesRules`
+regenerates §8 from our reading of §§1-7. G47 and G48 came out of that.
+Its prose has had the sentence pass too, which found three dropped
+example forms, one of which `phonotactics.go` had dropped with it.
+
+The two remaining files have had the form check but not the sentence
+pass. `morphology.md` §8 agrees with §6.4.1 of the lexicon document,
+both directions, on every form either carries. `affixes_reference.md`
+agrees with the affix document except for A8.
 
 ### How much of this list to believe
 
-Thirteen entries have been settled, and eleven of those were defects in
+Fourteen entries have been settled, and twelve of those were defects in
 our own transcription rather than in Quijada. That is the base rate to
 apply to everything below.
 
@@ -85,11 +105,17 @@ affixes' semantics contradicted their declared gradient type; against
 Quijada's real definitions both fit exactly, and the mismatch was in a
 paraphrase of his wording that we had written ourselves.
 
-**Verified against the source:** the Affix table and Lexicon sections,
-and G33, G35, G36, G39, G40, G41. **Not yet:** G2, G5-G13, G15, G18,
-G20-G26, G28, G30, G37, G42 and the Corpus section. Those have been
-read against our markdown, not against the PDF, so each is a claim
-about a document that has been wrong eleven times.
+A rendered page beats the text extraction whenever a single letter is
+the point. `pdftotext` reported the SAT bias as ļţ where our markdown
+had lţ, and reported §1.3's ň alternates as `n͕ or ṇ`; both needed
+`pdftoppm` at 600 dpi to settle, and in both cases a low-resolution
+render was also wrong, losing a cedilla to antialiasing.
+
+**Verified against the source:** all of `morphology.md` and
+`phonotactics.md`, the Affix table and Lexicon sections, and G33, G35,
+G36, G39, G40, G41. **Not yet:** the Corpus section, and those entries
+below that rest on the affix and lexicon documents rather than the
+grammar.
 
 ## Settled
 
@@ -118,6 +144,26 @@ a defect in the language.
 | G46 | §4.4's END adjunct is hü; our markdown added an i in three of four places |
 
 ## Affix table
+
+### A8. PIC names two affixes, and only one of them reached the spreadsheet
+
+The chemistry section of the affix document gives four Polyatomic Ion
+affixes on one line — `-cţ` PIA, `-ẓţ` PIB, `-čţ` PIC, `-jţ` PID — and
+then, fourteen lines later, a fifth: **`-žţ` PIC Additional Polyatomic
+Ionic Configurations**, whose nine degrees are the oxyanion series
+(-ate, -ite, hypo-...-ite, per-...-ate, -ide, bi-...-ate, dihydrogen
+...-ate, di-...-ate, di...-ide).
+
+So PIC abbreviates two different affixes with different C_S forms and
+unrelated meanings. The community spreadsheet carries only `-čţ`, and
+`data.json` and `affixes_reference.md` follow it, so `-žţ` is absent
+from our data entirely — the cluster appears there only as a root.
+
+Not fixed in place: the affix rows come from `tools/sync_lexicon.py`
+mirroring the spreadsheet, and a hand-added row would be overwritten on
+the next sync. The gap belongs upstream, and the duplicate abbreviation
+belongs to Quijada either way.
+
 ## Grammar
 
 ### G2. The §3.6 bn-substitution cannot cover both configurations that need it
@@ -520,3 +566,36 @@ exist, and the totals are commentary on them. It does mean no count
 Quijada prints for these tables can be quoted as authoritative, and
 that the widely-cited "679 bi-consonantal conjuncts" is one of the
 five-row disagreements rather than a figure the grid supports.
+
+### G49. §4.5.3's naming-adjunct examples hold a form from the adjunct above
+
+Each of §4.5's four suppletive adjuncts prints six example words built
+on its own C_P: `hla, hlei, hloa, hle'e, hla'u, hli'a` for CAR on
+**hl**, and the same six vowel-forms on **hm** for QUO, **hn** for NAM,
+**hň** for PHR. Two entries break the pattern:
+
+- NAM's second example is **hmei**, which is QUO's. On the pattern it
+  should be `hnei`, and every other NAM example is `hn`-initial.
+- PHR's third example is **hňo** where the other three rows have the
+  Case-3 form `-oa`. It should be `hňoa`.
+
+Both are single-word slips in an otherwise mechanical list, so nothing
+rests on them; the C_P values themselves are stated separately in the
+same table and are not in doubt. Recorded because the transcription
+carries them as printed rather than repairing them, and a reader
+building a test set from these examples would otherwise get one
+adjunct's form filed under another's.
+
+### G50. The phonotactics document's vowel chart has a tenth vowel
+
+§1 of the phonotactics document prints a vowel chart with **ï** in the
+high central unrounded cell, beside i, ü and u. The grammar document's
+§1.1 chart has the same three and no fourth; the vowel-form table of
+§1.6 is built from nine vowels, not ten; and ï appears nowhere else in
+the phonotactics document, in any rule, in any conjunct table, or in
+any root or affix in the lexicon.
+
+So nothing depends on it and nothing else corroborates it. It is
+transcribed as printed, in the cell it occupies, because the cell is
+the whole of the claim: an implementation that added a tenth vowel on
+this evidence would have no vowel-form to put it in.

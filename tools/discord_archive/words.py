@@ -49,10 +49,10 @@ VARIANTS = str.maketrans({
     "ŧ": "ţ",
     "ḍ": "ḑ",
     "đ": "ḑ",
+    "ņ": "ň",
     "ṇ": "ň",
-    "ŋ": "ň",
+    "ŗ": "ř",
     "ṛ": "ř",
-    "ṙ": "ř",
     "ł": "ļ",
     "ḷ": "ļ",
     "ż": "ẓ",  # unsanctioned, but the phonotactics document uses it throughout

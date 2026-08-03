@@ -76,19 +76,18 @@ func TestNormalize_LeavesPreV4Letters(t *testing.T) {
 	}
 }
 
-// §1.3 lets ţ be written ṭ or ŧ, ḑ as ḍ or đ, ň as ṇ or ŋ, ř as ṛ or ṙ,
-// and ļ as ł or ḷ. Quijada's own §4.6 table uses đ for the
-// mi/DETRIMENTAL referent, and the phonotactics document writes every ẓ
-// as ż although §1.3 grants ẓ no alternate at all.
+// §1.3 lets ţ be written ṭ or ŧ, ḑ as ḍ or đ, ň as ņ or ṇ, ř as ŗ or ṛ,
+// and ļ as ł or ḷ. The phonotactics document additionally writes every
+// ẓ as ż, although §1.3 grants ẓ no alternate at all.
 func TestNormalize_FoldsSanctionedAlternates(t *testing.T) {
 	for _, c := range []struct{ in, want string }{
 		{"ṭ", "ţ"}, {"ŧ", "ţ"},
 		{"ḍ", "ḑ"}, {"đ", "ḑ"},
-		{"ṇ", "ň"}, {"ŋ", "ň"},
-		{"ṛ", "ř"}, {"ṙ", "ř"},
+		{"ņ", "ň"}, {"ṇ", "ň"},
+		{"ŗ", "ř"}, {"ṛ", "ř"},
 		{"ł", "ļ"}, {"ḷ", "ļ"},
 		{"ż", "ẓ"},
-		{"đa", "ḑa"}, // §4.6, mi/DETRIMENTAL
+		{"đa", "ḑa"}, // folded mid-word, not only alone
 	} {
 		if got := Normalize(c.in); got != c.want {
 			t.Errorf("Normalize(%q) = %q, want %q", c.in, got, c.want)

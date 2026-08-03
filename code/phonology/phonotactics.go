@@ -326,7 +326,7 @@ func ClusterViolationsAt(p Position, cluster string) []fault.Fault {
 		// fricative or dental stop is prohibited because the medial
 		// stop is phonetically indistinct (mpf ≈ mf, mbd ≈ md, etc.).
 		if a == 'm' {
-			if (b == 'p' && (c == 'f' || c == 'ţ')) ||
+			if (b == 'p' && (c == 'f' || c == 'ţ' || c == 't')) ||
 				(b == 'b' && (c == 'v' || c == 'ḑ' || c == 'd')) {
 				errs = append(errs, fault.Fault{
 					Stage: fault.Sound,

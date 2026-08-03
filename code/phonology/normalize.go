@@ -15,11 +15,10 @@ import (
 // guesses the wrong side of a quotation. ț is t-with-comma, which most
 // fonts draw identically to the t-with-cedilla ţ that v4 uses.
 //
-// §1.3 sanctions two further spellings apiece for ţ, ḑ, ň, ř and ļ, and
-// the documents exercise them: the §4.6 referential table gives the
-// mi/DETRIMENTAL form as đ, which occurs nowhere else and is absent
-// from §1.1 as printed. A reader copying that row would otherwise get a
-// word we reject.
+// §1.3 sanctions two further spellings apiece for ţ, ḑ, ň, ř and ļ.
+// The grammar document itself uses only §1.1's characters, but the
+// alternates are what a reader typing from a keyboard that has ḍ and
+// not ḑ will produce, and §1.3 says that is allowed.
 //
 // ż is the same case without the sanction. §1.3 grants ẓ no alternate,
 // but the phonotactics document writes every one of its ẓ as ż,
@@ -46,10 +45,10 @@ var variants = strings.NewReplacer(
 	"ŧ", "ţ",
 	"ḍ", "ḑ",
 	"đ", "ḑ",
+	"ņ", "ň",
 	"ṇ", "ň",
-	"ŋ", "ň",
+	"ŗ", "ř",
 	"ṛ", "ř",
-	"ṙ", "ř",
 	"ł", "ļ",
 	"ḷ", "ļ",
 	"ż", "ẓ", // unsanctioned, but the phonotactics document uses it throughout

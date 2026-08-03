@@ -163,3 +163,33 @@ func TestStrip_DisyllabicFinalConjunct(t *testing.T) {
 		t.Errorf("Apply(wuttihia, Antepenultimate) = %q, want %q", got, "wuttíhia")
 	}
 }
+
+// §1.3.1 puts a grave on the -i- of a -Cìa- conjunct: karésìa against
+// karesya, vélkìo against velkyo. Reading one works — Normalize folds
+// the grave away, since it marks pronunciation and not grammar — but
+// writing one does not, so a word read from the grammar document comes
+// back spelled differently from how the document spells it.
+//
+// The obvious fix, having Apply put the grave back, is wrong twice
+// over. Apply's business is the stress mark, and the grave is not one:
+// it says the vowel is a syllable nucleus rather than a glide, on a
+// vowel the rule has already required to be unstressed. And it is
+// positional rather than suprasegmental, so it belongs wherever
+// conjuncts are written rather than in the one function that moves an
+// accent around.
+//
+// What is not settled is whether the grave belongs in canonical output
+// at all. §1.3.1 says it "is used" over -i- but only that it "may
+// similarly be used" over -u-, so the two are not obviously the same
+// rule, and the document's own worked examples in §§5 and 7 write
+// -Cia- without it far more often than with. Until that reading is
+// settled, writing it back would be guessing.
+func TestApply_GraveOnUnstressedI(t *testing.T) {
+	t.Skip("§1.3.1's grave is read but not written; see BUGS.md")
+
+	for _, w := range []string{"karésìa", "vélkìo", "ehùá"} {
+		if got := Normalize(w); got != w {
+			t.Errorf("Normalize(%q) = %q, want the grave kept", w, got)
+		}
+	}
+}
