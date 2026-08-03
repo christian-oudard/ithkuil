@@ -9,8 +9,8 @@ import (
 	"github.com/christian-oudard/ithkuil/parse"
 )
 
-// ParseWord parses a single canonical-gloss token (whitespace-delimited
-// unit) into a g.Word. Inverse of Glosser.Word when Canonical=true.
+// ParseWord parses a single gloss token (whitespace-delimited unit)
+// into a g.Word. Inverse of Glosser.Word.
 //
 // Dispatch is structural: each adjunct type has a distinctive shape
 // (leading bracket, trailing colon, bare uppercase, and so on), which

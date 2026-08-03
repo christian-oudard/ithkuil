@@ -419,16 +419,6 @@ func TestCrRootLabel_EmptyCluster(t *testing.T) {
 	_ = got
 }
 
-func TestBiasLabel_EmptyExpression(t *testing.T) {
-	// A bias variant whose expression-table lookup returns "" should
-	// fall through to plain b.String(). Use a zero-value Bias which
-	// has no romanized expression.
-	out := (&Glosser{}).biasLabel(g.Bias(0))
-	if out == "" {
-		t.Error("biasLabel(zero) returned empty")
-	}
-}
-
 // §4.3 Slot 4 is mandatory, so a modular adjunct with no content is
 // not a word. It glosses to nothing rather than to a name that would
 // compose to a value the renderer then refuses.

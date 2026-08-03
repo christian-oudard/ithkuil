@@ -22,9 +22,7 @@ import (
 // content at all, which §4.3 Slot 4 makes an impossible word and the
 // writer then refused; two of them glossed to a bare "-".
 //
-// Canonical output names every entry for that reason. The display
-// gloss keeps "MOD", where a human reads the label rather than the
-// content.
+// Every entry is named for that reason.
 func TestModularAdjunct_GlossComposesBack(t *testing.T) {
 	gl := &gloss.Glosser{}
 	for _, w := range corpus.Words() {

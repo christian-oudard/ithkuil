@@ -57,12 +57,12 @@ func (gl *Glosser) Word(t g.Word, span g.Text, i int) string {
 		}
 		return strings.Join(parts, " ")
 	case g.Bias:
-		return gl.biasLabel(v)
+		return v.String()
 	case g.RegisterMarker:
 		if v.End {
-			return gl.registerEndLabel(v.Register)
+			return v.Register.String() + "_END"
 		}
-		return gl.registerStartLabel(v.Register)
+		return v.Register.String()
 	case g.CarrierAdjunct:
 		return gl.carrierLabel(v)
 	case g.ModularAdjunct:
@@ -124,11 +124,11 @@ func (gl *Glosser) affixPart(a g.Affix) string {
 }
 
 // affixLabel returns the abbreviation for an affix Cs when the lexicon
-// is set and has an entry; otherwise the raw cluster. Canonical mode
-// spells that fallback in ASCII digraphs, the same way the root is
-// spelled, since the canonical gloss has to stay typable. The lexicon
-// is a named subset rather than the list of legal Cs clusters, so the
-// fallback is reachable for any well-formed affix outside it.
+// is set and has an entry; otherwise the raw cluster, spelled in ASCII
+// digraphs the same way the root is, since a gloss has to stay typable.
+// The lexicon is a named subset rather than the list of legal Cs
+// clusters, so the fallback is reachable for any well-formed affix
+// outside it.
 func (gl *Glosser) affixLabel(cs string) string {
 	if gl.Lex != nil {
 		if entry, ok := gl.Lex.Affixes[cs]; ok && entry.Abbrev != "" {
@@ -138,10 +138,8 @@ func (gl *Glosser) affixLabel(cs string) string {
 	return phonology.ToASCII(cs)
 }
 
-// affixTypeSuffix renders an affix's Type. Type 1 (the unmarked
-// default) is silent in both modes. Type 2 and Type 3 emit either a
-// Unicode subscript (display mode) or the ASCII-clean "_N" suffix
-// (Canonical mode, parsed by compose).
+// affixTypeSuffix renders an affix's Type. Type 1, the unmarked
+// default, is silent; Type 2 and Type 3 take an ASCII "_N" suffix.
 func (gl *Glosser) affixTypeSuffix(t g.AffixType) string {
 	switch t {
 	case g.Type2Affix:
@@ -152,29 +150,9 @@ func (gl *Glosser) affixTypeSuffix(t g.AffixType) string {
 	return ""
 }
 
-// biasLabel formats a bias adjunct. Display mode adds the English
-// expression in parens; canonical mode emits the bare abbreviation
-// (suitable for input parsing).
-func (gl *Glosser) biasLabel(b g.Bias) string {
-	return b.String()
-}
-
-// registerStartLabel formats a register-start adjunct.
-// Display: "REG-DSV". Canonical: bare "DSV" (zsnout style).
-func (gl *Glosser) registerStartLabel(r g.Register) string {
-	return r.String()
-}
-
-// registerEndLabel formats a register-end adjunct.
-// Display: "REG-DSV-END". Canonical: "DSV_END" (zsnout style).
-func (gl *Glosser) registerEndLabel(r g.Register) string {
-	return r.String() + "_END"
-}
-
-// carrierLabel formats a carrier adjunct.
-// Display: "CARR-Quotative(a)". Canonical: "[QUO]-CASE" — the carrier
-// type is shown as a 3-letter abbreviation and the Vc vowel is decoded
-// to its case name (zsnout-style suppletive form).
+// carrierLabel formats a carrier adjunct as "[QUO]-CASE": the carrier
+// type as a 3-letter abbreviation in brackets, and the Vc vowel decoded
+// to its case name. THM is the default and stays silent.
 func (gl *Glosser) carrierLabel(c g.CarrierAdjunct) string {
 	head := "[" + c.Type.Abbrev() + "]"
 	if c.Case == g.THM {
@@ -224,14 +202,11 @@ func modularReachSuffix(r g.ModularReach) string {
 	return "-{" + r.String() + "}"
 }
 
-// combinationRefLabel formats a §4.6.2 combination referential.
-//
-// Display: "REF[<refs>]-<case>.<spec>(-<affix>...)(-<case2>)".
-// Canonical: "<refs>-<case>-<spec>(-<affix>...)(-<case2>)(-RPV)" — the
+// combinationRefLabel formats a §4.6.2 combination referential as
+// "<refs>-<case>-<spec>(-<affix>...)(-<case2>)(-RPV)". The
 // Specification is always emitted, which is what tells a combination
 // referential apart from a plain one.
-func (gl *Glosser) combinationRefLabel(c g.CombinationReferential) string {
-	comb := c
+func (gl *Glosser) combinationRefLabel(comb g.CombinationReferential) string {
 	head := gl.refHead(comb.Head)
 	out := head + "-" + comb.Case.String() + "-" + comb.Spec.String()
 	for _, a := range comb.Affixes {
@@ -246,17 +221,14 @@ func (gl *Glosser) combinationRefLabel(c g.CombinationReferential) string {
 	return out
 }
 
-// refLabel formats a §4.6.1 referential.
-//
-// Display: "REF[<refs>]-<case>(-[<refB>]/<case2>)(\RPV)".
-// Canonical: the same with a bare head and "-RPV".
+// refLabel formats a §4.6.1 referential as
+// "<refs>-<case>(-[<refB>]/<case2>)(-RPV)".
 //
 // The second referent binds its own case, so it reads "[2m]/IND" per
 // the gloss rule that a case attached to a head is written HEAD/CASE.
 // A second case with no referent of its own stacks onto the head
 // instead, and stays a plain slot.
-func (gl *Glosser) refLabel(r g.Referential) string {
-	ref := r
+func (gl *Glosser) refLabel(ref g.Referential) string {
 	label := gl.refHead(ref.Head) + "-" + ref.Case.String()
 	if s := ref.Second; s != nil {
 		if len(s.Refs) > 0 {
@@ -271,9 +243,9 @@ func (gl *Glosser) refLabel(r g.Referential) string {
 	return label
 }
 
-// refHead renders a referential head: a suppletive cluster as "[QUO]"
-// (canonical) or "CARR[Quotative]" (display), or a referent chain with
-// its optional category tag, as in "NOM:1m".
+// refHead renders a referential head: a suppletive cluster as "[QUO]",
+// or a referent chain with its optional §4.6 category tag, as in
+// "NOM:1m".
 func (gl *Glosser) refHead(head g.RefHead) string {
 	switch h := head.(type) {
 	case g.SuppletiveHead:

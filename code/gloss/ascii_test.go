@@ -11,11 +11,11 @@ import (
 	"github.com/christian-oudard/ithkuil/store"
 )
 
-// The canonical gloss is an authoring syntax, not only an output
-// format: gloss.ParseFormative reads back what Canonical=true writes. So
-// every character in it has to be typable on an ordinary keyboard,
-// which is why the root is spelled in ASCII digraphs and the affix
-// type is "_2" rather than the "₂" display mode uses.
+// The gloss is an authoring syntax, not only an output format:
+// gloss.ParseFormative reads back what gloss.Formative writes. So every
+// character in it has to be typable on an ordinary keyboard, which is
+// why the root is spelled in ASCII digraphs and the affix type is "_2"
+// rather than a Unicode subscript.
 //
 // Two designs have been proposed that broke this, "Ø" for a zero value
 // and "§" for a sentence-starter marker. Both read as natural notation

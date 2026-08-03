@@ -291,8 +291,8 @@ func TestFormative_CanonicalWord(t *testing.T) {
 	// End-to-end: parse the canonical test word and gloss it, alongside
 	// the older spelling it replaced. Cr=m in both; ţř/5 sits in Slot V
 	// in the first and Slot VII in the second, and the "{Ca}" marker is
-	// what keeps the two glosses apart. Type 2 emits a "₂" subscript in
-	// display mode (silent in canonical mode); Type 1 stays silent.
+	// what keeps the two glosses apart. Type 2 emits "_2"; Type 1, the
+	// default, stays silent.
 	cases := []struct{ rom, want string }{
 		{"maţřëullait", "m-t,rq/5_2-{Ca}-t/1_2"},
 		{"malëuţřait", "m-t,rq/5_2-t/1_2"},

@@ -12,10 +12,10 @@ import (
 
 // The seven category-valued affixes carry a category code in place of
 // a degree meaning: MCS/1 is (SUB) Subjunctive, PHS/1 is (PCT)
-// Punctual, and so on. Display mode shows the code; canonical mode
-// must not, because "MCS:SUB" has the same shape as a §3.9.2
-// accessor's "ACC1:INS" — three uppercase letters either side of a
-// colon — and only a lexicon lookup tells them apart.
+// Punctual, and so on. The gloss must not write that code, because
+// "MCS:SUB" has the same shape as a §3.9.2 accessor's "ACC1:INS", three
+// uppercase letters either side of a colon, and only a lexicon lookup
+// tells them apart.
 //
 // While it did, every one of the seven failed the gloss-to-compose
 // trip, which is a round-trip guarantee SPEC.md states outright. Two

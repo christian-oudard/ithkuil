@@ -15,17 +15,15 @@ import (
 // as a FormativeWord. Each word in corpus/morphology_examples.txt
 // that successfully classifies and parses goes through:
 //
-//	romanization ─tokenize→ FormativeWord
-//	         ─fullparse→ grammar.Formative
-//	         ─gloss(Canonical)→ G1
-//	         ─ParseFormative→ Formative'
-//	         ─gloss(Canonical)→ G2
+//	romanization ─roman.ParseWord→ grammar.Formative
+//	         ─gloss.Formative→ G1
+//	         ─gloss.ParseFormative→ Formative'
+//	         ─gloss.Formative→ G2
 //
-// G1 must equal G2 — compose is the inverse of canonical gloss on
+// G1 must equal G2: reading a gloss is the inverse of writing one, on
 // every spec example we can parse. Non-formative tokens (adjuncts,
-// referentials, unknowns) are silently skipped: those have their own
-// classification tests, and compose Phase 3 only covers CrRoot,
-// CsRoot, and RefRoot formatives.
+// referentials, unknowns) are silently skipped, since those have their
+// own classification tests.
 func TestFullDistance_MorphologyCorpus(t *testing.T) {
 	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
 	if err != nil {
