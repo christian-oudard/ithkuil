@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 
+	"github.com/christian-oudard/ithkuil/fault"
 	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/roman"
@@ -57,7 +59,7 @@ func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 	lex := loadLex(dataFile, stderr)
 	words, err := gloss.ParseText(rest[0], lex)
 	if err != nil {
-		fmt.Fprintf(stderr, "compose: %v\n", err)
+		renderGlossFaults(stderr, rest[0], err)
 		return 2
 	}
 	if len(words) != 1 {
@@ -86,4 +88,22 @@ func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 	fmt.Fprintln(stdout, word)
 	fmt.Fprintln(stdout, (&gloss.Glosser{Lex: lex}).Token(tok))
 	return 0
+}
+
+// renderGlossFaults prints one fault per line under the expression
+// they came from. Reading is permissive, so there may be several, and
+// joining them onto one line ran three separate problems together
+// into a sentence that had to be taken apart before any of them could
+// be acted on.
+func renderGlossFaults(w io.Writer, expr string, err error) {
+	var fs fault.Faults
+	if !errors.As(err, &fs) {
+		fmt.Fprintf(w, "compose: %v\n", err)
+		return
+	}
+	fmt.Fprintf(w, "compose: cannot read %s\n", stylize(ansiBold, expr))
+	iw := indented(w, "  ")
+	for _, f := range fs.List {
+		fmt.Fprintf(iw, "%s %s\n", stylize(ansiRed, "\u2717"), f.Fix)
+	}
 }

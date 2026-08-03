@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/christian-oudard/ithkuil/fault"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
@@ -19,7 +20,7 @@ import (
 func ParseWord(s string, lex *lexicon.Lexicon) (g.Word, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
-		return nil, fmt.Errorf("empty token")
+		return nil, syntax("", "a word needs at least a root cluster or a referent list")
 	}
 	// Affix names resolve through the lexicon when there is one. A nil
 	// lexicon still parses everything else, and affixes written as a
@@ -72,7 +73,8 @@ func ParseWord(s string, lex *lexicon.Lexicon) (g.Word, error) {
 	// Affixual adjunct: contains "/" and matches the Cs/N shape.
 	if strings.Contains(s, "/") && looksLikeAffixual(s) {
 		if lex == nil {
-			return nil, fmt.Errorf("affixual adjunct %q: lexicon required", s)
+			return nil, badValue(s, "affix", s,
+				"an affix written as an abbreviation needs the lexicon; write it as a bare Cs cluster instead")
 		}
 		return parseAffixualAdjunct(s, lex.Affixes)
 	}
@@ -131,7 +133,7 @@ func parseCarrierOrReferential(s string, affixes map[string]lexicon.AffixEntry) 
 		if restTail == "" {
 			cv, err := caseFromCanonicalTail(tail)
 			if err != nil {
-				return nil, true, fmt.Errorf("carrier %q: %w", s, err)
+				return nil, true, inToken(s, err)
 			}
 			return g.CarrierAdjunct{Type: ct, Case: cv}, true, nil
 		}
@@ -141,11 +143,11 @@ func parseCarrierOrReferential(s string, affixes map[string]lexicon.AffixEntry) 
 	}
 	refs, err := parseRefList(inner)
 	if err != nil {
-		return nil, true, fmt.Errorf("referential %q: %w", s, err)
+		return nil, true, inToken(s, err)
 	}
 	caseChunk, restTail := splitFirstHyphenChunk(tail)
 	if caseChunk == "" {
-		return nil, true, fmt.Errorf("referential %q: no case after referent list", s)
+		return nil, true, syntax(s, "a referential is a referent list and a case, joined by \"-\"")
 	}
 	parts := []string{caseChunk}
 	if restTail != "" {
@@ -189,11 +191,11 @@ func buildReferential(
 	affixes map[string]lexicon.AffixEntry,
 ) (g.Word, error) {
 	if len(parts) == 0 || parts[0] == "" {
-		return nil, fmt.Errorf("referential %q: missing case", text)
+		return nil, syntax(text, "a referential is a referent list and a case, joined by \"-\"")
 	}
 	c, ok := parseCaseName(parts[0])
 	if !ok {
-		return nil, fmt.Errorf("referential %q: unknown case %q", text, parts[0])
+		return nil, inToken(text, unlisted(parts[0], "case", parts[0]))
 	}
 	rest := parts[1:]
 	if len(rest) > 0 {
@@ -210,28 +212,28 @@ func buildReferential(
 			// "[refs]/CASE": a second referent carrying its own case.
 			end := strings.Index(p, "]")
 			if end < 1 || !strings.HasPrefix(p[end+1:], "/") {
-				return nil, fmt.Errorf("referential %q: %q is not [refs]/CASE", text, p)
+				return nil, inToken(text, syntax(p, "a second referent is written [refs]/CASE"))
 			}
 			refs, err := parseRefList(p[1:end])
 			if err != nil {
-				return nil, fmt.Errorf("referential %q second referent %q: %w", text, p, err)
+				return nil, inToken(text, inToken(p, err))
 			}
 			cv, ok := parseCaseName(p[end+2:])
 			if !ok {
-				return nil, fmt.Errorf("referential %q: unknown case %q", text, p[end+2:])
+				return nil, inToken(text, unlisted(p[end+2:], "case", p[end+2:]))
 			}
 			if ref.Second != nil {
-				return nil, fmt.Errorf("referential %q: two second referents", text)
+				return nil, inToken(text, syntax(p, "a referential carries one second referent, and one is already set"))
 			}
 			ref.Second = &g.SecondReferent{Case: cv, Refs: refs}
 		default:
 			// A bare case with no referent of its own stacks onto the head.
 			cv, ok := parseCaseName(p)
 			if !ok {
-				return nil, fmt.Errorf("referential %q: unexpected slot %q", text, p)
+				return nil, inToken(text, syntax(p, "a referential holds a referent list, a case, and at most one [refs]/CASE second referent"))
 			}
 			if ref.Second != nil {
-				return nil, fmt.Errorf("referential %q: two second cases", text)
+				return nil, inToken(text, syntax(p, "a referential stacks one second case, and one is already set"))
 			}
 			ref.Second = &g.SecondReferent{Case: cv}
 		}
@@ -262,10 +264,10 @@ func buildCombinationRef(
 		}
 		cv, ok := parseCaseName(p)
 		if !ok {
-			return nil, fmt.Errorf("combination referential %q: unexpected slot %q", text, p)
+			return nil, inToken(text, syntax(p, "a combination referential holds a referent list, a case, a specification, affixes, and at most one stacked case"))
 		}
 		if comb.Case2 != nil {
-			return nil, fmt.Errorf("combination referential %q: two stacked cases", text)
+			return nil, inToken(text, syntax(p, "a combination referential stacks one case, and one is already set"))
 		}
 		comb.Case2 = &cv
 	}
@@ -295,7 +297,7 @@ func caseFromCanonicalTail(tail string) (g.Case, error) {
 		return g.THM, nil
 	}
 	if !strings.HasPrefix(tail, "-") {
-		return 0, fmt.Errorf("expected leading '-' before case, got %q", tail)
+		return 0, syntax(tail, "a case follows its head after a \"-\"")
 	}
 	caseName := tail[1:]
 	for _, c := range g.AllCases {
@@ -303,7 +305,7 @@ func caseFromCanonicalTail(tail string) (g.Case, error) {
 			return c, nil
 		}
 	}
-	return 0, fmt.Errorf("unknown case %q", caseName)
+	return 0, unlisted(caseName, "case", caseName)
 }
 
 // isBareUppercase reports whether s is composed entirely of uppercase
@@ -326,16 +328,23 @@ func isBareUppercase(s string) bool {
 // behind a "CAT:" category tag ("NOM:1m-ERG"). Multi-ref forms like
 // "[1m+2p]-..." are detected by the "[" prefix instead.
 func looksLikeReferential(s string) bool {
-	dash := strings.Index(s, "-")
-	if dash < 1 {
-		return false
+	head := s
+	if dash := strings.Index(s, "-"); dash > 0 {
+		head = s[:dash]
 	}
-	_, head := splitCategoryTag(s[:dash])
+	_, head = splitCategoryTag(head)
 	// The head is a referent abbreviation, so ask the parser for one.
 	// None of the eleven can be mistaken for a formative's root: a root
 	// is written as a bare consonant cluster, and every abbreviation
 	// either starts with a digit ("1m"), carries a vowel ("ma"), or
 	// capitalises ("Mx", "Obv").
+	//
+	// The head decides on its own, with or without a case after it.
+	// Requiring the case meant a referential missing one was not
+	// recognised as a referential at all: it fell through to the
+	// formative reader, which called "1m" a bad root cluster and put
+	// the digit at fault. A token is claimed by the class its head
+	// names, and then judged as that class.
 	_, _, err := parseRefSpec(head)
 	return err == nil
 }
@@ -482,10 +491,10 @@ func looksLikeAffixual(s string) bool {
 func ParseText(s string, lex *lexicon.Lexicon) (g.Text, error) {
 	fields := strings.Fields(s)
 	out := make(g.Text, 0, len(fields))
-	for i, f := range fields {
+	for _, f := range fields {
 		tok, err := ParseWord(f, lex)
 		if err != nil {
-			return nil, fmt.Errorf("token %d (%q): %w", i, f, err)
+			return nil, inToken(f, err)
 		}
 		out = append(out, tok)
 	}
@@ -509,8 +518,12 @@ func joinChains(words g.Text) (g.Text, error) {
 		if !isFormative || f.Concat == g.ConcatNone {
 			if len(pending) > 0 {
 				if !isFormative {
-					return nil, fmt.Errorf(
-						"concatenated formative is followed by %T rather than the parent it needs", w)
+					return nil, fault.Faults{List: []fault.Fault{{
+						Stage: fault.Shape,
+						Code:  "concatenation",
+						Fix: "§3.1.7 puts the parent last, and the word after this " +
+							"dependent is not a formative at all",
+					}}}
 				}
 				chain := g.NewChain(f)
 				for _, d := range pending {
@@ -531,7 +544,16 @@ func joinChains(words g.Text) (g.Text, error) {
 		pending = append(pending, f)
 	}
 	if len(pending) > 0 {
-		return nil, fmt.Errorf("%d concatenated formatives with no parent after them", len(pending))
+		// No Found: the fault is about the end of the text, not about
+		// any one token in it. Naming the last dependent would point
+		// at the word that is fine and away from the one that is
+		// missing.
+		return nil, fault.Faults{List: []fault.Fault{{
+			Stage: fault.Shape,
+			Code:  "concatenation",
+			Fix: fmt.Sprintf("§3.1.7 puts the parent last, and %s end this text with none after them",
+				plural(len(pending), "dependent")),
+		}}}
 	}
 	return out, nil
 }
@@ -556,14 +578,14 @@ func parseAffixualAdjunct(s string, affixes map[string]lexicon.AffixEntry) (g.Wo
 		if strings.HasPrefix(p, "{") && strings.HasSuffix(p, "}") {
 			scope, ok := parseScopeName(p[1 : len(p)-1])
 			if !ok {
-				return nil, fmt.Errorf("affixual adjunct: unknown scope %q", p)
+				return nil, unlisted(p, "scope", p)
 			}
 			elems = append(elems, element{kind: "scope", scope: scope})
 			continue
 		}
 		a, err := parseAffixField(p, affixes)
 		if err != nil {
-			return nil, fmt.Errorf("affixual adjunct: %w", err)
+			return nil, err
 		}
 		elems = append(elems, element{kind: "affix", affix: a})
 	}
@@ -586,7 +608,7 @@ func parseAffixualAdjunct(s string, affixes map[string]lexicon.AffixEntry) (g.Wo
 		}
 		// scope
 		if !firstAffixSeen {
-			return nil, fmt.Errorf("affixual adjunct: scope before any affix")
+			return nil, syntax(s, "a scope in an affixual adjunct qualifies the affix in front of it, and there is none yet")
 		}
 		if !scopeSeenAfterFirst && len(rest) == 0 {
 			// First scope position: between first affix and rest affixes.
@@ -598,7 +620,7 @@ func parseAffixualAdjunct(s string, affixes map[string]lexicon.AffixEntry) (g.Wo
 		restScope = e.scope
 	}
 	if !firstAffixSeen {
-		return nil, fmt.Errorf("affixual adjunct: no affix found")
+		return nil, syntax(s, "an affixual adjunct carries at least one affix")
 	}
 	if !scopeSeenAfterFirst && len(rest) == 0 {
 		// Single-affix form: collapses to SingleAffixAdjunct.
@@ -643,7 +665,7 @@ func parseAffixField(s string, affixes map[string]lexicon.AffixEntry) (g.Affix, 
 		tail = tail[:i]
 	}
 	if len(tail) != 1 || tail[0] < '0' || tail[0] > '9' {
-		return g.Affix{}, value(tail, "degree", tail, degreeAdmits(tail))
+		return g.Affix{}, badValue(tail, "degree", tail, degreeAdmits(tail))
 	}
 	degree := int(tail[0] - '0')
 	cs := resolveAffixCs(csOrAbbrev, affixes)
@@ -671,12 +693,12 @@ func parseScopeName(s string) (g.AffixScope, bool) {
 func parseReferentialToken(s string, affixes map[string]lexicon.AffixEntry) (g.Word, error) {
 	parts := strings.Split(s, "-")
 	if len(parts) < 2 {
-		return nil, fmt.Errorf("referential %q: need at least head and case", s)
+		return nil, syntax(s, "a referential is a referent list and a case, joined by \"-\"")
 	}
 	category, head := splitCategoryTag(parts[0])
 	ref, eff, err := parseRefSpec(head)
 	if err != nil {
-		return nil, fmt.Errorf("referential %q head: %w", s, err)
+		return nil, inToken(s, err)
 	}
 	return buildReferential(s, g.PersonalHead{
 		Refs:     []g.PersonalRef{{Referent: ref, Effect: eff}},
@@ -760,7 +782,7 @@ func parseModularToken(s string) (g.Word, error) {
 			}
 			sv, err := slotVIIIFromNames(vnName, cnName)
 			if err != nil {
-				return nil, fmt.Errorf("modular %q: %w", s, err)
+				return nil, inToken(s, err)
 			}
 			ma.Content = append(ma.Content, sv)
 		}
@@ -803,7 +825,7 @@ func slotVIIIFromNames(vn, cn string) (g.SlotVIII, error) {
 	if cn != "" {
 		m, ok := lookupMoodOrCaseScope(cn)
 		if !ok {
-			return nil, fmt.Errorf("unknown Mood/CaseScope %q", cn)
+			return nil, unlisted(cn, "mood or case-scope", cn)
 		}
 		mood = m
 	}
@@ -833,7 +855,7 @@ func slotVIIIFromNames(vn, cn string) (g.SlotVIII, error) {
 			return g.VnCnAspect{Aspect: a, MoodScope: mood}, nil
 		}
 	}
-	return nil, fmt.Errorf("unknown Vn category %q", vn)
+	return nil, unlisted(vn, "Slot VIII value", vn)
 }
 
 // lookupMoodOrCaseScope accepts either a Mood (FAC/SUB/...) or a

@@ -41,10 +41,13 @@ func unlisted(tok, kind, name string) error {
 	})
 }
 
-// value reports a name that is in an inventory but not admissible
-// where it was written, which is a different problem from not being
-// there at all and reads differently to someone holding the table.
-func value(tok, code, found, admits string) error {
+// badValue reports a value-stage fault other than a name missing from
+// its inventory: a degree outside 1-9, a case with no accessor
+// increment, a name that exists but is not admissible where it was
+// written. Each is a different problem from "no such name" and reads
+// differently to someone holding the table, so unlisted stays
+// separate rather than absorbing them.
+func badValue(tok, code, found, admits string) error {
 	return fault.One(tok, fault.Fault{
 		Stage: fault.Value, Code: code, Found: found, Fix: admits,
 	})
@@ -81,6 +84,9 @@ func clusterFault(kind, cluster string) error {
 // appended "(in DEV/99)" named it twice in one line, which reads as
 // though the two mentions were different things.
 func inToken(tok string, err error) error {
+	if err == nil {
+		return nil
+	}
 	var fs fault.Faults
 	if errors.As(err, &fs) {
 		return fault.Faults{Word: tok, List: fs.List}
@@ -134,4 +140,53 @@ func (a assigned) apply(f *g.Formative, flag string) error {
 	}
 	a[cat] = strings.ToUpper(flag)
 	return nil
+}
+
+// plural writes a count with its noun, so a message reads "1
+// dependent" rather than "1 dependent(s)".
+func plural(n int, noun string) string {
+	if n == 1 {
+		return fmt.Sprintf("%d %s", n, noun)
+	}
+	return fmt.Sprintf("%d %ss", n, noun)
+}
+
+// collected gathers the faults of a whole gloss so a writer sees
+// every bad token at once rather than the first one repeatedly.
+//
+// A fault keeps the token it came from as its Word, and Faults holds
+// only one; flattening the list would lose which token each belonged
+// to. So the token is folded into the Fix on the way in, where it is
+// the one thing a writer needs to find it again.
+type collected struct {
+	list []fault.Fault
+}
+
+// add records a token's failure, if it failed. A nil error is the
+// ordinary case and costs nothing, which is what lets the caller
+// write the loop without a branch in it.
+func (c *collected) add(err error) {
+	if err == nil {
+		return
+	}
+	var fs fault.Faults
+	if !errors.As(err, &fs) {
+		c.list = append(c.list, fault.Fault{
+			Stage: fault.Shape, Code: "syntax", Fix: err.Error(),
+		})
+		return
+	}
+	for _, f := range fs.List {
+		if fs.Word != "" && f.Found != fs.Word {
+			f.Fix += " (in " + fs.Word + ")"
+		}
+		c.list = append(c.list, f)
+	}
+}
+
+func (c *collected) err(subject string) error {
+	if len(c.list) == 0 {
+		return nil
+	}
+	return fault.Faults{Word: subject, List: c.list}
 }

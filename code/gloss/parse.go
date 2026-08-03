@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/christian-oudard/ithkuil/allomorph"
+	"github.com/christian-oudard/ithkuil/fault"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
@@ -105,15 +106,23 @@ func ParseFormative(s string, affixes map[string]lexicon.AffixEntry) (g.Formativ
 		SlotVI: g.DefaultSlotVI,
 		Final:  g.UnframedNominal{Case: g.THM},
 	}
+	// Reading is permissive: a token that fails records its fault and
+	// the rest are still read. Stopping at the first meant a gloss
+	// with three bad tokens took three attempts to fix, each one
+	// revealing the next, and the half-built Formative is discarded
+	// anyway — a non-empty ledger is an error — so carrying on costs
+	// nothing but tells the writer everything at once.
 	caIdx := caTokenIndex(tokens, rootIdx)
 	seen := newAssigned()
+	var fs collected
 	for i, tok := range tokens {
 		if i == rootIdx || tok == caMarker {
 			continue
 		}
-		if err := applyToken(&f, tok, affixes, i < caIdx, seen); err != nil {
-			return g.Formative{}, inToken(tok, err)
-		}
+		fs.add(inToken(tok, applyToken(&f, tok, affixes, i < caIdx, seen)))
+	}
+	if err := fs.err(s); err != nil {
+		return g.Formative{}, err
 	}
 	return f, nil
 }
@@ -223,6 +232,21 @@ func validateRootCluster(cluster string) error {
 // which, for the message. Neither fires on any of the 5946 lexicon
 // roots or 528 affixes, so nothing attested is at risk.
 func validateCluster(kind, cluster string) error {
+	// A capital in a cluster is not an Ithkuil letter, it is a Latin
+	// one. CheckChars lowercases before it looks, so "Ml" passed and
+	// composed to "aMlal" — Latin capitals inside an Ithkuil word,
+	// which nothing can read back. isClusterToken accepts a token
+	// carrying any lowercase letter, which is the right test for
+	// telling a root from an all-uppercase abbreviation and the wrong
+	// one for deciding the root is well formed.
+	if cluster != strings.ToLower(cluster) {
+		return fault.One(cluster, fault.Fault{
+			Stage: fault.Chars,
+			Code:  kind,
+			Found: cluster,
+			Fix:   "a " + kind + " cluster is written in lowercase",
+		})
+	}
 	if v := phonology.CheckChars(cluster); len(v) > 0 {
 		return clusterFault(kind, cluster)
 	}
@@ -243,7 +267,7 @@ func parseParensRoot(tok string, affixes map[string]lexicon.AffixEntry) (g.Root,
 		degree, _ := strconv.Atoi(m[2])
 		cs := resolveAffixCs(m[1], affixes)
 		if cs == "" {
-			return nil, true, fmt.Errorf("unknown Cs-root affix %q", m[1])
+			return nil, true, unlisted(m[1], "affix", m[1])
 		}
 		return g.CsRoot{Cs: cs, Degree: degree, Version: g.PRC, Function: g.STA, Context: g.EXS}, true, nil
 	}
@@ -255,7 +279,7 @@ func parseParensRoot(tok string, affixes map[string]lexicon.AffixEntry) (g.Root,
 	}
 	inner := tok[1 : len(tok)-1]
 	if inner == "" {
-		return nil, true, fmt.Errorf("empty referential")
+		return nil, true, syntax(tok, "a parenthesised head holds at least one referent")
 	}
 	parts := strings.Split(inner, "+")
 	refs := make([]g.PersonalRef, 0, len(parts))
@@ -282,7 +306,7 @@ func parseRefSpec(s string) (g.Referent, g.RefEffect, error) {
 		}
 	}
 	if !matched {
-		return 0, 0, fmt.Errorf("unknown referent %q", refName)
+		return 0, 0, unlisted(refName, "referent", refName)
 	}
 	eff := g.NEU
 	if effName != "" {
@@ -295,7 +319,7 @@ func parseRefSpec(s string) (g.Referent, g.RefEffect, error) {
 			}
 		}
 		if !matched {
-			return 0, 0, fmt.Errorf("unknown effect %q", effName)
+			return 0, 0, unlisted(effName, "effect", effName)
 		}
 	}
 	return ref, eff, nil
@@ -396,7 +420,7 @@ func slashTokenFault(tok string, affixes map[string]lexicon.AffixEntry) error {
 	// A known affix or accessor family in front means the head was
 	// right and the argument was not, which is the whole of the news.
 	if resolveAffixCs(head, affixes) != "" {
-		return value(tok, "degree", arg, degreeAdmits(arg))
+		return badValue(tok, "degree", arg, degreeAdmits(arg))
 	}
 	if _, found := g.LookupAccessorKind(head, g.Type1Affix); found {
 		return unlisted(tok, "case", arg)
@@ -449,7 +473,8 @@ var accessorToken = regexp.MustCompile(`^(ACC|IAC|CST)/([A-Z]{3})(?:_([23]))?$`)
 func appendAccessor(f *g.Formative, family, caseName, typeStr string, slotV bool) error {
 	kind, found := g.LookupAccessorKind(family, affixTypeFromSuffix(typeStr))
 	if !found {
-		return fmt.Errorf("%s has no Type-%s form", family, typeStr)
+		return badValue(family, "affix type", typeStr,
+			"§3.9.2 gives "+family+" no Type-"+typeStr+" form")
 	}
 	c, ok := parseCaseName(caseName)
 	if !ok {
@@ -457,11 +482,13 @@ func appendAccessor(f *g.Formative, family, caseName, typeStr string, slotV bool
 	}
 	series, degree, high, ok := g.AccessorVx(c)
 	if !ok {
-		return fmt.Errorf("case %s has no case-accessor encoding", caseName)
+		return badValue(caseName, "case", caseName,
+			"§3.9.2 gives no case-accessor increment for "+caseName)
 	}
 	atype, ok := g.SeriesAffixType(series)
 	if !ok {
-		return fmt.Errorf("case %s maps to vowel series %d", caseName, series)
+		return badValue(caseName, "case", caseName,
+			fmt.Sprintf("a case-accessor Vx writes vowel series 1-3, and %s falls in series %d", caseName, series))
 	}
 	appendToAffixSlot(f, g.Affix{
 		Type:      atype,
@@ -487,7 +514,7 @@ func appendType3Affix(f *g.Formative, tok string, slotV bool) error {
 	} else if m := column4AffixToken.FindStringSubmatch(tok); m != nil {
 		atype, refSpec, value = g.Column4Affix, m[1], m[2]
 	} else {
-		return fmt.Errorf("not a recognized Type-3 affix")
+		return syntax(tok, "a Type-3 referential affix is written (refs)/degree")
 	}
 
 	degree, _ := strconv.Atoi(value)
@@ -498,7 +525,8 @@ func appendType3Affix(f *g.Formative, tok string, slotV bool) error {
 		}
 		d, ok := g.TransrelativeDegree(c)
 		if !ok {
-			return fmt.Errorf("%s is not a Transrelative case; §4.6.5's Column-4 shortcut reaches only the first nine", value)
+			return badValue(value, "case", value,
+				"§4.6.5's Column-4 shortcut reaches the nine Transrelative cases, and "+value+" is not one of them")
 		}
 		degree = d
 	}

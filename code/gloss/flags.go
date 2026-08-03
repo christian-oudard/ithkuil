@@ -55,7 +55,7 @@ func ApplyFlag(f *g.Formative, flag string) (string, error) {
 		stem := map[string]g.Stem{"S0": g.S0, "S1": g.S1, "S2": g.S2, "S3": g.S3}[flag]
 		cr, ok := f.Root.(g.CrRoot)
 		if !ok {
-			return "", value(flag, "stem", flag,
+			return "", badValue(flag, "stem", flag,
 				"a stem selects among a Cr root's three meanings, and this formative has no Cr root")
 		}
 		cr.Stem = stem
@@ -117,7 +117,7 @@ func ApplyFlag(f *g.Formative, flag string) (string, error) {
 			r.SlotIV.Specification = s
 			f.Root = r
 		default:
-			return "", value(flag, "specification", flag,
+			return "", badValue(flag, "specification", flag,
 				"a specification applies to a Cr or personal-reference root, and this formative has neither")
 		}
 		return "specification", nil

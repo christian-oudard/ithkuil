@@ -1,7 +1,7 @@
 package gloss
 
 import (
-	"fmt"
+	"strconv"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
 )
@@ -63,7 +63,8 @@ func MCSDegreeForCaseScope(cs g.CaseScope) (int, bool) {
 func WithMCSMood(f g.Formative, m g.Mood) (g.Formative, error) {
 	d, ok := MCSDegreeForMood(m)
 	if !ok {
-		return f, fmt.Errorf("mood %v has no MCS encoding (default FAC needs no MCS)", m)
+		return f, badValue(m.String(), "mood", m.String(),
+			"FAC is the default mood and an MCS affix writes only the others")
 	}
 	f.SlotVII = append(f.SlotVII, g.Affix{
 		Type:      g.Type1Affix,
@@ -80,7 +81,8 @@ func WithMCSMood(f g.Formative, m g.Mood) (g.Formative, error) {
 func WithMCSCaseScope(f g.Formative, cs g.CaseScope) (g.Formative, error) {
 	d, ok := MCSDegreeForCaseScope(cs)
 	if !ok {
-		return f, fmt.Errorf("case-scope %v has no MCS encoding (default CCN needs no MCS)", cs)
+		return f, badValue(cs.String(), "case-scope", cs.String(),
+			"CCN is the default case-scope and an MCS affix writes only the others")
 	}
 	f.SlotVII = append(f.SlotVII, g.Affix{
 		Type:      g.Type1Affix,
@@ -97,7 +99,7 @@ func WithMCSCaseScope(f g.Formative, cs g.CaseScope) (g.Formative, error) {
 // Returns an error for degrees outside 1-9.
 func WithCHC(f g.Formative, degree int) (g.Formative, error) {
 	if degree < 1 || degree > 9 {
-		return f, fmt.Errorf("CHC degree %d out of range (must be 1-9)", degree)
+		return f, badValue(strconv.Itoa(degree), "degree", strconv.Itoa(degree), degreeAdmits(strconv.Itoa(degree)))
 	}
 	f.SlotVII = append(f.SlotVII, g.Affix{
 		Type:      g.Type1Affix,
