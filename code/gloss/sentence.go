@@ -10,10 +10,35 @@ import (
 	"github.com/christian-oudard/ithkuil/semantics"
 )
 
+// Text writes a whole span as one gloss string, and is the inverse of
+// ParseText. Each word is glossed in the context of the span, so a
+// modular adjunct resolves its Cn against the formative it applies to
+// rather than falling back to the Vn-pattern guess Token makes.
+//
+// Words are joined with a space, the mark that separates them. A §3.1
+// chain is the one word that contributes more than one token, since
+// its members are glossed separately; ParseText rejoins them by their
+// Slot I markers, so the trip is still an identity.
+func (gl *Glosser) Text(t g.Text) string {
+	parts := make([]string, len(t))
+	for i, w := range t {
+		parts[i] = gl.Word(w, t, i)
+	}
+	return strings.Join(parts, " ")
+}
+
+// Text is the no-lexicon convenience wrapper.
+func Text(t g.Text) string {
+	return (&Glosser{}).Text(t)
+}
+
 // Sentence runs the tokenizer over a sentence and returns one gloss
-// string per word. A word that cannot be read glosses as "?" and the
-// romanization, which says only that it was not read; callers wanting
-// the reason should use roman.Tokenize and report it themselves.
+// string per word. It crosses arms on purpose: romanization in, gloss
+// out, one entry per romanized word, which is what an analyzer wants
+// and what Text deliberately is not. A word that cannot be read
+// glosses as "?" and the romanization, which says only that it was not
+// read; callers wanting the reason should use roman.Tokenize and
+// report it themselves.
 func (gl *Glosser) Sentence(sentence string) []string {
 	results := roman.Tokenize(sentence)
 	out := make([]string, len(results))

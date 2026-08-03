@@ -36,7 +36,13 @@ Each mark in the canonical gloss has exactly one job. A token's kind therefore f
 - `""` quotes text that is not Ithkuil, the foreign word a carrier adjunct introduces: `[CAR] "John"`
 - ` ` separates words: `[CAR] "John"`
 
-A space is what makes a token a token, so it is the one mark that cannot appear inside one. The §3.1 concatenation chain is the exception that proves it: a chain is a single hyphenated word, but its members are glossed as separate tokens, `T1-ml ml`, because each is a whole formative and hyphen is already spoken for. Nothing marks the join. A dependent carries a Slot I marker and a parent carries none, so a run of dependents closed by a plain formative is exactly one chain, and the reader recovers it without a sigil.
+A space is what makes a token a token, so no token contains one. Foreign text is no exception: a loanword is adapted to Ithkuil phonology when it is borrowed, so it arrives as a single Ithkuil-shaped word, and Spanish is written `espanya`.
+
+Two constructs cross word boundaries, and both are read back without a mark of their own.
+
+A §3.1 concatenation chain is a single hyphenated word whose members are glossed as separate tokens, `T1-ml ml`, because each member is a whole formative and the hyphen already separates slots. Nothing marks the join: a dependent carries a Slot I marker and a parent carries none, so a run of dependents closed by a plain formative is exactly one chain.
+
+A §4.6.3 carrier adjunct makes the word after it foreign. Nothing marks that either, because the carrier is the mark.
 
 The comma is not in this list, and is not gloss punctuation. It belongs to the digraph notation the root is spelled in, where `t,` is ţ, so `nt,l` is one root and not three slots.
 

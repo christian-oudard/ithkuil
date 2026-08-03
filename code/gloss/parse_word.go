@@ -470,12 +470,18 @@ func looksLikeAffixual(s string) bool {
 	return true
 }
 
-// ParseText splits a canonical-gloss sentence on whitespace and
-// dispatches each token via ParseWord. Returns the slice of tokens
-// in order; errors include the failing token's index and content.
-func ParseText(s string, lex *lexicon.Lexicon) ([]g.Word, error) {
+// ParseText splits a gloss span on whitespace and dispatches each
+// token via ParseWord. It is the inverse of Glosser.Text. Errors
+// include the failing token's index and content.
+//
+// Whitespace is enough because no gloss token contains a space. A
+// foreign word is the one that carries text rather than grammar, and a
+// loanword is adapted to Ithkuil phonology when it is borrowed, so it
+// arrives as a single word: the corpus writes Spanish as "espanya",
+// not as two words of Spanish.
+func ParseText(s string, lex *lexicon.Lexicon) (g.Text, error) {
 	fields := strings.Fields(s)
-	out := make([]g.Word, 0, len(fields))
+	out := make(g.Text, 0, len(fields))
 	for i, f := range fields {
 		tok, err := ParseWord(f, lex)
 		if err != nil {
@@ -495,8 +501,8 @@ func ParseText(s string, lex *lexicon.Lexicon) ([]g.Word, error) {
 // marker each dependent carries, and §3.1.7 makes it enough. A
 // dependent has a Cc and the parent has none, so a run of dependents
 // closed by a plain formative is exactly one chain.
-func joinChains(words []g.Word) ([]g.Word, error) {
-	out := make([]g.Word, 0, len(words))
+func joinChains(words g.Text) (g.Text, error) {
+	out := make(g.Text, 0, len(words))
 	var pending []g.Formative
 	for _, w := range words {
 		f, isFormative := w.(g.Formative)
