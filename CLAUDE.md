@@ -19,6 +19,8 @@ go install ./cmd/...      # Drop binaries into $GOBIN
 go build ./...            # Typecheck and compile everything; writes no binaries
 go test ./...             # Run the full test suite
 tools/test.sh             # Test suite with cross-package coverage summary (run from anywhere)
+tools/build_wasm.sh       # Browser module, via TinyGo (run from anywhere)
+tools/test_tinygo.sh      # Suite under TinyGo, the browser compiler (run from anywhere)
 ```
 
 One-shot form, for anything that can't hold an interactive shell open:
@@ -56,8 +58,8 @@ The canonical test word is "Maţřëullait", the community nickname for v4 (not 
 
 ## Architecture
 
-The repo has four top-level folders: `code/` (the Go module, and the only
-place Go lives), `data/`, `docs/`, and `tools/`. Package paths below are
+The repo has five top-level folders: `code/` (the Go module, and the only
+place Go lives), `data/`, `docs/`, `tools/`, and `web/`. Package paths below are
 relative to `code/`.
 
 - `phonology/` - §1 of the grammar, sounds and the letters that write them. `inventory.go` holds 31 consonants, 9 vowels, and the vowel form table (4 series x 9 forms); the rest is rune-level work with no grammatical knowledge: `Strip`/`Apply` for stress diacritics, `SplitConjuncts`/`JoinConjuncts` for vowel/consonant runs, `MergeGlottalVowels`, `Normalize`, vowel classification, and `InputState` + `FromASCII`/`ToASCII` for the digraph notation. `ParseWord` is the only constructor of `Word`, which carries the reading (normalized text, stress, conjuncts) that every later layer builds on; the §2 phonotactic rules are a separate judgment on a word already read (`Word.Violations`, `CheckText`, `Legal`), because the Ca tables generate a few clusters our reading of §2 rejects and a parser that refused them could not round-trip its own output.
@@ -75,8 +77,9 @@ relative to `code/`.
 - `numbers/` - Centesimal/base-100 number system.
 - `search/` - Reverse lookup over the grammar inventory and the lexicon: by abbreviation, written form, or meaning keyword. Backs the `search` subcommand, and was in `compose` only because that subcommand grew around it.
 - `view/` - Presentation layer for parsed tokens: the per-token type tag (`view.Type`), the phonetic-segment + glossary breakdown (`view.Segments`, `view.Headword`, `view.Glossary`), and the two-word comparison model (`view.BuildSide`, `view.PairSides`, `view.SlotDiff`, `view.GlossDiff`). Both the CLI and the MCP server build on it; only the table drawing lives in `cmd/ithkuil/compare.go`.
-- `store/` - Read-only SQLite access to `data/data.db` (roots, affixes, grammar tables).
-- `lexicon/` - Roots and affixes in memory. `LoadFromStore(*store.Store)` is the normal path; `Load(path)` reads the JSON source directly (used by tests).
+- `api/` - The contract between this Go and a browser: the calls the front end may make and the exact JSON each answers with. Every type carries explicit json tags, so no Go field name reaches the wire by accident, and the types are close to the internal ones but deliberately not the same (a root's four stems become an array, Wikidata Q-IDs are dropped). Builds on every platform, so the normal suite covers it and an HTTP server could serve the same shapes later. `web/ithkuil.d.ts` is the other half, and `api/dts_test.go` fails when they disagree.
+- `store/` - Read-only SQLite access to `data/data.db` (roots, affixes, grammar tables). `LoadLexicon` reads the whole thing into a `lexicon.Lexicon`.
+- `lexicon/` - Roots and affixes in memory. `store.LoadLexicon(*store.Store)` is the normal path; `Load(path)` reads the JSON source from disk and `Parse(bytes)` from memory. The dependency runs store -> lexicon and not the other way, which is what keeps the SQLite driver out of every package that only wants a root's meaning: the driver has no `js/wasm` build, so a browser could not link `lexicon` at all if it imported `store`.
 - `dictionary/` - The English index: reads the lexicon's English glosses backwards into a headword-to-lexical-core map. `english_doc_test.go` checks every claim made in `docs/dictionary/english.md` by composing it.
 - `corpus/` - The 384 example sentences published on ithkuil.net, with Quijada's English translations, embedded as test data. Their section numbers follow the site's chapters rather than the Grammar Design PDF, and most do not appear in it; see the head of `examples.txt` before citing one as a passage of the grammar. `corpus.Examples()` and `corpus.Words()`. `roman/corpus_test.go` guards the set of words we still fail to classify.
   `corpus.DiscordExamples()` reads curated words from the community Discord archive, each marked `correct` or `incorrect` with the rule it rests on. The archive is usage, not authority, so a word cited as evidence should appear there first. A leading `!` marks a word we currently disagree with (a filed defect). `roman/discord_examples_test.go` checks we agree, and skips where the list is absent. The list is not in the repo: its words are other people's chat messages rather than published grammar, so it is a testing record beside the mirror it came from, at `corpus.DiscordExamplesPath()`.
@@ -86,6 +89,7 @@ Command-line entrypoints under `cmd/`:
 
 - `cmd/ithkuil/` - The main CLI. Subcommands: parse, compare, compose, search, define. `main.go` dispatches; `flags.go` parses shared flags, accepting them in any position.
 - `cmd/ithkuil-mcp/` - Model Context Protocol server exposing the parser/glosser/lexicon as MCP tools and resources.
+- `cmd/ithkuil-wasm/` - Binds `api` to `globalThis.ithkuil`, `//go:build js && wasm` so the host toolchain skips it. Deliberately thin: it converts `js.Value` to Go arguments and hands back `api.Reply`, and decides nothing, so nothing in it can drift from what the tests check. Built by `tools/build_wasm.sh`, never by `go build`.
 - `cmd/ithkuil-input/` - Raw-mode TUI that types Ithkuil Unicode from ASCII digraphs (aa→ä, t,→ţ, sq→š, dz→ẓ). Pending chars are shown dim. Backed by `phonology.InputState`; `phonology.FromASCII` / `ToASCII` provide the batch transforms.
 
 ## Key Conventions
@@ -101,7 +105,19 @@ Command-line entrypoints under `cmd/`:
 
 ## Data Files
 
-- `data/data.json` - Source of truth for the store: roots, affixes, and grammar tables.
+- `data/data.json` - Source of truth for the store: roots, affixes, grammar tables, and topics.
+  Each grammar value may carry an `explanation` (a fuller reading than the
+  one-line `description`) and `guidance` (how it lands in English). Both are
+  authored rather than transcribed, unlike everything around them: they were
+  written by running a gloss through a model, comparing against Quijada's own
+  English, and recording what the model got wrong. That is why so many read as
+  corrections. 160 of the 294 values have them; a value with nothing surprising
+  about it has neither, which is not an oversight. `topics` holds the 42
+  explanations belonging to no single value: a construction, a slot, an affix
+  pattern, or a value read in a second context (an illocution carried by a Vk
+  affix rather than a slot). Descriptions are Quijada's, under the reuse terms
+  published on ithkuil.net; the guidance came from the IthkuilTranslator
+  project, merged with its author's permission.
 - `data/gen_grammar.go` - `//go:build ignore` one-shot that printed the grammar section of `data.json`. Never compiled by `go build`, so assume it has rotted.
 
 ## Tools
@@ -110,6 +126,8 @@ Everything under `tools/` is non-Go tooling. Go tools stay with the code they be
 
 - `tools/build_db.py` - Builds the SQLite store from `data/data.json`. Writes to `$XDG_DATA_HOME/ithkuil/data.db` (`~/.local/share/ithkuil/data.db` when unset), which is what `store.DefaultPath()` returns in Go. `-o PATH` overrides.
 - `tools/sync_lexicon.py` - Refreshes the roots/affixes sections of `data.json` (and the TSV mirrors kept for diff visibility) from the upstream community spreadsheet.
+- `tools/test_tinygo.sh` - Runs the suite under TinyGo, which compiles the browser build and which the standard suite does not cover: it has its own runtime, GC and standard library. It caught a live panic the standard toolchain hid. Skips four packages, all for reasons that do not touch shipped code; the script's head says which and why.
+- `tools/build_wasm.sh` - Builds `cmd/ithkuil-wasm` with TinyGo, runs `wasm-opt -Oz`, copies TinyGo's `wasm_exec.js` (not interchangeable with the standard toolchain's) and `data.json`, and prints raw and Brotli sizes. Output goes to `$XDG_DATA_HOME/ithkuil/web` or to a path given as `$1`. Its head records every size measurement behind the toolchain choice, including the two size cuts that were measured and refused.
 - `tools/test.sh` - Go test suite with a cross-package coverage summary. `COVERAGE_THRESHOLD=NN` fails below a floor; `SHOW_UNCOVERED=1` lists functions under 100%.
 - `tools/discord_archive/` - Scrapers for the community Discord. Output goes to `$XDG_DATA_HOME/ithkuil/discord/`; see its `paths.py`.
 
@@ -122,10 +140,18 @@ Ithkuil, authored rather than derived — see the "English index" section
 of SPEC.md, and the head of `english.md` for what earns an entry.
 `README.md`, `SPEC.md`, and this file stay at the root by convention.
 
-`docs/grammar_explanations.md` sits outside `reference/` on purpose: it
-is authored rather than transcribed, and says how each category lands in
-English, which is not a claim about the language and not something the
-sources set out to answer.
+`docs/web_interface.md` is mostly a design rather than a record: it says
+what a website over this repo should do and why, and no page exists yet.
+Its central claim is that the browser calls this Go rather than carrying
+a second copy of the grammar; `code/api`, `cmd/ithkuil-wasm` and
+`web/ithkuil.d.ts` are the part of it that is built.
+
+`web/` holds the front end. So far that is `ithkuil.d.ts`, the
+TypeScript half of the `api` contract, hand-written and checked against
+the Go by `api/dts_test.go`. That file is the API reference, since it is
+the only documentation here a test can fail on; `docs/web_api.md` is the
+part a type declaration cannot say, which is what to call in what order
+and what works before the lexicon has arrived.
 
 `docs/romanization_design.md` likewise: it is a design document, not a
 reference. One `Formative` admits several legal spellings, and it splits

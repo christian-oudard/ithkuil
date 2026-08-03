@@ -20,6 +20,13 @@
             pkgs.gzip
             pkgs.zstd
             pkgs.xz
+            # tools/build_wasm.sh. TinyGo compiles the browser build
+            # (a third of what the standard toolchain emits), wasm-opt
+            # takes another 3% off it, and brotli is what the wire size
+            # is actually measured in.
+            pkgs.tinygo
+            pkgs.binaryen
+            pkgs.brotli
           ];
           CGO_ENABLED = "0";
         };
