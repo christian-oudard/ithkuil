@@ -68,8 +68,12 @@ func TestNormalize_Variants(t *testing.T) {
 // The pre-v4 alphabet had letters v4 dropped, and a word using one is
 // not v4 text. Folding it to something that parses would turn a word
 // we should reject into a wrong answer.
+//
+// The grave ì used to be listed here. It is v4's own: §1.3.1 puts it on
+// the unstressed -i- of a -Cìa- conjunct, and gives karésìa and vélkìo
+// as the examples. See the comment on variants.
 func TestNormalize_LeavesPreV4Letters(t *testing.T) {
-	for _, w := range []string{"ëıtfoıgyaölw", "iţkuîl", "ìku"} {
+	for _, w := range []string{"ëıtfoıgyaölw", "iţkuîl"} {
 		if got := Normalize(w); got != w {
 			t.Errorf("Normalize(%q) = %q, want it left alone", w, got)
 		}

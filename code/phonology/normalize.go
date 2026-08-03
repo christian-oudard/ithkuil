@@ -26,10 +26,27 @@ import (
 // conjuncts. Both are folded onto §1.1's characters, which are what
 // data.json and the tables here use throughout.
 //
-// Only letters v4 already has are folded. The pre-v4 alphabet had
-// others — dotless ı, grave ì and ù — and those stay unrecognised,
-// because a word spelled with one is not v4 text and should fail
-// rather than be quietly rewritten into something that parses.
+// The grave accents are v4's own, not a stray from an older alphabet.
+// §1.3.1 puts a grave on the -i- of a -Cìa- conjunct to say it is a
+// syllable of its own, long /iː/, rather than the glide of a Cy+V
+// sequence, and allows the same on -u- so that it is not collapsed
+// into /w/; karésìa against karesya, vélkìo against velkyo, and ehùá
+// are the examples it gives. The rule is conditioned on the vowel
+// being unstressed, but unstressedness is not what the mark conveys —
+// the acute elsewhere in the word already says where the stress is,
+// and karésìa carries both.
+//
+// Neither grave carries grammar, because the distinction it draws is
+// drawn by the letters too: -Cìa- and -Cya- are different spellings
+// either way. So the grave folds away to a bare vowel, which leaves
+// the reading unchanged and lets the grammar's own examples through.
+// What it does not yet do is come back on output; see the skipped test
+// in stress_test.go.
+//
+// Other letters outside v4's alphabet stay unrecognised — dotless ı
+// among them — because a word spelled with one is not v4 text and
+// should fail rather than be quietly rewritten into something that
+// parses.
 //
 // tools/discord_archive/words.py keeps its own copy of this table. It
 // has to tokenize the raw archive before any of this code sees it, and
@@ -52,6 +69,8 @@ var variants = strings.NewReplacer(
 	"ł", "ļ",
 	"ḷ", "ļ",
 	"ż", "ẓ", // unsanctioned, but the phonotactics document uses it throughout
+	"ì", "i", // §1.3.1 grave, a reading aid rather than grammar
+	"ù", "u",
 )
 
 // Normalize puts a romanization in the form the rest of the stack expects:
