@@ -127,7 +127,9 @@ func chainBlocks(cw *g.Chain, lex *lexicon.Lexicon) []Block {
 func unknownBlock(word string) (Block, error) {
 	layout, err := slots.Parse(word)
 	if err != nil {
-		return Block{}, fmt.Errorf("%s: %v", word, err)
+		// The fault already names the word, so wrapping it named the
+		// word twice on one line.
+		return Block{}, err
 	}
 	// The note names the slot and what it would admit, not the whole
 	// error: the word is already the block's header and the stage is
