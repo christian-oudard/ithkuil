@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/christian-oudard/ithkuil/search"
 )
@@ -46,6 +47,11 @@ func cmdSearch(args []string, stdout, stderr io.Writer, dataFile string) int {
 	entries := grammarHits(query, *category, *exact, *formMode)
 	if len(entries) > 0 {
 		printEntries(stdout, entries)
+		// A single hit is a request to read about one value, so the
+		// authored notes follow the row. In a list they would bury it.
+		if len(entries) == 1 {
+			printNotes(stdout, entries[0].Abbrev, dataFile, stderr)
+		}
 	}
 
 	// A category listing is a grammar request; there is no lexicon
@@ -161,6 +167,45 @@ func printEntries(w io.Writer, hits []search.Entry) {
 		fmt.Fprintf(w, "%-*s  %-*s  %-*s  %-*s  %s\n",
 			catW, h.Category, abW, h.Abbrev, nmW, h.Name, fmW, h.Form, h.Description)
 	}
+}
+
+// printNotes writes the fuller reading of a value and how it lands in
+// English, both of which live in the store rather than in the compiled
+// inventory: they are authored, and the inventory is derived.
+func printNotes(w io.Writer, abbrev, dataFile string, stderr io.Writer) {
+	st := openStore(dataFile, stderr)
+	if st == nil {
+		return
+	}
+	defer st.Close()
+	e, err := st.Grammar(abbrev)
+	if err != nil || e == nil {
+		return
+	}
+	if e.Explanation != "" {
+		fmt.Fprintf(w, "\n%s\n", wrapAt(e.Explanation, 72, ""))
+	}
+	if e.Guidance != "" {
+		fmt.Fprintf(w, "\nIn English: %s\n", wrapAt(e.Guidance, 60, "  "))
+	}
+}
+
+// wrapAt fills text to width, indenting every line after the first.
+func wrapAt(text string, width int, indent string) string {
+	var out, line []string
+	n := 0
+	for _, word := range strings.Fields(text) {
+		if n > 0 && n+len(word)+1 > width {
+			out = append(out, strings.Join(line, " "))
+			line, n = nil, 0
+		}
+		line = append(line, word)
+		n += len(word) + 1
+	}
+	if len(line) > 0 {
+		out = append(out, strings.Join(line, " "))
+	}
+	return strings.Join(out, "\n"+indent)
 }
 
 func printStem(w io.Writer, label, s string) {

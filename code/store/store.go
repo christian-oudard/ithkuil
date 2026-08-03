@@ -75,16 +75,53 @@ type GrammarEntry struct {
 	Category    string
 	Form        string
 	Description string
+	// Explanation is the fuller reading of the value, longer than the
+	// one-line Description the tables print.
 	Explanation string
+	// Guidance says how the value lands in English, which is not a
+	// claim about the language and not something the sources set out to
+	// answer. Authored, unlike everything around it.
+	Guidance string
+}
+
+// Topic is an explanation that belongs to no single value of a
+// category: a construction, a slot, an affix pattern. Keyed by its own
+// name because there is no abbreviation to hang it on.
+type Topic struct {
+	Key         string
+	Category    string
+	Name        string
+	Explanation string
+	Guidance    string
+}
+
+// Topics returns every topic in table order.
+func (s *Store) Topics() ([]Topic, error) {
+	rows, err := s.db.Query(
+		`SELECT key, category, name, explanation, guidance
+		   FROM topics ORDER BY rowid`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []Topic
+	for rows.Next() {
+		var t Topic
+		if err := rows.Scan(&t.Key, &t.Category, &t.Name, &t.Explanation, &t.Guidance); err != nil {
+			return nil, err
+		}
+		out = append(out, t)
+	}
+	return out, rows.Err()
 }
 
 // Grammar returns the entry for the given abbreviation, or nil if not found.
 func (s *Store) Grammar(abbrev string) (*GrammarEntry, error) {
 	row := s.db.QueryRow(
-		`SELECT abbrev, name, category, form, description, explanation
+		`SELECT abbrev, name, category, form, description, explanation, guidance
 		   FROM grammar WHERE abbrev = ?`, abbrev)
 	var e GrammarEntry
-	if err := row.Scan(&e.Abbrev, &e.Name, &e.Category, &e.Form, &e.Description, &e.Explanation); err != nil {
+	if err := row.Scan(&e.Abbrev, &e.Name, &e.Category, &e.Form, &e.Description, &e.Explanation, &e.Guidance); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
@@ -97,7 +134,7 @@ func (s *Store) Grammar(abbrev string) (*GrammarEntry, error) {
 // (e.g. "Case" matches "Case/Transrelative", "Case/Appositive", ...).
 func (s *Store) GrammarCategory(prefix string) ([]GrammarEntry, error) {
 	rows, err := s.db.Query(
-		`SELECT abbrev, name, category, form, description, explanation
+		`SELECT abbrev, name, category, form, description, explanation, guidance
 		   FROM grammar WHERE category = ? OR category LIKE ?
 		   ORDER BY rowid`,
 		prefix, prefix+"/%")
@@ -111,7 +148,7 @@ func (s *Store) GrammarCategory(prefix string) ([]GrammarEntry, error) {
 // GrammarAll returns every grammar entry in table order.
 func (s *Store) GrammarAll() ([]GrammarEntry, error) {
 	rows, err := s.db.Query(
-		`SELECT abbrev, name, category, form, description, explanation
+		`SELECT abbrev, name, category, form, description, explanation, guidance
 		   FROM grammar ORDER BY rowid`)
 	if err != nil {
 		return nil, err
@@ -124,7 +161,7 @@ func scanGrammar(rows *sql.Rows) ([]GrammarEntry, error) {
 	var out []GrammarEntry
 	for rows.Next() {
 		var e GrammarEntry
-		if err := rows.Scan(&e.Abbrev, &e.Name, &e.Category, &e.Form, &e.Description, &e.Explanation); err != nil {
+		if err := rows.Scan(&e.Abbrev, &e.Name, &e.Category, &e.Form, &e.Description, &e.Explanation, &e.Guidance); err != nil {
 			return nil, err
 		}
 		out = append(out, e)

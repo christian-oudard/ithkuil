@@ -32,7 +32,19 @@ CREATE TABLE grammar (
     category    TEXT NOT NULL DEFAULT '',
     form        TEXT NOT NULL DEFAULT '',
     description TEXT NOT NULL DEFAULT '',
-    explanation TEXT NOT NULL DEFAULT ''
+    explanation TEXT NOT NULL DEFAULT '',
+    guidance    TEXT NOT NULL DEFAULT ''
+);
+
+-- Explanations that do not belong to any one value of a category: a
+-- construction, a slot, an affix pattern. Keyed by their own name
+-- because there is no abbreviation to hang them on.
+CREATE TABLE topics (
+    key         TEXT NOT NULL PRIMARY KEY CHECK (key <> ''),
+    category    TEXT NOT NULL DEFAULT '',
+    name        TEXT NOT NULL DEFAULT '',
+    explanation TEXT NOT NULL DEFAULT '',
+    guidance    TEXT NOT NULL DEFAULT ''
 );
 
 CREATE TABLE roots (
@@ -118,7 +130,7 @@ def build(data_path: Path, db_path: Path) -> None:
     conn.executescript(SCHEMA)
 
     conn.executemany(
-        "INSERT INTO grammar VALUES (?,?,?,?,?,?)",
+        "INSERT INTO grammar VALUES (?,?,?,?,?,?,?)",
         [
             (
                 e["abbrev"],
@@ -127,8 +139,23 @@ def build(data_path: Path, db_path: Path) -> None:
                 e.get("form", ""),
                 e.get("description", ""),
                 e.get("explanation", ""),
+                e.get("guidance", ""),
             )
             for e in data["grammar"]
+        ],
+    )
+
+    conn.executemany(
+        "INSERT INTO topics VALUES (?,?,?,?,?)",
+        [
+            (
+                t["key"],
+                t.get("category", ""),
+                t.get("name", ""),
+                t.get("explanation", ""),
+                t.get("guidance", ""),
+            )
+            for t in data.get("topics", [])
         ],
     )
 
@@ -170,7 +197,7 @@ def build(data_path: Path, db_path: Path) -> None:
 
     counts = {
         t: conn.execute(f"SELECT count(*) FROM {t}").fetchone()[0]
-        for t in ("grammar", "roots", "affixes")
+        for t in ("grammar", "topics", "roots", "affixes")
     }
     conn.commit()
     conn.close()

@@ -23,14 +23,20 @@ nonsense.
 
 ## 2. Look up what the codes do to English
 
-For every CODE in the table, check `docs/grammar_explanations.md`. Entries
-there say how a category lands in English, which is not what the grammar
-reference says: the grammar defines the category, the supplement corrects the
-misreading. About 200 categories have one. The rest are absent because they
-hold no surprise, so absence is not a gap to fill by invention.
+For every CODE in the table:
 
-`docs/reference/morphology.md` is the grammar itself, for when the supplement
-is silent and the category is doing real work in the sentence.
+```bash
+ithkuil search --exact "<CODE>"
+```
+
+An entry's `explanation` is the fuller reading of the value and its
+`guidance` says how it lands in English, which is not what the grammar
+reference says: the grammar defines the category, the guidance corrects the
+misreading. 160 of the 294 values carry one. The rest are absent because
+they hold no surprise, so absence is not a gap to fill by invention.
+
+`docs/reference/morphology.md` is the grammar itself, for when a value has
+no guidance and the category is doing real work in the sentence.
 
 ## 3. Read the gloss structure
 

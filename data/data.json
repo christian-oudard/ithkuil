@@ -34,7 +34,9 @@
       "name": "Stimulative",
       "category": "Case/Transrelative",
       "form": "ëi",
-      "description": "STIMULUS triggering an affective response"
+      "description": "STIMULUS triggering an affective response",
+      "explanation": "The party/entity/idea/thought/situation or mental state which triggers an unwilled, affective response or is the trigger for an existential states with no tangibly affected patient, e.g., The hammerexemplifies toolship, The man possesses a cat, That book contains poems. Its semantic role is that of STIMULUS.",
+      "guidance": "When the stimulus is an instance of musical performance framing attendance at a scheduled event, English often synthesizes as \"concert\"."
     },
     {
       "abbrev": "EFF",
@@ -62,245 +64,315 @@
       "name": "Inducive",
       "category": "Case/Transrelative",
       "form": "u",
-      "description": "self-acting AGENT+PATIENT"
+      "description": "self-acting AGENT+PATIENT",
+      "explanation": "The patient who undergoes the tangible effect, impact, or change of state of an act/event initiated/caused by that self-same party. Its semantic role is that of simultaneous AGENT and PATIENT.",
+      "guidance": "IND marks the self-affected subject of the predicate (who acts and undergoes)—not manner or simile; prefer a subject NP (e.g. 'the boys run') over 'in the manner of X'"
     },
     {
       "abbrev": "POS",
       "name": "Possessive",
       "category": "Case/Appositive",
       "form": "ai",
-      "description": "alienable possessor (circumstantial)"
+      "description": "alienable possessor (circumstantial)",
+      "explanation": "A noun which has alienable (removable or severable) possession of another noun in the sense of having physical control or oversight of that noun, whether by chance circumstance or deliberate manipulation.",
+      "guidance": "temporary/physical possession in use: prefer 'X's Y' for the item currently used/occupied (e.g. 'the rider's saddle [in use]')—not ownership-as-property"
     },
     {
       "abbrev": "PRP",
       "name": "Proprietive",
       "category": "Case/Appositive",
       "form": "au",
-      "description": "owner (long-term possessor)"
+      "description": "owner (long-term possessor)",
+      "explanation": "A noun having alienable possession of another noun in the sense of quasi-permanent contextual control, ownership or oversight, whether by societal recognition, social convention, law, purchase or decree.",
+      "guidance": "proprietive ownership: prefer owned-property reading (e.g. 'the farmer's tractor')—contrast POS (in-use)"
     },
     {
       "abbrev": "GEN",
       "name": "Genitive",
       "category": "Case/Appositive",
       "form": "ei",
-      "description": "inalienable possessor / intrinsic attribute"
+      "description": "inalienable possessor / intrinsic attribute",
+      "explanation": "A noun which has inalienable (unremovable, unseverable) possession of or association with another noun in the sense of having that noun as an inherent or intrinsic attribute, characteristic, physical part, or genetic (familial) bond.",
+      "guidance": "intrinsic/whole-part genitive: prefer inalienable or constitutive 'of' (e.g. 'the lid of a jar' / 'the river's bank')"
     },
     {
       "abbrev": "ATT",
       "name": "Attributive",
       "category": "Case/Appositive",
       "form": "eu",
-      "description": "attribute or characteristic of"
+      "description": "attribute or characteristic of",
+      "explanation": "A noun which inalienably experiences the effects of, or otherwise has an affective relationship with another noun, either as a temporary or permanent attribute, characteristic, or experience, whether physical or psychological, objective or subjective in nature.",
+      "guidance": "attributive quality as possessed trait: prefer 'X's Y' for a quality/emotion (e.g. 'the singer's nervousness')"
     },
     {
       "abbrev": "PDC",
       "name": "Productive",
       "category": "Case/Appositive",
       "form": "ëu",
-      "description": "creator / author / originator"
+      "description": "creator / author / originator",
+      "explanation": "The creator, author or originator of another noun.",
+      "guidance": "productive origin: prefer creator→product (e.g. 'the poet's essays')"
     },
     {
       "abbrev": "ITP",
       "name": "Interpretive",
       "category": "Case/Appositive",
       "form": "ou",
-      "description": "subjective viewpoint through which X is interpreted"
+      "description": "subjective viewpoint through which X is interpreted",
+      "explanation": "A noun acting as the subjective interpretational context of another noun, that is the noun by or through which another noun is subjectively interpreted or described.",
+      "guidance": "interpretative viewpoint: prefer 'from X's point of view' / 'in X's reading' (e.g. 'from the judge's standpoint')"
     },
     {
       "abbrev": "OGN",
       "name": "Originative",
       "category": "Case/Appositive",
       "form": "oi",
-      "description": "original source or native location"
+      "description": "original source or native location",
+      "explanation": "A noun as being the literal or figurative source of another, or which is the native location, origin, or usual locational context for another.",
+      "guidance": "originative source: prefer 'fruit/product of X' origin (e.g. 'honey from the hive')"
     },
     {
       "abbrev": "IDP",
       "name": "Interdependent",
       "category": "Case/Appositive",
       "form": "iu",
-      "description": "complementary / mutually dependent counterpart"
+      "description": "complementary / mutually dependent counterpart",
+      "explanation": "A noun which has a coordinated, tandem, complementary or mutually dependent relationship with another. The relationship between the two nouns can be thought of as reciprocal in nature.",
+      "guidance": "interdependent part-whole: prefer constitutive containment (e.g. 'the marrow in the bone')"
     },
     {
       "abbrev": "PAR",
       "name": "Partitive",
       "category": "Case/Appositive",
       "form": "ui",
-      "description": "quantitative content — \"a cup of X\""
+      "description": "quantitative content — \"a cup of X\"",
+      "explanation": "A quantitative or content-to-container relationship between the two nouns. Also used to mark a noun qualified by a specific number.",
+      "guidance": "partitive measure/group-of: prefer 'a load/batch of X' (e.g. 'a crate of bottles')"
     },
     {
       "abbrev": "APL",
       "name": "Applicative",
       "category": "Case/Associative",
       "form": "ia",
-      "description": "circumstantial use or function of X"
+      "description": "circumstantial use or function of X",
+      "explanation": "A noun which represents the purpose for which another noun is to be utilized in a given instance. Usually translates English 'for' when meaning 'for the temporary or incidental use/purpose of.'",
+      "guidance": "With reciprocal social introduction, often synthesizes as purpose \"to meet X\"."
     },
     {
       "abbrev": "PUR",
       "name": "Purposive",
       "category": "Case/Associative",
       "form": "ie",
-      "description": "inherent purpose — \"for the purpose of\""
+      "description": "inherent purpose — \"for the purpose of\"",
+      "explanation": "A noun which characterizes or defines the purpose of, or reason for, another noun. Defines another noun's dedicated function or primary reason for being, outside of any contextual instance.",
+      "guidance": "purposive function-as-name: English often names the tool by purpose (e.g. 'a watering can')"
     },
     {
       "abbrev": "TRA",
       "name": "Transmissive",
       "category": "Case/Associative",
       "form": "io",
-      "description": "beneficiary or recipient of harm"
+      "description": "beneficiary or recipient of harm",
+      "explanation": "A noun for whose sake or benefit an action or event occurs or is done or the party to whose detriment an action or event occurs.",
+      "guidance": "transmissive beneficiary/recipient of transfer: prefer 'X for Y' as intended recipient (e.g. 'a letter for the neighbor')"
     },
     {
       "abbrev": "DFR",
       "name": "Deferential",
       "category": "Case/Associative",
       "form": "iö",
-      "description": "for X's sake / out of deference to X"
+      "description": "for X's sake / out of deference to X",
+      "explanation": "Translates the English phrases 'out of respect for,' 'for the sake of,' or 'in deference toward,' identifying the noun to which deference is paid within the context for an act, condition, or event.",
+      "guidance": "deferential motive: prefer 'out of respect for X' / 'in deference to X' (e.g. 'out of respect for custom')"
     },
     {
       "abbrev": "CRS",
       "name": "Contrastive",
       "category": "Case/Associative",
       "form": "eë",
-      "description": "instead of / in place of X"
+      "description": "instead of / in place of X",
+      "explanation": "A noun which has been replaced by another or for which another noun has been substituted. Translatable by the English phrases 'instead of' or 'rather than' or 'as opposed to.'",
+      "guidance": "contrastive not-that: prefer 'X, not Y' / 'rather than' (e.g. 'it's tea, not coffee')"
     },
     {
       "abbrev": "TSP",
       "name": "Transpositive",
       "category": "Case/Associative",
       "form": "uö",
-      "description": "on behalf of X"
+      "description": "on behalf of X",
+      "explanation": "Implies substitution of one noun for another. Translates English 'for' in the sense of 'on behalf of,' 'in place of,' or 'instead of' (i.e., 'as a substitution for').",
+      "guidance": "transpositive substitution: prefer 'substituting X for Y' / 'replacing Y with X' (e.g. 'substituting ink for paint')"
     },
     {
       "abbrev": "CMM",
       "name": "Commutative",
       "category": "Case/Associative",
       "form": "uo",
-      "description": "in exchange for X"
+      "description": "in exchange for X",
+      "explanation": "Translates English 'for' in the sense of 'in exchange for.'",
+      "guidance": "commutative exchange/payment framing: prefer 'paid/exchanged for X' (e.g. 'they paid for the lessons')"
     },
     {
       "abbrev": "CMP",
       "name": "Comparative",
       "category": "Case/Associative",
       "form": "ue",
-      "description": "as compared to / versus / whereas"
+      "description": "as compared to / versus / whereas",
+      "explanation": "A noun being compared to another. Translates such expressions as 'as compared to,' or certain usages of 'versus' or 'as opposed to.'",
+      "guidance": "comparative standard: prefer 'X compared to Y' / 'X relative to Y' (e.g. 'bitter compared to honey')"
     },
     {
       "abbrev": "CSD",
       "name": "Considerative",
       "category": "Case/Associative",
       "form": "ua",
-      "description": "according to / as per X"
+      "description": "according to / as per X",
+      "explanation": "Translates English terms such as 'according to,' 'in the opinion of.'",
+      "guidance": "considerative authority: prefer 'according to X' / 'in X's judgment' (e.g. 'according to the guide')"
     },
     {
       "abbrev": "FUN",
       "name": "Functive",
       "category": "Case/Adverbial",
       "form": "ao",
-      "description": "the manner in which X is/occurs"
+      "description": "the manner in which X is/occurs",
+      "explanation": "Functions similarly to English adverbs ending in -ly or the adverbial use of with, identifying the manner in which an action, event, or state occurs or exists.",
+      "guidance": "functive manner: prefer manner adverb/PP of how the act is done (e.g. 'speaks confidently')"
     },
     {
       "abbrev": "TFM",
       "name": "Transformative",
       "category": "Case/Adverbial",
       "form": "aö",
-      "description": "into — the final state of a transformation"
+      "description": "into — the final state of a transformation",
+      "explanation": "The outcome or final state of a process, often translatable by 'to,' 'until,' or 'into' in the sense of reaching a final state after having undergone some transformation.",
+      "guidance": "transformative end-state as purpose of the act: prefer 'lessons/training into becoming X' reading—not mere payment-for"
     },
     {
       "abbrev": "CLA",
       "name": "Classificative",
       "category": "Case/Adverbial",
       "form": "eo",
-      "description": "basis for arranging / sorting / counting"
+      "description": "basis for arranging / sorting / counting",
+      "explanation": "A noun as a basis for arranging, sorting, classifying, or counting. Also identifies a noun considered in consecutively recurring increments as a means of describing the manner of an event.",
+      "guidance": "classificative by class/unit: prefer 'X by X' / 'X-wise' / 'by the X' (e.g. 'page by page' / 'widthwise')"
     },
     {
       "abbrev": "RSL",
       "name": "Resultative",
       "category": "Case/Adverbial",
       "form": "eö",
-      "description": "result or consequence of X"
+      "description": "result or consequence of X",
+      "explanation": "A result or consequence, usually translatable utilizing a clause-like structure in English.",
+      "guidance": "when chaining AVS/EML avoidance, prefer infinitive purpose 'to avoid being turned into X'—not 'resulting in avoiding…'"
     },
     {
       "abbrev": "CSM",
       "name": "Consumptive",
       "category": "Case/Adverbial",
       "form": "oë",
-      "description": "resource consumed in the process"
+      "description": "resource consumed in the process",
+      "explanation": "The resource consumed or used (up) as a result of, or as a concurrent part of a process.",
+      "guidance": "consumptive means/ingredient: prefer 'with/using X as consumed means' (e.g. 'bakes bread with yeast')"
     },
     {
       "abbrev": "CON",
       "name": "Concessive",
       "category": "Case/Adverbial",
       "form": "öe",
-      "description": "despite / in spite of / although"
+      "description": "despite / in spite of / although",
+      "explanation": "A noun, situation, or circumstance which gives rise to an expectation of a certain result which, in fact, does not occur.",
+      "guidance": "concessive despite: prefer 'in spite of X' / 'despite X' (e.g. 'in spite of the delay')"
     },
     {
       "abbrev": "AVR",
       "name": "Aversive",
       "category": "Case/Adverbial",
       "form": "oe",
-      "description": "for fear of / in order to avoid"
+      "description": "for fear of / in order to avoid",
+      "explanation": "A noun as a source or object of fear and/or avoidance. Translates expressions such as 'for fear of,' 'in order to avoid,' or 'in avoidance of.'",
+      "guidance": "aversive fear-motive: prefer 'out of fear of X' / 'for fear of X' (e.g. 'out of fear of silence')"
     },
     {
       "abbrev": "CVS",
       "name": "Conversive",
       "category": "Case/Adverbial",
       "form": "öa",
-      "description": "except for / unless / but for"
+      "description": "except for / unless / but for",
+      "explanation": "Used in conjunction with hypothetical or potential contexts to identify a hypothetical exception to a potential outcome or an actual circumstance which alters or has altered a potential outcome.",
+      "guidance": "conversive exception: prefer 'except X' / 'all but X' (e.g. 'everything was packed except the lamp')"
     },
     {
       "abbrev": "SIT",
       "name": "Situative",
       "category": "Case/Adverbial",
       "form": "oa",
-      "description": "given / because of / in view of"
+      "description": "given / because of / in view of",
+      "explanation": "A noun as the background context for a clause without implying a direct causative relationship between the background context and the act, condition, or event which occurs.",
+      "guidance": "situative because-of-presence: cause is X's presence/existence, not an act by X (e.g. 'upset because of the crowd [being there]')"
     },
     {
       "abbrev": "PRN",
       "name": "Pertinential",
       "category": "Case/Relational",
       "form": "a'a",
-      "description": "about / regarding / concerning"
+      "description": "about / regarding / concerning",
+      "explanation": "A formative functioning as the general referent of the verb, translating such English terms as 'about,' 'regarding,' 'concerning,' 'in regard to,' 'in reference to,' 'pertaining to,' or 'as for.'",
+      "guidance": "Marks the about-topic; other quoted stems in the same formative may be distinct participants."
     },
     {
       "abbrev": "DSP",
       "name": "Descriptive",
       "category": "Case/Relational",
       "form": "ä'ä",
-      "description": "describing — like X qualitatively"
+      "description": "describing — like X qualitatively",
+      "explanation": "A formative as describing another formative in an adjectival manner, translatable as 'characterised/describable as being like', 'characterized/describable as having the quality/qualities of'.",
+      "guidance": "descriptive case-frame: relative/descriptive clause characterizing the head (e.g. 'bird-watching hikers tend to wake early')—do not promote the frame to a main-clause only reading"
     },
     {
       "abbrev": "COR",
       "name": "Correlative",
       "category": "Case/Relational",
       "form": "e'e",
-      "description": "in relation to / in association with"
+      "description": "in relation to / in association with",
+      "explanation": "An abstract general relationship, association, or conjunction between one formative and another, including subjective, contextual, metaphorical, or symbolic associations.",
+      "guidance": "correlative association/theme: prefer 'in the direction of X' or 'X in Y' thematic link (e.g. 'symbols in folklore')"
     },
     {
       "abbrev": "CPS",
       "name": "Compositive",
       "category": "Case/Relational",
       "form": "i'i",
-      "description": "made of / composed of X"
+      "description": "made of / composed of X",
+      "explanation": "A formative as being the literal or figurative substance or component(s) of which another is made, composed, formed, built or comprised.",
+      "guidance": "compositive material: prefer 'made of X' / 'of X' (e.g. 'things made of glass')"
     },
     {
       "abbrev": "COM",
       "name": "Comitative",
       "category": "Case/Relational",
       "form": "ë'i",
-      "description": "along with / accompanied by"
+      "description": "along with / accompanied by",
+      "explanation": "A formative that accompanies another, translatable as '(along) with'.",
+      "guidance": "comitative accompaniment (not worn): prefer 'with X' as accompanying object carried along (e.g. 'a traveler with a suitcase')—contrast UTL"
     },
     {
       "abbrev": "UTL",
       "name": "Utilitative",
       "category": "Case/Relational",
       "form": "ö'ö",
-      "description": "while using or wielding X"
+      "description": "while using or wielding X",
+      "explanation": "A formative in the process of being used while some other activity or state is in progress.",
+      "guidance": "utilitative worn/in-use tool: prefer 'wearing/using X' (e.g. 'a traveler wearing a coat')—contrast COM"
     },
     {
       "abbrev": "PRD",
       "name": "Predicative",
       "category": "Case/Relational",
       "form": "o'o",
-      "description": "based on / dependent on X"
+      "description": "based on / dependent on X",
+      "explanation": "The non-causal basis, foundation, sustenance (literally or figuratively), or required existential condition for another noun or clause, translatable by the phrases 'based (up)on,' 'dependent (up)on' or 'relying on.'",
+      "guidance": "predicative basis: prefer 'based in/on X' (e.g. 'rules based in evidence')"
     },
     {
       "abbrev": "RLT",
@@ -314,49 +386,63 @@
       "name": "Activative",
       "category": "Case/Affinitive",
       "form": "a'i",
-      "description": "experiencer of a modal state (want, need, ability)"
+      "description": "experiencer of a modal state (want, need, ability)",
+      "explanation": "Identifies the experiencer of a modal state, such as obligation, necessity, desire, hope, expectation, wishing, being able to, etc. functioning as the \"subject\" of a modal(ized) verb governing a hypothetical state (i.e., what is wanted, needed, expected, able to be done, etc.).",
+      "guidance": "activative enablement/activation: often a modal 'even X needs Y' / enabling frame (e.g. 'I think even machines need care')—do not drop the validating matrix if present"
     },
     {
       "abbrev": "ASI",
       "name": "Assimilative",
       "category": "Case/Affinitive",
       "form": "a'u",
-      "description": "as if it were X (analogy / metaphor)"
+      "description": "as if it were X (analogy / metaphor)",
+      "explanation": "Identifies a formative used as a context for analogy or metaphorical comparison, translatable as 'as/like' meaning 'as if it were X'",
+      "guidance": "assimilative likeness without identity: prefer 'like an X (though not one)' (e.g. 'you argue like a lawyer [though you are not]')"
     },
     {
       "abbrev": "ESS",
       "name": "Essive",
       "category": "Case/Affinitive",
       "form": "e'i",
-      "description": "as X (functional identity or role)"
+      "description": "as X (functional identity or role)",
+      "explanation": "Identifies the role or name by which an entity is known or contextually identified, translates 'as/like' in sense of naming or functional identity",
+      "guidance": "essive identity-as: prefer 'like an X (because you are one)' / 'as an X' (e.g. 'you argue like a lawyer [being one]')"
     },
     {
       "abbrev": "TRM",
       "name": "Terminative",
       "category": "Case/Affinitive",
       "form": "e'u",
-      "description": "goal of an act — toward / for"
+      "description": "goal of an act — toward / for",
+      "explanation": "Identifies a formative as being the goal of an act/event",
+      "guidance": "terminative goal of seeking: prefer bare goal NP of pursuit (e.g. 'we're seeking mushrooms')"
     },
     {
       "abbrev": "SEL",
       "name": "Selective",
       "category": "Case/Affinitive",
       "form": "ë'u",
-      "description": "every X / on Xs (recurring entity or period)"
+      "description": "every X / on Xs (recurring entity or period)",
+      "explanation": "Identifies a contextually recurring time-period or string of recurring entities",
+      "guidance": "selective every-nth / subset pick: prefer 'every nth X' / 'each selected X' (e.g. 'every fourth row')"
     },
     {
       "abbrev": "CFM",
       "name": "Conformative",
       "category": "Case/Affinitive",
       "form": "o'u",
-      "description": "pursuant to / in conformance with X"
+      "description": "pursuant to / in conformance with X",
+      "explanation": "Identifies the entity pursuant to which, as per which, or in conformance with which another entity is or an act/event occurs",
+      "guidance": "On a prior formative, English \"Under / pursuant to X\" frames the following modal act; do not make X the direct object of the verb in the next formative unless the gloss marks object case on X."
     },
     {
       "abbrev": "DEP",
       "name": "Dependent",
       "category": "Case/Affinitive",
       "form": "o'i",
-      "description": "contingent on X (if circumstances allow)"
+      "description": "contingent on X (if circumstances allow)",
+      "explanation": "Identifies a formative as being the basis of a dependency phrase on which another formative acts as contingency",
+      "guidance": "dependent conditional circumstance: prefer 'only if X' / 'provided X' (e.g. 'will attend only if there is music')"
     },
     {
       "abbrev": "VOC",
@@ -370,7 +456,9 @@
       "name": "Locative",
       "category": "Case/SpatioTemporal1",
       "form": "i'a",
-      "description": "location at / in / on / by"
+      "description": "location at / in / on / by",
+      "explanation": "Identifies the location where something is situated or occurs, translates 'at/in/on/by'",
+      "guidance": "locative at/in place: prefer 'at/in X' static location (e.g. 'at the gate')"
     },
     {
       "abbrev": "ATD",
@@ -384,42 +472,54 @@
       "name": "Allative",
       "category": "Case/SpatioTemporal1",
       "form": "i'o",
-      "description": "moving toward"
+      "description": "moving toward",
+      "explanation": "Identifies the entity toward which another entity is moving/approaching, translates 'to/toward'",
+      "guidance": "allative toward goal: prefer 'to(ward) X' (e.g. 'toward the harbor')"
     },
     {
       "abbrev": "ABL",
       "name": "Ablative",
       "category": "Case/SpatioTemporal1",
       "form": "i'ö",
-      "description": "moving away from"
+      "description": "moving away from",
+      "explanation": "Identifies the entity away from which another entity is moving/receding, translates '(away) from'",
+      "guidance": "ablative away-from source: prefer 'away from X' / 'from X' (e.g. 'walk away from the platform')"
     },
     {
       "abbrev": "ORI",
       "name": "Orientative",
       "category": "Case/SpatioTemporal1",
       "form": "e'ë",
-      "description": "X's face / front / forward axis"
+      "description": "X's face / front / forward axis",
+      "explanation": "Identifies the entity (often a body part or sub-component) which serves as the \"face\" or surface or \"front\" or \"head\" of an entity in terms of external communication or interaction, or which serves as the forward \"end\" of a spatially orientated axis aligned to a vector of motion in terms of directional movement",
+      "guidance": "with motion verbs + body-part/orientation stems (front, back, flank/side), prefer directional adverbs (frontward, backward, sideways)—not path PPs (along the side / toward the back)"
     },
     {
       "abbrev": "IRL",
       "name": "Interrelative",
       "category": "Case/SpatioTemporal1",
       "form": "u'ö",
-      "description": "relative to X (directional or temporal position)"
+      "description": "relative to X (directional or temporal position)",
+      "explanation": "Identifies the directional/temporal orientation or position of an entity relative to another",
+      "guidance": "interrelative temporal relation focus: keep the between-times relation (e.g. 'how long since the train's arrival?' as relation-between-times)—not mere clock time"
     },
     {
       "abbrev": "INV",
       "name": "Intrative",
       "category": "Case/SpatioTemporal1",
       "form": "u'o",
-      "description": "since / until / from X (boundary of a span)"
+      "description": "since / until / from X (boundary of a span)",
+      "explanation": "Identifies a formative as being the spatio-temporal boundary point of a span or volume of space or period of time",
+      "guidance": "intrative juxtaposition of two times/events: focus on the span between endpoints (e.g. 'how long between departure and return')"
     },
     {
       "abbrev": "NAV",
       "name": "Navigative",
       "category": "Case/SpatioTemporal1",
       "form": "u'a",
-      "description": "along X (X's axis as direction)"
+      "description": "along X (X's axis as direction)",
+      "explanation": "Identifies the entity whose literal or metaphorically inferred long axis serves as the direction of another entity's path or trajectory",
+      "guidance": "navigative path/way followed: prefer 'follow the way/path of X' (e.g. 'they follow the river's course')"
     },
     {
       "abbrev": "CNR",
@@ -433,21 +533,27 @@
       "name": "Assessive",
       "category": "Case/SpatioTemporal2",
       "form": "a'ö",
-      "description": "per X (increment for a ratio)"
+      "description": "per X (increment for a ratio)",
+      "explanation": "Identifies the increment of space or time or unit by which a contextual ratio of measurement is created",
+      "guidance": "assessive rate/ratio: prefer 'X per Y' / 'X for each Y'"
     },
     {
       "abbrev": "PER",
       "name": "Periodic",
       "category": "Case/SpatioTemporal2",
       "form": "e'o",
-      "description": "within / over X (time span for repetitions)"
+      "description": "within / over X (time span for repetitions)",
+      "explanation": "Identifies the span of time/time frame at some point(s) during which separate events, repetitions, or durationally segmented acts or states take place",
+      "guidance": "time frame for a (segmented) act's completion: prefer \"it takes X\" / \"in X\" / \"within X\"—do not render as a past-event setting adjunct \"over an X period\"; contrast PRO (\"for an hour\" = how long an act lasts)"
     },
     {
       "abbrev": "PRO",
       "name": "Prolapsive",
       "category": "Case/SpatioTemporal2",
       "form": "e'ö",
-      "description": "for X (duration of an act)"
+      "description": "for X (duration of an act)",
+      "explanation": "Identifies the duration of an act, condition, or event, i.e. how long it takes or lasts",
+      "guidance": "how long an act lasts: prefer \"for X\" / \"through X\" / \"all X\"—contrast PER (\"it takes X\" / \"in/within X\" for time-to-completion)"
     },
     {
       "abbrev": "PCV",
@@ -461,7 +567,9 @@
       "name": "Postcursive",
       "category": "Case/SpatioTemporal2",
       "form": "ö'e",
-      "description": "after X (point in time subsequent)"
+      "description": "after X (point in time subsequent)",
+      "explanation": "Identifies an entity acting as a point in time after which an act, state, or event occurs",
+      "guidance": "point-in-time after which: keep \"after …\" / \"it was after …\"; with RTR+CRL (outburst) formative, prefer PCR as a past-event frame over a bare ongoing \"there's a … going on\"; when FRAMED attend/event precedes, keep attendees + attend verb"
     },
     {
       "abbrev": "ELP",
@@ -553,25 +661,33 @@
       "abbrev": "EXS",
       "name": "Existential",
       "category": "Context",
-      "description": "pure existence (default ontology)"
+      "description": "pure existence (default ontology)",
+      "explanation": "ontologically objective features that exist irrespective of observers, opinions, or interpretations",
+      "guidance": "existential context: render as a bare physical scene (e.g. 'rain falls on the roof') with no social/metaphorical overlay"
     },
     {
       "abbrev": "FNC",
       "name": "Functional",
       "category": "Context",
-      "description": "functional context (purpose, role)"
+      "description": "functional context (purpose, role)",
+      "explanation": "features defined socially by ideas, attitudes, beliefs, opinions, convention, cultural status, use, function, benefit",
+      "guidance": "functional context: highlight personal/social significance of the scene (e.g. 'the letter arriving mattered for the family')"
     },
     {
       "abbrev": "RPS",
       "name": "Representational",
       "category": "Context",
-      "description": "representational context (model, symbol)"
+      "description": "representational context (model, symbol)",
+      "explanation": "symbol, metaphor, or metonym, representing some other concept or entity abstractly associated with it",
+      "guidance": "representational context: treat participants as metaphorical/stand-ins (e.g. 'the storm stood for the argument')"
     },
     {
       "abbrev": "AMG",
       "name": "Amalgamative",
       "category": "Context",
-      "description": "amalgamative context (blended/composite)"
+      "description": "amalgamative context (blended/composite)",
+      "explanation": "systemic, holistic, gestalt-like nature derived from interrelationships between all parts and developmental history",
+      "guidance": "amalgamative context: blend emotional impact with cultural meaning (e.g. 'the ceremony hit hard and carried tradition')"
     },
     {
       "abbrev": "UPX",
@@ -583,31 +699,41 @@
       "abbrev": "DPX",
       "name": "Duplex",
       "category": "Configuration",
-      "description": "two instances forming one entity"
+      "description": "two instances forming one entity",
+      "explanation": "binary or two-halved in nature — a configurational set of exactly two entities, events, or states viewed as a paired or bipartite whole",
+      "guidance": "duplex pair: prefer 'a pair of X' / 'two X as a unit' (e.g. 'a pair of boots')—not bare plural"
     },
     {
       "abbrev": "DSS",
       "name": "Duplex Similar Separate",
       "category": "Configuration",
-      "description": "two similar instances, separate"
+      "description": "two similar instances, separate",
+      "explanation": "Two entities, similar and physically separate",
+      "guidance": "duplex similar separate: two alike items as a pair but not joined (e.g. 'a pair of matching cups kept apart')"
     },
     {
       "abbrev": "DSC",
       "name": "Duplex Similar Connected",
       "category": "Configuration",
-      "description": "two similar instances, connected"
+      "description": "two similar instances, connected",
+      "explanation": "Two entities, similar and connected",
+      "guidance": "duplex similar connected: two alike items linked as a pair (e.g. 'a pair of linked rings')"
     },
     {
       "abbrev": "DSF",
       "name": "Duplex Similar Fused",
       "category": "Configuration",
-      "description": "two similar instances, fused"
+      "description": "two similar instances, fused",
+      "explanation": "Two entities, similar and fused",
+      "guidance": "duplex similar fused: two alike items fused into one pair-unit (e.g. 'a fused pair of identical plates')"
     },
     {
       "abbrev": "DDS",
       "name": "Duplex Dissimilar Separate",
       "category": "Configuration",
-      "description": "two dissimilar instances, separate"
+      "description": "two dissimilar instances, separate",
+      "explanation": "Two entities, dissimilar and physically separate",
+      "guidance": "duplex dissimilar separate: two unlike items as a loose pair (e.g. 'a mismatched pair of gloves')"
     },
     {
       "abbrev": "DDC",
@@ -643,49 +769,65 @@
       "abbrev": "MSS",
       "name": "Multiplex Similar Separate",
       "category": "Configuration",
-      "description": "three or more similar instances, separate"
+      "description": "three or more similar instances, separate",
+      "explanation": "Three or more entities, similar and physically separate — a multiplex set whose members are alike but not physically connected",
+      "guidance": "multiplex similar separate: many alike items, unjoined (e.g. 'a loose set of matching tiles')"
     },
     {
       "abbrev": "MSC",
       "name": "Multiplex Similar Connected",
       "category": "Configuration",
-      "description": "three or more similar instances, connected"
+      "description": "three or more similar instances, connected",
+      "explanation": "Three or more entities, similar and connected — a multiplex set whose members are alike and physically touching or linked",
+      "guidance": "multiplex similar connected: many alike items touching/linked (e.g. 'a chain of identical beads')"
     },
     {
       "abbrev": "MSF",
       "name": "Multiplex Similar Fused",
       "category": "Configuration",
-      "description": "three or more similar instances, fused"
+      "description": "three or more similar instances, fused",
+      "explanation": "Three or more entities, similar and fused",
+      "guidance": "multiplex similar fused: many alike items fused (e.g. 'a fused cluster of identical crystals')"
     },
     {
       "abbrev": "MDS",
       "name": "Multiplex Dissimilar Separate",
       "category": "Configuration",
-      "description": "three or more dissimilar instances, separate"
+      "description": "three or more dissimilar instances, separate",
+      "explanation": "Three or more entities, dissimilar and physically separate — a multiplex set whose members differ from one another and are not physically connected",
+      "guidance": "multiplex dissimilar separate: many unlike items, unjoined (e.g. 'a mixed pile of tools')"
     },
     {
       "abbrev": "MDC",
       "name": "Multiplex Dissimilar Connected",
       "category": "Configuration",
-      "description": "three or more dissimilar instances, connected"
+      "description": "three or more dissimilar instances, connected",
+      "explanation": "Three or more entities, dissimilar and connected — a multiplex set whose members differ from one another but are physically touching or linked",
+      "guidance": "multiplex dissimilar connected: many unlike items linked/touching (e.g. 'linked odd-sized modules')"
     },
     {
       "abbrev": "MDF",
       "name": "Multiplex Dissimilar Fused",
       "category": "Configuration",
-      "description": "three or more dissimilar instances, fused"
+      "description": "three or more dissimilar instances, fused",
+      "explanation": "Three or more entities, dissimilar and fused",
+      "guidance": "multiplex dissimilar fused: many unlike items fused (e.g. 'a fused mass of mixed scrap')"
     },
     {
       "abbrev": "MFS",
       "name": "Multiplex Fuzzy Separate",
       "category": "Configuration",
-      "description": "three or more instances of indeterminate similarity, separate"
+      "description": "three or more instances of indeterminate similarity, separate",
+      "explanation": "Three or more entities, fuzzy in similarity and physically separate",
+      "guidance": "multiplex fuzzy separate: loosely similar-looking items, unjoined (e.g. 'assorted vaguely round pebbles, some more than others')"
     },
     {
       "abbrev": "MFC",
       "name": "Multiplex Fuzzy Connected",
       "category": "Configuration",
-      "description": "three or more instances of indeterminate similarity, connected"
+      "description": "three or more instances of indeterminate similarity, connected",
+      "explanation": "Three or more entities, fuzzy in similarity and connected",
+      "guidance": "multiplex fuzzy connected: loosely similar-looking items linked (e.g. 'linked vaguely rounded beads, some more than others')"
     },
     {
       "abbrev": "MFF",
@@ -733,7 +875,9 @@
       "abbrev": "N",
       "name": "Nomic",
       "category": "Perspective",
-      "description": "generic / archetypal class"
+      "description": "generic / archetypal class",
+      "explanation": "generic collective entity or archetype, containing all members or instantiations of a configurative set throughout space and time",
+      "guidance": "nomic generic: with 'child'-N or creature/person stems prefer plural generic subjects (e.g. 'children'); with habit/verb stems prefer generic/habitual practice—not a one-off deictic instance and do not invent a bare 'they' subject from N alone"
     },
     {
       "abbrev": "A",
@@ -751,7 +895,9 @@
       "abbrev": "PRX",
       "name": "Proximal",
       "category": "Extension",
-      "description": "current / ongoing instance"
+      "description": "current / ongoing instance",
+      "explanation": "indicates that a noun is being spoken of not in its entirety, but rather only in terms of the portion, duration, subset, or aspect which is relevant to the context at hand",
+      "guidance": "when PRX marks the main eventive formative with no case-marked actor, prefer impersonal 'takes place' / 'going on' over calquing 'stretch/portion of'; when PRX marks a noun, keep natural existential English (e.g. 'if there's an X')"
     },
     {
       "abbrev": "ICP",
@@ -781,175 +927,233 @@
       "abbrev": "NRM",
       "name": "Normal",
       "category": "Essence",
-      "description": "the entity as it actually exists"
+      "description": "the entity as it actually exists",
+      "explanation": "Real-world actualities — the formative denotes entities, acts, or states taken as actually existing in the real world rather than imagined or representative counterparts",
+      "guidance": "normal/real-world framing: prefer a plain factual clause (e.g. 'the guard notices a shadow')—not hypothetical/representative wording"
     },
     {
       "abbrev": "RPV",
       "name": "Representative",
       "category": "Essence",
-      "description": "the entity as imagined/representative"
+      "description": "the entity as imagined/representative",
+      "explanation": "Alternative/imagined counterparts — the formative denotes entities, acts, or states as imagined, hypothetical, or representative rather than as real-world actualities",
+      "guidance": "hypothetical/representative—not always agent \"imagine\"; with Nomic participants (generic person/creature stems), prefer infinitival/generic framing (e.g. \"for an X to VERB a Y\")—do not add \"imagine having…\""
     },
     {
       "abbrev": "MNO",
       "name": "Monoactive",
       "category": "Valence",
-      "description": "one participant; no co-actor (default)"
+      "description": "one participant; no co-actor (default)",
+      "explanation": "The default valence indicating a lack of co-activity, no participation by a second party is implied",
+      "guidance": "monoactive: no co-activity implied; parties may share a scene without interacting (e.g. 'two bakers work in the kitchen [each on their own]')"
     },
     {
       "abbrev": "PRL",
       "name": "Parallel",
       "category": "Valence",
-      "description": "two or more parallel co-actors doing the same action"
+      "description": "two or more parallel co-actors doing the same action",
+      "explanation": "Indicates that a second party is engaging in the same activity as the first party at same time",
+      "guidance": "parallel: same kind of activity at the same time, separately (e.g. 'two bakers knead dough at the same time, separately')"
     },
     {
       "abbrev": "CRO",
       "name": "Corollary",
       "category": "Valence",
-      "description": "one party's action is a corollary of another's"
+      "description": "one party's action is a corollary of another's",
+      "explanation": "Similar to parallel, except that the second party engages in related activity at the same time as the first party",
+      "guidance": "corollary: simultaneous related but different activities (e.g. 'two bakers work at once, each on a different recipe')"
     },
     {
       "abbrev": "RCP",
       "name": "Reciprocal",
       "category": "Valence",
-      "description": "mutual / reciprocal action between parties"
+      "description": "mutual / reciprocal action between parties",
+      "explanation": "Indicates identical activity by one party directed at another party and vice-versa. English may be 'each other'/'one another' when the reciprocal partners are a named closed set (often SBS-marked), or reciprocity with an unnamed external party when only a single group party is named without SBS.",
+      "guidance": "If two or more parties are separately named (distinct formatives/stems), render reciprocity among those named parties. If a single plural/group/duplex party is named without SBS, do not say 'each other'—imply an unnamed external reciprocal partner (e.g. 'playing with another party', not 'with each other'). SBS1-1 on that group marks closed-set 'each other' within the group. A separate PRN formative is the about-topic. Pattern: DPX group-IND + RCP without SBS → reciprocity with an unnamed external party; same gloss + SBS1-1 → closed-set 'with each other'."
     },
     {
       "abbrev": "CPL",
       "name": "Complementary",
       "category": "Valence",
-      "description": "complementary actions, each completing the other"
+      "description": "complementary actions, each completing the other",
+      "explanation": "Indicates that the second party performs a complementary activity to that of the first party, the \"other half\" of the joint activity",
+      "guidance": "complementary: interlocking roles of one joint activity (e.g. 'two bakers run a complementary bake—one mixes, one shapes')"
     },
     {
       "abbrev": "DUP",
       "name": "Duplicative",
       "category": "Valence",
-      "description": "duplicative — same action repeated in parallel"
+      "description": "duplicative — same action repeated in parallel",
+      "explanation": "Indicates that the second party copies or repeats the activity of the first party",
+      "guidance": "duplicative: one party does the act and the other copies it (e.g. 'one baker demonstrates kneading and the other copies')"
     },
     {
       "abbrev": "DEM",
       "name": "Demonstrative",
       "category": "Valence",
-      "description": "demonstrative — one party shows another how"
+      "description": "demonstrative — one party shows another how",
+      "explanation": "Indicates that the first party demonstrates for the second party how to do something or what to do",
+      "guidance": "demonstrative: one shows the other how (e.g. 'one baker shows the other how to score the loaf')"
     },
     {
       "abbrev": "CNG",
       "name": "Contingent",
       "category": "Valence",
-      "description": "contingent — one action depends on another"
+      "description": "contingent — one action depends on another",
+      "explanation": "Indicates that the second party engages in the next or dependent phase of a multi-part activity",
+      "guidance": "Sequential/dependent phases of one multi-part activity: one party completes one part, then the other does the next logical part. Do not collapse to 'together'/'with each other' (RCP±SBS), simultaneous complementary roles (CPL), or copying the same act (DUP). Prefer explicit sequencing ('one … then the other … the next part'). E.g. starting a campfire for a friend in CNG implies the friend then cooks."
     },
     {
       "abbrev": "PTI",
       "name": "Participative",
       "category": "Valence",
-      "description": "participative — taking part in a wider group action"
+      "description": "participative — taking part in a wider group action",
+      "explanation": "Indicates that the parties take part in an activity involving a greater whole, translatable by 'take part in'",
+      "guidance": "participative: both take part in the same shared activity (e.g. 'two bakers take part in the same bake')"
     },
     {
       "abbrev": "PCT",
       "name": "Punctual",
       "category": "Phase",
-      "description": "punctual / momentary"
+      "description": "punctual / momentary",
+      "explanation": "Describes an act, condition, or event which is point-like, momentary or instantaneous in nature, such as an explosion, a flash of lightning, a single handclap, or a single cough. It can be visually represented along a timeline by a single point.",
+      "guidance": "punctual: single brief occurrence (e.g. 'the bell gave one short ring')"
     },
     {
       "abbrev": "ITR",
       "name": "Iterative",
       "category": "Phase",
-      "description": "iterative — happens again and again"
+      "description": "iterative — happens again and again",
+      "explanation": "Refers to a momentary event which repeats itself in a rapid, on/off, staccato manner, considered as a single event",
+      "guidance": "iterative: a series of short occurrences (e.g. 'the bell gave a series of short rings')"
     },
     {
       "abbrev": "REP",
       "name": "Repetitive",
       "category": "Phase",
-      "description": "repetitive — same identical instances"
+      "description": "repetitive — same identical instances",
+      "explanation": "Refers to a relatively brief event repeated in an on/off staccato manner",
+      "guidance": "repetitive: a series of longer occurrences (e.g. 'the bell gave a series of long rings')"
     },
     {
       "abbrev": "ITM",
       "name": "Intermittent",
       "category": "Phase",
-      "description": "intermittent — on and off"
+      "description": "intermittent — on and off",
+      "explanation": "Similar to iterative but the duration of time between repetitions is relatively long and contextually relevant",
+      "guidance": "intermittent: a repeating short occurrence pattern (e.g. 'the bell kept giving a repeating short ring')"
     },
     {
       "abbrev": "RCT",
       "name": "Recurrent",
       "category": "Phase",
-      "description": "recurrent — returns periodically"
+      "description": "recurrent — returns periodically",
+      "explanation": "Indicates a slow repetition of an event, where the duration between occurrences is relatively long",
+      "guidance": "slow recurrence; with bouncing/jumping verbs, English often uses '(up and down)' rather than the literal phrase 'slowly recurring'"
     },
     {
       "abbrev": "FRE",
       "name": "Frequentative",
       "category": "Phase",
-      "description": "frequentative — happens often"
+      "description": "frequentative — happens often",
+      "explanation": "Indicates an iterative occurrence which in turn repeats at intervals, the whole considered as a single event",
+      "guidance": "frequentative: repeating series of singles (e.g. 'the bell gave repeating series of single rings')"
     },
     {
       "abbrev": "FRG",
       "name": "Fragmentative",
       "category": "Phase",
-      "description": "fragmentative — broken into pieces"
+      "description": "fragmentative — broken into pieces",
+      "explanation": "Indicates a random pattern of punctual occurrences, the whole considered as a single event",
+      "guidance": "fragmentative: several random series of repeating shorts (e.g. 'several random bursts of repeating short rings')"
     },
     {
       "abbrev": "VAC",
       "name": "Vacillative",
       "category": "Phase",
-      "description": "vacillative — alternating, wavering"
+      "description": "vacillative — alternating, wavering",
+      "explanation": "Functions as a non-punctual counterpart to the fragmentative",
+      "guidance": "vacillitative: several random series of repeating longs (e.g. 'several random bursts of repeating long rings')"
     },
     {
       "abbrev": "FLC",
       "name": "Fluctuative",
       "category": "Phase",
-      "description": "fluctuative — irregularly varying"
+      "description": "fluctuative — irregularly varying",
+      "explanation": "Indicates a random pattern of both punctual and longer occurrences",
+      "guidance": "random punctual bursts / snippets; with sing.a.song+RSM+PRL, prefer fragmented/burst song snippets—not bare 'intermittently'"
     },
     {
       "abbrev": "BEN1",
       "name": "Beneficial to speaker",
       "category": "Effect",
-      "description": "beneficial to the speaker"
+      "description": "beneficial to the speaker",
+      "explanation": "Indicates that the formative is of benefit to the first-person speaker of the sentence",
+      "guidance": "when bundled as PA+1M/BEN (or similar multiparty+speaker), benefit scopes over the whole party (\"to our benefit\" / we)—not speaker-alone \"to my benefit\""
     },
     {
       "abbrev": "BEN2",
       "name": "Beneficial to addressee",
       "category": "Effect",
-      "description": "beneficial to the addressee"
+      "description": "beneficial to the addressee",
+      "explanation": "Indicates that the formative is of benefit to the addressee of the sentence",
+      "guidance": "beneficial to addressee: benefit scopes to 'you'/'your side' (e.g. weather/news framed as good for the hearer)"
     },
     {
       "abbrev": "BEN3",
       "name": "Beneficial to 3rd party",
       "category": "Effect",
-      "description": "beneficial to an unspecified third party"
+      "description": "beneficial to an unspecified third party",
+      "explanation": "Indicates that the formative is of benefit to a third party other than the speaker or addressee",
+      "guidance": "beneficial to a third party: benefit scopes to that third party (e.g. 'the patient's recovery has returned' as good for them)"
     },
     {
       "abbrev": "BSLF",
       "name": "Beneficial to self",
       "category": "Effect",
-      "description": "beneficial to the subject itself"
+      "description": "beneficial to the subject itself",
+      "explanation": "Indicates that the formative is of benefit to the formative itself to which the affix is attached",
+      "guidance": "beneficial to self: self-benefactive announcement/state (e.g. present a favorable outcome for the speaker without a separate 'I declare' matrix)"
     },
     {
       "abbrev": "UNK",
       "name": "Unknown",
       "category": "Effect",
-      "description": "neutral / unknown effect"
+      "description": "neutral / unknown effect",
+      "explanation": "Indicates that the formative is either of unknown benefit or detriment or that any benefit/detriment is irrelevant",
+      "guidance": "unknown benefit/detriment: keep evaluative neutrality (e.g. 'there's an odd object in the field' with no good/bad spin)"
     },
     {
       "abbrev": "DSLF",
       "name": "Detrimental to self",
       "category": "Effect",
-      "description": "detrimental to the subject itself"
+      "description": "detrimental to the subject itself",
+      "explanation": "Indicates that the formative is detrimental to the formative itself to which the affix is attached",
+      "guidance": "detrimental to self: self-directed negative evaluation (e.g. self-reproach force without inventing extra parties)"
     },
     {
       "abbrev": "DET3",
       "name": "Detrimental to 3rd party",
       "category": "Effect",
-      "description": "detrimental to an unspecified third party"
+      "description": "detrimental to an unspecified third party",
+      "explanation": "Indicates that the formative is detrimental to a third party other than the speaker or addressee",
+      "guidance": "detrimental to a third party: harm/ill scopes to that party (e.g. 'the neighbor's debt has returned')"
     },
     {
       "abbrev": "DET2",
       "name": "Detrimental to addressee",
       "category": "Effect",
-      "description": "detrimental to the addressee"
+      "description": "detrimental to the addressee",
+      "explanation": "Indicates that the formative is detrimental to the addressee of the sentence",
+      "guidance": "detrimental to addressee: bad-for-you scoping (e.g. reported news framed as disadvantageous to the hearer)"
     },
     {
       "abbrev": "DET1",
       "name": "Detrimental to speaker",
       "category": "Effect",
-      "description": "detrimental to the speaker"
+      "description": "detrimental to the speaker",
+      "explanation": "Indicates that the formative is detrimental to the first-person speaker of the sentence",
+      "guidance": "detrimental to speaker: bad-for-me scoping on the focused content (e.g. identifying a situation as undesirable for the speaker)"
     },
     {
       "abbrev": "MIN",
@@ -979,13 +1183,17 @@
       "abbrev": "EQU",
       "name": "Equative",
       "category": "Level",
-      "description": "equal to the reference"
+      "description": "equal to the reference",
+      "explanation": "X M 's the same as Y ( or as before) / X is as M as Y ( or as before)",
+      "guidance": "equative level: prefer 'as … as' equality between compared parties"
     },
     {
       "abbrev": "SUR",
       "name": "Surpassive",
       "category": "Level",
-      "description": "surpassing the reference"
+      "description": "surpassing the reference",
+      "explanation": "X M 's more than Y ( or than before) / X is more M than Y ( or than before)",
+      "guidance": "surpassive relative greater degree: prefer comparative 'longer/more than' with optional neither-extreme caveat—keep relative, not absolute"
     },
     {
       "abbrev": "SPL",
@@ -1039,19 +1247,25 @@
       "abbrev": "PCS",
       "name": "Precessive",
       "category": "Aspect",
-      "description": "just finished / just before"
+      "description": "just finished / just before",
+      "explanation": "Conveys that an action, state or event has immediately preceded",
+      "guidance": "precessive recent past: prefer 'just (now) …' (e.g. 'I just noticed a stranger at the gate')"
     },
     {
       "abbrev": "REG",
       "name": "Regulative",
       "category": "Aspect",
-      "description": "happens at regular intervals"
+      "description": "happens at regular intervals",
+      "explanation": "Conveys the idea of participation or involvement in an action, state, or event over an amount of time extending from the past into the future relative to the contextual present",
+      "guidance": "regulative habitual ongoing: prefer 'have been …-ing (everywhere/habitually)' (e.g. 'couriers have been busy delivering parcels everywhere')"
     },
     {
       "abbrev": "SMM",
       "name": "Summative",
       "category": "Aspect",
-      "description": "have already done"
+      "description": "have already done",
+      "explanation": "Translates English '...(have) already...'",
+      "guidance": "summative already-complete: prefer 'have already finished X' (e.g. 'they have already finished packing')"
     },
     {
       "abbrev": "ATP",
@@ -1069,25 +1283,33 @@
       "abbrev": "CSS",
       "name": "Cessative",
       "category": "Aspect",
-      "description": "ceased / stopped"
+      "description": "ceased / stopped",
+      "explanation": "Conveys the idea of cessation of an event, state or action",
+      "guidance": "cessative stop: prefer 'stopped/ceased X-ing' (e.g. 'they stopped packing')"
     },
     {
       "abbrev": "PAU",
       "name": "Pausal",
       "category": "Aspect",
-      "description": "paused, waiting to continue"
+      "description": "paused, waiting to continue",
+      "explanation": "Indicates a pause in an action, state or event, with an implied intention to resume",
+      "guidance": "pausal pause-in: prefer 'paused in X-ing' (e.g. 'they paused in packing')"
     },
     {
       "abbrev": "RGR",
       "name": "Regressive",
       "category": "Aspect",
-      "description": "going backward / undoing"
+      "description": "going backward / undoing",
+      "explanation": "Conveys the idea of a return to an original or previous action, state or event after a long hiatus involving an intervening change of state or situation",
+      "guidance": "regressive return-to: prefer 'got back to X' after interruption (e.g. 'after the break, she got back to studying')"
     },
     {
       "abbrev": "PCL",
       "name": "Preclusive",
       "category": "Aspect",
-      "description": "precluded from happening"
+      "description": "precluded from happening",
+      "explanation": "Conveys the fact that an action, state, or event takes place from inception to conclusion all in one contextual segment",
+      "guidance": "preclusive all-at-once/whole: prefer 'X whole' / undivided completion (e.g. 'swallowed the pill whole')"
     },
     {
       "abbrev": "CNT",
@@ -1099,91 +1321,121 @@
       "abbrev": "ICS",
       "name": "Incessative",
       "category": "Aspect",
-      "description": "happens ceaselessly"
+      "description": "happens ceaselessly",
+      "explanation": "Conveys that an action, state or event continues on without stopping",
+      "guidance": "incessative keeps-on: prefer 'keeps X-ing on and on' (e.g. 'keeps rambling on and on')"
     },
     {
       "abbrev": "EXP",
       "name": "Experiential",
       "category": "Aspect",
-      "description": "experiential — has experienced"
+      "description": "experiential — has experienced",
+      "explanation": "Translates English 'ever' in the sense of 'within the realm of one's experience'",
+      "guidance": "experiential ever-in-life: prefer 'Have you ever …?' (e.g. 'Have you ever seen a comet?')"
     },
     {
       "abbrev": "IRP",
       "name": "Interruptive",
       "category": "Aspect",
-      "description": "interrupted partway"
+      "description": "interrupted partway",
+      "explanation": "Translates English 'to get interrupted while X-ing' or 'to X only so far or so much before having to stop'",
+      "guidance": "interruptive broken-by: prefer 'was interrupted by X' (e.g. 'the meeting was interrupted by an alarm')"
     },
     {
       "abbrev": "PMP",
       "name": "Preemptive",
       "category": "Aspect",
-      "description": "preemptive — before another can"
+      "description": "preemptive — before another can",
+      "explanation": "Emphasizes the singularity and initial occurrence an action, state or event",
+      "guidance": "preemptive first-time/at-last milestone: prefer 'finally/for the first time' milestone reading (e.g. 'the apprentice finally soloed')—not mere delay"
     },
     {
       "abbrev": "CLM",
       "name": "Climactic",
       "category": "Aspect",
-      "description": "climactic — peak moment"
+      "description": "climactic — peak moment",
+      "explanation": "Emphasizes the finality of an action, state or event",
+      "guidance": "climactic last-straw: prefer 'for the last time' culminating warning (e.g. 'you've lied for the last time')"
     },
     {
       "abbrev": "DLT",
       "name": "Dilatory",
       "category": "Aspect",
-      "description": "long-delayed"
+      "description": "long-delayed",
+      "explanation": "Translates English '(be) long-delay(ed) in being/doing X'",
+      "guidance": "long delay: with CPT-'seek'+AFM, keep both long-delay and certainty—do not collapse to bare 'finally'"
     },
     {
       "abbrev": "TMP",
       "name": "Temporary",
       "category": "Aspect",
-      "description": "temporary"
+      "description": "temporary",
+      "explanation": "Conveys that an action, state or event is being considered or is applicable only to the present subjective context",
+      "guidance": "temporary present-context only: prefer \"for the time being\" / \"for now\"—do not drop the temporary sense"
     },
     {
       "abbrev": "XPD",
       "name": "Expenditive",
       "category": "Aspect",
-      "description": "expended / used up"
+      "description": "expended / used up",
+      "explanation": "Conveys an all-consuming action, state, or event which interferes with or prevents other events from occurring",
+      "guidance": "expenditive wasteful spending of time/resource: prefer 'wastes time/resources X-ing' (e.g. 'wastes hours on idle speculation')"
     },
     {
       "abbrev": "LIM",
       "name": "Limitative",
       "category": "Aspect",
-      "description": "limitative — just in time"
+      "description": "limitative — just in time",
+      "explanation": "Translates English 'to be/do X (just) in time' indicating an act/event that culminates an anticipatory context",
+      "guidance": "limitative just-in-time boundary: prefer 'just in time to …' (e.g. 'left just in time to avoid the storm')"
     },
     {
       "abbrev": "EPD",
       "name": "Expeditive",
       "category": "Aspect",
-      "description": "expeditive — promptly"
+      "description": "expeditive — promptly",
+      "explanation": "Conveys a sense of haste associated with an action or event",
+      "guidance": "expeditive hurried manner: prefer 'in a hurry' / 'hastily' (e.g. 'they packed in a hurry')"
     },
     {
       "abbrev": "PTC",
       "name": "Protractive",
       "category": "Aspect",
-      "description": "protractive — taking one's time"
+      "description": "protractive — taking one's time",
+      "explanation": "Conveys that an action, state or event takes place over a long period of time",
+      "guidance": "protractive long-ongoing: prefer 'for quite a while' / extended duration so far (e.g. 'it's been snowing for quite a while')"
     },
     {
       "abbrev": "PPR",
       "name": "Preparatory",
       "category": "Aspect",
-      "description": "preparatory — in preparation"
+      "description": "preparatory — in preparation",
+      "explanation": "Conveys that an action, state or event exists or takes place in advance of another",
+      "guidance": "preparatory in-advance: prefer 'planned/prepared X in advance' (e.g. 'they planned the route in advance')"
     },
     {
       "abbrev": "DCL",
       "name": "Disclusive",
       "category": "Aspect",
-      "description": "disclusive — without doing"
+      "description": "disclusive — without doing",
+      "explanation": "Focuses on the revelatory nature of an action, state or event",
+      "guidance": "revelatory frame: prefer \"it turns out …\" / \"as it turns out\"—do not omit the revelatory matrix"
     },
     {
       "abbrev": "CCL",
       "name": "Conclusive",
       "category": "Aspect",
-      "description": "conclusive — finally"
+      "description": "conclusive — finally",
+      "explanation": "Conveys the direct outcome of an action, state or event within the short-term context of the situation at hand",
+      "guidance": "conclusive ended-up result: prefer 'we've ended up …' / final landing (e.g. 'we've ended up in the old district')"
     },
     {
       "abbrev": "CUL",
       "name": "Culminative",
       "category": "Aspect",
-      "description": "culminative — having reached completion"
+      "description": "culminative — having reached completion",
+      "explanation": "Similar to the conclusive above, but with a focus on the eventual, long-term outcome over an extended period of time",
+      "guidance": "culminative eventual outcome: prefer 'eventually wound up …' (e.g. 'we eventually wound up in the old district')—contrast CCL's more final 'ended up'"
     },
     {
       "abbrev": "IMD",
@@ -1195,31 +1447,41 @@
       "abbrev": "TRD",
       "name": "Tardative",
       "category": "Aspect",
-      "description": "tardative — late, delayed"
+      "description": "tardative — late, delayed",
+      "explanation": "Conveys the idea that an action, state, or event lessens, dwindles, or slackens in energy, intensity, or effect",
+      "guidance": "tardative gradual waning: prefer progressive decline over time (e.g. 'enthusiasm wanes as the years go by')"
     },
     {
       "abbrev": "TNS",
       "name": "Transitional",
       "category": "Aspect",
-      "description": "transitional"
+      "description": "transitional",
+      "explanation": "Focuses on the initial stage of preparation, adjustment, or accustomization to an action, state or event",
+      "guidance": "transitional taking-up new state: prefer 'has taken up X as …' (e.g. 'has taken up painting as a pastime')"
     },
     {
       "abbrev": "ITC",
       "name": "Intercommutative",
       "category": "Aspect",
-      "description": "intercommutative — back and forth"
+      "description": "intercommutative — back and forth",
+      "explanation": "Conveys the idea of \"sequential reciprocity,\" meaning that the action or event is a consequent reciprocation triggered by, or in reaction to, an initiating action or event",
+      "guidance": "intercommutative mutual return-act: prefer reciprocal 'X back' (e.g. 'couldn't help but glance back with curiosity')"
     },
     {
       "abbrev": "MTV",
       "name": "Motive",
       "category": "Aspect",
-      "description": "motive — out of habit/inclination"
+      "description": "motive — out of habit/inclination",
+      "explanation": "Conveys that an action, state or event involves physical removal or absence of the participant from the present context of discourse",
+      "guidance": "motive let's-head-off: prefer hortative motion 'let's head off to X' (e.g. 'let's head off to the coast')"
     },
     {
       "abbrev": "SQN",
       "name": "Sequential",
       "category": "Aspect",
-      "description": "sequential — one after another"
+      "description": "sequential — one after another",
+      "explanation": "conveys the idea a \"sequential progressive\" in which a series of contextually identical instances is seen as comprising a single event",
+      "guidance": "sequential one-by-one: prefer 'one by one' / itemized sequence (e.g. 'checked each box one by one')"
     },
     {
       "abbrev": "FAC",
@@ -1303,103 +1565,137 @@
       "abbrev": "DIR",
       "name": "Directive",
       "category": "Illocution",
-      "description": "I direct / command"
+      "description": "I direct / command",
+      "explanation": "the statement is either an imperative command to another party to do/be something, or a \"commissive\" statement committing the speaker to a specific state or course of action",
+      "guidance": "directive command: prefer imperative to the addressee (e.g. 'Walk away from the platform!')"
     },
     {
       "abbrev": "DEC",
       "name": "Declarative",
       "category": "Illocution",
-      "description": "I declare (performative)"
+      "description": "I declare (performative)",
+      "explanation": "a \"performative\" statement which. by its utterance/publication, creates a change of state (at least psychologically) for the addressees",
+      "guidance": "do not add a matrix 'I hereby declare that…' clause; prefer direct announcement/presentation force (e.g. 'Here's…' / 'We have…' / 'What a…!'); with compete.to.win+ACCESSOR-IND+SLF:BEN, announce the winner in 2nd/3rd-person presentation force—never 1st-person 'I declare myself the winner' / 'I've won'"
     },
     {
       "abbrev": "IRG",
       "name": "Interrogative",
       "category": "Illocution",
-      "description": "I ask"
+      "description": "I ask",
+      "explanation": "a statement whose purpose is to inquire or seek information from the addressee",
+      "guidance": "interrogative content question: keep wh-question force on the queried relation/time/place"
     },
     {
       "abbrev": "VER",
       "name": "Verificative",
       "category": "Illocution",
-      "description": "I ask for confirmation (yes/no question)"
+      "description": "I ask for confirmation (yes/no question)",
+      "explanation": "a statement whose purpose is to seek/obtain corroboration, confirmation, or verification",
+      "guidance": "verificative yes/no check: prefer a polar question seeking confirmation (e.g. 'Are the guests ready?')"
     },
     {
       "abbrev": "ADM",
       "name": "Admonitive",
       "category": "Illocution",
-      "description": "I warn / advise against"
+      "description": "I warn / advise against",
+      "explanation": "a statement whose purpose is to provide advisory/admonitive information to the addressee",
+      "guidance": "admonitive warning: prefer 'Beware of …!' / warning imperative (e.g. 'Beware of thin ice!')"
     },
     {
       "abbrev": "POT",
       "name": "Potentiative",
       "category": "Illocution",
-      "description": "I wish / hope (unrealized)"
+      "description": "I wish / hope (unrealized)",
+      "explanation": "a statement of wishing, hoping, or other unreal(ized) provenance",
+      "guidance": "when OBG (must/have to) + ACT co-occur, prefer obligation (\"must\") over stacking \"hope\" from POT"
     },
     {
       "abbrev": "HOR",
       "name": "Hortative",
       "category": "Illocution",
-      "description": "I wish it were so (counterfactual)"
+      "description": "I wish it were so (counterfactual)",
+      "explanation": "a counterfactual statement indicating a desired but impossible state of affairs that cannot be realized",
+      "guidance": "counterfactual wish: \"If only …\"; with NEG on pathogen stem + ADI illness, the wish is that the ABS party GET the disease—not that they remain not-ill"
     },
     {
       "abbrev": "CNJ",
       "name": "Conjectural",
       "category": "Illocution",
-      "description": "I conjecture"
+      "description": "I conjecture",
+      "explanation": "Equivalent to an English-language \"if\"-clause, indicating that the statement is offered as a conjectured hypothetical",
+      "guidance": "conjectural if-then speculation: prefer 'If you …, there'll be …' conjectural consequence (e.g. 'If you enter the cave, there'll be no easy return')"
     },
     {
       "abbrev": "OBS",
       "name": "Observational",
       "category": "Validation",
-      "description": "present sensory knowledge — I perceive / I know"
+      "description": "present sensory knowledge — I perceive / I know",
+      "explanation": "present sensory knowledge or present sensory experience",
+      "guidance": "epistemic source; do not add a separate \"I perceive that…\" matrix clause when the clause already has an explicit case-marked subject; on impersonal/eventive clauses with no case-marked actor, prefer 'takes place' / 'there's … going on' — do not add 'is observed'"
     },
     {
       "abbrev": "REC",
       "name": "Recollective",
       "category": "Validation",
-      "description": "past sensory memory — I remember"
+      "description": "past sensory memory — I remember",
+      "explanation": "past sensory knowledge or past sensory experience — the speaker's knowledge derives from prior direct perception or memory rather than present observation",
+      "guidance": "recollective remembered knowledge: keep as recalled fact (e.g. 'A lived longer than B…' as remembered), not newly inferred"
     },
     {
       "abbrev": "PUP",
       "name": "Purportive",
       "category": "Validation",
-      "description": "from a verifiable source — I've read / an expert says"
+      "description": "from a verifiable source — I've read / an expert says",
+      "explanation": "knowledge from a definitive/(quasi-)verifiable 3rd party source",
+      "guidance": "purportive alleged/yet-to: prefer 'had not yet …' / purported timeline claim (e.g. 'cities had not yet formed in that era')"
     },
     {
       "abbrev": "RPR",
       "name": "Reportive",
       "category": "Validation",
-      "description": "hearsay — I heard / someone says"
+      "description": "hearsay — I heard / someone says",
+      "explanation": "knowledge from a 3rd party",
+      "guidance": "reportive hearsay: prefer a hearsay matrix ('I'm told…' / 'I hear…') before the reported clause"
     },
     {
       "abbrev": "USP",
       "name": "Unspecified",
       "category": "Validation",
-      "description": "validation deliberately unspecified"
+      "description": "validation deliberately unspecified",
+      "explanation": "Validation deliberately unspecified — the speaker makes no commitment as to the epistemic source or evidentiary basis for the statement",
+      "guidance": "unspecified validation: no special evidential matrix—render the clause plainly (e.g. a plain milestone statement)"
     },
     {
       "abbrev": "IMA",
       "name": "Imaginary",
       "category": "Validation",
-      "description": "unreal — imagination, dream, fantasy"
+      "description": "unreal — imagination, dream, fantasy",
+      "explanation": "unreal statement, not intended as true, based on whim, imagination, dream, altered mental state, etc.",
+      "guidance": "imaginary validation: treat as imagined/unreal (e.g. 'there's a dragon in the attic' as imaginary)"
     },
     {
       "abbrev": "CVN",
       "name": "Conventional",
       "category": "Validation",
-      "description": "shared cultural knowledge — they say / it is said"
+      "description": "shared cultural knowledge — they say / it is said",
+      "explanation": "cultural/conventional (i.e., collectively agreed-upon) knowledge",
+      "guidance": "often surfaces as \"They say…\" / \"It is said…\""
     },
     {
       "abbrev": "ITU",
       "name": "Intuitive",
       "category": "Validation",
-      "description": "intuition / hunch — I feel / something tells me"
+      "description": "intuition / hunch — I feel / something tells me",
+      "explanation": "intuition, hunch, subjective feeling, past experiences, etc.",
+      "guidance": "When ITU validates a modal/nomic formative with ACT (no separate speaker formative), render speaker intuition with a matrix like 'I think…' (do not omit it). When a case-marked subject already carries perceptual content (OBS/see patterns), omit redundant matrix 'I think/feel'."
     },
     {
       "abbrev": "INF",
       "name": "Inferential",
       "category": "Validation",
-      "description": "inferred from evidence — I infer / I reason"
+      "description": "inferred from evidence — I infer / I reason",
+      "explanation": "inference from evidence (or absence of alternatives), induction, extrapolation, etc.",
+      "guidance": "inferential must-be: prefer 'must be …' inference (e.g. 'the guests must be ready')"
     },
     {
       "abbrev": "DOL",
@@ -1469,7 +1765,9 @@
       "name": "Anticipative",
       "category": "Bias",
       "form": "lst",
-      "description": "I'm looking forward to this!"
+      "description": "I'm looking forward to this!",
+      "explanation": "Form: lst. 'I'm looking foward to this!'",
+      "guidance": "anticipative bias: speaker anticipation/expectation color (e.g. anticipatory 'I…' / awaiting tone)—do not invent extra propositions"
     },
     {
       "abbrev": "DPB",
@@ -1490,7 +1788,9 @@
       "name": "Indignative",
       "category": "Bias",
       "form": "pšš",
-      "description": "the nerve! / how dare...!"
+      "description": "the nerve! / how dare...!",
+      "explanation": "Form: pšç. 'The nerve!' or 'How dare…!?\"",
+      "guidance": "indignative bias: offense/affront (e.g. 'The nerve!')"
     },
     {
       "abbrev": "EXA",
@@ -1504,7 +1804,9 @@
       "name": "Repulsive",
       "category": "Bias",
       "form": "šštļ",
-      "description": "yuck! / ew! / how gross!"
+      "description": "yuck! / ew! / how gross!",
+      "explanation": "Form: šš. 'Yuck! Ew! How gross!'",
+      "guidance": "repulsive bias: disgust (e.g. 'Yuck! How gross!')"
     },
     {
       "abbrev": "IVD",
@@ -1560,7 +1862,9 @@
       "name": "Euphoric",
       "category": "Bias",
       "form": "gzz",
-      "description": "(sigh) what bliss!"
+      "description": "(sigh) what bliss!",
+      "explanation": "Form: gzz. '(Sigh) What bliss!'",
+      "guidance": "euphoric bias: blissful affect (e.g. '(Sigh) What bliss!')"
     },
     {
       "abbrev": "GRT",
@@ -1581,7 +1885,9 @@
       "name": "Delectative",
       "category": "Bias",
       "form": "ẓmm",
-      "description": "whee!"
+      "description": "whee!",
+      "explanation": "Form: ẓm. 'Whee!'",
+      "guidance": "delectative bias: playful delight (e.g. 'Whee!' / gleeful tone)"
     },
     {
       "abbrev": "IFT",
@@ -1595,7 +1901,9 @@
       "name": "Solicitative",
       "category": "Bias",
       "form": "ňňs",
-      "description": "please"
+      "description": "please",
+      "explanation": "Form: ňň. 'please'",
+      "guidance": "solicitative bias: please/request softener (e.g. 'please')"
     },
     {
       "abbrev": "RAC",
@@ -1616,7 +1924,9 @@
       "name": "Exigent",
       "category": "Bias",
       "form": "rrs",
-      "description": "it's now or never!"
+      "description": "it's now or never!",
+      "explanation": "Form: rrs. 'It's now or never!'",
+      "guidance": "exigent bias: urgent/pressing tone on the clause (e.g. clipped urgency)—do not invent a new main verb"
     },
     {
       "abbrev": "ATE",
@@ -1742,7 +2052,9 @@
       "name": "Coincidental",
       "category": "Bias",
       "form": "ššč",
-      "description": "what a coincidence!"
+      "description": "what a coincidence!",
+      "explanation": "Form: šš. 'What a coincidence!'",
+      "guidance": "coincidental bias: prefer coincidence framing (e.g. 'What a coincidence!')"
     },
     {
       "abbrev": "FOR",
@@ -1819,7 +2131,9 @@
       "name": "Dejective",
       "category": "Bias",
       "form": "žžg",
-      "description": "(sigh) — dejection / disillusionment"
+      "description": "(sigh) — dejection / disillusionment",
+      "explanation": "Form: žž. '(sigh)' [of dejection/disillusionment]",
+      "guidance": "dejective bias: weary/sigh affect (e.g. a parenthetical sigh)—do not add propositional content"
     },
     {
       "abbrev": "ADS",
@@ -1839,7 +2153,9 @@
       "name": "Discursive",
       "category": "Register",
       "form": "ha",
-      "description": "direct speech (quotation)"
+      "description": "direct speech (quotation)",
+      "explanation": "Indicates a phrase/statement represents direct speech",
+      "guidance": "discursive adjunct: marks quoted/spoken discourse stretch (e.g. turned and said \"…\")—keep as speech framing"
     },
     {
       "abbrev": "PNT",
@@ -1860,7 +2176,9 @@
       "name": "Exemplificative",
       "category": "Register",
       "form": "ho",
-      "description": "giving an example"
+      "description": "giving an example",
+      "explanation": "Indicates the word/phrase constitutes an illustrative example for the preceding formative or phrase. Translates a clause in English beginning with 'for example,...'",
+      "guidance": "exemplificative adjunct: prefer 'for example, …' / 'e.g. …'"
     },
     {
       "abbrev": "CGT",
@@ -1883,7 +2201,9 @@
     {
       "abbrev": "QUO",
       "category": "CarrierType",
-      "form": "hm"
+      "form": "hm",
+      "explanation": "This adjunct combines the Carrier Adjunct with the discursive Register Adjunct to allow direct quotes to be placed within a case-frame, useful for translating imbedded quotes within sentences such as He told me \"get out of the house!\"",
+      "guidance": "quotative adjunct: marks verbatim quote content (e.g. a commanded 'leave the room!')—keep quote force"
     },
     {
       "abbrev": "NAM",
@@ -1894,6 +2214,302 @@
       "abbrev": "PHR",
       "category": "CarrierType",
       "form": "hň"
+    }
+  ],
+  "topics": [
+    {
+      "key": "OBS",
+      "category": "VK Affix",
+      "name": "observational",
+      "explanation": "present sensory knowledge or present sensory experience: \"I perceive... / I know...\"",
+      "guidance": "epistemic source; do not force a matrix \"I perceive that…\" when another party is the case-marked subject; on impersonal/eventive clauses with no case-marked actor, prefer 'takes place' / 'there's … going on' — do not add 'is observed'"
+    },
+    {
+      "key": "REC",
+      "category": "VK Affix",
+      "name": "recollective",
+      "explanation": "past sensory knowledge or past sensory experience – \"I remember... / I know (from memory)...\"",
+      "guidance": "recollective remembered knowledge: keep as recalled fact (e.g. 'A lived longer than B…' as remembered), not newly inferred"
+    },
+    {
+      "key": "PUP",
+      "category": "VK Affix",
+      "name": "purportive",
+      "explanation": "knowledge from a definitive/(quasi-)verifiable 3rd party source: \"I've read... / (an expert) has said...\"",
+      "guidance": "purportive alleged/yet-to: prefer 'had not yet …' / purported timeline claim (e.g. 'cities had not yet formed in that era')"
+    },
+    {
+      "key": "RPR",
+      "category": "VK Affix",
+      "name": "reportive",
+      "explanation": "knowledge from a 3rd party: \"I heard (from someone)... / someone has said...\"",
+      "guidance": "reportive hearsay: prefer a hearsay matrix ('I'm told…' / 'I hear…') before the reported clause"
+    },
+    {
+      "key": "USP",
+      "category": "VK Affix",
+      "name": "unspecified",
+      "explanation": "Validation deliberately unspecified — the speaker makes no commitment as to the epistemic source or evidentiary basis for the statement",
+      "guidance": "unspecified validation: no special evidential matrix—render the clause plainly (e.g. a plain milestone statement)"
+    },
+    {
+      "key": "IMA",
+      "category": "VK Affix",
+      "name": "imaginary",
+      "explanation": "unreal statement, not intended as true, based on whim, imagination, dream, altered mental state, etc.",
+      "guidance": "imaginary validation: treat as imagined/unreal (e.g. 'there's a dragon in the attic' as imaginary)"
+    },
+    {
+      "key": "ITU",
+      "category": "VK Affix",
+      "name": "intuitive",
+      "explanation": "intuition, hunch, subjective feeling, past experiences, etc. – \"I feel... / I have a hunch... / something tells me...\"",
+      "guidance": "When ITU validates a modal/nomic formative with ACT (no separate speaker formative), render speaker intuition with a matrix like 'I think…' (do not omit it). When a case-marked subject already carries perceptual content, omit redundant matrix 'I think/feel'."
+    },
+    {
+      "key": "INF",
+      "category": "VK Affix",
+      "name": "inferential",
+      "explanation": "inference from evidence (or absence of alternatives), induction, extrapolation, etc. \"I infer... / I reason...\"",
+      "guidance": "inferential must-be: prefer 'must be …' inference (e.g. 'the guests must be ready')"
+    },
+    {
+      "key": "DIR",
+      "category": "VK Affix",
+      "name": "directive",
+      "explanation": "the statement is either an imperative command to another party to do/be something, or a \"commissive\" statement committing the speaker to a specific state or course of action (i.e., a vow, promise, guarantee, etc.)",
+      "guidance": "directive command: prefer imperative to the addressee (e.g. 'Walk away from the platform!')"
+    },
+    {
+      "key": "DEC",
+      "category": "VK Affix",
+      "name": "declarative",
+      "explanation": "a \"performative\" statement which. by its utterance/publication, creates a change of state (at least psychologically) for the addressees (i.e., a declaration, announcement, edict, etc.)",
+      "guidance": "do not add a matrix 'I hereby declare that…' clause; prefer direct announcement/presentation force (e.g. 'Here's…' / 'We have…' / 'What a…!'); with compete.to.win+ACCESSOR-IND+SLF:BEN, announce the winner in 2nd/3rd-person presentation force—never 1st-person 'I declare myself the winner' / 'I've won'"
+    },
+    {
+      "key": "IRG",
+      "category": "VK Affix",
+      "name": "interrogative",
+      "explanation": "a statement whose purpose is to inquire or seek information from the addressee (i.e., equivalent to an English WH-question) -- see Sec. 10.6 for further explanation on the use of IRG Illocution",
+      "guidance": "interrogative content question: keep wh-question force on the queried relation/time/place"
+    },
+    {
+      "key": "VER",
+      "category": "VK Affix",
+      "name": "verificative",
+      "explanation": "a statement whose purpose is to seek/obtain corroboration, confirmation, or verification (i.e., equivalent to a Yes/No question)",
+      "guidance": "verificative yes/no check: prefer a polar question seeking confirmation (e.g. 'Are the guests ready?')"
+    },
+    {
+      "key": "ADM",
+      "category": "VK Affix",
+      "name": "admonitive",
+      "explanation": "a statement whose purpose is to provide advisory/admonitive information to the addressee (i.e., a warning)",
+      "guidance": "admonitive warning: prefer 'Beware of …!' / warning imperative (e.g. 'Beware of thin ice!')"
+    },
+    {
+      "key": "POT",
+      "category": "VK Affix",
+      "name": "potentiative",
+      "explanation": "a statement of wishing, hoping, or other unreal(ized) provenance",
+      "guidance": "when OBG (must/have to) + ACT co-occur, prefer obligation (\"must\") over stacking \"hope\" from POT"
+    },
+    {
+      "key": "HOR",
+      "category": "VK Affix",
+      "name": "hortative",
+      "explanation": "a counterfactual statement indicating a desired but impossible state of affairs that cannot be realized (equivalent to English hortative constructions such as If only..., Were that..., If only it were so that...)",
+      "guidance": "counterfactual wish: \"If only …\"; with NEG on pathogen stem + ADI illness, the wish is that the ABS party GET the disease—not that they remain not-ill"
+    },
+    {
+      "key": "CNJ",
+      "category": "VK Affix",
+      "name": "conjectural",
+      "explanation": "Equivalent to an English-language \"if\"-clause, indicating that the statement is offered as a conjectured hypothetical, ostensibly to be followed by a \"then...\" implicational clause. Translatable as \"If (it were the case that)...\"",
+      "guidance": "conjectural if-then speculation: prefer 'If you …, there'll be …' conjectural consequence (e.g. 'If you enter the cave, there'll be no easy return')"
+    },
+    {
+      "key": "frame",
+      "category": "Case-Frame",
+      "name": "case-frame",
+      "explanation": "The New Ithkuil equivalent to relative or subordinate clauses is known as a case-frame, or simply, frame.",
+      "guidance": "case-frame: subordinate temporal/circumstantial frame for the main clause (e.g. 'After the workers finish the shift, they must …')—keep frame as adjunct, not the main predicate"
+    },
+    {
+      "key": "DSP",
+      "category": "Case-Frame",
+      "name": "descriptive case",
+      "explanation": "a noun in the descriptive case, which operates like RELATIVE case for adjectival clauses",
+      "guidance": "descriptive case-frame: relative/descriptive clause characterizing the head (e.g. 'bird-watching hikers tend to wake early')—do not promote the frame to a main-clause only reading"
+    },
+    {
+      "key": "V",
+      "category": "Slot V affixes",
+      "name": "Slot V affixes",
+      "explanation": "Slot V affixes: If a CA complex is present in Slot VI of the formative, any Slot V affixes are shownin reversed form: -CSVX-; however, if the Slot IV VR and Slot VI CA complex have been elided as indicated by Slot I (see Sec._3.10 on \"short-cut\" formatives), then any Slot V affixes are shown in the standard form -VXCS-. As detailed earlier in Sec. 3.6.1, the presence of a Slot V affix requires any Slot VI CA complex to be geminated. ALSO: The semantic scope of any Slot V affixes applies only to the formative Stem, not to its Slot VI CA affix-complex (i.e., the various meanings of the CA affix-complex are applied to the formative stem AFTER the stem has first been modified by its Slot V affixes).",
+      "guidance": "Slot V affix string: affixes before Ca; e.g. size+configuration stacked on a stem ('a group of large but otherwise dissimilar boxes')"
+    },
+    {
+      "key": "VII",
+      "category": "Slot VII affixes",
+      "name": "Slot VII affixes",
+      "explanation": "Slot VII affixes are shown in standard form -VXCS- form, and apply to both the stem AND its CA affix-complex (i.e., the meanings of the CA affix-complex are applied to the formative stem first, then the resulting stem+CA complex is then modified by any Slot VII affixes). Note that in the absence of any Slot V affix(es), the presence of any Slot VII affix(es) does not trigger the gemination of any Slot VI CA complex.",
+      "guidance": "Slot VII affix string: affixes after Ca; e.g. quantity stacked outside configuration ('a large group of dissimilar boxes')"
+    },
+    {
+      "key": "pur",
+      "category": "Associative Case",
+      "name": "purposive",
+      "explanation": "The entity/act/event which constitutes the inherent/innate/intrinsic purpose of another entity/act/event",
+      "guidance": "purposive function-as-name: English often names the tool by purpose (e.g. 'a watering can')"
+    },
+    {
+      "key": "ERG1",
+      "category": "Case-Accessor Affix",
+      "name": "Type-1",
+      "explanation": "Type-1 case-accessor affix for ergative case",
+      "guidance": "Type-1 ergative accessor: circumstantial agent — prefer 'the party who did X' / 'whoever caused X' (not a lexicalized role noun yet)"
+    },
+    {
+      "key": "ERG2",
+      "category": "Case-Accessor Affix",
+      "name": "Type-2",
+      "explanation": "Type-2 case-accessor affix for ergative case",
+      "guidance": "Type-2 ergative accessor: prefer a lexicalized agent noun when English has one (perpetrator/culprit/author)—not a bare relative 'who did…'"
+    },
+    {
+      "key": "PDC1",
+      "category": "Case-Accessor Affix",
+      "name": "Type-1",
+      "explanation": "Type-1 case-accessor affix for productive case",
+      "guidance": "Type-1 productive accessor: circumstantial creator — prefer 'the one who designed/produced X'"
+    },
+    {
+      "key": "PDC2",
+      "category": "Case-Accessor Affix",
+      "name": "Type-2",
+      "explanation": "Type-2 case-accessor affix for productive case",
+      "guidance": "Type-2 productive accessor: prefer a lexicalized creator noun (architect/author/composer of X) when English has one"
+    },
+    {
+      "key": "CPS1",
+      "category": "Case-Accessor Affix",
+      "name": "Type-1",
+      "explanation": "Type-1 case-accessor affix for compositive case",
+      "guidance": "Type-1 compositive accessor: circumstantial material — prefer 'what X is made out of'"
+    },
+    {
+      "key": "CPS2",
+      "category": "Case-Accessor Affix",
+      "name": "Type-2",
+      "explanation": "Type-2 case-accessor affix for compositive case",
+      "guidance": "Type-2 compositive accessor: prefer a lexicalized materials NP ('X's construction materials' / 'X's makeup')"
+    },
+    {
+      "key": "COM1",
+      "category": "Case-Accessor Affix",
+      "name": "Type-1",
+      "explanation": "Type-1 inverse case-accessor affix for comitative case",
+      "guidance": "Type-1 comitative accessor: circumstantial companion — prefer 'the one whom Y is with'"
+    },
+    {
+      "key": "COM2",
+      "category": "Case-Accessor Affix",
+      "name": "Type-2",
+      "explanation": "Type-2 inverse case-accessor affix for comitative case",
+      "guidance": "Type-2 comitative accessor: prefer a lexicalized companion role (chaperone/escort/companion) when English has one"
+    },
+    {
+      "key": "INVERSE.ACCESSOR:ERG1",
+      "category": "Case-Accessor Affix",
+      "name": "Type-1",
+      "explanation": "Type-1 inverse case-accessor affix for ergative case",
+      "guidance": "Type-1 inverse ergative accessor: what the absolutive party did to the ergative party — prefer 'what A did to B'"
+    },
+    {
+      "key": "ACCESSOR:INS3",
+      "category": "Case-Accessor Affix",
+      "name": "Type-3",
+      "explanation": "Type-3 case-accessor affix for instrumental case",
+      "guidance": "Type-3 instrumental accessor: instrument/means nominal scoped via Type-3 (e.g. 'that by which a calm outcome occurs')—not the stem alone"
+    },
+    {
+      "key": "INVERSE.ACCESSOR:INS3",
+      "category": "Case-Accessor Affix",
+      "name": "Type-3 inverse case-accessor",
+      "explanation": "Type-3 inverse case-accessor affix for instrumental case",
+      "guidance": "Type-3 inverse instrumental accessor: what the instrument is used for (e.g. 'what a calm outcome is used for')"
+    },
+    {
+      "key": "ACCESSOR:ERG3",
+      "category": "Case-Accessor Affix",
+      "name": "Type-3",
+      "explanation": "Type-3 case-accessor affix for ergative case",
+      "guidance": "nominal ergative agent of the stem: with upward.motion+DNG, agent who pushes (dangerously) upward—not the figure that merely moves upward"
+    },
+    {
+      "key": "INVERSE.ACCESSOR:ERG3",
+      "category": "Case-Accessor Affix",
+      "name": "Type-3 inverse case-accessor",
+      "explanation": "Type-3 inverse case-accessor affix for ergative case",
+      "guidance": "Type-3 inverse ergative accessor: patient/figure of the Type-3-scoped agentive act (e.g. 'that which one carefully lifts upward')"
+    },
+    {
+      "key": "ACCESSOR:PUR3",
+      "category": "Case-Accessor Affix",
+      "name": "Type-3",
+      "explanation": "Type-3 case-accessor affix for purposive case",
+      "guidance": "nominal purposive referent: with interfere+AUT, prefer a nominal 'purpose for [authorized interference]'—not adverbial 'for the purpose of…'"
+    },
+    {
+      "key": "INVERSE.ACCESSOR:PUR3",
+      "category": "Case-Accessor Affix",
+      "name": "Type-3 inverse case-accessor",
+      "explanation": "Type-3 inverse case-accessor affix for purposive case",
+      "guidance": "Type-3 inverse purposive accessor: purpose-of reading inverted (e.g. 'what using careful authority to intervene is for')"
+    },
+    {
+      "key": "CVS",
+      "category": "Case-Stacking Affix",
+      "name": "conversive",
+      "explanation": "Case-stacking affix used with conversive case; using the case-stacking affix on unframed verbal formatives can function as a substitute for case-frames",
+      "guidance": "conversive exception: prefer 'except X' / 'all but X' (e.g. 'everything was packed except the lamp')"
+    },
+    {
+      "key": "order",
+      "category": "Case-Stacking Affix",
+      "name": "ordering of the formatives",
+      "explanation": "ordering of formatives, placement of case-stacking affix, and use of TPF affix",
+      "guidance": "formative order/case-stacking: keep stacked modifiers aligned to the intended head (e.g. looking at a book about capturing animals)—do not reassign the about-clause to the wrong noun"
+    },
+    {
+      "key": "SIN",
+      "category": "Adjunct",
+      "name": "single-affix",
+      "explanation": "This adjunct associates a single VXCS affix to the following formative and provides scoping information over the formative's other VXCS affixes. The tell-tale sign of this adjunct is the V-C-(V) form containing only one full consonant-form. Examples: ač, iakse, etra, usmú, aull.",
+      "guidance": "single-affix adjunct: one VxCs affix only; keep that single modification (e.g. hurry alone → 'in a hurry')"
+    },
+    {
+      "key": "MUL",
+      "category": "Adjunct",
+      "name": "multiple-affix",
+      "explanation": "associates two or more affixes to a formative",
+      "guidance": "multiple-affix adjunct: stacked affixes; keep all stacked senses (e.g. timing+avoidance together → 'just in time to avoid …')"
+    },
+    {
+      "key": "MOD",
+      "category": "Adjunct",
+      "name": "modular",
+      "explanation": "has two slots corresponding to formative Slot VIII showing Valence, Phase, Level, or Effect, in combination with Mood/Case-Scope, or showing Aspect plus Mood/Case-Scope",
+      "guidance": "modular adjunct: mood/module bundle; keep modality+aspectual pieces (e.g. might + resume + random bursts)"
+    },
+    {
+      "key": "Type-2",
+      "category": "Construction",
+      "name": "Type-2 Concatenation",
+      "explanation": "Type-2 concatenation is derivational (i.e., lexicalizing), creating a new lexico-semantic gestalt usually requiring a different English translation.",
+      "guidance": "derivational concatenation: ROOT-'person'+child context often yields 'child' (not bare 'person'); prefer the lexicalized English reading"
     }
   ],
   "roots": [
