@@ -33,6 +33,12 @@ Each mark in the canonical gloss has exactly one job. A token's kind therefore f
 - `+` joins referents: `1m+2p`
 - `{}` marks something structural rather than a morpheme: `{Ca}`, `{parent}`
 - `[]` marks a word-level head that is not a root: `[QUO]`, `[1m+2p]`
+- `""` quotes text that is not Ithkuil, the foreign word a carrier adjunct introduces: `[CAR] "John"`
+- ` ` separates words: `[CAR] "John"`
+
+A space is what makes a token a token, so it is the one mark that cannot appear inside one. The §3.1 concatenation chain is the exception that proves it: a chain is a single hyphenated word, but its members are glossed as separate tokens, `T1-ml ml`, because each is a whole formative and hyphen is already spoken for. Nothing marks the join. A dependent carries a Slot I marker and a parent carries none, so a run of dependents closed by a plain formative is exactly one chain, and the reader recovers it without a sigil.
+
+The comma is not in this list, and is not gloss punctuation. It belongs to the digraph notation the root is spelled in, where `t,` is ţ, so `nt,l` is one root and not three slots.
 
 The rule is what keeps the syntax extensible. Anything that binds a case to a head reads `HEAD/CASE`, whether it comes from §3.9.2, §4.6.5, or the second referent of a §4.6.1 referential, so the three do not have to be told apart by name. A construct that would need a new sense of an existing mark needs a new mark instead.
 

@@ -63,9 +63,30 @@ func TestDocumentedSyntaxExamples(t *testing.T) {
 		"1m/BEN-ERG",       // "/" binds an effect to a referent
 		"1m-THM-[2m]/IND",  // "/" binds the second referent's own case
 		"1m-THM-ERG",       // a stacked second case, which binds to nothing
+		`"John"`,           // `""` quotes non-Ithkuil text
 	} {
 		if _, err := gloss.ParseWord(in, lex); err != nil {
 			t.Errorf("documented example %q does not parse: %v", in, err)
+		}
+	}
+
+	// Span-level examples, where the mark is the space between tokens.
+	// ParseWord cannot read these by construction, which is the point.
+	for _, in := range []struct {
+		gloss string
+		words int
+	}{
+		{`[CAR] "John"`, 2}, // " " separates words
+		{"T1-ml ml", 1},     // ...except inside a chain, which rejoins
+	} {
+		got, err := gloss.ParseText(in.gloss, lex)
+		if err != nil {
+			t.Errorf("documented example %q does not parse: %v", in.gloss, err)
+			continue
+		}
+		if len(got) != in.words {
+			t.Errorf("documented example %q is %d words, want %d",
+				in.gloss, len(got), in.words)
 		}
 	}
 }

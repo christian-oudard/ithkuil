@@ -271,8 +271,18 @@ func TestParse_ShortFlag(t *testing.T) {
 // What --short prints has to compose back to the word it came from.
 // That is the whole claim the view makes, and nothing checked it while
 // the view was printing a rendering no parser accepted.
+// Each word is given in its canonical spelling, so the trip out and
+// back is an identity rather than a canonicalization.
+//
+// "hamlal-mlala" is here because a §3.1 chain is the one word whose
+// gloss is not a single token: its members are separated by a space.
+// compose read its argument with gloss.ParseWord, which takes one
+// token, so the chain gloss this very test would produce was the one
+// string compose could not read back. The list had no chain in it.
 func TestParse_ShortRoundTripsThroughCompose(t *testing.T) {
-	for _, word := range []string{"malëuţřait", "hla", "la", "mlala", "lo"} {
+	for _, word := range []string{
+		"malëuţřait", "hla", "la", "mlala", "lo", "hamlal-mlala",
+	} {
 		out, _, code := runCLI("-data", dataFile(), "parse", "--short", word)
 		if code != 0 {
 			t.Errorf("parse --short %q exit %d: %s", word, code, out)
