@@ -1,7 +1,9 @@
 // Package lexicon loads Ithkuil V4 roots and affixes and exposes
-// lookup by consonant form. Use Load to read from a JSON data file
-// (data/data.json), or LoadFromStore to populate from an open SQLite
-// store (data/data.db).
+// lookup by consonant form. Load reads a JSON data file
+// (data/data.json); store.LoadLexicon reads the SQLite store. The
+// store direction lives there rather than here so that this package
+// carries no database driver: the driver has no js/wasm build, and a
+// browser has no file to open anyway.
 package lexicon
 
 import (
@@ -9,8 +11,6 @@ import (
 	"fmt"
 	"os"
 	"regexp"
-
-	"github.com/christian-oudard/ithkuil/store"
 )
 
 // RootEntry pairs a root consonant cluster with its four-stem meaning
@@ -75,41 +75,12 @@ func Load(path string) (*Lexicon, error) {
 	if err != nil {
 		return nil, fmt.Errorf("load lexicon: %w", err)
 	}
-	return parseLexicon(b)
+	return Parse(b)
 }
 
-// LoadFromStore reads all roots and affixes from an open store into
-// an in-memory Lexicon. Use this when you need map-based access across
-// many lookups (e.g. analysis of a full document). Version is left
-// zero since the store does not record a version.
-func LoadFromStore(s *store.Store) (*Lexicon, error) {
-	sr, err := s.AllRoots()
-	if err != nil {
-		return nil, fmt.Errorf("load roots from store: %w", err)
-	}
-	sa, err := s.AllAffixes()
-	if err != nil {
-		return nil, fmt.Errorf("load affixes from store: %w", err)
-	}
-	roots := make(map[string]RootEntry, len(sr))
-	for _, r := range sr {
-		roots[r.Cr] = RootEntry{
-			Cr: r.Cr, Stem0: r.Stem0, Stem1: r.Stem1,
-			Stem2: r.Stem2, Stem3: r.Stem3,
-			Contential: r.Contential, Constitutive: r.Constitutive,
-			Objective: r.Objective, Completive: r.Completive,
-			Dynamic: r.Dynamic, Wikidata: r.Wikidata,
-		}
-	}
-	affixes := make(map[string]AffixEntry, len(sa))
-	for _, a := range sa {
-		affixes[a.Cs] = AffixEntry{
-			Cs: a.Cs, Abbrev: a.Abbrev, Description: a.Description,
-			Type: a.Type, Degrees: a.Degrees,
-		}
-	}
-	return &Lexicon{Roots: roots, Affixes: affixes}, nil
-}
+// Parse reads the same JSON as Load from memory, for callers that
+// fetched the bytes rather than opening a file.
+func Parse(buf []byte) (*Lexicon, error) { return parseLexicon(buf) }
 
 // Category-valued affixes (MCS, PHS, AP1-4, IVL, LVL, VAL) write their
 // degree descriptions as "(CODE) Full Name", where CODE is the 2-4

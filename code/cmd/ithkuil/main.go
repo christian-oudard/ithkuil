@@ -137,7 +137,7 @@ func loadLex(dataFile string, stderr io.Writer) *lexicon.Lexicon {
 		return nil
 	}
 	defer s.Close()
-	lex, err := lexicon.LoadFromStore(s)
+	lex, err := store.LoadLexicon(s)
 	if err != nil {
 		fmt.Fprintf(stderr, "warning: lexicon load failed (%v); continuing without lexicon\n", err)
 		return nil

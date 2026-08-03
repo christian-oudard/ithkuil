@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/phonology"
 	"github.com/christian-oudard/ithkuil/store"
 )
@@ -38,7 +37,7 @@ func TestLexiconSweep(t *testing.T) {
 	if err != nil {
 		t.Skip("no data store; run tools/build_db.py")
 	}
-	lex, err := lexicon.LoadFromStore(st)
+	lex, err := store.LoadLexicon(st)
 	if err != nil {
 		t.Fatal(err)
 	}

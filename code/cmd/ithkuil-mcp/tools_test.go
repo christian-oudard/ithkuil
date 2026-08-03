@@ -24,7 +24,7 @@ func testServer(t *testing.T) *server {
 		t.Skipf("no data store at %s; run tools/build_db.py", store.DefaultPath())
 	}
 	t.Cleanup(func() { st.Close() })
-	lex, err := lexicon.LoadFromStore(st)
+	lex, err := store.LoadLexicon(st)
 	if err != nil {
 		t.Fatalf("load lexicon: %v", err)
 	}

@@ -3,8 +3,6 @@ package lexicon
 import (
 	"path/filepath"
 	"testing"
-
-	"github.com/christian-oudard/ithkuil/store"
 )
 
 // dataPath returns the path to a file under the repo's data/ directory,
@@ -43,30 +41,6 @@ func TestLoad(t *testing.T) {
 	}
 	if len(ba.Degrees) != 9 {
 		t.Errorf("affix \"b\" degrees = %d, want 9", len(ba.Degrees))
-	}
-}
-
-func TestLoadFromStore(t *testing.T) {
-	s, err := store.Open(store.DefaultPath())
-	if err != nil {
-		t.Skipf("data.db not available: %v", err)
-	}
-	defer s.Close()
-	lex, err := LoadFromStore(s)
-	if err != nil {
-		t.Fatalf("LoadFromStore: %v", err)
-	}
-	if len(lex.Roots) < 4000 {
-		t.Errorf("expected several thousand root entries, got %d", len(lex.Roots))
-	}
-	if len(lex.Affixes) < 400 {
-		t.Errorf("expected several hundred affix entries, got %d", len(lex.Affixes))
-	}
-	if _, ok := lex.Roots["ml"]; !ok {
-		t.Error("root \"ml\" missing")
-	}
-	if _, ok := lex.Affixes["rf"]; !ok {
-		t.Error("affix \"rf\" missing")
 	}
 }
 

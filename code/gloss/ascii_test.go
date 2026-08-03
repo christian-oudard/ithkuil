@@ -6,7 +6,6 @@ import (
 
 	"github.com/christian-oudard/ithkuil/corpus"
 	"github.com/christian-oudard/ithkuil/gloss"
-	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/roman"
 	"github.com/christian-oudard/ithkuil/store"
 )
@@ -31,7 +30,7 @@ func TestCanonicalGlossIsASCII(t *testing.T) {
 	if err != nil {
 		t.Skip("no data store; run tools/build_db.py")
 	}
-	lex, err := lexicon.LoadFromStore(st)
+	lex, err := store.LoadLexicon(st)
 	if err != nil {
 		t.Fatal(err)
 	}

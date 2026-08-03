@@ -47,7 +47,7 @@ func newServer(dataFile, grammarDir string) *server {
 
 	lex := &lexicon.Lexicon{}
 	if st != nil {
-		lex, err = lexicon.LoadFromStore(st)
+		lex, err = store.LoadLexicon(st)
 		if err != nil {
 			log.Printf("warning: lexicon load failed (%v); roots/affixes lookups will return empty", err)
 			lex = &lexicon.Lexicon{}

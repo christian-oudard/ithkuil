@@ -178,7 +178,7 @@ func loadTextLex(t *testing.T) *lexicon.Lexicon {
 	if err != nil {
 		t.Skip("no data store; run tools/build_db.py")
 	}
-	lex, err := lexicon.LoadFromStore(st)
+	lex, err := store.LoadLexicon(st)
 	if err != nil {
 		t.Fatal(err)
 	}
