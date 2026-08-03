@@ -90,7 +90,8 @@ const (
 )
 
 func (s Stem) String() string {
-	return [...]string{"Cardinal", "Ordinal", "Partitive", "Collective"}[s]
+	return enumName(s, "Stem",
+		"Cardinal", "Ordinal", "Partitive", "Collective")
 }
 
 // Version distinguishes concrete (specific) from abstract (approximate)
@@ -103,7 +104,7 @@ const (
 )
 
 func (v Version) String() string {
-	return [...]string{"Concrete", "Abstract"}[v]
+	return enumName(v, "Version", "Concrete", "Abstract")
 }
 
 // Number bundles the integer value of a number formative with its

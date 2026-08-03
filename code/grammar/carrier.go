@@ -12,7 +12,8 @@ const (
 )
 
 func (c CarrierType) String() string {
-	return [...]string{"Carrier", "Quotative", "Naming", "Phrasal"}[c]
+	return enumName(c, "CarrierType",
+		"Carrier", "Quotative", "Naming", "Phrasal")
 }
 
 // Abbrev returns the three-letter abbreviation, which is what §4.5's
@@ -22,7 +23,7 @@ func (c CarrierType) String() string {
 // String spelling it out, so the abbreviation needs a method of its
 // own rather than the two being the same string.
 func (c CarrierType) Abbrev() string {
-	return [...]string{"CAR", "QUO", "NAM", "PHR"}[c]
+	return enumName(c, "CarrierType", "CAR", "QUO", "NAM", "PHR")
 }
 
 // AllCarrierTypes enumerates the four types in declaration order.

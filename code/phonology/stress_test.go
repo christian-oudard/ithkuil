@@ -193,3 +193,26 @@ func TestApply_GraveOnUnstressedI(t *testing.T) {
 		}
 	}
 }
+
+// TestStress_StringOutOfRange pins a String method against the value it
+// is not supposed to receive. slots.ToGrammar formats the stress into
+// its "no Slot IX reading" fault, so an out-of-range Stress reaches
+// %v on the error path, and indexing a fixed array there panicked.
+// Standard-toolchain fmt hid it by recovering the panic and printing
+// %!v(PANIC=...); TinyGo's does not, so the browser build died on a
+// case the CLI merely garbled. Found by running this suite under
+// TinyGo, which is the only reason it was ever visible.
+func TestStress_StringOutOfRange(t *testing.T) {
+	for _, s := range []Stress{-1, 5, 99} {
+		got := Stress(s).String()
+		if got == "" {
+			t.Errorf("Stress(%d).String() is empty", int(s))
+		}
+	}
+	if got := Stress(99).String(); got != "Stress(99)" {
+		t.Errorf("Stress(99).String() = %q, want Stress(99)", got)
+	}
+	if got := Ultimate.String(); got != "Ultimate" {
+		t.Errorf("Ultimate.String() = %q, want Ultimate", got)
+	}
+}

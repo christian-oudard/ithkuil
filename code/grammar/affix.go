@@ -29,9 +29,8 @@ const (
 )
 
 func (a AffixType) String() string {
-	return [...]string{
-		"Type1Affix", "Type2Affix", "Type3Affix", "CaStackAffix", "Column4Affix",
-	}[a]
+	return enumName(a, "AffixType",
+		"Type1Affix", "Type2Affix", "Type3Affix", "CaStackAffix", "Column4Affix")
 }
 
 // TransrelativeCase maps a Column-4 form number (1-9) to the case it
@@ -80,7 +79,8 @@ const (
 // Family is the gloss head for the kind: ACC for a case-accessor, IAC
 // for an inverse case-accessor, CST for case-stacking.
 func (k AccessorKind) Family() string {
-	return [...]string{"ACC", "ACC", "ACC", "IAC", "IAC", "IAC", "CST"}[k]
+	return enumName(k, "AccessorKind",
+		"ACC", "ACC", "ACC", "IAC", "IAC", "IAC", "CST")
 }
 
 // Type is the §3.9.2 Type of the kind. Case-stacking has no Type

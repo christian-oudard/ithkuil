@@ -62,7 +62,7 @@ const (
 )
 
 func (e RefEffect) String() string {
-	return [...]string{"NEU", "BEN", "DET"}[e]
+	return enumName(e, "RefEffect", "NEU", "BEN", "DET")
 }
 
 // AllRefEffects enumerates the three referent effects.
@@ -93,7 +93,7 @@ const (
 )
 
 func (c RefCategory) String() string {
-	return [...]string{"AGM", "NOM", "ABS"}[c]
+	return enumName(c, "RefCategory", "AGM", "NOM", "ABS")
 }
 
 // AllRefCategories enumerates the three categories in declaration order.

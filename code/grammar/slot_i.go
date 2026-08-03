@@ -12,5 +12,5 @@ const (
 )
 
 func (c ConcatenationStatus) String() string {
-	return [...]string{"None", "Type1", "Type2"}[c]
+	return enumName(c, "ConcatenationStatus", "None", "Type1", "Type2")
 }

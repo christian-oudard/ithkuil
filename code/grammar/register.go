@@ -17,7 +17,8 @@ const (
 )
 
 func (r Register) String() string {
-	return [...]string{"NRR", "DSV", "PNT", "SPF", "EXM", "CGT", "END"}[r]
+	return enumName(r, "Register",
+		"NRR", "DSV", "PNT", "SPF", "EXM", "CGT", "END")
 }
 
 // AllRegisters enumerates every Register in declaration order.

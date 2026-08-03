@@ -13,7 +13,7 @@ const (
 )
 
 func (s ModularScope) String() string {
-	return [...]string{"default", "parent", "concat"}[s]
+	return enumName(s, "ModularScope", "default", "parent", "concat")
 }
 
 // ModularReach is the reach scope encoded by the Slot-4 V_H vowel
@@ -35,7 +35,8 @@ const (
 // no punctuation of their own: a "/" or a "." would claim a job it does
 // not have, and a "-" would split the token.
 func (r ModularReach) String() string {
-	return [...]string{"none", "casemood", "casemoodill", "formative", "adjacent"}[r]
+	return enumName(r, "ModularReach",
+		"none", "casemood", "casemoodill", "formative", "adjacent")
 }
 
 // AllModularScopes and AllModularReaches enumerate the two in

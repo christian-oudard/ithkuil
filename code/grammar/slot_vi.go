@@ -53,7 +53,7 @@ const (
 )
 
 func (a Affiliation) String() string {
-	return [...]string{"CSL", "ASO", "COA", "VAR"}[a]
+	return enumName(a, "Affiliation", "CSL", "ASO", "COA", "VAR")
 }
 
 var AllAffiliations = []Affiliation{CSL, ASO, COA, VAR}
@@ -71,7 +71,7 @@ const (
 )
 
 func (p Perspective) String() string {
-	return [...]string{"M", "G", "N", "A"}[p]
+	return enumName(p, "Perspective", "M", "G", "N", "A")
 }
 
 var AllPerspectives = []Perspective{M_, G_, N_, A_}
@@ -89,7 +89,7 @@ const (
 )
 
 func (e Extension) String() string {
-	return [...]string{"DEL", "PRX", "ICP", "ATV", "GRA", "DPL"}[e]
+	return enumName(e, "Extension", "DEL", "PRX", "ICP", "ATV", "GRA", "DPL")
 }
 
 var AllExtensions = []Extension{DEL, PRX, ICP, ATV, GRA, DPL}
@@ -103,7 +103,7 @@ const (
 )
 
 func (e Essence) String() string {
-	return [...]string{"NRM", "RPV"}[e]
+	return enumName(e, "Essence", "NRM", "RPV")
 }
 
 var AllEssences = []Essence{NRM, RPV}

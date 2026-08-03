@@ -17,7 +17,8 @@ const (
 )
 
 func (v Valence) String() string {
-	return [...]string{"MNO", "PRL", "CRO", "RCP", "CPL", "DUP", "DEM", "CNG", "PTI"}[v]
+	return enumName(v, "Valence",
+		"MNO", "PRL", "CRO", "RCP", "CPL", "DUP", "DEM", "CNG", "PTI")
 }
 
 var AllValences = []Valence{MNO, PRL, CRO, RCP, CPL, DUP, DEM, CNG, PTI}
@@ -38,7 +39,8 @@ const (
 )
 
 func (p Phase) String() string {
-	return [...]string{"PCT", "ITR", "REP", "ITM", "RCT", "FRE", "FRG", "VAC", "FLC"}[p]
+	return enumName(p, "Phase",
+		"PCT", "ITR", "REP", "ITM", "RCT", "FRE", "FRG", "VAC", "FLC")
 }
 
 var AllPhases = []Phase{PCT, ITR, REP, ITM, RCT, FRE, FRG, VAC, FLC}
@@ -60,7 +62,8 @@ const (
 )
 
 func (e Effect) String() string {
-	return [...]string{"BEN1", "BEN2", "BEN3", "BSLF", "UNK", "DSLF", "DET3", "DET2", "DET1"}[e]
+	return enumName(e, "Effect",
+		"BEN1", "BEN2", "BEN3", "BSLF", "UNK", "DSLF", "DET3", "DET2", "DET1")
 }
 
 var AllEffects = []Effect{BEN1, BEN2, BEN3, BSLF, UNK, DSLF, DET3, DET2, DET1}
@@ -81,7 +84,8 @@ const (
 )
 
 func (l Level) String() string {
-	return [...]string{"MIN", "SBE", "IFR", "DFT", "EQU", "SUR", "SPL", "SPQ", "MAX"}[l]
+	return enumName(l, "Level",
+		"MIN", "SBE", "IFR", "DFT", "EQU", "SUR", "SPL", "SPQ", "MAX")
 }
 
 var AllLevels = []Level{MIN, SBE, IFR, DFT, EQU, SUR, SPL, SPQ, MAX}
@@ -159,7 +163,7 @@ const (
 )
 
 func (m Mood) String() string {
-	return [...]string{"FAC", "SUB", "ASM", "SPC", "COU", "HYP"}[m]
+	return enumName(m, "Mood", "FAC", "SUB", "ASM", "SPC", "COU", "HYP")
 }
 
 var AllMoods = []Mood{FAC, SUB, ASM, SPC, COU, HYP}
@@ -179,7 +183,7 @@ const (
 )
 
 func (c CaseScope) String() string {
-	return [...]string{"CCN", "CCA", "CCS", "CCQ", "CCP", "CCV"}[c]
+	return enumName(c, "CaseScope", "CCN", "CCA", "CCS", "CCQ", "CCP", "CCV")
 }
 
 var AllCaseScopes = []CaseScope{CCN, CCA, CCS, CCQ, CCP, CCV}

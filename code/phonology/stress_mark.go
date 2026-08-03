@@ -18,12 +18,8 @@ const (
 )
 
 func (e StressError) Error() string {
-	return [...]string{
-		"",
-		"DoubleMarkedStress",
-		"MarkedDefaultStress",
-		"UnrecognizedPlacement",
-	}[e]
+	return enumName(e, "StressError",
+		"", "DoubleMarkedStress", "MarkedDefaultStress", "UnrecognizedPlacement")
 }
 
 // ValidateStress decides which Stress a word is marked for, or

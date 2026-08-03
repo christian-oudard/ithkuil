@@ -36,7 +36,8 @@ const (
 )
 
 func (s Stress) String() string {
-	return [...]string{"Monosyllabic", "Penultimate", "Ultimate", "Antepenultimate", "InvalidStress"}[s]
+	return enumName(s, "Stress",
+		"Monosyllabic", "Penultimate", "Ultimate", "Antepenultimate", "InvalidStress")
 }
 
 // stripMap drops a stress diacritic but preserves the umlaut layer.

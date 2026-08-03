@@ -222,7 +222,7 @@ const (
 )
 
 func (p Position) String() string {
-	return [...]string{"initial", "medial", "final"}[p]
+	return enumName(p, "Position", "initial", "medial", "final")
 }
 
 // MaxClusterLength returns the maximum allowed consonant-cluster length

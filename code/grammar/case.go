@@ -121,10 +121,9 @@ const (
 )
 
 func (g CaseGroup) String() string {
-	return [...]string{
-		"Transrelative", "Appositive", "Associative", "Adverbial",
-		"Relational", "Affinitive", "SpatioTemporal1", "SpatioTemporal2",
-	}[g]
+	return enumName(g, "CaseGroup",
+		"Transrelative", "Appositive", "Associative", "Adverbial", "Relational",
+		"Affinitive", "SpatioTemporal1", "SpatioTemporal2")
 }
 
 // Group returns the case-series group this Case belongs to.

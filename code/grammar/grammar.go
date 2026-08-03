@@ -15,7 +15,7 @@ const (
 )
 
 func (s Stem) String() string {
-	return [...]string{"S1", "S2", "S3", "S0"}[s]
+	return enumName(s, "Stem", "S1", "S2", "S3", "S0")
 }
 
 // Version distinguishes Processual (ongoing) from Completive (achieved).
@@ -27,7 +27,7 @@ const (
 )
 
 func (v Version) String() string {
-	return [...]string{"PRC", "CPT"}[v]
+	return enumName(v, "Version", "PRC", "CPT")
 }
 
 // SlotII = (Stem, Version), encoded as the Vv vowel.
@@ -47,7 +47,7 @@ const (
 )
 
 func (f Function) String() string {
-	return [...]string{"STA", "DYN"}[f]
+	return enumName(f, "Function", "STA", "DYN")
 }
 
 // Specification is one of four ways a root is realized: Basic,
@@ -62,7 +62,7 @@ const (
 )
 
 func (s Specification) String() string {
-	return [...]string{"BSC", "CTE", "CSV", "OBJ"}[s]
+	return enumName(s, "Specification", "BSC", "CTE", "CSV", "OBJ")
 }
 
 // Context places the formative on the Existential/Functional/
@@ -77,7 +77,7 @@ const (
 )
 
 func (c Context) String() string {
-	return [...]string{"EXS", "FNC", "RPS", "AMG"}[c]
+	return enumName(c, "Context", "EXS", "FNC", "RPS", "AMG")
 }
 
 // SlotIV = (Function, Specification, Context), encoded as the Vr vowel.

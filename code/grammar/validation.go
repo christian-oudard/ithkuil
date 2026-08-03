@@ -18,7 +18,8 @@ const (
 )
 
 func (v Validation) String() string {
-	return [...]string{"OBS", "REC", "PUP", "RPR", "USP", "IMA", "CVN", "ITU", "INF"}[v]
+	return enumName(v, "Validation",
+		"OBS", "REC", "PUP", "RPR", "USP", "IMA", "CVN", "ITU", "INF")
 }
 
 var AllValidations = []Validation{OBS, REC, PUP, RPR, USP, IMA, CVN, ITU, INF}

@@ -16,7 +16,8 @@ const (
 )
 
 func (s AffixScope) String() string {
-	return [...]string{"VDom", "VSub", "VIIDom", "VIISub", "formative", "adjacent"}[s]
+	return enumName(s, "AffixScope",
+		"VDom", "VSub", "VIIDom", "VIISub", "formative", "adjacent")
 }
 
 // AllAffixScopes enumerates every AffixScope in declaration order.
