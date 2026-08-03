@@ -145,7 +145,7 @@ func cmdParse(args []string, stdin io.Reader, stdout, stderr io.Writer, dataFile
 				var fs fault.Faults
 				errors.As(r.Err, &fs)
 				fmt.Fprintf(stdout, "%s: %s\n", r.Romanization,
-					strings.Join(faultLines(fs, r.Err), "; "))
+					strings.Join(faultLines(fs, r.Romanization, r.Err), "; "))
 				continue
 			}
 			fmt.Fprintln(stdout, canonical.Word(r.Word, span, i))
@@ -252,7 +252,7 @@ func renderUnknown(w io.Writer, word string, err error) {
 
 	layout, perr := slots.Parse(word)
 	if perr != nil {
-		for _, f := range faultLines(fs, err) {
+		for _, f := range faultLines(fs, word, err) {
 			fmt.Fprintln(iw, f)
 		}
 		return
@@ -284,13 +284,22 @@ func drawnSlots(segs []view.Segment) map[string]bool {
 
 // faultLines renders faults as plain sentences, for the cases with no
 // table to hang them on.
-func faultLines(fs fault.Faults, err error) []string {
+//
+// subject is the word being reported. Where the faults name something
+// narrower — one link of a concatenation chain — that name is put in
+// front, since a chain is several words on one line and "no Ca
+// complex is written vẓ" does not say which of them holds it.
+func faultLines(fs fault.Faults, subject string, err error) []string {
 	if len(fs.List) == 0 {
 		return []string{err.Error()}
 	}
+	prefix := ""
+	if fs.Word != "" && fs.Word != subject {
+		prefix = fs.Word + ": "
+	}
 	out := make([]string, len(fs.List))
 	for i, f := range fs.List {
-		out[i] = f.Fix
+		out[i] = prefix + f.Fix
 	}
 	return out
 }

@@ -64,7 +64,9 @@ func referentialWord(r g.Referential) g.Word {
 // word-final w, biases use the otherwise-prohibited geminates çç/ļļ).
 func ParseWord(word string) (g.Word, error) {
 	if word == "" {
-		return nil, fmt.Errorf("empty word")
+		return nil, fault.One(word, fault.Fault{
+			Stage: fault.Shape, Code: "shape", Fix: "a word needs at least one conjunct",
+		})
 	}
 	// Compose and lowercase before any classifier reads the letters;
 	// see phonology.Normalize. Words we fail to classify keep their
@@ -79,10 +81,11 @@ func ParseWord(word string) (g.Word, error) {
 	// parse, don't let other classifiers (whose input model has no
 	// hyphen) snatch the word with a stretchy match.
 	if strings.Contains(word, "-") {
-		if c, ok := tryConcatenation(word); ok {
-			return c, nil
-		}
-		return nil, fmt.Errorf("hyphenated word %q is not a concatenation chain", word)
+		// A hyphen is only meaningful as a concat-pair separator, so a
+		// word carrying one is a chain or nothing. No other class is
+		// offered it, and the chain reader's complaint is the answer
+		// rather than one candidate among several.
+		return tryConcatenation(word)
 	}
 	conjs := phonology.SplitConjuncts(word)
 
@@ -352,28 +355,50 @@ func isCarrier(w g.Word) bool {
 // "concatenated" dependent carrying a Slot I Cc marker, and the LAST
 // formative is the "parent" with no Cc. Returns ok=false if any
 // constraint fails.
-func tryConcatenation(word string) (*g.Chain, bool) {
+func tryConcatenation(word string) (*g.Chain, error) {
 	parts := strings.Split(word, "-")
 	if len(parts) < 2 {
-		return nil, false
+		return nil, fault.One(word, fault.Fault{
+			Stage: fault.Shape, Code: "chain", Found: word,
+			Fix: "a hyphen joins two or more formatives, and this has one",
+		})
 	}
 	formatives := make([]g.Formative, 0, len(parts))
 	for _, p := range parts {
 		f, err := ParseFormative(p)
 		if err != nil {
-			return nil, false
+			// The link's own complaint, relabelled to the link. A
+			// chain fails because one of its formatives does, and
+			// saying only that the whole word is not a chain hands
+			// the reader back what they typed and leaves them to
+			// bisect it.
+			var fs fault.Faults
+			if errors.As(err, &fs) {
+				fs.Word = p
+				return nil, fs
+			}
+			return nil, err
 		}
 		formatives = append(formatives, f)
 	}
 	last := len(formatives) - 1
-	// Parent (last) must be plain.
+	// §3.1.7 puts the parent last and gives it no marker, and every
+	// link in front of it one. Both halves are named against the link
+	// that broke them, because which link is wrong is the whole of
+	// what a reader cannot see for themselves.
 	if formatives[last].Concat != g.ConcatNone {
-		return nil, false
+		return nil, fault.One(parts[last], fault.Fault{
+			Stage: fault.Value, Code: "Cc", Found: parts[last],
+			Fix: "§3.1.7 puts the parent last and gives it no concatenation marker, and this one carries " +
+				formatives[last].Concat.String(),
+		})
 	}
-	// Every leading dependent must carry a Cc.
 	for i := 0; i < last; i++ {
 		if formatives[i].Concat == g.ConcatNone {
-			return nil, false
+			return nil, fault.One(parts[i], fault.Fault{
+				Stage: fault.Value, Code: "Cc", Found: parts[i],
+				Fix: "§3.1.7 gives every dependent a concatenation marker, and this one before the parent has none",
+			})
 		}
 	}
 	chain := g.NewChain(formatives[last])
@@ -385,5 +410,5 @@ func tryConcatenation(word string) (*g.Chain, bool) {
 			chain.AddType2(formatives[i])
 		}
 	}
-	return chain, true
+	return chain, nil
 }
