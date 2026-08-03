@@ -35,8 +35,16 @@ func assertRoundTrip(t *testing.T, name string, f g.Formative) {
 	if !reflect.DeepEqual(parsed.SlotVII, f.SlotVII) {
 		t.Errorf("%s: SlotVII: got %v, want %v (romanization %q)", name, parsed.SlotVII, f.SlotVII, rom)
 	}
-	if !reflect.DeepEqual(parsed.SlotVIII, f.SlotVIII) {
-		t.Errorf("%s: SlotVIII: got %v, want %v (romanization %q)", name, parsed.SlotVIII, f.SlotVIII, rom)
+	// MNO Valence at the FAC Mood/Case-Scope says only what an absent
+	// Slot VIII says, so both arms fold it away and what comes back is
+	// the absent form. That is the round trip working, not failing.
+	wantSlotVIII := f.SlotVIII
+	if g.SlotVIIIIsDefault(wantSlotVIII) {
+		wantSlotVIII = nil
+	}
+	if !reflect.DeepEqual(parsed.SlotVIII, wantSlotVIII) {
+		t.Errorf("%s: SlotVIII: got %v, want %v (romanization %q)",
+			name, parsed.SlotVIII, wantSlotVIII, rom)
 	}
 	if !reflect.DeepEqual(parsed.Final, f.Final) {
 		t.Errorf("%s: Final: got %v, want %v (romanization %q)", name, parsed.Final, f.Final, rom)

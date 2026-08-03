@@ -254,6 +254,22 @@ func (VnCnAspect) slotVIII() {}
 // SlotVIIIMoodScope returns the MoodScope field of any SlotVIII
 // variant. Returns FAC for a nil receiver (the grammatical default
 // when Slot VIII is absent).
+// SlotVIIIIsDefault reports whether s says only what a formative
+// already says by leaving Slot VIII out: the MNO Valence at the FAC
+// Mood/Case-Scope. §3.7 gives both as the unmarked values, so the two
+// are one grammatical state and a Formative should hold one of them.
+//
+// It is a question about the type rather than about either arm, which
+// is why it lives here: reading a word folds the redundant value away
+// and writing one treats it as absent, so neither can spell the state
+// its own way. They did: an absent slot wrote "mlala" and a slot
+// holding the defaults wrote "mlalah", and each read back as itself,
+// so no round trip noticed.
+func SlotVIIIIsDefault(s SlotVIII) bool {
+	v, ok := s.(VnCnValence)
+	return ok && v.Valence == MNO && v.MoodScope == FAC
+}
+
 func SlotVIIIMoodScope(s SlotVIII) Mood {
 	switch v := s.(type) {
 	case VnCnValence:

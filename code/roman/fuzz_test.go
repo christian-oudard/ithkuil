@@ -151,6 +151,13 @@ func randomSlotVIII(rng *rand.Rand) g.SlotVIII {
 	if rng.Intn(10) < 3 {
 		mood = g.AllMoods[rng.Intn(len(g.AllMoods))]
 	}
+	// MNO at FAC is what an absent Slot VIII already says, so it is
+	// not a filled slot to generate: both arms fold it away and the
+	// value would not come back as itself. The caller asks for a
+	// non-default slot, so give it one.
+	if s8 := (g.VnCnValence{Valence: val, MoodScope: mood}); g.SlotVIIIIsDefault(s8) {
+		val = g.AllValences[1+rng.Intn(len(g.AllValences)-1)]
+	}
 	return g.VnCnValence{Valence: val, MoodScope: mood}
 }
 

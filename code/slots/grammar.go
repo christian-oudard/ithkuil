@@ -34,7 +34,11 @@ func ToGrammar(l Layout) (g.Formative, error) {
 	slotVII := affixesVxCs(&fs, "Vx", l.SlotVII)
 	if l.Cn != "" {
 		if s8, ok := parse.ParseVnCn(l.Vn, l.Cn); ok {
-			slotVIII = s8
+			// The defaults say nothing an absent slot does not, so
+			// only one of the two reaches a Formative.
+			if !g.SlotVIIIIsDefault(s8) {
+				slotVIII = s8
+			}
 		} else if t, d, ok := parse.AffixVowelDegree(l.Vn); ok {
 			slotVII = append(slotVII, g.Affix{Type: t, Degree: d, Consonant: l.Cn})
 		} else {
@@ -472,7 +476,7 @@ func layoutFor(f g.Formative, e encoding) Layout {
 		})
 	}
 
-	if f.SlotVIII != nil {
+	if f.SlotVIII != nil && !g.SlotVIIIIsDefault(f.SlotVIII) {
 		l.Vn, l.Cn = vnCnFromSlotVIII(f.SlotVIII)
 	}
 
