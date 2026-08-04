@@ -49,3 +49,31 @@ Current version 1.1 (Feb. 11, 2023), which updates version 1.0.1.
 Current version 0.5.4, which updates version 0.5.3. Quijada marks the
 added and changed values in red; colour does not survive transcription,
 so the reference document here does not distinguish them.
+
+## The website is a third document, not a renumbering
+
+`https://ithkuil.net/` carries "A GRAMMAR OF NEW ITHKUIL" in fourteen
+chapters: Phonology, Morpho-Phonology, Basic Morphology, Case
+Morphology, Verb Morphology, More Verb Morphology, Affixes, Adjuncts,
+Referentials, Special Constructions, Syntax, The Writing System,
+Numbers, The Lexicon. The PDF this directory transcribes is "NEW
+ITHKUIL: GRAMMAR DESIGN". They are separate documents covering
+overlapping ground, so their section numbers coincide only by accident.
+
+Where they coincide they really do. The site's chapter 1 runs 1.0
+PHONOLOGY, 1.1 Phonemic Inventory, 1.2 Pronunciation Notes and
+Allophonic Distinctions, 1.2.1 Vowels, matching the PDF exactly, and
+its inventory chart has the same thirteen columns in the same order,
+labial through lateral. That is a second witness to §1.1's layout,
+which matters because our transcription of that chart had several rows
+shifted a column left.
+
+Where they diverge, they diverge silently. What the PDF calls §5.6,
+WH-interrogatives, sits at 10.6 on the site, inside Special
+Constructions, and 5.6 on the site holds aspect examples instead. See
+the head of `code/corpus/examples.txt`.
+
+No mapping between the two has been made. A section number taken from
+the site should not be cited against this directory without checking
+which document it came from.
+
