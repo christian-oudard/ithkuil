@@ -161,11 +161,13 @@ type compareIn struct {
 func (s *server) compare(_ context.Context, _ *mcp.CallToolRequest, in compareIn) (*mcp.CallToolResult, api.Comparison, error) {
 	a, err := pronounceable(in.A)
 	if err != nil {
-		return nil, api.Comparison{}, err
+		c, e := comparisonFault(err)
+		return nil, c, e
 	}
 	b, err := pronounceable(in.B)
 	if err != nil {
-		return nil, api.Comparison{}, err
+		c, e := comparisonFault(err)
+		return nil, c, e
 	}
 	out, err := s.api.Compare(a, b)
 	if err != nil {
@@ -182,10 +184,21 @@ func pronounceable(word string) (string, error) {
 	if word == "" {
 		return "", fmt.Errorf("both a and b are required")
 	}
+	// Returned as it stands: the faults already name the word and the
+	// rule, and a sentence in front only hid the structure.
 	if err := phonology.CheckText(word); err != nil {
-		return "", fmt.Errorf("%s is not pronounceable Ithkuil: %w", word, err)
+		return "", err
 	}
 	return word, nil
+}
+
+// comparisonFault sends a word the caller got wrong back as a result,
+// keeping a genuine bad request — a missing argument — an error.
+func comparisonFault(err error) (api.Comparison, error) {
+	if fs := api.Faults(err); fs != nil {
+		return api.Comparison{Faults: fs}, nil
+	}
+	return api.Comparison{}, err
 }
 
 // --------------------------------------------------------------------
@@ -214,6 +227,13 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 	}
 	built, err := s.api.Compose(expr, in.Stressless)
 	if err != nil {
+		// An expression the caller got wrong is a result, not a
+		// protocol failure. Handing the SDK a Go error would flatten
+		// every fault to one string and leave the caller matching
+		// English for the token to fix.
+		if fs := api.Faults(err); fs != nil {
+			return nil, api.Word{Error: err.Error(), Faults: fs}, nil
+		}
 		return nil, api.Word{}, err
 	}
 	words := s.api.Parse(built.Word)

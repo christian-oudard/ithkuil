@@ -235,6 +235,8 @@ export interface Comparison {
   b: string;
   pairs: ComparePair[];
   unpaired: Unpaired[];
+  /** Why a side could not be read, absent when both were. */
+  faults?: Violation[];
 }
 
 /**

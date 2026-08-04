@@ -257,7 +257,6 @@ func TestMCPCompare_Errors(t *testing.T) {
 	}{
 		{"empty a", compareIn{A: "", B: "mala"}, "required"},
 		{"empty b", compareIn{A: "mala", B: ""}, "required"},
-		{"unpronounceable", compareIn{A: "akxq", B: "mala"}, "not pronounceable"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -343,19 +342,9 @@ func TestMCPCompose_Verbose(t *testing.T) {
 	}
 }
 
-func TestMCPCompose_Errors(t *testing.T) {
-	s := testServer(t)
-	for _, c := range []struct{ name, expr string }{
-		{"empty", "   "},
-		{"nonsense", "not-a-gloss-at-all"},
-	} {
-		t.Run(c.name, func(t *testing.T) {
-			if _, _, err := s.compose(context.Background(), nil, composeIn{Expression: c.expr}); err == nil {
-				t.Error("want an error")
-			}
-		})
-	}
-}
+// Compose's two failure kinds are split across fault_test.go now:
+// a missing argument is a protocol error, an expression that does not
+// read is a result carrying its faults.
 
 // ---- search ----
 

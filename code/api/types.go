@@ -247,6 +247,11 @@ type Comparison struct {
 	B        string        `json:"b"`
 	Pairs    []ComparePair `json:"pairs"`
 	Unpaired []Unpaired    `json:"unpaired"`
+	// Faults is why a side could not be read, empty when both were. A
+	// word the caller got wrong is a result here for the same reason
+	// it is on Word: the tool did its job and the answer is that the
+	// word does not read.
+	Faults []Violation `json:"faults,omitempty"`
 }
 
 // GrammarEntry is one value of the grammar inventory. It is both a row
