@@ -36,6 +36,23 @@ const (
 	Glottal
 )
 
+// Secondary is a second, simultaneous constriction, made with a
+// different organ from the primary one. §1.1 lists a Labio-velar
+// column holding only w, which is a tongue-body approximant said with
+// rounded lips rather than a labial consonant.
+//
+// Place records where the tongue is, so w is Velar and its lip
+// rounding is recorded here. Filing it under Labial instead would put
+// it as far from u as it is from i, when in articulation it is
+// adjacent to u.
+type Secondary int
+
+const (
+	// Plain is a single constriction, which is every consonant but w.
+	Plain Secondary = iota
+	Labialized
+)
+
 type Manner int
 
 const (
@@ -79,10 +96,17 @@ type Phoneme interface {
 	phoneme()
 }
 
+// Consonant is a phoneme described by where and how it is made.
+//
+// Place is ordered front to back, Labial through Glottal, so the gap
+// between two values approximates how far the articulators travel
+// between them. Anything measuring articulatory effort reads it that
+// way, and TestPlaceIsOrderedFrontToBack holds the ordering.
 type Consonant struct {
-	Voicing Voicing
-	Place   Place
-	Manner  Manner
+	Voicing   Voicing
+	Place     Place
+	Manner    Manner
+	Secondary Secondary
 }
 
 func (Consonant) phoneme() {}
@@ -105,37 +129,43 @@ type PhonemeEntry struct {
 
 // Consonants lists the 31 consonants of Ithkuil V4.
 var Consonants = []PhonemeEntry{
-	{Consonant{Voiceless, Labial, Stop}, 'p', "p"},
-	{Consonant{Voiced, Labial, Stop}, 'b', "b"},
-	{Consonant{Voiceless, Alveolar, Stop}, 't', "t"},
-	{Consonant{Voiced, Alveolar, Stop}, 'd', "d"},
-	{Consonant{Voiceless, Velar, Stop}, 'k', "k"},
-	{Consonant{Voiced, Velar, Stop}, 'g', "g"},
-	{Consonant{Voiceless, Glottal, Stop}, '\'', "'"},
-	{Consonant{Voiceless, LabioDental, Fricative}, 'f', "f"},
-	{Consonant{Voiced, LabioDental, Fricative}, 'v', "v"},
-	{Consonant{Voiceless, Dental, Fricative}, 'T', "ţ"},
-	{Consonant{Voiced, Dental, Fricative}, 'D', "ḑ"},
-	{Consonant{Voiceless, Alveolar, Fricative}, 's', "s"},
-	{Consonant{Voiced, Alveolar, Fricative}, 'z', "z"},
-	{Consonant{Voiceless, PostAlveolar, Fricative}, 'S', "š"},
-	{Consonant{Voiced, PostAlveolar, Fricative}, 'Z', "ž"},
-	{Consonant{Voiceless, Palatal, Fricative}, 'c', "ç"},
-	{Consonant{Voiceless, Uvular, Fricative}, 'x', "x"},
-	{Consonant{Voiceless, Glottal, Fricative}, 'h', "h"},
-	{Consonant{Voiceless, Alveolar, Affricate}, 'C', "c"},
-	{Consonant{Voiced, Alveolar, Affricate}, 'J', "ẓ"},
-	{Consonant{Voiceless, PostAlveolar, Affricate}, 'X', "č"},
-	{Consonant{Voiced, PostAlveolar, Affricate}, 'j', "j"},
-	{Consonant{Voiced, Labial, Nasal}, 'm', "m"},
-	{Consonant{Voiced, Alveolar, Nasal}, 'n', "n"},
-	{Consonant{Voiced, Velar, Nasal}, 'N', "ň"},
-	{Consonant{Voiced, Alveolar, Tap}, 'r', "r"},
-	{Consonant{Voiced, Uvular, Trill}, 'R', "ř"},
-	{Consonant{Voiced, Alveolar, LateralApprox}, 'l', "l"},
-	{Consonant{Voiced, Palatal, Approximant}, 'y', "y"},
-	{Consonant{Voiced, Labial, Approximant}, 'w', "w"},
-	{Consonant{Voiceless, Alveolar, LateralFric}, 'L', "ļ"},
+	{Consonant{Voiceless, Labial, Stop, Plain}, 'p', "p"},
+	{Consonant{Voiced, Labial, Stop, Plain}, 'b', "b"},
+	{Consonant{Voiceless, Alveolar, Stop, Plain}, 't', "t"},
+	{Consonant{Voiced, Alveolar, Stop, Plain}, 'd', "d"},
+	{Consonant{Voiceless, Velar, Stop, Plain}, 'k', "k"},
+	{Consonant{Voiced, Velar, Stop, Plain}, 'g', "g"},
+	{Consonant{Voiceless, Glottal, Stop, Plain}, '\'', "'"},
+	{Consonant{Voiceless, LabioDental, Fricative, Plain}, 'f', "f"},
+	{Consonant{Voiced, LabioDental, Fricative, Plain}, 'v', "v"},
+	{Consonant{Voiceless, Dental, Fricative, Plain}, 'T', "ţ"},
+	{Consonant{Voiced, Dental, Fricative, Plain}, 'D', "ḑ"},
+	{Consonant{Voiceless, Alveolar, Fricative, Plain}, 's', "s"},
+	{Consonant{Voiced, Alveolar, Fricative, Plain}, 'z', "z"},
+	{Consonant{Voiceless, PostAlveolar, Fricative, Plain}, 'S', "š"},
+	{Consonant{Voiced, PostAlveolar, Fricative, Plain}, 'Z', "ž"},
+	{Consonant{Voiceless, Palatal, Fricative, Plain}, 'c', "ç"},
+	{Consonant{Voiceless, Uvular, Fricative, Plain}, 'x', "x"},
+	{Consonant{Voiceless, Glottal, Fricative, Plain}, 'h', "h"},
+	{Consonant{Voiceless, Alveolar, Affricate, Plain}, 'C', "c"},
+	{Consonant{Voiced, Alveolar, Affricate, Plain}, 'J', "ẓ"},
+	{Consonant{Voiceless, PostAlveolar, Affricate, Plain}, 'X', "č"},
+	{Consonant{Voiced, PostAlveolar, Affricate, Plain}, 'j', "j"},
+	{Consonant{Voiced, Labial, Nasal, Plain}, 'm', "m"},
+	{Consonant{Voiced, Alveolar, Nasal, Plain}, 'n', "n"},
+	{Consonant{Voiced, Velar, Nasal, Plain}, 'N', "ň"},
+	{Consonant{Voiced, Alveolar, Tap, Plain}, 'r', "r"},
+	// §1.2.2: "The uvular -ř- is an approximant [ʁ] as in colloquial
+	// French or German; when geminated it is either [ʁː] or can be
+	// strengthened to a uvular trill [ʀ]." §1.1 lists it on the
+	// Approximant row. The trill is the geminate allophone, not the
+	// phoneme.
+	{Consonant{Voiced, Uvular, Approximant, Plain}, 'R', "ř"},
+	{Consonant{Voiced, Alveolar, LateralApprox, Plain}, 'l', "l"},
+	{Consonant{Voiced, Palatal, Approximant, Plain}, 'y', "y"},
+	// §1.1 files w under Labio-velar, not Labial. See Secondary.
+	{Consonant{Voiced, Velar, Approximant, Labialized}, 'w', "w"},
+	{Consonant{Voiceless, Alveolar, LateralFric, Plain}, 'L', "ļ"},
 }
 
 // Vowels lists the 9 vowels of Ithkuil V4.

@@ -216,17 +216,44 @@ Three terms are available without adding anything:
   currently an accident of how it was written; anything depending on it
   must say so, and the ordering must then be held by a test.
 
-One feature is missing. `Place` records the passive target, not the
-active articulator, so a tongue-shape term has nothing to read. The
-clearest symptom is `w`, which §1.1 lists as labio-velar and our table
-records as `Labial`, dropping the tongue-body gesture. Adding an
-articulator field (tip, blade, body, root) is the prerequisite for any
-term about tongue shape as opposed to contact location.
+A tongue-shape term needs one thing the model does not yet have: the
+active articulator (tip, blade, body, root) as distinct from the
+passive target `Place` records. Two consonants made with different
+organs can be coarticulated at no travel cost, while two made with the
+same organ at different places require real movement, and nothing in
+the current features distinguishes those cases.
+
+Double articulation is handled, though, since it was the one place the
+inventory disagreed with §1.1. `w` is now `Velar` plus `Labialized`
+rather than plain `Labial`, so it sits beside `u` rather than
+equidistant from `u` and `i`. `ř` is an `Approximant` rather than a
+`Trill`, per §1.2.2, which gives the trill as its geminate allophone.
 
 Beyond that lies gestural overlap and coarticulation, which is not a
 matter of reading a feature off a table but of adopting a phonological
-theory. That is out of scope until the three cheap terms are shown to
-be insufficient.
+theory. That is out of scope until the cheap terms are shown to be
+insufficient.
+
+### Two place models
+
+`phonology` currently holds place of articulation twice, and the two
+disagree. `inventory.go` has the typed `Place` enum, and
+`phonotactics.go` has `placeGroup`, a rune switch into six groups, and
+it is `placeGroup` that `areHomologous` and therefore §2.4, §2.5 and
+§2.13 actually consult.
+
+They part over the front coronals. `placeGroup` puts `t d ţ ḑ n`
+together and `s z c ẓ` apart, following §1.1's Apico-dental and
+Apico-alveolar columns. `inventory.Place` puts `t d n` at `Alveolar`
+with `s z`, and `ţ ḑ` at `Dental`, following the IPA reading of [θ ð].
+
+An effort table built on `inventory.Place` would therefore disagree
+with the rules about which segments share a place. These must become
+one model before the table is built, and the source table should win,
+since the rules being implemented are Quijada's. `section8_test.go`
+regenerates §8's 810 cells from the pair rules and is the instrument
+for making the change safely: unify the two, and it says whether the
+grid still comes out.
 
 ### The transition table
 
@@ -281,6 +308,51 @@ K stays small because interior decisions cannot affect a neighbour, by
 the argument above. Minimize those locally per word first; the chain
 then ranges only over edge-affecting variants, principally whether the
 Slot IX vowel is written.
+
+### Prior art
+
+The model is not novel, which is a good sign and a source of parts.
+
+**Lindblom's H&H theory** (Hyper- and Hypo-articulation, 1990) is the
+same shape: a speaker minimizes articulatory effort subject to
+sufficient discriminability, hypo-articulating only as far as the
+listener can still tell the word from its competitors. That is our
+minimization with `phonology.Legal` in the role of the discriminability
+floor, and it is worth knowing that the floor being categorical here,
+where Lindblom's is gradient, is a simplification we are choosing.
+
+**Kirchner's effort-based account of lenition** (1998) supplies the
+place-distance term and its justification: an articulation is more
+effortful the further and the faster the articulators travel. It also
+warns about a case we will meet, geminates, which resist reduction
+because holding a constriction is itself costly. Ithkuil permits
+geminates (§1.7) and generates them (§3.6.1 Ca gemination), so
+"repeated segment is free" would be the wrong default.
+
+**Boersma's Functional Phonology** (1998) formalizes articulatory ease
+and perceptual confusion as separate competing drives. That is two of
+the three terms §2 names, kept apart rather than summed into one
+number, which is the right instinct: a cluster can be easy to say and
+still be barred for sounding like something else, which is exactly
+§2.13's reason for rejecting \***nks**.
+
+**Kondrak's ALINE** is the closest ready-made component. It decomposes
+each phoneme into multivalued articulatory features, place and manner
+for consonants, height and backness for vowels, which is the
+decomposition `phonology.Consonant` and `phonology.Vowel` already use,
+and weights each feature by a hand-set salience to yield a distance
+between segments. Its salience weights are a published starting point
+for ours, and its use of hand-set rather than fitted weights is the
+practice recommended below.
+
+**Unit-selection speech synthesis** already runs the algorithm. A join
+cost scores each pair of adjacent units, a target cost scores each unit
+against what was wanted, and Viterbi finds the sequence minimizing the
+total. Our transition table is a join cost and our candidate spellings
+are the unit inventory. One reported practical finding transfers
+directly: the number of join costs actually needed is a small fraction
+of all possible pairs, so a sparse table with a principled default is
+likely to be enough.
 
 ### Calibrating the effort model
 
