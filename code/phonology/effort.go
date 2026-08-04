@@ -116,18 +116,9 @@ func Distance(a, b Phoneme) float64 {
 		d += boolDiff(va.Rounding == Rounded, vb.Rounding == Rounded) * salienceRound
 		return d
 	default:
-		// A consonant beside a vowel. ALINE's distance is largest here,
-		// because a consonant and a vowel are maximally unlike, but
-		// effort is smallest: a consonant followed by a vowel is the
-		// unmarked syllable, and sonority rises into a nucleus and
-		// falls out of it by default. Borrowing the similarity number
-		// as a cost would make every added syllable expensive, which
-		// is a length penalty wearing a phonetic disguise.
-		//
-		// So this returns the distance at which Transition is cheapest
-		// rather than a measured one. A finer model would grade it by
-		// how far the consonant is from the vowel in sonority; nothing
-		// yet needs that.
+		// Unreachable from Transition, which handles the mixed case
+		// before asking for a distance. Kept total so that Distance is
+		// still a function of any two phonemes.
 		return unmarkedDistance
 	}
 }
@@ -140,15 +131,33 @@ func Distance(a, b Phoneme) float64 {
 // The shape is U-shaped in Distance, per the note at the head of this
 // file: travel rises with distance, similarity falls with it.
 func Transition(a, b Phoneme, across bool) float64 {
+	// A consonant beside a vowel does not go through the U at all. The
+	// U models one constriction giving way to another, and a syllable
+	// is not that. An onset opening into a nucleus is the easiest
+	// thing the vocal tract does, and it is what every word is made
+	// of. Sending it through the curve priced it as the least bad
+	// consonant cluster, which is not the same as easy, and that made
+	// every added syllable dear enough to need an inflated boundary
+	// penalty to overcome.
+	if isConsonant(a) != isConsonant(b) {
+		return syllableCost
+	}
 	d := Distance(a, b)
 	cost := d * travelWeight
 	cost += similarityPenalty / (d + similarityFloor)
-	if across && isConsonant(a) && isConsonant(b) {
+	if across && isConsonant(a) && isConsonant(b) && !isGlottalStop(b) {
 		// §1.5 conditions its remedy on both sides being consonants:
 		// "When a word ending in a consonant-form ... is followed in
 		// the same breath-group by another word beginning with a
 		// consonant-form". A vowel-final word before a consonant is
 		// the case the rule is trying to reach, so it pays nothing.
+		//
+		// Nor does a following glottal stop. §1.5's harm is "confusion
+		// as to which word the word-final and/or word-initial
+		// consonants belong to", and a glottal onset is the thing that
+		// says a word began here: §1.2 has it unwritten but pronounced
+		// on every vowel-initial word. There is nothing to be confused
+		// about, so there is nothing to remedy.
 		cost += boundaryPenalty
 	}
 	return cost
@@ -172,25 +181,31 @@ const (
 	similarityPenalty = 8.0
 	similarityFloor   = 8.0
 
-	// unmarkedDistance is where Transition bottoms out, which is where
-	// a consonant-vowel pair is placed. Derived from the other two:
-	// the minimum of d*travelWeight + similarityPenalty/(d+floor) is at
-	// sqrt(similarityPenalty/travelWeight) - similarityFloor.
+	// unmarkedDistance is where the curve bottoms out. Nothing is
+	// placed there any more; it survives so that Distance is still
+	// total over any two phonemes, and so that the tests can say where
+	// the minimum is.
 	unmarkedDistance = 26.0
 
-	// boundaryPenalty is the cost of a word boundary falling between
-	// two consonants, which is §1.5's subject: "it is usually
+	// syllableCost is a consonant opening into a vowel, or closing out
+	// of one. Small rather than zero: it is still a gesture, but it is
+	// the unmarked one, and cheaper than any consonant meeting another
+	// consonant.
+	syllableCost = 0.05
+
+	// segmentCost is charged once per segment, and is the only reason
+	// a longer word costs more than a shorter one. Length belongs here
+	// rather than in the transitions: saying more costs more because
+	// there are more gestures, which is Kirchner's per-gesture effort,
+	// not because any junction between them is hard.
+	segmentCost = 0.05
+
+	// boundaryPenalty is what a word boundary adds to a consonant
+	// meeting a consonant, which is §1.5's subject: "it is usually
 	// necessary to append a vowel ... so as to avoid confusion as to
 	// which word the word-final and/or word-initial consonants belong
-	// to".
-	//
-	// It has to exceed what an added syllable costs, or the rule can
-	// never fire: filling a slot replaces one C|C boundary transition
-	// with a C-V transition, a V|C boundary and one more segment,
-	// which is about 2*unmarkedDistance worth. "Usually necessary" is
-	// the source calling that trade worth making, so this is set above
-	// it rather than fitted to a count.
-	boundaryPenalty = 1.4
+	// to". §1.6 and §7 are measured in the same units.
+	boundaryPenalty = 0.5
 )
 
 func isVowelPhoneme(p Phoneme) bool {
@@ -288,6 +303,8 @@ func spanEnergy(words []string) float64 {
 				}
 				prev, havePrev, first = glottalStop, true, false
 			}
+			total += segmentCost
+			total += segmentCost
 			if havePrev {
 				total += Transition(prev, p, prevWordEnd && first)
 			}
@@ -296,4 +313,9 @@ func spanEnergy(words []string) float64 {
 		prevWordEnd = true
 	}
 	return total
+}
+
+func isGlottalStop(p Phoneme) bool {
+	c, ok := p.(Consonant)
+	return ok && c.Place == Glottal && c.Manner == Stop
 }
