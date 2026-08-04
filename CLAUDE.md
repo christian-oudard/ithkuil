@@ -127,6 +127,12 @@ is authored rather than transcribed, and says how each category lands in
 English, which is not a claim about the language and not something the
 sources set out to answer.
 
+`docs/romanization_design.md` likewise: it is a design document, not a
+reference. One `Formative` admits several legal spellings, and it splits
+the structural choice from the phonetic one, an explicit form per word
+and a spoken form per span, so that the code choosing between legal
+spellings cannot reach the code deciding what is legal.
+
 - `docs/reference/morphology.md` - Canonical V4 grammar reference (phonology, morphology, slots, cases, adjuncts, syntax, numbers)
 - `docs/reference/affixes_reference.md` - All 528 affixes with gradient types and 9 degrees
 - `docs/reference/phonotactics.md` - Detailed consonant cluster rules
