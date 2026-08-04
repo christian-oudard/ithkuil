@@ -61,3 +61,29 @@ func TestMCPCompare_AnUnreadableWordIsAResult(t *testing.T) {
 		t.Errorf("incomplete fault: %+v", f)
 	}
 }
+
+// The parse tool answers with api.Word, so an unreadable word carries
+// its faults with no work here — but trim runs over every word on the
+// way out, and a field it started clearing would take the faults with
+// it silently. This pins that they survive a non-verbose call, which
+// is the default one.
+func TestMCPParse_FaultsSurviveTrim(t *testing.T) {
+	s := testServer(t)
+	_, out, err := s.parse(context.Background(), nil, parseIn{Text: "mavẓorf"})
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	if len(out.Words) != 1 {
+		t.Fatalf("got %d words, want 1", len(out.Words))
+	}
+	w := out.Words[0]
+	if len(w.Faults) == 0 {
+		t.Fatal("no faults on an unreadable word")
+	}
+	if got := w.Faults[0].Code; got != "Ca" {
+		t.Errorf("fault code = %q, want the slot at fault", got)
+	}
+	if w.Error == "" {
+		t.Error("the message a client prints is gone")
+	}
+}
