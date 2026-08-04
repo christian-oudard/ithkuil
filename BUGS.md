@@ -112,13 +112,30 @@ are the live list rather than anything written here:
   `section9_test.go` expands the whitelist and asserts each entry is
   legal, which tests what it admits and never what it excludes.
 
-- None of §4.2's word-final conjunct rules are implemented. §4.1's bans
-  on final -**w**, -**y** and the glottal stop are there, but §4.2.1
-  through §4.2.12, which say which bi-consonantal conjuncts may end a
-  word, have no counterpart in `phonotactics.go`. §4.2.1 has "a stop
-  consonant may be followed by any fricative of the same voicing", so
-  word-final -**bf** should not stand, and `ClusterLegalAt(Final, "bf")`
-  returns true.
+- §4.2's word-final conjunct rules are not enforced, and enforcing them
+  as written breaks the renderer. §4.1's bans on final -**w**, -**y**
+  and the glottal stop are checked; §4.2.1 through §4.2.12, which say
+  which bi-consonantal conjuncts may end a word, are not.
+
+  Implementing them was tried and reverted. Two things it found:
+
+  `isFricative` covers only **f v ţ ḑ**, since it exists for §2.5,
+  which is about homologous pairs disagreeing in voicing. §4.2 means
+  §1.1's whole Fricative row, so a §4.2 check needs its own predicate
+  or it rejects `erčädókh` (-**kh**) and `mmiexinļ` (-**nļ**), both
+  attested.
+
+  The blocker is §4.2.1: "A stop consonant cannot be followed by any
+  affricate, nasal, liquid, or approximant in word-final position." An
+  affixual adjunct whose last C_S affix is **tr** ends in -**tr**, and
+  **tr** is a permissible affix form per §8. So the morphology generates
+  what §4.2 forbids, and `roman` cannot round-trip its own output with
+  the rule on. This is the tension CLAUDE.md already records between §2
+  and the C_A tables, and it wants the same answer: decide whether §4.2
+  is a rule about roots and affixes in isolation rather than about any
+  word, and record the finding in `docs/reference/ISSUES.md` if the
+  source is simply inconsistent.
+
 
   Filed as a question rather than a defect: a speaker called `bf` "not
   illegal, just awkward", which settles it medially, where nothing in §2
