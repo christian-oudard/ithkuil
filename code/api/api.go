@@ -633,8 +633,15 @@ func violations(text string) []Violation {
 }
 
 func segment(s view.Segment) Segment {
+	// A blank segment, standing for a slot the other side has and this
+	// one does not, encodes nothing. Nil would marshal as null and
+	// ithkuil.d.ts declares an array.
+	encodes := s.Encodes
+	if encodes == nil {
+		encodes = []string{}
+	}
 	return Segment{
-		Chunk: s.Chunk, Raw: s.Raw, Slot: s.Slot, Encodes: s.Encodes,
+		Chunk: s.Chunk, Raw: s.Raw, Slot: s.Slot, Encodes: encodes,
 		Defaults: s.Defaults, Elided: s.Elided, Ordinal: s.Ordinal,
 		Cluster: s.Cluster, Degree: s.Degree,
 	}

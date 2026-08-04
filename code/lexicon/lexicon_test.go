@@ -1,7 +1,11 @@
 package lexicon
 
 import (
+	"encoding/json"
+	"os"
 	"path/filepath"
+	"slices"
+	"sort"
 	"testing"
 )
 
@@ -158,5 +162,70 @@ func TestLoad_LocalOnlyAffix(t *testing.T) {
 	}
 	if len(xcl.Degrees) != 9 {
 		t.Errorf("affix \"çx\" degrees = %d, want 9", len(xcl.Degrees))
+	}
+}
+
+// A C_R identifies a root, so two roots cannot share one. Five do in
+// the upstream spreadsheet: cfw, ksmy, lzbḑ, nļt and rţnw, each a pair
+// of unrelated senses. One of ksmy's two is retired, and
+// tools/sync_lexicon.py drops it, which leaves four in data.json.
+//
+// The defect is upstream's and not ours to correct: neither entry of a
+// pair is obviously the wrong one, and editing data.json by hand would
+// be undone by the next sync. What is ours is to not lose the
+// collisions silently. Both readers keep the first of each pair, so the
+// second is dropped either way, and this pins which clusters that
+// happens to. It fails when the set changes in either direction: when
+// upstream fixes one, so the note here can go, and when upstream adds
+// one, so a root does not vanish unnoticed.
+func TestParse_DuplicateClusters(t *testing.T) {
+	b, err := os.ReadFile(dataPath("data.json"))
+	if err != nil {
+		t.Skipf("data.json not readable: %v", err)
+	}
+	var doc struct {
+		Roots []struct {
+			Cr    string `json:"cr"`
+			Stem1 string `json:"stem1"`
+		} `json:"roots"`
+	}
+	if err := json.Unmarshal(b, &doc); err != nil {
+		t.Fatal(err)
+	}
+	seen := map[string]string{}
+	collisions := map[string][]string{}
+	for _, r := range doc.Roots {
+		if first, ok := seen[r.Cr]; ok {
+			collisions[r.Cr] = []string{first, r.Stem1}
+			continue
+		}
+		seen[r.Cr] = r.Stem1
+	}
+
+	want := []string{"cfw", "lzbḑ", "nļt", "rţnw"}
+	var got []string
+	for cr := range collisions {
+		got = append(got, cr)
+	}
+	sort.Strings(got)
+	sort.Strings(want)
+	if !slices.Equal(got, want) {
+		t.Errorf("duplicated clusters = %v, want %v\n"+
+			"a change here is upstream's doing: update this list and say which sense won",
+			got, want)
+	}
+
+	// Whichever reader loads them, the first sense of a pair is the one
+	// that survives. store keeps the first and this used to keep the
+	// last, so one file produced two different lexicons.
+	lex, err := Parse(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for cr, senses := range collisions {
+		if lex.Roots[cr].Stem1 != senses[0] {
+			t.Errorf("%s resolved to %q, want the first sense %q",
+				cr, lex.Roots[cr].Stem1, senses[0])
+		}
 	}
 }
