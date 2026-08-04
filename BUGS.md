@@ -33,25 +33,6 @@ written. See the skipped `TestApply_GraveOnUnstressedI` in
 `phonology/stress_test.go` for why putting it in `Apply` would be the
 wrong place either way.
 
-## the referents have no names or meanings
-
-`la` glosses as `1m-THM`, and the detailed view now expands THM and not
-`1m` — not because it does not try, but because there is nothing to
-find. The eleven §4.6 referents and the three referent Effects carry no
-name and no description anywhere: `search.Table` has no Referent
-category, and `g.Name`/`g.Meaning` answer "" for every one of them.
-
-```
-1m   Name=""  Meaning=""          THM  Name="Thematic"  Meaning="inactive participant…"
-```
-
-So a referential, whose whole content is its referent, is the one class
-whose main code cannot be explained by any mechanism. This is a hole in
-`data/data.json` rather than in the code that reads it, which is why
-expanding the codes did not close it.
-
-`cmd/ithkuil/expand_test.go` covers the classes that do resolve.
-
 ## Words we cannot read
 
 Two drift guards fail when the set changes in either direction, so they
