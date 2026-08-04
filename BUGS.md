@@ -127,13 +127,21 @@ are the live list rather than anything written here:
   than the mouth requires. That does not change the fix: the repair
   exists and the renderer should use it either way.
 
-  Enforcing §4.2 also trips `FuzzClassifyWord`, which holds the
-  invariant that anything `phonology.CheckText` rejects must not parse.
-  With §4.2 on, `xaheitr` fails CheckText while the adjunct parser still
-  reads it. That is the lenient-reading against canonical-writing
-  question rather than a defect, and it wants deciding before the
-  enforcement lands: we would never emit `xaheitr` once the renderer
-  writes V_Z, but refusing to read it is a separate choice.
+  Enforcing §4.2 also trips `FuzzClassifyWord`, and that is a defect in
+  the test rather than a question about the parser. Its assertion reads
+
+      // Char validation is a hard precondition: anything holding a
+      // non-V4 rune has to fail, never come back as some word class.
+      charsOK := phonology.CheckText(in) == nil
+
+  The comment says chars and the variable is named for chars, but
+  `CheckText` judges the whole phonotactics, so the test demands that
+  anything phonotactically ill-formed also fail to parse. That is the
+  opposite of the documented architecture: reading is lenient and
+  judging is separate, "because the C_A tables generate a few clusters
+  our reading of §2 rejects and a parser that refused them could not
+  round-trip its own output". Narrow the precondition to a chars-only
+  check when §4.2 lands.
 
   The renderer half was written and reverted with the rest. Two things
   it established. V_Z cannot be restored as "a": an elided V_Z means
