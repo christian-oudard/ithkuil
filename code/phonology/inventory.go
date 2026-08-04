@@ -180,17 +180,20 @@ var Consonants = []PhonemeEntry{
 	{Consonant{Voiceless, ApicoAlveolar, LateralFric, Plain}, 'L', "ļ"},
 }
 
-// Vowels lists the 9 vowels of Ithkuil V4.
+// Vowels lists the 9 vowels of Ithkuil V4, in §1.1's own rows and
+// columns, read off the PDF. §1.2.1 corroborates the two that had been
+// recorded backwards: "-ä- is pronounced [æ]", which is front, and
+// "-a- is pronounced [a] or [ɑ]", which is back.
 var Vowels = []PhonemeEntry{
 	{Vowel{High, Front, Unrounded}, 'i', "i"},
-	{Vowel{High, Central, Unrounded}, 'I', "ü"},
+	{Vowel{High, Central, Rounded}, 'I', "ü"},
 	{Vowel{High, Back, Rounded}, 'u', "u"},
 	{Vowel{Mid, Front, Unrounded}, 'e', "e"},
-	{Vowel{Mid, Central, Unrounded}, 'E', "ë"},
-	{Vowel{Mid, Back, Rounded}, 'o', "o"},
 	{Vowel{Mid, Front, Rounded}, 'O', "ö"},
-	{Vowel{Low, Central, Unrounded}, 'a', "a"},
-	{Vowel{Low, Back, Unrounded}, 'A', "ä"},
+	{Vowel{Mid, Back, Unrounded}, 'E', "ë"},
+	{Vowel{Mid, Back, Rounded}, 'o', "o"},
+	{Vowel{Low, Front, Unrounded}, 'A', "ä"},
+	{Vowel{Low, Back, Unrounded}, 'a', "a"},
 }
 
 // VowelFormTable holds §1.6's 4 series x 9 forms, the pattern that

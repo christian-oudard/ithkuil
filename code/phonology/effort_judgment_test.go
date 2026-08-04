@@ -7,13 +7,23 @@ import "testing"
 // bears directly on effort: the corpus shows which spellings Quijada
 // chose, but not which of two clusters is easier to say.
 //
-// The model agrees with six of the twenty. This test is skipped rather
-// than deleted or made to pass, because what it records is a target,
-// and the gap between it and the model is the work. See
-// docs/romanization_design.md.
+// The model reached seventeen of twenty once the four gaps below were
+// closed. It stays skipped because three remain, and because what it
+// records is a target rather than a guarantee.
 //
-// Four structural gaps show up in the disagreements, and none of them
-// is a matter of adjusting a weight:
+// Still open:
+//
+//   - afta over asta. f and s are both cheap fricatives before a stop
+//     and nothing separates the clusters.
+//   - axla over aţla. Uvular is priced dear so that ř outranks r, but
+//     x is uvular too and the speaker finds it easy. ř's cost belongs
+//     to being a rhotic, not to being uvular, and there is no rhotic
+//     term.
+//   - anka over anta. A homorganic nasal and stop should cost more
+//     than a heterorganic pair, which is the OCP arm's job, but the
+//     travel term more than repays it over that distance.
+//
+// The four gaps that were closed, none of which was a weight:
 //
 //  1. Distance is symmetric, so nothing can tell tl from lt. The
 //     speaker prefers alta to atla ("less stoppage of airflow"), and
@@ -37,7 +47,7 @@ import "testing"
 //     Similarity avoidance should peak at small non-zero distance and
 //     vanish at zero, not peak at zero.
 func TestEffortMatchesSpeakerJudgments(t *testing.T) {
-	t.Skip("records the target; the model agrees with 6 of 20")
+	t.Skip("17 of 20; the three that remain are noted above")
 
 	// easier, harder
 	judgments := [][2]string{

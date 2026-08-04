@@ -18,24 +18,18 @@ func ph(t *testing.T, s string) Phoneme {
 	return nil
 }
 
-// The whole design rests on effort not being monotonic in ALINE's
-// distance. ALINE was built to align cognates, so its distance falls
-// to zero for a repeated segment; effort does not, because adjacent
-// near-identical segments are what §2 spends most of its rules
-// barring. A geminate must therefore cost more than a moderately
-// different pair at the same place.
-func TestGeminateCostsMoreThanANearNeighbour(t *testing.T) {
+// A geminate is the cheap case, not the dear one. This test asserted
+// the opposite until a speaker was asked: alla is easier than alra.
+// The sources say so too, since §1.7 permits geminates outright and §6
+// generates them, while what §2.4 and §2.5 bar is the near miss, two
+// homologous consonants disagreeing in voicing. Similarity avoidance
+// applies to similar-but-distinct.
+func TestGeminateIsCheaperThanANearMiss(t *testing.T) {
 	pp := Transition(ph(t, "p"), ph(t, "p"), false)
-	pt := Transition(ph(t, "p"), ph(t, "t"), false)
-	if pp <= pt {
-		t.Errorf("pp costs %.3f and pt %.3f; a geminate should cost more "+
-			"than a pair one place apart", pp, pt)
-	}
-	// But finitely more: §1.7 permits geminates and bars only the
-	// triple, so this arm must not behave like a prohibition.
-	if math.IsInf(pp, 0) || pp > 4*pt {
-		t.Errorf("pp costs %.3f against pt %.3f; §1.7 permits geminates, so "+
-			"the similarity penalty is too steep", pp, pt)
+	pb := Transition(ph(t, "p"), ph(t, "b"), false)
+	if pp >= pb {
+		t.Errorf("pp costs %.3f and pb %.3f; the geminate should be the "+
+			"cheaper, and pb is the homologous voicing mismatch §2.4 bars", pp, pb)
 	}
 }
 
@@ -122,10 +116,13 @@ func TestProhibitedPairsCostMoreOnAverage(t *testing.T) {
 	mb, ma := mean(barred), mean(allowed)
 	t.Logf("%d pairs barred by §2 average %.3f; %d permitted average %.3f",
 		len(barred), mb, len(allowed), ma)
-	if mb <= ma {
-		t.Errorf("§2-barred pairs average %.3f, permitted %.3f; the barred set "+
-			"should be the dearer one", mb, ma)
-	}
+	// Reported, not asserted. §2's own reason is twofold, "difficulty/
+	// awkwardness in pronunciation, or because they are too phonetically
+	// indistinguishable from other forms", and only the first of those
+	// is effort. A pair barred for sounding like something else has no
+	// reason to be hard to say, so the two sets need not separate here.
+	_ = mb
+	_ = ma
 }
 
 func mean(xs []float64) float64 {

@@ -1,5 +1,7 @@
 package phonology
 
+import "math"
+
 // Articulatory effort, as a cost per transition between two adjacent
 // segments. See docs/romanization_design.md for what this is for: one
 // grammar admits several legal spellings, and the cheapest to say is
@@ -161,8 +163,8 @@ func Transition(a, b Phoneme, across bool) float64 {
 		}
 	}
 	d := Distance(a, b)
-	cost := d * travelWeight
-	cost += similarityPenalty / (d + similarityFloor)
+	cost := d*travelWeight + risingSonority(a, b)
+	cost += ocp(d)
 	if across && isConsonant(a) && isConsonant(b) && !isGlottalStop(b) {
 		// §1.5 conditions its remedy on both sides being consonants:
 		// "When a word ending in a consonant-form ... is followed in
@@ -328,8 +330,8 @@ func spanEnergy(words []string) float64 {
 				}
 				prev, havePrev, first = glottalStop, true, false
 			}
-			total += segmentCost
-			total += segmentCost
+			total += SegmentCost(p)
+			total += SegmentCost(p)
 			if havePrev {
 				total += Transition(prev, p, prevWordEnd && first)
 			}
@@ -358,3 +360,131 @@ var textOf = func() map[Phoneme]string {
 func isPermissibleDiphthong(a, b Vowel) bool {
 	return permissibleDiphthongs[textOf[a]+textOf[b]]
 }
+
+// Everything below is fitted to twenty pairwise judgments from a
+// speaker; see effort_judgment_test.go, which holds them. The
+// borrowed parameters above answer "how unlike are these two
+// segments", which is what ALINE was built for and is not the same
+// question. These answer "which is harder to say", which is.
+//
+// The numbers are therefore ours and the citations do not cover them.
+// What is borrowed here is only the vocabulary: place, manner, voicing
+// and rounding are the axes; the weights on them are the speaker's.
+
+// SegmentCost is the effort of producing one segment, before anything
+// about what sits beside it. Most of the speaker's judgments are of
+// this kind rather than about a junction: l easier than r easier than
+// ř, y easier than w, i easier than u, s easier than ţ and than š,
+// voiceless easier than voiced, dental easier than bilabial.
+func SegmentCost(p Phoneme) float64 {
+	switch v := p.(type) {
+	case Vowel:
+		c := baseSegment
+		if v.Rounding == Rounded {
+			// The speaker preferred i to u and y to w, giving the same
+			// reason both times: rounding is extra work.
+			c += roundingCost
+		}
+		return c
+	case Consonant:
+		c := baseSegment + placeCost[v.Place] + mannerCost[v.Manner]
+		if v.Voicing == Voiced {
+			// "voicedness is harder": holding voicing through a
+			// constriction is an active gesture, which is also why
+			// Kirchner's geminates resist lenition.
+			c += voicingCost
+		}
+		if v.Secondary == Labialized {
+			c += roundingCost
+		}
+		return c
+	}
+	return baseSegment
+}
+
+// placeCost ranks the places by how much work the speaker found them.
+// Apico-alveolar is the rest position and cheapest; the labials cost
+// because the lips must move, and the back places because the tongue
+// body must. Fitted, not measured.
+var placeCost = map[Place]float64{
+	ApicoAlveolar:     0.00, // s z c ẓ l ļ, the cheapest
+	ApicoDental:       0.01, // t d n; the speaker put these under the labials
+	InterDental:       0.04, // ţ ḑ, dearer than s
+	AlveolarRetroflex: 0.03, // r, dearer than l
+	AlveoloPalatal:    0.05, // š ž č j, dearer than s
+	Palatal:           0.02, // ç y
+	Labial:            0.03, // p b m, dearer than the dentals
+	LabioDental:       0.02, // f v
+	Velar:             0.02, // k g ň w
+	Uvular:            0.05, // x ř, dearest; ř above r
+	Glottal:           0.02, // ' h
+}
+
+// mannerCost separates l from r beyond what place already does, and
+// keeps the obstruents above the sonorants.
+var mannerCost = map[Manner]float64{
+	Stop:          0.03,
+	Affricate:     0.03,
+	Fricative:     0.02,
+	LateralFric:   0.02,
+	Nasal:         0.01,
+	Tap:           0.02, // r: a ballistic gesture, dearer than a lateral
+	Trill:         0.04,
+	LateralApprox: 0.00, // l: the cheapest consonant the speaker named
+	Approximant:   0.01,
+}
+
+// risingSonority charges a cluster whose sonority rises. The speaker
+// preferred alta to atla, "less stoppage of airflow": in alta the
+// liquid closes one syllable and the stop opens the next, while atla
+// asks for a stop released straight into a liquid. Nothing else in the
+// model can see this, because Distance is symmetric.
+//
+// The sources are directional in the same way. §2.5 permits cč and cj
+// while barring čc and čẓ; §2.9 bars an affricate before a sibilant
+// fricative but not the reverse; §2.18 bars dļ, gļ and bļ but not ļd,
+// ļg or ļb.
+func risingSonority(a, b Phoneme) float64 {
+	ca, ok := a.(Consonant)
+	if !ok {
+		return 0
+	}
+	cb, ok := b.(Consonant)
+	if !ok {
+		return 0
+	}
+	// mannerCoord runs high for obstruents, so a fall in it is a rise
+	// in sonority.
+	if mannerCoord[ca.Manner] > mannerCoord[cb.Manner] {
+		return risingSonorityCost
+	}
+	return 0
+}
+
+// ocp is the similarity-avoidance arm, rebuilt. It vanishes for a
+// geminate and peaks just above: the speaker found alla easier than
+// alra, and the sources agree, since §1.7 permits geminates outright
+// and §6 generates them, while what §2.4 and §2.5 bar is the near
+// miss, two homologous consonants disagreeing in voicing. Avoidance
+// applies to similar-but-distinct, not to identity.
+func ocp(d float64) float64 {
+	if d <= 0 {
+		return 0
+	}
+	x := d / ocpPeak
+	return ocpWeight * x * math.Exp(1-x)
+}
+
+const (
+	// baseSegment is what any segment costs before its features.
+	baseSegment = 0.05
+
+	voicingCost        = 0.03
+	roundingCost       = 0.03
+	risingSonorityCost = 0.04
+
+	// ocpWeight is the height of the similarity bump and ocpPeak the
+	// distance at which it sits: near-misses, not identities.
+	ocpWeight = 0.30
+	ocpPeak   = 14.0
+)
