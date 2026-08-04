@@ -60,6 +60,15 @@ func (fs *flagSet) permute(args []string) (flags, rest []string) {
 			rest = append(rest, args[i+1:]...)
 			break
 		}
+		// A root or affix is cited as "-tkw-", which is how this
+		// program prints one, so an argument in that shape is the
+		// query and not a flag. Copying a root out of the output and
+		// searching for it otherwise failed as an undefined flag. No
+		// declared flag ends in "-", so nothing else has this shape.
+		if len(a) > 2 && a[0] == '-' && a[len(a)-1] == '-' {
+			rest = append(rest, a)
+			continue
+		}
 		if len(a) > 1 && a[0] == '-' {
 			flags = append(flags, a)
 			if takesValue[a] && i+1 < len(args) {

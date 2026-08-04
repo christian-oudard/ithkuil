@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/christian-oudard/ithkuil/corpus"
 	"github.com/christian-oudard/ithkuil/dictionary"
@@ -395,6 +396,13 @@ func (a *API) Search(query string, opts SearchOptions) SearchResult {
 		Roots:   []RootHit{},
 		Affixes: []Affix{},
 	}
+	// A root or affix is cited with hyphens either side, "-tkw-", and
+	// that is how every one of this module's callers prints one. The
+	// cluster is stored without them, so a reader searching for what
+	// they had just been shown found nothing. Trimming here rather than
+	// in the CLI, because the browser and the MCP server display the
+	// same citation form and would each have needed the same repair.
+	query = strings.Trim(query, "-")
 	switch {
 	case opts.Form:
 		// A written form is a question about the grammar alone. Asking

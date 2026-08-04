@@ -775,6 +775,28 @@ func TestSearch_FormSaysItSkippedTheLexicon(t *testing.T) {
 	}
 }
 
+// A root is printed as "-tkw-", so that is what a reader copies back
+// into the search box. It was rejected twice over: the leading hyphen
+// made the flag parser call it an undefined flag, and the cluster is
+// stored without hyphens, so even reaching the lexicon it would have
+// matched nothing. The program has to accept the form it prints.
+func TestSearch_AcceptsTheCitationFormItPrints(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "search", "tkw")
+	if code != 0 {
+		t.Fatalf("search exit %d", code)
+	}
+	if !strings.Contains(out, "-tkw-") {
+		t.Fatalf("search prints roots in citation form; got %q", out)
+	}
+	cited, errOut, code := runCLI("-data", dataFile(), "search", "-tkw-")
+	if code != 0 {
+		t.Fatalf("search -tkw- exit %d: %s", code, errOut)
+	}
+	if !strings.Contains(cited, "-tkw-") {
+		t.Errorf("searching the printed citation form found nothing; got %q", cited)
+	}
+}
+
 func TestSearch_NoMatches(t *testing.T) {
 	// An empty section is noise; nothing found says so once.
 	out, _, code := runCLI("-data", dataFile(), "search", "zzzznotaword")
