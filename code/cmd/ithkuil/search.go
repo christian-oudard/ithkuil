@@ -107,33 +107,6 @@ func cmdSearch(args []string, stdout, stderr io.Writer, dataFile string) int {
 	return 0
 }
 
-// grammarHits resolves the grammar half of a search.
-func grammarHits(query, category string, exact, formMode bool) []search.Entry {
-	if formMode {
-		hits := search.LookupForm(query)
-		if category != "" {
-			hits = filterByCategory(hits, category)
-		}
-		return hits
-	}
-	return search.Filter(category, query, exact)
-}
-
-func filterByCategory(in []search.Entry, cat string) []search.Entry {
-	out := make([]search.Entry, 0, len(in))
-	keep := search.Filter(cat, "", false)
-	allowed := map[string]struct{}{}
-	for _, e := range keep {
-		allowed[e.Category+"|"+e.Abbrev] = struct{}{}
-	}
-	for _, e := range in {
-		if _, ok := allowed[e.Category+"|"+e.Abbrev]; ok {
-			out = append(out, e)
-		}
-	}
-	return out
-}
-
 func printEntries(w io.Writer, hits []api.GrammarEntry) {
 	catW, abW, nmW, fmW := 8, 4, 4, 4
 	for _, h := range hits {

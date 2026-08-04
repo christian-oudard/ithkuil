@@ -943,10 +943,11 @@ func TestParse_ModularMultiSlot(t *testing.T) {
 	}
 }
 
-// TestSearch_FormWithCategory covers filterByCategory, which is live in
-// the binary and was reached by no test. It only runs for a written-form
-// lookup narrowed by category, the one combination the search tests did
-// not pair.
+// TestSearch_FormWithCategory pairs a written-form lookup with a
+// category, which the search tests had not done. The filtering moved
+// into api.Search when the CLI, the MCP server and the browser were put
+// behind one layer; this holds the CLI end of it, that the two flags
+// still compose.
 func TestSearch_FormWithCategory(t *testing.T) {
 	out, _, code := runCLI("-data", dataFile(), "search", "a", "--form", "--category", "Case")
 	if code != 0 {

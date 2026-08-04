@@ -432,15 +432,19 @@ func TestParse_BreakdownForEveryClassThatHasOne(t *testing.T) {
 // about a chain.
 func TestParse_ChainSplitsIntoMembers(t *testing.T) {
 	a := loaded(t)
+	// A §3.1.7 chain is written with a hyphen joining its members. The
+	// sample has to contain one: with two ordinary words here the
+	// search below found nothing, took the skip, and the assertions
+	// never ran.
 	var chain *Word
-	for _, w := range a.Parse("hwaisxalaň'a walaharzatļu'a") {
+	for _, w := range a.Parse("hakšiţé-alcialu'a") {
 		if w.Type == "Concat" {
 			chain = &w
 			break
 		}
 	}
 	if chain == nil {
-		t.Skip("no chain in the sample; the corpus test covers the sweep")
+		t.Fatal("hakšiţé-alcialu'a is a concatenation chain and should classify as one")
 	}
 	if len(chain.Members) < 2 {
 		t.Fatalf("chain has %d members, want at least 2", len(chain.Members))
