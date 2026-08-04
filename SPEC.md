@@ -46,6 +46,8 @@ A §4.6.3 carrier adjunct makes the word after it foreign. Nothing marks that ei
 
 The comma is not in this list, and is not gloss punctuation. It belongs to the digraph notation the root is spelled in, where `t,` is ţ, so `nt,l` is one root and not three slots.
 
+A gloss assigns each grammatical category once, and assigning one twice is an error rather than a last-write-wins. Categories that share a written slot count as one, since only one of them survives into the word; categories that merely sit in the same slot stay distinct and compose as the punctuation says. A stacked Ca is its own scope, being a second complex rather than a second assignment to the first.
+
 The rule is what keeps the syntax extensible. Anything that binds a case to a head reads `HEAD/CASE`, whether it comes from §3.9.2, §4.6.5, or the second referent of a §4.6.1 referential, so the three do not have to be told apart by name. A construct that would need a new sense of an existing mark needs a new mark instead.
 
 The same rule decides when a construct gets no mark at all. A §4.6.1 second case with no referent of its own stacks onto the head rather than binding to anything, so it stays a plain slot: `1m-THM-ERG` stacks, `1m-THM-[2m]/IND` binds. And a §4.6.3 suppletive-headed referential needs no sigil to tell it from the carrier adjunct it resembles, because a carrier adjunct holds one case and nothing else — the extra slots are themselves the signal.
@@ -86,7 +88,7 @@ Coverage of English is partial and stays that way. The index says what the lexic
 
 ## Reading failures
 
-Reading a romanization passes through four stages, each of which presupposes the one before it. A failure belongs to exactly one stage, and naming that stage is most of the diagnosis.
+Reading passes through four stages, each of which presupposes the one before it. A failure belongs to exactly one stage, and naming that stage is most of the diagnosis. The stages are the same whichever arm is being read: a gloss carries Ithkuil text inside it, so a root cluster written there reaches the first two stages exactly as a romanization does, and the gloss's punctuation grammar is its shape.
 
 1. **Characters.** A character outside the V4 alphabet. Nothing after this point can be trusted, so a character fault is reported on its own rather than followed by the cluster and stress complaints that reading garbage would produce.
 2. **Sound.** Legal letters in an arrangement that cannot be pronounced: a §2 cluster rule, or a stress mark that cannot be read.
@@ -100,6 +102,12 @@ The stages differ in how much they can report. A character fault knows every off
 That last case is the one worth reporting well, because the word is well-formed and only its content is wrong. The slots that read correctly stay visible beside the ones that did not, so the reader sees the parse that was achieved and the single place it failed.
 
 Word class is decided by attempting each class in turn, so a word that no class claims has failed several times over. Reporting all of those attempts would bury the answer: the useful fault is the one from the class that read furthest before giving up, and that is what a reader is shown.
+
+Once a reading has committed to a shape it is judged as that shape. A token that carries the mark binding an argument to a head has said what it is; re-reading it as something with no such mark, because the argument turned out to be wrong, describes it as a thing it never was and sends the reader to look in the wrong half of it.
+
+Reading does not stop at the first failure where it does not have to. Everything the reader can still judge is judged, and every fault it finds is reported together, because a writer holding three problems should not have to find them one attempt at a time. What survives a failure differs by stage, as above.
+
+Faults travel as data, not only as prose. Every interface that reports one carries the stage, the code, the offending text and the sentence, so a program acting on a failure never has to match the wording. Both are sent, because neither answers the other's question. A failure that is not a reading — an argument the caller left out — carries no faults at all rather than an empty list, so the two cases stay distinguishable.
 
 ## Cross-format conversion
 
