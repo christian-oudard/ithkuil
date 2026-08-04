@@ -126,3 +126,18 @@ are the live list rather than anything written here:
   A speaker judged -**tr** "not that bad", so §4.2.1 may be stricter
   than the mouth requires. That does not change the fix: the repair
   exists and the renderer should use it either way.
+
+  Enforcing §4.2 also trips `FuzzClassifyWord`, which holds the
+  invariant that anything `phonology.CheckText` rejects must not parse.
+  With §4.2 on, `xaheitr` fails CheckText while the adjunct parser still
+  reads it. That is the lenient-reading against canonical-writing
+  question rather than a defect, and it wants deciding before the
+  enforcement lands: we would never emit `xaheitr` once the renderer
+  writes V_Z, but refusing to read it is a separate choice.
+
+  The renderer half was written and reverted with the rest. Two things
+  it established. V_Z cannot be restored as "a": an elided V_Z means
+  "the same scope as C_Z", not a default value, so spelling it out
+  writes the vowel naming that scope, and "a" would say VDom. V_S is not
+  like that — §4.1.1's "(a)" really is the value — so the two slots need
+  different treatment despite looking alike.

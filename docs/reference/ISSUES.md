@@ -45,7 +45,7 @@ in the transcription.
 | `morphology.md` §8 | §6.4 of Lexicon for New Ithkuil, v1.0 (Feb. 9, 2023) | transcription under our own chapter number |
 | `phonotactics.md` | Phonotactic Rules for the Ithkuil Successor Language, v0.5.4, 24 pp. | transcription |
 | `affixes_reference.md` | `data/data.json`, reconciled against V_XC_S Affixes for New Ithkuil v1.1 | generated content |
-| `source_versions.md` | the version histories of the above | transcription |
+| `READING.md` | the version histories of the above | transcription |
 
 Every chapter of `morphology.md` now has a layer-1 source. §8 did not
 until the lexicon document was obtained: the grammar document ends at

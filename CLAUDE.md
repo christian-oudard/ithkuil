@@ -167,7 +167,7 @@ spellings cannot reach the code deciding what is legal.
   amendments. Permanent, and checked against the code by `phonology/errata_test.go`.
 - `docs/reference/ISSUES.md` - Worklist of defects in the published sources that we
   have not yet decided about. Drains into `ERRATA.md` and will be deleted at zero.
-- `docs/reference/source_versions.md` - Quijada's published version history for the three documents. The documents themselves carry only the current version.
+- `docs/reference/READING.md` - two facts a section number will not tell you: the site is a third document, and the two PDFs collide on §1.5, §1.6, §1.7 and §4.2.
 - Source PDFs and any intermediate extraction output (html, per-page pdf) go outside the repo, under `$XDG_DATA_HOME/ithkuil/reference/`.
 
 `morphology.md` and `phonotactics.md` began as transcriptions of
