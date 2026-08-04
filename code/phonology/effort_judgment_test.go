@@ -107,6 +107,21 @@ func TestEffortMatchesSpeakerJudgments(t *testing.T) {
 		{"mala", "malala"},     // and again, with no cluster difference at all
 	}...)
 
+	// The a/ë split in the diphthongs is the speaker's own point, and
+	// §1.2.1 gives it a mechanism. Both are back unrounded in §1.1 and
+	// differ only in height, but ë is "[ɤ] or [ʌ] or [ə]", and the last
+	// of those is central. From a, firmly low and back, au is a
+	// vertical move and ai a diagonal one, so travel decides and the
+	// back element wins. From ë as a schwa the two are near symmetric,
+	// travel cancels, and the second element's own cost decides, which
+	// is i over u exactly as mila over mula and mila over müla say.
+	//
+	// So a diphthong costs travel from first element to second plus the
+	// second element's own cost, and which term dominates depends on
+	// where the first element sits. One mechanism rather than ten free
+	// parameters. Untested predictions: oi should lose to ou, and ei
+	// should beat eu decisively.
+
 	// The speaker later graded these: x is "hard-ish" and ř "pretty
 	// hard", so the ordering is ţ then x then ř. Uvular is a costly
 	// place and a rhotic costs again on top of it. That makes batch
