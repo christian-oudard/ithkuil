@@ -47,7 +47,7 @@ import "testing"
 //     Similarity avoidance should peak at small non-zero distance and
 //     vanish at zero, not peak at zero.
 func TestEffortMatchesSpeakerJudgments(t *testing.T) {
-	t.Skip("17 of 20; the three that remain are noted above")
+	t.Skip("36 of 48; the model has not caught up with the second batch")
 
 	// easier, harder
 	judgments := [][2]string{
@@ -72,6 +72,45 @@ func TestEffortMatchesSpeakerJudgments(t *testing.T) {
 		{"anka", "anta"}, // non-homorganic easier than homorganic
 		{"alla", "alra"}, // a geminate is easier than two liquids
 	}
+
+	// Batch two. Vowels, which batch one omitted entirely, plus the
+	// contrasts batch one left open.
+	judgments = append(judgments, [][2]string{
+		{"mela", "mala"},       // e easier than a
+		{"mila", "mula"},       // i easier than u
+		{"mala", "mäla"},       // a easier than ä
+		{"mela", "möla"},       // rounding costs at mid front
+		{"mila", "müla"},       // rounding costs at high
+		{"mola", "mëla"},       // but o beats ë: ë is the marked one, not u
+		{"maula", "maila"},     //
+		{"meila", "moila"},     //
+		{"miula", "muila"},     // diphthongs are order-sensitive too
+		{"maola", "maöla"},     //
+		{"malaula", "malaila"}, //
+		{"arta", "ařta"},       // r easier than ř
+		{"axta", "ařta"},       // x easier than ř, though both are uvular
+		{"axla", "ařla"},       // so ř is dear for being a rhotic, not uvular
+		{"aţma", "axma"},       // but ţ beats x here, where axla beat aţla
+		{"asta", "assa"},       // an obstruent geminate is NOT cheap
+		{"asta", "atta"},       // nor is a stop geminate
+		{"alla", "anna"},       // sonorant geminates are, and l over n
+		{"aspa", "apsa"},       // falling sonority again
+		{"arpa", "apra"},       // and again
+		{"alna", "anla"},       // and again
+		{"alka", "asta"},       //
+		{"anta", "asta"},       //
+		{"afna", "afma"},       // n easier than m, as in batch one
+		{"afma", "avma"},       // voiceless easier than voiced, as in batch one
+		{"asma", "aţma"},       // s easier than ţ, as in batch one
+		{"asta", "astra"},      // shorter is easier: length is real
+		{"mala", "malala"},     // and again, with no cluster difference at all
+	}...)
+
+	// The speaker later graded these: x is "hard-ish" and ř "pretty
+	// hard", so the ordering is ţ then x then ř. Uvular is a costly
+	// place and a rhotic costs again on top of it. That makes batch
+	// one's axla over aţla the outlier, and it was hedged as "slightly"
+	// when given.
 
 	agree := 0
 	for _, j := range judgments {

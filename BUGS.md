@@ -87,3 +87,12 @@ are the live list rather than anything written here:
 - `roman/corpus_test.go`, official examples that do not classify.
 - the Discord word list, community words, where a leading `!`
   marks one we disagree with.
+
+- Tri-consonantal conjuncts are validated pairwise, not against §9's
+  table. §9 is a whitelist: for medial **b**, the row whose initials
+  include **f** permits only `vlrwyř` as the third consonant, so `fbm`
+  is not on it. `phonology.ClusterLegal("fbm")` returns true anyway,
+  because `fb` and `bm` are each permissible per §8 and nothing
+  consults §9. `phonology/section9_test.go` cannot see this: it expands
+  §9's rows and asserts each is legal, which tests only what the
+  whitelist admits, never what it should exclude.
