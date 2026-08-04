@@ -85,10 +85,7 @@ are the live list rather than anything written here:
   `section9_test.go` expands the whitelist and asserts each entry is
   legal, which tests what it admits and never what it excludes.
 
-- §4.2's word-final conjunct rules are not enforced, and enforcing them
-  as written breaks the renderer. §4.1's bans on final -**w**, -**y**
-  and the glottal stop are checked; §4.2.1 through §4.2.12, which say
-  which bi-consonantal conjuncts may end a word, are not.
+
 
   Implementing them was tried and reverted. Two things it found:
 
