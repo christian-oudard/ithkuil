@@ -120,8 +120,8 @@ grammar.
 ## Settled
 
 Removed from the list below; the reasoning is in the commit that
-settled each. Kept as a ledger because the proportion is the useful part. Twelve of
-the fourteen were defects in our own transcription, not in Quijada;
+settled each. Kept as a ledger because the proportion is the useful part. Thirteen of
+the fifteen were defects in our own transcription, not in Quijada;
 one was a transposition in the community spreadsheet; one was a real
 gap in the published data that turned out to be recoverable. None was
 a defect in the language.
@@ -142,6 +142,7 @@ a defect in the language.
 | G34 | Our markdown lost three of the seven case-accessor affixes |
 | G38 | §3.5.0's gradient-type descriptions were ours, and four were wrong |
 | G46 | §4.4's END adjunct is hü; our markdown added an i in three of four places |
+| G51 | the OPTIMAL bias is ççk; the affricate spelling was ours, and outlived its own correction |
 
 ## Affix table
 
