@@ -1,0 +1,81 @@
+package phonology
+
+import "testing"
+
+// Twenty pairwise judgments from a speaker, each pair differing only in
+// its medial cluster. These are the only calibration data we have that
+// bears directly on effort: the corpus shows which spellings Quijada
+// chose, but not which of two clusters is easier to say.
+//
+// The model agrees with six of the twenty. This test is skipped rather
+// than deleted or made to pass, because what it records is a target,
+// and the gap between it and the model is the work. See
+// docs/romanization_design.md.
+//
+// Four structural gaps show up in the disagreements, and none of them
+// is a matter of adjusting a weight:
+//
+//  1. Distance is symmetric, so nothing can tell tl from lt. The
+//     speaker prefers alta to atla ("less stoppage of airflow"), and
+//     the source is directional in several places too: §2.5 permits cč
+//     and cj while barring čc and čẓ, §2.9 is one-directional, §2.18
+//     bars dļ gļ bļ but not ļd ļg ļb.
+//
+//  2. Segments have no cost of their own, only transitions. Most of
+//     these judgments are about a segment rather than a junction: l
+//     easier than r easier than ř, y easier than w, i easier than u, s
+//     easier than ţ and than š, voiceless easier than voiced.
+//
+//  3. Rounding is not charged. w over y and u over i are the same
+//     judgment twice, and the speaker gave the same reason both times.
+//
+//  4. The similarity penalty has the wrong shape at zero. It is
+//     largest for a geminate, and the speaker finds alla easier than
+//     alra. That is also what the sources say: §1.7 permits geminates
+//     outright and §6 generates them, while what §2.4 and §2.5 bar is
+//     the near-miss, two homologous consonants disagreeing in voicing.
+//     Similarity avoidance should peak at small non-zero distance and
+//     vanish at zero, not peak at zero.
+func TestEffortMatchesSpeakerJudgments(t *testing.T) {
+	t.Skip("records the target; the model agrees with 6 of 20")
+
+	// easier, harder
+	judgments := [][2]string{
+		{"anta", "ampa"}, // dental easier than bilabial
+		{"apta", "abda"}, // voicing is work
+		{"alta", "atla"}, // less stoppage of airflow
+		{"aiya", "aiwa"}, // y easier than w
+		{"aiva", "auva"}, // i easier than u
+		{"afta", "asta"}, //
+		{"alka", "arka"}, // l easier than r
+		{"ehla", "ehra"}, // l easier than r
+		{"ehya", "ehwa"}, // y easier than w
+		{"anla", "amla"}, // dental easier than bilabial
+		{"arla", "ařla"}, // r easier than ř
+		{"akya", "akwa"}, // y easier than w
+		{"asra", "aţra"}, // s easier than ţ
+		{"aska", "aţka"}, // s easier than ţ
+		{"alţa", "arţa"}, // l easier than r
+		{"apla", "apra"}, // l easier than r
+		{"axla", "aţla"}, // x easier than ţ, slightly
+		{"asta", "ašta"}, // s easier than š
+		{"anka", "anta"}, // non-homorganic easier than homorganic
+		{"alla", "alra"}, // a geminate is easier than two liquids
+	}
+
+	agree := 0
+	for _, j := range judgments {
+		easier, harder := Energy(j[0]), Energy(j[1])
+		if easier < harder {
+			agree++
+			continue
+		}
+		verdict := "scores them equal"
+		if easier > harder {
+			verdict = "has it backwards"
+		}
+		t.Errorf("%s should be easier than %s; model %s (%.3f vs %.3f)",
+			j[0], j[1], verdict, easier, harder)
+	}
+	t.Logf("agrees with %d of %d", agree, len(judgments))
+}
