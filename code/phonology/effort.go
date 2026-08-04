@@ -140,7 +140,25 @@ func Transition(a, b Phoneme, across bool) float64 {
 	// every added syllable dear enough to need an inflated boundary
 	// penalty to overcome.
 	if isConsonant(a) != isConsonant(b) {
+		// A glottal stop is not an unmarked onset. It is a complete
+		// closure of the glottis, so it interrupts the voice stream
+		// rather than opening into it, and §1.7 spends a whole section
+		// on where one may be put. Pricing it as an ordinary syllable
+		// made a'u cheaper than the diphthong au.
+		if isGlottalStop(a) || isGlottalStop(b) {
+			return glottalStopCost
+		}
 		return syllableCost
+	}
+	// A permissible diphthong is one gesture, not two vowels colliding:
+	// §1.2.1 names the ten falling diphthongs, and the tongue glides
+	// through them without a second constriction. Sending them through
+	// the curve charged them the similarity penalty meant for two
+	// consonants at the same place.
+	if va, ok := a.(Vowel); ok {
+		if vb, ok := b.(Vowel); ok && isPermissibleDiphthong(va, vb) {
+			return syllableCost
+		}
 	}
 	d := Distance(a, b)
 	cost := d * travelWeight
@@ -192,6 +210,13 @@ const (
 	// the unmarked one, and cheaper than any consonant meeting another
 	// consonant.
 	syllableCost = 0.05
+
+	// glottalStopCost is a glottal stop beside a vowel. A complete
+	// closure interrupting the voice stream, so dearer than an
+	// ordinary onset, and dear enough that a diphthong beats the same
+	// two vowels split by one. §1.7 treats its placement as something
+	// to be decided rather than done freely.
+	glottalStopCost = 0.5
 
 	// segmentCost is charged once per segment, and is the only reason
 	// a longer word costs more than a shorter one. Length belongs here
@@ -318,4 +343,18 @@ func spanEnergy(words []string) float64 {
 func isGlottalStop(p Phoneme) bool {
 	c, ok := p.(Consonant)
 	return ok && c.Place == Glottal && c.Manner == Stop
+}
+
+// textOf is the reverse of phonemeOf, for the few places that need to
+// ask a table keyed by spelling about a phoneme.
+var textOf = func() map[Phoneme]string {
+	m := map[Phoneme]string{}
+	for _, e := range append(append([]PhonemeEntry{}, Consonants...), Vowels...) {
+		m[e.Phoneme] = e.Text
+	}
+	return m
+}()
+
+func isPermissibleDiphthong(a, b Vowel) bool {
+	return permissibleDiphthongs[textOf[a]+textOf[b]]
 }
