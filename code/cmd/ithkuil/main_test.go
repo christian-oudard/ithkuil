@@ -749,6 +749,32 @@ func TestSearch_LexiconAffix(t *testing.T) {
 	}
 }
 
+// --form searches the grammar inventory alone, deliberately: asking the
+// lexicon which root contains the letters of a vowel-form buries the
+// answer in substring noise. But an empty answer that does not say so
+// reads as "no such form anywhere", and it is not — "tkw" under --form
+// finds nothing while the plain query finds the root -tkw- with four
+// stems. Nothing recorded the difference, and a bare "no matches" is
+// how a present root gets read as an absent one.
+func TestSearch_FormSaysItSkippedTheLexicon(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "search", "tkw", "--form")
+	if code != 0 {
+		t.Fatalf("search exit %d", code)
+	}
+	if !strings.Contains(out, "grammar inventory") {
+		t.Errorf("empty --form result should name the half it searched; got %q", out)
+	}
+	// The same query without the flag has to find the root, or the
+	// message above is describing a difference that is not there.
+	out, _, code = runCLI("-data", dataFile(), "search", "tkw")
+	if code != 0 {
+		t.Fatalf("search exit %d", code)
+	}
+	if !strings.Contains(out, "-tkw-") {
+		t.Errorf("plain search should find the root -tkw-; got %q", out)
+	}
+}
+
 func TestSearch_NoMatches(t *testing.T) {
 	// An empty section is noise; nothing found says so once.
 	out, _, code := runCLI("-data", dataFile(), "search", "zzzznotaword")

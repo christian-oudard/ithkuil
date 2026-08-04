@@ -24,7 +24,7 @@ func cmdSearch(args []string, stdout, stderr io.Writer, dataFile string) int {
 	fs.describe("Search the grammar inventory and the lexicon.", "[QUERY]")
 	category := fs.String("category", "c", "", "CAT", "grammar: list only this category (Case, Aspect, Bias, …)")
 	exact := fs.Bool("exact", "e", false, "grammar: exact abbreviation match against the query")
-	formMode := fs.Bool("form", "f", false, "grammar: treat the query as a written form (vowel/consonant)")
+	formMode := fs.Bool("form", "f", false, "grammar only: treat the query as a written form (vowel/consonant)")
 	limit := fs.Int("limit", "n", 20, "N", "lexicon: maximum hits per kind (default 20)")
 	if err := fs.Parse(args); err != nil {
 		return 2
@@ -102,7 +102,16 @@ func cmdSearch(args []string, stdout, stderr io.Writer, dataFile string) int {
 	}
 
 	if !found {
-		fmt.Fprintln(stdout, "no matches")
+		// Naming the half that was searched, because --form searches
+		// the grammar inventory alone and a bare "no matches" reads as
+		// "no such form anywhere". It is not: "tkw" under --form finds
+		// nothing while the plain query finds the root -tkw-, and the
+		// empty answer said nothing about the difference.
+		if *formMode {
+			fmt.Fprintln(stdout, "no matches in the grammar inventory; --form does not search roots or affixes")
+		} else {
+			fmt.Fprintln(stdout, "no matches")
+		}
 	}
 	return 0
 }
