@@ -193,14 +193,20 @@ func buildReferential(
 	if len(parts) == 0 || parts[0] == "" {
 		return nil, syntax(text, "a referential is a referent list and a case, joined by \"-\"")
 	}
+	// Reading is permissive here as it is for a formative: a slot that
+	// fails records its fault and the rest are still read. The
+	// half-built Referential is discarded when anything failed, so
+	// carrying on costs nothing and spares the writer a round trip per
+	// problem.
+	var fs collected
 	c, ok := parseCaseName(parts[0])
 	if !ok {
-		return nil, inToken(text, unlisted(parts[0], "case", parts[0]))
+		fs.add(unlisted(parts[0], "case", parts[0]))
 	}
 	rest := parts[1:]
 	if len(rest) > 0 {
 		if spec, ok := parseSpecName(rest[0]); ok {
-			return buildCombinationRef(text, head, c, spec, rest[1:], affixes)
+			return buildCombinationRef(text, head, c, spec, rest[1:], affixes, &fs)
 		}
 	}
 	ref := g.Referential{Head: head, Case: c}
@@ -212,31 +218,40 @@ func buildReferential(
 			// "[refs]/CASE": a second referent carrying its own case.
 			end := strings.Index(p, "]")
 			if end < 1 || !strings.HasPrefix(p[end+1:], "/") {
-				return nil, inToken(text, syntax(p, "a second referent is written [refs]/CASE"))
+				fs.add(syntax(p, "a second referent is written [refs]/CASE"))
+				continue
 			}
 			refs, err := parseRefList(p[1:end])
 			if err != nil {
-				return nil, inToken(text, inToken(p, err))
+				fs.add(inToken(p, err))
+				continue
 			}
 			cv, ok := parseCaseName(p[end+2:])
 			if !ok {
-				return nil, inToken(text, unlisted(p[end+2:], "case", p[end+2:]))
+				fs.add(unlisted(p[end+2:], "case", p[end+2:]))
+				continue
 			}
 			if ref.Second != nil {
-				return nil, inToken(text, syntax(p, "a referential carries one second referent, and one is already set"))
+				fs.add(syntax(p, "a referential carries one second referent, and one is already set"))
+				continue
 			}
 			ref.Second = &g.SecondReferent{Case: cv, Refs: refs}
 		default:
 			// A bare case with no referent of its own stacks onto the head.
 			cv, ok := parseCaseName(p)
 			if !ok {
-				return nil, inToken(text, syntax(p, "a referential holds a referent list, a case, and at most one [refs]/CASE second referent"))
+				fs.add(syntax(p, "a referential holds a referent list, a case, and at most one [refs]/CASE second referent"))
+				continue
 			}
 			if ref.Second != nil {
-				return nil, inToken(text, syntax(p, "a referential stacks one second case, and one is already set"))
+				fs.add(syntax(p, "a referential stacks one second case, and one is already set"))
+				continue
 			}
 			ref.Second = &g.SecondReferent{Case: cv}
 		}
+	}
+	if err := fs.err(text); err != nil {
+		return nil, err
 	}
 	return ref, nil
 }
@@ -251,6 +266,7 @@ func buildCombinationRef(
 	spec g.Specification,
 	rest []string,
 	affixes map[string]lexicon.AffixEntry,
+	fs *collected,
 ) (g.Word, error) {
 	comb := g.CombinationReferential{Head: head, Case: c, Spec: spec}
 	for _, p := range rest {
@@ -264,12 +280,17 @@ func buildCombinationRef(
 		}
 		cv, ok := parseCaseName(p)
 		if !ok {
-			return nil, inToken(text, syntax(p, "a combination referential holds a referent list, a case, a specification, affixes, and at most one stacked case"))
+			fs.add(syntax(p, "a combination referential holds a referent list, a case, a specification, affixes, and at most one stacked case"))
+			continue
 		}
 		if comb.Case2 != nil {
-			return nil, inToken(text, syntax(p, "a combination referential stacks one case, and one is already set"))
+			fs.add(syntax(p, "a combination referential stacks one case, and one is already set"))
+			continue
 		}
 		comb.Case2 = &cv
+	}
+	if err := fs.err(text); err != nil {
+		return nil, err
 	}
 	return comb, nil
 }
@@ -573,21 +594,29 @@ func parseAffixualAdjunct(s string, affixes map[string]lexicon.AffixEntry) (g.Wo
 		affix g.Affix
 		scope g.AffixScope
 	}
+	// Every element is read before any failure is reported, so an
+	// adjunct with two unknown affixes names both.
+	var fs collected
 	elems := make([]element, 0, len(parts))
 	for _, p := range parts {
 		if strings.HasPrefix(p, "{") && strings.HasSuffix(p, "}") {
 			scope, ok := parseScopeName(p[1 : len(p)-1])
 			if !ok {
-				return nil, unlisted(p, "scope", p)
+				fs.add(unlisted(p, "scope", p))
+				continue
 			}
 			elems = append(elems, element{kind: "scope", scope: scope})
 			continue
 		}
 		a, err := parseAffixField(p, affixes)
 		if err != nil {
-			return nil, err
+			fs.add(err)
+			continue
 		}
 		elems = append(elems, element{kind: "affix", affix: a})
+	}
+	if err := fs.err(s); err != nil {
+		return nil, err
 	}
 	// Count affixes and lay them out with scope tails.
 	var first g.Affix

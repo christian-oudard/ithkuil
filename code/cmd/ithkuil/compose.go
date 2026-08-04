@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/christian-oudard/ithkuil/fault"
 )
@@ -79,6 +80,15 @@ func renderGlossFaults(w io.Writer, expr string, err error) {
 	fmt.Fprintf(w, "compose: cannot read %s\n", stylize(ansiBold, expr))
 	iw := indented(w, "  ")
 	for _, f := range fs.List {
-		fmt.Fprintf(iw, "%s %s\n", stylize(ansiRed, "\u2717"), f.Fix)
+		// The token goes in front unless the sentence already names
+		// it. Two slots of one kind raise the same sentence twice —
+		// "a combination referential holds ..." for both ZZZ and XXX —
+		// and without the token the reader has two identical lines and
+		// no way to tell which is about what.
+		line := f.Fix
+		if f.Found != "" && !strings.Contains(f.Fix, f.Found) {
+			line = stylize(ansiBold, f.Found) + ": " + f.Fix
+		}
+		fmt.Fprintf(iw, "%s %s\n", stylize(ansiRed, "\u2717"), line)
 	}
 }

@@ -1,6 +1,6 @@
 package phonology
 
-import "fmt"
+import "github.com/christian-oudard/ithkuil/fault"
 
 // A parsing adjunct (§4.8, §2.3 ¶5) is a one-syllable word of the
 // shape 'V — a single vowel between two glottal stops — placed before
@@ -54,14 +54,18 @@ func ParsingAdjunct(word string) (Stress, bool) {
 func DeclareStress(word string, declared Stress) (string, error) {
 	bare, marked := Strip(word)
 	if marked == InvalidStress {
-		return "", fmt.Errorf("parsing adjunct declares %v for %q, which is not marked legibly", declared, word)
+		return "", fault.One(word, sound("stress", word,
+			"a §4.8 parsing adjunct declares "+declared.String()+
+				" for this word, and the word's own mark cannot be read"))
 	}
 	if marked != declared {
 		// Monosyllabic is not a placement, so a one-syllable word
 		// cannot carry a contradicting mark; anything else can.
 		if SyllableCount(bare) > 1 && marked != Penultimate {
-			return "", fmt.Errorf(
-				"parsing adjunct declares %v stress but %q is written with %v", declared, word, marked)
+			return "", fault.One(word, sound("stress", word,
+				"a §4.8 parsing adjunct declares "+declared.String()+
+					" stress and the word is written with "+marked.String()+
+					"; neither cue outranks the other, so write one or the other"))
 		}
 	}
 	return Apply(bare, declared), nil
