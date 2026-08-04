@@ -44,6 +44,12 @@ func (gl *Glosser) Token(t g.Word) string {
 	return gl.Word(t, nil, 0)
 }
 
+// Word is the no-lexicon convenience wrapper, and the inverse of
+// ParseWord: both take one word with no span around it.
+func Word(t g.Word) string {
+	return (&Glosser{}).Token(t)
+}
+
 // Word glosses the word at index i of span, using the span for the
 // facts that are not in the word. A nil span means there is none.
 func (gl *Glosser) Word(t g.Word, span g.Text, i int) string {

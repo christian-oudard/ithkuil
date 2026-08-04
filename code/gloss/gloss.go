@@ -13,20 +13,19 @@
 //	S2.PRC-ml-DYN.OBJ-MSS.G-ERG
 //
 // Each punctuation mark has exactly one job, so a token's kind can be
-// told from its shape without consulting the lexicon:
+// told from its shape without consulting the lexicon. The table of
+// marks is in SPEC.md, under "Gloss punctuation", and is not repeated
+// here: a copy of it lived in this comment and went stale, missing
+// three marks the code had since grown. TestDocumentedSyntaxExamples
+// composes every example in the SPEC table, so that one is checked and
+// a second copy could only ever drift away from it.
 //
-//	"-"  separates slots
-//	"."  joins category values within one slot
-//	"/"  binds an argument, a degree or a case, to a head
-//	"_"  trails a modifier, currently the affix Type
-//	":"  tags a structured body ("Ca:MSS.G", "NOM:1m")
-//	"()" wraps a head built from referents or a Cs
-//	"+"  joins referents
-//	"{}" marks something structural rather than a morpheme
-//
-// When a lexicon is supplied (via Glosser.Lex), roots show their
-// stem-selected meaning and affixes show their ABBREV/degree form;
-// otherwise both fall back to raw consonant clusters.
+// A gloss is one rendering, not a choice between a readable one and a
+// parseable one, so nothing here is for display only: every string
+// these functions write is a string ParseWord reads. A lexicon (via
+// Glosser.Lex) therefore does not change what a gloss says, only how
+// an affix is named — ABBREV/degree where the lexicon names the Cs,
+// and the raw cluster where it does not. Roots are always the cluster.
 package gloss
 
 import (

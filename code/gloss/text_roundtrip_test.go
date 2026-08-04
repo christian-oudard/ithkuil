@@ -172,6 +172,35 @@ func TestText_GlossSpanIsAFixedPoint(t *testing.T) {
 	}
 }
 
+// The package is three writers and three readers, paired by name and
+// by shape. Each pair is checked here at the package level, where the
+// no-lexicon wrappers live, because that is the surface the doc
+// comment promises and the one that went a version without a Word.
+func TestPackageWritersPairWithReaders(t *testing.T) {
+	lex := loadTextLex(t)
+
+	f := g.MinimalFormative("ml")
+	if back, err := gloss.ParseFormative(gloss.Formative(f), nil); err != nil {
+		t.Errorf("Formative/ParseFormative: %v", err)
+	} else if gloss.Formative(back) != gloss.Formative(f) {
+		t.Errorf("Formative/ParseFormative is not an identity on %q", gloss.Formative(f))
+	}
+
+	var w g.Word = f
+	if back, err := gloss.ParseWord(gloss.Word(w), lex); err != nil {
+		t.Errorf("Word/ParseWord: %v", err)
+	} else if gloss.Word(back) != gloss.Word(w) {
+		t.Errorf("Word/ParseWord is not an identity on %q", gloss.Word(w))
+	}
+
+	txt := g.Text{f, f}
+	if back, err := gloss.ParseText(gloss.Text(txt), lex); err != nil {
+		t.Errorf("Text/ParseText: %v", err)
+	} else if gloss.Text(back) != gloss.Text(txt) {
+		t.Errorf("Text/ParseText is not an identity on %q", gloss.Text(txt))
+	}
+}
+
 func loadTextLex(t *testing.T) *lexicon.Lexicon {
 	t.Helper()
 	st, err := store.Open(store.DefaultPath())
