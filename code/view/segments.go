@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/christian-oudard/ithkuil/allomorph"
+	"github.com/christian-oudard/ithkuil/gloss"
 	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
@@ -787,4 +788,73 @@ func stemNum(s g.Stem) int {
 		return 3
 	}
 	return 1
+}
+
+// GlossaryFromGloss expands every code in a gloss line, whatever word
+// class wrote it.
+//
+// The detailed view exists to say what the codes mean, and for most of
+// the word classes it did not: a formative had Glossary and a modular
+// adjunct had GlossaryModular, and an affixual adjunct, a carrier, a
+// referential, a bias or a register marker printed their gloss and the
+// name of their class and stopped. The reader was left to look VMC up
+// by hand, which is the one thing this view is for.
+//
+// A glossary function per class is the obvious repair and the wrong
+// shape. The codes come from three places — an affix abbreviation from
+// the lexicon, a scope or carrier type from the grammar table, a
+// referent from the grammar package — and per-class code would
+// rediscover that split once per class, including for classes nobody
+// has written yet.
+//
+// Instead the gloss is the input. gloss.Tokens knows which pieces are
+// codes, because it is the arm that wrote them, and a code resolves
+// through the same two lookups for every class. Referents are included
+// even though they are not uppercase-initial: "1m" is as much a code as
+// "THM" and a reader has the same question about it.
+func GlossaryFromGloss(gl string, lex *lexicon.Lexicon) []GlossaryEntry {
+	var out []GlossaryEntry
+	seen := map[string]bool{}
+	for _, t := range gloss.Tokens(gl) {
+		if t.Kind != gloss.KindCode && t.Kind != gloss.KindRoot {
+			continue
+		}
+		if seen[t.Text] {
+			continue
+		}
+		if e, ok := lookupCode(t.Text, lex); ok {
+			seen[t.Text] = true
+			out = append(out, e)
+		}
+	}
+	return out
+}
+
+// lookupCode resolves one gloss atom, or reports that it names nothing.
+// The grammar table is asked first: it is the smaller, closed space,
+// and an affix abbreviation that collided with a grammatical one would
+// be a defect in the lexicon rather than an ambiguity to resolve here.
+func lookupCode(code string, lex *lexicon.Lexicon) (GlossaryEntry, bool) {
+	if hits := search.LookupGrammar(code); len(hits) > 0 {
+		return GlossaryEntry{
+			Category: categoryForCode(code, ""),
+			Code:     code,
+			Name:     g.Name(code),
+			Meaning:  g.Meaning(code),
+		}, true
+	}
+	if lex == nil {
+		return GlossaryEntry{}, false
+	}
+	for _, a := range lex.Affixes {
+		if a.Abbrev == code {
+			return GlossaryEntry{
+				Category: "affix",
+				Code:     code,
+				Name:     a.Description,
+				Meaning:  "-" + a.Cs + "-",
+			}, true
+		}
+	}
+	return GlossaryEntry{}, false
 }

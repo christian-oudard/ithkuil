@@ -39,15 +39,20 @@ import (
 // expansion for every class, including classes nobody has written yet,
 // and it is the same lookup the browser makes when a reader clicks a
 // code.
+// The wanted strings come from the sources, not from the output:
+// affixes_reference.md §VMC is "Volumetric Measurement C", the affix
+// for minims and fluid drams. This test first read it as "Vocal",
+// which is a guess at what three letters stand for and matches
+// nothing, and would have failed the fix it was written to describe.
 func TestParse_ExpandsCodesForEveryClass(t *testing.T) {
-	t.Skip("only formatives and modular adjuncts expand their codes; see BUGS.md")
-
 	for _, tc := range []struct {
 		word, code, want string
 	}{
-		{"arqla", "VMC", "Vocal"}, // single-affix adjunct
-		{"ex", "SIZ", "Size"},     // single-affix adjunct
-		{"hla", "CAR", "Carrier"}, // carrier adjunct
+		{"arqla", "VMC", "Volumetric"}, // single-affix adjunct
+		{"ex", "SIZ", "Size"},          // single-affix adjunct
+		{"hla", "CAR", "Carrier"},      // carrier adjunct
+		{"ha", "DSV", "Discursive"},    // register marker
+		{"la", "THM", "Thematic"},      // referential
 	} {
 		out, _, _ := runCLI("parse", "--data", dataFile(), tc.word)
 		if !strings.Contains(out, tc.code) {

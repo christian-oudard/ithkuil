@@ -215,8 +215,18 @@ func renderDetailed(w io.Writer, r roman.Result, span g.Text, i int,
 		}
 		renderModular(w, r.Romanization, tt, marksMood, gl)
 	default:
+		// Every remaining class — affixual adjunct, carrier,
+		// referential, bias, register marker — expands its codes the
+		// same way, off the gloss rather than off the grammar type.
+		// Printing the class name alone left the reader to look the
+		// codes up by hand, which is what this view is for.
 		wordHeader(w, r.Romanization, gl)
-		fmt.Fprintln(indented(w, "  "), view.Type(r.Word))
+		iw := indented(w, "  ")
+		fmt.Fprintln(iw, view.Type(r.Word))
+		if glossary := view.GlossaryFromGloss(gl, canonical.Lex); len(glossary) > 0 {
+			fmt.Fprintln(iw)
+			renderGlossaryTable(iw, glossary)
+		}
 	}
 }
 

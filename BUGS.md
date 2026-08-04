@@ -33,25 +33,24 @@ written. See the skipped `TestApply_GraveOnUnstressedI` in
 `phonology/stress_test.go` for why putting it in `Apply` would be the
 wrong place either way.
 
-## `parse` names the codes only for a formative
+## the referents have no names or meanings
 
-Without `--short`, `parse` is the view that explains a word, and for a
-formative it does: a CATEGORY/CODE/NAME/MEANING row per code. For an
-affixual adjunct, a carrier, a referential, a bias or a register marker
-it prints the gloss, the class, and nothing else.
+`la` glosses as `1m-THM`, and the detailed view now expands THM and not
+`1m` — not because it does not try, but because there is nothing to
+find. The eleven §4.6 referents and the three referent Effects carry no
+name and no description anywhere: `search.Table` has no Referent
+category, and `g.Name`/`g.Meaning` answer "" for every one of them.
 
-    $ ithkuil parse arqla
-    ařla
-      VMC/1
+```
+1m   Name=""  Meaning=""          THM  Name="Thematic"  Meaning="inactive participant…"
+```
 
-      Affix
+So a referential, whose whole content is its referent, is the one class
+whose main code cannot be explained by any mechanism. This is a hole in
+`data/data.json` rather than in the code that reads it, which is why
+expanding the codes did not close it.
 
-So the reader is left to look VMC up by hand, which is what the detailed
-view exists to save them. `--short` is meant to be the terse one.
-
-`cmd/ithkuil/expand_test.go` holds the detail: why a glossary function
-per class is the wrong shape, and why the fix became tractable only
-after `gloss.Tokens`.
+`cmd/ithkuil/expand_test.go` covers the classes that do resolve.
 
 ## Words we cannot read
 
