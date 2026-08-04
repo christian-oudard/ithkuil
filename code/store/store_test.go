@@ -235,3 +235,30 @@ func TestAll(t *testing.T) {
 		}
 	}
 }
+
+// A search term goes into an FTS5 MATCH expression, which is a query
+// language rather than a plain string. The term was concatenated in
+// raw, so the punctuation the ASCII digraph notation uses was read as
+// syntax: "l,x" came back as `fts5: syntax error near ","` rather than
+// as a search that found nothing. Searching for a root by its cluster
+// is the ordinary case, so this failed on ordinary input.
+func TestSearchRoots_PunctuationIsNotSyntax(t *testing.T) {
+	testDB := store.DefaultPath()
+	if _, err := os.Stat(testDB); err != nil {
+		t.Skipf("data.db not found (%v); run tools/build_db.py first", err)
+	}
+	s, err := store.Open(testDB)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Close()
+
+	for _, q := range []string{`l,x`, `t,`, `-tl-`, `a"b`, `sq`, `ml`, ``} {
+		if _, err := s.SearchRoots(q, 5); err != nil {
+			t.Errorf("SearchRoots(%q): %v", q, err)
+		}
+		if _, err := s.SearchAffixes(q, 5); err != nil {
+			t.Errorf("SearchAffixes(%q): %v", q, err)
+		}
+	}
+}

@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	_ "modernc.org/sqlite"
 )
@@ -172,6 +173,19 @@ func (s *Store) AllRoots() ([]RootEntry, error) {
 	return scanRoots(rows)
 }
 
+// ftsPrefix turns a user's search term into an FTS5 prefix query.
+//
+// FTS5 MATCH takes an expression language of its own, not a plain
+// string, so a term went in as syntax: "l,x" failed with `fts5: syntax
+// error near ","` and any term holding a hyphen or a quote failed the
+// same way. Every Ithkuil search that named a root by its cluster hit
+// this, because those are exactly the characters the ASCII digraphs
+// use. Wrapping the term in double quotes makes it a literal, and
+// doubling any quote inside it escapes that.
+func ftsPrefix(query string) string {
+	return `"` + strings.ReplaceAll(query, `"`, `""`) + `"*`
+}
+
 // SearchRoots runs an FTS5 prefix search and returns ranked hits.
 func (s *Store) SearchRoots(query string, limit int) ([]RootEntry, error) {
 	rows, err := s.db.Query(
@@ -182,7 +196,7 @@ func (s *Store) SearchRoots(query string, limit int) ([]RootEntry, error) {
 		   JOIN roots r ON r.rowid = f.rowid
 		  WHERE roots_fts MATCH ?
 		  ORDER BY rank
-		  LIMIT ?`, query+"*", limit)
+		  LIMIT ?`, ftsPrefix(query), limit)
 	if err != nil {
 		return nil, err
 	}
@@ -265,7 +279,7 @@ func (s *Store) SearchAffixes(query string, limit int) ([]AffixEntry, error) {
 		   JOIN affixes a ON a.rowid = f.rowid
 		  WHERE affixes_fts MATCH ?
 		  ORDER BY rank
-		  LIMIT ?`, query+"*", limit)
+		  LIMIT ?`, ftsPrefix(query), limit)
 	if err != nil {
 		return nil, err
 	}
