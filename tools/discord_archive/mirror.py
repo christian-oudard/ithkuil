@@ -112,6 +112,110 @@ def save_json(path, data):
         json.dump(data, f, indent=2)
 
 
+def batch_files(ch_dir):
+    return sorted(
+        f for f in os.listdir(ch_dir)
+        if f.startswith("batch_") and f.endswith(".json")
+    )
+
+
+def next_batch_num(ch_dir):
+    """One past the highest batch number already on disk.
+
+    Derived from the filenames rather than from the message count,
+    which drifts once a channel has been refreshed: a refresh appends
+    whole batches of its own, so total_messages // 100 no longer names
+    a free slot and would overwrite one.
+    """
+    highest = -1
+    for f in batch_files(ch_dir):
+        try:
+            highest = max(highest, int(f[len("batch_"):-len(".json")]))
+        except ValueError:
+            continue
+    return highest + 1
+
+
+def newest_known_id(ch_dir, progress):
+    """The most recent message already mirrored, or None if there is none.
+
+    A refresh records newest_id, so later runs read it straight back.
+    A channel mirrored before refreshes existed has no such field, and
+    for those the first batch is the newest, because the original walk
+    starts at the top and pages backward.
+    """
+    if progress.get("newest_id"):
+        return progress["newest_id"]
+    files = batch_files(ch_dir)
+    if not files:
+        return None
+    with open(os.path.join(ch_dir, files[0])) as f:
+        batch = json.load(f)
+    ids = [m["id"] for m in batch if "id" in m]
+    return max(ids, key=int) if ids else None
+
+
+def fetch_newer(ch_id, ch_dir, progress):
+    """Fetch messages posted since the last run, newest first.
+
+    The archive walk pages backward from the top and marks a channel
+    complete when it reaches the beginning, which said nothing about
+    the end: a completed channel was skipped outright, so re-running
+    mirror.py refreshed nothing at all and the mirror aged silently.
+
+    Paging is backward here too, stopping at the newest message already
+    held, rather than forward with `after`. Discord answers `after` with
+    the newest messages in the range instead of the ones adjoining the
+    cursor, so a forward walk would need its own stop condition anyway,
+    and this way there is one paging shape rather than two.
+    """
+    stop_at = newest_known_id(ch_dir, progress)
+    if stop_at is None:
+        return 0
+    stop = int(stop_at)
+
+    fresh = []
+    before = None
+    while True:
+        params = "?limit=100"
+        if before:
+            params += f"&before={before}"
+        messages = api_get(f"/channels/{ch_id}/messages{params}")
+        if not messages:
+            break
+        new = [m for m in messages if int(m["id"]) > stop]
+        fresh.extend(new)
+        # Either the batch ran into ground we already hold, or the
+        # channel ran out. Both mean there is nothing older to want.
+        if len(new) < len(messages) or len(messages) < 100:
+            break
+        before = messages[-1]["id"]
+        time.sleep(0.5)
+
+    if not fresh:
+        print(f"  Up to date ({progress.get('total_messages', 0)} messages)", flush=True)
+        return progress.get("total_messages", 0)
+
+    batch_num = next_batch_num(ch_dir)
+    for i in range(0, len(fresh), 100):
+        save_json(
+            os.path.join(ch_dir, f"batch_{batch_num:06d}.json"), fresh[i:i + 100]
+        )
+        batch_num += 1
+
+    total = progress.get("total_messages", 0) + len(fresh)
+    save_json(os.path.join(ch_dir, "_progress.json"), {
+        "oldest_id": progress.get("oldest_id"),
+        "newest_id": fresh[0]["id"],
+        "total_messages": total,
+        "complete": True,
+        "last_updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    })
+    ts = fresh[0].get("timestamp", "?")[:10]
+    print(f"  +{len(fresh)} new (newest: {ts}), {total} total", flush=True)
+    return total
+
+
 def archive_channel(ch_id, ch_name, guild_dir):
     ch_dir = os.path.join(guild_dir, f"{ch_name}_{ch_id}")
     os.makedirs(ch_dir, exist_ok=True)
@@ -124,13 +228,13 @@ def archive_channel(ch_id, ch_name, guild_dir):
         with open(progress_file) as f:
             progress = json.load(f)
             if progress.get("complete"):
-                print(f"  Already complete ({progress.get('total_messages', 0)} messages)", flush=True)
-                return progress.get("total_messages", 0)
+                return fetch_newer(ch_id, ch_dir, progress)
             before = progress.get("oldest_id")
             total_messages = progress.get("total_messages", 0)
-            batch_num = total_messages // 100
+            batch_num = next_batch_num(ch_dir)
             print(f"  Resuming from {before} ({total_messages} already)", flush=True)
 
+    newest_id = None
     while True:
         if get_disk_usage() >= MAX_BYTES:
             print(f"  Disk budget reached ({MAX_BYTES / 1e9:.1f}GB)", flush=True)
@@ -144,6 +248,9 @@ def archive_channel(ch_id, ch_name, guild_dir):
         if messages is None or not messages:
             break
 
+        if newest_id is None:
+            newest_id = messages[0]["id"]
+
         batch_file = os.path.join(ch_dir, f"batch_{batch_num:06d}.json")
         save_json(batch_file, messages)
 
@@ -153,6 +260,7 @@ def archive_channel(ch_id, ch_name, guild_dir):
 
         save_json(progress_file, {
             "oldest_id": before,
+            "newest_id": newest_id,
             "total_messages": total_messages,
             "last_updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         })
@@ -167,6 +275,7 @@ def archive_channel(ch_id, ch_name, guild_dir):
 
     save_json(progress_file, {
         "oldest_id": before,
+        "newest_id": newest_id,
         "total_messages": total_messages,
         "complete": True,
         "last_updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),

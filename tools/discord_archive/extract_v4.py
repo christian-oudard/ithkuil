@@ -16,14 +16,21 @@ def has_ithkuil(text):
     return any(c in ITHKUIL_CHARS for c in text.lower())
 
 def extract_messages(directory):
-    """Extract all messages from batch files in a directory, chronological order."""
+    """Every message in a channel's batch files, oldest first.
+
+    Order comes from the message ids, which are snowflakes and so sort
+    chronologically. Reading it off the filenames instead used to be
+    close enough, because the original walk wrote batch 0 newest and
+    counted down; a refresh appends newer messages in later-numbered
+    batches, so the filenames no longer carry the order at all.
+    """
     messages = []
     for f in sorted(os.listdir(directory)):
         if not f.startswith("batch_"):
             continue
         with open(os.path.join(directory, f)) as fh:
-            batch = json.load(fh)
-        messages.extend(reversed(batch))  # Reverse: batches are newest-first
+            messages.extend(json.load(fh))
+    messages.sort(key=lambda m: int(m["id"]))
     return messages
 
 def extract_translation_pairs(messages):
