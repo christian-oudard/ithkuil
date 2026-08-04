@@ -183,10 +183,119 @@ boundary ambiguity. §1.2.2 supplies concrete instances of the middle
 term: `ļ` and `hl` are allophonically identical, which is why §5.1 bars
 `ļ` between vowels, and `př`/`tř` need care against `px`/`tx`.
 
-The corpus is the calibration target. A cost model that cannot
+The corpus is one calibration target. A cost model that cannot
 reproduce Quijada's choices over the 583 distinct corpus words is
 wrong, and each disagreement is either a rule we have misread or a
 place the source is genuinely free.
+
+### Articulatory effort
+
+The three terms above are reasons, not a metric. The metric is a sum of
+transition costs over the segment sequence, and the features it needs
+are already modelled. `phonology.Consonant` carries `Voicing`, `Place`
+and `Manner`; `phonology.Vowel` carries `Height`, `Backness` and
+`Rounding`. These are the same features §1.1 tabulates and the same
+ones Quijada's own rules reason over: §2.4, §2.5 and §2.13 turn on
+"homologous", defined in §0 as sharing a place of articulation, and
+`phonotactics.go` already implements them through `areHomologous`.
+
+Three terms are available without adding anything:
+
+- **Voicing switches.** The count of adjacent segments differing in
+  `Voicing`. Each is a laryngeal reconfiguration. §2.4 and §2.5 forbid
+  the switch outright at a shared place of articulation, so a gradient
+  penalty generalises a judgment the source already makes.
+- **Sonority profile.** `Manner` orders as stop, affricate, fricative,
+  nasal, lateral, approximant, vowel. Rising into a nucleus and falling
+  out of it is the unmarked shape; departures cost. The ordering is a
+  choice among competing published scales and should be recorded as
+  such rather than presented as a fact.
+- **Place distance.** The `Place` enum runs front to back, Labial
+  through Glottal, so the gap between adjacent segments approximates
+  articulator travel. That the enum is anatomically ordered is
+  currently an accident of how it was written; anything depending on it
+  must say so, and the ordering must then be held by a test.
+
+One feature is missing. `Place` records the passive target, not the
+active articulator, so a tongue-shape term has nothing to read. The
+clearest symptom is `w`, which §1.1 lists as labio-velar and our table
+records as `Labial`, dropping the tongue-body gesture. Adding an
+articulator field (tip, blade, body, root) is the prerequisite for any
+term about tongue shape as opposed to contact location.
+
+Beyond that lies gestural overlap and coarticulation, which is not a
+matter of reading a feature off a table but of adopting a phonological
+theory. That is out of scope until the three cheap terms are shown to
+be insufficient.
+
+### The transition table
+
+The feature terms compile down to a table: the cost of moving from one
+phoneme to the next. With 31 consonants and 9 vowels that is 1600
+ordered pairs, small enough to pre-generate the way `allomorph`
+pre-generates its Ca forms.
+
+The table is indexed by three things, not two: the pair, and whether it
+spans a word boundary. The same pair can differ. `hh` is a permissible
+geminate inside a word, `ClusterLegal("hh")` accepts it, and §1.6
+forbids it across a boundary. So the boundary is a modifier on the
+transition rather than a segment in the sequence, and §1.5, §1.6, §7.1
+and §7.2 all become entries in the boundary half of the table instead
+of four special cases in the reducer.
+
+A word's energy is the sum over its adjacent pairs. A span's energy is
+the sum over its words plus the boundary transitions between them, so
+within a word and across words are one mechanism.
+
+### Where infinity comes from
+
+Not from the table. The categorical rules are not pairwise and a
+pairwise table should not try to express them:
+
+- §2.13 bans a nasal plus homologous stop plus sibilant, and says why:
+  \***nks** is "too phonetically indistinguishable" from **ňs**. The
+  cost is a property of the trigram, not of any pair inside it.
+- §2.19 constrains -**h**- only as the final member of a conjunct,
+  which is a position rather than a pair.
+- §4's word-final tables and §§9 through 11's conjunct tables judge
+  whole clusters.
+
+So legality stays where it already lives, in `phonology.Legal` and
+`ClusterLegal`, and supplies the infinity. The table ranks only what
+survives that. This makes the constraint above structural rather than a
+rule to remember: the ranking function has no way to reach an illegal
+form, because illegal forms are removed before it runs.
+
+If every candidate for a span is infinite, the reducer fails rather
+than emitting the least bad one. `roman.pickValid` already has that
+shape.
+
+### Minimizing
+
+Energy is a sum over adjacent pairs, so a span is a linear chain and
+the minimum is a shortest path, not a search over the product of every
+word's choices. Viterbi over N words with K candidate spellings each
+costs O(N·K²).
+
+K stays small because interior decisions cannot affect a neighbour, by
+the argument above. Minimize those locally per word first; the chain
+then ranges only over edge-affecting variants, principally whether the
+Slot IX vowel is written.
+
+### Calibrating the effort model
+
+The corpus exhibits a handful of binary choices, so a model with
+several free weights fitted to it would be unfalsifiable. Prefer few
+terms with fixed, argued weights over many with fitted ones. A
+tie-breaker that cannot be shown wrong is not worth having.
+
+§2 is not a fit target either, since legality is decided before the
+table runs and the table is never asked to reproduce it. It is still a
+sanity check. §2's prohibitions are Quijada naming conjuncts as
+difficult or confusable, and §8 renders that judgment over 810 cells.
+A table that scored the prohibited pairs as cheap would be measuring
+something other than effort, even though nothing depends on it
+directly.
 
 ## Chains
 
