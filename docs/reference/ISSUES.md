@@ -121,6 +121,15 @@ render was also wrong, losing a cedilla to antialiasing.
 G2 has left this list: §3.6's bn-substitution family is decided and
 implemented, and the writeup is `ERRATA.md` §3.6.
 
+G5 and G6 have gone without a writeup, being our confusion rather
+than Quijada's defect. Both read §3.6.1's nine gemination rules as a
+dispatch table every C_A must match, and counted the forms none of
+them names as unreachable. The rules are a default plus exceptions:
+geminating a cluster means doubling its initial consonant, and the
+nine say where that does not hold. Every C_A value has a geminate,
+all legal and all distinct, which `allomorph/geminate_test.go` now
+checks and explains so the reading is not lost a third time.
+
 **Verified against the source:** all of `morphology.md` and
 `phonotactics.md`, the Affix table and Lexicon sections, and G33, G35,
 G36, G39, G40, G41. **Not yet:** the Corpus section, and those entries
@@ -149,100 +158,6 @@ the next sync. The gap belongs upstream, and the duplicate abbreviation
 belongs to Quijada either way.
 
 ## Grammar
-
-### G5. The gemination rules leave 115 of the 3840 Ca forms with no geminated form
-
-§3.6.1 geminates the Ca complex to mark where Slot V ends, so every Ca
-that can co-occur with a Slot V affix needs a geminated form. Running
-the nine rules as written over all 3840 Ca values, 115 match no rule at
-all. Each gap traces to a list that is narrower than the rule around
-it.
-
-**Rule 4's sibilant list omits the voiced affricates.** It names
-"a sibilant fricative or affricate (**s**, **š**, **z**, **ž**, **ç**,
-**c**, **č**)" — seven of the nine, leaving out **ẓ** and **j**. ẓ is
-the MFF Configuration, so `ẓb`, `ẓg`, `ẓk`, `ẓl`, `ẓm`, `ẓn`, `ẓp`,
-`ẓr`, `ẓt`, `ẓv`, `ẓw`, `ẓx`, `ẓy`, `ẓň`, `ẓř`, `ẓḑ`, `ẓkh`, `ẓph` and
-`ẓth` all fall through. Rule 1's own example list geminates ẓ —
-"**ẓ → ẓẓ**" — so the omission is in rule 4's parenthetical, not in the
-phonology.
-
-**Rule 6's fricative list omits five fricatives.** It covers a
-voiceless stop followed by "(**s**, **š**, **f**, **ţ**, **ç**)". The
-§1.1 chart has eleven fricatives; **v**, **ḑ**, **x**, **ļ** and **h**
-are not on rule 6's list and are not sibilants, so `kv`, `kḑ`, `px`,
-`pļ`, `tv` and `tx` have no rule. The h-forms are the widest of these:
-the N/RPV Perspective alternate is **h**, so `th`, `ph`, `kh`, `kph`,
-`kth`, `pkh`, `pth`, `tkh`, `tph`, `ẓkh`, `ẓph` and `ẓth` — twelve
-forms — end in a fricative no rule can reach.
-
-**Rule 7's table omits the voiceless-plus-voiced stop pairs.** The rule
-covers "C_A forms ending in two stops" and supplies six substitutions:
-pt, pk, kt, kp, tk, tp — every pair voiceless. But `kb`, `pg`, `tb` and
-`tg` all arise (a stop Configuration plus the DPL or GRA Extension) and
-are perfectly legal under §2.4, which names **tg** among its permitted
-pairs. None has an entry.
-
-**Rule 8's table omits ň.** The rule covers a form ending in "a stop
-(t, k, p, d, g, b) plus nasal (**n**, **m**, **ň**)" and then supplies
-twelve substitutions covering m and n only. `pň` and `tň` match the
-condition and find nothing in the table.
-
-**Rule 3 only reaches forms that begin with stop + liquid.** It says
-"For forms **beginning with** a stop … followed by a liquid or an
-approximant", which leaves the 99 Ca values of the shape
-stop + stop + liquid — `kbl`, `kbr`, `kbw`, `kby`, `kbř`, `kpl`,
-`kpr`, `kpw` and so on — matching neither rule 3 (they do not begin
-with stop + liquid) nor rules 7 and 8 (they do not end in stop + stop
-or stop + nasal).
-
-Reading rule 3 loosely, as "a stop followed by a liquid anywhere in the
-form", closes those 99 but not the rest: 40 forms still match no rule.
-It is also not a free repair — the loose reading takes 300 further
-forms away from rule 5 and geminates them somewhere else, so the two
-readings disagree on the romanization of `fkl` and its like, not just on
-coverage.
-
-None of this shows up as an ambiguity: the 3725 covered forms geminate
-to 3725 distinct clusters, none of which collides with a bare Ca. The
-system is sound where it is defined. It is simply not defined
-everywhere, and a formative whose Ca is one of the 115 cannot take a
-Slot V affix at all.
-
-### G6. A moved C_N leaves the end of Slot V unmarkable
-
-§3.8.1.2 lets a Pattern-1 Mood/Case-Scope C_N move out of Slot VIII
-into the Slot VI C_A position, "thus shortening the word by one
-syllable", on three conditions: Slot VIII's V_N is default MNO, the
-C_N is something other than FAC/CCN -**h**-, and the C_A is the default
--**l**-. What lands in the C_A slot is then one of **hl**, **hr**,
-**hm**, **hn**, **hň**.
-
-That much is clean. None of the five collides with any of the 3840 C_A
-forms or with any of their geminates — no C_A begins with h- at all —
-and all five are permissible intervocalically under §5.2.
-
-The problem is the other rule that owns Slot VI. §3.6.1 opens "If Slot
-V contains any affixes, it becomes necessary to show where Slot V ends
-and Slot VI begins", and accomplishes it by geminating the C_A form.
-Run the nine rules against `hl`, `hr`, `hm`, `hn` and `hň` and none
-fires: h is not a stop (rules 3, 6, 7, 8), not a sibilant (rule 4), not
-on rule 5's list of non-sibilant fricatives (f, ţ, v, ḑ) nor a nasal,
-not a liquid (rule 9), and the forms are not single consonants (rule
-1).
-
-Nor does §3.6.2 reach the case. It covers "the absence of a C_A form",
-but scopes itself to a C_A "elided as per Sec. 3.1 and 3.2" — the Slot
-I shortcut — and a formative using that shortcut has no Slot VI C_A for
-§3.8.1.2 to replace in the first place.
-
-So a formative with a Slot V affix, a default C_A, MNO Valence and a
-non-FAC Mood has no way to mark where Slot V ends. Every one of those
-conditions is an independent choice and nothing forbids the
-combination. The document does consider §3.8.1.2's interactions
-elsewhere — §3.9.1's Special Note suspends the V_C shortening rule when
-§3.8.1.2 has been applied — so the omission here is of a piece the
-author was otherwise tracking.
 
 ### G40. HORTATIVE and POTENTIATIVE are both named for categories they are not
 

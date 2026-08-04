@@ -2,20 +2,40 @@ package allomorph
 
 import "github.com/christian-oudard/ithkuil/phonology"
 
-// GeminateCa applies the §3.6.1 gemination rules to a Ca cluster.
-// Gemination is required whenever Slot V has any affixes; it marks
-// where Slot V ends and Slot VI begins.
+// GeminateCa applies §3.6.1 to a Ca cluster. Gemination is what marks
+// where Slot V ends and Slot VI begins, so a formative with any Slot V
+// affix needs it; see §3.5.1 for the problem it solves.
 //
-// The rules are tried in order of specificity:
-//  9. Initial l/r/ř: recurse on the rest, then re-prepend.
-//  2. Standalone "tļ" → "ttļ".
-//  1. Single consonant: double it.
-//  6. Initial voiceless stop (p/t/k) + fricative (s/š/f/ţ/ç): double the fricative.
-//  4. Any sibilant (s/š/z/ž/ç/c/č): double the first sibilant.
-//  3. Initial stop + liquid/approximant (l/r/ř/w/y): double the stop.
-//  5. Initial non-sibilant fricative (f/ţ/v/ḑ) or nasal (n/m/ň): double it.
-//  7. Two-stop ending: voicing-and-substitution table.
-//  8. Stop + nasal ending: substitution table.
+// The nine rules are a DEFAULT PLUS EXCEPTIONS, not a dispatch table
+// that every form must match. §3.6.1 says the boundary is shown "by
+// gemination of the C_A form", and geminating a cluster means doubling
+// its initial consonant. The numbered rules say where that does not
+// hold. Reading them as an exhaustive dispatch, and treating the forms
+// no rule names as a gap in the language, is a mistake this repository
+// has now made twice — see the note on geminateCore's last return.
+//
+// Which rules restate the default and which are real exceptions:
+//
+//	1  single consonant -> double it            default
+//	2  standalone "tļ" -> "ttļ"                 default
+//	3  initial stop + liquid/approximant        default
+//	5  initial non-sibilant fricative or nasal  default
+//	4  a sibilant anywhere: kst -> ksst         EXCEPTION
+//	6  voiceless stop + fricative: pf -> pff    EXCEPTION
+//	7  two-stop ending: substitution table      EXCEPTION
+//	8  stop + nasal ending: substitution table  EXCEPTION
+//	9  initial l/r/ř: recurse, then re-prepend  EXCEPTION
+//
+// The shape of the exceptions is a phonetic fact: you cannot geminate
+// mid-cluster except on a fricative. Rules 4 and 6 are exactly the
+// cases that double a medial consonant, and both double a fricative —
+// ksst and pff are sayable. Doubling a medial stop is not: akbbla and
+// akttha are unsayable where akkbla and akktha are fine. That is why
+// rules 7 and 8 substitute instead of doubling, their inputs ending in
+// a stop, and why nothing anywhere doubles a stop that is not the
+// first consonant.
+//
+// Tried in order of specificity, which is not the numbered order:
 func GeminateCa(cluster string) string {
 	rs := []rune(cluster)
 	if len(rs) == 0 {
@@ -77,8 +97,17 @@ func geminateCore(cluster string) string {
 			return string(rs[:n-2]) + sub
 		}
 	}
-	// Fallback: double the first consonant. Shouldn't be reached for
-	// valid Ca clusters in practice.
+	// The default: double the first consonant. This is §3.6.1's own
+	// "gemination of the C_A form" with no exception applying, and it
+	// is the single busiest branch — 460 of the 3840 Ca values reach
+	// it, kbl -> kkbl and kth -> kkth among them.
+	//
+	// It reads like a fallback and is not one. Twice now it has been
+	// mistaken for a hack papering over forms the rules fail to name,
+	// and both times the conclusion drawn was that §3.6.1 has a hole
+	// in it. It does not. Every Ca value gets exactly one geminate,
+	// all legal, all distinct, none equal to a bare Ca, which
+	// TestGeminate_EveryFormIsCoveredAndDistinct checks.
 	return string(rs[0]) + cluster
 }
 
