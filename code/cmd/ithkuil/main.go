@@ -23,6 +23,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/christian-oudard/ithkuil/api"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/store"
 )
@@ -126,6 +127,46 @@ func openStore(file string, stderr io.Writer) *store.Store {
 		return nil
 	}
 	return s
+}
+
+// loadAPI builds the api every subcommand answers through, with the
+// store's full-text index wired in. That index ranks by word where the
+// in-memory scan matches a substring anywhere, so "cat" does not answer
+// with "indicate"; only a browser has to do without it.
+//
+// The caller closes the store. A store that will not open is a warning
+// rather than an exit, as it is for the MCP server: the grammar tables
+// are compiled in, so everything but the lexicon half still answers.
+func loadAPI(dataFile string, stderr io.Writer) (*api.API, func()) {
+	a := api.New()
+	st := openStore(dataFile, stderr)
+	if st == nil {
+		return a, func() {}
+	}
+	lex, err := store.LoadLexicon(st)
+	if err != nil {
+		fmt.Fprintf(stderr, "warning: lexicon load failed (%v); continuing without lexicon\n", err)
+	} else {
+		a.SetLexicon(lex)
+	}
+	if notes, topics, err := st.Notes(); err == nil {
+		entries := make([]api.GrammarEntry, len(notes))
+		for i, n := range notes {
+			entries[i] = api.GrammarEntry{
+				Abbrev: n.Abbrev, Explanation: n.Explanation, Guidance: n.Guidance,
+			}
+		}
+		ts := make([]api.Topic, len(topics))
+		for i, t := range topics {
+			ts[i] = api.Topic{
+				Key: t.Key, Category: t.Category, Name: t.Name,
+				Explanation: t.Explanation, Guidance: t.Guidance,
+			}
+		}
+		a.SetNotes(entries, ts)
+	}
+	a.SetLexiconSearch(store.NewSearcher(st))
+	return a, func() { st.Close() }
 }
 
 // loadLex opens the store and reads all roots/affixes into memory.

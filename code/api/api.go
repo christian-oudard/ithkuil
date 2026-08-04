@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sort"
 
 	"github.com/christian-oudard/ithkuil/corpus"
 	"github.com/christian-oudard/ithkuil/dictionary"
 	"github.com/christian-oudard/ithkuil/fault"
 	"github.com/christian-oudard/ithkuil/gloss"
+	g "github.com/christian-oudard/ithkuil/grammar"
 	"github.com/christian-oudard/ithkuil/inventory"
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/phonology"
@@ -33,11 +35,61 @@ type API struct {
 	// grammar table, so a code needs no category to find its note.
 	notes  map[string]note
 	topics []Topic
+	// lexSearch answers the lexicon half of a search. Nil means the
+	// in-memory scan, which is all a browser can have.
+	lexSearch LexiconSearch
 }
 
 // note is the authored half of a grammar value: what it means at more
 // length than the one-line description, and how it lands in English.
 type note struct{ explanation, guidance string }
+
+// LexiconSearch is how the lexicon half of a search is answered. There
+// are two engines and the difference is not cosmetic: SQLite's
+// full-text index ranks by word, so "cat" does not answer with
+// "indicate", while the in-memory scan matches a substring anywhere.
+// Measured over the lexicon they disagree on 13 of 20 hits for "water"
+// and 16 of 20 for "cat".
+//
+// A browser has only the in-memory scan, because the driver has no
+// js/wasm build. The CLI and the MCP server have the index and should
+// keep it, so this is injected rather than chosen here: deduplicating
+// the two front ends onto this package must not quietly downgrade what
+// they answer with.
+type LexiconSearch interface {
+	SearchRoots(query string, limit int) ([]lexicon.RootEntry, error)
+	SearchAffixes(query string, limit int) ([]lexicon.AffixEntry, error)
+}
+
+// SetLexicon installs an already-built lexicon, for a caller that read
+// it from the store rather than from the JSON a browser fetches.
+func (a *API) SetLexicon(lex *lexicon.Lexicon) {
+	a.lex = lex
+	if lex != nil {
+		a.index = dictionary.Build(lex.Roots)
+	}
+}
+
+// SetNotes installs the authored explanations, for a caller reading
+// them from the store rather than from the JSON a browser fetches.
+// Without it a store-backed caller gets the terse description and none
+// of the writing that says how a value lands in English.
+func (a *API) SetNotes(entries []GrammarEntry, topics []Topic) {
+	for _, e := range entries {
+		if e.Explanation == "" && e.Guidance == "" {
+			continue
+		}
+		if a.notes == nil {
+			a.notes = map[string]note{}
+		}
+		a.notes[e.Abbrev] = note{e.Explanation, e.Guidance}
+	}
+	a.topics = append(a.topics, topics...)
+}
+
+// SetLexiconSearch replaces the in-memory scan. Pass store.Searcher(st)
+// to get the full-text index.
+func (a *API) SetLexiconSearch(s LexiconSearch) { a.lexSearch = s }
 
 // New returns an API with no lexicon. Parse, Compose, Compare,
 // Categories, Table and FromASCII all work in that state; Define and
@@ -239,14 +291,34 @@ func member(b view.Block) Member {
 // Compose builds a word from a gloss expression, which is the builder's
 // other half: the controls edit the expression and read the letters
 // back from here.
-func (a *API) Compose(expr string) (Composed, error) {
-	w, err := gloss.ParseWord(expr, a.lex)
+// stressless writes stress as a §4.8 parsing adjunct instead of a
+// diacritic, for readers and fonts that cannot show one.
+func (a *API) Compose(expr string, stressless bool) (Composed, error) {
+	// ParseText, not ParseWord: a concatenation chain glosses as two
+	// formatives with a space between them, and reading the whole
+	// string as one word takes the space for part of a root.
+	words, err := gloss.ParseText(expr, a.lex)
 	if err != nil {
 		return Composed{}, err
 	}
-	text, err := roman.Word(w)
+	if len(words) != 1 {
+		return Composed{}, fmt.Errorf("%q is %d words; compose builds one", expr, len(words))
+	}
+	w := words[0]
+	var text string
+	if stressless {
+		text, err = roman.Stressless(g.Text{w})
+	} else {
+		text, err = roman.Word(w)
+	}
 	if err != nil {
 		return Composed{}, err
+	}
+	// A word class can be real and still write nothing: NRR is the
+	// unmarked register, so it has no adjunct. Returning the empty
+	// string would read as a failure of the renderer.
+	if text == "" {
+		return Composed{}, fmt.Errorf("%s is unmarked and writes no word", expr)
 	}
 	return Composed{Word: text, Gloss: (&gloss.Glosser{Lex: a.lex}).Token(w)}, nil
 }
@@ -264,8 +336,19 @@ func (a *API) Compare(x, y string) (Comparison, error) {
 	pairs, unpaired := view.PairSides(sa, sb)
 	out := Comparison{A: sa.Word, B: sb.Word}
 	for _, p := range pairs {
-		cp := ComparePair{Role: p.A.Role}
+		cp := ComparePair{
+			Role:        p.A.Role,
+			RootDiffers: view.RootDiffers(p.A, p.B),
+			ANote:       p.A.Note,
+			BNote:       p.B.Note,
+		}
+		if cp.RootDiffers {
+			cp.AHead = &Headword{Code: p.A.Head.Code, Meaning: p.A.Head.Meaning}
+			cp.BHead = &Headword{Code: p.B.Head.Code, Meaning: p.B.Head.Meaning}
+		}
+		var changed bool
 		for _, r := range view.SlotDiff(p.A, p.B) {
+			changed = changed || r.Differs
 			cp.Slots = append(cp.Slots, SlotRow{
 				Slot:    r.Slot,
 				A:       segment(r.A),
@@ -280,6 +363,8 @@ func (a *API) Compare(x, y string) (Comparison, error) {
 				B:        glossaryEntry(r.B),
 			})
 		}
+		cp.Identical = p.A.Decoded && p.B.Decoded && !changed &&
+			!cp.RootDiffers && len(cp.Gloss) == 0
 		out.Pairs = append(out.Pairs, cp)
 	}
 	for _, u := range unpaired {
@@ -294,33 +379,160 @@ func (a *API) Compare(x, y string) (Comparison, error) {
 // lexicon at once. With no lexicon loaded it answers from the grammar
 // alone rather than failing, because the grammar tables are compiled
 // into this module and are always available.
-func (a *API) Search(query string) SearchResult {
-	out := SearchResult{Grammar: a.grammarEntries(search.SearchGrammar(query))}
-	if a.lex == nil {
+func (a *API) Search(query string, opts SearchOptions) SearchResult {
+	var out SearchResult
+	switch {
+	case opts.Form:
+		// A written form is a question about the grammar alone. Asking
+		// the lexicon what root contains the letter "ëu" would bury the
+		// answer under substring noise.
+		hits := search.LookupForm(query)
+		if opts.Category != "" {
+			// "what does -a- write, among the Biases" is a fair
+			// question and usually answered by nothing, which is the
+			// useful answer.
+			keep := map[string]bool{}
+			for _, e := range search.Filter(opts.Category, "", false) {
+				keep[e.Category+"/"+e.Abbrev] = true
+			}
+			var kept []search.Entry
+			for _, e := range hits {
+				if keep[e.Category+"/"+e.Abbrev] {
+					kept = append(kept, e)
+				}
+			}
+			hits = kept
+		}
+		out.Grammar = a.grammarEntries(hits)
+		return out
+	case opts.Category != "" || opts.Exact:
+		out.Grammar = a.grammarEntries(search.Filter(opts.Category, query, opts.Exact))
+	default:
+		out.Grammar = a.grammarEntries(search.SearchGrammar(query))
+	}
+	// A category listing is a grammar request and has no lexicon half.
+	if (a.lex == nil && a.lexSearch == nil) || query == "" || opts.Category != "" {
+		return out
+	}
+	limit := opts.Limit
+	if limit == 0 {
+		limit = 20
+	}
+	if a.lexSearch != nil {
+		// The index does its own ranking and limiting.
+		roots, err := a.lexSearch.SearchRoots(query, limit)
+		if err != nil {
+			return out
+		}
+		for _, e := range roots {
+			out.Roots = append(out.Roots, RootHit{Root: root(e)})
+		}
+		affixes, err := a.lexSearch.SearchAffixes(query, limit)
+		if err != nil {
+			return out
+		}
+		for _, e := range affixes {
+			out.Affixes = append(out.Affixes, affix(e))
+		}
 		return out
 	}
 	for _, h := range search.SearchRoots(query, a.lex.Roots) {
+		if limit >= 0 && len(out.Roots) >= limit {
+			break
+		}
 		out.Roots = append(out.Roots, RootHit{Score: h.Score, Root: root(h.Entry)})
 	}
 	for _, e := range search.SearchAffixes(query, a.lex.Affixes) {
+		if limit >= 0 && len(out.Affixes) >= limit {
+			break
+		}
 		out.Affixes = append(out.Affixes, affix(e))
 	}
 	return out
 }
 
+// Affixes returns a window onto the affix table, ordered by cluster.
+// Browsing needs this: a search box cannot find what you do not know
+// the name of, and the affixes are the part learners complain about
+// most. A limit of zero means all 528, which is 250 KB of JSON and fine
+// to ask for once.
+func (a *API) Affixes(offset, limit int) AffixPage {
+	if a.lex == nil {
+		return AffixPage{Items: []Affix{}}
+	}
+	keys := make([]string, 0, len(a.lex.Affixes))
+	for k := range a.lex.Affixes {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	out := AffixPage{Total: len(keys), Offset: offset, Items: []Affix{}}
+	for _, k := range window(keys, offset, limit) {
+		out.Items = append(out.Items, affix(a.lex.Affixes[k]))
+	}
+	return out
+}
+
+// Roots returns a window onto the lexicon, ordered by cluster. Unlike
+// the affixes there are 5,891 of them, so a caller browsing rather than
+// searching wants a page at a time.
+func (a *API) Roots(offset, limit int) RootPage {
+	if a.lex == nil {
+		return RootPage{Items: []Root{}}
+	}
+	keys := make([]string, 0, len(a.lex.Roots))
+	for k := range a.lex.Roots {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	out := RootPage{Total: len(keys), Offset: offset, Items: []Root{}}
+	for _, k := range window(keys, offset, limit) {
+		out.Items = append(out.Items, root(a.lex.Roots[k]))
+	}
+	return out
+}
+
+// window clamps a slice to a page. An offset past the end is an empty
+// page rather than an error: a caller stepping through a list should
+// find the end, not a failure.
+func window(keys []string, offset, limit int) []string {
+	if offset < 0 {
+		offset = 0
+	}
+	if offset >= len(keys) {
+		return nil
+	}
+	keys = keys[offset:]
+	if limit > 0 && limit < len(keys) {
+		keys = keys[:limit]
+	}
+	return keys
+}
+
 // Define reads an English headword backwards into the lexical cores
 // that name it.
-func (a *API) Define(word string) ([]Sense, error) {
+// A limit of zero means 20; a negative one means no cap.
+func (a *API) Define(word string, limit int) (Definition, error) {
 	if a.index == nil {
-		return nil, ErrNoLexicon
+		return Definition{}, ErrNoLexicon
 	}
-	var out []Sense
-	for _, s := range a.index.Lookup(word) {
-		out = append(out, Sense{
-			Cr:    s.Cr,
-			Stem:  s.Stem.String(),
-			Gloss: s.Gloss,
-			Word:  roman.Formative(s.Formative()),
+	if limit == 0 {
+		limit = 20
+	}
+	senses := a.index.Lookup(word)
+	out := Definition{Word: word}
+	gl := &gloss.Glosser{}
+	for i, s := range senses {
+		if limit >= 0 && i == limit {
+			out.More = len(senses) - limit
+			break
+		}
+		f := s.Formative()
+		out.Senses = append(out.Senses, Sense{
+			Cr:      s.Cr,
+			Stem:    s.Stem.String(),
+			Meaning: s.Gloss,
+			Word:    roman.Formative(f),
+			Gloss:   gl.Formative(f),
 		})
 	}
 	return out, nil
@@ -497,6 +709,7 @@ func root(e lexicon.RootEntry) Root {
 		Objective:    e.Objective,
 		Completive:   e.Completive,
 		Dynamic:      e.Dynamic,
+		Wikidata:     e.Wikidata,
 	}
 }
 

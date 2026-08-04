@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/api"
 	"github.com/christian-oudard/ithkuil/store"
 )
 
@@ -28,13 +28,16 @@ func testServer(t *testing.T) *server {
 	if err != nil {
 		t.Fatalf("load lexicon: %v", err)
 	}
-	return &server{lex: lex, st: st, grammarDir: "../../../docs/reference"}
+	a := api.New()
+	a.SetLexicon(lex)
+	a.SetLexiconSearch(store.NewSearcher(st))
+	return &server{api: a, st: st, grammarDir: "../../../docs/reference"}
 }
 
 // emptyServer is what main builds when the store will not open: no
 // store, and a lexicon with nothing in it.
 func emptyServer() *server {
-	return &server{lex: &lexicon.Lexicon{}, grammarDir: "../../../docs/reference"}
+	return &server{api: api.New(), grammarDir: "../../../docs/reference"}
 }
 
 // ---- parse ----
@@ -52,19 +55,19 @@ func TestMCPParse_Formative(t *testing.T) {
 	if w.Type != "Form" {
 		t.Errorf("type = %q, want Form", w.Type)
 	}
-	if !w.Valid {
+	if len(w.Violations) != 0 {
 		t.Errorf("the canonical test word is pronounceable; got violations %v", w.Violations)
 	}
 	if w.Gloss == "" || len(w.Segments) == 0 {
 		t.Errorf("gloss %q, %d segments; want both", w.Gloss, len(w.Segments))
 	}
-	if w.Root == nil {
+	if w.Headword == nil {
 		t.Fatal("a formative has a root head")
 	}
 	// Without verbose the meanings stay out: they are the bulk of the
 	// payload and a caller that only wants the slots pays for them.
-	if w.Root.Meaning != "" {
-		t.Errorf("root meaning %q leaked without verbose", w.Root.Meaning)
+	if w.Headword.Meaning != "" {
+		t.Errorf("root meaning %q leaked without verbose", w.Headword.Meaning)
 	}
 	if len(w.Glossary) != 0 {
 		t.Errorf("glossary present without verbose: %d rows", len(w.Glossary))
@@ -78,7 +81,7 @@ func TestMCPParse_Verbose(t *testing.T) {
 		t.Fatalf("parse: %v", err)
 	}
 	w := out.Words[0]
-	if w.Root == nil || w.Root.Meaning == "" {
+	if w.Headword == nil || w.Headword.Meaning == "" {
 		t.Error("verbose asks for the root definition")
 	}
 	if len(w.Glossary) == 0 {
@@ -120,15 +123,16 @@ func TestMCPParse_Unreadable(t *testing.T) {
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
+	// A word that will not read carries the reason and no type or
+	// gloss. It used to carry "?" for both, which a caller had to know
+	// meant failure; an empty type beside a populated Error says it
+	// without a sentinel.
 	w := out.Words[0]
-	if w.Type != "?" {
-		t.Fatalf("type = %q, want ?", w.Type)
-	}
-	if w.Reason == "" {
+	if w.Error == "" {
 		t.Error("an unreadable word must say why")
 	}
-	if !strings.HasPrefix(w.Gloss, "?") {
-		t.Errorf("gloss = %q, want a leading ?", w.Gloss)
+	if w.Type != "" || w.Gloss != "" {
+		t.Errorf("an unreadable word claims type %q and gloss %q", w.Type, w.Gloss)
 	}
 }
 
@@ -188,7 +192,7 @@ func TestMCPParse_Violations(t *testing.T) {
 	if w.Type != "Carrier" {
 		t.Fatalf("type = %q, want Carrier", w.Type)
 	}
-	if w.Valid {
+	if len(w.Violations) == 0 {
 		t.Fatal("hň is not licensed word-initially")
 	}
 	if len(w.Violations) == 0 {
@@ -282,10 +286,10 @@ func TestMCPCompose_Formative(t *testing.T) {
 	if len(out.Segments) == 0 {
 		t.Error("a composed formative reports its slots")
 	}
-	if out.Root == nil {
+	if out.Headword == nil {
 		t.Fatal("a composed formative has a root head")
 	}
-	if out.Root.Meaning != "" || len(out.Glossary) != 0 {
+	if out.Headword.Meaning != "" || len(out.Glossary) != 0 {
 		t.Error("meanings and glossary belong to verbose")
 	}
 }
@@ -323,7 +327,7 @@ func TestMCPCompose_NonFormative(t *testing.T) {
 	if out.Romanization == "" {
 		t.Error("a bias adjunct is a word")
 	}
-	if out.Segments != nil || out.Root != nil {
+	if out.Segments != nil || out.Headword != nil {
 		t.Errorf("a bias has no slots or root; got %+v", out)
 	}
 }
@@ -334,7 +338,7 @@ func TestMCPCompose_Verbose(t *testing.T) {
 	if err != nil {
 		t.Fatalf("compose: %v", err)
 	}
-	if out.Root == nil || out.Root.Meaning == "" || len(out.Glossary) == 0 {
+	if out.Headword == nil || out.Headword.Meaning == "" || len(out.Glossary) == 0 {
 		t.Error("verbose asks for the root definition and the glossary")
 	}
 }
@@ -364,7 +368,7 @@ func TestMCPSearch_NoQueryListsCategories(t *testing.T) {
 	if len(out.Categories) == 0 {
 		t.Fatal("a bare search lists the categories")
 	}
-	if len(out.Entries) != 0 || len(out.Roots) != 0 {
+	if len(out.Grammar) != 0 || len(out.Roots) != 0 {
 		t.Error("a bare search returns categories and nothing else")
 	}
 }
@@ -376,7 +380,7 @@ func TestMCPSearch_Abbrev(t *testing.T) {
 		t.Fatalf("search: %v", err)
 	}
 	var found bool
-	for _, e := range out.Entries {
+	for _, e := range out.Grammar {
 		if e.Category == "CarrierType" && e.Abbrev == "CAR" {
 			found = true
 			if e.Name == "" || e.Description == "" {
@@ -385,7 +389,7 @@ func TestMCPSearch_Abbrev(t *testing.T) {
 		}
 	}
 	if !found {
-		t.Errorf("CAR not among %d entries", len(out.Entries))
+		t.Errorf("CAR not among %d entries", len(out.Grammar))
 	}
 }
 
@@ -398,7 +402,7 @@ func TestMCPSearch_Form(t *testing.T) {
 	if err != nil {
 		t.Fatalf("search: %v", err)
 	}
-	if len(out.Entries) == 0 {
+	if len(out.Grammar) == 0 {
 		t.Fatal("hl is the CAR carrier form")
 	}
 	if len(out.Roots) != 0 || len(out.Affixes) != 0 {
@@ -416,10 +420,10 @@ func TestMCPSearch_FormWithCategory(t *testing.T) {
 	if err != nil {
 		t.Fatalf("search: %v", err)
 	}
-	if len(kept.Entries) == 0 {
+	if len(kept.Grammar) == 0 {
 		t.Fatal("a is the THM case vowel and Case is its category")
 	}
-	for _, e := range kept.Entries {
+	for _, e := range kept.Grammar {
 		if !strings.HasPrefix(e.Category, "Case") {
 			t.Errorf("%s/%s survived a Case filter", e.Category, e.Abbrev)
 		}
@@ -428,8 +432,8 @@ func TestMCPSearch_FormWithCategory(t *testing.T) {
 	if err != nil {
 		t.Fatalf("search: %v", err)
 	}
-	if len(dropped.Entries) != 0 {
-		t.Errorf("a is not a bias form; got %+v", dropped.Entries)
+	if len(dropped.Grammar) != 0 {
+		t.Errorf("a is not a bias form; got %+v", dropped.Grammar)
 	}
 }
 
@@ -454,7 +458,7 @@ func TestMCPSearch_Lexicon(t *testing.T) {
 		t.Errorf("limit 5 returned %d roots", len(out.Roots))
 	}
 	for _, r := range out.Roots {
-		if r.Cr == "" {
+		if r.Root.Cr == "" {
 			t.Errorf("root hit with no cluster: %+v", r)
 		}
 	}
@@ -472,7 +476,7 @@ func TestMCPSearch_NoStore(t *testing.T) {
 	if !strings.Contains(err.Error(), "data store") {
 		t.Errorf("error %q does not mention the store", err)
 	}
-	if len(out.Entries) == 0 {
+	if len(out.Grammar) == 0 {
 		t.Error("the grammar table is in the binary and should still answer")
 	}
 }
@@ -485,10 +489,10 @@ func TestMCPSearch_CategoryOnly(t *testing.T) {
 	if err != nil {
 		t.Fatalf("search: %v", err)
 	}
-	if len(out.Entries) == 0 {
+	if len(out.Grammar) == 0 {
 		t.Fatal("Bias has 61 entries")
 	}
-	for _, e := range out.Entries {
+	for _, e := range out.Grammar {
 		if e.Category != "Bias" {
 			t.Errorf("%s survived a Bias filter", e.Category)
 		}
@@ -510,7 +514,7 @@ func TestMCPDefine(t *testing.T) {
 		t.Fatal("water has at least one sense")
 	}
 	for _, sense := range out.Senses {
-		if sense.Romanization == "" || sense.Gloss == "" || sense.Meaning == "" {
+		if sense.Word == "" || sense.Gloss == "" || sense.Meaning == "" {
 			t.Errorf("incomplete sense: %+v", sense)
 		}
 	}
@@ -554,8 +558,7 @@ func TestMCPDefine_Errors(t *testing.T) {
 	if _, _, err := emptyServer().define(context.Background(), nil, defineIn{Word: " "}); err == nil {
 		t.Error("empty word is an error")
 	}
-	s := &server{}
-	if _, _, err := s.define(context.Background(), nil, defineIn{Word: "water"}); err == nil {
+	if _, _, err := emptyServer().define(context.Background(), nil, defineIn{Word: "water"}); err == nil {
 		t.Error("no lexicon is an error")
 	}
 }

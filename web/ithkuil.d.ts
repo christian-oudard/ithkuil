@@ -192,6 +192,22 @@ export interface ComparePair {
   role: string;
   slots: SlotRow[];
   gloss: GlossRow[];
+  /**
+   * The two decoded the same way in every slot and every category.
+   * Worth stating outright: two spellings of one grammar is the
+   * interesting answer, not an absence of rows.
+   */
+  identical?: boolean;
+  /**
+   * They name different lexical identities, which no slot row shows,
+   * since a root is one chunk either way.
+   */
+  rootDiffers?: boolean;
+  aHead?: Headword;
+  bHead?: Headword;
+  /** The decoder's complaint, when a side read only for its shape. */
+  aNote?: string;
+  bNote?: string;
 }
 
 /** A chain member with nothing on the other side to compare against. */
@@ -268,6 +284,8 @@ export interface Root {
   objective?: string[];
   completive?: string[];
   dynamic?: string;
+  /** External Q-IDs per stem, for reconciling against Wikidata. */
+  wikidata?: string[];
 }
 
 export interface RootHit {
@@ -295,8 +313,52 @@ export interface SearchResult {
 export interface Sense {
   cr: string;
   stem: string;
-  gloss: string;
+  /** The lexicon cell it was read out of, often naming several senses. */
+  meaning: string;
+  /** The minimal formative carrying the sense, and its canonical gloss. */
   word: string;
+  gloss: string;
+}
+
+/**
+ * An English word read backwards into lexical cores. `more` counts the
+ * senses past the limit, so a caller can say there are others rather
+ * than implying the list is all of them.
+ */
+export interface Definition {
+  word: string;
+  senses?: Sense[];
+  more?: number;
+}
+
+/** Narrows a search. The zero value is a plain substring query. */
+export interface SearchOptions {
+  /** List one category of the grammar inventory, ignoring the query. */
+  category?: string;
+  /** The query must equal an abbreviation. */
+  exact?: boolean;
+  /** Read the query as a written form. Answers from the grammar only. */
+  form?: boolean;
+  /** Lexicon hits per kind. 0 means 20; negative means no cap. */
+  limit?: number;
+}
+
+/**
+ * A window onto the affix table, ordered by cluster. `total` is the
+ * size of the whole table, so a caller can show how far in it is
+ * without asking twice.
+ */
+export interface AffixPage {
+  total: number;
+  offset: number;
+  items: Affix[];
+}
+
+/** A window onto the lexicon, ordered by cluster. */
+export interface RootPage {
+  total: number;
+  offset: number;
+  items: Root[];
 }
 
 /** Both counts are zero before `load`, which is a legitimate state. */
@@ -345,16 +407,28 @@ export interface Ithkuil {
    * that still marks that boundary. Affixes written before the Ca land
    * in Slot V. `ml`, `S2.CPT-ml-ERG`, `m-SYS/5_2-{Ca}-DCD/1_2`.
    */
-  compose(expr: string): string;
+   * Set `stressless` to "true" to write stress as a section 4.8 parsing
+   * adjunct rather than a diacritic.
+   */
+  compose(expr: string, stressless?: string): string;
   /** Fails on a word with no slot structure, such as an adjunct. */
   compare(a: string, b: string): string;
   /**
    * One query against the grammar inventory and the lexicon at once,
    * grammar first. Answers from the grammar alone before `load`.
    */
-  search(query: string): string;
+  /** Options are JSON-encoded: `search(q, JSON.stringify(opts))`. */
+  search(query: string, options?: string): string;
   /** English backwards into lexical cores. Needs roots loaded. */
-  define(word: string): string;
+  define(word: string, limit?: string): string;
+  /**
+   * A window onto the affix table, ordered by cluster. Browsing needs
+   * this: a search box cannot find what you do not know the name of.
+   * A limit of 0 means all 528.
+   */
+  affixes(offset?: string, limit?: string): string;
+  /** A window onto the 5,891 roots, ordered by cluster. */
+  roots(offset?: string, limit?: string): string;
   /** The grammar inventory's category names, for `table`. */
   categories(): string;
   /** One category's values, or the whole inventory when empty. */

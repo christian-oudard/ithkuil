@@ -68,6 +68,7 @@ func wire() []any {
 		Comparison{}, GrammarEntry{}, Root{}, RootHit{}, Affix{},
 		SearchResult{}, Sense{}, LexiconInfo{}, Info{},
 		Topic{}, Position{}, GlossToken{}, Violation{}, Member{},
+		Definition{}, SearchOptions{}, AffixPage{}, RootPage{},
 		Example{}, Sample{}, Input{},
 	}
 }

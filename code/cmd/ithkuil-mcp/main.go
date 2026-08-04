@@ -21,13 +21,15 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/api"
 	"github.com/christian-oudard/ithkuil/store"
 )
 
-// server bundles the per-process state every tool handler needs.
+// server bundles the per-process state every tool handler needs. The
+// api holds the lexicon and answers every tool; the store stays only to
+// be closed and to lend its full-text index to that api.
 type server struct {
-	lex        *lexicon.Lexicon
+	api        *api.API
 	st         *store.Store
 	grammarDir string
 }
@@ -45,15 +47,36 @@ func newServer(dataFile, grammarDir string) *server {
 		log.Printf("warning: cannot open data store %s (%v); roots/affixes lookups will return empty", dataFile, err)
 	}
 
-	lex := &lexicon.Lexicon{}
+	a := api.New()
 	if st != nil {
-		lex, err = store.LoadLexicon(st)
+		lex, err := store.LoadLexicon(st)
 		if err != nil {
 			log.Printf("warning: lexicon load failed (%v); roots/affixes lookups will return empty", err)
-			lex = &lexicon.Lexicon{}
+		} else {
+			a.SetLexicon(lex)
 		}
+		if notes, topics, err := st.Notes(); err == nil {
+			entries := make([]api.GrammarEntry, len(notes))
+			for i, n := range notes {
+				entries[i] = api.GrammarEntry{
+					Abbrev: n.Abbrev, Explanation: n.Explanation, Guidance: n.Guidance,
+				}
+			}
+			ts := make([]api.Topic, len(topics))
+			for i, t := range topics {
+				ts[i] = api.Topic{
+					Key: t.Key, Category: t.Category, Name: t.Name,
+					Explanation: t.Explanation, Guidance: t.Guidance,
+				}
+			}
+			a.SetNotes(entries, ts)
+		}
+		// The full-text index ranks by word where the in-memory scan
+		// matches a substring anywhere, so "cat" does not answer with
+		// "indicate". Only a browser has to do without it.
+		a.SetLexiconSearch(store.NewSearcher(st))
 	}
-	return &server{lex: lex, st: st, grammarDir: grammarDir}
+	return &server{api: a, st: st, grammarDir: grammarDir}
 }
 
 func main() {

@@ -4,10 +4,6 @@ import (
 	"fmt"
 	"io"
 	"strings"
-
-	"github.com/christian-oudard/ithkuil/dictionary"
-	"github.com/christian-oudard/ithkuil/gloss"
-	"github.com/christian-oudard/ithkuil/roman"
 )
 
 // cmdDefine looks an English word up in the lexicon's glosses and shows
@@ -27,25 +23,24 @@ func cmdDefine(args []string, stdout, stderr io.Writer, dataFile string) int {
 		return 2
 	}
 
-	lex := loadLex(dataFile, stderr)
-	if lex == nil {
+	a, done := loadAPI(dataFile, stderr)
+	defer done()
+	got, err := a.Define(word, *limit)
+	if err != nil {
+		fmt.Fprintf(stderr, "define: %v\n", err)
 		return 1
 	}
-	senses := dictionary.Build(lex.Roots).Lookup(word)
-	if len(senses) == 0 {
+	if len(got.Senses) == 0 {
 		fmt.Fprintf(stdout, "%s: no root names this in English\n", word)
 		return 1
 	}
 
-	gl := &gloss.Glosser{}
 	fmt.Fprintf(stdout, "%s\n", word)
-	for i, s := range senses {
-		if i == *limit {
-			fmt.Fprintf(stdout, "  ... %d more\n", len(senses)-*limit)
-			break
-		}
-		f := s.Formative()
-		fmt.Fprintf(stdout, "  %-16s %-20s %s\n", roman.Formative(f), gl.Formative(f), s.Gloss)
+	for _, s := range got.Senses {
+		fmt.Fprintf(stdout, "  %-16s %-20s %s\n", s.Word, s.Gloss, s.Meaning)
+	}
+	if got.More > 0 {
+		fmt.Fprintf(stdout, "  ... %d more\n", got.More)
 	}
 	return 0
 }

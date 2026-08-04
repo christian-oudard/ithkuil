@@ -119,6 +119,16 @@ beyond them:
   note, which is normal: only the ones with something surprising about
   them carry one, and "no note for this one" is the honest thing to show
   rather than something invented to fill the panel.
+- **`search(query, options)`** takes its options as a JSON string,
+  since the boundary carries strings: `search(q, JSON.stringify({limit:
+  5}))`. `category` lists a whole category and ignores the query;
+  `exact` requires the abbreviation; `form` reads the query as written
+  letters and answers from the grammar alone.
+- **`affixes(offset, limit)`** and **`roots(offset, limit)`** walk the
+  lexicon in cluster order, for browsing rather than searching. All 528
+  affixes at once is 250 KB of JSON and reasonable to ask for; the 5,891
+  roots want a page. An offset past the end is an empty page, not an
+  error. Numbers cross as strings: `affixes("0", "50")`.
 - **`input(ascii)`** runs the digraph input method over a field's whole
   contents and is stateless. Hold the ASCII the reader typed, ask what
   it looks like, and render `pending` dim: `input("mat")` gives
@@ -158,7 +168,9 @@ Stated so a page is not built expecting it:
   comes back with its shape split.
 - `compare` fails outright on those same classes, with
   `"Affix has no slot breakdown to compare"`.
-- `search` takes a query and nothing else. The category, exact, form and
-  limit filters the CLI has are not exposed.
-- There is no way to list all 528 affixes or page the roots. Browsing
-  the lexicon needs a query to start from.
+- The lexicon half of a search is a substring scan here, and SQLite's
+  full-text index everywhere else. They disagree on 13 of 20 hits for
+  "water" and 16 of 20 for "cat", because the index ranks by word and a
+  substring matches anywhere, so "cat" answers with "indicate". The
+  driver has no js/wasm build, so a page cannot have the index. Rank
+  hits accordingly, or search the grammar first, which is exact.

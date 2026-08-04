@@ -16,6 +16,8 @@
 package main
 
 import (
+	"encoding/json"
+	"strconv"
 	"syscall/js"
 
 	"github.com/christian-oudard/ithkuil/api"
@@ -34,16 +36,30 @@ func main() {
 			return a.Parse(arg(s, 0)), nil
 		}),
 		"compose": fn(func(s ...string) (any, error) {
-			return a.Compose(arg(s, 0))
+			return a.Compose(arg(s, 0), arg(s, 1) == "true")
 		}),
 		"compare": fn(func(s ...string) (any, error) {
 			return a.Compare(arg(s, 0), arg(s, 1))
 		}),
 		"search": fn(func(s ...string) (any, error) {
-			return a.Search(arg(s, 0)), nil
+			// Options arrive as JSON because the boundary carries
+			// strings; an empty second argument is the zero value.
+			var opts api.SearchOptions
+			if raw := arg(s, 1); raw != "" {
+				if err := json.Unmarshal([]byte(raw), &opts); err != nil {
+					return nil, err
+				}
+			}
+			return a.Search(arg(s, 0), opts), nil
 		}),
 		"define": fn(func(s ...string) (any, error) {
-			return a.Define(arg(s, 0))
+			return a.Define(arg(s, 0), num(s, 1))
+		}),
+		"affixes": fn(func(s ...string) (any, error) {
+			return a.Affixes(num(s, 0), num(s, 1)), nil
+		}),
+		"roots": fn(func(s ...string) (any, error) {
+			return a.Roots(num(s, 0), num(s, 1)), nil
 		}),
 		"categories": fn(func(...string) (any, error) {
 			return a.Categories(), nil
@@ -93,6 +109,17 @@ func fn(h func(...string) (any, error)) js.Func {
 // arg reads the i'th argument, treating a missing one as empty. A page
 // calling with too few arguments gets the same answer as one passing
 // empty strings, which every call already has a defined reply for.
+// num reads an integer argument. JavaScript numbers arrive as strings
+// through this boundary, and a missing or unparseable one is zero,
+// which every call that takes one already defines.
+func num(s []string, i int) int {
+	n, err := strconv.Atoi(arg(s, i))
+	if err != nil {
+		return 0
+	}
+	return n
+}
+
 func arg(s []string, i int) string {
 	if i >= len(s) {
 		return ""

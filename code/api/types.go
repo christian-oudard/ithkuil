@@ -11,9 +11,15 @@
 // it.
 //
 // The types are close to the internal ones and deliberately not the
-// same. They drop what a browser cannot use (Wikidata Q-IDs), flatten
-// what it should not have to walk (a root's four stems are an array),
-// and name things as TypeScript names them.
+// same. They flatten what a caller should not have to walk (a root's
+// four stems are an array) and name things as TypeScript names them.
+//
+// They carry what any caller needs, not only what a browser needs.
+// Wikidata Q-IDs were dropped once on the grounds that a page cannot
+// use them; the CLI prints them, and since this is the one layer all
+// three front ends read, dropping a field here deletes it from the CLI
+// too. They are back, and omitted when blank, which costs a browser
+// about 2 KB compressed.
 //
 // This package builds on every platform. Only the thin adapter in
 // cmd/ithkuil-wasm is js/wasm-only, which is what lets these types be
@@ -198,6 +204,19 @@ type ComparePair struct {
 	Role  string     `json:"role"`
 	Slots []SlotRow  `json:"slots"`
 	Gloss []GlossRow `json:"gloss"`
+	// Identical says the two decoded the same way in every slot and
+	// every category. Worth stating outright: two spellings of one
+	// grammar is the interesting answer, not an absence of rows.
+	Identical bool `json:"identical,omitempty"`
+	// RootDiffers says they name different lexical identities, which no
+	// slot row shows, since a root is one chunk either way.
+	RootDiffers bool      `json:"rootDiffers,omitempty"`
+	AHead       *Headword `json:"aHead,omitempty"`
+	BHead       *Headword `json:"bHead,omitempty"`
+	// ANote and BNote carry the decoder's complaint when a side could
+	// only be read for its shape.
+	ANote string `json:"aNote,omitempty"`
+	BNote string `json:"bNote,omitempty"`
 }
 
 // Unpaired is a chain member with nothing on the other side to compare
@@ -251,9 +270,9 @@ type Topic struct {
 // shape anything iterating over stems wants.
 //
 // The remaining fields are the cross-slot alternates, present on a
-// small minority of roots and omitted when blank. Wikidata Q-IDs are
-// dropped: they are for reconciling the lexicon against an external
-// database, not for reading a word.
+// small minority of roots and omitted when blank. Wikidata holds the
+// external Q-IDs per stem, which reconcile the lexicon against
+// Wikidata rather than saying anything about the word.
 type Root struct {
 	Cr           string   `json:"cr"`
 	Stems        []string `json:"stems"`
@@ -262,6 +281,7 @@ type Root struct {
 	Objective    []string `json:"objective,omitempty"`
 	Completive   []string `json:"completive,omitempty"`
 	Dynamic      string   `json:"dynamic,omitempty"`
+	Wikidata     []string `json:"wikidata,omitempty"`
 }
 
 // RootHit is a root returned by a search, with the relevance score the
@@ -282,6 +302,47 @@ type Affix struct {
 	Degrees     []string `json:"degrees"`
 }
 
+// SearchOptions narrows a search. The zero value is a plain substring
+// query against both halves, which is what a page's search box wants;
+// the CLI and the MCP server expose the rest as flags.
+type SearchOptions struct {
+	// Category lists one category of the grammar inventory and ignores
+	// the query, for "show me every Case".
+	Category string `json:"category,omitempty"`
+	// Exact requires the query to equal an abbreviation, rather than
+	// appear anywhere in a name or a description.
+	Exact bool `json:"exact,omitempty"`
+	// Form reads the query as a written vowel or consonant and asks
+	// what it encodes. Answers from the grammar only: a written form is
+	// not a lexicon question.
+	Form bool `json:"form,omitempty"`
+	// Limit caps lexicon hits per kind. Zero means 20; a negative
+	// number means no cap.
+	Limit int `json:"limit,omitempty"`
+}
+
+// AffixPage is a window onto the affix table, ordered by cluster. Total
+// is the size of the whole table, so a caller can show how far in it is
+// without asking twice.
+//
+// Total and Offset are spelled out here and in RootPage rather than
+// embedded from a shared Page. Embedding flattens in JSON and reads
+// fine in TypeScript, but the declaration guard compares fields to json
+// tags and an embedded struct has neither, so it would have to be
+// taught a special case to check two fields.
+type AffixPage struct {
+	Total  int     `json:"total"`
+	Offset int     `json:"offset"`
+	Items  []Affix `json:"items"`
+}
+
+// RootPage is a window onto the lexicon, ordered by cluster.
+type RootPage struct {
+	Total  int    `json:"total"`
+	Offset int    `json:"offset"`
+	Items  []Root `json:"items"`
+}
+
 // SearchResult is one query answered against the grammar inventory and
 // the lexicon at once. Grammar hits come first because a three-letter
 // query is almost always a category abbreviation.
@@ -295,10 +356,24 @@ type SearchResult struct {
 // root, which stem, the source gloss it was read out of, and the
 // minimal word that carries it.
 type Sense struct {
-	Cr    string `json:"cr"`
-	Stem  string `json:"stem"`
-	Gloss string `json:"gloss"`
+	Cr   string `json:"cr"`
+	Stem string `json:"stem"`
+	// Meaning is the lexicon cell the headword was read out of, which
+	// is prose and often names several senses at once.
+	Meaning string `json:"meaning"`
+	// Word is the minimal formative carrying the sense, and Gloss is
+	// its canonical gloss, so a caller can show either.
 	Word  string `json:"word"`
+	Gloss string `json:"gloss"`
+}
+
+// Definition is an English word read backwards into lexical cores.
+// More counts the senses past the limit, so a caller can say there are
+// others rather than implying the list is all of them.
+type Definition struct {
+	Word   string  `json:"word"`
+	Senses []Sense `json:"senses,omitempty"`
+	More   int     `json:"more,omitempty"`
 }
 
 // Position is one place in a formative a builder offers controls for.

@@ -5,6 +5,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/christian-oudard/ithkuil/api"
 	"github.com/christian-oudard/ithkuil/search"
 )
 
@@ -44,70 +45,58 @@ func cmdSearch(args []string, stdout, stderr io.Writer, dataFile string) int {
 		return 0
 	}
 
-	entries := grammarHits(query, *category, *exact, *formMode)
+	a, done := loadAPI(dataFile, stderr)
+	defer done()
+	got := a.Search(query, api.SearchOptions{
+		Category: *category, Exact: *exact, Form: *formMode, Limit: *limit,
+	})
+	entries := got.Grammar
 	if len(entries) > 0 {
 		printEntries(stdout, entries)
 		// A single hit is a request to read about one value, so the
 		// authored notes follow the row. In a list they would bury it.
 		if len(entries) == 1 {
-			printNotes(stdout, entries[0].Abbrev, dataFile, stderr)
+			printNotes(stdout, entries[0], stdout)
 		}
 	}
 
 	// A category listing is a grammar request; there is no lexicon
 	// half to it. --form likewise asks what a written form encodes.
 	found := len(entries) > 0
-	if query != "" && !*formMode {
-		s := openStore(dataFile, stderr)
-		if s == nil {
-			return 1
+	if len(got.Roots) > 0 {
+		if found {
+			fmt.Fprintln(stdout)
 		}
-		defer s.Close()
-
-		roots, err := s.SearchRoots(query, *limit)
-		if err != nil {
-			fmt.Fprintf(stderr, "search: root search: %v\n", err)
-			return 1
-		}
-		affixes, err := s.SearchAffixes(query, *limit)
-		if err != nil {
-			fmt.Fprintf(stderr, "search: affix search: %v\n", err)
-			return 1
-		}
-		if len(roots) > 0 {
-			if found {
-				fmt.Fprintln(stdout)
-			}
-			found = true
-			fmt.Fprintln(stdout, "Roots:")
-			for _, h := range roots {
-				fmt.Fprintf(stdout, "  -%s-\n", h.Cr)
-				printStem(stdout, "S0", h.Stem0)
-				printStem(stdout, "S1", h.Stem1)
-				printStem(stdout, "S2", h.Stem2)
-				printStem(stdout, "S3", h.Stem3)
-				printStem(stdout, "CTE", h.Contential)
-				printStem(stdout, "CSV", h.Constitutive)
-				printTrio(stdout, "OBJ", h.Objective)
-				printTrio(stdout, "CPT", h.Completive)
-				printStem(stdout, "DYN", h.Dynamic)
-				printTrio(stdout, "Wikidata", h.Wikidata)
-			}
-		}
-		if len(affixes) > 0 {
-			if found {
-				fmt.Fprintln(stdout)
-			}
-			found = true
-			fmt.Fprintln(stdout, "Affixes:")
-			for _, a := range affixes {
-				fmt.Fprintf(stdout, "  -%s- %s  %s\n", a.Cs, a.Abbrev, a.Description)
-				for i, d := range a.Degrees {
-					if d == "" {
-						continue
-					}
-					fmt.Fprintf(stdout, "    %d. %s\n", i+1, d)
+		found = true
+		fmt.Fprintln(stdout, "Roots:")
+		for _, h := range got.Roots {
+			fmt.Fprintf(stdout, "  -%s-\n", h.Root.Cr)
+			for i, label := range []string{"S0", "S1", "S2", "S3"} {
+				if i < len(h.Root.Stems) {
+					printStem(stdout, label, h.Root.Stems[i])
 				}
+			}
+			printStem(stdout, "CTE", h.Root.Contential)
+			printStem(stdout, "CSV", h.Root.Constitutive)
+			printTrio(stdout, "OBJ", h.Root.Objective)
+			printTrio(stdout, "CPT", h.Root.Completive)
+			printStem(stdout, "DYN", h.Root.Dynamic)
+			printTrio(stdout, "Wikidata", h.Root.Wikidata)
+		}
+	}
+	if len(got.Affixes) > 0 {
+		if found {
+			fmt.Fprintln(stdout)
+		}
+		found = true
+		fmt.Fprintln(stdout, "Affixes:")
+		for _, af := range got.Affixes {
+			fmt.Fprintf(stdout, "  -%s- %s  %s\n", af.Cs, af.Abbrev, af.Description)
+			for i, d := range af.Degrees {
+				if d == "" {
+					continue
+				}
+				fmt.Fprintf(stdout, "    %d. %s\n", i+1, d)
 			}
 		}
 	}
@@ -145,7 +134,7 @@ func filterByCategory(in []search.Entry, cat string) []search.Entry {
 	return out
 }
 
-func printEntries(w io.Writer, hits []search.Entry) {
+func printEntries(w io.Writer, hits []api.GrammarEntry) {
 	catW, abW, nmW, fmW := 8, 4, 4, 4
 	for _, h := range hits {
 		if n := len(h.Category); n > catW {
@@ -172,16 +161,7 @@ func printEntries(w io.Writer, hits []search.Entry) {
 // printNotes writes the fuller reading of a value and how it lands in
 // English, both of which live in the store rather than in the compiled
 // inventory: they are authored, and the inventory is derived.
-func printNotes(w io.Writer, abbrev, dataFile string, stderr io.Writer) {
-	st := openStore(dataFile, stderr)
-	if st == nil {
-		return
-	}
-	defer st.Close()
-	e, err := st.Grammar(abbrev)
-	if err != nil || e == nil {
-		return
-	}
+func printNotes(w io.Writer, e api.GrammarEntry, _ io.Writer) {
 	if e.Explanation != "" {
 		fmt.Fprintf(w, "\n%s\n", wrapAt(e.Explanation, 72, ""))
 	}

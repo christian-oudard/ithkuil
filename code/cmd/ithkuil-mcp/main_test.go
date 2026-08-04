@@ -52,7 +52,7 @@ func TestNewServer_WithStore(t *testing.T) {
 	if s.st == nil {
 		t.Fatal("the store opened, so the server should hold it")
 	}
-	if len(s.lex.Roots) == 0 {
+	if s.api.Info().Lexicon.Roots == 0 {
 		t.Error("the lexicon should be loaded from the store")
 	}
 	if buf.Len() != 0 {
@@ -69,11 +69,11 @@ func TestNewServer_NoStore(t *testing.T) {
 	if s.st != nil {
 		t.Error("no store should have opened")
 	}
-	if s.lex == nil {
+	if s.api == nil {
 		t.Fatal("the lexicon must be non-nil even when empty; define checks it")
 	}
-	if len(s.lex.Roots) != 0 {
-		t.Errorf("want an empty lexicon, got %d roots", len(s.lex.Roots))
+	if s.api.Info().Lexicon.Roots != 0 {
+		t.Errorf("want an empty lexicon, got %d roots", s.api.Info().Lexicon.Roots)
 	}
 	if !strings.Contains(buf.String(), "cannot open data store") {
 		t.Errorf("want a warning naming the store; got %q", buf)
@@ -102,11 +102,11 @@ func TestNewServer_EmptyStore(t *testing.T) {
 	}
 	buf := captureLog(t)
 	s := newServer(path, grammarDir())
-	if s.lex == nil {
+	if s.api == nil {
 		t.Fatal("the lexicon must never be nil")
 	}
-	if len(s.lex.Roots) != 0 {
-		t.Errorf("an empty store yields an empty lexicon; got %d roots", len(s.lex.Roots))
+	if s.api.Info().Lexicon.Roots != 0 {
+		t.Errorf("an empty store yields an empty lexicon; got %d roots", s.api.Info().Lexicon.Roots)
 	}
 	if !strings.Contains(buf.String(), "warning") {
 		t.Errorf("want a warning; got %q", buf)

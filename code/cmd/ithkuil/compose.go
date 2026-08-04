@@ -6,9 +6,6 @@ import (
 	"io"
 
 	"github.com/christian-oudard/ithkuil/fault"
-	"github.com/christian-oudard/ithkuil/gloss"
-	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/roman"
 )
 
 // cmdCompose builds a word from a gloss expression and prints the
@@ -56,37 +53,15 @@ func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 		fmt.Fprintf(stderr, "compose: unexpected extra args %q\n", rest[1:])
 		return 2
 	}
-	lex := loadLex(dataFile, stderr)
-	words, err := gloss.ParseText(rest[0], lex)
+	a, done := loadAPI(dataFile, stderr)
+	defer done()
+	built, err := a.Compose(rest[0], *stressless)
 	if err != nil {
 		renderGlossFaults(stderr, rest[0], err)
 		return 2
 	}
-	if len(words) != 1 {
-		fmt.Fprintf(stderr, "compose: %q is %d words; compose builds one\n",
-			rest[0], len(words))
-		return 2
-	}
-	tok := words[0]
-	var word string
-	if *stressless {
-		word, err = roman.Stressless(g.Text{tok})
-	} else {
-		word, err = roman.Word(tok)
-	}
-	if err != nil {
-		fmt.Fprintf(stderr, "compose: %v\n", err)
-		return 2
-	}
-	// A word class can be real and still write nothing: NRR is the
-	// unmarked register, so it has no adjunct. Printing the blank line
-	// would read as a bug in the renderer.
-	if word == "" {
-		fmt.Fprintf(stderr, "compose: %s is unmarked and writes no word\n", rest[0])
-		return 2
-	}
-	fmt.Fprintln(stdout, word)
-	fmt.Fprintln(stdout, (&gloss.Glosser{Lex: lex}).Token(tok))
+	fmt.Fprintln(stdout, built.Word)
+	fmt.Fprintln(stdout, built.Gloss)
 	return 0
 }
 

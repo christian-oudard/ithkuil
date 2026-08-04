@@ -141,8 +141,8 @@ func TestLoad_Merges(t *testing.T) {
 		t.Errorf("Version = %d, want %d", info.Lexicon.Version, doc.Version)
 	}
 	// The English index is built from roots, so it only works now.
-	if senses, err := a.Define("water"); err != nil || len(senses) == 0 {
-		t.Errorf("Define after roots: %v, %d senses", err, len(senses))
+	if got, err := a.Define("water", 0); err != nil || len(got.Senses) == 0 {
+		t.Errorf("Define after roots: %v, %d senses", err, len(got.Senses))
 	}
 }
 
@@ -153,17 +153,17 @@ func TestNeedLexicon(t *testing.T) {
 	if _, err := a.Affix("rf"); err != ErrNoLexicon {
 		t.Errorf("Affix without a lexicon: %v, want ErrNoLexicon", err)
 	}
-	if _, err := a.Define("water"); err != ErrNoLexicon {
+	if _, err := a.Define("water", 0); err != ErrNoLexicon {
 		t.Errorf("Define without a lexicon: %v, want ErrNoLexicon", err)
 	}
 	// Search still answers from the grammar, which is compiled in.
-	if r := a.Search("ERG"); len(r.Grammar) == 0 {
+	if r := a.Search("ERG", SearchOptions{}); len(r.Grammar) == 0 {
 		t.Error("Search found no grammar without a lexicon")
 	}
 }
 
 func TestCompose(t *testing.T) {
-	c, err := loaded(t).Compose("S2.CPT-ml-ERG")
+	c, err := loaded(t).Compose("S2.CPT-ml-ERG", false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -178,7 +178,7 @@ func TestCompose(t *testing.T) {
 }
 
 func TestCompose_Error(t *testing.T) {
-	if _, err := loaded(t).Compose("NOT-A-GLOSS"); err == nil {
+	if _, err := loaded(t).Compose("NOT-A-GLOSS", false); err == nil {
 		t.Error("Compose on nonsense reported success")
 	}
 }
@@ -238,7 +238,7 @@ func TestAffix_Degrees(t *testing.T) {
 // rename: the internal type spells four stems as four named fields,
 // and anything iterating over stems wants an array.
 func TestRoot_StemsAreIndexed(t *testing.T) {
-	hits := loaded(t).Search("ml").Roots
+	hits := loaded(t).Search("ml", SearchOptions{}).Roots
 	if len(hits) == 0 {
 		t.Fatal("no root hits for ml")
 	}
@@ -577,5 +577,194 @@ func TestFromASCII(t *testing.T) {
 	}
 	if got := a.FromASCII("mlala"); got != "mlala" {
 		t.Errorf("FromASCII left plain text alone as %q", got)
+	}
+}
+
+// TestSearchOptions_Filters pins the four narrowings the CLI and the
+// MCP server expose. They lived in those two front ends separately
+// until this package grew them, which is why they are checked here now
+// rather than twice.
+func TestSearchOptions_Filters(t *testing.T) {
+	a := loaded(t)
+
+	// Category lists a whole category and ignores the query.
+	byCat := a.Search("", SearchOptions{Category: "Aspect"})
+	if len(byCat.Grammar) < 30 {
+		t.Errorf("Category=Aspect gave %d rows, want the whole category", len(byCat.Grammar))
+	}
+	for _, e := range byCat.Grammar {
+		if e.Category != "Aspect" {
+			t.Errorf("%s/%s survived an Aspect filter", e.Category, e.Abbrev)
+		}
+	}
+	// A category listing is a grammar request with no lexicon half.
+	if len(byCat.Roots) != 0 || len(byCat.Affixes) != 0 {
+		t.Error("a category listing answered with lexicon hits")
+	}
+
+	// Exact requires the abbreviation, not a substring of a description.
+	exact := a.Search("DPX", SearchOptions{Exact: true})
+	if len(exact.Grammar) != 1 || exact.Grammar[0].Abbrev != "DPX" {
+		t.Errorf("Exact gave %+v, want just DPX", exact.Grammar)
+	}
+
+	// Form reads the query as written letters and answers from the
+	// grammar alone: what a root contains is a different question.
+	form := a.Search("ëu", SearchOptions{Form: true})
+	if len(form.Grammar) == 0 {
+		t.Error("ëu is a written form and encodes something")
+	}
+	if len(form.Roots) != 0 {
+		t.Error("a written form is not a lexicon question")
+	}
+	// Form and Category compose: "what does this write, among Biases".
+	if got := a.Search("a", SearchOptions{Form: true, Category: "Bias"}); len(got.Grammar) != 0 {
+		t.Errorf("a is not a bias form; got %+v", got.Grammar)
+	}
+
+	// Limit caps each lexicon kind. A negative limit uncaps it.
+	if got := a.Search("water", SearchOptions{Limit: 3}); len(got.Roots) > 3 {
+		t.Errorf("Limit=3 gave %d roots", len(got.Roots))
+	}
+	capped := a.Search("water", SearchOptions{})
+	uncapped := a.Search("water", SearchOptions{Limit: -1})
+	if len(uncapped.Roots) < len(capped.Roots) {
+		t.Error("a negative limit returned fewer hits than the default cap")
+	}
+}
+
+// TestAffixesAndRoots_Paging pins the browsing endpoints. A search box
+// cannot find what you do not know the name of, so the affix ladder and
+// the lexicon have to be walkable as well as searchable.
+func TestAffixesAndRoots_Paging(t *testing.T) {
+	a := loaded(t)
+
+	all := a.Affixes(0, 0)
+	if all.Total != 528 || len(all.Items) != 528 {
+		t.Errorf("Affixes(0,0) = %d of %d, want all 528", len(all.Items), all.Total)
+	}
+	// Ordered by cluster, so a page is stable between calls.
+	for i := 1; i < len(all.Items); i++ {
+		if all.Items[i-1].Cs >= all.Items[i].Cs {
+			t.Fatalf("affixes out of order at %d: %q then %q",
+				i, all.Items[i-1].Cs, all.Items[i].Cs)
+		}
+	}
+	page := a.Affixes(10, 5)
+	if len(page.Items) != 5 || page.Offset != 10 || page.Total != 528 {
+		t.Errorf("Affixes(10,5) = %d items, offset %d, total %d", len(page.Items), page.Offset, page.Total)
+	}
+	if page.Items[0].Cs != all.Items[10].Cs {
+		t.Errorf("page starts at %q, whole list has %q at 10", page.Items[0].Cs, all.Items[10].Cs)
+	}
+
+	roots := a.Roots(0, 4)
+	if roots.Total < 5000 || len(roots.Items) != 4 {
+		t.Errorf("Roots(0,4) = %d items of %d", len(roots.Items), roots.Total)
+	}
+	for _, r := range roots.Items {
+		if r.Cr == "" || len(r.Stems) != 4 {
+			t.Errorf("root without a cluster or four stems: %+v", r)
+		}
+	}
+	// Stepping past the end finds the end, rather than an error.
+	if end := a.Roots(999999, 10); len(end.Items) != 0 || end.Total != roots.Total {
+		t.Errorf("past the end = %d items, total %d", len(end.Items), end.Total)
+	}
+	// No lexicon is an empty page, not a panic.
+	if got := New().Affixes(0, 10); got.Total != 0 || len(got.Items) != 0 {
+		t.Errorf("Affixes with no lexicon = %+v", got)
+	}
+}
+
+// TestCompose_Stressless pins the §4.8 alternative: stress written as a
+// parsing adjunct instead of a diacritic, for a reader or a font that
+// cannot show one.
+func TestCompose_Stressless(t *testing.T) {
+	a := loaded(t)
+	plain, err := a.Compose("S2.CPT-ml-ERG", false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	adjunct, err := a.Compose("S2.CPT-ml-ERG", true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if plain.Word == adjunct.Word {
+		t.Errorf("stressless wrote the same word: %q", plain.Word)
+	}
+	if !strings.Contains(adjunct.Word, " ") {
+		t.Errorf("stressless = %q, want a parsing adjunct before the word", adjunct.Word)
+	}
+	if plain.Gloss != adjunct.Gloss {
+		t.Errorf("the same grammar glossed two ways: %q and %q", plain.Gloss, adjunct.Gloss)
+	}
+}
+
+// TestCompose_Chain pins that a chain gloss composes. Reading the whole
+// expression as one word takes the space between two formatives for
+// part of a root, which fails with a confusing complaint about the Cr.
+func TestCompose_Chain(t *testing.T) {
+	a := loaded(t)
+	one, err := a.Compose("S2.CPT-ml-ERG", false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := a.Compose(one.Gloss+" "+one.Gloss, false); err == nil {
+		t.Error("two separate words composed as one")
+	}
+}
+
+// TestDefine_LimitAndMore pins that a capped list says how much it left
+// out, rather than implying it is all there is.
+func TestDefine_LimitAndMore(t *testing.T) {
+	a := loaded(t)
+	all, err := a.Define("water", -1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(all.Senses) < 3 {
+		t.Skipf("water has %d senses; too few to test a cap", len(all.Senses))
+	}
+	capped, err := a.Define("water", 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(capped.Senses) != 2 {
+		t.Errorf("limit 2 gave %d senses", len(capped.Senses))
+	}
+	if capped.More != len(all.Senses)-2 {
+		t.Errorf("More = %d, want %d", capped.More, len(all.Senses)-2)
+	}
+	if all.More != 0 {
+		t.Errorf("an uncapped list reports %d more", all.More)
+	}
+	for _, s := range capped.Senses {
+		if s.Word == "" || s.Gloss == "" || s.Meaning == "" {
+			t.Errorf("sense missing a field: %+v", s)
+		}
+	}
+}
+
+// TestSetNotes pins the store-backed path to the authored text. A
+// caller reading the lexicon from SQLite gets the notes this way; the
+// browser gets them in the JSON it fetches. Both must end up the same.
+func TestSetNotes(t *testing.T) {
+	a := New()
+	a.SetNotes([]GrammarEntry{{
+		Abbrev: "DPX", Explanation: "two-halved", Guidance: "a pair of X",
+	}}, []Topic{{Key: "frame", Category: "Case-Frame"}})
+	got, err := a.Note("DPX")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Explanation != "two-halved" || got.Guidance != "a pair of X" {
+		t.Errorf("Note(DPX) = %+v", got)
+	}
+	if len(a.Topics()) != 1 {
+		t.Errorf("Topics() = %d, want the one that was set", len(a.Topics()))
+	}
+	if a.Info().Lexicon.Explained != 1 {
+		t.Errorf("Explained = %d, want 1", a.Info().Lexicon.Explained)
 	}
 }

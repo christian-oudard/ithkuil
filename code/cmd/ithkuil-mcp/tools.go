@@ -2,26 +2,32 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"github.com/christian-oudard/ithkuil/dictionary"
-	"github.com/christian-oudard/ithkuil/fault"
-	"github.com/christian-oudard/ithkuil/gloss"
-	g "github.com/christian-oudard/ithkuil/grammar"
-	"github.com/christian-oudard/ithkuil/lexicon"
+	"github.com/christian-oudard/ithkuil/api"
 	"github.com/christian-oudard/ithkuil/phonology"
-	"github.com/christian-oudard/ithkuil/roman"
-	"github.com/christian-oudard/ithkuil/search"
-	"github.com/christian-oudard/ithkuil/slots"
-	"github.com/christian-oudard/ithkuil/view"
 )
 
+// The tools answer in the api package's types rather than a set of
+// their own. They used to declare seventeen: segmentOut, slotRowOut,
+// rootHitOut, senseOut and the rest, each a near-copy of a type in view
+// or lexicon, each mapped across by hand. The browser module then grew
+// a second set of copies, and the two disagreed on names that should
+// have been the same word, `default` against `defaults`, snake_case
+// against camelCase. One shape for one thing, and the drift guard in
+// api keeps the TypeScript declaration honest about all of it.
+//
+// What stays here is what is genuinely about serving a model rather
+// than a program: the verbose switch, which strips the meanings and the
+// glossary from a reply because they are most of its tokens and a
+// caller that wants them can ask the search tool instead.
+
 // registerTools wires every tool to its handler. The set mirrors the
-// ithkuil CLI subcommands one-for-one: parse, compose, search, define.
+// ithkuil CLI subcommands one-for-one: parse, compare, compose, search,
+// define.
 func (s *server) registerTools(srv *mcp.Server) {
 	mcp.AddTool(srv, &mcp.Tool{
 		Name: "parse",
@@ -43,7 +49,7 @@ func (s *server) registerTools(srv *mcp.Server) {
 			"changed. Answers what one letter is doing without diffing two parse " +
 			"results by hand. A concatenation chain is compared member by member from " +
 			"the parent end. Either word may use the ASCII digraph notation. " +
-			"Example: a=\"mar\u00e7at\", b=\"marcat\".",
+			"Example: a=\"marçat\", b=\"marcat\".",
 	}, s.compare)
 
 	mcp.AddTool(srv, &mcp.Tool{
@@ -56,7 +62,8 @@ func (s *server) registerTools(srv *mcp.Server) {
 			"or (ABBREV)/degree for a CsRoot, or (1m+2p) for a RefRoot. Affixes placed " +
 			"before the Ca land in Slot V (applying to the stem alone); write '{Ca}' for an " +
 			"all-default Ca that still needs to mark that boundary. The returned romanization is " +
-			"canonical. By default (verbose=false) descriptions are omitted. Set " +
+			"canonical. Set stressless=true to write stress as a §4.8 parsing adjunct " +
+			"instead of a diacritic. By default (verbose=false) descriptions are omitted. Set " +
 			"verbose=true for inline names and meanings. Examples: expression=\"ml\" → " +
 			"\"mlala\"; \"S2.CPT-ml-ERG\" → \"wimlo\"; " +
 			"\"S2.CPT-ml-DYN.OBJ-MSS.G-DEV/3-ERG\" → \"imlötrebo\"; \"(CTR)/1\" → \"ëilal\"; " +
@@ -97,52 +104,8 @@ type parseIn struct {
 	Verbose bool   `json:"verbose,omitempty" jsonschema:"include category names, meanings, and root definition (default false)"`
 }
 
-type segmentOut struct {
-	Chunk   string   `json:"chunk"`             // hyphen-decorated romanization
-	Raw     string   `json:"raw"`               // bare written chunk
-	Slot    string   `json:"slot"`              // Cr, Vr, Ca, Vx₁, Cs₁, …
-	Encodes []string `json:"encodes"`           // codes encoded
-	Default bool     `json:"default,omitempty"` // all encoded codes are defaults
-	Elided  bool     `json:"elided,omitempty"`  // placeholder for absent slot
-}
-
-type glossaryRow struct {
-	Category string `json:"category"`
-	Code     string `json:"code"`
-	Name     string `json:"name,omitempty"`
-	Meaning  string `json:"meaning,omitempty"`
-}
-
-// validationOut is one fault, as JSON. Stage and code are what a
-// caller branches on; fix is the sentence it shows a person. All four
-// are carried because a client that only got the prose would have to
-// pattern-match English to act on a failure.
-type validationOut struct {
-	Stage string `json:"stage"`
-	Code  string `json:"code"`
-	Found string `json:"found,omitempty"`
-	Fix   string `json:"fix"`
-}
-
-type rootHead struct {
-	Code    string `json:"code"`              // "\"m\" / S1 / BSC"
-	Meaning string `json:"meaning,omitempty"` // stem-selected lexicon entry
-}
-
-type parseWord struct {
-	Romanization string          `json:"romanization"`
-	Type         string          `json:"type"`
-	Gloss        string          `json:"gloss"`
-	Reason       string          `json:"reason,omitempty"` // why an unclassified word could not be read
-	Root         *rootHead       `json:"root,omitempty"`
-	Segments     []segmentOut    `json:"segments,omitempty"`
-	Glossary     []glossaryRow   `json:"glossary,omitempty"`
-	Valid        bool            `json:"valid"`
-	Violations   []validationOut `json:"violations,omitempty"`
-}
-
 type parseOut struct {
-	Words []parseWord `json:"words"`
+	Words []api.Word `json:"words"`
 }
 
 func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*mcp.CallToolResult, parseOut, error) {
@@ -150,104 +113,40 @@ func (s *server) parse(_ context.Context, _ *mcp.CallToolRequest, in parseIn) (*
 	if text == "" {
 		return nil, parseOut{}, fmt.Errorf("text is required")
 	}
-	text = phonology.FromASCII(text)
-	results := roman.Tokenize(text)
-	span := roman.Words(results)
-	glosser := gloss.Glosser{Lex: s.lex}
-
-	out := make([]parseWord, len(results))
-	for i, r := range results {
-		w := parseWord{Romanization: r.Romanization}
-		if r.Err != nil {
-			// The shape split survives even when the grammatical
-			// reading fails, so both the reason and the split are
-			// available; without them the caller gets no way to tell
-			// an unreadable word from an unsupported one.
-			w.Type = "?"
-			w.Gloss = "?" + r.Romanization
-			// The faults carry the slot each one belongs to, so a
-			// client can line them up against the segments below
-			// rather than parse them out of the prose.
-			var fs fault.Faults
-			if errors.As(r.Err, &fs) {
-				for _, f := range fs.List {
-					w.Violations = append(w.Violations, validationOut{
-						Stage: f.Stage.String(), Code: f.Code, Found: f.Found, Fix: f.Fix,
-					})
-				}
-			}
-			w.Reason = r.Err.Error()
-			if layout, err := slots.Parse(r.Romanization); err == nil {
-				for _, sg := range view.LayoutSegments(layout) {
-					w.Segments = append(w.Segments, segmentOut{
-						Chunk: sg.Chunk, Raw: sg.Raw, Slot: sg.Slot,
-					})
-				}
-			}
-			out[i] = w
-			continue
-		}
-		w.Type = view.Type(r.Word)
-		w.Gloss = glosser.Word(r.Word, span, i)
-		switch tt := r.Word.(type) {
-		case g.Formative:
-			head := view.Headword(tt, s.lex)
-			if head.Code != "" {
-				r := &rootHead{Code: head.Code}
-				if in.Verbose {
-					r.Meaning = head.Meaning
-				}
-				w.Root = r
-			}
-			segs := view.Segments(r.Romanization, tt, s.lex)
-			for _, sg := range segs {
-				w.Segments = append(w.Segments, segmentOut{
-					Chunk: sg.Chunk, Raw: sg.Raw, Slot: sg.Slot,
-					Encodes: sg.Encodes, Default: sg.Defaults, Elided: sg.Elided,
-				})
-			}
-			if in.Verbose {
-				for _, ge := range view.Glossary(r.Romanization, tt, segs, s.lex) {
-					w.Glossary = append(w.Glossary, glossaryRow{
-						Category: ge.Category, Code: ge.Code,
-						Name: ge.Name, Meaning: ge.Meaning,
-					})
-				}
-			}
-		case g.ModularAdjunct:
-			var marksMood *bool
-			if verbal, found := roman.ModularIsVerbal(span, i); found {
-				marksMood = &verbal
-			}
-			segs := view.SegmentsModular(r.Romanization, tt, marksMood)
-			for _, sg := range segs {
-				w.Segments = append(w.Segments, segmentOut{
-					Chunk: sg.Chunk, Raw: sg.Raw, Slot: sg.Slot,
-					Encodes: sg.Encodes, Default: sg.Defaults, Elided: sg.Elided,
-				})
-			}
-			if in.Verbose {
-				for _, ge := range view.GlossaryModular(segs) {
-					w.Glossary = append(w.Glossary, glossaryRow{
-						Category: ge.Category, Code: ge.Code,
-						Name: ge.Name, Meaning: ge.Meaning,
-					})
-				}
-			}
-		}
-		var ill fault.Faults
-		err := phonology.CheckText(r.Romanization)
-		w.Valid = err == nil
-		if errors.As(err, &ill) {
-			for _, v := range ill.List {
-				w.Violations = append(w.Violations, validationOut{
-					Stage: v.Stage.String(), Code: v.Code, Found: v.Found, Fix: v.Fix,
-				})
-			}
-		}
-		out[i] = w
+	words := s.api.Parse(text)
+	for i := range words {
+		trim(&words[i], in.Verbose)
 	}
-	return nil, parseOut{Words: out}, nil
+	return nil, parseOut{Words: words}, nil
+}
+
+// trim drops what a model does not need to be told twice. The glossary
+// and the meanings are most of a reply's tokens, and a caller that
+// wants them can ask the search tool for the one code it cares about.
+// The gloss tokens go always: they are the same line the gloss already
+// carries, split for a page to make clickable, which is no use here.
+func trim(w *api.Word, verbose bool) {
+	w.GlossTokens = nil
+	for i := range w.Members {
+		w.Members[i].Glossary = trimGlossary(w.Members[i].Glossary, verbose)
+		w.Members[i].Headword = trimHead(w.Members[i].Headword, verbose)
+	}
+	w.Glossary = trimGlossary(w.Glossary, verbose)
+	w.Headword = trimHead(w.Headword, verbose)
+}
+
+func trimGlossary(rows []api.GlossaryEntry, verbose bool) []api.GlossaryEntry {
+	if verbose {
+		return rows
+	}
+	return nil
+}
+
+func trimHead(h *api.Headword, verbose bool) *api.Headword {
+	if h == nil || verbose {
+		return h
+	}
+	return &api.Headword{Code: h.Code}
 }
 
 // --------------------------------------------------------------------
@@ -259,120 +158,34 @@ type compareIn struct {
 	B string `json:"b" jsonschema:"the second word"`
 }
 
-// slotRowOut is one slot lined up across both words. A side with no
-// such slot has an empty chunk and no codes.
-type slotRowOut struct {
-	Slot     string   `json:"slot"`
-	AChunk   string   `json:"a_chunk,omitempty"`
-	AEncodes []string `json:"a_encodes,omitempty"`
-	BChunk   string   `json:"b_chunk,omitempty"`
-	BEncodes []string `json:"b_encodes,omitempty"`
-	Differs  bool     `json:"differs,omitempty"`
-}
-
-type glossDiffOut struct {
-	Category string `json:"category"`
-	ACode    string `json:"a_code,omitempty"`
-	AName    string `json:"a_name,omitempty"`
-	BCode    string `json:"b_code,omitempty"`
-	BName    string `json:"b_name,omitempty"`
-}
-
-// comparePairOut is one pair of formatives compared. Words that are not
-// chains give exactly one pair.
-type comparePairOut struct {
-	A           string         `json:"a"` // header: romanization, plus chain role
-	B           string         `json:"b"`
-	Slots       []slotRowOut   `json:"slots"`
-	Differences []glossDiffOut `json:"differences,omitempty"`
-	RootDiffers bool           `json:"root_differs,omitempty"`
-	ARoot       *rootHead      `json:"a_root,omitempty"`
-	BRoot       *rootHead      `json:"b_root,omitempty"`
-	ANote       string         `json:"a_note,omitempty"` // why it would not decode
-	BNote       string         `json:"b_note,omitempty"`
-	Identical   bool           `json:"identical,omitempty"`
-}
-
-// unpairedOut is a chain member the other word had no counterpart for.
-type unpairedOut struct {
-	Word  string `json:"word"`
-	Role  string `json:"role,omitempty"`
-	Owner string `json:"owner"`
-}
-
-type compareOut struct {
-	A        string           `json:"a"`
-	B        string           `json:"b"`
-	Pairs    []comparePairOut `json:"pairs"`
-	Unpaired []unpairedOut    `json:"unpaired,omitempty"`
-}
-
-func (s *server) compare(_ context.Context, _ *mcp.CallToolRequest, in compareIn) (*mcp.CallToolResult, compareOut, error) {
-	a, err := compareSide(in.A, s.lex)
+func (s *server) compare(_ context.Context, _ *mcp.CallToolRequest, in compareIn) (*mcp.CallToolResult, api.Comparison, error) {
+	a, err := pronounceable(in.A)
 	if err != nil {
-		return nil, compareOut{}, err
+		return nil, api.Comparison{}, err
 	}
-	b, err := compareSide(in.B, s.lex)
+	b, err := pronounceable(in.B)
 	if err != nil {
-		return nil, compareOut{}, err
+		return nil, api.Comparison{}, err
 	}
-
-	pairs, extra := view.PairSides(a, b)
-	out := compareOut{A: a.Word, B: b.Word}
-	for _, p := range pairs {
-		pair := comparePairOut{
-			A:           p.A.Header(),
-			B:           p.B.Header(),
-			RootDiffers: view.RootDiffers(p.A, p.B),
-			ANote:       p.A.Note,
-			BNote:       p.B.Note,
-		}
-		changed := false
-		for _, r := range view.SlotDiff(p.A, p.B) {
-			changed = changed || r.Differs
-			pair.Slots = append(pair.Slots, slotRowOut{
-				Slot:     r.Slot,
-				AChunk:   r.A.Chunk,
-				AEncodes: r.A.Encodes,
-				BChunk:   r.B.Chunk,
-				BEncodes: r.B.Encodes,
-				Differs:  r.Differs,
-			})
-		}
-		for _, d := range view.GlossDiff(p.A, p.B) {
-			pair.Differences = append(pair.Differences, glossDiffOut{
-				Category: d.Category,
-				ACode:    d.A.Code, AName: d.A.Name,
-				BCode: d.B.Code, BName: d.B.Name,
-			})
-		}
-		if pair.RootDiffers {
-			pair.ARoot = &rootHead{Code: p.A.Head.Code, Meaning: p.A.Head.Meaning}
-			pair.BRoot = &rootHead{Code: p.B.Head.Code, Meaning: p.B.Head.Meaning}
-		}
-		pair.Identical = p.A.Decoded && p.B.Decoded && !changed && !pair.RootDiffers && len(pair.Differences) == 0
-		out.Pairs = append(out.Pairs, pair)
-	}
-	for _, e := range extra {
-		out.Unpaired = append(out.Unpaired, unpairedOut{
-			Word: e.Block.Word, Role: e.Block.Role, Owner: e.Owner,
-		})
+	out, err := s.api.Compare(a, b)
+	if err != nil {
+		return nil, api.Comparison{}, err
 	}
 	return nil, out, nil
 }
 
-// compareSide validates one word and breaks it down. An unpronounceable
-// word is an error here, naming the rule it breaks, the same refusal
-// the CLI makes before it compares anything.
-func compareSide(word string, lex *lexicon.Lexicon) (view.Side, error) {
+// pronounceable refuses a word that breaks §2 before anything compares
+// it, naming the rule, which is the same refusal the CLI makes. A
+// comparison of two words that cannot be said is not a useful answer.
+func pronounceable(word string) (string, error) {
 	word = phonology.FromASCII(strings.TrimSpace(word))
 	if word == "" {
-		return view.Side{}, fmt.Errorf("both a and b are required")
+		return "", fmt.Errorf("both a and b are required")
 	}
 	if err := phonology.CheckText(word); err != nil {
-		return view.Side{}, fmt.Errorf("%s is not pronounceable Ithkuil: %w", word, err)
+		return "", fmt.Errorf("%s is not pronounceable Ithkuil: %w", word, err)
 	}
-	return view.BuildSide(word, lex)
+	return word, nil
 }
 
 // --------------------------------------------------------------------
@@ -381,64 +194,37 @@ func compareSide(word string, lex *lexicon.Lexicon) (view.Side, error) {
 
 type composeIn struct {
 	Expression string `json:"expression" jsonschema:"gloss-style compose expression; '-' separates slots, '.' joins category values in a slot, '/' binds a degree or case to a head; affixes before the Ca land in Slot V, with '{Ca}' marking an all-default Ca; bare cluster like 'ml' or full 'S2.CPT-ml-DYN.OBJ-MSS.G-DEV/3-ERG'"`
+	Stressless bool   `json:"stressless,omitempty" jsonschema:"write stress as a §4.8 parsing adjunct instead of a diacritic (default false)"`
 	Verbose    bool   `json:"verbose,omitempty" jsonschema:"include category names, meanings, and root definition (default false)"`
 }
 
-type composeOut struct {
-	Romanization string        `json:"romanization"`
-	Gloss        string        `json:"gloss"`
-	Root         *rootHead     `json:"root,omitempty"`
-	Segments     []segmentOut  `json:"segments,omitempty"`
-	Glossary     []glossaryRow `json:"glossary,omitempty"`
-}
-
-func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn) (*mcp.CallToolResult, composeOut, error) {
+// compose answers with the word it built, read back. The reply is an
+// api.Word because that is already what one is: the old composeOut had
+// romanization, gloss, root, segments and glossary, which is the same
+// five fields under different names.
+//
+// Reading it back rather than reporting what the builder held is
+// deliberate. It is the round trip the tool exists to guarantee, so the
+// breakdown shown is evidence about the word that was written and not
+// about the intent behind it.
+func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn) (*mcp.CallToolResult, api.Word, error) {
 	expr := strings.TrimSpace(in.Expression)
 	if expr == "" {
-		return nil, composeOut{}, fmt.Errorf("expression is required")
+		return nil, api.Word{}, fmt.Errorf("expression is required")
 	}
-	tok, err := gloss.ParseWord(expr, s.lex)
+	built, err := s.api.Compose(expr, in.Stressless)
 	if err != nil {
-		return nil, composeOut{}, err
+		return nil, api.Word{}, err
 	}
-	rom, err := roman.Word(tok)
-	if err != nil {
-		return nil, composeOut{}, err
+	words := s.api.Parse(built.Word)
+	if len(words) != 1 {
+		// A word that will not read back is a defect in this code, not
+		// a bad request, and saying only "romanization: x" would hide
+		// it. Report what was built and let the caller see the gap.
+		return nil, api.Word{Romanization: built.Word, Gloss: built.Gloss}, nil
 	}
-	glosser := gloss.Glosser{Lex: s.lex}
-	out := composeOut{
-		Romanization: rom,
-		Gloss:        glosser.Token(tok),
-	}
-	// The slot breakdown is a formative's; the other word classes have
-	// their own shapes and no Segments to show here.
-	f, ok := tok.(g.Formative)
-	if !ok {
-		return nil, out, nil
-	}
-	segs := view.Segments(rom, f, s.lex)
-	if head := view.Headword(f, s.lex); head.Code != "" {
-		r := &rootHead{Code: head.Code}
-		if in.Verbose {
-			r.Meaning = head.Meaning
-		}
-		out.Root = r
-	}
-	for _, sg := range segs {
-		out.Segments = append(out.Segments, segmentOut{
-			Chunk: sg.Chunk, Raw: sg.Raw, Slot: sg.Slot,
-			Encodes: sg.Encodes, Default: sg.Defaults, Elided: sg.Elided,
-		})
-	}
-	if in.Verbose {
-		for _, ge := range view.Glossary(rom, f, segs, s.lex) {
-			out.Glossary = append(out.Glossary, glossaryRow{
-				Category: ge.Category, Code: ge.Code,
-				Name: ge.Name, Meaning: ge.Meaning,
-			})
-		}
-	}
-	return nil, out, nil
+	trim(&words[0], in.Verbose)
+	return nil, words[0], nil
 }
 
 // --------------------------------------------------------------------
@@ -446,146 +232,42 @@ func (s *server) compose(_ context.Context, _ *mcp.CallToolRequest, in composeIn
 // --------------------------------------------------------------------
 
 type searchIn struct {
-	Query    string `json:"query,omitempty" jsonschema:"abbreviation, category, written form, or meaning substring"`
-	Category string `json:"category,omitempty" jsonschema:"restrict grammar hits to one category (Case, Aspect, Bias, ...)"`
-	Exact    bool   `json:"exact,omitempty" jsonschema:"if true, query must equal an abbreviation exactly"`
-	Form     bool   `json:"form,omitempty" jsonschema:"if true, treat query as a written form (vowel or consonant); grammar only"`
+	Query    string `json:"query,omitempty" jsonschema:"term to look up: an abbreviation, a name, or an English keyword"`
+	Category string `json:"category,omitempty" jsonschema:"list only this grammar category (Case, Aspect, Bias, Mood, ...)"`
+	Exact    bool   `json:"exact,omitempty" jsonschema:"the query must equal an abbreviation"`
+	Form     bool   `json:"form,omitempty" jsonschema:"treat the query as a written form (vowel or consonant)"`
 	Limit    int    `json:"limit,omitempty" jsonschema:"maximum lexicon hits per kind (default 20)"`
 }
 
-type grammarEntryOut struct {
-	Category    string `json:"category"`
-	Abbrev      string `json:"abbrev"`
-	Name        string `json:"name,omitempty"`
-	Form        string `json:"form,omitempty"`
-	Description string `json:"description,omitempty"`
-}
-
-type rootHitOut struct {
-	Cr           string   `json:"cr"`
-	Stem0        string   `json:"stem0,omitempty"`
-	Stem1        string   `json:"stem1,omitempty"`
-	Stem2        string   `json:"stem2,omitempty"`
-	Stem3        string   `json:"stem3,omitempty"`
-	Contential   string   `json:"contential,omitempty"`
-	Constitutive string   `json:"constitutive,omitempty"`
-	Objective    []string `json:"objective,omitempty"`
-	Completive   []string `json:"completive,omitempty"`
-	Dynamic      string   `json:"dynamic,omitempty"`
-	Wikidata     []string `json:"wikidata,omitempty"`
-}
-
-type affixHitOut struct {
-	Cs          string   `json:"cs"`
-	Abbrev      string   `json:"abbrev"`
-	Description string   `json:"description"`
-	Type        string   `json:"type"`
-	Degrees     []string `json:"degrees"`
-}
-
-// searchOut lists grammar hits before lexicon hits, the order the CLI
-// prints them in and the order a short query is most often meant in.
 type searchOut struct {
-	Categories []string          `json:"categories,omitempty"`
-	Entries    []grammarEntryOut `json:"entries,omitempty"`
-	Roots      []rootHitOut      `json:"roots,omitempty"`
-	Affixes    []affixHitOut     `json:"affixes,omitempty"`
+	api.SearchResult
+	// Categories answers a call with nothing to search for, so a caller
+	// can discover what --category takes.
+	Categories []string `json:"categories,omitempty"`
 }
 
 func (s *server) search(_ context.Context, _ *mcp.CallToolRequest, in searchIn) (*mcp.CallToolResult, searchOut, error) {
 	query := strings.TrimSpace(in.Query)
 	if query == "" && in.Category == "" {
-		return nil, searchOut{Categories: search.Categories()}, nil
+		return nil, searchOut{Categories: s.api.Categories()}, nil
 	}
 	if in.Form && query == "" {
 		return nil, searchOut{}, fmt.Errorf("form=true requires a query")
 	}
-
-	var out searchOut
-	if in.Form {
-		hits := search.LookupForm(query)
-		if in.Category != "" {
-			hits = filterEntriesByCategory(hits, in.Category)
-		}
-		out.Entries = toGrammarEntries(hits)
-		// A written form is a grammar question; the lexicon has no
-		// answer to what a vowel encodes.
-		return nil, out, nil
-	}
-	out.Entries = toGrammarEntries(search.Filter(in.Category, query, in.Exact))
-
-	if query == "" {
-		return nil, out, nil
-	}
-	if s.st == nil {
-		return nil, out, fmt.Errorf("data store not available")
-	}
-	limit := in.Limit
-	if limit <= 0 {
-		limit = 20
-	}
-	roots, err := s.st.SearchRoots(query, limit)
-	if err != nil {
-		return nil, searchOut{}, fmt.Errorf("root search: %w", err)
-	}
-	for _, h := range roots {
-		out.Roots = append(out.Roots, rootHitOut{
-			Cr:           h.Cr,
-			Stem0:        h.Stem0,
-			Stem1:        h.Stem1,
-			Stem2:        h.Stem2,
-			Stem3:        h.Stem3,
-			Contential:   h.Contential,
-			Constitutive: h.Constitutive,
-			Objective:    h.Objective,
-			Completive:   h.Completive,
-			Dynamic:      h.Dynamic,
-			Wikidata:     h.Wikidata,
-		})
-	}
-	affixes, err := s.st.SearchAffixes(query, limit)
-	if err != nil {
-		return nil, searchOut{}, fmt.Errorf("affix search: %w", err)
-	}
-	for _, a := range affixes {
-		out.Affixes = append(out.Affixes, affixHitOut{
-			Cs:          a.Cs,
-			Abbrev:      a.Abbrev,
-			Description: a.Description,
-			Type:        a.Type,
-			Degrees:     a.Degrees,
-		})
+	got := s.api.Search(query, api.SearchOptions{
+		Category: in.Category,
+		Exact:    in.Exact,
+		Form:     in.Form,
+		Limit:    in.Limit,
+	})
+	out := searchOut{SearchResult: got}
+	// An empty lexicon half means one of two things and a caller cannot
+	// tell them apart from the reply: no root matched, or there is no
+	// store to match against. Say which.
+	if s.st == nil && query != "" && in.Category == "" && !in.Form {
+		return nil, out, fmt.Errorf("data store not available: grammar hits only")
 	}
 	return nil, out, nil
-}
-
-func toGrammarEntries(hits []search.Entry) []grammarEntryOut {
-	out := make([]grammarEntryOut, len(hits))
-	for i, e := range hits {
-		out[i] = grammarEntryOut{
-			Category:    e.Category,
-			Abbrev:      e.Abbrev,
-			Name:        e.Name,
-			Form:        e.Form,
-			Description: e.Description,
-		}
-	}
-	return out
-}
-
-func filterEntriesByCategory(in []search.Entry, cat string) []search.Entry {
-	allowed := search.Filter(cat, "", false)
-	want := make(map[string]struct{}, len(allowed))
-	for _, e := range allowed {
-		want[e.Category+"|"+e.Abbrev] = struct{}{}
-	}
-	out := make([]search.Entry, 0, len(in))
-	for _, e := range in {
-		if _, ok := want[e.Category+"|"+e.Abbrev]; ok {
-			out = append(out, e)
-		}
-	}
-	return out
 }
 
 // --------------------------------------------------------------------
@@ -597,47 +279,14 @@ type defineIn struct {
 	Limit int    `json:"limit,omitempty" jsonschema:"maximum senses returned (default 20)"`
 }
 
-// senseOut is one lexical core naming the English word: the bare
-// thematic formative, its canonical gloss, and the lexicon cell the
-// headword was read out of.
-type senseOut struct {
-	Romanization string `json:"romanization"`
-	Gloss        string `json:"gloss"`
-	Meaning      string `json:"meaning"`
-}
-
-type defineOut struct {
-	Word   string     `json:"word"`
-	Senses []senseOut `json:"senses,omitempty"`
-	More   int        `json:"more,omitempty"` // senses past the limit
-}
-
-func (s *server) define(_ context.Context, _ *mcp.CallToolRequest, in defineIn) (*mcp.CallToolResult, defineOut, error) {
+func (s *server) define(_ context.Context, _ *mcp.CallToolRequest, in defineIn) (*mcp.CallToolResult, api.Definition, error) {
 	word := strings.TrimSpace(in.Word)
 	if word == "" {
-		return nil, defineOut{}, fmt.Errorf("word is required")
+		return nil, api.Definition{}, fmt.Errorf("word is required")
 	}
-	if s.lex == nil {
-		return nil, defineOut{}, fmt.Errorf("lexicon not available")
-	}
-	limit := in.Limit
-	if limit <= 0 {
-		limit = 20
-	}
-	senses := dictionary.Build(s.lex.Roots).Lookup(word)
-	out := defineOut{Word: word}
-	glosser := &gloss.Glosser{}
-	for i, sense := range senses {
-		if i == limit {
-			out.More = len(senses) - limit
-			break
-		}
-		f := sense.Formative()
-		out.Senses = append(out.Senses, senseOut{
-			Romanization: roman.Formative(f),
-			Gloss:        glosser.Formative(f),
-			Meaning:      sense.Gloss,
-		})
+	out, err := s.api.Define(word, in.Limit)
+	if err != nil {
+		return nil, api.Definition{}, err
 	}
 	return nil, out, nil
 }
