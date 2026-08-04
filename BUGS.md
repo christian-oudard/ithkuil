@@ -96,3 +96,12 @@ are the live list rather than anything written here:
   consults §9. `phonology/section9_test.go` cannot see this: it expands
   §9's rows and asserts each is legal, which tests only what the
   whitelist admits, never what it should exclude.
+
+- A word-final glottal stop is accepted anywhere. §1.5 of the
+  phonotactics allows it only "in the unusual instance of monosyllabic
+  parsing adjuncts of the form 'V' where V is a single vowel (e.g.,
+  a', o', u')". `phonology.Legal` returns true for `mala'` and `mla'`,
+  neither of which is such an adjunct. Found by ear before it was found
+  in the code: a speaker reported it is "very hard to hear the
+  difference between mala and mala'", which is the source's own reason
+  for the rule.

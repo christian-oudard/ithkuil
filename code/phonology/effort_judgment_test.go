@@ -128,6 +128,37 @@ func TestEffortMatchesSpeakerJudgments(t *testing.T) {
 	// one's axla over aţla the outlier, and it was hedged as "slightly"
 	// when given.
 
+	// Batch three, on glottal stops, came back on a different scale.
+	// The speaker answered it in terms of clarity rather than effort,
+	// and said so: ma'ala is "slightly harder to say but much easier to
+	// hear". Effort and audibility can point opposite ways, and on
+	// every glottal pair audibility won.
+	//
+	// That is Quijada's own pair of criteria. §2 bars conjuncts for
+	// "difficulty/awkwardness in pronunciation, or because they are too
+	// phonetically indistinguishable from other forms", and only the
+	// first is what this file measures. It is also Boersma's two drives
+	// and Lindblom's effort-subject-to-discriminability, both cited in
+	// effort.go and both implemented here as one number.
+	//
+	// The judgments, on the clarity scale:
+	//
+	//	ma'ala over ma'la      ma'ila over mai'la
+	//	ma'ula over mau'la     ma'ela over mae'la
+	//	ma'la  over mala'      mala'i over ma'lai
+	//	malu'a over ma'lua
+	//
+	// and on effort: malla over ma'la, ma'ala over ma'ila, ma'ila over
+	// ma'ula slightly.
+	//
+	// Not added to the list below, because that list is scored against
+	// Energy, which measures effort. A second scale has to exist before
+	// these can be scored at all. The decision it governs is real: the
+	// glottal stop in cases 37 through 52 carries the case, so an
+	// inaudible placement loses a distinction, while the choice between
+	// two spellings of a Slot IX default carries nothing. The model
+	// needs to know which segments are load-bearing.
+
 	agree := 0
 	for _, j := range judgments {
 		easier, harder := Energy(j[0]), Energy(j[1])
