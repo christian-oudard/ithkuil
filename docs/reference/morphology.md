@@ -405,25 +405,60 @@ The nine Configuration categories of Ithkuil 2011 have been revised/expanded int
 
 **C_A complex — Affiliation + Configuration + Extension + Perspective + Essence**
 
-| AFFILIATION | | CONFIGURATION | | | EXTENSION | | PERSPECTIVE + ESSENCE | | | |
-|---|---|---|---|---|---|---|---|---|---|---|
-| **CSL** | CONSOLIDATIVE | — | | | **DEL** | DELIMITIVE | — | | **NRM** | **RPV** |
-| **ASO** | ASSOCIATIVE | l (nļ) | **(U/D)PX** UNIPLEX/DUPLEX | | **PRX** | PROXIMAL | t / d | **M** MONADIC | — (l) | l (tļ) |
-| **COA** | COALESCENT | r (rļ) | **M/D** MULTIPLEX/DUPLEX SIMILAR | **SS** SEPARATE | **ICP** | INCEPTIVE | k / g | **G** AGGLOMERATIVE | r | ř |
-| **VAR** | VARIATIVE | ř (ň) | | **SC** CONNECTED | **ATV** | ATTENUATIVE | p / b | **N** NOMIC | w (v) | m / h² |
-| | | | | **SF** FUSED | **GRA** | GRADUATIVE | g / gz¹ | **A** ABSTRACT | y (j) | n / ç² |
-| | | | **M/D** MULTIPLEX/DUPLEX DISSIMILAR | **DS** SEPARATE | **DPL** | DEPLETIVE | b / bz¹ | | | |
-| | | | | **DC** CONNECTED | | | | | | |
-| | | | | **DF** FUSED | | | | | | |
-| | | | **M/D** MULTIPLEX/DUPLEX FUZZY | **FS** SEPARATE | | | | | | |
-| | | | | **FC** CONNECTED | | | | | | |
-| | | | | **FF** FUSED | | | | | | |
+The source lays these out as four tables side by side on one page. They
+are independent: a C_A complex takes one value from each, written in the
+order Affiliation + Configuration + Extension + Perspective/Essence.
+Each table's name is a banner above it, not a row; only Configuration
+and Perspective + Essence carry a header row of their own.
+
+**AFFILIATION**
+
+| | | |
+|---|---|---|
+| **CSL** | CONSOLIDATIVE | — |
+| **ASO** | ASSOCIATIVE | l (nļ) |
+| **COA** | COALESCENT | r (rļ) |
+| **VAR** | VARIATIVE | ř (ň) |
+
+**CONFIGURATION**
+
+| | | -DPX | +DPX |
+|---|---|---|---|
+| **(U/D)PX** | UNIPLEX/DUPLEX | — | s |
+| **M/D** MULTIPLEX/DUPLEX SIMILAR | **SS** SEPARATE | t | c |
+| | **SC** CONNECTED | k | ks |
+| | **SF** FUSED | p | ps |
+| **M/D** MULTIPLEX/DUPLEX DISSIMILAR | **DS** SEPARATE | ţ | ţs |
+| | **DC** CONNECTED | f | fs |
+| | **DF** FUSED | ç | š |
+| **M/D** MULTIPLEX/DUPLEX FUZZY | **FS** SEPARATE | z | č |
+| | **FC** CONNECTED | ž | kš |
+| | **FF** FUSED | ẓ | pš |
+
+**EXTENSION**
+
+| | | |
+|---|---|---|
+| **DEL** | DELIMITIVE | — |
+| **PRX** | PROXIMAL | t / d¹ |
+| **ICP** | INCEPTIVE | k / g¹ |
+| **ATV** | ATTENUATIVE | p / b¹ |
+| **GRA** | GRADUATIVE | g / gz¹ |
+| **DPL** | DEPLETIVE | b / bz¹ |
+
+**PERSPECTIVE + ESSENCE**
+
+| | | NRM | RPV |
+|---|---|---|---|
+| **M** | MONADIC | — (l) | l (tļ) |
+| **G** | AGGLOMERATIVE | r | ř |
+| **N** | NOMIC | w (v) | m / h² |
+| **A** | ABSTRACT | y (j) | n / ç² |
 
 Forms in parentheses are standalone forms.
 
-Configuration forms (with -DPX and +DPX columns): (U/D)PX = — / s; SS = t / c; SC = k / ks; SF = p / ps; DS = ţ / ţs; DC = f / fs; DF = ç / š; FS = z / č; FC = ž / kš; FF = ẓ / pš
-
 ¹ Use the alternate form if the Configuration of the word is UPX
+
 ² Use the alternate form when preceded by [C]t-, [C]k-, or [C]p-
 
 **Allomorphic Substitutions:**

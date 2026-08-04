@@ -128,15 +128,19 @@ func ConstructCaRaw(s g.SlotVI) string {
 		// prefix sits in front; the original code dropped it.
 		//
 		// The footnote this rests on — "use the alternate form if the
-		// Configuration of the word is UPX" — is printed with its
-		// marker on only two of the five Extension rows, GRA and DPL.
-		// It has to govern the whole column: UPX/PRX would otherwise
-		// compose a bare t, which is already MSS/DEL, and likewise k
-		// for UPX/ICP against MSC/DEL and p for UPX/ATV against
-		// MSF/DEL, across every Affiliation and Perspective. Read as
-		// printed that costs 96 of the 3840 Ca forms their distinct
-		// spelling; read over the column the map is injective, which
-		// TestCaFormsAreDistinct checks.
+		// Configuration of the word is UPX" — carries its marker on
+		// all five Extension rows: t/d¹, k/g¹, p/b¹, g/gz¹, b/bz¹. So
+		// it governs the whole column and no inference is needed.
+		//
+		// This comment used to say the marker was printed on only GRA
+		// and DPL, and argued the rest from injectivity: UPX/PRX would
+		// otherwise compose a bare t, which is already MSS/DEL, and
+		// likewise k for UPX/ICP against MSC/DEL and p for UPX/ATV
+		// against MSF/DEL, costing 96 of the 3840 forms their distinct
+		// spelling. The argument holds and TestCaFormsAreDistinct still
+		// checks it, but the premise was our own: morphology.md had
+		// dropped three of the five markers, and the PDF at 600 dpi has
+		// all five.
 		return ca3[s.Affiliation] + ca2Standalone[s.Extension] + persp.suffix
 	}
 	if s.Configuration == g.UPX && s.Affiliation != g.CSL {
