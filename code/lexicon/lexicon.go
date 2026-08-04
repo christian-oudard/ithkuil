@@ -141,12 +141,28 @@ func parseLexicon(buf []byte) (*Lexicon, error) {
 	if err := json.Unmarshal(buf, &raw); err != nil {
 		return nil, fmt.Errorf("lexicon: %w", err)
 	}
+	// data.json carries four clusters twice, two different species
+	// sharing a C_R: nļt, lzbḑ, rţnw and cfw. tools/build_db.py keeps
+	// the first of each and says so, and this kept the last, so the
+	// same file produced two different lexicons depending on which
+	// loader read it and a search answered differently in a browser
+	// than in a terminal. First wins here too.
+	//
+	// The duplication itself is a defect in the upstream spreadsheet
+	// rather than in either loader, and neither entry is obviously the
+	// wrong one.
 	roots := make(map[string]RootEntry, len(raw.Roots))
 	for _, e := range raw.Roots {
+		if _, seen := roots[e.Cr]; seen {
+			continue
+		}
 		roots[e.Cr] = e
 	}
 	affixes := make(map[string]AffixEntry, len(raw.Affixes))
 	for _, e := range raw.Affixes {
+		if _, seen := affixes[e.Cs]; seen {
+			continue
+		}
 		affixes[e.Cs] = e
 	}
 	return &Lexicon{Version: raw.Version, Roots: roots, Affixes: affixes}, nil

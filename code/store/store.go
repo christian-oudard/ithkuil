@@ -220,8 +220,38 @@ func (s *Store) AllRoots() ([]RootEntry, error) {
 // use. Wrapping the term in double quotes makes it a literal, and
 // doubling any quote inside it escapes that.
 func ftsPrefix(query string) string {
-	return `"` + strings.ReplaceAll(query, `"`, `""`) + `"*`
+	return ftsTerm(query) + "*"
 }
+
+// ftsTerm quotes the query as an FTS5 string literal. MATCH takes a
+// query language, not a plain string, so the punctuation the ASCII
+// digraph notation is built from would otherwise be read as syntax.
+func ftsTerm(query string) string {
+	return `"` + strings.ReplaceAll(query, `"`, `""`) + `"`
+}
+
+// ftsSplit asks each half of a table the question it can answer:
+// identifier columns by prefix, prose columns by stem.
+//
+// A cluster is looked up by its letters, so "ţr" has to find ţr and
+// "ţ" ought to find it too. English is looked up by meaning, and there
+// a prefix is noise rather than help: with the index stemming, "cat"
+// already finds cats, and "cat"* would drag in catfish, Catopuma and
+// catastrophe. Measured on the roots, that is 19 hits against 209.
+func ftsSplit(ident, prose []string, query string) string {
+	return "{" + strings.Join(ident, " ") + "} : " + ftsPrefix(query) +
+		" OR {" + strings.Join(prose, " ") + "} : " + ftsTerm(query)
+}
+
+var (
+	rootIdentColumns = []string{"cr"}
+	rootProseColumns = []string{
+		"stem0", "stem1", "stem2", "stem3",
+		"contential", "constitutive", "dynamic",
+	}
+	affixIdentColumns = []string{"cs", "abbrev"}
+	affixProseColumns = []string{"description"}
+)
 
 // SearchRoots runs an FTS5 prefix search and returns ranked hits.
 func (s *Store) SearchRoots(query string, limit int) ([]RootEntry, error) {
@@ -233,7 +263,7 @@ func (s *Store) SearchRoots(query string, limit int) ([]RootEntry, error) {
 		   JOIN roots r ON r.rowid = f.rowid
 		  WHERE roots_fts MATCH ?
 		  ORDER BY rank
-		  LIMIT ?`, ftsPrefix(query), limit)
+		  LIMIT ?`, ftsSplit(rootIdentColumns, rootProseColumns, query), limit)
 	if err != nil {
 		return nil, err
 	}
@@ -316,7 +346,7 @@ func (s *Store) SearchAffixes(query string, limit int) ([]AffixEntry, error) {
 		   JOIN affixes a ON a.rowid = f.rowid
 		  WHERE affixes_fts MATCH ?
 		  ORDER BY rank
-		  LIMIT ?`, ftsPrefix(query), limit)
+		  LIMIT ?`, ftsSplit(affixIdentColumns, affixProseColumns, query), limit)
 	if err != nil {
 		return nil, err
 	}

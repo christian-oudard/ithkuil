@@ -69,15 +69,26 @@ CREATE TABLE affixes (
     degrees     TEXT NOT NULL DEFAULT '[]'
 );
 
+-- porter stems, so "cats" finds a cat and "speaks" finds speech.
+-- Without it a search matched whole tokens or prefixes of them, and an
+-- inflected query found almost nothing: "trees" answered with 2 roots
+-- against "tree"'s 306, and "studies" with none at all.
+--
+-- search.Stem is the same algorithm in Go, for the browser, which has
+-- no SQLite. FTS5's tokenizer is original Porter rather than Snowball
+-- English, which is why that one is too; store/stem_parity_test.go
+-- holds the two against each other over the whole lexicon.
 CREATE VIRTUAL TABLE roots_fts USING fts5(
     cr, stem0, stem1, stem2, stem3,
     contential, constitutive, dynamic,
-    content=roots, content_rowid=rowid
+    content=roots, content_rowid=rowid,
+    tokenize="porter unicode61"
 );
 
 CREATE VIRTUAL TABLE affixes_fts USING fts5(
     cs, abbrev, description,
-    content=affixes, content_rowid=rowid
+    content=affixes, content_rowid=rowid,
+    tokenize="porter unicode61"
 );
 """
 

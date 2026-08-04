@@ -6,8 +6,50 @@ import (
 	"unicode/utf8"
 )
 
+// matchesTerms reports whether every word of the query matches a word
+// of the text, comparing Porter stems, so "cats" finds a cat and
+// "speaks" finds speech.
+//
+// This is for prose: a name, a description, a lexicon gloss. It is what
+// the store's index does, and doing the same here is what keeps a
+// browser's answers and a terminal's the same. Prefix matching is not
+// used on prose because a three-letter query lands inside too much:
+// "cat" prefix-matches 209 roots, most of them catfish, Catopuma and
+// catastrophe, against 19 that are actually about cats.
+func matchesTerms(text, query string) bool {
+	if query == "" {
+		return false
+	}
+	words := splitWords(text)
+	if len(words) == 0 {
+		return false
+	}
+	stems := make(map[string]bool, len(words))
+	for _, w := range words {
+		stems[Stem(w)] = true
+	}
+	for _, q := range splitWords(query) {
+		if !stems[Stem(q)] {
+			return false
+		}
+	}
+	return true
+}
+
+// splitWords cuts text where a word ends: at anything that is not a
+// letter or a digit.
+func splitWords(text string) []string {
+	return strings.FieldsFunc(strings.ToLower(text), func(r rune) bool {
+		return !isWordRune(r)
+	})
+}
+
 // matchesWord reports whether q begins a word somewhere in text, both
 // compared case-insensitively.
+//
+// This is for identifiers rather than prose: an abbreviation, a written
+// form, a category path. "BEN" has to find BEN1 and "trans" has to find
+// Case/Transrelative, and neither is English for a stemmer to reduce.
 //
 // A plain substring test is wrong here and was wrong for a long time:
 // searching the grammar for "ERG" answered with the Absolutive, whose

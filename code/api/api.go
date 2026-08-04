@@ -334,9 +334,14 @@ func (a *API) Compare(x, y string) (Comparison, error) {
 		return Comparison{}, fmt.Errorf("%s: %w", y, err)
 	}
 	pairs, unpaired := view.PairSides(sa, sb)
-	out := Comparison{A: sa.Word, B: sb.Word}
+	out := Comparison{
+		A: sa.Word, B: sb.Word,
+		Pairs: []ComparePair{}, Unpaired: []Unpaired{},
+	}
 	for _, p := range pairs {
 		cp := ComparePair{
+			Slots:       []SlotRow{},
+			Gloss:       []GlossRow{},
 			Role:        p.A.Role,
 			RootDiffers: view.RootDiffers(p.A, p.B),
 			ANote:       p.A.Note,
@@ -380,7 +385,15 @@ func (a *API) Compare(x, y string) (Comparison, error) {
 // alone rather than failing, because the grammar tables are compiled
 // into this module and are always available.
 func (a *API) Search(query string, opts SearchOptions) SearchResult {
-	var out SearchResult
+	// The slices start empty rather than nil. A nil slice marshals as
+	// null, and ithkuil.d.ts declares these as arrays, so a caller
+	// doing .roots.length crashed on a query that found nothing, which
+	// is the commonest query there is.
+	out := SearchResult{
+		Grammar: []GrammarEntry{},
+		Roots:   []RootHit{},
+		Affixes: []Affix{},
+	}
 	switch {
 	case opts.Form:
 		// A written form is a question about the grammar alone. Asking

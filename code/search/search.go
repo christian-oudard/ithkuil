@@ -144,11 +144,14 @@ func matchesEntry(e Entry, q string) bool {
 	if q == "" {
 		return true
 	}
+	// Abbreviation, form and category are identifiers, matched by
+	// prefix so "BEN" finds BEN1. Name and description are English,
+	// matched by stem so "cases" finds a Case.
 	return matchesWord(e.Abbrev, q) ||
 		matchesWord(e.Category, q) ||
 		matchesWord(e.Form, q) ||
-		matchesWord(e.Name, q) ||
-		matchesWord(e.Description, q)
+		matchesTerms(e.Name, q) ||
+		matchesTerms(e.Description, q)
 }
 
 // LookupGrammar returns every entry whose Abbrev is an exact case-
@@ -270,7 +273,7 @@ func SearchRoots(query string, roots map[string]lexicon.RootEntry) []RootHit {
 		// Stem priority: S1 > S2 > S3 > S0.
 		stems := []string{entry.Stem1, entry.Stem2, entry.Stem3, entry.Stem0}
 		for i, s := range stems {
-			if matchesWord(s, q) {
+			if matchesTerms(s, q) {
 				hits = append(hits, RootHit{Score: i + 1, Cr: cr, Entry: entry})
 				break
 			}
@@ -299,12 +302,12 @@ func SearchAffixes(query string, affixes map[string]lexicon.AffixEntry) []lexico
 	for cs, a := range affixes {
 		if strings.EqualFold(cs, q) ||
 			strings.EqualFold(a.Abbrev, q) ||
-			matchesWord(a.Description, q) {
+			matchesTerms(a.Description, q) {
 			hits = append(hits, a)
 			continue
 		}
 		for _, d := range a.Degrees {
-			if matchesWord(d, q) {
+			if matchesTerms(d, q) {
 				hits = append(hits, a)
 				break
 			}
