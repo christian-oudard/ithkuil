@@ -66,11 +66,18 @@ func cmdCompose(args []string, stdout, stderr io.Writer, dataFile string) int {
 	return 0
 }
 
-// renderGlossFaults prints one fault per line under the expression
-// they came from. Reading is permissive, so there may be several, and
-// joining them onto one line ran three separate problems together
-// into a sentence that had to be taken apart before any of them could
-// be acted on.
+// renderGlossFaults shows the expression token by token, marking the
+// ones that failed and writing "ok" against the rest.
+//
+// The tokens that read are half the diagnosis, the same way the slots
+// that read are half of a parse failure. A list of complaints alone
+// says what is wrong without saying how much was understood, and a
+// writer looking at a long gloss cannot tell whether one token is bad
+// or the whole shape was misread.
+//
+// A fault that names no token — one about the expression as a whole,
+// or one the split does not line up with — is printed under the table
+// rather than dropped.
 func renderGlossFaults(w io.Writer, expr string, err error) {
 	var fs fault.Faults
 	if !errors.As(err, &fs) {
@@ -79,16 +86,73 @@ func renderGlossFaults(w io.Writer, expr string, err error) {
 	}
 	fmt.Fprintf(w, "compose: cannot read %s\n", stylize(ansiBold, expr))
 	iw := indented(w, "  ")
+
+	tokens := glossTokens(expr)
+	byToken := map[string][]fault.Fault{}
 	for _, f := range fs.List {
-		// The token goes in front unless the sentence already names
-		// it. Two slots of one kind raise the same sentence twice —
-		// "a combination referential holds ..." for both ZZZ and XXX —
-		// and without the token the reader has two identical lines and
-		// no way to tell which is about what.
-		line := f.Fix
-		if f.Found != "" && !strings.Contains(f.Fix, f.Found) {
-			line = stylize(ansiBold, f.Found) + ": " + f.Fix
+		if f.In != "" {
+			byToken[f.In] = append(byToken[f.In], f)
 		}
-		fmt.Fprintf(iw, "%s %s\n", stylize(ansiRed, "\u2717"), line)
+	}
+	if len(tokens) > 1 && len(byToken) > 0 {
+		fmt.Fprintln(iw)
+		renderTokenTable(iw, tokens, byToken)
+	}
+	// Whatever the table could not place.
+	var loose []fault.Fault
+	for _, f := range fs.List {
+		if f.In == "" || len(tokens) <= 1 || len(byToken) == 0 {
+			loose = append(loose, f)
+		}
+	}
+	if len(loose) > 0 {
+		fmt.Fprintln(iw)
+		for _, f := range loose {
+			fmt.Fprintf(iw, "%s %s\n", stylize(ansiRed, "\u2717"), f.Fix)
+		}
+	}
+}
+
+// glossTokens splits an expression the way the reader does, so the
+// rows line up with what was actually judged. The reader collapses
+// runs of "-", which the canonical gloss writes around the root.
+func glossTokens(expr string) []string {
+	var out []string
+	for _, t := range strings.Split(expr, "-") {
+		if t = strings.TrimSpace(t); t != "" {
+			out = append(out, t)
+		}
+	}
+	return out
+}
+
+func renderTokenTable(w io.Writer, tokens []string, byToken map[string][]fault.Fault) {
+	tokW := len("TOKEN")
+	for _, t := range tokens {
+		if n := runeWidth(t); n > tokW {
+			tokW = n
+		}
+	}
+	fmt.Fprintf(w, "   %s  %s\n",
+		stylize(ansiDim, padRunes("TOKEN", tokW)),
+		stylize(ansiDim, "READS AS"))
+	for _, t := range tokens {
+		faults := byToken[t]
+		if len(faults) == 0 {
+			fmt.Fprintf(w, "   %s  %s\n",
+				stylize(ansiCyan, padRunes(t, tokW)),
+				stylize(ansiDim, "ok"))
+			continue
+		}
+		for i, f := range faults {
+			mark, cell := stylize(ansiRed, "\u2717  "), padRunes(t, tokW)
+			if i > 0 {
+				// A token with two complaints keeps one row each, with
+				// the name written once: repeating it would read as
+				// two tokens spelled the same.
+				mark, cell = "   ", padRunes("", tokW)
+			}
+			fmt.Fprintf(w, "%s%s  %s\n", mark, stylize(ansiCyan, cell), f.Fix)
+		}
 	}
 }

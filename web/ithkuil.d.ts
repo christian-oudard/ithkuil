@@ -86,6 +86,13 @@ export interface Violation {
   stage: string;
   code: string;
   found?: string;
+  /**
+   * The enclosing unit this sits inside, when what was read is made of
+   * several: one link of a concatenation chain, one token of a gloss.
+   * Absent when the fault is about the whole of it. Mark the failing
+   * part with this rather than searching `fix` for a name.
+   */
+  in?: string;
   fix: string;
 }
 

@@ -650,7 +650,7 @@ func Faults(err error) []Violation {
 	for i, f := range fs.List {
 		out[i] = Violation{
 			Stage: f.Stage.String(), Code: f.Code,
-			Found: f.Found, Fix: f.Fix,
+			Found: f.Found, In: f.In, Fix: f.Fix,
 		}
 	}
 	return out

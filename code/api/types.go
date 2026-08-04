@@ -101,7 +101,14 @@ type Violation struct {
 	Stage string `json:"stage"`
 	Code  string `json:"code"`
 	Found string `json:"found,omitempty"`
-	Fix   string `json:"fix"`
+	// In is the enclosing unit this sits inside, when what was read is
+	// made of several: one link of a concatenation chain, one token of
+	// a gloss. Absent when the fault is about the whole of it. A
+	// caller marking the failing part reads this; without it, several
+	// faults are several sentences with nothing tying each to a piece
+	// of the input.
+	In  string `json:"in,omitempty"`
+	Fix string `json:"fix"`
 }
 
 // Example is one published sentence with Quijada's own English. The

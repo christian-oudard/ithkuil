@@ -58,10 +58,17 @@ func (s Stage) String() string {
 // and says what is admissible rather than guessing at what was meant —
 // a parser that offers "did you mean" is inventing evidence it does
 // not have.
+// In is the enclosing unit a fault sits inside, when the thing being
+// read is made of several: one link of a concatenation chain, one
+// token of a gloss. Without it, a report of several faults is several
+// sentences with nothing saying which part of the input each is
+// about, and two slots of one kind raise the same sentence twice. It
+// is empty when the fault is about the whole of what was read.
 type Fault struct {
 	Stage Stage
 	Code  string // rule identifier ("2.1", "chars") or slot name ("Ca")
 	Found string // the offending text; empty when the whole word is the subject
+	In    string // the chain link or gloss token this sits in; empty when the whole
 	Fix   string // what would have to change
 }
 

@@ -295,21 +295,22 @@ func drawnSlots(segs []view.Segment) map[string]bool {
 // faultLines renders faults as plain sentences, for the cases with no
 // table to hang them on.
 //
-// subject is the word being reported. Where the faults name something
-// narrower — one link of a concatenation chain — that name is put in
-// front, since a chain is several words on one line and "no Ca
-// complex is written vẓ" does not say which of them holds it.
+// subject is the word being reported. A fault naming something
+// narrower — one link of a concatenation chain — is prefixed with it,
+// since a chain is several words on one line and "no Ca complex is
+// written vẓ" does not say which of them holds it. The link comes
+// from the fault itself rather than from the enclosing Faults, so a
+// report of several keeps them apart.
 func faultLines(fs fault.Faults, subject string, err error) []string {
 	if len(fs.List) == 0 {
 		return []string{err.Error()}
 	}
-	prefix := ""
-	if fs.Word != "" && fs.Word != subject {
-		prefix = fs.Word + ": "
-	}
 	out := make([]string, len(fs.List))
 	for i, f := range fs.List {
-		out[i] = prefix + f.Fix
+		out[i] = f.Fix
+		if f.In != "" && f.In != subject {
+			out[i] = f.In + ": " + f.Fix
+		}
 	}
 	return out
 }

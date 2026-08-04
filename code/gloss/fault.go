@@ -177,8 +177,12 @@ func (c *collected) add(err error) {
 		return
 	}
 	for _, f := range fs.List {
-		if fs.Word != "" && f.Found != fs.Word {
-			f.Fix += " (in " + fs.Word + ")"
+		// The token goes in a field, not into the sentence. Appending
+		// "(in DEV/99)" to the prose put the answer where only a human
+		// reading English could find it, and left a caller wanting to
+		// mark the token with nothing to match on.
+		if f.In == "" {
+			f.In = fs.Word
 		}
 		c.list = append(c.list, f)
 	}

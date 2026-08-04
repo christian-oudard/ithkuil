@@ -375,6 +375,9 @@ func tryConcatenation(word string) (*g.Chain, error) {
 			var fs fault.Faults
 			if errors.As(err, &fs) {
 				fs.Word = p
+				for i := range fs.List {
+					fs.List[i].In = p
+				}
 				return nil, fs
 			}
 			return nil, err
