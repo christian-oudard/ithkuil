@@ -187,12 +187,19 @@ func Rule1Glottal(v string) (string, bool) {
 // is exactly one form, so there is no case where the y and the -i-
 // belong to different morphemes.
 //
-// Scope: bare vowel-forms only. §1.6's footnote gives its examples that
-// way, and a Series-3 case-vowel carrying a §1.7 glottal-stop (i'a) is
-// left alone rather than dissimilated on a rule the source does not
-// state.
+// A glottal-stop inside the vowel does not exempt it. §1.6's footnote
+// is about which spelling of a vowel-form to write, and §1.7's stop is
+// a separate marker docked onto whichever spelling that is — the
+// §3.9.1 SPECIAL NOTE can move it onto a different slot's vowel
+// entirely, so it is not part of the form. yi'a dissimilates to yu'ä
+// for the same reason yia dissimilates to yuä: the glide still sits
+// against the matching vowel, which is the whole of what the rule is
+// about.
 func DissimilateGlides(word string) string {
-	conjs := SplitConjuncts(word)
+	// MergeGlottalVowels, because SplitConjuncts alone makes the glottal
+	// its own conjunct and would hand this loop a bare "i" where the
+	// vowel-form is "i'a".
+	conjs := MergeGlottalVowels(SplitConjuncts(word))
 	changed := false
 	for i := 1; i < len(conjs); i++ {
 		prev := conjs[i-1]
@@ -203,13 +210,36 @@ func DissimilateGlides(word string) string {
 		if last != 'y' && last != 'w' {
 			continue
 		}
-		if alt := VowelFormAfterGlide(last, conjs[i]); alt != conjs[i] {
-			conjs[i] = alt
-			changed = true
+		bare, glottal := deglottalizeVowel(conjs[i])
+		alt := VowelFormAfterGlide(last, bare)
+		if alt == bare {
+			continue
 		}
+		if glottal {
+			alt = GlottalizeVowel(alt)
+		}
+		conjs[i] = alt
+		changed = true
 	}
 	if !changed {
 		return word
 	}
 	return strings.Join(conjs, "")
+}
+
+// deglottalizeVowel strips a §1.7 glottal-stop from a vowel conjunct,
+// recovering the bare vowel-form and reporting whether there was one.
+// It undoes both placements GlottalizeVowel produces: the reduplication
+// a single vowel takes (a'a -> a) and the infix a longer form takes
+// (u'ä -> uä). No vowel-form is a doubled vowel, so collapsing the
+// reduplicated pair cannot be mistaken for one.
+func deglottalizeVowel(v string) (string, bool) {
+	if !strings.Contains(v, "'") {
+		return v, false
+	}
+	bare := strings.ReplaceAll(v, "'", "")
+	if rs := []rune(bare); len(rs) == 2 && rs[0] == rs[1] {
+		bare = string(rs[0])
+	}
+	return bare, true
 }

@@ -932,6 +932,17 @@ func canElideLeadingVv(l *Layout, f g.Formative) bool {
 	if cr.Stem != g.S1 || cr.Version != g.PRC {
 		return false
 	}
+	// §3.5.1 requires a glottal-stop in Vv whenever Slot V holds two or
+	// more affixes, to say so before the listener reaches the consonant
+	// runs and has to guess whether they are Cs forms or the Ca. An
+	// elided Vv has nowhere to put it, so the slot has to stay.
+	//
+	// Our own parser copes without the marker — it resolves at the
+	// geminated Ca — so nothing round-trips differently and no test
+	// noticed. It is still a form §3.5.1 forbids.
+	if len(f.SlotV) >= 2 {
+		return false
+	}
 	// Dropping Vv puts Cr at the start of the word, where §3.1/§3.2
 	// permit a narrower set of clusters than medial position does.
 	// "amlala" can lose its Vv because m- takes a following liquid;

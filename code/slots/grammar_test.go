@@ -2,6 +2,7 @@ package slots
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
@@ -262,5 +263,41 @@ func TestParse_VcGlottalNotMoved(t *testing.T) {
 	un, ok := f.Final.(g.UnframedNominal)
 	if !ok || un.Case != g.PLM {
 		t.Errorf("Final = %+v, want UnframedNominal{PLM}", f.Final)
+	}
+}
+
+// §3.5.1 makes a glottal-stop in Vv mandatory when Slot V holds two or
+// more affixes: it tells the listener the consonant runs ahead are Cs
+// forms and not the Ca, before the Ca arrives to settle it. Vv elision
+// used to run without asking, so every default-Slot-II formative with
+// two Slot V affixes lost the marker. Our own parser resolves such a
+// word anyway, and it re-renders to itself, so nothing else catches it.
+func TestVvGlottalSurvivesElision(t *testing.T) {
+	affix := func(cs string) g.Affix {
+		return g.Affix{Consonant: cs, Type: g.Type1Affix, Degree: 1}
+	}
+	cases := []struct {
+		slotV []g.Affix
+		want  string
+	}{
+		{nil, "člala"},
+		{[]g.Affix{affix("sk")}, "člaskall"},
+		// Keeping Vv makes the Cc shortcut the shorter form, so the
+		// canonical spelling switches to it. Two glottals then: §3.5.1's
+		// in Vv, and §3.6.2's end-of-Slot-V marker, which the shortcut
+		// needs because it elides Ca.
+		{[]g.Affix{affix("sk"), affix("pt")}, "wa'ačlaska'pt"},
+		{[]g.Affix{affix("sk"), affix("pt"), affix("rr")}, "wa'ačlaskapta'rr"},
+	}
+	for _, c := range cases {
+		f := g.MinimalFormative("čl")
+		f.SlotV = c.slotV
+		got := Render(FromGrammar(f))
+		if got != c.want {
+			t.Errorf("%d Slot V affixes: %q, want %q", len(c.slotV), got, c.want)
+		}
+		if len(c.slotV) >= 2 && !strings.Contains(got, "'") {
+			t.Errorf("%q has no §3.5.1 glottal-stop", got)
+		}
 	}
 }

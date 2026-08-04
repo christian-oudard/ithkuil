@@ -153,3 +153,27 @@ func TestDissimilateGlides(t *testing.T) {
 		}
 	}
 }
+
+// The §1.7 glottal-stop does not exempt a vowel from §1.6's footnote.
+// It is a separate marker docked onto whichever spelling the footnote
+// selects — the §3.9.1 SPECIAL NOTE can move it onto another slot's
+// vowel entirely — so yi'a dissimilates exactly as yia does.
+//
+// Reachable through the Cc shortcut: §3.5.1 forces a glottal into Vv
+// when Slot V holds two or more affixes, and a y- or w- shortcut puts
+// that Vv straight after the glide.
+func TestDissimilateGlides_Glottalized(t *testing.T) {
+	cases := []struct{ in, want string }{
+		{"yi'ačl", "yu'äčl"}, // y + glottalized ia
+		{"wu'ačl", "wi'äčl"}, // w + glottalized ua
+		{"wi'ačl", "wi'ačl"}, // w + i-initial: untouched
+		{"yu'ačl", "yu'ačl"}, // y + u-initial: untouched
+		{"ya'ačl", "ya'ačl"}, // series 1, reduplicated around the stop
+		{"yu'äčl", "yu'äčl"}, // idempotent
+	}
+	for _, c := range cases {
+		if got := DissimilateGlides(c.in); got != c.want {
+			t.Errorf("DissimilateGlides(%q) = %q, want %q", c.in, got, c.want)
+		}
+	}
+}
