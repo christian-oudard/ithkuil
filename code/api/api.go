@@ -192,6 +192,7 @@ func (a *API) Parse(text string) []Word {
 		a.breakdown(&w, r.Romanization)
 		if r.Err != nil {
 			w.Error = r.Err.Error()
+			w.Faults = faults(r.Err)
 			out = append(out, w)
 			continue
 		}
@@ -588,7 +589,9 @@ func (a *API) FromASCII(s string) string { return phonology.FromASCII(s) }
 func Reply(v any, err error) string {
 	var envelope map[string]any
 	if err != nil {
-		envelope = map[string]any{"error": Error{Message: err.Error()}}
+		envelope = map[string]any{"error": Error{
+			Message: err.Error(), Faults: faults(err),
+		}}
 	} else {
 		envelope = map[string]any{"ok": v}
 	}
@@ -618,8 +621,16 @@ func glossTokens(line string) []GlossToken {
 
 // violations reports the §2 rules a romanization breaks, or nothing.
 func violations(text string) []Violation {
+	return faults(phonology.CheckText(text))
+}
+
+// faults converts a reader's failure to the wire shape, or nil when
+// err did not come from a reader. Nil rather than an empty slice: the
+// field is omitempty, and a caller must be able to tell "no faults
+// were reported" from "this failure carries none".
+func faults(err error) []Violation {
 	var fs fault.Faults
-	if !errors.As(phonology.CheckText(text), &fs) {
+	if !errors.As(err, &fs) {
 		return nil
 	}
 	out := make([]Violation, len(fs.List))

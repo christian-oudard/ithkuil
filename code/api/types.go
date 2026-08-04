@@ -36,8 +36,17 @@ const APIVersion = 1
 // Error is the failure arm of every response. Message is the whole of
 // what went wrong: the parser knows what it saw and what it expected,
 // and that is what belongs here. Nothing guesses at a correction.
+//
+// Faults is the same answer with its structure intact, present when
+// the failure came from a reader and absent otherwise. Every layer
+// below this one reports a stage, a code, the text at fault and what
+// would be admissible; flattening that to Message at the wire made
+// the caller match English to find the token it had to fix. Message
+// is what a page prints, Faults is what it acts on, and neither
+// stands in for the other.
 type Error struct {
-	Message string `json:"message"`
+	Message string      `json:"message"`
+	Faults  []Violation `json:"faults,omitempty"`
 }
 
 // Segment is one written chunk of a word paired with the slot it fills
@@ -155,6 +164,11 @@ type Word struct {
 	// tables generate a few clusters our reading of §2 rejects, and a
 	// parser that refused them could not round-trip its own output.
 	Violations []Violation `json:"violations,omitempty"`
+	// Faults is why the word would not read, the structured form of
+	// Error. It answers a different question from Violations: a word
+	// can be perfectly pronounceable and still not read, which is what
+	// mavẓorf is, and a word can read and still break a §2 rule.
+	Faults []Violation `json:"faults,omitempty"`
 }
 
 // Member is one formative of a concatenation chain.

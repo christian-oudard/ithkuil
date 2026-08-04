@@ -15,6 +15,12 @@
 export interface ApiError {
   /** The whole of what went wrong. Never a guess at a correction. */
   message: string;
+  /**
+   * `message` with its structure intact, present when the failure came
+   * from a reader. `message` is what you print; this is what you act
+   * on, so you never have to match English to find the token to fix.
+   */
+  faults?: Violation[];
 }
 
 export type Envelope<T> = { ok: T } | { error: ApiError };
@@ -148,6 +154,13 @@ export interface Word {
    * generate a few clusters our reading of section 2 rejects.
    */
   violations?: Violation[];
+  /**
+   * Why the word would not read, the structured form of `error`. A
+   * different question from `violations`: a word can be perfectly
+   * pronounceable and still not read, and can read and still break a
+   * §2 rule.
+   */
+  faults?: Violation[];
 }
 
 /** One formative of a concatenation chain. */
