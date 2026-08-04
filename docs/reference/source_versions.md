@@ -77,3 +77,30 @@ No mapping between the two has been made. A section number taken from
 the site should not be cited against this directory without checking
 which document it came from.
 
+## Section numbers do not identify a rule on their own
+
+The Grammar Design document and the phonotactics document number
+independently and collide throughout:
+
+| number | morphology | phonotactics |
+|---|---|---|
+| 1.5 | External Juncture | glottal-stop placement |
+| 1.6 | the Standard Vowel-Form Sequence | final -h before initial h- |
+| 1.7 | inserting a glottal stop into a vowel-form | geminates |
+| 4.2 | Slot IV V_R for the Specialized C_S-Root | word-final bi-consonantal conjuncts |
+
+Both collisions have caused real confusion here. §1.5 was read as the
+juncture rule when the glottal-stop rule was meant. And the §4.2 entry
+in ISSUES.md concerns the phonotactics rule, while the version history
+above records a v1.3 change to "Sec. 4.2" that is the morphology one:
+two unrelated rules, one label, one directory.
+
+So a bare section number is ambiguous, in prose and in a fault code
+alike. `phonology` currently emits six of them as `fault.Code` values,
+all from the phonotactics document, with nothing saying so.
+
+The website does not have this problem, being one document in one
+sequence, but it is not a substitute: the site lags the PDFs, so it
+corroborates rather than supersedes. It is most useful for material
+unlikely to have been revised, such as the phoneme inventory.
+
