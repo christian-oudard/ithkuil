@@ -82,8 +82,9 @@ func TestEffortMatchesSpeakerJudgments(t *testing.T) {
 		{"mela", "möla"},       // rounding costs at mid front
 		{"mila", "müla"},       // rounding costs at high
 		{"mola", "mëla"},       // but o beats ë: ë is the marked one, not u
-		{"maula", "maila"},     //
+		{"maula", "maila"},     // after a, the back second element wins
 		{"meila", "moila"},     //
+		{"mëila", "mëula"},     // but after ë, the front one does
 		{"miula", "muila"},     // diphthongs are order-sensitive too
 		{"maola", "maöla"},     //
 		{"malaula", "malaila"}, //
