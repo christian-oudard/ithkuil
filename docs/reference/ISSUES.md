@@ -512,3 +512,10 @@ Undecided, and it turns on what was meant rather than on any test:
 Worth checking 4 first: it is the only reading under which no source
 statement is wrong.
 
+A note for whoever implements it, found while trying. `isFricative` in
+`phonotactics.go` covers only **f v ţ ḑ**, because it exists for §2.5,
+which is about homologous pairs disagreeing in voicing. §4.2 means
+§1.1's whole Fricative row, so a §4.2 check needs its own predicate; a
+narrow one rejects `erčädókh` for -**kh** and `mmiexinļ` for -**nļ**,
+both attested.
+
