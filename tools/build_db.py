@@ -93,41 +93,28 @@ CREATE VIRTUAL TABLE affixes_fts USING fts5(
 """
 
 
-# A C_R names one root, so the roots table is keyed on it and the key
-# is unique. Four clusters carry two unrelated live meanings upstream,
-# which the key cannot express:
+# A C_R names one root, so the roots table is keyed on it and the key is
+# unique. Four clusters used to carry two unrelated live meanings each,
+# which the key cannot express, and the build dropped whichever came
+# second — losing a real meaning to keep the index happy.
 #
-#   cfw   magnoliaceae            / myristicaceae
-#   lzbḑ  psychodomorph           / tabanid fly
-#   nļt   groin undergarment      / cicadomorphic bug
-#   rţnw  vitaceae 2              / rosoideae 7
-#
-# Neither side is marked retired, so there is nothing to choose between
-# them and the first is kept. A fifth, ksmy "oven" against "jagged
-# line", used to be here and is gone: the sheet had daggered the oven
-# sense and sync_lexicon now drops retired entries before they reach
-# data.json.
-#
-# Listed rather than tolerated, so the loss is deliberate rather than
-# whatever INSERT OR REPLACE happened to do. A new collision, or one of
-# these being repaired upstream, fails the build.
-KNOWN_DUPLICATE_ROOTS = {"cfw", "lzbḑ", "nļt", "rţnw"}
+# They are repaired upstream of here now: sync_lexicon.py applies
+# data/root_overrides.json, which moves the second meaning to a free
+# C_R rather than discarding it, and docs/reference/ERRATA.md carries
+# the reasoning for each. So a duplicate reaching this point means the
+# sheet has grown a new collision that nobody has looked at, and the
+# build should stop rather than quietly pick a winner.
 
 
-def dedupe_roots(roots: list[dict]) -> list[dict]:
-    collisions = {cr for cr, n in Counter(r["cr"] for r in roots).items() if n > 1}
-    if collisions != KNOWN_DUPLICATE_ROOTS:
+def check_unique_roots(roots: list[dict]) -> list[dict]:
+    dupes = sorted(cr for cr, n in Counter(r["cr"] for r in roots).items() if n > 1)
+    if dupes:
         raise ValueError(
-            f"duplicate C_R set changed: {sorted(collisions)} "
-            f"!= {sorted(KNOWN_DUPLICATE_ROOTS)}"
+            f"duplicate C_R in data.json: {dupes}. A C_R names one root. "
+            f"Add an entry to data/root_overrides.json moving one of each "
+            f"pair to a free C_R, and record why in docs/reference/ERRATA.md."
         )
-    kept: dict[str, dict] = {}
-    for r in roots:
-        if r["cr"] in kept:
-            print(f"  duplicate C_R {r['cr']}: dropping {r.get('stem0', '')!r}")
-            continue
-        kept[r["cr"]] = r
-    return list(kept.values())
+    return roots
 
 
 def build(data_path: Path, db_path: Path) -> None:
@@ -186,7 +173,7 @@ def build(data_path: Path, db_path: Path) -> None:
                 json.dumps(r.get("completive", []), ensure_ascii=False),
                 json.dumps(r.get("wikidata", []), ensure_ascii=False),
             )
-            for r in dedupe_roots(data["roots"])
+            for r in check_unique_roots(data["roots"])
         ],
     )
     conn.execute('INSERT INTO roots_fts(roots_fts) VALUES ("rebuild")')

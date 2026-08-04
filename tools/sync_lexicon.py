@@ -445,6 +445,42 @@ def drop_retired(roots: list[dict]) -> list[dict]:
     return live
 
 
+def apply_root_overrides(roots: list[dict]) -> list[dict]:
+    """Move roots off a C_R that two unrelated meanings both claim.
+
+    A C_R names one root, so the four collisions in the sheet are a
+    defect in it rather than a fact about the language. Dropping one
+    side, which is what the store used to do, loses a real meaning;
+    these move it instead.
+
+    data/root_overrides.json holds the reassignments and
+    docs/reference/ERRATA.md the reasoning for each. An override is
+    matched on both the old C_R and the Stem 0 gloss, so an upstream
+    repair that renames or removes that row stops matching and the
+    override falls away rather than corrupting a row that has since
+    become something else.
+    """
+    path = DATA_DIR / "root_overrides.json"
+    if not path.exists():
+        return roots
+    with open(path, encoding="utf-8") as f:
+        spec = json.load(f)
+    for o in spec["overrides"]:
+        hits = [
+            r for r in roots
+            if r.get("cr") == o["cr"] and r.get("stem0", "").strip() == o["match_stem0"]
+        ]
+        if len(hits) != 1:
+            print(f"  override {o['cr']} -> {o['new_cr']}: {len(hits)} rows match, skipped")
+            continue
+        if any(r.get("cr") == o["new_cr"] for r in roots):
+            print(f"  override {o['cr']} -> {o['new_cr']}: destination taken, skipped")
+            continue
+        hits[0]["cr"] = o["new_cr"]
+        print(f"  {o['cr']} -> {o['new_cr']} ({o['basis']}): {o['match_stem0']}")
+    return roots
+
+
 def main() -> int:
     data_path = DATA_DIR / "data.json"
 
@@ -459,7 +495,7 @@ def main() -> int:
 
     write_roots_tsv(roots, DATA_DIR / "roots.tsv")
     write_affixes_tsv(affixes, DATA_DIR / "affixes.tsv")
-    version = write_data(drop_retired(roots), affixes, data_path)
+    version = write_data(apply_root_overrides(drop_retired(roots)), affixes, data_path)
     print(f"Wrote roots.tsv, affixes.tsv, data.json (version v{version})")
     return 0
 

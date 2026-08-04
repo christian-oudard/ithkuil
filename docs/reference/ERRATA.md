@@ -290,6 +290,111 @@ Quijada gives none.
 
 ---
 
+# Lexicon
+
+*Where the community spreadsheet, not Quijada, is the source.*
+
+The roots and affixes come from the Collaborative Ithkuil IV
+spreadsheet rather than from any of Quijada's documents, so these
+entries are keyed by the C_R at issue instead of by a section. They are
+held in `data/root_overrides.json` and applied by `sync_lexicon.py`
+after each fetch, so an upstream repair supersedes them automatically
+and reverting one is a single line.
+
+A C_R names one root, so four C_R values carrying two unrelated live
+meanings each is a defect in the sheet. Three are clerical and one is a
+real double-claim. Note the asymmetry of confidence: only `cfy` is
+*recovered*, in the sense that the data determines it. The rest are
+*chosen*, and a later upstream repair may well choose differently.
+
+The biological sections assign a C_R by extending a stem with a fixed
+suffix series, `w y l r ř f ţ ç m …`, one slot per taxon. Every
+clerical collision is a break in that series, which is what makes them
+diagnosable.
+
+### -cfw- — magnoliaceae and myristicaceae
+
+**Source.** Rows 5575 and 5576 of the sheet, adjacent, both `cfw`. The
+`cf` run reads `cfw, _, cfl, cfr, cfř, cff`: the second slot of the
+series is empty and `cfy` occurs nowhere among the 5891 roots.
+
+**Decision.** Magnoliaceae keeps `cfw`; myristicaceae takes **`cfy`**.
+Row 5575 sits where the series puts it and row 5576 failed to advance
+the consonant, so this is a copy-down and the vacant slot is exactly
+the one the series demands. Recovered, not chosen.
+
+**Status.** `implemented`
+
+**Where.** `data/root_overrides.json`.
+
+### -rţnw- — vitaceae 2 and rosoideae 7
+
+**Source.** Rows 5118 and 5484, far apart. Two series overlap by one
+slot. Rosoideae is a complete ten-member run —
+`rţm rţmw rţmy rţml rţmr rţmř rţnw rţny rţň rţňw` — with no gaps.
+Vitaceae is two entries, `rţn` and `rţnw`, whose second lands on
+rosoideae's seventh.
+
+**Decision.** Rosoideae 7 keeps `rţnw`; vitaceae 2 takes **`rţnl`**,
+the next free slot in the series after `rţnw` and `rţny`. A ten-member
+run with no gaps has the stronger claim than a two-member one that
+overlaps it. The displacement is determined; the destination is chosen.
+
+**Status.** `implemented`
+
+**Where.** `data/root_overrides.json`.
+
+### -lzbḑ- — psychodomorph and tabanid fly
+
+**Source.** Rows 4296 and 4297, adjacent. The `lzb` series holds nine
+suffixes — `ḑ w y l r ř z ž v` — the same nine the neighbouring `lzg`
+series uses, and it is full. The section then moves to the `lzk` stem,
+which draws on a wider set including `f`, `m`, `ç` and `h`.
+
+**Decision.** Psychodomorph keeps `lzbḑ`; tabanid fly takes **`lzbf`**,
+free, legal, and drawn from the set the same section uses one stem
+later.
+
+This is the weakest of the four and it is worth saying why. The
+taxonomy argues the other way: Psychodomorpha is a nematoceran, which
+puts it with the `lzg` run that ends at 4295 in "other nematoceran
+fly", while Tabanidae sits inside Tabanomorpha, which is `lzbw`
+immediately below. So the row that looks misplaced is the first one,
+not the second. Following that would move psychodomorph into the `lzg`
+series instead, which is also full. We keep the row order because it is
+evidence we can check and the taxonomy is not, but a maintainer who
+knows the sheet's intent should overrule this.
+
+**Status.** `implemented`
+
+**Where.** `data/root_overrides.json`.
+
+### -nļt- — groin undergarment and cicadomorphic bug
+
+**Source.** Rows 1417 and 4117, three thousand rows apart, in unrelated
+domains. Both have a structural claim. The clothing block uses `nļt`
+as one member of a set varying the final consonant — `nļt`, `nļp`,
+`nļm`. The insect block uses `nļt` as a **stem** and extends it eight
+times: `nļtw`, `nļty`, `nļtl` and five more.
+
+This is the one real double-claim of the four; no series is broken and
+nothing is recoverable.
+
+**Decision.** The cicadomorphic bug keeps `nļt`; the undergarment takes
+**`nļx`**. Purely a cost argument: moving the insect root drags eight
+dependants with it, moving the clothing root moves one, because `nļp`
+and `nļm` stand on their own. `nļx` rather than the nearer `nļţ`,
+which differs from `nļt` by a cedilla and would be read wrong.
+
+Chosen, not recovered, and on the weakest grounds of the four. Whoever
+maintains the sheet should decide this rather than us.
+
+**Status.** `implemented`
+
+**Where.** `data/root_overrides.json`.
+
+---
+
 # Proposals
 
 *Amendments we think the language wants. Not in force.*

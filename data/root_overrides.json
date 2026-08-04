@@ -1,0 +1,48 @@
+{
+  "_comment": [
+    "Local repairs to the Collaborative Ithkuil IV spreadsheet, applied by",
+    "tools/sync_lexicon.py after each fetch. Each entry moves one root off a",
+    "C_R that two unrelated meanings both claim; a C_R names one root, so",
+    "carrying both is a defect in the sheet rather than a fact about the",
+    "language.",
+    "",
+    "The reasoning for each is in docs/reference/ERRATA.md under the C_R.",
+    "match_stem0 identifies which of the two rows moves, so an upstream",
+    "repair that renames or removes that row simply stops matching and the",
+    "override falls away instead of corrupting something.",
+    "",
+    "basis: 'recovered' means the sheet's own series determines the new",
+    "value. 'chosen' means it does not, and a later upstream repair may",
+    "pick differently."
+  ],
+  "overrides": [
+    {
+      "cr": "cfw",
+      "match_stem0": "myristicaceae",
+      "new_cr": "cfy",
+      "basis": "recovered",
+      "why": "adjacent copy-down; cfy is the empty slot in the cf run and is unused"
+    },
+    {
+      "cr": "rţnw",
+      "match_stem0": "vitaceae 2",
+      "new_cr": "rţnl",
+      "basis": "chosen",
+      "why": "rosoideae is a complete ten-member run and holds the slot; rţnl is the next free"
+    },
+    {
+      "cr": "lzbḑ",
+      "match_stem0": "tabanid fly",
+      "new_cr": "lzbf",
+      "basis": "chosen",
+      "why": "lzb's nine suffixes are full; f is free and used by the same section at lzk. Weakest of the four: the taxonomy argues psychodomorph is the misplaced row instead"
+    },
+    {
+      "cr": "nļt",
+      "match_stem0": "groin undergarment/underwear/pantie",
+      "new_cr": "nļx",
+      "basis": "chosen",
+      "why": "a real double-claim, not a slip; the insect stem carries eight dependants and the clothing root none"
+    }
+  ]
+}

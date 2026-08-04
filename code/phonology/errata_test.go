@@ -26,11 +26,12 @@ import (
 // valid line number aimed at nothing in particular. The Decision text
 // is the record; the pointer is a convenience.
 
-// Entries are named for the section they rule on rather than
-// numbered, so a citation carries its own meaning and two people
-// adding an entry at once cannot collide on an id.
+// Entries are named for what they rule on rather than numbered, so a
+// citation carries its own meaning and two people adding an entry at
+// once cannot collide on an id. That is a section of Quijada's for the
+// grammar, and the C_R at issue for the lexicon, which has no sections.
 var (
-	errataEntry  = regexp.MustCompile(`(?m)^### (§[0-9.]+[0-9]) — (.+)$`)
+	errataEntry  = regexp.MustCompile("(?m)^### (§[0-9.]+[0-9]|-[^ ]+-) — (.+)$")
 	errataField  = regexp.MustCompile(`(?m)^\*\*(Source|Decision|Status|Where)\.\*\*`)
 	errataTarget = regexp.MustCompile("`([a-z][a-z0-9_/]*\\.go):(\\d+)`")
 	errataStatus = regexp.MustCompile(`(?m)^\*\*Status\.\*\* ` + "`" + `(adopted|proposed|implemented)` + "`")
@@ -55,11 +56,10 @@ func TestErrataEntriesAreWellFormed(t *testing.T) {
 		}
 		body := text[loc[1]:end]
 
-		// Sections are the ids, so two entries on one section would
-		// make a citation ambiguous. Split the section or widen the
-		// reference instead.
+		// The key is the id, so two entries sharing one would make a
+		// citation ambiguous. Split it or widen the reference instead.
 		if seen[id] {
-			t.Errorf("%s: two entries rule on this section", id)
+			t.Errorf("%s: two entries rule on this", id)
 		}
 		seen[id] = true
 
@@ -87,7 +87,7 @@ func TestErrataCoversTheCodeThatCitesIt(t *testing.T) {
 	}
 
 	cited := map[string][]string{}
-	cite := regexp.MustCompile(`ERRATA\.md (§[0-9.]+[0-9])`)
+	cite := regexp.MustCompile("ERRATA\\.md (§[0-9.]+[0-9]|-[^ ]+-)")
 	err := filepath.Walk(filepath.Join("..", ""), func(path string, info os.FileInfo, err error) error {
 		if err != nil || info.IsDir() || !strings.HasSuffix(path, ".go") {
 			return err
