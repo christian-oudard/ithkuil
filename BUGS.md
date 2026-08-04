@@ -111,3 +111,19 @@ are the live list rather than anything written here:
   Neither table can currently fail in the direction that matters:
   `section9_test.go` expands the whitelist and asserts each entry is
   legal, which tests what it admits and never what it excludes.
+
+- None of §4.2's word-final conjunct rules are implemented. §4.1's bans
+  on final -**w**, -**y** and the glottal stop are there, but §4.2.1
+  through §4.2.12, which say which bi-consonantal conjuncts may end a
+  word, have no counterpart in `phonotactics.go`. §4.2.1 has "a stop
+  consonant may be followed by any fricative of the same voicing", so
+  word-final -**bf** should not stand, and `ClusterLegalAt(Final, "bf")`
+  returns true.
+
+  Filed as a question rather than a defect: a speaker called `bf` "not
+  illegal, just awkward", which settles it medially, where nothing in §2
+  touches it, but was not aimed at the word-final case. Confirm the
+  reading of §4.2.1 before implementing. Unlike §9 this is prose of the
+  same kind `CheckProhibitedPair` already handles rather than a table
+  needing embedding, and being position-scoped it cannot affect medial
+  round-tripping.
