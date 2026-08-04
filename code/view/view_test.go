@@ -621,16 +621,19 @@ func TestSegmentsModular_ClaimsNoAbsentLetter(t *testing.T) {
 	}
 }
 
-// TestSegmentsModular_SlotThreeSeparator records what the view still
-// does not model. §4.3 spends Slot 3's consonant entirely on C_M, "n if
-// V_N represents an Aspect, otherwise ň", where Slot 2 writes a full
-// C_N. SegmentsModular asks slots.VnCnFromSlotVIII for every entry, so
-// it derives a C_N for Slot 3 as well, finds it is not in the word, and
-// shows the slot as elided. The n that is in the word gets no segment
-// at all.
+// §4.3 spends Slot 3's consonant entirely on C_M, "n if V_N represents
+// an Aspect, otherwise ň", where Slot 2 writes a full C_N.
+// SegmentsModular used to ask slots.VnCnFromSlotVIII for every entry,
+// so it derived a C_N for Slot 3 as well, found it was not in the word,
+// and showed the slot as elided while the n that was there got no
+// segment at all:
+//
+//	wähňainui   w- ä- hň- ai- ∅ ui- ∅      the n has no segment
+//
+// The segments now come from roman.ModularParts, the arm that wrote
+// the word, so the letters shown are the letters written. Spelling the
+// unelided segments back must give the word.
 func TestSegmentsModular_SlotThreeSeparator(t *testing.T) {
-	t.Skip("Slot 3's C_M has no segment; see BUGS.md")
-
 	m := g.ModularAdjunct{
 		Scope: g.ModularScopeParent,
 		Content: []g.SlotVIII{

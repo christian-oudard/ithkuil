@@ -911,14 +911,20 @@ func TestCompose_EchoesTheGlossItAccepts(t *testing.T) {
 // half of a fix, and by hand was the only way it had been checked.
 //
 // §4.3's bare Slot 4 form writes the V_N alone, so "a" is a whole RTR
-// adjunct with no C_N in it, and the column must say so rather than
-// print a -w- the word does not contain.
+// adjunct with no C_N in it, and the column must not print a -w- the
+// word does not contain.
+//
+// Nor may it print an elided C_N, which is what it used to do: Slot 4
+// has no consonant position for one to be elided from, so naming it
+// showed a slot §4.3 does not have. The default Mood/Case-Scope the
+// slot implies is real, and is said by the shape rather than by a
+// letter, so it is listed against the vowel that is there.
 func TestParse_ModularAdjunct(t *testing.T) {
 	out, _, code := runCLI("-data", dataFile(), "parse", "a")
 	if code != 0 {
 		t.Fatalf("exit %d\n%s", code, out)
 	}
-	for _, want := range []string{"RTR", "Vn\u2081", "Cn\u2081", "FAC", view.ElidedMark} {
+	for _, want := range []string{"RTR", "Vn\u2081", "FAC"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("output missing %q:\n%s", want, out)
 		}
@@ -926,17 +932,27 @@ func TestParse_ModularAdjunct(t *testing.T) {
 	if strings.Contains(out, "-w") {
 		t.Errorf("the C_N is elided, so no -w should be printed:\n%s", out)
 	}
+	if strings.Contains(out, "Cn\u2081") {
+		t.Errorf("Slot 4 has no C_N position to name:\n%s", out)
+	}
+	if strings.Contains(out, view.ElidedMark) {
+		t.Errorf("nothing is elided in a bare Slot 4 adjunct:\n%s", out)
+	}
 }
 
 // TestParse_ModularMultiSlot covers the multi-entry shape, whose slots
-// are numbered and whose §4.3 Slot 3 separator is still unaccounted for
-// (see BUGS.md). What is pinned here is the categories it names.
+// are numbered. §4.3's Slot 3 separator is one of them: the -n- is a
+// C_M, labelled apart from the C_N in the slot before it, and it had no
+// segment at all while every entry was read as a (V_N, C_N) pair.
 func TestParse_ModularMultiSlot(t *testing.T) {
 	out, _, code := runCLI("-data", dataFile(), "parse", "w\u00e4h\u0148ainui")
 	if code != 0 {
 		t.Fatalf("exit %d\n%s", code, out)
 	}
-	for _, want := range []string{"Vn\u2081", "Vn\u2082", "Vn\u2083", "PRL", "HYP", "RSM", "IRP"} {
+	for _, want := range []string{
+		"Vn\u2081", "Vn\u2082", "Vn\u2083", "PRL", "HYP", "RSM", "IRP",
+		"Cn\u2081", "Cm\u2082", "-n-",
+	} {
 		if !strings.Contains(out, want) {
 			t.Errorf("output missing %q:\n%s", want, out)
 		}

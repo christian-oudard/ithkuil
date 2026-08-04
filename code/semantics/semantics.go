@@ -106,10 +106,23 @@ func VnCategory(vn, cn string) string {
 	return "Vn?"
 }
 
+// CmLabel renders a §4.3 Slot 3 C_M marker. The slot spends its whole
+// consonant on "n if V_N represents an Aspect, otherwise ň", so the
+// letter names the category of the vowel beside it and nothing else.
+// It is not a C_N and has no Mood or Case-Scope reading, which is why
+// it is labelled apart from one.
+func CmLabel(cm string) string {
+	switch cm {
+	case "n":
+		return "CmAspect"
+	case "ň":
+		return "CmOther"
+	}
+	return "Cm?"
+}
+
 // CnLabel renders a modular Cn cluster as either a Mood label or a
-// CaseScope label depending on asMood. The "n"/"ň" Cm markers used in
-// 3-slot modular adjuncts have no Mood/CaseScope reading; they return
-// the marker tags "CmAspect"/"CmOther" instead.
+// CaseScope label depending on asMood.
 func CnLabel(cn string, asMood bool) string {
 	if asMood {
 		if IsAspectCn(cn) {
@@ -122,12 +135,6 @@ func CnLabel(cn string, asMood bool) string {
 		}
 	} else if cs, ok := parse.ParseCnCaseScope(cn); ok {
 		return cs.String()
-	}
-	switch cn {
-	case "n":
-		return "CmAspect"
-	case "ň":
-		return "CmOther"
 	}
 	return "Cn?"
 }

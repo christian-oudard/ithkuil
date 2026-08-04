@@ -451,3 +451,49 @@ form at all:
 
 Each needs an amendment rather than a reading, and each lands here as a
 proposal once drafted.
+
+### §6.2.2 — *Étkwö'e* is missing the Slot I marker its own gloss needs
+
+**Source.** The §6.2.2 example sentence opens with **Étkwö'e**, glossed
+on the site as `stem2/prc-FRAMED-'attend.scheduled.event'-PCR`: a stem,
+a root and a case, with no Function/Specification/Context and no C_A.
+
+Its three conjuncts are **é**, **tkw** and **ö'e**, and **ö'e** is the
+whole of PCR Postcursive. Slots IV and VI are therefore both empty,
+which is the §3.2 Slot IV/VI **a**+C_A shortcut and nothing else.
+§3.1.5 and the two Slot II tables are explicit that the shortcut is
+*shown* by a Slot I C_C of **w**- or **y**-, and that a Slot I of zero,
+**h**- or **hw**- means the formative does not contain one. This word
+has no Slot I at all, so as printed it needs a Slot IV and a Slot VI
+and has neither.
+
+The convention is not otherwise in doubt, and the sentence settles it
+against itself. Six words later it has **wuttíhia**, glossed `[default
+CA]-stem3/prc-FRAMED-'introduce'-RCP-APL`: the same construction —
+a FRAMED verbal carrying the default-C_A shortcut under antepenultimate
+stress — written with its **w**-. Across the whole corpus 177 words
+carry a Slot I glide and none drops it; **we**-, **wa**-, **wu**-,
+**wo**-, **ye**-, **ya**- and **yu**- are all attested, so no vowel
+conditions it away, and *wétkwö'e* is phonotactically legal as it
+stands. The only elision the sources give a word-initial **w**- is
+§5.8.8's, where the sentence-juncture **ç**- merges with it to give
+**çw**-, which adds a letter rather than removing one.
+
+The glide is not decoration that could be left off. The Slot II table
+is indexed by both: the V_V vowel gives the Stem, Version and series,
+and **w**- against **y**- picks which C_A that series stands for —
+[default] against PRX, G against RPV, N against A, G/RPV against
+PRX/RPV. So *wétkwö'e* and *yétkwö'e* are both well-formed and differ
+only in C_A, and with neither glide there is nothing to say which C_A
+was elided.
+
+**Decision.** Read it as a slip for **Wétkwö'e**, which parses to
+exactly the published gloss, stress included — antepenultimate over
+three syllables is the FRAMED relation. Do not repair the corpus:
+`corpus/examples.txt` transcribes the site, and the site says
+*Étkwö'e*. The word stays in the drift guard as one we cannot read,
+now with a reason rather than as an unexplained failure.
+
+**Status.** `adopted`
+
+**Where.** `roman/corpus_test.go:38`, the `corpusUnclassified` entry.

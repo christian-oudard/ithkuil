@@ -9,6 +9,7 @@ import (
 	"github.com/christian-oudard/ithkuil/lexicon"
 	"github.com/christian-oudard/ithkuil/parse"
 	"github.com/christian-oudard/ithkuil/phonology"
+	"github.com/christian-oudard/ithkuil/roman"
 	"github.com/christian-oudard/ithkuil/search"
 	"github.com/christian-oudard/ithkuil/semantics"
 	"github.com/christian-oudard/ithkuil/slots"
@@ -350,18 +351,6 @@ func slotVIICsSegment(a slots.AffixChunk, idx int, f g.Formative, lex *lexicon.L
 // makes each pair's slot inside the adjunct visible.
 //
 // marksMood disambiguates the Cn romanization (which is shared between
-// modularScopePrefix returns the romanization w/y consonant for the
-// decoded ModularScope, or "" for the default scope.
-func modularScopePrefix(s g.ModularScope) string {
-	switch s {
-	case g.ModularScopeParent:
-		return "w"
-	case g.ModularScopeConcat:
-		return "y"
-	}
-	return ""
-}
-
 // vnCnForms re-encodes a typed SlotVIII as the (Vn, Cn) pair the
 // romanization uses. Inverse of parse.ParseVnCn.
 func vnCnForms(s g.SlotVIII) (string, string) {
@@ -408,43 +397,68 @@ func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segmen
 		return true
 	}
 	var segs []Segment
-	if raw := modularScopePrefix(ma.Scope); raw != "" {
+	if raw := roman.ModularScopePrefix(ma.Scope); raw != "" {
 		segs = append(segs, Segment{
 			Raw:     raw,
 			Slot:    "scope",
 			Encodes: []string{semantics.PrefixCode(raw)},
 		})
 	}
-	// Re-derive written (Vn, Cn) per typed Content entry. The
-	// romanization-level view still wants per-segment bytes, so we use
-	// the slots-package encoder as the inverse of ParseVnCn.
-	for i, s := range ma.Content {
-		idx := subscript(i + 1)
-		vn, cn := vnCnForms(s)
-		written(strings.ToLower(vn))
-		segs = append(segs, Segment{
-			Raw:     strings.ToLower(vn),
-			Slot:    fmt.Sprintf("Vn%s", idx),
-			Encodes: []string{semantics.VnCategory(vn, cn)},
-		})
-		if cn != "" {
-			seg := Segment{
-				Raw:     strings.ToLower(cn),
-				Slot:    fmt.Sprintf("Cn%s", idx),
-				Encodes: []string{semantics.CnLabel(cn, asMood)},
-			}
-			if !written(seg.Raw) {
-				seg.Raw, seg.Elided = ElidedMark, true
-			}
-			segs = append(segs, seg)
-		}
+	// The split comes from the arm that wrote the word. §4.3's slots are
+	// not alike — Slot 2 writes a full C_N, Slot 3 spends its consonant
+	// on C_M alone, Slot 4 has none — so asking slots.VnCnFromSlotVIII
+	// for a (V_N, C_N) pair per entry, as this once did, invented a C_N
+	// for Slot 3, found it absent, and called the slot elided while the
+	// n that was there got no segment at all.
+	parts, err := roman.ModularParts(ma)
+	if err != nil {
+		return segs
 	}
-	if ma.Reach != g.ModularReachNone {
-		segs = append(segs, Segment{
-			Raw:     reachVH(ma.Reach),
-			Slot:    "Vh",
-			Encodes: []string{ma.Reach.String()},
-		})
+	for i, p := range parts {
+		idx := subscript(i + 1)
+		written(strings.ToLower(p.Vn))
+		vnSeg := Segment{
+			Raw:  strings.ToLower(p.Vn),
+			Slot: fmt.Sprintf("Vn%s", idx),
+		}
+		switch {
+		case p.Value == nil:
+			vnSeg.Slot = "Vh"
+			vnSeg.Encodes = []string{ma.Reach.String()}
+		case p.Slot == 4:
+			// §4.3's Slot 4 is a bare vowel: it has no consonant
+			// position at all, so there is no C_N here to write or to
+			// elide. Its Mood/Case-Scope is the default, and that is
+			// said by the shape of the slot rather than by a letter, so
+			// it belongs to this vowel and not to a row of its own.
+			// Naming a Cn here printed a slot §4.3 does not have.
+			vnSeg.Encodes = []string{
+				semantics.VnCategory(p.Vn, p.Cn),
+				semantics.MoodOrCaseScope(g.SlotVIIIMoodScope(p.Value), asMood),
+			}
+		default:
+			vnSeg.Encodes = []string{semantics.VnCategory(p.Vn, p.Cn)}
+		}
+		segs = append(segs, vnSeg)
+		if p.Cn == "" {
+			continue
+		}
+		seg := Segment{Raw: strings.ToLower(p.Cn)}
+		if p.Slot == 3 {
+			// §4.3 gives Slot 3 only C_M, "n if V_N represents an
+			// Aspect, otherwise ň". It separates the slot from the one
+			// before it and names the category; it is not a C_N and
+			// carries no Mood/Case-Scope.
+			seg.Slot = fmt.Sprintf("Cm%s", idx)
+			seg.Encodes = []string{semantics.CmLabel(p.Cn)}
+		} else {
+			seg.Slot = fmt.Sprintf("Cn%s", idx)
+			seg.Encodes = []string{semantics.CnLabel(p.Cn, asMood)}
+		}
+		if !written(seg.Raw) {
+			seg.Raw, seg.Elided = ElidedMark, true
+		}
+		segs = append(segs, seg)
 	}
 	decorateHyphens(segs)
 	return segs
@@ -469,21 +483,22 @@ func GlossaryModular(segs []Segment) []GlossaryEntry {
 			cat := categoryForCode(code, s.Slot)
 			name := g.Name(code)
 			meaning := g.Meaning(code)
-			switch s.Slot {
-			case "scope":
+			switch {
+			case s.Slot == "scope":
 				cat = "scope"
 				name = ""
 				meaning = semantics.PrefixMeaning(s.Raw)
-			case "Vh":
+			case s.Slot == "Vh":
 				cat = "scope"
 				name = ""
 				meaning = semantics.VhMeaning(s.Raw)
-			case "Cn₁", "Cn₂", "Cn₃":
-				if code == "CmAspect" || code == "CmOther" {
-					cat = "marker"
-					name = semantics.CmName(code)
-					meaning = semantics.CmMeaning(code)
-				}
+			// Keyed on the code rather than the slot label: the label
+			// says where the marker sits and §4.3 puts C_M only in
+			// Slot 3, but the code is what says it is one.
+			case code == "CmAspect" || code == "CmOther":
+				cat = "marker"
+				name = semantics.CmName(code)
+				meaning = semantics.CmMeaning(code)
 			}
 			out = append(out, GlossaryEntry{
 				Category: cat, Code: code, Name: name, Meaning: meaning,

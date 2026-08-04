@@ -72,6 +72,9 @@ func MultipleAffixAdjunct(a g.MultipleAffixAdjunct) (string, error) {
 // only on "n if V_N represents an Aspect, otherwise ň" — so a value
 // placed there whose mood is not the default cannot be written, and
 // this says so instead of dropping it. Inverse of parse.ParseModular.
+//
+// ModularParts hands out the same split for a reader that needs to know
+// which letters went where.
 func ModularAdjunct(m g.ModularAdjunct) (string, error) {
 	if len(m.Content) == 0 {
 		return "", fmt.Errorf("modular adjunct: no content to write")
@@ -92,12 +95,7 @@ func ModularAdjunct(m g.ModularAdjunct) (string, error) {
 	}
 
 	var b strings.Builder
-	switch m.Scope {
-	case g.ModularScopeParent:
-		b.WriteString("w")
-	case g.ModularScopeConcat:
-		b.WriteString("y")
-	}
+	b.WriteString(ModularScopePrefix(m.Scope))
 	for i, s := range pairs {
 		vn, cn := slots.VnCnFromSlotVIII(s)
 		b.WriteString(vn)
@@ -129,6 +127,110 @@ func ModularAdjunct(m g.ModularAdjunct) (string, error) {
 	// §4.3: the trailing vowel reads as V_H only under ultimate stress.
 	b.WriteString(reachVH(m.Reach))
 	return phonology.Apply(phonology.DissimilateGlides(b.String()), phonology.Ultimate), nil
+}
+
+// ModularScopePrefix returns the §4.3 Slot 1 consonant for a scope, or
+// "" for the default, which writes nothing.
+func ModularScopePrefix(s g.ModularScope) string {
+	switch s {
+	case g.ModularScopeParent:
+		return "w"
+	case g.ModularScopeConcat:
+		return "y"
+	}
+	return ""
+}
+
+// ModularPart is one §4.3 slot of a modular adjunct as written.
+//
+// The slots are not alike, which is the whole reason this is handed out
+// rather than re-derived. Slot 2 writes a full C_N. Slot 3 spends its
+// consonant entirely on C_M, "n if V_N represents an Aspect, otherwise
+// ň", so there is no C_N in it. Slot 4 is a bare vowel with no
+// consonant at all. A reader that asks for a (V_N, C_N) pair per entry
+// looks for a C_N that Slot 3 never wrote, reports it elided, and
+// leaves the n that is there unaccounted for.
+type ModularPart struct {
+	Slot  int        // §4.3 slot number: 2, 3 or 4
+	Vn    string     // as written, after glide dissimilation
+	Cn    string     // C_N in Slot 2, C_M in Slot 3, empty in Slot 4
+	Value g.SlotVIII // the entry this slot writes; nil for a V_H Slot 4
+}
+
+// ModularParts returns the §4.3 split ModularAdjunct writes, each piece
+// spelled as it appears in the word. The scope prefix is not a part:
+// it belongs to Slot 1 and carries no V_N.
+//
+// The split is read back off the finished word rather than collected on
+// the way in, because DissimilateGlides rewrites a vowel that follows a
+// glide (yia becomes yuä) and the pieces have to be the letters that
+// survived that. Conjuncts alternate consonant and vowel here, so
+// walking them back is exact; anything left over is a disagreement
+// between this and ModularAdjunct, and it says so rather than handing
+// back a split that does not add up.
+func ModularParts(m g.ModularAdjunct) ([]ModularPart, error) {
+	word, err := ModularAdjunct(m)
+	if err != nil {
+		return nil, err
+	}
+	shape, err := modularShape(m)
+	if err != nil {
+		return nil, err
+	}
+	bare, _ := phonology.Strip(word)
+	conjs := phonology.SplitConjuncts(bare)
+	if ModularScopePrefix(m.Scope) != "" {
+		if len(conjs) == 0 {
+			return nil, fmt.Errorf("modular adjunct %q: no scope prefix to read", word)
+		}
+		conjs = conjs[1:]
+	}
+	out := make([]ModularPart, 0, len(shape))
+	for _, p := range shape {
+		if len(conjs) == 0 {
+			return nil, fmt.Errorf("modular adjunct %q: slot %d has no vowel left to read", word, p.Slot)
+		}
+		p.Vn, conjs = conjs[0], conjs[1:]
+		if p.Cn != "" {
+			if len(conjs) == 0 {
+				return nil, fmt.Errorf("modular adjunct %q: slot %d has no consonant left to read", word, p.Slot)
+			}
+			p.Cn, conjs = conjs[0], conjs[1:]
+		}
+		out = append(out, p)
+	}
+	if len(conjs) > 0 {
+		return nil, fmt.Errorf("modular adjunct %q: %v is written but belongs to no slot", word, conjs)
+	}
+	return out, nil
+}
+
+// modularShape lists the slots Content fills and which of them spend a
+// consonant, without spelling anything: ModularParts takes the letters
+// from the word. A V_H Slot 4 is one of these too, holding a reach
+// rather than a Content value.
+func modularShape(m g.ModularAdjunct) ([]ModularPart, error) {
+	if len(m.Content) == 0 {
+		return nil, fmt.Errorf("modular adjunct: no content to write")
+	}
+	pairs, slot4 := m.Content, -1
+	if m.Reach == g.ModularReachNone && fitsSlot4(m.Content[len(m.Content)-1]) {
+		slot4 = len(m.Content) - 1
+		pairs = m.Content[:slot4]
+	}
+	var out []ModularPart
+	for i, s := range pairs {
+		// Cn is a placeholder here; ModularParts replaces it with the
+		// conjunct actually written. Only its emptiness is read, to say
+		// whether this slot spends a consonant at all.
+		out = append(out, ModularPart{Slot: i + 2, Vn: "", Cn: "?", Value: s})
+	}
+	if slot4 >= 0 {
+		out = append(out, ModularPart{Slot: 4, Value: m.Content[slot4]})
+	} else if m.Reach != g.ModularReachNone {
+		out = append(out, ModularPart{Slot: 4})
+	}
+	return out, nil
 }
 
 // fitsSlot4 reports whether a value can be written as §4.3's bare Slot 4

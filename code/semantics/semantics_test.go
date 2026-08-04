@@ -123,8 +123,20 @@ func TestCnLabel(t *testing.T) {
 	if got := CnLabel("hňw", true); got != "HYP" {
 		t.Errorf("CnLabel(hňw,Mood) = %q, want \"HYP\"", got)
 	}
-	if got := CnLabel("n", true); got != "CmAspect" {
-		t.Errorf("CnLabel(n) = %q, want \"CmAspect\"", got)
+	// A §4.3 Slot 3 C_M is not a C_N and has no Mood reading, so it
+	// belongs to CmLabel; CnLabel used to answer for it too, which is
+	// the conflation that left Slot 3's n without a segment.
+	if got := CnLabel("n", true); got != "Cn?" {
+		t.Errorf("CnLabel(n) = %q, want %q", got, "Cn?")
+	}
+	if got := CmLabel("n"); got != "CmAspect" {
+		t.Errorf("CmLabel(n) = %q, want \"CmAspect\"", got)
+	}
+	if got := CmLabel("ň"); got != "CmOther" {
+		t.Errorf("CmLabel(ň) = %q, want \"CmOther\"", got)
+	}
+	if got := CmLabel("zzz"); got != "Cm?" {
+		t.Errorf("CmLabel(zzz) = %q, want \"Cm?\"", got)
 	}
 }
 

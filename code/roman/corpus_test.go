@@ -29,8 +29,16 @@ var corpusUnclassified = []string{
 	// the sound copy.
 	"hakšilaölwie-addyëubzattuo",
 
-	// Unexplained.
-	"étkwö'e", // §6.2.2; still fails with the stress mark or the glottal removed
+	// §6.2.2, missing the Slot I marker its own gloss needs. Its
+	// conjuncts are é, tkw and ö'e, and ö'e is the whole of PCR, so
+	// Slots IV and VI are both empty — the §3.2 a+C_A shortcut, which
+	// §3.1.5 says is shown by a Slot I of w- or y-. There is no Slot I
+	// here, so the word needs a Vr and a Ca and has neither. Wétkwö'e
+	// reads back as the published gloss, and the same sentence writes
+	// the glide on wuttíhia, which is the same construction. The glide
+	// also says which Ca was elided, so there is no reading without it.
+	// See ERRATA.md §6.2.2.
+	"étkwö'e",
 }
 
 func TestCorpus_Classification(t *testing.T) {
