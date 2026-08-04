@@ -2,6 +2,7 @@ package view
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/christian-oudard/ithkuil/allomorph"
@@ -815,7 +816,8 @@ func stemNum(s g.Stem) int {
 func GlossaryFromGloss(gl string, lex *lexicon.Lexicon) []GlossaryEntry {
 	var out []GlossaryEntry
 	seen := map[string]bool{}
-	for _, t := range gloss.Tokens(gl) {
+	tokens := gloss.Tokens(gl)
+	for i, t := range tokens {
 		// A lowercase atom is a cluster, not a code, and must not be
 		// looked up as one: search.LookupGrammar upper-cases its query,
 		// so the root "m" would come back as Perspective M and a
@@ -825,13 +827,12 @@ func GlossaryFromGloss(gl string, lex *lexicon.Lexicon) []GlossaryEntry {
 		if t.Kind != gloss.KindCode && !isReferentCode(t.Text) {
 			continue
 		}
-		if seen[t.Text] {
+		e, ok := lookupCode(t.Text, degreeAfter(tokens, i), lex)
+		if !ok || seen[e.Code] {
 			continue
 		}
-		if e, ok := lookupCode(t.Text, lex); ok {
-			seen[t.Text] = true
-			out = append(out, e)
-		}
+		seen[e.Code] = true
+		out = append(out, e)
 	}
 	return out
 }
@@ -840,7 +841,22 @@ func GlossaryFromGloss(gl string, lex *lexicon.Lexicon) []GlossaryEntry {
 // The grammar table is asked first: it is the smaller, closed space,
 // and an affix abbreviation that collided with a grammatical one would
 // be a defect in the lexicon rather than an ambiguity to resolve here.
-func lookupCode(code string, lex *lexicon.Lexicon) (GlossaryEntry, bool) {
+// degreeAfter reads the "/9" that binds a degree to the affix before
+// it, and reports 0 when what follows is not one. A slash also binds a
+// case to an accessor, so the digits are what decide.
+func degreeAfter(tokens []gloss.Token, i int) int {
+	if i+2 >= len(tokens) || tokens[i+1].Text != "/" ||
+		tokens[i+2].Kind != gloss.KindDegree {
+		return 0
+	}
+	n, err := strconv.Atoi(tokens[i+2].Text)
+	if err != nil {
+		return 0
+	}
+	return n
+}
+
+func lookupCode(code string, degree int, lex *lexicon.Lexicon) (GlossaryEntry, bool) {
 	if hits := search.LookupGrammar(code); len(hits) > 0 {
 		return GlossaryEntry{
 			Category: categoryForCode(code, ""),
@@ -867,14 +883,28 @@ func lookupCode(code string, lex *lexicon.Lexicon) (GlossaryEntry, bool) {
 		return GlossaryEntry{}, false
 	}
 	for _, a := range lex.Affixes {
-		if a.Abbrev == code {
+		if a.Abbrev != code {
+			continue
+		}
+		// The degree is what an affix actually says, and a formative's
+		// breakdown already prints it: SYS/5 reads "a feedback-driven
+		// system based on X", not "-ţř-". An adjunct carries exactly
+		// one affix and its degree is right there in the gloss, so
+		// there is no reason for it to read differently.
+		if degree >= 1 && degree <= len(a.Degrees) && a.Degrees[degree-1] != "" {
 			return GlossaryEntry{
 				Category: "affix",
-				Code:     code,
+				Code:     code + "/" + strconv.Itoa(degree),
 				Name:     a.Description,
-				Meaning:  "-" + a.Cs + "-",
+				Meaning:  a.Degrees[degree-1],
 			}, true
 		}
+		return GlossaryEntry{
+			Category: "affix",
+			Code:     code,
+			Name:     a.Description,
+			Meaning:  "-" + a.Cs + "-",
+		}, true
 	}
 	return GlossaryEntry{}, false
 }

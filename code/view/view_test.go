@@ -657,3 +657,45 @@ func TestSegmentsModular_SlotThreeSeparator(t *testing.T) {
 		t.Errorf("segments spell %q, the word is %q", joined, bare)
 	}
 }
+
+// TestGlossaryFromGloss_BindsTheDegree pins that an affix in an adjunct
+// reads the way an affix in a formative reads. A formative's breakdown
+// prints SYS/5 and what degree 5 means; the gloss-line expansion
+// printed SYS and the cluster "-ţř-", which is the affix's identity
+// rather than what it says. An adjunct carries exactly one affix and
+// its degree is in the gloss, so there was nothing to look up twice.
+func TestGlossaryFromGloss_BindsTheDegree(t *testing.T) {
+	lex, err := lexicon.Load(filepath.Join("..", "..", "data", "data.json"))
+	if err != nil {
+		t.Skipf("data.json not readable: %v", err)
+	}
+	rows := GlossaryFromGloss("MCD/1", lex)
+	if len(rows) != 1 {
+		t.Fatalf("got %d rows, want one: %+v", len(rows), rows)
+	}
+	if rows[0].Code != "MCD/1" {
+		t.Errorf("Code = %q, want MCD/1", rows[0].Code)
+	}
+	if rows[0].Meaning == "" || strings.HasPrefix(rows[0].Meaning, "-") {
+		t.Errorf("Meaning = %q, want what degree 1 says rather than the cluster",
+			rows[0].Meaning)
+	}
+	// Without a degree there is nothing to bind, and the cluster is the
+	// honest answer: it identifies the affix when its reading cannot.
+	bare := GlossaryFromGloss("MCD", lex)
+	if len(bare) != 1 || bare[0].Code != "MCD" {
+		t.Fatalf("bare code = %+v", bare)
+	}
+	if bare[0].Meaning != "-"+lexAffixCluster(lex, "MCD")+"-" {
+		t.Errorf("Meaning = %q, want the cluster", bare[0].Meaning)
+	}
+}
+
+func lexAffixCluster(lex *lexicon.Lexicon, abbrev string) string {
+	for _, a := range lex.Affixes {
+		if a.Abbrev == abbrev {
+			return a.Cs
+		}
+	}
+	return ""
+}
