@@ -12,8 +12,8 @@ import "testing"
 // quietly skewing every pair that crosses it.
 func TestPlaceIsOrderedFrontToBack(t *testing.T) {
 	frontToBack := []Place{
-		Labial, LabioDental, Dental, Alveolar, PostAlveolar,
-		Retroflex, Palatal, Velar, Uvular, Glottal,
+		Labial, LabioDental, ApicoDental, InterDental, ApicoAlveolar,
+		AlveolarRetroflex, AlveoloPalatal, Palatal, Velar, Uvular, Glottal,
 	}
 	for i := 1; i < len(frontToBack); i++ {
 		if frontToBack[i-1] >= frontToBack[i] {
@@ -87,4 +87,38 @@ func consonantFor(text string) (Consonant, bool) {
 		return c, ok
 	}
 	return Consonant{}, false
+}
+
+// §1.1's columns, read off the PDF at the coordinates the glyphs
+// actually sit at. docs/reference/morphology.md had transcribed
+// several rows a column to the left, which put š ž under Alveolar
+// Retroflex, ç under Alveo-palatal, h under Uvular and r under
+// Apico-alveolar. The distinctions matter here because Place is
+// measured over: filing t and s at one place erases a contrast §2.4
+// and §2.5 turn on.
+func TestPlacesFollowTheSourceColumns(t *testing.T) {
+	for _, c := range []struct {
+		text string
+		want Place
+	}{
+		{"p", Labial}, {"m", Labial},
+		{"f", LabioDental},
+		{"t", ApicoDental}, {"d", ApicoDental}, {"n", ApicoDental},
+		{"ţ", InterDental}, {"ḑ", InterDental},
+		{"s", ApicoAlveolar}, {"z", ApicoAlveolar}, {"c", ApicoAlveolar},
+		{"r", AlveolarRetroflex},
+		{"š", AlveoloPalatal}, {"ž", AlveoloPalatal}, {"č", AlveoloPalatal},
+		{"ç", Palatal}, {"y", Palatal},
+		{"k", Velar}, {"ň", Velar},
+		{"ř", Uvular},
+		{"'", Glottal}, {"h", Glottal},
+	} {
+		got, ok := consonantFor(c.text)
+		if !ok {
+			t.Fatalf("no entry for %s", c.text)
+		}
+		if got.Place != c.want {
+			t.Errorf("%s.Place = %v, want %v", c.text, got.Place, c.want)
+		}
+	}
 }

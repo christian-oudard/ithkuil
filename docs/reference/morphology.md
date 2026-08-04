@@ -13,12 +13,18 @@ This document assumes the reader is familiar with Ithkuil 2011 (i.e., Ithkuil II
 | | Labial | Labio-dental | Labio-velar | Apico-dental | Inter-dental | Apico-alveolar | Alveolar Retroflex | Alveo-palatal | Palatal | Velar | Uvular | Glottal | Lateral |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | **Stop** | p b | | | t d | | | | | | k g | | ' | |
-| **Fricative** | | f v | | ţ ḑ | | s z | š ž | ç | | x | h | | ļ |
-| **Affricate** | | | | | | c ẓ | č j | | | | | | |
+| **Fricative** | | f v | | | ţ ḑ | s z | | š ž | ç | x | | h | ļ |
+| **Affricate** | | | | | | c ẓ | | č j | | | | | |
 | **Nasal** | m | | | n | | | | | | ň | | | |
-| **Flap/Trill** | | | | | | r | | | | | | | |
+| **Flap/Trill** | | | | | | | r | | | | | | |
 | **Non-flap** | | | | | | | | | | | | | l |
-| **Approximant** | | | w | | | | | y | | | ř | | |
+| **Approximant** | | | w | | | | | | y | | ř | | |
+
+**Note on -x-:** in the source the **x** cell straddles the Velar and
+Uvular columns rather than sitting in either, which matches §1.2.2:
+"The fricative -**x**- may be pronounced with either velar or uvular
+articulation [x ~ χ]." It is placed under Velar here because a table
+cell cannot straddle.
 
 **Vowels (9):**
 
