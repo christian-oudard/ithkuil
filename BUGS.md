@@ -88,11 +88,26 @@ are the live list rather than anything written here:
 - the Discord word list, community words, where a leading `!`
   marks one we disagree with.
 
-- Tri-consonantal conjuncts are validated pairwise, not against §9's
-  table. §9 is a whitelist: for medial **b**, the row whose initials
-  include **f** permits only `vlrwyř` as the third consonant, so `fbm`
-  is not on it. `phonology.ClusterLegal("fbm")` returns true anyway,
-  because `fb` and `bm` are each permissible per §8 and nothing
-  consults §9. `phonology/section9_test.go` cannot see this: it expands
-  §9's rows and asserts each is legal, which tests only what the
-  whitelist admits, never what it should exclude.
+- Nothing enforces that a C_R root or C_S affix is a permissible root
+  or affix form. §8 tabulates the bi-consonantal ones and §9 the
+  tri-consonantal ones, and both are read by tests
+  (`phonology/section8_test.go`, `section9_test.go`) but by no
+  production code. A cluster is judged only by its adjacent pairs, so
+  `ClusterLegal("fbm")` is true: `fb` and `bm` are each permissible
+  per §8, while §9's row for medial **b** whose initials include **f**
+  permits only `vlrwyř` third, which excludes **m**. A speaker reported
+  `fbm` impossible to say.
+
+  Scope matters and the first diagnosis of this got it wrong. §9 is
+  titled "Permissible Tri-Consonantal Conjuncts Which Can Be Roots or
+  Affixes", so it does not govern every triple in a word: a Slot VI C_A
+  complex is tri-consonantal and answers to §4.3 and §4.4 instead.
+  Applying §9 inside `ClusterLegal` would therefore reject legitimate
+  C_A forms and break round-tripping, which is the failure mode CLAUDE.md
+  already warns about for §2. The check belongs where a root or affix is
+  built or read, and needs the §9 table embedded rather than parsed from
+  the reference document at runtime.
+
+  Neither table can currently fail in the direction that matters:
+  `section9_test.go` expands the whitelist and asserts each entry is
+  legal, which tests what it admits and never what it excludes.
