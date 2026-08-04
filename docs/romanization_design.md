@@ -354,6 +354,81 @@ directly: the number of join costs actually needed is a small fraction
 of all possible pairs, so a sparse table with a principled default is
 likely to be enough.
 
+### Numbers to start from
+
+ALINE publishes its whole parameter set, and its feature decomposition
+is ours. Quoted from Kondrak (2000), Tables 3 and 4.
+
+Multivalued features, as coordinates on [0,1]:
+
+```
+Place    bilabial 1.0   labiodental 0.95  dental 0.9   alveolar 0.85
+         retroflex 0.8  palato-alveolar 0.75            palatal 0.7
+         velar 0.6      uvular 0.5        pharyngeal 0.3  glottal 0.1
+Manner   stop 1.0  affricate 0.9  fricative 0.8  approximant 0.6
+         high vowel 0.4  mid vowel 0.2  low vowel 0.0
+High     high 1.0  mid 0.5  low 0.0
+Back     front 1.0  central 0.5  back 0.0
+```
+
+Feature saliences, the weights on each feature's contribution:
+
+```
+Manner 50   Place 40   Voice 10   Nasal 10   Lateral 10   Retroflex 10
+Syllabic 5  Aspirated 5   High 5   Back 5   Round 5   Long 1
+```
+
+The segment distance is then `δ(p,q) = Σ_f diff(p,q,f) × salience(f)`.
+Manner outranks place, and voicing is a quarter of place.
+
+Two things to notice before adopting any of it.
+
+**The place scale disagrees with our enum on one pair.** ALINE runs
+alveolar 0.85, retroflex 0.8, palato-alveolar 0.75, so retroflex comes
+before palato-alveolar; `Place` declares `PostAlveolar` before
+`Retroflex`. It matters for us because §1.1 files **š ž č j** under an
+"Alveolar Retroflex" column while `inventory.go` records them as
+`PostAlveolar`. Whichever we keep, the enum order and the scale have to
+be made to agree, and `TestPlaceIsOrderedFrontToBack` is where the
+answer gets written down.
+
+**ALINE measures similarity, not effort, and the two are not the same
+sign.** It exists to align cognates, so a small δ means two segments
+resemble each other. Adjacent segments that resemble each other are
+penalized, not rewarded: that is the Obligatory Contour Principle, and
+it is what almost every §2 rule turns out to be. §2.4 and §2.5 bar
+homologous stops, fricatives and affricates that disagree in voicing;
+§2.10 bars **ç** beside a sibilant; §2.13 bars a nasal plus homologous
+stop plus sibilant for being "too phonetically indistinguishable" from
+the same string without the stop. All of those are same-place
+restrictions, none is about travel.
+
+So effort is not monotonic in δ. It is U-shaped, and needs two terms of
+opposite sign:
+
+- a travel term rising with δ, which is Kirchner's, and which ALINE's
+  place coordinates measure directly;
+- a similarity term falling with δ, penalizing near-identity, which is
+  the OCP and which §2 already encodes categorically.
+
+Geminates sit at δ = 0 and are the test of whether the second term is
+right. §1.7 permits them, §3.6.1 generates them, and §1.7 bars only the
+triple, so the similarity penalty must be finite at zero rather than
+prohibitive.
+
+For manner, ALINE's scale is a sonority scale read backwards, stop 1.0
+down to low vowel 0.0. It is too coarse for Ithkuil, which contrasts a
+tap `r`, an approximant `ř`, a lateral approximant `l` and a lateral
+fricative `ļ` that ALINE would treat with binary Lateral and Retroflex
+flags. Parker's acoustically grounded scale separates them: seventeen
+classes ordered low vowels, mid vowels, high vowels, ə, ɨ, glides,
+rhotics, flaps, laterals, trills, nasals, voiced fricatives, voiced
+affricates, voiced stops, voiceless fricatives and h, voiceless
+affricates, voiceless stops and ʔ. The reference vowel [ɑ] indexes 17.
+The per-class integers are an inference from seventeen classes counting
+down from that reference, not a quotation, and should be checked
+against Parker (2008) before being relied on.
+
 ### Calibrating the effort model
 
 The corpus exhibits a handful of binary choices, so a model with
