@@ -1,10 +1,17 @@
 # Issues in the V4 Source Material
 
 Defects in the published grammar, the affix tables and the community
-lexicon — not in this repository's code. Defects in our own handling
-are tracked as skipped tests beside the code they concern, not in a
-list; anything we cannot implement because the sources disagree gets an
-entry here and a test there.
+lexicon — not in this repository's code.
+
+**This file is a worklist, not a record.** An entry sits here until we
+decide what to do about it. That decision is written up in `ERRATA.md`,
+which is permanent, and the entry here goes away. When this list
+reaches zero it will be deleted and `ERRATA.md` will be the only one
+left.
+
+So: a defect with no decision is here. A defect with a decision is in
+`ERRATA.md`. `BUGS.md` is separate again, and is about our code failing
+to do what we intend rather than about the language.
 
 ## Provenance
 

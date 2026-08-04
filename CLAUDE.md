@@ -162,14 +162,21 @@ spellings cannot reach the code deciding what is legal.
 - `docs/reference/morphology.md` - Canonical V4 grammar reference (phonology, morphology, slots, cases, adjuncts, syntax, numbers)
 - `docs/reference/affixes_reference.md` - All 528 affixes with gradient types and 9 degrees
 - `docs/reference/phonotactics.md` - Detailed consonant cluster rules
-- `docs/reference/ISSUES.md` - Defects in the published sources, not in this code.
+- `docs/reference/ERRATA.md` - What Quijada said and what we do instead: corrections
+  to the sources, readings where they cannot be implemented as written, and proposed
+  amendments. Permanent, and checked against the code by `phonology/errata_test.go`.
+- `docs/reference/ISSUES.md` - Worklist of defects in the published sources that we
+  have not yet decided about. Drains into `ERRATA.md` and will be deleted at zero.
 - `docs/reference/source_versions.md` - Quijada's published version history for the three documents. The documents themselves carry only the current version.
 - Source PDFs and any intermediate extraction output (html, per-page pdf) go outside the repo, under `$XDG_DATA_HOME/ithkuil/reference/`.
 
-`morphology.md` and `phonotactics.md` are transcriptions of Quijada's
-PDFs and should stay faithful to them, including where a source is
-wrong; record the defect in `ISSUES.md` rather than silently correcting
-the transcription. `affixes_reference.md` is not a transcription: it
+`morphology.md` and `phonotactics.md` began as transcriptions of
+Quijada's PDFs and are being taken further: we correct his errors and
+propose improvements. Nothing changes silently. A correction is applied
+only alongside an `ERRATA.md` entry giving the source wording, the
+change and the reason, so that what he said and what we decided can
+always be told apart. An error found but not yet decided about goes on
+the `ISSUES.md` worklist. `affixes_reference.md` is not a transcription: it
 tracks `data/data.json`, which merges the community spreadsheet with the
 affix document.
 

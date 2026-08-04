@@ -1,7 +1,12 @@
 # Open bugs
 
-Defects in this code. Defects in Quijada's published sources go in
-`docs/reference/ISSUES.md` instead.
+Defects in this code: places where it fails to do what we intend.
+
+Two sibling files cover the language rather than the code.
+`docs/reference/ERRATA.md` records every decision we have made about
+what the sources mean, and every place our output departs from them.
+`docs/reference/ISSUES.md` is the worklist of source defects we have
+found but not yet decided about.
 
 Each entry is a pointer, not the record. Where a bug has a skipped test,
 that test holds the detail: the section it rests on, and why the obvious
