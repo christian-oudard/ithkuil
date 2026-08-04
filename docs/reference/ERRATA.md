@@ -329,7 +329,7 @@ Quijada gives none.
 The roots and affixes come from the Collaborative Ithkuil IV
 spreadsheet rather than from any of Quijada's documents, so these
 entries are keyed by the C_R at issue instead of by a section. They are
-held in `data/root_overrides.json` and applied by `sync_lexicon.py`
+held in `data/lexicon_overrides.json` and applied by `sync_lexicon.py`
 after each fetch, so an upstream repair supersedes them automatically
 and reverting one is a single line.
 
@@ -357,7 +357,7 @@ the one the series demands. Recovered, not chosen.
 
 **Status.** `implemented`
 
-**Where.** `data/root_overrides.json`.
+**Where.** `data/lexicon_overrides.json`.
 
 ### -rţnw- — vitaceae 2 and rosoideae 7
 
@@ -374,7 +374,7 @@ overlaps it. The displacement is determined; the destination is chosen.
 
 **Status.** `implemented`
 
-**Where.** `data/root_overrides.json`.
+**Where.** `data/lexicon_overrides.json`.
 
 ### -lzbḑ- — psychodomorph and tabanid fly
 
@@ -405,7 +405,7 @@ knows the sheet's intent should overrule this.
 
 **Status.** `implemented`
 
-**Where.** `data/root_overrides.json`.
+**Where.** `data/lexicon_overrides.json`.
 
 ### -nļt- — groin undergarment and cicadomorphic bug
 
@@ -429,7 +429,26 @@ maintains the sheet should decide this rather than us.
 
 **Status.** `implemented`
 
-**Where.** `data/root_overrides.json`.
+**Where.** `data/lexicon_overrides.json`.
+
+### -ḑg- — MDI and S07
+
+**Source.** The affix sheet gives `ḑg` to both **MDI** Modification and
+**S07** Position/state intertwined. `gḑ`, its transposition, is claimed
+by no affix at all.
+
+**Decision.** S07 keeps `ḑg`; MDI takes **`gḑ`**. A free slot that is
+the exact transposition of the collided one, next to an entry that
+needs a slot, is a typed-backwards pair rather than a coincidence.
+
+This had already been fixed by hand in `data.json` and the fix did not
+survive: the sheet is the source for affixes, the sync overwrote it,
+and the store then refused the duplicate key. It is an override now, so
+it survives.
+
+**Status.** `implemented`
+
+**Where.** `data/lexicon_overrides.json`.
 
 ---
 

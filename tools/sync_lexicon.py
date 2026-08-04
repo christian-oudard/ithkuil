@@ -58,43 +58,95 @@ def fetch(url: str) -> str:
         return resp.read().decode("utf-8")
 
 
+# Column positions in the Roots sheet, 0-based.
+#
+# The sheet is read positionally, not by header name. It carried a header
+# row when this was written in May 2026 and does not now, so a
+# DictReader silently took the first root as the field names and yielded
+# nothing at all — 5947 rows in, zero out. Position is the more honest
+# assumption: when it goes wrong, check_shape below says so.
+#
+# The sheet's own header names the columns, and it is not at the top:
+# it sits at row 4451, pasted mid-list. The layout either side of it is
+# identical, so it is a stray rather than a section boundary, but it is
+# why a DictReader found nothing — row 1 is the root "b".
+#
+#   1 Root  2 Stem 0 / Basic  3 Stem 1  4 Stem 2  5 Stem 3
+#   6-8 S1-S3 Completive   9-11 unlabelled, numeric
+#   12-14 S1-S3 Pattern    15 Basic
+#   16 Contential  17 Constitutive  18-20 S1-S3 Objective  21 Dynamic
+#   22-24 unlabelled, holding the Wikidata ids
+#
+# Pattern and Basic we do not store. Completive precedes Objective here,
+# where our own roots.tsv writes it after; that file's header is ours,
+# not the sheet's, so the two orders are unrelated.
+ROOT_COLS = {
+    "cr": 0,
+    "stem0": 1, "stem1": 2, "stem2": 3, "stem3": 4,
+    "completive": (5, 6, 7),
+    "contential": 15, "constitutive": 16,
+    "objective": (17, 18, 19),
+    "dynamic": 20,
+    "wikidata": (21, 22, 23),
+}
+
+# Fewer roots than this and something is wrong with the fetch or the
+# sheet, not with the language. The lexicon has never shrunk.
+MIN_ROOTS = 5000
+
+
+def check_shape(rows: list[list[str]]) -> None:
+    """Fail loudly when the sheet stops looking like the sheet."""
+    if len(rows) < MIN_ROOTS:
+        raise ValueError(
+            f"only {len(rows)} root rows; expected at least {MIN_ROOTS}. "
+            f"The sheet's shape has probably changed — check ROOT_COLS."
+        )
+    width = max(ROOT_COLS["wikidata"]) + 1
+    narrow = sum(1 for r in rows if len(r) < width)
+    if narrow > len(rows) // 100:
+        raise ValueError(
+            f"{narrow} of {len(rows)} rows are narrower than {width} columns; "
+            f"the sheet's shape has probably changed — check ROOT_COLS."
+        )
+    # Stem 0 is filled for every root in every version we have seen. If
+    # it is mostly empty, the columns have moved under us.
+    filled = sum(1 for r in rows if len(r) > 1 and r[1].strip())
+    if filled < len(rows) * 0.9:
+        raise ValueError(
+            f"Stem 0 is empty in {len(rows) - filled} of {len(rows)} rows; "
+            f"the columns have probably moved — check ROOT_COLS."
+        )
+
+
 def parse_roots(csv_text: str) -> list[dict]:
-    reader = csv.DictReader(csv_text.splitlines())
+    rows = [r for r in csv.reader(csv_text.splitlines()) if r and r[0].strip()]
+    # Drop header rows wherever they appear, not just first: the sheet
+    # keeps one at row 4451. "Root" is not a possible C_R — §3 admits no
+    # root beginning with r- followed by another consonant here — so
+    # matching on it cannot swallow a real entry.
+    rows = [r for r in rows if r[0].strip().lower() != "root"]
+    check_shape(rows)
+
+    def cell(row: list[str], i: int) -> str:
+        return normalize(row[i]) if i < len(row) else ""
+
     out = []
-    for row in reader:
-        cr = normalize(row.get("Root", ""))
+    for row in rows:
+        cr = cell(row, ROOT_COLS["cr"])
         if not cr:
             continue
-        entry = {
-            "cr": cr,
-            "stem0": normalize(row.get("Stem 0 / Basic", "")),
-            "stem1": normalize(row.get("Stem 1", "")),
-            "stem2": normalize(row.get("Stem 2", "")),
-            "stem3": normalize(row.get("Stem 3", "")),
-        }
-        contential = normalize(row.get("Contential", ""))
-        if contential:
-            entry["contential"] = contential
-        constitutive = normalize(row.get("Constitutive", ""))
-        if constitutive:
-            entry["constitutive"] = constitutive
-        dynamic = normalize(row.get("Dynamic", ""))
-        if dynamic:
-            entry["dynamic"] = dynamic
-
-        def trio(col_prefix: str) -> list[str] | None:
-            vals = [normalize(row.get(f"S{i} {col_prefix}", "")) for i in (1, 2, 3)]
-            return vals if any(vals) else None
-
-        objective = trio("Objective")
-        if objective:
-            entry["objective"] = objective
-        completive = trio("Completive")
-        if completive:
-            entry["completive"] = completive
-        wikidata = trio("Wikidata")
-        if wikidata:
-            entry["wikidata"] = wikidata
+        entry = {"cr": cr}
+        for f in ("stem0", "stem1", "stem2", "stem3"):
+            entry[f] = cell(row, ROOT_COLS[f])
+        for f in ("contential", "constitutive", "dynamic"):
+            v = cell(row, ROOT_COLS[f])
+            if v:
+                entry[f] = v
+        for f in ("objective", "completive", "wikidata"):
+            vals = [cell(row, i) for i in ROOT_COLS[f]]
+            if any(vals):
+                entry[f] = vals
         out.append(entry)
     return out
 
@@ -348,7 +400,9 @@ def write_affixes_tsv(affixes: list[dict], path: Path) -> None:
         )
         for a in affixes:
             w.writerow(
-                [a["cs"], a["abbrev"]] + a["degrees"] + [a["type"], a["description"]]
+                [a["cs"], a.get("abbrev", "")]
+                + a.get("degrees", [])
+                + [a.get("type", ""), a.get("description", "")]
             )
 
 
@@ -390,22 +444,29 @@ def merge_affix_entries(parsed: list[dict], existing: list[dict]) -> list[dict]:
 
 
 def write_data(roots: list[dict], affixes: list[dict], path: Path) -> int:
-    """Write roots and affixes into data.json, preserving the grammar section.
+    """Write roots and affixes into data.json, preserving every other section.
+
+    Only roots and affixes come from the sheet. Everything else in the
+    file is ours and is carried through untouched, whatever it is called
+    — this used to name "grammar" explicitly and so silently deleted the
+    42-entry "topics" section the first time a sync ran after it was
+    added.
 
     Versioning: monotonically increasing uint16. Version bumps only when
-    roots or affixes content changes; grammar changes don't affect it.
+    roots or affixes content changes; the other sections don't affect it.
     """
     new_content = {"roots": roots, "affixes": affixes}
     new_payload = json.dumps(new_content, sort_keys=True, ensure_ascii=False)
 
     prev_version = 0
     prev_payload = None
-    prev_grammar: list[dict] = []
+    kept: dict = {}
     if path.exists():
         with open(path, encoding="utf-8") as f:
             prev = json.load(f)
         prev_version = int(prev.get("version", 0))
-        prev_grammar = prev.get("grammar", [])
+        kept = {k: v for k, v in prev.items()
+                if k not in ("version", "roots", "affixes")}
         prev_payload = json.dumps(
             {"roots": prev.get("roots", []), "affixes": prev.get("affixes", [])},
             sort_keys=True, ensure_ascii=False,
@@ -415,7 +476,7 @@ def write_data(roots: list[dict], affixes: list[dict], path: Path) -> int:
     if version > 0xFFFF:
         raise ValueError(f"version overflow: {version}")
 
-    combined = {"version": version, "grammar": prev_grammar, "roots": roots, "affixes": affixes}
+    combined = {"version": version, **kept, "roots": roots, "affixes": affixes}
     with open(path, "w", encoding="utf-8") as f:
         json.dump(combined, f, ensure_ascii=False, indent=2)
         f.write("\n")
@@ -453,19 +514,19 @@ def apply_root_overrides(roots: list[dict]) -> list[dict]:
     side, which is what the store used to do, loses a real meaning;
     these move it instead.
 
-    data/root_overrides.json holds the reassignments and
+    data/lexicon_overrides.json holds the reassignments and
     docs/reference/ERRATA.md the reasoning for each. An override is
     matched on both the old C_R and the Stem 0 gloss, so an upstream
     repair that renames or removes that row stops matching and the
     override falls away rather than corrupting a row that has since
     become something else.
     """
-    path = DATA_DIR / "root_overrides.json"
+    path = DATA_DIR / "lexicon_overrides.json"
     if not path.exists():
         return roots
     with open(path, encoding="utf-8") as f:
         spec = json.load(f)
-    for o in spec["overrides"]:
+    for o in spec.get("overrides", []):
         hits = [
             r for r in roots
             if r.get("cr") == o["cr"] and r.get("stem0", "").strip() == o["match_stem0"]
@@ -481,6 +542,35 @@ def apply_root_overrides(roots: list[dict]) -> list[dict]:
     return roots
 
 
+def apply_affix_overrides(affixes: list[dict]) -> list[dict]:
+    """Move affixes off a C_S that two unrelated ones both claim.
+
+    The same repair as apply_root_overrides, on the other half of the
+    sheet. A hand-edit in data.json will not survive a sync, which is
+    how MDI's move off ḑg was lost: it had been corrected in place, the
+    fetch overwrote it, and the store then refused the duplicate key.
+    """
+    path = DATA_DIR / "lexicon_overrides.json"
+    if not path.exists():
+        return affixes
+    with open(path, encoding="utf-8") as f:
+        spec = json.load(f)
+    for o in spec.get("affixes", []):
+        hits = [
+            a for a in affixes
+            if a.get("cs") == o["cs"] and a.get("abbrev") == o["match_abbrev"]
+        ]
+        if len(hits) != 1:
+            print(f"  affix override {o['cs']} -> {o['new_cs']}: {len(hits)} rows match, skipped")
+            continue
+        if any(a.get("cs") == o["new_cs"] for a in affixes):
+            print(f"  affix override {o['cs']} -> {o['new_cs']}: destination taken, skipped")
+            continue
+        hits[0]["cs"] = o["new_cs"]
+        print(f"  {o['cs']} -> {o['new_cs']} ({o['basis']}): {o['match_abbrev']}")
+    return affixes
+
+
 def main() -> int:
     data_path = DATA_DIR / "data.json"
 
@@ -490,7 +580,9 @@ def main() -> int:
 
     print("Fetching affixes from upstream sheet...")
     affixes = parse_affixes(fetch(AFFIXES_URL))
-    affixes = merge_affixes_from_data(affixes, data_path)
+    # Overrides first: they repair upstream's own duplicate, and only
+    # then can the merge tell a kept local affix from a stale one.
+    affixes = merge_affixes_from_data(apply_affix_overrides(affixes), data_path)
     print(f"  {len(affixes)} affix entries")
 
     write_roots_tsv(roots, DATA_DIR / "roots.tsv")
