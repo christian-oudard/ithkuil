@@ -1,6 +1,7 @@
 package gloss_test
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -38,5 +39,29 @@ func TestParseWord_CollectedFaultsAreComplete(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// A root that will not read does not end the reading. It used to,
+// which left every other token unjudged — and a report that then
+// showed them as fine would be claiming something the reader never
+// checked.
+func TestParseFormative_ABadRootDoesNotStopTheRest(t *testing.T) {
+	fs := glossFault(t, "S9-ZZZ-Ml-QQQ")
+	if len(fs.List) != 4 {
+		t.Fatalf("faults = %+v, want one per bad token", fs.List)
+	}
+}
+
+// A token consumed as a root is not offered to the slot loop as well.
+// Reading it twice added a second, wrong complaint beside the real
+// one — the fallthrough this syntax avoids everywhere else.
+func TestParseFormative_ASecondRootIsNotAlsoReadAsAFlag(t *testing.T) {
+	fs := glossFault(t, "ml-tpl-ERG")
+	if len(fs.List) != 1 {
+		t.Fatalf("faults = %+v, want only the duplicate-root complaint", fs.List)
+	}
+	if !strings.Contains(fs.List[0].Fix, "one root") {
+		t.Errorf("wrong complaint kept: %q", fs.List[0].Fix)
 	}
 }

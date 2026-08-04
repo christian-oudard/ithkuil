@@ -89,7 +89,19 @@ func inToken(tok string, err error) error {
 	}
 	var fs fault.Faults
 	if errors.As(err, &fs) {
-		return fault.Faults{Word: tok, List: fs.List}
+		// Stamp the token on any fault that does not already name a
+		// narrower one, so a caller can mark the part of the input it
+		// belongs to. The innermost reader wins: a fault already
+		// naming a gloss token keeps it when the whole word is
+		// wrapped again as one of several.
+		out := make([]fault.Fault, len(fs.List))
+		for i, f := range fs.List {
+			if f.In == "" {
+				f.In = tok
+			}
+			out[i] = f
+		}
+		return fault.Faults{Word: tok, List: out}
 	}
 	return fmt.Errorf("token %q: %w", tok, err)
 }

@@ -572,7 +572,7 @@ func joinChains(words g.Text) (g.Text, error) {
 		return nil, fault.Faults{List: []fault.Fault{{
 			Stage: fault.Shape,
 			Code:  "concatenation",
-			Fix: fmt.Sprintf("§3.1.7 puts the parent last, and %s end this text with none after them",
+			Fix: fmt.Sprintf("§3.1.7 puts the parent last, and this text ends with %s and no parent",
 				plural(len(pending), "dependent")),
 		}}}
 	}

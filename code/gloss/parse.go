@@ -58,6 +58,14 @@ func ParseFormative(s string, affixes map[string]lexicon.AffixEntry) (g.Formativ
 	// Ithkuil chars) beats a parenthesised form when both are
 	// present: in "S3-tpl-(1m/BEN)/3" the `tpl` is the root and
 	// `(1m/BEN)/3` is a Type-3 referential affix in Slot VII.
+	// A bad root does not end the reading. It used to, which left
+	// every other token unjudged while the report still had to say
+	// something about them — and "ok" for a token nobody looked at is
+	// a claim the reader never made. The cluster is folded to
+	// lowercase and kept so the rest can be read against something;
+	// the Formative is discarded when anything failed.
+	var fs collected
+	spent := map[int]bool{}
 	rootIdx := -1
 	var root g.Root
 	for i, tok := range tokens {
@@ -66,11 +74,19 @@ func ParseFormative(s string, affixes map[string]lexicon.AffixEntry) (g.Formativ
 			continue
 		}
 		if rootIdx >= 0 {
-			return g.Formative{}, syntax(tok,
-				"a gloss has one root, and "+tokens[rootIdx]+" already read as one")
+			// Consumed, not merely rejected. A token that read as a
+			// root is a root; letting the slot loop have a second go
+			// at it added "no grammatical value is named TPL" beside
+			// the real complaint, which is the fallthrough this syntax
+			// avoids everywhere else.
+			fs.add(inToken(tok, syntax(tok,
+				"a gloss has one root, and "+tokens[rootIdx]+" already read as one")))
+			spent[i] = true
+			continue
 		}
 		if err := validateRootCluster(cluster); err != nil {
-			return g.Formative{}, err
+			fs.add(inToken(tok, err))
+			cluster = strings.ToLower(cluster)
 		}
 		rootIdx = i
 		root = g.DefaultCrRoot(cluster)
@@ -114,9 +130,8 @@ func ParseFormative(s string, affixes map[string]lexicon.AffixEntry) (g.Formativ
 	// nothing but tells the writer everything at once.
 	caIdx := caTokenIndex(tokens, rootIdx)
 	seen := newAssigned()
-	var fs collected
 	for i, tok := range tokens {
-		if i == rootIdx || tok == caMarker {
+		if i == rootIdx || spent[i] || tok == caMarker {
 			continue
 		}
 		fs.add(inToken(tok, applyToken(&f, tok, affixes, i < caIdx, seen)))

@@ -88,22 +88,28 @@ func renderGlossFaults(w io.Writer, expr string, err error) {
 	iw := indented(w, "  ")
 
 	tokens := glossTokens(expr)
-	byToken := map[string][]fault.Fault{}
-	for _, f := range fs.List {
-		if f.In != "" {
-			byToken[f.In] = append(byToken[f.In], f)
-		}
+	drawn := map[string]bool{}
+	for _, t := range tokens {
+		drawn[t] = true
 	}
-	if len(tokens) > 1 && len(byToken) > 0 {
+	// A fault is placed only against a row that will actually be
+	// drawn. Keying on In alone dropped a fault naming the whole
+	// expression: it matched no row, and it was not loose either, so
+	// nothing printed it at all. Losing a fault is worse than printing
+	// it twice, so the two sets are complements by construction.
+	byToken := map[string][]fault.Fault{}
+	var loose []fault.Fault
+	table := len(tokens) > 1
+	for _, f := range fs.List {
+		if table && f.In != "" && drawn[f.In] {
+			byToken[f.In] = append(byToken[f.In], f)
+			continue
+		}
+		loose = append(loose, f)
+	}
+	if table && len(byToken) > 0 {
 		fmt.Fprintln(iw)
 		renderTokenTable(iw, tokens, byToken)
-	}
-	// Whatever the table could not place.
-	var loose []fault.Fault
-	for _, f := range fs.List {
-		if f.In == "" || len(tokens) <= 1 || len(byToken) == 0 {
-			loose = append(loose, f)
-		}
 	}
 	if len(loose) > 0 {
 		fmt.Fprintln(iw)
@@ -113,14 +119,18 @@ func renderGlossFaults(w io.Writer, expr string, err error) {
 	}
 }
 
-// glossTokens splits an expression the way the reader does, so the
-// rows line up with what was actually judged. The reader collapses
-// runs of "-", which the canonical gloss writes around the root.
+// glossTokens splits an expression into the units the reader judges.
+// A gloss separates words by space and slots by "-", and a fault
+// names whichever of the two it came from, so both are rows. Runs of
+// "-" collapse, as the reader collapses them: the canonical gloss
+// writes a double hyphen around the root.
 func glossTokens(expr string) []string {
 	var out []string
-	for _, t := range strings.Split(expr, "-") {
-		if t = strings.TrimSpace(t); t != "" {
-			out = append(out, t)
+	for _, w := range strings.Fields(expr) {
+		for _, t := range strings.Split(w, "-") {
+			if t != "" {
+				out = append(out, t)
+			}
 		}
 	}
 	return out
