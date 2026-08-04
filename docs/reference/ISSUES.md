@@ -118,38 +118,14 @@ had lţ, and reported §1.3's ň alternates as `n͕ or ṇ`; both needed
 `pdftoppm` at 600 dpi to settle, and in both cases a low-resolution
 render was also wrong, losing a cedilla to antialiasing.
 
+G2 has left this list: §3.6's bn-substitution family is decided and
+implemented, and the writeup is `ERRATA.md` §3.6.
+
 **Verified against the source:** all of `morphology.md` and
 `phonotactics.md`, the Affix table and Lexicon sections, and G33, G35,
 G36, G39, G40, G41. **Not yet:** the Corpus section, and those entries
 below that rest on the affix and lexicon documents rather than the
 grammar.
-
-## Settled
-
-Removed from the list below; the reasoning is in the commit that
-settled each. Kept as a ledger because the proportion is the useful part. Thirteen of
-the fifteen were defects in our own transcription, not in Quijada;
-one was a transposition in the community spreadsheet; one was a real
-gap in the published data that turned out to be recoverable. None was
-a defect in the language.
-
-| | Disposition |
-|---|---|
-| A2 | the ḑg collision is a spreadsheet transposition |
-| A5 | fifty-four functional-group degrees recovered |
-| G1 | there is no §2.24, and this entry is the proof |
-| G3 | the conditions are footnotes, and our markdown lost them |
-| G4 | the substitution list is complete in the source |
-| G14 | the V_K diacritics are correct in the source |
-| G17 | the PDF publishes all fourteen increments |
-| G19 | §8 now transcribes Quijada, not the 2011 grammar |
-| G27 | CLG is -ḑc in the source |
-| G31 | the DES bias is mřř in the source |
-| G32 | the script document tabulates 28, as it says |
-| G34 | Our markdown lost three of the seven case-accessor affixes |
-| G38 | §3.5.0's gradient-type descriptions were ours, and four were wrong |
-| G46 | §4.4's END adjunct is hü; our markdown added an i in three of four places |
-| G51 | the OPTIMAL bias is ççk; the affricate spelling was ours, and outlived its own correction |
 
 ## Affix table
 
@@ -173,25 +149,6 @@ the next sync. The gap belongs upstream, and the duplicate abbreviation
 belongs to Quijada either way.
 
 ## Grammar
-
-### G2. The §3.6 bn-substitution cannot cover both configurations that need it
-
-Two Ca configurations reach an unsayable intermediate:
-
-- MSS/A/DPL/RPV composes `tbn` and lands on `tḑ`, barred by §2.2 as a
-  dental stop plus interdental.
-- MDS/A/DPL/RPV composes `ţbn` and lands on `ţḑ`, barred by §2.5 as a
-  homologous voicing mismatch.
-
-§3.6 offers exactly one escape, **ţbn → (tḑ) → ḑy**, and it names the
-second configuration on its input side and the first in its
-intermediate. It cannot be read to cover both: they would then share
-the romanization `ḑy`, and Ca would stop being uniquely decodable. Whichever
-reading is taken, one configuration is left with no pronounceable form.
-
-The neighbouring rule **fbm → (fv) → vw** is parallel to the `ţbn`
-reading — a fricative before bm/bn in both — which argues for the input
-side. That still leaves MSS/A/DPL/RPV stranded.
 
 ### G5. The gemination rules leave 115 of the 3840 Ca forms with no geminated form
 

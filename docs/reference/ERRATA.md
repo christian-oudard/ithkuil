@@ -85,10 +85,15 @@ yields `ţḑ`. And the rule beside it is the exact parallel — both voice
 the fricative and open the nasal into an approximant, f→v with m→w and
 ţ→ḑ with n→y — which makes `(ţḑ)` the reading and `(tḑ)` the slip.
 
-**Decision.** Correct the intermediate, and add the missing third rule:
+**Decision.** Two changes to §3.6's substitution list. Correct the
+intermediate of the rule that is there, and add the rule that is
+missing:
 
-    ţbn → (ţḑ) → ḑy      his, intermediate corrected
-    tbn → (tḑ) → ḑw      ours
+| | printed | ours |
+|---|---|---|
+| unchanged | `fbm → (fv) → vw` | `fbm → (fv) → vw` |
+| corrected | `ţbn → (tḑ) → ḑy` | `ţbn → (ţḑ) → ḑy` |
+| added | — | `tbn → (tḑ) → ḑw` |
 
 `ḑw` keeps the interdental the composition was already heading for and
 varies only the approximant, so `ḑy` and `ḑw` are a minimal pair the
@@ -100,9 +105,36 @@ are phonotactically legal, unused by any other C_A, and have legal
 unused geminates reachable by §3.6.1 rule 5. With the family complete,
 all 3840 C_A values compose to a legal cluster and none collides.
 
-Three arguments for treating `tbn` the same way, beyond symmetry.
+**The sentence it costs.** `-lḑ-` is "tree", and this C_A is the idea
+of a set of trees dying off, taken as a representative case. MSS makes
+the members alike, MDS unlike — a monoculture against a mixed wood,
+which is a distinction a forester draws.
+
+Before, with `tbn` routed through `ḑy` so that both spell the same:
+
+    Čalörá alḑaḑya alḑaḑyue.
+    'eq'-NEG/6-ASR   lḑ-MSS.A.DPL.RPV   lḑ-MSS.A.DPL.RPV-CMP
+
+Both nouns decode as MSS, so the sentence reads "a dying-off of like
+trees is not the same thing as a dying-off of like trees" and refutes
+itself. The one distinction it exists to draw is the one that is gone.
+
+After, with `tbn → ḑw`:
+
+    Čalörá alḑaḑwa alḑaḑyue.
+    'eq'-NEG/6-ASR   lḑ-MSS.A.DPL.RPV   lḑ-MDS.A.DPL.RPV-CMP
+
+    "A dying-off of like trees is not the same thing as a dying-off
+     of unlike trees."
+
+`alḑaḑwa` parses back to MSS and `alḑaḑyue` to MDS. Every word is built
+from the lexicon and round-trips through the parser.
+
+Three further arguments for treating `tbn` the same way, beyond
+symmetry.
 Articulation: the family is a sayability gradient, `fbm` unsayable →
-`fv` hard → `vw` easy, and `tbn` → `tḑ` → `ḑw` sits in it. Epenthesis:
+`fv` hard → `vw` easy, and `tbn` awkward → `tḑ` hard → `ḑw` easy sits
+in it. Epenthesis:
 a speaker resolving `atbna` reaches for *atabana*, which is a legal
 Ithkuil word of four syllables rather than two, and syllable count is
 what stress is measured against, so the repair a speaker improvises
@@ -351,9 +383,15 @@ suffixes — `ḑ w y l r ř z ž v` — the same nine the neighbouring `lzg`
 series uses, and it is full. The section then moves to the `lzk` stem,
 which draws on a wider set including `f`, `m`, `ç` and `h`.
 
-**Decision.** Psychodomorph keeps `lzbḑ`; tabanid fly takes **`lzbf`**,
-free, legal, and drawn from the set the same section uses one stem
-later.
+**Decision.** Psychodomorph keeps `lzbḑ`; tabanid fly takes **`lzbẓ`**.
+
+Every suffix the `lzb` series uses is voiced — `ḑ w y l r ř z ž v` — and
+the lexicon bears the constraint out: `bf` occurs in 3 roots out of
+5891, against 45 for `bv` and 138 for `bz`. So a voiceless continuation
+is what the stem does not take, and `ẓ` continues the `z`/`ž` sibilants
+already in the series. An earlier draft of this entry said `lzbf`,
+picked from the wider set the neighbouring `lzk` stem draws on, which
+was wrong for exactly that reason.
 
 This is the weakest of the four and it is worth saying why. The
 taxonomy argues the other way: Psychodomorpha is a nematoceran, which
