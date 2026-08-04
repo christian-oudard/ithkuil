@@ -59,6 +59,26 @@ hand out the split it already computed, which is a change to what
 
 `view.TestSegmentsModular_SlotThreeSeparator`
 
+## `parse` names the codes only for a formative
+
+Without `--short`, `parse` is the view that explains a word, and for a
+formative it does: a CATEGORY/CODE/NAME/MEANING row per code. For an
+affixual adjunct, a carrier, a referential, a bias or a register marker
+it prints the gloss, the class, and nothing else.
+
+    $ ithkuil parse arqla
+    ařla
+      VMC/1
+
+      Affix
+
+So the reader is left to look VMC up by hand, which is what the detailed
+view exists to save them. `--short` is meant to be the terse one.
+
+`cmd/ithkuil/expand_test.go` holds the detail: why a glossary function
+per class is the wrong shape, and why the fix became tractable only
+after `gloss.Tokens`.
+
 ## Words we cannot read
 
 Two drift guards fail when the set changes in either direction, so they
