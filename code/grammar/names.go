@@ -344,6 +344,41 @@ var canonicalNames = map[string]string{
 	"QUO": "Quotative",
 	"NAM": "Naming",
 	"PHR": "Phrasal",
+	// Referent (§4.6). The eleven referential categories, each of
+	// which also distinguishes the three Effects below.
+	"1m":  "Monadic Speaker",
+	"2m":  "Monadic Addressee",
+	"2p":  "Polyadic Addressee",
+	"ma":  "Monadic Animate Third Party",
+	"pa":  "Polyadic Animate Third Party",
+	"mi":  "Monadic Inanimate Third Party",
+	"pi":  "Polyadic Inanimate Third Party",
+	"Mx":  "Mixed Animate/Inanimate Third Party",
+	"Rdp": "Reduplicative",
+	"Obv": "Obviative",
+	"PVS": "Provisional",
+	// Referent Effect (§4.6, a coarser set than the §3.8 Effects).
+	"NEU": "Neutral",
+	"BEN": "Beneficial",
+	"DET": "Detrimental",
+	// Accessor family (§3.9.2).
+	"ACC1": "Case-Accessor",
+	"IAC":  "Inverse Case-Accessor",
+	"CST":  "Case-Stacking",
+	// Affix scope (§4.7).
+	"VDom":      "Slot V Dominant",
+	"VSub":      "Slot V Subordinate",
+	"VIIDom":    "Slot VII Dominant",
+	"VIISub":    "Slot VII Subordinate",
+	"formative": "Whole Formative",
+	"adjacent":  "Formative and Adjacent Adjuncts",
+	// Concatenation type (§3.1.2).
+	"Ca": "Ca Boundary Marker",
+	"T1": "Type-1 Concatenation",
+	"T2": "Type-2 Concatenation",
+	// Slot IX relation, carried by stress (§3.10).
+	"ANT": "Framed Verbal",
+	"ULT": "Unframed Verbal",
 }
 
 // meanings holds short one-line descriptions for the most-asked-about
@@ -674,4 +709,40 @@ var meanings = map[string]string{
 	"MFS": "three or more instances of indeterminate similarity, separate",
 	"MFC": "three or more instances of indeterminate similarity, connected",
 	"MFF": "three or more instances of indeterminate similarity, fused",
+	// Referent (§4.6). The English is the pronoun the referent
+	// corresponds to, which is what a reader is usually after; the
+	// table in §4.6 gives these directly.
+	"1m":  "\"I\" — the speaker alone",
+	"2m":  "\"you\" (singular) — the addressee alone",
+	"2p":  "\"you\" (plural) — more than one addressee",
+	"ma":  "\"he\" / \"she\" — one animate third party",
+	"pa":  "\"they\" — more than one animate third party",
+	"mi":  "\"it\" — one inanimate third party",
+	"pi":  "\"these things\" / \"those things\" — several inanimate",
+	"Mx":  "animate and inanimate together, e.g. \"s/he and it\"",
+	"Rdp": "refers back to the party already named (resumptive)",
+	"Obv": "a third party other than the one already referenced",
+	"PVS": "\"whatever\" — a vague or unknown party; the case usually carries the sense",
+	// Referent Effect (§4.6).
+	"NEU": "the act has no particular benefit or harm for the referent",
+	"BEN": "the act is to the referent's benefit",
+	"DET": "the act is to the referent's detriment",
+	// Accessor family (§3.9.2).
+	"ACC1": "the affix names a case the stem stands in",
+	"IAC":  "the inverse: the stem is what stands in that case",
+	"CST":  "stacks a second case onto the formative",
+	// Affix scope (§4.7).
+	"VDom":      "scopes over the last Slot V affix (default)",
+	"VSub":      "scopes over the first Slot V affix",
+	"VIIDom":    "scopes over the last Slot VII affix",
+	"VIISub":    "scopes over the first Slot VII affix",
+	"formative": "scopes over the whole formative",
+	"adjacent":  "scopes over the formative and any adjunct beside it",
+	// Concatenation type (§3.1.2).
+	"Ca": "an all-default Ca, written only to keep the Slot V/VII boundary visible",
+	"T1": "circumstantial: the dependent stands in a case-frame to the parent",
+	"T2": "derivational: the pair names a new gestalt, as \"polar bear\" does",
+	// Slot IX relation (§3.10). Both are read off the stress.
+	"ANT": "framed verbal — a subordinate clause, marked by antepenultimate stress",
+	"ULT": "unframed verbal — a main clause, marked by ultimate stress",
 }

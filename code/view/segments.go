@@ -816,7 +816,13 @@ func GlossaryFromGloss(gl string, lex *lexicon.Lexicon) []GlossaryEntry {
 	var out []GlossaryEntry
 	seen := map[string]bool{}
 	for _, t := range gloss.Tokens(gl) {
-		if t.Kind != gloss.KindCode && t.Kind != gloss.KindRoot {
+		// A lowercase atom is a cluster, not a code, and must not be
+		// looked up as one: search.LookupGrammar upper-cases its query,
+		// so the root "m" would come back as Perspective M and a
+		// formative would be told its root means "Monadic". The §4.6
+		// referents are the exception — "1m" and "ma" are codes that
+		// happen not to start with a capital.
+		if t.Kind != gloss.KindCode && !isReferentCode(t.Text) {
 			continue
 		}
 		if seen[t.Text] {
@@ -843,6 +849,20 @@ func lookupCode(code string, lex *lexicon.Lexicon) (GlossaryEntry, bool) {
 			Meaning:  g.Meaning(code),
 		}, true
 	}
+	// Notation the gloss writes that is not a grammatical value, so
+	// search.Table does not hold it: "{Ca}" for the Slot V/VII
+	// boundary, "T1" for a concatenation type, "ULT" for the relation
+	// stress carries, "VIIDom" for an affix scope. These are named in
+	// the grammar package and nowhere else, and a reader meets them in
+	// a gloss exactly as they meet a case.
+	if name := g.Name(code); name != "" {
+		return GlossaryEntry{
+			Category: "notation",
+			Code:     code,
+			Name:     name,
+			Meaning:  g.Meaning(code),
+		}, true
+	}
 	if lex == nil {
 		return GlossaryEntry{}, false
 	}
@@ -857,4 +877,22 @@ func lookupCode(code string, lex *lexicon.Lexicon) (GlossaryEntry, bool) {
 		}
 	}
 	return GlossaryEntry{}, false
+}
+
+// isReferentCode reports whether an atom is a §4.6 referent or referent
+// Effect. They are written lowercase ("1m", "ma", "pa") or with one
+// capital ("Mx", "Rdp"), so shape alone cannot tell them from a root
+// cluster; the closed list can.
+func isReferentCode(s string) bool {
+	for _, r := range g.AllReferents {
+		if r.String() == s {
+			return true
+		}
+	}
+	for _, e := range g.AllRefEffects {
+		if e.String() == s {
+			return true
+		}
+	}
+	return false
 }

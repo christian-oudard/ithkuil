@@ -2214,6 +2214,104 @@
       "abbrev": "PHR",
       "category": "CarrierType",
       "form": "hň"
+    },
+    {
+      "abbrev": "1m",
+      "name": "Monadic Speaker",
+      "category": "Referent",
+      "form": "l",
+      "description": "\"I\" — the speaker alone"
+    },
+    {
+      "abbrev": "2m",
+      "name": "Monadic Addressee",
+      "category": "Referent",
+      "form": "s",
+      "description": "\"you\" (singular) — the addressee alone"
+    },
+    {
+      "abbrev": "2p",
+      "name": "Polyadic Addressee",
+      "category": "Referent",
+      "form": "n",
+      "description": "\"you\" (plural) — more than one addressee"
+    },
+    {
+      "abbrev": "ma",
+      "name": "Monadic Animate Third Party",
+      "category": "Referent",
+      "form": "m",
+      "description": "\"he\" / \"she\" — one animate third party"
+    },
+    {
+      "abbrev": "pa",
+      "name": "Polyadic Animate Third Party",
+      "category": "Referent",
+      "form": "ň",
+      "description": "\"they\" — more than one animate third party"
+    },
+    {
+      "abbrev": "mi",
+      "name": "Monadic Inanimate Third Party",
+      "category": "Referent",
+      "form": "z",
+      "description": "\"it\" — one inanimate third party"
+    },
+    {
+      "abbrev": "pi",
+      "name": "Polyadic Inanimate Third Party",
+      "category": "Referent",
+      "form": "ẓ",
+      "description": "\"these things\" / \"those things\" — several inanimate"
+    },
+    {
+      "abbrev": "Mx",
+      "name": "Mixed Animate/Inanimate Third Party",
+      "category": "Referent",
+      "form": "c",
+      "description": "animate and inanimate together, e.g. \"s/he and it\""
+    },
+    {
+      "abbrev": "Rdp",
+      "name": "Reduplicative",
+      "category": "Referent",
+      "form": "th",
+      "description": "refers back to the party already named (resumptive)"
+    },
+    {
+      "abbrev": "Obv",
+      "name": "Obviative",
+      "category": "Referent",
+      "form": "ll",
+      "description": "a third party other than the one already referenced"
+    },
+    {
+      "abbrev": "PVS",
+      "name": "Provisional",
+      "category": "Referent",
+      "form": "mm",
+      "description": "\"whatever\" — a vague or unknown party; the case usually carries the sense"
+    },
+    {
+      "abbrev": "NEU",
+      "name": "Neutral",
+      "category": "RefEffect",
+      "form": "",
+      "description": "the act has no particular benefit or harm for the referent"
+    },
+    {
+      "abbrev": "BEN",
+      "name": "Beneficial",
+      "category": "RefEffect",
+      "form": "",
+      "description": "the act is to the referent's benefit"
+    },
+    {
+      "abbrev": "DET",
+      "name": "Detrimental",
+      "category": "RefEffect",
+      "form": "",
+      "description": "the act is to the referent's detriment"
     }
   ],
   "topics": [

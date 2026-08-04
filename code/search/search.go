@@ -118,6 +118,30 @@ func init() {
 			Form:     parse.CarrierTypeForm(ct),
 		})
 	}
+	// §4.6 referents and their Effects. A referential's whole content
+	// is its referent, so these were the one class of code a reader
+	// could see in a gloss and find nothing about: absent here, absent
+	// from Name and Meaning, and so unexplainable by any mechanism.
+	// The Form is the NEU consonant, which is the one the table in
+	// §4.6 lists first and the one an unmarked referential writes.
+	for _, r := range g.AllReferents {
+		Table = append(Table, Entry{
+			Category: "Referent",
+			Abbrev:   r.String(),
+			Form:     parse.RefCluster([]g.PersonalRef{{Referent: r, Effect: g.NEU}}),
+		})
+	}
+	for _, e := range g.AllRefEffects {
+		Table = append(Table, Entry{Category: "RefEffect", Abbrev: e.String()})
+	}
+	// Notation that a gloss writes but the inventory does not hold —
+	// "{Ca}", "T1", "ULT", "VIIDom", "ACC1" — is deliberately not here.
+	// This Table is the inventory of grammatical values: every row is
+	// held against the store and must have a sample word, which is what
+	// lets the roman and gloss sweeps claim "every value". A notation
+	// code has no value to sample, so adding one would quietly weaken
+	// that claim. Those are named in grammar.Name and grammar.Meaning
+	// instead, and view.GlossaryFromGloss reads both.
 	// Fill canonical Name from grammar.Name, and Description from
 	// grammar.Meaning where the row has none of its own. Bias rows keep
 	// theirs (e.g. "Please" for SOL), which is the utterance the bias

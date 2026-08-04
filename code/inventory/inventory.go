@@ -240,5 +240,23 @@ func Samples() []Sample {
 	for _, ct := range g.AllCarrierTypes {
 		add("CarrierType", ct.Abbrev(), g.CarrierAdjunct{Type: ct, Case: g.THM})
 	}
+
+	// §4.6 referents and their Effects. A referential's whole content
+	// is its referent, and until now no sample carried one, so the
+	// sweeps could say "every grammatical value" about a set that left
+	// the referentials out entirely. NEU is the unmarked Effect, so it
+	// rides the same baseline the other two vary from.
+	ref := func(r g.Referent, e g.RefEffect) g.Referential {
+		return g.Referential{
+			Head: g.PersonalHead{Refs: []g.PersonalRef{{Referent: r, Effect: e}}},
+			Case: g.THM,
+		}
+	}
+	for _, r := range g.AllReferents {
+		add("Referent", r.String(), ref(r, g.NEU))
+	}
+	for _, e := range g.AllRefEffects {
+		addIf(e == g.NEU, "RefEffect", e.String(), ref(g.R1m, e))
+	}
 	return out
 }
