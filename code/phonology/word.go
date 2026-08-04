@@ -183,7 +183,34 @@ func (w Word) Violations() []fault.Fault {
 			vs = append(vs, sound("stress", w.text, se.Error()))
 		}
 	}
+	if f, ok := finalGlottalViolation(w.bare); ok {
+		vs = append(vs, f)
+	}
 	return append(vs, clusterViolations(w.bare)...)
+}
+
+// finalGlottalViolation applies §1.5's exception, which is a fact about
+// the whole word and so cannot be decided one cluster at a time:
+//
+//	The glottal stop cannot occur in word-final position except in the
+//	unusual instance of monosyllabic parsing adjuncts of the form 'V'
+//	where V is a single vowel (e.g., a', o', u', etc.)
+//
+// The cluster-level check could only ask whether the final conjunct was
+// longer than the glottal stop alone, which let mala' and mla' through:
+// their final conjunct is just the glottal stop, but neither word is
+// such an adjunct. §1.2 has the leading glottal stop unwritten, so the
+// adjunct is written as one vowel followed by the mark.
+func finalGlottalViolation(bare string) (fault.Fault, bool) {
+	if !strings.HasSuffix(bare, "'") {
+		return fault.Fault{}, false
+	}
+	body := []rune(strings.TrimSuffix(bare, "'"))
+	if len(body) == 1 && IsVowel(body[0]) {
+		return fault.Fault{}, false
+	}
+	return sound("1.5", bare,
+		"glottal stop word-finally outside a 'V' parsing adjunct"), true
 }
 
 // Legal reports whether text is a well-formed Ithkuil word or chain:

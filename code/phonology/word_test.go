@@ -173,3 +173,30 @@ func TestLegal(t *testing.T) {
 		t.Error("Legal(møl) = true, want false: it is not even readable")
 	}
 }
+
+// §1.5: "The glottal stop cannot occur in word-final position except
+// in the unusual instance of monosyllabic parsing adjuncts of the form
+// 'V' where V is a single vowel (e.g., a', o', u', etc.)"
+//
+// This lived in the cluster checks, which can only see one conjunct and
+// so asked whether the final conjunct was longer than the glottal stop
+// alone. mala' and mla' passed: their final conjunct is just the mark,
+// though neither word is such an adjunct. A speaker found it before a
+// test did, reporting it is hard to hear any difference between mala
+// and mala', which is the reason the rule exists.
+func TestWordFinalGlottalStopOnlyInParsingAdjuncts(t *testing.T) {
+	for _, w := range []string{"a'", "o'", "u'", "e'"} {
+		if !Legal(w) {
+			t.Errorf("%q is a 'V parsing adjunct and should be legal", w)
+		}
+	}
+	for _, w := range []string{"mala'", "mla'", "ma'", "malaa'"} {
+		if Legal(w) {
+			t.Errorf("%q ends in a glottal stop and is not a 'V parsing adjunct", w)
+		}
+	}
+	// The rule is about word-final position only; medial is untouched.
+	if !Legal("ma'la") {
+		t.Error("ma'la has a medial glottal stop and should be legal")
+	}
+}
