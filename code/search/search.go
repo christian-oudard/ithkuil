@@ -137,6 +137,20 @@ func init() {
 	}
 }
 
+// matchesEntry reports whether the query begins a word in any of the
+// fields a grammar search reads. An empty query is no filter and keeps
+// everything, which is how the whole table is listed.
+func matchesEntry(e Entry, q string) bool {
+	if q == "" {
+		return true
+	}
+	return matchesWord(e.Abbrev, q) ||
+		matchesWord(e.Category, q) ||
+		matchesWord(e.Form, q) ||
+		matchesWord(e.Name, q) ||
+		matchesWord(e.Description, q)
+}
+
 // LookupGrammar returns every entry whose Abbrev is an exact case-
 // insensitive match for query.
 func LookupGrammar(query string) []Entry {
@@ -161,11 +175,7 @@ func SearchGrammar(query string) []Entry {
 			exact = append(exact, e)
 			continue
 		}
-		if strings.Contains(strings.ToLower(e.Abbrev), q) ||
-			strings.Contains(strings.ToLower(e.Category), q) ||
-			(e.Form != "" && strings.Contains(strings.ToLower(e.Form), q)) ||
-			(e.Name != "" && strings.Contains(strings.ToLower(e.Name), q)) ||
-			(e.Description != "" && strings.Contains(strings.ToLower(e.Description), q)) {
+		if matchesEntry(e, q) {
 			fuzzy = append(fuzzy, e)
 		}
 	}
@@ -206,11 +216,7 @@ func Filter(cat, query string, exact bool) []Entry {
 				if !strings.EqualFold(e.Abbrev, qL) {
 					continue
 				}
-			} else if !strings.Contains(strings.ToLower(e.Abbrev), qL) &&
-				!strings.Contains(strings.ToLower(e.Category), qL) &&
-				(e.Form == "" || !strings.Contains(strings.ToLower(e.Form), qL)) &&
-				(e.Name == "" || !strings.Contains(strings.ToLower(e.Name), qL)) &&
-				(e.Description == "" || !strings.Contains(strings.ToLower(e.Description), qL)) {
+			} else if !matchesEntry(e, qL) {
 				continue
 			}
 		}
@@ -264,7 +270,7 @@ func SearchRoots(query string, roots map[string]lexicon.RootEntry) []RootHit {
 		// Stem priority: S1 > S2 > S3 > S0.
 		stems := []string{entry.Stem1, entry.Stem2, entry.Stem3, entry.Stem0}
 		for i, s := range stems {
-			if strings.Contains(strings.ToLower(s), q) {
+			if matchesWord(s, q) {
 				hits = append(hits, RootHit{Score: i + 1, Cr: cr, Entry: entry})
 				break
 			}
@@ -293,12 +299,12 @@ func SearchAffixes(query string, affixes map[string]lexicon.AffixEntry) []lexico
 	for cs, a := range affixes {
 		if strings.EqualFold(cs, q) ||
 			strings.EqualFold(a.Abbrev, q) ||
-			strings.Contains(strings.ToLower(a.Description), q) {
+			matchesWord(a.Description, q) {
 			hits = append(hits, a)
 			continue
 		}
 		for _, d := range a.Degrees {
-			if strings.Contains(strings.ToLower(d), q) {
+			if matchesWord(d, q) {
 				hits = append(hits, a)
 				break
 			}
