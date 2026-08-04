@@ -194,7 +194,7 @@ func Rule1Glottal(v string) (string, bool) {
 // entirely, so it is not part of the form. yi'a dissimilates to yu'ä
 // for the same reason yia dissimilates to yuä: the glide still sits
 // against the matching vowel, which is the whole of what the rule is
-// about.
+// about. See ERRATA.md §1.6.
 func DissimilateGlides(word string) string {
 	// MergeGlottalVowels, because SplitConjuncts alone makes the glottal
 	// its own conjunct and would hand this loop a bare "i" where the

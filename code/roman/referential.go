@@ -186,7 +186,7 @@ func refChainForm(refs []g.PersonalRef) string {
 // ranking is ours, not Quijada's: çla and xla are both legal, as are
 // tļma, mtļa and ļma, and the canonicalization heuristics in SPEC.md
 // have nothing to say here, the candidates being identical in syllable
-// count, glottal count and length.
+// count, glottal count and length. See ERRATA.md §4.6.
 func categoryForm(chain string, cat g.RefCategory) (string, error) {
 	var tried []string
 	for _, f := range parse.RefCategoryForms {

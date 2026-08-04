@@ -31,6 +31,7 @@ import (
 //     by a voiced sibilant affricate (ż, j)"; the grid marks çẓ and çj
 //     permissible. We follow the prose, since it states a reason and
 //     the grid states none, so we bar two cells the grid allows.
+//     See ERRATA.md §2.10.
 var section8ExpectedDiff = map[string]bool{"çẓ": true, "çj": true}
 
 func TestSection8GridMatchesRules(t *testing.T) {

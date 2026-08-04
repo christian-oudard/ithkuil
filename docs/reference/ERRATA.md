@@ -22,6 +22,12 @@ Each entry carries **Source**, **Decision**, **Status** and **Where**.
 Entries are self-contained: nothing here needs another file to be
 understood.
 
+An entry is named for the section it rules on, not numbered. A serial
+tells you nothing about what it says, collides when two people add one
+at once, and has to be looked up; a section reference is what a reader
+arrives with. Code cites an entry the same way — `see ERRATA.md §2.10`
+— and a test checks the citation finds it.
+
 ## Status values
 
 | | |
@@ -59,7 +65,7 @@ through.
 
 *Where the source cannot be implemented as written, and we chose.*
 
-### E1. ç before a voiced sibilant affricate: follow the prose
+### §2.10 — ç before a voiced sibilant affricate
 
 **Source.** §2.10 of the phonotactics document bars **ç** from being
 "followed by a voiced sibilant affricate (**ẓ**, **j**)", and gives a
@@ -80,7 +86,7 @@ that is derived from rules rather than the other way round.
 which regenerates the whole grid and pins these two cells as the only
 departures.
 
-### E2. The adjunct tables outrank the phonotactics
+### §4.7 — the adjunct tables outrank the phonotactics
 
 **Source.** Two documents disagree about what may begin a word. The
 grammar document publishes tables of adjuncts and worked examples using
@@ -105,7 +111,7 @@ those sections never contemplate. None of the forms is hypothetical:
 **Where.** `phonology/word.go:248`, in `clusterViolations`, which
 exempts single-conjunct consonant words from cluster validation.
 
-### E3. Pattern-2 FAC is written w
+### §3.8 — Pattern-2 FAC is written w
 
 **Source.** §3.8's Pattern-2 Mood/Case-Scope table prints the FAC value
 as "w/y" and gives no rule anywhere for choosing between them.
@@ -125,7 +131,7 @@ too common to be a slip.
 **Where.** `slots/grammar.go:782`, `moodCnP2Table`; the parser accepts
 **y** wherever it accepts **w** in `parse/slot_viii.go`.
 
-### E4. Referential category affixes take the first permissible spelling
+### §4.6 — referential category affixes take the first permissible spelling
 
 **Source.** §4.6 says to add the AGGLOMERATIVE, NOMIC or ABSTRACT affix
 "immediately preceding or following" the referential "as
@@ -144,7 +150,7 @@ candidates being identical in syllable count, glottal count and length.
 
 **Where.** `roman/referential.go:186`, `categoryForm`.
 
-### E5. §1.6's glide dissimilation applies to a glottalized vowel
+### §1.6 — glide dissimilation applies to a glottalized vowel
 
 **Source.** §1.6's footnote says a Series-3 vowel-form beginning with
 **-i** takes its alternate spelling after **y-**, and one beginning
@@ -172,7 +178,7 @@ here would invent an exception the source does not state.
 **Where.** `phonology/conjunct.go:198`, `DissimilateGlides`;
 `phonology/inventory.go:201`, `VowelFormAfterGlide`.
 
-### E6. §1.3.1's grave accent is read but not written
+### §1.3.1 — the grave accent is read but not written
 
 **Source.** §1.3.1 puts a grave on the **-i-** of a **-Cìa-** conjunct
 to mark it as a syllable of its own rather than the glide of a **Cy+V**
@@ -199,7 +205,7 @@ reading.
 `TestApply_GraveOnUnstressedI`. Indexed in `BUGS.md` as an open
 question about our output rather than about the language.
 
-### E7. A referential used as a lone Type-3 affix is glossed (refs/degree)
+### §4.6.5 — a referential used as a lone Type-3 affix is glossed (refs/degree)
 
 **Source.** §4.6.5 makes a lone Type-3 V_X C_S affix whose C_S is a
 referential consonant read as a personal-reference shortcut rather than
@@ -225,15 +231,17 @@ Quijada gives none.
 
 *Amendments we think the language wants. Not in force.*
 
-None written up yet. The three candidates are the entries in
-`ISSUES.md` that no reading can rescue, because the source leaves a
-construct with no expressible form at all:
+None written up yet. The candidates are the three places no reading
+can rescue, because the source leaves a construct with no expressible
+form at all:
 
-- **G5**, the §3.6.1 gemination rules, which reach only some of the
-  3840 Ca forms.
-- **G6**, a moved Slot VIII C_N leaving the end of Slot V unmarkable.
-- **G2**, the §3.6 **bn**-substitution, which cannot cover both
-  configurations that need it.
+- **§3.6.1**, whose gemination rules reach only some of the 3840 Ca
+  forms, so the rest cannot mark where Slot V ends.
+- **§3.8.1.2**, where a C_N moved into the Slot VI position meets no
+  gemination rule either, with the same consequence.
+- **§3.6**, whose **bn**-substitution names one configuration on its
+  input side and a different one in its intermediate, stranding
+  whichever is left out.
 
-Each needs an amendment rather than a reading, and each will land here
-as a proposal once drafted.
+Each needs an amendment rather than a reading, and each lands here as a
+proposal once drafted.

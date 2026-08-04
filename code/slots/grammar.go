@@ -764,6 +764,7 @@ var moodCnP1Table = [...]string{"h", "hl", "hr", "hm", "hn", "hň"}
 //
 // We render w, the majority form, and parse both. That is our choice,
 // not Quijada's: parse/slot_viii.go accepts y wherever it accepts w.
+// See ERRATA.md §3.8.
 var moodCnP2Table = [...]string{"w", "hw", "hrw", "hmw", "hnw", "hňw"}
 
 func moodCnP1(m g.Mood) string { return moodCnP1Table[m] }

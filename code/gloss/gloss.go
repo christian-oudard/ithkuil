@@ -278,7 +278,7 @@ func slotVI(s g.SlotVI, slotVFilled bool) string {
 // §4.6.5 special case: a lone Type-3 affix whose Cs is a referential
 // consonant reads as a personal-reference shortcut rather than a
 // regular affix. We render that as "(refs/degree)" to make the
-// referential reading visible.
+// referential reading visible. See ERRATA.md §4.6.5.
 // affixes glosses one affix slot. Called once for Slot V and once for
 // Slot VII, which is what settles §4.6.5's ambiguity: its trigger is "a
 // lone Type-3 V_X C_S affix without any adjacent Type-1 or Type-2 affix

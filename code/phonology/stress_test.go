@@ -183,7 +183,7 @@ func TestStrip_DisyllabicFinalConjunct(t *testing.T) {
 // similarly be used" over -u-, so the two are not obviously the same
 // rule, and the document's own worked examples in §§5 and 7 write
 // -Cia- without it far more often than with. Until that reading is
-// settled, writing it back would be guessing.
+// settled, writing it back would be guessing. See ERRATA.md §1.3.1.
 func TestApply_GraveOnUnstressedI(t *testing.T) {
 	t.Skip("§1.3.1's grave is read but not written; see BUGS.md")
 

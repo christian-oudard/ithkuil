@@ -26,8 +26,11 @@ import (
 // valid line number aimed at nothing in particular. The Decision text
 // is the record; the pointer is a convenience.
 
+// Entries are named for the section they rule on rather than
+// numbered, so a citation carries its own meaning and two people
+// adding an entry at once cannot collide on an id.
 var (
-	errataEntry  = regexp.MustCompile(`(?m)^### (E\d+)\. (.+)$`)
+	errataEntry  = regexp.MustCompile(`(?m)^### (§[0-9.]+[0-9]) — (.+)$`)
 	errataField  = regexp.MustCompile(`(?m)^\*\*(Source|Decision|Status|Where)\.\*\*`)
 	errataTarget = regexp.MustCompile("`([a-z][a-z0-9_/]*\\.go):(\\d+)`")
 	errataStatus = regexp.MustCompile(`(?m)^\*\*Status\.\*\* ` + "`" + `(adopted|proposed|implemented)` + "`")
@@ -52,8 +55,11 @@ func TestErrataEntriesAreWellFormed(t *testing.T) {
 		}
 		body := text[loc[1]:end]
 
+		// Sections are the ids, so two entries on one section would
+		// make a citation ambiguous. Split the section or widen the
+		// reference instead.
 		if seen[id] {
-			t.Errorf("%s: duplicate entry id", id)
+			t.Errorf("%s: two entries rule on this section", id)
 		}
 		seen[id] = true
 
@@ -81,7 +87,7 @@ func TestErrataCoversTheCodeThatCitesIt(t *testing.T) {
 	}
 
 	cited := map[string][]string{}
-	cite := regexp.MustCompile(`ERRATA\.md (E\d+)|errata (E\d+)`)
+	cite := regexp.MustCompile(`ERRATA\.md (§[0-9.]+[0-9])`)
 	err := filepath.Walk(filepath.Join("..", ""), func(path string, info os.FileInfo, err error) error {
 		if err != nil || info.IsDir() || !strings.HasSuffix(path, ".go") {
 			return err
@@ -91,7 +97,7 @@ func TestErrataCoversTheCodeThatCitesIt(t *testing.T) {
 			return err
 		}
 		for _, m := range cite.FindAllStringSubmatch(string(b), -1) {
-			id := m[1] + m[2]
+			id := m[1]
 			cited[id] = append(cited[id], path)
 		}
 		return nil

@@ -246,7 +246,7 @@ func clusterViolations(bare string) []fault.Fault {
 	// None of them is hypothetical: every one is attested standing alone
 	// in the community corpus, pļļ 291 times, msf 127, kçç 48, cč 33.
 	// So the table is taken as authoritative and §3's word-initial rules
-	// as scoped to words that have a vowel in them.
+	// as scoped to words that have a vowel in them. See ERRATA.md §4.7.
 	//
 	// One form stays unsettled and is simply admitted with the rest.
 	// ARB xtļ is neither permitted nor prohibited: §3.2.3 licenses xt
