@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/christian-oudard/ithkuil/store"
+	"github.com/christian-oudard/ithkuil/view"
 )
 
 func dataFile() string {
@@ -900,5 +901,66 @@ func TestCompose_EchoesTheGlossItAccepts(t *testing.T) {
 		if got := strings.TrimSpace(p); got != echoed {
 			t.Errorf("compose %q echoed %q but parse says %q", expr, echoed, got)
 		}
+	}
+}
+
+// TestParse_ModularAdjunct covers the one word class with a slot
+// breakdown that no CLI test reached. renderModular is live in the
+// binary and was never run by a test, so the phonetic table it prints
+// had nothing pinning it: the elided-slot marking below is the visible
+// half of a fix, and by hand was the only way it had been checked.
+//
+// §4.3's bare Slot 4 form writes the V_N alone, so "a" is a whole RTR
+// adjunct with no C_N in it, and the column must say so rather than
+// print a -w- the word does not contain.
+func TestParse_ModularAdjunct(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "parse", "a")
+	if code != 0 {
+		t.Fatalf("exit %d\n%s", code, out)
+	}
+	for _, want := range []string{"RTR", "Vn\u2081", "Cn\u2081", "FAC", view.ElidedMark} {
+		if !strings.Contains(out, want) {
+			t.Errorf("output missing %q:\n%s", want, out)
+		}
+	}
+	if strings.Contains(out, "-w") {
+		t.Errorf("the C_N is elided, so no -w should be printed:\n%s", out)
+	}
+}
+
+// TestParse_ModularMultiSlot covers the multi-entry shape, whose slots
+// are numbered and whose §4.3 Slot 3 separator is still unaccounted for
+// (see BUGS.md). What is pinned here is the categories it names.
+func TestParse_ModularMultiSlot(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "parse", "w\u00e4h\u0148ainui")
+	if code != 0 {
+		t.Fatalf("exit %d\n%s", code, out)
+	}
+	for _, want := range []string{"Vn\u2081", "Vn\u2082", "Vn\u2083", "PRL", "HYP", "RSM", "IRP"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("output missing %q:\n%s", want, out)
+		}
+	}
+}
+
+// TestSearch_FormWithCategory covers filterByCategory, which is live in
+// the binary and was reached by no test. It only runs for a written-form
+// lookup narrowed by category, the one combination the search tests did
+// not pair.
+func TestSearch_FormWithCategory(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "search", "a", "--form", "--category", "Case")
+	if code != 0 {
+		t.Fatalf("exit %d\n%s", code, out)
+	}
+	if !strings.Contains(out, "THM") {
+		t.Errorf("a is the THM case vowel:\n%s", out)
+	}
+	// The same form under a category it does not belong to keeps nothing.
+	out, _, code = runCLI("-data", dataFile(), "search", "a", "--form", "--category", "Bias")
+	if code != 0 {
+		t.Fatalf("exit %d\n%s", code, out)
+	}
+	if strings.Contains(out, "THM") {
+		t.Errorf("a is not a bias form:\n%s", out)
 	}
 }
