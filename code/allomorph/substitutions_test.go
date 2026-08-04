@@ -41,7 +41,8 @@ func TestApplySubstitutions_ContextNonInitial(t *testing.T) {
 		{"bm", "bm"},
 		{"fbm", "vw"},
 		// "bn" non-initial → "ḑ"; tḑ second-pass → ḑy.
-		{"tbn", "ḑy"},
+		// tbn is the §2.2 case; ERRATA.md §3.6 gives it ḑw.
+		{"tbn", "ḑw"},
 		// "gn" non-initial → "ň".
 		{"tgn", "tň"},
 		// "çx" non-initial → "xw".
@@ -84,6 +85,35 @@ func TestConstructCa_RoundsTrip(t *testing.T) {
 	for _, c := range cases {
 		if got := ConstructCa(c.s); got != c.want {
 			t.Errorf("ConstructCa(%v) = %q, want %q", c.s, got, c.want)
+		}
+	}
+}
+
+// The §3.6 bn-substitution family, completed. Two of these are
+// Quijada's and the third is ours; ERRATA.md §3.6 has the argument.
+//
+// Sweeping every Ca whose raw composition ends in bm or bn, exactly
+// three shapes come out unsayable under the general [C]bm → [C]v and
+// [C]bn → [C]ḑ rules. §3.6 escapes two of them — the two barred by
+// §2.5 — and says nothing about the third, which §2.2 bars instead.
+func TestSubstitutions_BnFamily(t *testing.T) {
+	cases := []struct{ raw, want, why string }{
+		{"fbm", "vw", "§2.5 fv, his rule"},
+		{"ţbn", "ḑy", "§2.5 ţḑ, his rule with its intermediate corrected"},
+		{"tbn", "ḑw", "§2.2 tḑ, ours"},
+		// The liquid Affiliation prefixes ride along untouched.
+		{"lţbn", "lḑy", "ASO"},
+		{"rtbn", "rḑw", "COA"},
+		{"řfbm", "řvw", "VAR"},
+		// Neighbours that must not be caught by the new rule.
+		{"tbm", "tv", "bm after a plain stop is fine"},
+		{"ţbm", "ţv", "likewise"},
+		{"kbn", "kḑ", "kḑ is legal, so no escape applies"},
+	}
+	for _, c := range cases {
+		if got := ApplySubstitutions(c.raw); got != c.want {
+			t.Errorf("ApplySubstitutions(%q) = %q, want %q (%s)",
+				c.raw, got, c.want, c.why)
 		}
 	}
 }

@@ -54,10 +54,73 @@ failing to do what we intend, not about the language.
 
 *Where the reference documents depart from the printed source.*
 
-None yet. The transcriptions currently match their sources exactly,
-verified in both directions for every Ithkuil form and sentence by
-sentence for the prose. Entries arrive here as `ISSUES.md` is worked
-through.
+### §3.6 — the bn-substitution family is one rule short
+
+**Source.** §3.6's allomorphic substitutions include two escapes for
+clusters the general rules leave unsayable:
+
+    fbm → (fv) → vw
+    ţbn → (tḑ) → ḑy
+
+Both are printed in blue, and the v1.3 change list says "Two of the
+allomorphic substitutions for C_A have been modified", so these two are
+that revision.
+
+Sweeping every C_A whose raw composition ends in **bm** or **bn** — the
+inputs the general `[C]bm → [C]v` and `[C]bn → [C]ḑ` rules act on —
+exactly three shapes come out unsayable:
+
+| raw | becomes | barred by |
+|---|---|---|
+| `fbm` | `fv` | §2.5, homologous voicing mismatch |
+| `ţbn` | `ţḑ` | §2.5, homologous voicing mismatch |
+| `tbn` | `tḑ` | §2.2, dental stop plus interdental |
+
+The revision covers the two §2.5 cases and is complete for them. `tbn`
+is barred by a different rule and has no escape at all.
+
+Two things are therefore wrong. The printed intermediate `(tḑ)` cannot
+arise from `ţbn`: `[C]bn → [C]ḑ` rewrites only the **bn**, so `ţbn`
+yields `ţḑ`. And the rule beside it is the exact parallel — both voice
+the fricative and open the nasal into an approximant, f→v with m→w and
+ţ→ḑ with n→y — which makes `(ţḑ)` the reading and `(tḑ)` the slip.
+
+**Decision.** Correct the intermediate, and add the missing third rule:
+
+    ţbn → (ţḑ) → ḑy      his, intermediate corrected
+    tbn → (tḑ) → ḑw      ours
+
+`ḑw` keeps the interdental the composition was already heading for and
+varies only the approximant, so `ḑy` and `ḑw` are a minimal pair the
+way `vw` sits beside them. Voicing the stop to `dḑ` would be tidier
+still but is barred by §2.2 in its turn.
+
+All eight resulting forms — both escapes across all four Affiliations —
+are phonotactically legal, unused by any other C_A, and have legal
+unused geminates reachable by §3.6.1 rule 5. With the family complete,
+all 3840 C_A values compose to a legal cluster and none collides.
+
+Three arguments for treating `tbn` the same way, beyond symmetry.
+Articulation: the family is a sayability gradient, `fbm` unsayable →
+`fv` hard → `vw` easy, and `tbn` → `tḑ` → `ḑw` sits in it. Epenthesis:
+a speaker resolving `atbna` reaches for *atabana*, which is a legal
+Ithkuil word of four syllables rather than two, and syllable count is
+what stress is measured against, so the repair a speaker improvises
+changes the grammar rather than just the sound. Cost: without a rule,
+MSS/A/DPL/RPV has no form across all four Affiliations, and routing it
+through `ḑy` instead would make *alḑaḑya* mean both a like and an
+unlike set — so the sentence *Čalörá alḑaḑya alḑaḑyue*, "a dying-off of
+like trees is not the same thing as a dying-off of unlike trees", would
+refute itself.
+
+**Status.** `implemented`
+
+**Where.** `allomorph/substitutions.go:46`,
+`secondPassSubstitutions`, pinned by `TestSubstitutions_BnFamily`.
+`TestCa_EveryFormIsPronounceable` and
+`TestCa_EveryGeminateIsPronounceable` sweep all 3840 values and their
+geminates; both used to be excused by `UnresolvedCa`, which now returns
+false for everything.
 
 ---
 

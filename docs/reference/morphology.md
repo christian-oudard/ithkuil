@@ -470,7 +470,12 @@ Forms in parentheses are standalone forms.
 
     [C]gm → [C]x       [C]gn → [C]ň       ngn → ňn
     [C]bm → [C]v       [C]bn → [C]ḑ       fbm → (fv) → vw
-    [C]çx → [C]xw      ţbn → (tḑ) → ḑy
+    [C]çx → [C]xw      ţbn → (ţḑ) → ḑy
+                       tbn → (tḑ) → ḑw
+
+The last two substitutions depart from the source; see `ERRATA.md`
+§3.6. Quijada prints the second as **ţbn → (tḑ) → ḑy**, whose
+intermediate is a typo, and supplies nothing at all for **tbn**.
 
 **NOTE:** The new AGGLOMERATIVE Perspective (**G**) replaces the POLYADIC of previous versions of the language. The AGGLOMERATIVE indicates a neutral or fuzzy meaning in terms of number: 'at least one X / one or more / any number of X'; it is used when the specific number of an entity is irrelevant or the context of the utterance applies to either one or more than one of an entity. It also is used to create mass nouns from count nouns, in that MONADIC formatives previously referring to 'an amount of [English mass noun]' will now function as a "singulative", referring to a single element/member of a mass noun, e.g., 'a single grain of rice', 'a single hair', 'a drop of water', while its AGGLOMERATIVE counterpart will carry the meaning of 'some rice / an amount of rice', '(some) hair', '(some / an amount of) water'.
 

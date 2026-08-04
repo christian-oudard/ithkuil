@@ -76,9 +76,16 @@ func TestMorphologyFormsMatchSource(t *testing.T) {
 			t.Errorf("%q is in the grammar document but not in morphology.md", w)
 		}
 	}
+	// A form the reference prints and the source does not is a
+	// deliberate correction, and the only licence for one is an
+	// ERRATA.md entry. Drawing the allowlist from that file rather
+	// than from a literal here means a correction cannot reach the
+	// reference without its reasoning being written down.
+	corrected := ithkuilForms(errataText(t))
 	for _, w := range sortedKeys(mine) {
-		if !theirs[w] && !referenceExtra[w] {
-			t.Errorf("%q is in morphology.md but not in the grammar document", w)
+		if !theirs[w] && !referenceExtra[w] && !corrected[w] {
+			t.Errorf("%q is in morphology.md but neither in the grammar "+
+				"document nor named in ERRATA.md", w)
 		}
 	}
 	if len(theirs) < 400 {
@@ -134,4 +141,15 @@ func sortedKeys(m map[string]bool) []string {
 	}
 	sort.Strings(out)
 	return out
+}
+
+// errataText reads ERRATA.md, whose entries license the reference
+// documents to depart from their sources.
+func errataText(t *testing.T) string {
+	t.Helper()
+	b, err := os.ReadFile(filepath.Join("..", "..", "docs", "reference", "ERRATA.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(b)
 }
