@@ -18,7 +18,7 @@ cd code                   # The Go module lives here, not at the repo root
 go install ./cmd/...      # Drop binaries into $GOBIN
 go build ./...            # Typecheck and compile everything; writes no binaries
 go test ./...             # Run the full test suite
-tools/test.sh             # Test suite with cross-package coverage summary (run from anywhere)
+tools/test.sh             # The gate: suite, coverage, dead-code pass (run from anywhere)
 tools/build_wasm.sh       # Browser module, via TinyGo (run from anywhere)
 tools/test_tinygo.sh      # Suite under TinyGo, the browser compiler (run from anywhere)
 ```
@@ -128,7 +128,7 @@ Everything under `tools/` is non-Go tooling. Go tools stay with the code they be
 - `tools/sync_lexicon.py` - Refreshes the roots/affixes sections of `data.json` (and the TSV mirrors kept for diff visibility) from the upstream community spreadsheet.
 - `tools/test_tinygo.sh` - Runs the suite under TinyGo, which compiles the browser build and which the standard suite does not cover: it has its own runtime, GC and standard library. It caught a live panic the standard toolchain hid. Skips four packages, all for reasons that do not touch shipped code; the script's head says which and why.
 - `tools/build_wasm.sh` - Builds `cmd/ithkuil-wasm` with TinyGo, runs `wasm-opt -Oz`, copies TinyGo's `wasm_exec.js` (not interchangeable with the standard toolchain's) and `data.json`, and prints raw and Brotli sizes. Output goes to `$XDG_DATA_HOME/ithkuil/web` or to a path given as `$1`. Its head records every size measurement behind the toolchain choice, including the two size cuts that were measured and refused.
-- `tools/test.sh` - Go test suite with a cross-package coverage summary, then a `deadcode` pass that fails on any function no main or test can reach. `COVERAGE_THRESHOLD=NN` fails below a floor; `SHOW_UNCOVERED=1` lists functions under 100%; `SKIP_DEADCODE=1` skips the reachability pass. A function at 0% coverage is ambiguous between untested and unreachable, and the two want opposite fixes, which is what the second pass settles. `deadcode` is pinned by the `tool` directive in `code/go.mod`, so `go tool deadcode` runs it.
+- `tools/test.sh` - The test gate; see the Testing section for what it checks and why. `COVERAGE_THRESHOLD=NN` fails below a floor, `SHOW_UNCOVERED=1` lists functions under 100%, `SKIP_DEADCODE=1` skips the reachability pass. `deadcode` is pinned by the `tool` directive in `code/go.mod`.
 - `tools/discord_archive/` - Scrapers for the community Discord. Output goes to `$XDG_DATA_HOME/ithkuil/discord/`; see its `paths.py`.
 
 ## Documents
@@ -186,12 +186,49 @@ and the earlier Python attempts are all on the `writing` branch, bound for their
 own repository. Quijada's script document is separate from the grammar document,
 so nothing here has to carry it to keep a document whole.
 
+## Testing
+
+`tools/test.sh` is the gate, not `go test ./...`. It runs the suite, prints
+cross-package coverage, and then fails on any function no main or test can
+reach. Running `go test` alone has already let through a commit whose message
+claimed a deletion that a stray `git checkout` had undone.
+
+Four checks, each blind to what the others catch:
+
+- **The suite.** `go test ./...`, for correctness.
+- **Coverage.** `SHOW_UNCOVERED=1 tools/test.sh` lists what is below 100%. A
+  function at 0% is ambiguous — untested, or unreachable — and the two want
+  opposite fixes, which is why the next check exists.
+- **Reachability.** `go tool deadcode -test ./...`, run by `tools/test.sh`.
+  Go makes an unused local a compile error and an unused package-level
+  function nothing at all, so a refactor that removes the last caller leaves
+  the callee behind in silence. Eight had collected before this pass existed;
+  the first rebase after it landed caught two more, orphaned that same day.
+- **Skips.** `go test ./... -v | grep SKIP`. A `t.Skip` inside a test body is
+  invisible to both coverage and deadcode, and reads as a pass. One had never
+  run its assertions at all: it searched a two-word sample for a §3.1.7 chain,
+  neither word was one, and it skipped every time.
+
+Before deleting what deadcode reports, find the commit that removed the last
+caller. Most are orphans of a named refactor and simply go. Some are half of a
+pair the package doc advertises — `roman.Text` is one — and want the test they
+never had instead.
+
+Coverage percentage is a floor, not a goal. Every defect this suite has caught
+in its own code came from somewhere else: from exhausting an inventory
+(`inventory/`, every grammatical value through each arm, which found two
+lookup tables disagreeing with the store), from a property a round trip cannot
+see (`serialize`'s truncation and corruption sweeps, which found a decoder
+that crashed on a corrupt byte), or from reachability. None came from raising
+the number.
+
 ## Open Work
 
 `BUGS.md` indexes the open defects in this code. It holds a pointer per bug and
 nothing more: the record itself is a skipped test next to the code it concerns,
 carrying the section it rests on and why the obvious fix is wrong, and
-`go test ./... -v | grep SKIP` lists those directly. Words we cannot read live
+`go test ./... -v | grep SKIP` lists those directly. Not every skip is one:
+see Testing for the other kind. Words we cannot read live
 in the drift guards (`roman/corpus_test.go`, the Discord word list),
 which fail when the set changes in either direction. Defects in the published
 sources go in `docs/reference/ISSUES.md`.
