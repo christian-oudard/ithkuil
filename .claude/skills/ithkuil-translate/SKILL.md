@@ -90,3 +90,32 @@ ithkuil search "<term>"             # grammar inventory, roots, affixes
 Compose accepts the same canonical gloss syntax the parser emits, so a gloss
 round-trips. Vary stem and version rather than defaulting everything, or
 every word you build starts with `a-`.
+
+Compose by round-tripping, the way translation parses first. `compose` emits
+a well-formed word even when the mood or case you asked for was dropped or
+reread as something else, so a word that builds is not a word that means what
+you meant. Parse every word you compose and confirm the gloss carries what you
+intended. Three traps account for most of the drift:
+
+- **Verbal or nominal decides whether a mood survives.** A bare formative is
+  nominal, so its Cn is read as case-scope, and a mood written onto it — SUB
+  for "could", and the rest — is silently reread as a case-scope value. Give
+  the formative an illocution (ASR) or a validation (OBS, INF, …) to make it
+  verbal, and the mood holds. `SUB-rt,t` round-trips as `rt,t-CCA`;
+  `SUB-rt,t-INF` round-trips as `rt,t-SUB-ASR.INF`, mood intact.
+- **Participants are case-marked, not ordered.** Formatives left in the
+  default THM and set side by side are a list of disconnected concepts, not a
+  clause. The roles live in the cases — ERG the agent, OGN the source, PRN
+  "about", DAT the recipient, AFF the experiencer. A reciprocal's asymmetry,
+  who learns from whom, exists only in that marking; drop it and both halves
+  collapse to the same thing.
+- **Epistemic framing is a validation, not a second verb.** "I think", "I
+  hear", "I saw" fold into INF, RPR, OBS — the composing mirror of the rule
+  that OBS is not "I perceive that". Do not build a "believe" verb over a
+  clause a validation already carries.
+
+Confirm a degree's sense before spending it: `search --exact` the affix and
+read the degree line. `ITY/9` is "too intense", not "a lot"; the degree you
+want is often one below the extreme. And `define`'s English index is partial —
+when it names nothing, `search` the meaning text, and where no root fits, note
+the gap under the translation rather than inventing one.
