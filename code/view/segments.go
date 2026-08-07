@@ -678,6 +678,21 @@ func Glossary(word string, f g.Formative, segs []Segment, lex *lexicon.Lexicon) 
 			add(cat, code, g.Name(code), g.Meaning(code))
 		}
 	}
+
+	// The segments carry what each written chunk encodes, and that is
+	// not everything the formative says. A §3.9.2 accessor is the plain
+	// case: "mlaläswa" glosses ml-ACC/INS, but the Cs chunk carries the
+	// raw cluster "sw", so the glossary listed a nameless affix and
+	// explained neither the accessor nor the case it names. The codes
+	// are in the gloss, which is derived from the grammar rather than
+	// from the spelling, so anything the segments could not reach is
+	// picked up here.
+	for _, e := range GlossaryFromGloss((&gloss.Glosser{Lex: lex}).Formative(f), lex) {
+		if skipCode[e.Code] {
+			continue
+		}
+		add(e.Category, e.Code, e.Name, e.Meaning)
+	}
 	return out
 }
 
@@ -826,6 +841,23 @@ func GlossaryFromGloss(gl string, lex *lexicon.Lexicon) []GlossaryEntry {
 		// happen not to start with a capital.
 		if t.Kind != gloss.KindCode && !isReferentCode(t.Text) {
 			continue
+		}
+		// ACC is two things: the Accidental bias and the §3.9.2
+		// case-accessor family. Nothing in the abbreviation separates
+		// them, so the shape does, exactly as it does when the gloss is
+		// read: a bias is a whole word, an accessor binds a case after
+		// it. Looked up flat, "ml-ACC/INS" told the reader its accessor
+		// meant "as luck would have it".
+		if i+1 < len(tokens) && tokens[i+1].Text == "/" {
+			if name, meaning, ok := g.AccessorFamily(t.Text); ok {
+				if !seen[t.Text] {
+					seen[t.Text] = true
+					out = append(out, GlossaryEntry{
+						Category: "accessor", Code: t.Text, Name: name, Meaning: meaning,
+					})
+				}
+				continue
+			}
 		}
 		e, ok := lookupCode(t.Text, degreeAfter(tokens, i), lex)
 		if !ok || seen[e.Code] {

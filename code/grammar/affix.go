@@ -254,3 +254,21 @@ func AccessorVx(c Case) (series, degree int, high, ok bool) {
 	}
 	return series, degree, true, true
 }
+
+// AccessorFamily names a §3.9.2 accessor family for a reader, and is
+// separate from Name and Meaning because ACC cannot live in those maps:
+// the Bias table already has an ACC, Accidental, and one key cannot
+// hold both. The two are told apart by shape rather than by lookup —
+// a bias is a whole word, an accessor takes a case, "ACC/INS" — so the
+// caller that knows it is looking at an accessor asks here.
+func AccessorFamily(family string) (name, meaning string, ok bool) {
+	switch family {
+	case "ACC":
+		return "Case-Accessor", "the affix names a case the stem stands in", true
+	case "IAC":
+		return "Inverse Case-Accessor", "the inverse: the stem is what stands in that case", true
+	case "CST":
+		return "Case-Stacking", "stacks a second case onto the formative", true
+	}
+	return "", "", false
+}

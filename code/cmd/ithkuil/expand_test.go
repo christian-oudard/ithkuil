@@ -64,3 +64,39 @@ func TestParse_ExpandsCodesForEveryClass(t *testing.T) {
 		}
 	}
 }
+
+// ACC is two things at once: the Accidental bias of §4.1 and the
+// case-accessor family of §3.9.2. Nothing in the three letters
+// separates them, and they cannot share a key in the name tables, so
+// the reading is decided by shape the way the gloss itself decides it —
+// a bias is a whole word, an accessor binds a case after it.
+//
+// Looked up flat, "mlaläswa" (ml-ACC/INS) told the reader its accessor
+// meant "as luck would have it", which is the wrong sense of the only
+// abbreviation in this language that has two.
+func TestParse_AccessorIsNotTheAccidentalBias(t *testing.T) {
+	out, _, code := runCLI("-data", dataFile(), "parse", "mlaläswa")
+	if code != 0 {
+		t.Fatalf("parse exit %d\n%s", code, out)
+	}
+	if !strings.Contains(out, "Case-Accessor") {
+		t.Errorf("ACC before a case is the accessor family:\n%s", out)
+	}
+	if strings.Contains(out, "Accidental") {
+		t.Errorf("ACC before a case is not the bias:\n%s", out)
+	}
+	// The case the accessor names has to be explained too; it was not
+	// in the segments, because the Cs chunk carries a raw cluster.
+	if !strings.Contains(out, "Instrumental") {
+		t.Errorf("the case the accessor names is unexplained:\n%s", out)
+	}
+
+	// A bias adjunct is still a bias.
+	out, _, code = runCLI("-data", dataFile(), "parse", "lf")
+	if code != 0 {
+		t.Fatalf("parse lf exit %d\n%s", code, out)
+	}
+	if !strings.Contains(out, "Accidental") {
+		t.Errorf("a lone ACC is the bias:\n%s", out)
+	}
+}

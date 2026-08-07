@@ -361,10 +361,6 @@ var canonicalNames = map[string]string{
 	"NEU": "Neutral",
 	"BEN": "Beneficial",
 	"DET": "Detrimental",
-	// Accessor family (§3.9.2).
-	"ACC1": "Case-Accessor",
-	"IAC":  "Inverse Case-Accessor",
-	"CST":  "Case-Stacking",
 	// Affix scope (§4.7).
 	"VDom":      "Slot V Dominant",
 	"VSub":      "Slot V Subordinate",
@@ -727,10 +723,6 @@ var meanings = map[string]string{
 	"NEU": "the act has no particular benefit or harm for the referent",
 	"BEN": "the act is to the referent's benefit",
 	"DET": "the act is to the referent's detriment",
-	// Accessor family (§3.9.2).
-	"ACC1": "the affix names a case the stem stands in",
-	"IAC":  "the inverse: the stem is what stands in that case",
-	"CST":  "stacks a second case onto the formative",
 	// Affix scope (§4.7).
 	"VDom":      "scopes over the last Slot V affix (default)",
 	"VSub":      "scopes over the first Slot V affix",
