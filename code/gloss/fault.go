@@ -154,15 +154,6 @@ func (a assigned) apply(f *g.Formative, flag string) error {
 	return nil
 }
 
-// plural writes a count with its noun, so a message reads "1
-// dependent" rather than "1 dependent(s)".
-func plural(n int, noun string) string {
-	if n == 1 {
-		return fmt.Sprintf("%d %s", n, noun)
-	}
-	return fmt.Sprintf("%d %ss", n, noun)
-}
-
 // collected gathers the faults of a whole gloss so a writer sees
 // every bad token at once rather than the first one repeatedly.
 //

@@ -82,12 +82,3 @@ func subscriptSlot(name string, i int) string {
 	}
 	return name + string(digits[i])
 }
-
-// plural writes a count with its noun, so a message reads "1 conjunct"
-// rather than "1 conjunct(s)".
-func plural(n int, noun string) string {
-	if n == 1 {
-		return fmt.Sprintf("%d %s", n, noun)
-	}
-	return fmt.Sprintf("%d %ss", n, noun)
-}

@@ -122,3 +122,16 @@ func (e Faults) Stage() Stage {
 func One(word string, f Fault) error {
 	return Faults{Word: word, List: []Fault{f}}
 }
+
+// Plural writes a count with its noun, so a fix reads "1 conjunct"
+// rather than "1 conjunct(s)".
+//
+// It lives here rather than in either caller because both callers
+// were the same six lines, and both use it for one thing: the Fix
+// sentence, which is English by definition.
+func Plural(n int, noun string) string {
+	if n == 1 {
+		return fmt.Sprintf("%d %s", n, noun)
+	}
+	return fmt.Sprintf("%d %ss", n, noun)
+}

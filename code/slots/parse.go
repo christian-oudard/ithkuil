@@ -47,7 +47,7 @@ func ParseWord(w phonology.Word) (Layout, error) {
 	if len(conjs) < 3 {
 		return Layout{}, fault.One(word, shape("shape", word, fmt.Sprintf(
 			"a formative needs at least a Cr, a Vr and a Ca; this has %s",
-			plural(len(conjs), "conjunct"))))
+			fault.Plural(len(conjs), "conjunct"))))
 	}
 	l := Layout{
 		Stress: stress,
