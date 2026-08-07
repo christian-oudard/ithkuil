@@ -249,6 +249,16 @@ func CzForm(s g.AffixScope) string {
 // multiple-affix adjunct. Pass the first affix's scope as well: §4.1.2
 // gives "(ai)" for "same scope as C_Z", and an omitted V_Z says it more
 // briefly, so the two scopes agreeing writes nothing at all.
+// VzScopeVowel writes a V_Z scope unconditionally, without the
+// same-as-C_Z elision. A renderer needs it when eliding would leave a
+// word that cannot be said: an elided V_Z means "the scope C_Z already
+// gave", so spelling it out writes that scope's own vowel, not the "a"
+// heading the table. V_S is not like this — §4.1.1's "(a)" really is
+// the value — so the two slots restore differently.
+func VzScopeVowel(s g.AffixScope) string {
+	return [...]string{"a", "u", "e", "i", "o", "ö"}[s]
+}
+
 func VzForm(rest, first g.AffixScope) string {
 	if rest == first {
 		return ""

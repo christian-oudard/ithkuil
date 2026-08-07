@@ -55,7 +55,7 @@ func FuzzClassifyWord(f *testing.F) {
 
 		// Char validation is a hard precondition: anything holding a
 		// non-V4 rune has to fail, never come back as some word class.
-		charsOK := phonology.CheckText(in) == nil
+		charsOK := len(phonology.CheckChars(in)) == 0
 		if !charsOK && err == nil {
 			t.Fatalf("ParseWord(%q) = %T, want an error (non-V4 chars)", in, word)
 		}

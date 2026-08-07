@@ -19,9 +19,35 @@ func SingleAffixAdjunct(a g.SingleAffixAdjunct) (string, error) {
 	}
 	// §1.6's footnote depends on what precedes the vowel, so it
 	// applies to the assembled word. See phonology.DissimilateGlides.
-	return phonology.DissimilateGlides(
-		parse.AffixVowel(a.Affix.Type, a.Affix.Degree) + a.Affix.Consonant + parse.VsForm(a.Scope)), nil
+	// §4.1.1 writes 'V_X C_S (V_S) and prints the default V_S as "(a)":
+	// elidable, not obligatorily elided. Eliding can leave a word ending
+	// in a conjunct §4.2 bars, since a C_S that §8 admits as an affix
+	// need not be admitted word-finally — different axes, both true. His
+	// own §4.1.1 examples show both shapes, ač and aull beside etra,
+	// iakse and usmú.
+	//
+	// So the vowel is the repair, as the Slot IX default is for §1.5
+	// juncture (§3.1.3: "Before eliding the -a-, External Juncture
+	// requirements of Sec. 1.5 must be taken into account"). Elide by
+	// preference; write it when eliding will not be said. Only a default
+	// may be restored — a scope that writes its own vowel keeps it, or
+	// the adjunct would say something else.
+	body := parse.AffixVowel(a.Affix.Type, a.Affix.Degree) + a.Affix.Consonant
+	candidates := []string{body + parse.VsForm(a.Scope)}
+	if parse.VsForm(a.Scope) == "" {
+		candidates = append(candidates, body+defaultVs)
+	}
+	word, err := pickValid(candidates...)
+	if err != nil {
+		return "", fmt.Errorf("single-affix adjunct: %w", err)
+	}
+	return phonology.DissimilateGlides(word), nil
 }
+
+// defaultVs is the V_S value §4.1.1 prints as "(a)". For V_S the elided
+// form does mean that value; V_Z is not the same. See
+// MultipleAffixAdjunct and parse.VzScopeVowel.
+const defaultVs = "a"
 
 // MultipleAffixAdjunct writes a §4.1.2 multiple-affix adjunct,
 // [ë] C_S V_X C_Z (V_X C_S)+ [V_Z]. The first affix is written in
@@ -45,19 +71,27 @@ func MultipleAffixAdjunct(a g.MultipleAffixAdjunct) (string, error) {
 		b.WriteString(parse.AffixVowel(af.Type, af.Degree))
 		b.WriteString(af.Consonant)
 	}
-	b.WriteString(parse.VzForm(a.RestScope, a.FirstScope))
+	stem := b.String()
 	// §4.1.2 allows a leading ë- "if phonotactically necessary", and the
 	// reversed first affix is what makes it necessary: a Cs that cannot
-	// open a word opens this one. Ask the phonotactics rather than
+	// open a word opens this one. V_Z does the same work at the other
+	// end, for a final affix §8 admits that §4.2 will not let end a
+	// word; see SingleAffixAdjunct. Ask the phonotactics rather than
 	// guessing which clusters those are.
-	word := b.String()
-	if phonology.Legal(word) {
-		return phonology.DissimilateGlides(word), nil
+	vz := parse.VzForm(a.RestScope, a.FirstScope)
+	candidates := []string{stem + vz, "ë" + stem + vz}
+	if vz == "" {
+		// An elided V_Z means "the same scope as C_Z", not a default
+		// value, so restoring it writes the vowel naming that scope.
+		// "a" would say VDom and change the adjunct.
+		spelt := parse.VzScopeVowel(a.FirstScope)
+		candidates = []string{stem, stem + spelt, "ë" + stem, "ë" + stem + spelt}
 	}
-	if prefixed := "ë" + word; phonology.Legal(prefixed) {
-		return prefixed, nil
+	word, err := pickValid(candidates...)
+	if err != nil {
+		return "", fmt.Errorf("multiple-affix adjunct: %w", err)
 	}
-	return "", fmt.Errorf("multiple-affix adjunct: %q is unpronounceable with or without the ë- prefix", word)
+	return phonology.DissimilateGlides(word), nil
 }
 
 // ModularAdjunct writes a §4.3 modular adjunct:

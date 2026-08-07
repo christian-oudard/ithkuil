@@ -52,7 +52,11 @@ func TestSingleAffixAdjunct_DefaultScopeElided(t *testing.T) {
 }
 
 func TestMultipleAffixAdjunct_RoundTrip(t *testing.T) {
-	for _, word := range []string{"dohast", "xaheitr", "xaheitre", "xa'heitr"} {
+	// xaheitr and xa'heitr are gone: §4.2.1 bars a word-final stop plus
+	// liquid, so -tr cannot end a word and the canonical spelling writes
+	// the V_Z that eliding would drop. See
+	// TestMultipleAffixAdjunct_VzWrittenWhenElisionWouldNotBeSaid.
+	for _, word := range []string{"dohast", "xaheitre", "xaheitra"} {
 		ma, err := parse.ParseMultipleAffix(word)
 		if err != nil {
 			t.Fatalf("ParseMultipleAffix(%q): %v", word, err)
@@ -70,9 +74,10 @@ func TestMultipleAffixAdjunct_RoundTrip(t *testing.T) {
 
 // TestMultipleAffixAdjunct_SameScopeElidesVz checks §4.1.2's "(ai)":
 // when the trailing affixes share the first's scope, saying so again is
-// optional and the shorter form omits Vz.
+// optional and the shorter form omits Vz. Checked with an affix that
+// can end a word; the next test covers one that cannot.
 func TestMultipleAffixAdjunct_SameScopeElidesVz(t *testing.T) {
-	ma, err := parse.ParseMultipleAffix("xaheitrai")
+	ma, err := parse.ParseMultipleAffix("dohastai")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -83,8 +88,35 @@ func TestMultipleAffixAdjunct_SameScopeElidesVz(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got != "xaheitr" {
-		t.Errorf("wrote %q, want \"xaheitr\" with no Vz", got)
+	if got != "dohast" {
+		t.Errorf("wrote %q, want \"dohast\" with no Vz", got)
+	}
+}
+
+// V_Z is elidable, not obligatorily elided: §4.1.2 prints its default
+// in parentheses, as §4.1.1 does V_S and Slot IX does THM. §8 admits tr
+// as an affix and §4.2.1 bars a stop plus liquid word-finally; those are
+// different axes and both hold, so an adjunct ending in that affix
+// writes the vowel rather than being unsayable.
+//
+// The vowel written is the one naming C_Z's scope, not "a". An elided
+// V_Z means "the scope C_Z already gave", so "a" would say VDom and
+// change the adjunct.
+func TestMultipleAffixAdjunct_VzWrittenWhenElisionWouldNotBeSaid(t *testing.T) {
+	ma, err := parse.ParseMultipleAffix("xaheitrai")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ma.RestScope != ma.FirstScope {
+		t.Fatalf("expected \"ai\" to copy the Cz scope, got %v and %v",
+			ma.RestScope, ma.FirstScope)
+	}
+	got, err := MultipleAffixAdjunct(ma)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != "xaheitra" {
+		t.Errorf("wrote %q, want \"xaheitra\": eliding leaves -tr, which §4.2.1 bars", got)
 	}
 }
 

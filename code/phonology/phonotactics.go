@@ -381,6 +381,12 @@ func ClusterViolationsAt(p Position, cluster string) []fault.Fault {
 			errs = append(errs, sound("5.1", cluster, "ļ alone not allowed intervocalically"))
 		}
 	case Final:
+		// §4.2 governs word-final conjuncts of exactly two consonants.
+		if r := []rune(cluster); len(r) == 2 {
+			if rule, reason := checkFinalPair(r[0], r[1]); rule != "" {
+				errs = append(errs, sound(rule, cluster, reason))
+			}
+		}
 		last := lastRune(cluster)
 		if last == 'w' || last == 'y' {
 			errs = append(errs, sound("4.1", cluster, string(last)+" word-finally"))
@@ -898,4 +904,116 @@ func isFricative(r rune) bool {
 		return true
 	}
 	return isSibilantFricative(r)
+}
+
+// isAnyFricative is §1.1's Fricative row, which is what §4.2 means by
+// the word. isFricative is deliberately narrower: §2.5 is about
+// homologous pairs disagreeing in voicing, so only consonants with a
+// voicing partner are its subject. Read off the inventory so the two
+// cannot drift from the table.
+func isAnyFricative(r rune) bool {
+	for _, e := range Consonants {
+		if e.Text != string(r) {
+			continue
+		}
+		c, ok := e.Phoneme.(Consonant)
+		return ok && (c.Manner == Fricative || c.Manner == LateralFric)
+	}
+	return false
+}
+
+// checkFinalPair applies §4.2, which governs word-final bi-consonantal
+// conjuncts. It is separate from the pair rules because it is about a
+// position: -bf is unremarkable between vowels and cannot end a word,
+// since §4.2.1 wants a stop and a following fricative to agree in
+// voicing.
+//
+// Only conjuncts of exactly two consonants are its subject, per its
+// "-CC" heading. Longer word-final conjuncts answer to §4.3 and §4.4,
+// which admit C_A complexes this would otherwise reject.
+//
+// A first consonant §4.2 does not name is left alone rather than
+// refused. The section covers the stops, the fricatives, the nasals and
+// the two liquids, and says nothing about h, ř, w or y in that slot;
+// treating silence as prohibition is how a phonotactic check starts
+// rejecting words the C_A tables generate.
+func checkFinalPair(a, b rune) (rule, reason string) {
+	// §4.2.12: any geminate may end a word except a geminated stop.
+	if a == b {
+		if isStop(a) {
+			return "4.2.12", "geminated stop word-finally"
+		}
+		return "", ""
+	}
+	switch {
+	// §4.2.10, §4.2.11: the liquids take almost anything. Their
+	// exclusions are w, y and the glottal stop, already barred
+	// word-finally by §4.1, plus r and ň after l.
+	case a == 'r':
+		return "", ""
+	case a == 'l':
+		if b == 'r' || b == 'ň' {
+			return "4.2.11", "l + " + string(b) + " word-finally"
+		}
+		return "", ""
+	// §4.2.8: m and n take any stop or fricative, and nothing else.
+	case a == 'm' || a == 'n':
+		if isStop(b) || isAnyFricative(b) {
+			return "", ""
+		}
+		return "4.2.8", string(a) + " + " + string(b) + " word-finally"
+	// §4.2.9: ň takes any dental stop, or any fricative but x and ļ.
+	case a == 'ň':
+		if isDentalStop(b) || (isAnyFricative(b) && b != 'x' && b != 'ļ') {
+			return "", ""
+		}
+		return "4.2.9", "ň + " + string(b) + " word-finally"
+	// §4.2.4: a sibilant affricate takes a dental or velar stop of its
+	// own voicing, and nothing else.
+	case isSibilantAffricate(a):
+		if (isDentalStop(b) || isVelarStop(b)) && sameVoicing(a, b) {
+			return "", ""
+		}
+		return "4.2.4", "sibilant affricate + " + string(b) + " word-finally"
+	// §4.2.3: a sibilant fricative takes any stop of its own voicing. ç
+	// is one by the §0 definition and is named in both §4.2.3 and
+	// §4.2.4; the wider rule applies.
+	case isSibilantFricative(a):
+		if isStop(b) && sameVoicing(a, b) {
+			return "", ""
+		}
+		return "4.2.3", "sibilant fricative + " + string(b) + " word-finally"
+	// §4.2.5: f and v take a dental or velar stop, or a sibilant
+	// fricative, of their own voicing.
+	case a == 'f' || a == 'v':
+		if (isDentalStop(b) || isVelarStop(b) || isSibilantFricative(b)) &&
+			sameVoicing(a, b) {
+			return "", ""
+		}
+		return "4.2.5", string(a) + " + " + string(b) + " word-finally"
+	// §4.2.6: ţ and ḑ take a dental or velar stop of their own voicing.
+	case a == 'ţ' || a == 'ḑ':
+		if (isDentalStop(b) || isVelarStop(b)) && sameVoicing(a, b) {
+			return "", ""
+		}
+		return "4.2.6", string(a) + " + " + string(b) + " word-finally"
+	// §4.2.7: ļ and x take any voiceless stop.
+	case a == 'ļ' || a == 'x':
+		if isStop(b) && !isVoicedStop(b) {
+			return "", ""
+		}
+		return "4.2.7", string(a) + " + " + string(b) + " word-finally"
+	// §4.2.1 and §4.2.2: a stop takes a fricative of its own voicing,
+	// and a labial or velar stop also takes a dental stop of its own
+	// voicing (-kt, -pt, -bd, -gd).
+	case isStop(a):
+		if isAnyFricative(b) && sameVoicing(a, b) {
+			return "", ""
+		}
+		if (isLabialStop(a) || isVelarStop(a)) && isDentalStop(b) && sameVoicing(a, b) {
+			return "", ""
+		}
+		return "4.2.1", "stop + " + string(b) + " word-finally"
+	}
+	return "", ""
 }
