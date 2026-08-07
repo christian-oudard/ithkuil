@@ -99,22 +99,31 @@ func ParseFormative(s string, affixes map[string]lexicon.AffixEntry) (g.Formativ
 			}
 			r, ok, err := parseParensRoot(tok, affixes)
 			if err != nil {
-				return g.Formative{}, inToken(tok, err)
+				fs.add(inToken(tok, err))
+				spent[i] = true
+				continue
 			}
 			if !ok {
 				continue
 			}
 			if rootIdx >= 0 {
-				return g.Formative{}, syntax(tok,
-					"a gloss has one root, and "+tokens[rootIdx]+" already read as one")
+				fs.add(inToken(tok, syntax(tok,
+					"a gloss has one root, and "+tokens[rootIdx]+" already read as one")))
+				spent[i] = true
+				continue
 			}
 			rootIdx = i
 			root = r
 		}
 	}
 	if rootIdx < 0 {
-		return g.Formative{}, syntax(s,
-			"a gloss needs a root: a lowercase consonant cluster, (ABBREV)/degree, or (1m+2p)")
+		// No root, but the slots are still readable and a writer
+		// wants to know which of them are also wrong. Reading stops
+		// here only if nothing else could be judged; a placeholder
+		// root lets the rest be, and the Formative is discarded.
+		fs.add(syntax(s,
+			"a gloss needs a root: a lowercase consonant cluster, (ABBREV)/degree, or (1m+2p)"))
+		root = g.DefaultCrRoot("l")
 	}
 
 	f := g.Formative{
