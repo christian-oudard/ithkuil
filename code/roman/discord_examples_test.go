@@ -56,5 +56,3 @@ func TestDiscordExamples(t *testing.T) {
 	}
 	t.Logf("verdicts: %d correct, %d incorrect", counts[corpus.Correct], counts[corpus.Incorrect])
 }
-
-// readWord reads one word or fails the test.

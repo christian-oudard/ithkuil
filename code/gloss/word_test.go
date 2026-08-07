@@ -239,8 +239,8 @@ func TestToken_FramedVerbalCase(t *testing.T) {
 }
 
 func TestToken_AllStems(t *testing.T) {
-	// Drive stemIndex through every variant. Use lexicon-backed
-	// glossing to actually consult the stem index.
+	// Drive every stem through lexicon-backed glossing, which is what
+	// actually consults the stem-indexed lexicon entry.
 	lex := loadLex(t)
 	for _, stem := range []g.Stem{g.S0, g.S1, g.S2, g.S3} {
 		f := g.MinimalFormative("ml")

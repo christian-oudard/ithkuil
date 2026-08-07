@@ -8,7 +8,7 @@ import (
 	"github.com/christian-oudard/ithkuil/phonology"
 )
 
-// RenderStressless writes a span with its stress carried by §4.8
+// Stressless writes a span with its stress carried by §4.8
 // parsing adjuncts instead of by the acute and circumflex.
 //
 // §2.3 makes pitch accent "the means by which word boundaries may be

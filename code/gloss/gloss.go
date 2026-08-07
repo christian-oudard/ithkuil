@@ -205,8 +205,6 @@ func slotI(c g.ConcatenationStatus) string {
 	return ""
 }
 
-// stemIndex converts the grammar.Stem enum to the 0-3 index expected
-// by RootEntry.Stem: S0→0, S1→1, S2→2, S3→3.
 func slotIV(s g.SlotIV) string {
 	if s == g.DefaultSlotIV {
 		return ""

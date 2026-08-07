@@ -213,10 +213,6 @@ var caAbbrevs = func() map[string]bool {
 	return out
 }()
 
-// tryParseRoot inspects a single token and returns a parsed Root if it
-// looks like one. Returns (nil, false, nil) when the token is clearly
-// not a root candidate. An error means the token *looked* like a root
-// but couldn't be decoded — that's a real parse failure.
 // validateRootCluster rejects a Cr no root could be. isClusterToken
 // accepts any token carrying a lowercase letter, so without this
 // "qqq" composed to "aqqqal", which is not spelled in Ithkuil at all
