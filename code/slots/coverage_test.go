@@ -254,3 +254,53 @@ func TestApplyDefaultElisions_FramedVerbalPad(t *testing.T) {
 		t.Errorf("FramedVerbal minimal: render = %q, expected vowels", rendered)
 	}
 }
+
+// readWord runs the two steps ToGrammar needs in front of it.
+func readWord(t *testing.T, text string) (g.Formative, error) {
+	t.Helper()
+	w, err := phonology.ParseWord(text)
+	if err != nil {
+		t.Fatalf("phonology.ParseWord(%q): %v", text, err)
+	}
+	l, err := ParseWord(w)
+	if err != nil {
+		t.Fatalf("slots.ParseWord(%q): %v", text, err)
+	}
+	return ToGrammar(l)
+}
+
+// TestToGrammar_GeminatedCaWithoutSlotV pins a message that used to say
+// something false. "no Ca complex is written pp" is contradicted by our
+// own renderer, which writes pp for the Ca p whenever Slot V holds an
+// affix — aḑgwaxeppü does. §3.6.1 licenses the gemination to mark where
+// Slot V ends, so the fault in aḑgwappü is the missing Slot V, not the
+// cluster, and a reader who knew that rule could only conclude the
+// parser was broken. One did: the word was filed against us as a defect
+// on the strength of it.
+func TestToGrammar_GeminatedCaWithoutSlotV(t *testing.T) {
+	_, err := readWord(t, "aḑgwappü")
+	if err == nil {
+		t.Fatal("a geminated Ca with no Slot V is not a word")
+	}
+	msg := err.Error()
+	for _, want := range []string{"pp", "§3.6.1", "Slot V"} {
+		if !strings.Contains(msg, want) {
+			t.Errorf("message does not mention %q: %s", want, msg)
+		}
+	}
+	if strings.Contains(msg, "no Ca complex is written") {
+		t.Errorf("pp is a Ca spelling; the message should not deny it: %s", msg)
+	}
+
+	// The same Ca with a Slot V affix is a word, and is what the
+	// message points the reader at.
+	if _, err := readWord(t, "aḑgwaxeppü"); err != nil {
+		t.Errorf("aḑgwaxeppü has the Slot V affix the gemination marks: %v", err)
+	}
+
+	// A cluster that is no Ca and no gemination keeps the plain message.
+	_, err = readWord(t, "aḑgwaxü")
+	if err == nil || !strings.Contains(err.Error(), "no Ca complex is written") {
+		t.Errorf("an unknown Ca should still say so: %v", err)
+	}
+}

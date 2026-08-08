@@ -74,6 +74,16 @@ func rootFromLayout(fs *faults, l Layout, shortcut parse.ShortcutVariant) (g.Roo
 	ca := func() g.SlotVI {
 		slotVI, ok := allomorph.ParseCa(l.Ca)
 		if !ok {
+			// A geminated Ca is a real spelling, so saying no Ca is
+			// written this way would be false: the renderer writes the
+			// same cluster itself whenever Slot V holds an affix. What
+			// §3.6.1 licenses it for is marking where Slot V ends, and
+			// reaching here with one means there was no Slot V to end.
+			if bare, geminated := allomorph.CaUngeminate[l.Ca]; geminated && len(l.SlotV) == 0 {
+				fs.add("Ca", l.Ca, l.Ca+" is the §3.6.1 gemination of the Ca "+bare+
+					", which marks where Slot V ends; this word has no Slot V affix for it to end")
+				return g.DefaultSlotVI
+			}
 			fs.add("Ca", l.Ca, "no Ca complex is written "+l.Ca+
 				"; a Ca spells Configuration, Affiliation, Perspective, Extension and Essence in that order")
 			return g.DefaultSlotVI
