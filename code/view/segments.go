@@ -353,29 +353,6 @@ func slotVIICsSegment(a slots.AffixChunk, idx int, f g.Formative, lex *lexicon.L
 // makes each pair's slot inside the adjunct visible.
 //
 // marksMood disambiguates the Cn romanization (which is shared between
-// vnCnForms re-encodes a typed SlotVIII as the (Vn, Cn) pair the
-// romanization uses. Inverse of parse.ParseVnCn.
-func vnCnForms(s g.SlotVIII) (string, string) {
-	return slots.VnCnFromSlotVIII(s)
-}
-
-// reachVH returns the canonical romanization V_H vowel for a non-None reach
-// scope. "i" represents the formative reach by convention (could also
-// be "u").
-func reachVH(r g.ModularReach) string {
-	switch r {
-	case g.ModularReachCaseMoodIll:
-		return "a"
-	case g.ModularReachCaseMood:
-		return "e"
-	case g.ModularReachFormative:
-		return "i"
-	case g.ModularReachAdjacent:
-		return "o"
-	}
-	return ""
-}
-
 // Mood and Case-Scope). When nil, no adjacent formative was found and
 // Cn defaults to Mood — matching the spec's verbal-formative reading.
 func SegmentsModular(word string, ma g.ModularAdjunct, marksMood *bool) []Segment {
