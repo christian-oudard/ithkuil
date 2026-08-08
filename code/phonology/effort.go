@@ -1,6 +1,9 @@
 package phonology
 
-import "math"
+import (
+	"math"
+	"strings"
+)
 
 // Articulatory effort, as a cost per transition between two adjacent
 // segments. See docs/romanization_design.md for what this is for: one
@@ -172,19 +175,21 @@ func Transition(a, b Phoneme, across bool) float64 {
 	d := Distance(a, b)
 	cost := d*travelWeight + risingSonority(a, b)
 	cost += ocp(d)
-	if across && isConsonant(a) && isConsonant(b) && !isGlottalStop(b) {
+	if across && isConsonant(a) && isConsonant(b) {
 		// §1.5 conditions its remedy on both sides being consonants:
 		// "When a word ending in a consonant-form ... is followed in
 		// the same breath-group by another word beginning with a
 		// consonant-form". A vowel-final word before a consonant is
 		// the case the rule is trying to reach, so it pays nothing.
 		//
-		// Nor does a following glottal stop. §1.5's harm is "confusion
-		// as to which word the word-final and/or word-initial
-		// consonants belong to", and a glottal onset is the thing that
-		// says a word began here: §1.2 has it unwritten but pronounced
-		// on every vowel-initial word. There is nothing to be confused
-		// about, so there is nothing to remedy.
+		// A glottal onset is not exempt, though it was once made so
+		// here on the reasoning that it announces the boundary and so
+		// leaves nothing to confuse. §1.5 says consonant-final before
+		// consonant-initial, and §1.2 has the unwritten glottal stop
+		// "still be pronounced", so it is a consonant and the rule
+		// applies. Quijada agrees in practice: of the corpus positions
+		// where a Slot IX default could go either way before a
+		// vowel-initial word, he writes it every time.
 		cost += boundaryPenalty
 	}
 	return cost
@@ -344,9 +349,39 @@ func spanEnergy(words []string) float64 {
 			}
 			prev, havePrev, first = p, true, false
 		}
+		total += wordShapeCost(w)
 		prevWordEnd = true
 	}
 	return total
+}
+
+// wordShapeCost charges what is wrong with a word's ending regardless of
+// what follows it. §1.5 is about a boundary being ambiguous; this is
+// about the word itself.
+//
+// A bare word-final -h is the case. §4.1 permits it, "any single
+// consonant except -w or -y", and §1.6 exists because it is marginal:
+// it cannot stand before a word beginning h-, and a speaker reports it
+// is hard to hear at all, which is why mala and mala' were
+// indistinguishable. Quijada never writes one: none of the 583 distinct
+// corpus words ends in a bare -h, though §3.8.1.2 generates the shape
+// whenever a non-default V_N meets the default C_N with Slot IX elided.
+//
+// So the vowel after it is not a juncture repair but part of saying the
+// word, and eliding a Slot IX default that leaves -h is a bad trade
+// however the next word starts.
+func wordShapeCost(w string) float64 {
+	r := []rune(w)
+	n := len(r)
+	if n < 2 || r[n-1] != 'h' {
+		return 0
+	}
+	// -ph, -th, -kh, -ch, -čh are aspirated stops per §1.2.2, one
+	// segment rather than a final [h], and unaffected.
+	if strings.ContainsRune("ptkcč", r[n-2]) {
+		return 0
+	}
+	return bareFinalHCost
 }
 
 func isGlottalStop(p Phoneme) bool {
@@ -521,6 +556,11 @@ const (
 
 	// rhoticCost is charged on r and again, by half, on ř.
 	rhoticCost = 0.04
+
+	// bareFinalHCost is a word ending in an unsupported -h. Set above
+	// what a syllable costs, so restoring an elided default to avoid one
+	// is always the better trade; see wordShapeCost.
+	bareFinalHCost = 0.4
 
 	// obstruentGeminateCost is a held constriction. Above the sonorant
 	// geminate, which pays only the vanishing similarity term, and

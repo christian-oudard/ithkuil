@@ -22,6 +22,21 @@ import (
 // the numbers in effort.go are set rather than fitted, and nothing else
 // in the tree would show a change.
 //
+// What this now measures is §1.5 rather than the energy model. Read
+// literally the rule fills every time, "it is usually necessary to
+// append a vowel ... so as to avoid confusion as to which word the
+// word-final and/or word-initial consonants belong to", and since §1.2
+// makes every word consonant-initial its antecedent holds at every
+// junction after a consonant-final word. So the model agrees with all
+// 112 positions where Quijada wrote the default and none of the 18
+// where he elided. Those 18 are his "usually", and a speaker asked
+// about two families of them preferred the vowel both times.
+//
+// The consequence worth stating: the energy model decides nothing here.
+// The rule decides it. Its value is in the choices no rule settles, the
+// §1.7 glottal placement, the §3.2 shortcut, ranking candidates in
+// pickValid. Do not read this test as evidence about the model.
+//
 // Read the base rate before reading the score. He writes the default far
 // more often than he elides it, so a model that always filled would
 // score the written positions perfectly and the elided ones at zero,
@@ -33,9 +48,9 @@ import (
 // wiring it into pickValid rather than after.
 func TestEffortAgreesWithTheCorpusOnElision(t *testing.T) {
 	const (
-		wantWroteAgree  = 77
+		wantWroteAgree  = 112
 		wantWroteTotal  = 112
-		wantElidedAgree = 14
+		wantElidedAgree = 0
 		wantElidedTotal = 18
 	)
 
