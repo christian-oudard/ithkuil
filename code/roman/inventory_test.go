@@ -94,6 +94,43 @@ func TestInventory_DistinctWithinCategory(t *testing.T) {
 	}
 }
 
+// TestInventory_PairsAreDistinct is the same property as
+// DistinctWithinCategory over a much larger space: the romanization has
+// to be injective, so two formatives that are written the same way must
+// be the same grammar.
+//
+// Varying one value at a time cannot see a collision that needs two
+// slots filled to appear, and the Slot V against Slot VII collapse was
+// one of those. Comparing the grammar rather than the labels is what
+// lets the sweep run over combinations at all, since many combinations
+// name different coordinates and mean the same formative — Case/THM
+// with Stem/S1 is the bare baseline, and so is every other pair of
+// defaults.
+func TestInventory_PairsAreDistinct(t *testing.T) {
+	seen := map[string]inventory.Combination{}
+	var unwritable int
+	for _, c := range inventory.Pairs() {
+		out, err := roman.Word(c.Word)
+		if err != nil {
+			unwritable++
+			continue
+		}
+		prev, ok := seen[out]
+		if !ok {
+			seen[out] = c
+			continue
+		}
+		if !reflect.DeepEqual(prev.Word, c.Word) {
+			t.Errorf("%q is written by two different formatives\n  %s + %s\n  %s + %s",
+				out, prev.A, prev.B, c.A, c.B)
+		}
+	}
+	if len(seen) == 0 {
+		t.Fatal("no combination was written; the test is not exercising anything")
+	}
+	t.Logf("%d distinct words, %d combinations with no written form", len(seen), unwritable)
+}
+
 // TestInventory_RendersPronounceableWords requires what we write to be
 // a word by our own phonotactics. A round trip cannot see this: a form
 // both arms mishandle the same way still comes back equal, and it took

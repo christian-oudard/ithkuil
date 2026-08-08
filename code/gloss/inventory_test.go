@@ -108,3 +108,37 @@ func TestInventory_GlossDistinctWithinCategory(t *testing.T) {
 		seen[s.Category][out] = s.Abbrev
 	}
 }
+
+// TestInventory_GlossPairsAreDistinct is the same property over
+// combinations: the gloss has to be injective, so two formatives
+// glossing to one line must be the same grammar.
+//
+// This is the sweep the Slot V against Slot VII collapse would have
+// failed. The same affix means different things in the two slots — in
+// Slot V it applies to the stem alone, in Slot VII it has scope over
+// the whole C_A — and position relative to C_A was the only thing
+// saying which. An all-default C_A glossed to nothing, so both wrote
+// the same line and compose could not tell them apart on the way back.
+// One value at a time never reaches it: the collision needs an affix
+// and a default C_A at once, and AffixSlot is not a value in any
+// published table.
+func TestInventory_GlossPairsAreDistinct(t *testing.T) {
+	gl := inventoryGlosser(t)
+	seen := map[string]inventory.Combination{}
+	for _, c := range inventory.Pairs() {
+		out := gl.Word(c.Word, g.Text{c.Word}, 0)
+		prev, ok := seen[out]
+		if !ok {
+			seen[out] = c
+			continue
+		}
+		if !reflect.DeepEqual(prev.Word, c.Word) {
+			t.Errorf("%q is the gloss of two different formatives\n  %s + %s\n  %s + %s",
+				out, prev.A, prev.B, c.A, c.B)
+		}
+	}
+	if len(seen) == 0 {
+		t.Fatal("no combination was glossed; the test is not exercising anything")
+	}
+	t.Logf("%d distinct glosses", len(seen))
+}

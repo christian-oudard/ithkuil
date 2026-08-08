@@ -75,145 +75,37 @@ func withRoot(f g.Formative, edit func(*g.CrRoot)) g.Formative {
 
 // Samples returns one sample per grammatical value, in the order the
 // categories appear in the grammar.
+//
+// The formative-carried half comes from Axes, which Pairs also reads,
+// so the two sweeps cannot come to disagree about what the inventory
+// holds. AffixSlot is the one axis left out, being a structural choice
+// rather than a value in any published table, and
+// TestSamples_CoverTheInventory holds this list against search.Table.
 func Samples() []Sample {
 	var out []Sample
 	add := func(category, abbrev string, w g.Word) {
 		out = append(out, Sample{Category: category, Abbrev: abbrev, Word: w})
 	}
-	// addIf records a value that may be its category's default. A
-	// default's carrier is the baseline untouched, never a formative
+
+	// A default's carrier is the baseline untouched, never a formative
 	// with the default written into it: the two are the same grammar,
-	// and the baseline is the only one either arm produces.
-	addIf := func(isDefault bool, category, abbrev string, w g.Word) {
-		out = append(out, Sample{
-			Category: category, Abbrev: abbrev, Word: w, Unmarked: isDefault,
-		})
-	}
-
-	// Case (§4.4). The nine groups are one category to the grammar and
-	// nine to the tables; keep the table's names so a failure points at
-	// the page it is on.
-	for _, c := range g.AllCases {
-		f := nominal()
-		f.Final = g.UnframedNominal{Case: c}
-		addIf(c == g.THM, "Case/"+c.Group().String(), c.String(), f)
-	}
-
-	// Slot II: stem and version.
-	for _, x := range []g.Stem{g.S1, g.S2, g.S3, g.S0} {
-		f := withRoot(nominal(), func(r *g.CrRoot) { r.Stem = x })
-		addIf(x == g.S1, "Stem", x.String(), f)
-	}
-	for _, x := range []g.Version{g.PRC, g.CPT} {
-		f := withRoot(nominal(), func(r *g.CrRoot) { r.Version = x })
-		addIf(x == g.PRC, "Version", x.String(), f)
-	}
-
-	// Slot IV: function, specification, context.
-	for _, x := range []g.Function{g.STA, g.DYN} {
-		f := withRoot(nominal(), func(r *g.CrRoot) { r.SlotIV.Function = x })
-		addIf(x == g.STA, "Function", x.String(), f)
-	}
-	for _, x := range []g.Specification{g.BSC, g.CTE, g.CSV, g.OBJ} {
-		f := withRoot(nominal(), func(r *g.CrRoot) { r.SlotIV.Specification = x })
-		addIf(x == g.BSC, "Specification", x.String(), f)
-	}
-	for _, x := range []g.Context{g.EXS, g.FNC, g.RPS, g.AMG} {
-		f := withRoot(nominal(), func(r *g.CrRoot) { r.SlotIV.Context = x })
-		addIf(x == g.EXS, "Context", x.String(), f)
-	}
-
-	// Slot VI: the five Ca components, whose defaults are the unmarked
-	// Ca that g.DefaultSlotVI holds.
-	d := g.DefaultSlotVI
-	for _, x := range g.AllConfigurations {
-		f := nominal()
-		f.SlotVI.Configuration = x
-		addIf(x == d.Configuration, "Configuration", x.String(), f)
-	}
-	for _, x := range g.AllAffiliations {
-		f := nominal()
-		f.SlotVI.Affiliation = x
-		addIf(x == d.Affiliation, "Affiliation", x.String(), f)
-	}
-	for _, x := range g.AllPerspectives {
-		f := nominal()
-		f.SlotVI.Perspective = x
-		addIf(x == d.Perspective, "Perspective", x.String(), f)
-	}
-	for _, x := range g.AllExtensions {
-		f := nominal()
-		f.SlotVI.Extension = x
-		addIf(x == d.Extension, "Extension", x.String(), f)
-	}
-	for _, x := range g.AllEssences {
-		f := nominal()
-		f.SlotVI.Essence = x
-		addIf(x == d.Essence, "Essence", x.String(), f)
-	}
-
-	// Slot VIII, V_N half: the five series, one sample per value. Only
-	// the valence series has a default, MNO, which is why the other four
-	// always take a written slot.
-	for _, x := range g.AllValences {
-		f := nominal()
-		if x != g.MNO {
-			f.SlotVIII = g.VnCnValence{Valence: x}
+	// and the baseline is the only one either arm produces. That falls
+	// out of applying the value, a default's Apply either being a no-op
+	// or writing what is already there.
+	for _, ax := range Axes() {
+		if ax.Name == AffixSlotAxis {
+			continue
 		}
-		addIf(x == g.MNO, "Valence", x.String(), f)
-	}
-	for _, x := range g.AllPhases {
-		f := nominal()
-		f.SlotVIII = g.VnCnPhase{Phase: x}
-		add("Phase", x.String(), f)
-	}
-	for _, x := range g.AllEffects {
-		f := nominal()
-		f.SlotVIII = g.VnCnEffect{Effect: x}
-		add("Effect", x.String(), f)
-	}
-	for _, x := range g.AllLevels {
-		f := nominal()
-		f.SlotVIII = g.VnCnLevel{Level: x}
-		add("Level", x.String(), f)
-	}
-	for _, x := range g.AllAspects {
-		f := nominal()
-		f.SlotVIII = g.VnCnAspect{Aspect: x}
-		add("Aspect", x.String(), f)
-	}
-
-	// Slot VIII, C_N half. One consonant encodes both, and which label
-	// it takes is a fact about the formative's ending, so mood needs a
-	// verbal carrier and case-scope a nominal one.
-	for _, x := range g.AllMoods {
-		f := verbal()
-		if x != g.FAC {
-			f.SlotVIII = g.VnCnValence{MoodScope: x}
+		for _, v := range ax.Values {
+			f := ax.Baseline()
+			v.Apply(&f)
+			out = append(out, Sample{
+				Category: v.category(ax),
+				Abbrev:   v.Abbrev,
+				Word:     f,
+				Unmarked: v.Default,
+			})
 		}
-		addIf(x == g.FAC, "Mood", x.String(), f)
-	}
-	for _, x := range g.AllCaseScopes {
-		f := nominal()
-		if x != g.CCN {
-			f.SlotVIII = g.VnCnValence{MoodScope: g.CaseScopeToMood(x)}
-		}
-		addIf(x == g.CCN, "CaseScope", x.String(), f)
-	}
-
-	// Slot IX on a verbal formative: illocution, and the validations
-	// that only the assertive takes. ASR is the default illocution but
-	// is written anyway, the ending being what makes a formative verbal
-	// at all; OBS is the default validation and is not.
-	for _, vk := range g.AllVk {
-		f := verbal()
-		f.Final = g.UnframedVerbal{Vk: vk}
-		add("Illocution", vk.Tag(), f)
-	}
-	for _, x := range g.AllValidations {
-		f := verbal()
-		f.Final = g.UnframedVerbal{Vk: g.Assertive{Validation: x}}
-		addIf(x == g.OBS, "Validation", x.String(), f)
 	}
 
 	// Word classes that are their own carrier.
@@ -256,7 +148,10 @@ func Samples() []Sample {
 		add("Referent", r.String(), ref(r, g.NEU))
 	}
 	for _, e := range g.AllRefEffects {
-		addIf(e == g.NEU, "RefEffect", e.String(), ref(g.R1m, e))
+		out = append(out, Sample{
+			Category: "RefEffect", Abbrev: e.String(),
+			Word: ref(g.R1m, e), Unmarked: e == g.NEU,
+		})
 	}
 	return out
 }
