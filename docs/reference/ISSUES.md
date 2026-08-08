@@ -187,7 +187,25 @@ Whether one name for two forms is an error or a compression cannot be
 decided from the spreadsheet. §3.9.2 splits each of its affix families
 across a `w` increment and a `y` increment by case range, and these two
 carry that same pair of glides, so a range split is the obvious guess.
-Not yet checked against the affix document.
+Not yet checked against the affix document, which is where the answer
+would be if there is one.
+
+**Options.** Two decisions, and the second only arises if the first
+says the two forms are genuinely distinct.
+
+- **Check the affix document first.** If it names them apart, this is
+  a spreadsheet transcription defect and the fix is a sync, not a
+  decision. If it names them the same, the defect is Quijada's and A8
+  is the precedent for what that costs.
+- **Leave both rows as synced.** `SPT/3` stays ambiguous and `-ry`
+  stays unreachable by name. Nothing is invented and nothing is fixed.
+- **Gloss the unnameable one by its cluster,** `ry/3`. The same
+  trade-off G51 weighs for the §3.9.2 affixes, and it should be
+  decided once for both rather than twice.
+- **Name them apart locally.** A hand-added abbreviation would be
+  overwritten by the next sync unless `tools/sync_lexicon.py` carries
+  it, which is A8's objection to fixing an affix row in place.
+- **Raise it upstream,** where one name was assigned to two rows.
 
 ## Grammar
 
@@ -567,13 +585,65 @@ the namespace, and it has not been marking which tokens are its own.
 ACC, IAC, ANT and ULT are coinages rather than transcriptions. ACC
 collides with Quijada's Accidental bias, which is a defect of ours and
 not of the source. ANT and ULT stand where the community writes FRM
-and UNF. How the §3.9.2 affixes should be glossed is open: an invented
-code adds a fourth party to a namespace already unmanaged, the C_S
-cluster puts phonetics in a gloss that is phonetics-free everywhere
-but the root, and spelling the source's own words out is legible but
-abandons the shape every other token has. A guard that failed when a
-synced affix abbreviation landed on a grammar code would at least
-surface the next CNT at sync time rather than in a gloss.
+and UNF.
+
+**Options, on how to gloss the §3.9.2 affixes.** They are seven, and
+the C_S is the only thing in the word that separates a case-accessor
+from its inverse, so the gloss cannot leave the family unsaid.
+
+- **Bare case, as Quijada writes it.** Blocked, and worth recording as
+  blocked because it is the first thing anyone will propose. `ml-INS`
+  already composes to *mlalä*, a formative in the INSTRUMENTAL case.
+  His `INS₃` works only because the type subscript and the slot layout
+  of his notation tell an affix from a case, and ours has neither.
+- **Keep the invented codes.** ACC, IAC, CST. Every token keeps the
+  shape every other token has. Adds a fourth writer to an unmanaged
+  namespace, and ACC is already a collision.
+- **Invent non-colliding codes.** CAC or ACE for the accessor, IAC,
+  CST. Same shape, collision gone, still invention.
+- **The C_S cluster.** `sw/INS`, `sqw/INS`. No invention, and the
+  gloss already writes an affix the lexicon cannot name this way. Puts
+  phonetics into a gloss that is phonetics-free everywhere but the
+  root, and the root's exemption is earned by being central and
+  numerous, which fourteen clusters are not. The cluster also restates
+  the Type and the case range, which the rest of the token already
+  carries.
+- **The source's own words.** `Accessor/INS`, `Inverse/INS`. No
+  invention, no phonetics, and word-shaped tokens are already normal
+  here: `formative`, `adjacent`, `parent`, `concat`, `VIIDom`.
+  Longer than every neighbouring token, and it needs capitals to stay
+  clear of the lowercase-cluster reading, since every letter in
+  "accessor" is a legal one.
+
+Whichever is chosen, CST is attested community usage and the six
+accessors are not, so a rule that keeps CST and treats the accessors
+differently is defensible but leaves one named head among seven.
+
+**Options, on the coinages already in use.** ANT and ULT against the
+community's FRM and UNF, BEN1 against `1:BEN`.
+
+- Keep them and record the divergence in `ERRATA.md`, so a reader can
+  tell a departure from a transcription.
+- Adopt the community forms, on the ground that the namespace has one
+  reader and they are already writing in it.
+- Leave them unmarked, which is the present state and the reason this
+  entry exists.
+
+**Options, on CNT.** G41's reading applies unchanged: an affix carries
+a degree and an Aspect does not, so `CNT/3` and a bare `CNT` are
+distinguishable wherever both could stand.
+
+- Live with it on that reading, as G41 does for VRF.
+- Rename on our side, which departs from both sources at once.
+- Raise it upstream, where the two names were assigned.
+
+**Options, on catching the next one.** Nothing currently notices when
+`tools/sync_lexicon.py` pulls an affix abbreviation onto a grammar
+code or onto one of our coinages.
+
+- A test over `data.json` that fails on any such overlap.
+- A warning from `sync_lexicon.py` at sync time.
+- Nothing, and find out from a gloss.
 
 ## Lexicon
 
