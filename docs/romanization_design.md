@@ -16,38 +16,37 @@ This document separates them.
 
 ## The two forms
 
-**Explicit form.** Every slot in its place, every default written, no
-optional shortening taken. A structural image of the `Formative`. It is
-a function of one word and nothing else, and no rule fires while
-producing it. `roman.Formative` should return this.
+**Citation form.** The shortest spelling of one word, ranked by
+`slots.FromGrammar`: fewest syllables, then fewest glottal stops, then
+fewest runes, then fewest shortcuts. A function of one word and nothing
+else. `roman.Formative` and `roman.Word` return this, and it is what a
+dictionary entry, a gloss and a quoted example want.
 
-**Spoken form.** The optional shortenings applied, subject to the
-phonotactic rules that span word boundaries. It is a function of a
-span, not a word, because §1.5 makes the decision depend on the
-neighbour. `roman.Text` should return this.
+**Running text.** The same word chosen in the context of its
+neighbours. A function of a span, not a word, because §1.5 makes the
+choice depend on what follows. `roman.Text` returns this.
 
-The asymmetry is the design. Structure is per word, so the explicit
-form is per word. Elision is per position, so the spoken form is per
+The asymmetry is the design. Structure is per word, so the citation
+form is per word. Juncture is per position, so running text is per
 span.
 
-Put another way, the two forms sit on the two scales §2 names. The
-explicit form is the clearest one, and it is clear by construction
-rather than by scoring: nothing is elided, no shortcut is taken, no
-glottal stop is moved, so every distinction the grammar draws is
-written. The spoken form is the cheapest one to say. Neither needs a
-metric to be defined; a metric is needed only to choose among the
-spoken form's candidates.
+The two sit on the two scales §2 names, difficulty of pronunciation
+and confusability with another form, and the second is why running text
+is longer than citation form rather than shorter. A word said in
+isolation has no neighbour to be confused with; a word in a sentence
+does, and §1.5's remedy is to write back a vowel that citation form
+elided.
 
-That places the whole clarity-against-effort tradeoff inside the spoken
-form, and nowhere else. §3.9.1's relocation of a case glottal stop is
+That places the whole clarity-against-effort tradeoff inside running
+text, and nowhere else. §3.9.1's relocation of a case glottal stop is
 the example: moving it can shorten the word and can also put the case
 marker where it will not be heard. So the ranking has to know which
 segments carry information, not merely which are hard to say. A
 distinction lost is not a cost the effort model can see.
 
 Both are deterministic. This is not an orthographic option offered to a
-caller: one `Formative` has one explicit form, one `Text` has one
-spoken form.
+caller: one `Formative` has one citation form, one `Text` has one
+running-text form.
 
 ## Layout is the decision record
 
@@ -80,8 +79,9 @@ Formative  --FromGrammar-->  explicit Layout
 ## Mandatory and optional
 
 Not every shortening is a choice. Some the source states as
-unconditional, and those belong in the explicit form because declining
-them would produce a word the grammar does not admit.
+unconditional, and those are applied everywhere, because declining them
+would produce a word the grammar does not admit. Only the optional ones
+reach a candidate list.
 
 §3.8.1.2 states one as unconditional:
 
@@ -97,11 +97,36 @@ available:
 
 "Can elide", and conditioned on juncture. That one is the reducer's.
 
-Classifying each shortening against the source is the first piece of
-work, and it is research rather than judgment. The candidates are the
-Slot IX V_C and V_K defaults, the Slot II V_V default, the §3.2 Slot
-IV/VI Ca shortcut, the §3.8.1.2 C_N-to-Slot-VI move, and the §3.9.1
-glottal relocation for cases 37 through 52.
+## The eight decisions
+
+The slack the sources leave is eight decisions, and they are the whole
+of it. Five belong to a formative, and `slots.Spellings` enumerates
+them by taking every combination and keeping what is legal and reads
+back unchanged. Counted over the 507 corpus formatives, by how many
+each one actually decides:
+
+```
+§3.2 Ca shortcut          250    malá / wam
+Slot II default V_V       164    mal / amal
+Slot IX default V_C, V_K  102    mal / malá
+§3.9.1 moved glottal       42    kši'la / kšila'a
+§3.8.1.2 C_N into Ca        7    ebglalahlá / ebglahlá
+```
+
+Four corpus formatives in five have more than one legal spelling:
+
+```
+1 spelling    97 words        4 spellings   24
+2 spellings  281              5 spellings   11
+3 spellings   79              6 spellings   15
+```
+
+The other three belong elsewhere. The V_S default on a §4.1.1
+single-affix adjunct and the V_Z default on a §4.1.2 multiple-affix
+adjunct are the same elide-or-write choice as Slot IX; §4.1.2's leading
+`ë-`, granted "if phonotactically necessary", is a repair at the other
+end of the word. And §1.5 itself offers a choice no word makes alone:
+the vowel may go on either side of the junction.
 
 ## Interior and edge
 
@@ -119,21 +144,26 @@ Nothing across a boundary depends on where a word put its glottal stop
 or whether it moved C_N into Slot VI. So:
 
 **Interior decisions** are settled on one Layout with no context. The
-§3.9.1 glottal relocation, the §3.8.1.2 C_N move, the §3.2 shortcut and
-the Slot II default are interior.
+§3.9.1 glottal relocation and the §3.8.1.2 C_N move are interior.
 
-**Edge decisions** are the only ones the span-level pass needs to see.
+**Edge decisions** are the ones the span-level pass needs to see.
 Filling or eliding the Slot IX vowel is the main one, because it
-decides whether the word ends in a vowel or a consonant.
+decides whether the word ends in a vowel or a consonant. The Slot II
+default is the same choice at the other end. So is the §3.2 shortcut,
+which is easy to file as interior and is not: `malá` and `wam` are one
+formative with different initial consonants, and `wam` and `wamá`
+differ at the final edge as well, so the shortcut moves both edges at
+once and §7.1 reads the cluster spanning the seam.
 
 That keeps the span-level pass small. Each word offers its legal
-spellings in preference order and the pass picks a combination that
-satisfies the boundary rules. `roman/referential.go` already works this
-way within a word: it builds candidate spellings and `pickValid` takes
-the first that `phonology.Legal` accepts. The span-level pass is the
+spellings in preference order and the pass picks the first that
+satisfies the boundary rules. `roman/referential.go` works this way
+within a word already: it builds candidate spellings and `pickValid`
+takes the first that `phonology.Legal` accepts. `roman.Text` is the
 same shape one level up, and it works on strings plus a short candidate
 list, so word classes without a Layout (referentials, and the bias,
-register, carrier, modular and parsing adjuncts) need no new machinery.
+register, carrier, modular and parsing adjuncts) need no new machinery
+— they offer one spelling and the pass takes it.
 
 ## Why filling the Slot IX default is usually right
 
@@ -176,13 +206,51 @@ Where the source leaves genuine slack, something has to choose. §1.5
 offers the vowel at either end. §7.1 offers three remedies. §1.5 says
 "usually necessary" rather than "necessary".
 
-The choice is made by a cost model, under one constraint:
+Rules do most of the choosing and the cost model breaks one tie. The
+division follows the structural-against-phonetic split this document
+rests on, and it was settled by measurement rather than by taste.
 
-**The cost model may only rank forms the rules already permit.** It
-never makes an illegal form legal, and it never rejects a legal one. It
-is a selector over a candidate set, not a validator. A wrong cost model
+Most of the slack does not need a model. Ranking `pickValid`'s
+candidate sets by energy instead of by the hand order changes the
+answer at 60 of 5,208 positions, and all 60 are one thing, a word-final
+bare `-h`. Nothing in the model's tongue-travel, voicing or sonority
+terms decided any of the rest. A rule that can be stated beats a number
+that has to be trusted, so that one became a rule.
+
+The §3.9.1 case glottal is the exception, and it is a real one. It may
+sit on the case vowel or ride onto an earlier consonant, and no rule
+yet stated fits the judgments: moving it is right in `kši'la` over
+`kšila'a` and wrong in `zalë'i` over `za'lëi`. "Keep it between two
+vowels" gets the first backwards and "take the fewest syllables" gets
+the second backwards. The model has both, and six such pairs in a row,
+so `roman.pickInSpan` asks it rather than applying a rule.
+
+The tie-break is restricted to spellings that begin with the same
+consonant-form, which is what separates a phonetic variant from a
+structural one. Two spellings that open differently differ in which
+slots are written — the §3.2 shortcut is what turns `onţlal` into
+`wonţla` — and that choice is not made on effort grounds. A speaker
+asked about it preferred `onţlal` and `avsal`, because too many words
+would otherwise start with `w`. That is confusability across the
+vocabulary, §2's second criterion, and an articulation model has no
+term that could see it.
+
+Whichever does the choosing, one constraint holds:
+
+**Only forms the rules already permit may be ranked.** Ranking never
+makes an illegal form legal and never rejects a legal one. It is a
+selector over a candidate set, not a validator. A wrong ranking
 therefore produces a clumsy word, never an ungrammatical one, and the
 correctness path does not run through it.
+
+The model's other job is the check a rule cannot perform on itself. It
+is fitted to a speaker's pairwise effort judgments and the rules are
+fitted to §1.5 and the corpus, so the two are independent and either can
+catch the other. `roman.TestRulesChooseSpellingsTheEffortModelCannotBeat`
+swaps one word's spelling at a time across the corpus and re-scores the
+span. It stands at 27 of 452 positions, and all 27 are the §3.2 shortcut
+the speaker declined. Pinned rather than driven to zero, because
+declining them is a decision about the language and not a defect.
 
 Its terms are the source's own stated reasons rather than invented
 phonetics. §2 of the phonotactics names two in its opening sentence:
@@ -497,18 +565,24 @@ foreign name before a carrier adjunct takes one after it (§4.5).
 
 ## Testing
 
-Splitting the layers gives each one a test it can fail on its own.
+Splitting the layers gives each one a test it can fail on its own, and
+a structural error and a stylistic one fail different tests.
 
-- Explicit form: round trip. Reading the explicit form of every
+- Citation form: round trip. Reading the citation form of every
   `inventory` sample returns the sample. No juncture, no corpus, no
   cost model.
-- Reducer: corpus agreement. The spoken form of a parsed corpus
-  sentence should be the sentence Quijada wrote.
-- Cost model: the same corpus, read as a fit rather than as a pass or
-  fail, so that a disagreement is reported with the rule it turns on.
-
-Under the present single-layer arrangement these are one test, and it
-cannot distinguish a structural error from a stylistic one.
+- Candidate set: every spelling `slots.Spellings` offers must be legal
+  and must parse back to an equal `Formative`. Checked inside
+  `Spellings` on every call, because a shortening that changes the
+  reading is a worse failure than one that does not apply.
+- Junction rule: corpus agreement, counted rather than compared.
+  `TestSpanFillsEveryJunctionItCan` writes back Quijada's 340 sentences
+  and counts the words left consonant-final before another word. Not
+  string equality against his text, because he elides where §1.5 says
+  "usually" and we fill every time.
+- Cost model: `TestRulesChooseSpellingsTheEffortModelCannotBeat`, the
+  same corpus read as a fit rather than as a pass or fail, so a
+  disagreement is reported with the word it turns on.
 
 ## Open questions
 
@@ -526,35 +600,45 @@ is written `(a)` in §3.9.1 and the V_K default `(á)` in §3.9.3.3. V_K
 requires ultimate stress, so filling a verbal adds a syllable and a
 diacritic where filling a nominal adds neither.
 
-**Word-final bare `-h`.** §4.1 permits it, "any single consonant except
--**w** or -**y**", and §3.8.1.2 generates it whenever a non-default V_N
-meets the default C_N with Slot IX elided. It appears in 37 of 294
-`inventory` samples and in 0 of 583 corpus words. Whether that gap is
-the juncture rules operating or a bare `-h` being avoided outright is
-not settled by anything found so far.
+**Why is a word-final bare `-h` never written?** §4.1 permits it, "any
+single consonant except -**w** or -**y**", and §3.8.1.2 generates it
+whenever a non-default V_N meets the default C_N with Slot IX elided.
+It appears in 37 of 294 `inventory` samples and in 0 of 583 corpus
+words. We avoid it, on §1.6 existing because the ending is marginal and
+on a speaker reporting it is barely audible, which is also why `mala`
+and `mala'` were hard to tell apart. What is not settled is whether the
+corpus gap is that avoidance or merely the juncture rules operating on
+every word that could have shown one.
 
 ## Order of work
 
-1. Correct the effort model where speaker judgments already say it is
-   wrong. It stands at 36 of 48. The rhotic term comes first: ř is dear
-   for being a rhotic and not for being uvular, which the current
-   `placeCost` gets backwards, and x is only "hard-ish". Then split
-   geminates by sonorancy, since `alla` is easy while `assa` and `atta`
-   are not: holding a constriction is the cost, which is Kirchner's own
-   account of why geminates resist lenition.
-2. Rank by energy instead of by hand-ordered legality. `pickValid` has
-   three callers building real candidate sets and takes the first that
-   can be said rather than the cheapest. That is the selection point,
-   selecting on the wrong criterion, and wiring it is small. Do it after
-   1, because wiring a model with known wrong answers propagates them.
-3. Make elision conditional. Defaults are elided unconditionally today,
-   and three slots have now turned up where the source conditions it on
-   what elision produces: Slot IX against §1.5 juncture, and V_S and V_Z
-   against §4.2. §3.1.3 states the condition outright. One policy, not
-   three bugs.
+1. Correct the effort model where speaker judgments say it is wrong. It
+   stands at 40 of 49, and nine of the ten misses are one gap: a vowel
+   costs nothing of its own, so `SegmentCost` scores a, e and ä alike
+   and makes ë cheaper than o for being unrounded, which is backwards.
+   The judgments give the ordering to fit — e over a, i over u, a over
+   ä, e over ö, i over ü, o over ë — and §1.2.1 gives the mechanism, ë
+   being "[ɤ] or [ʌ] or [ə]" and so the marked vowel rather than
+   roundness as such. A diphthong wants travel from its first element
+   plus the second element's own cost, which is what makes au beat ai
+   after a while ëi beats ëu after ë.
+2. Find out what separates the §3.9.1 pairs. The model gets them and no
+   stated rule does, which is the one place a number is currently
+   trusted over a reading of the source. `kši'la` beats `kšila'a` and
+   `zalë'i` beats `za'lëi`, and the difference may be that the first
+   puts identical vowels either side of the glottal — a hypothesis, not
+   a finding. Until it is one, `pickInSpan` asks the model.
+3. Make the remaining elisions conditional. Slot IX and Slot II are
+   done, through `slots.Spellings` and the junction pass in
+   `roman.Text`. V_S and V_Z are not: `pickValid` restores them only
+   when eliding is outright illegal, never when it merely reads badly,
+   and the adjunct classes offer one spelling to the span pass rather
+   than a candidate list.
 4. Teach the ranking which segments are load-bearing, so §3.9.1 and the
    other information-carrying choices can be made on clarity rather than
-   on effort.
+   on effort. The glottal stop in cases 37 through 52 carries the case;
+   the choice between two spellings of a Slot IX default carries
+   nothing, and one number cannot currently tell them apart.
 5. Enforce §8 and §9 at the root and affix boundary. No such boundary
    exists in the code yet, and the §9 table needs embedding rather than
    parsing from this directory at runtime.

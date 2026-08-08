@@ -47,7 +47,7 @@ import "testing"
 //     Similarity avoidance should peak at small non-zero distance and
 //     vanish at zero, not peak at zero.
 func TestEffortMatchesSpeakerJudgments(t *testing.T) {
-	t.Skip("40 of 49; vowels have no cost of their own yet, see below")
+	t.Skip("43 of 52; vowels have no cost of their own yet, see below")
 
 	// easier, harder
 	judgments := [][2]string{
@@ -149,6 +149,34 @@ func TestEffortMatchesSpeakerJudgments(t *testing.T) {
 	// place and a rhotic costs again on top of it. That makes batch
 	// one's axla over aţla the outlier, and it was hedged as "slightly"
 	// when given.
+
+	// Batch four asked about §3.9.1, where the case glottal may sit on
+	// the case vowel or ride onto an earlier consonant, and about §3.2,
+	// where a shortcut puts a w- or y- at the front of a word that would
+	// otherwise open on §1.2's unwritten glottal stop. Both were put as
+	// real corpus words rather than nonce syllables.
+	judgments = append(judgments, [][2]string{
+		{"zalë'i", "za'lëi"},     // the glottal stays on the case vowel
+		{"ušvile'i", "ušvi'lei"}, // and again, one syllable longer
+		{"kši'la", "kšila'a"},    // but here the moved one wins
+	}...)
+
+	// The third of those is the one worth keeping. It runs against the
+	// other two and against the intervocalic reading of batch three, and
+	// no rule offered so far predicts all three: "keep the glottal
+	// between two vowels" gets kši'la backwards, "take the fewest
+	// syllables" gets zalë'i backwards. The model has all three, so
+	// whatever separates them is already in the transition costs and not
+	// in anything stateable yet. That is why roman.pickInSpan asks the
+	// model about glottal placement instead of applying a rule.
+	//
+	// The §3.2 pairs went the other way and are not listed, because they
+	// are not judgments about effort. The speaker prefers onţlal to
+	// wonţla and avsal to wavsa, and the reason given was that too many
+	// words start with w. That is confusability across the vocabulary,
+	// §2's second criterion, and this file scores Energy, which is the
+	// first. Adding them here would score a preference the metric is not
+	// measuring.
 
 	// Batch three, on glottal stops, came back on a different scale.
 	// The speaker answered it in terms of clarity rather than effort,

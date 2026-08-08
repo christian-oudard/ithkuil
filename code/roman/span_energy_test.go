@@ -24,38 +24,41 @@ import (
 // span finds a rule that left an easy win on the table without a
 // Viterbi pass that would need its own test.
 //
-// It stands at 34 of 452 positions, and the 34 are not noise. They are
-// two families, each a decision the rules do not currently make:
+// It stands at 27 of 452 positions, and the 27 are one family, not
+// noise. Every one of them wants the §3.2 Ca shortcut, which the
+// canonical ranking takes only when it buys a syllable: onţlal ->
+// wonţla, avsal -> wavsa, učral -> wučra, ebglahlá -> webglahlá. The
+// mechanism is §1.2's unwritten glottal onset. A word spelled
+// vowel-initially still begins with a glottal stop that "must still be
+// pronounced", and the shortcut puts a w- or y- there instead, which is
+// cheaper to say. Most are span-final, where the junction rule does not
+// reach.
 //
-//  1. Twenty-seven want the §3.2 Ca shortcut, which the canonical
-//     ranking takes only when it buys a syllable: onţlal -> wonţla,
-//     avsal -> wavsa, učral -> wučra, ebglahlá -> webglahlá. The
-//     mechanism is §1.2's unwritten glottal onset. A word spelled
-//     vowel-initially still begins with a glottal stop that "must
-//     still be pronounced", and the shortcut puts a w- or y- there
-//     instead, which is cheaper. Most of these are span-final, where
-//     rule 1 does not reach.
+// They stay open, and the speaker's reason for declining them is why
+// this number is pinned rather than driven to zero: too many words
+// would start with w. That is a fact about the distribution of the
+// vocabulary, not about the tongue, and an articulation model has no
+// term that could see it. It is also the reason pickInSpan breaks ties
+// only between spellings that open alike.
 //
-//  2. Seven want the §3.9.1 glottal left where it was rather than
-//     moved earlier: za'lëi -> zalë'i, ušvi'lei -> ušvile'i,
-//     amtri'lëi -> amtrilë'i, kši'lütřackoi -> kšilütřacko'i. In every
-//     one the two spellings have the same syllable count, so moving
-//     the glottal buys nothing and costs the intervocalic position.
+// A second family of seven used to sit here and no longer does. Those
+// wanted the §3.9.1 case glottal left where it was rather than moved
+// earlier — za'lëi over zalë'i, ušvi'lei over ušvile'i — and the
+// speaker agreed with the model on both. They are now decided by the
+// model, inside pickInSpan, which is why they have gone.
 //
-// Family 2 also settles what looked like a contradiction in the
-// speaker's judgments. ma'ala over ma'la and mala'i over ma'lai put the
-// glottal between two vowels; kši'la over kšila'a does not. The
-// difference is length: the first two are free, kšila'a costs a
-// syllable. One rule covers all three, and it is the rule this family
-// is asking for.
+// That family is also the case for keeping the model at all. No rule
+// stated so far fits it. Moving the glottal is right in kši'la over
+// kšila'a and wrong in zalë'i over za'lëi, the speaker judged both, and
+// neither "keep it intervocalic" nor "take the fewest syllables"
+// predicts the pair. The model gets both, and six such pairs in a row.
 //
-// Pinned rather than asserted at zero, because closing either family is
-// a decision about the language and not a bug fix. A failure is
-// informative either way: the rules regressing shows up as a span made
-// harder to say, and a weight moving in effort.go shows up here as a
-// disagreement about a real word rather than as a number in a log.
+// A failure here is informative either way: the rules regressing shows
+// up as a span made harder to say, and a weight moving in effort.go
+// shows up as a disagreement about a real word rather than as a number
+// in a log.
 func TestRulesChooseSpellingsTheEffortModelCannotBeat(t *testing.T) {
-	const wantBeaten = 34
+	const wantBeaten = 27
 	const wantPositions = 452
 
 	beaten, spans, positions := 0, 0, 0

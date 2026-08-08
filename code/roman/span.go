@@ -104,11 +104,31 @@ func Text(t g.Text) (string, error) {
 	return b.String(), nil
 }
 
-// pickInSpan takes the first spelling that suits the position, falling
-// back to the canonical one when none does. A word with nothing else to
-// offer is written as it is: these are preferences between legal forms,
-// never a reason to fail.
+// pickInSpan takes the spelling that suits the position, falling back to
+// the canonical one when none does. A word with nothing else to offer is
+// written as it is: these are preferences between legal forms, never a
+// reason to fail.
+//
+// Rules decide first, and where they leave a choice the effort model
+// breaks the tie — but only between spellings that begin the same way.
+//
+// The restriction is the point, and it is the structural-versus-phonetic
+// split this package's design rests on. Two spellings that differ in
+// their opening consonant differ in which slots are written: the §3.2
+// shortcut is what turns onţlal into wonţla, and it is a choice about
+// how the word is built. Two that open alike and differ only in where
+// the §3.9.1 case glottal sits are the same word said two ways, and
+// that is a phonetic choice with nothing else to decide it. §1.2 gives
+// every word a consonant onset already, written or not, so effort has
+// little to say about the first segment; how common a w- is across the
+// vocabulary is a fact about the lexicon, which an articulation model
+// cannot see and a speaker minds.
+//
+// The glottal is the case marker for §3.9.1's cases 37 through 52, so
+// this is also the one tie the model breaks that carries meaning. It
+// moves the segment, never drops it.
 func pickInSpan(cands []string, more bool) string {
+	var allowed []string
 	for _, c := range cands {
 		if more && !endsInVowel(c) {
 			continue
@@ -116,9 +136,31 @@ func pickInSpan(cands []string, more bool) string {
 		if phonology.EndsInBareH(c) {
 			continue
 		}
-		return c
+		allowed = append(allowed, c)
 	}
-	return cands[0]
+	if len(allowed) == 0 {
+		return cands[0]
+	}
+	best := allowed[0]
+	bestEnergy := phonology.Energy(best)
+	for _, c := range allowed[1:] {
+		if !opensAlike(c, best) {
+			continue
+		}
+		if e := phonology.Energy(c); e < bestEnergy {
+			best, bestEnergy = c, e
+		}
+	}
+	return best
+}
+
+// opensAlike reports whether two spellings of one word begin with the
+// same consonant-form, which is what tells a phonetic variant apart
+// from a structural one.
+func opensAlike(a, b string) bool {
+	ca := phonology.SplitConjuncts(a)
+	cb := phonology.SplitConjuncts(b)
+	return len(ca) > 0 && len(cb) > 0 && ca[0] == cb[0]
 }
 
 func endsInVowel(w string) bool {
