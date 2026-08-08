@@ -30,6 +30,21 @@ The asymmetry is the design. Structure is per word, so the explicit
 form is per word. Elision is per position, so the spoken form is per
 span.
 
+Put another way, the two forms sit on the two scales §2 names. The
+explicit form is the clearest one, and it is clear by construction
+rather than by scoring: nothing is elided, no shortcut is taken, no
+glottal stop is moved, so every distinction the grammar draws is
+written. The spoken form is the cheapest one to say. Neither needs a
+metric to be defined; a metric is needed only to choose among the
+spoken form's candidates.
+
+That places the whole clarity-against-effort tradeoff inside the spoken
+form, and nowhere else. §3.9.1's relocation of a case glottal stop is
+the example: moving it can shorten the word and can also put the case
+marker where it will not be heard. So the ranking has to know which
+segments carry information, not merely which are hard to say. A
+distinction lost is not a cost the effort model can see.
+
 Both are deterministic. This is not an orthographic option offered to a
 caller: one `Formative` has one explicit form, one `Text` has one
 spoken form.
@@ -517,3 +532,29 @@ meets the default C_N with Slot IX elided. It appears in 37 of 294
 `inventory` samples and in 0 of 583 corpus words. Whether that gap is
 the juncture rules operating or a bare `-h` being avoided outright is
 not settled by anything found so far.
+
+## Order of work
+
+1. Correct the effort model where speaker judgments already say it is
+   wrong. It stands at 36 of 48. The rhotic term comes first: ř is dear
+   for being a rhotic and not for being uvular, which the current
+   `placeCost` gets backwards, and x is only "hard-ish". Then split
+   geminates by sonorancy, since `alla` is easy while `assa` and `atta`
+   are not: holding a constriction is the cost, which is Kirchner's own
+   account of why geminates resist lenition.
+2. Rank by energy instead of by hand-ordered legality. `pickValid` has
+   three callers building real candidate sets and takes the first that
+   can be said rather than the cheapest. That is the selection point,
+   selecting on the wrong criterion, and wiring it is small. Do it after
+   1, because wiring a model with known wrong answers propagates them.
+3. Make elision conditional. Defaults are elided unconditionally today,
+   and three slots have now turned up where the source conditions it on
+   what elision produces: Slot IX against §1.5 juncture, and V_S and V_Z
+   against §4.2. §3.1.3 states the condition outright. One policy, not
+   three bugs.
+4. Teach the ranking which segments are load-bearing, so §3.9.1 and the
+   other information-carrying choices can be made on clarity rather than
+   on effort.
+5. Enforce §8 and §9 at the root and affix boundary. No such boundary
+   exists in the code yet, and the §9 table needs embedding rather than
+   parsing from this directory at runtime.
