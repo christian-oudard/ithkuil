@@ -167,17 +167,13 @@ func TestLoad_LocalOnlyAffix(t *testing.T) {
 
 // A C_R identifies a root, so two roots cannot share one. Five do in
 // the upstream spreadsheet: cfw, ksmy, lzbḑ, nļt and rţnw, each a pair
-// of unrelated senses. One of ksmy's two is retired, and
-// tools/sync_lexicon.py drops it, which leaves four in data.json.
+// of unrelated senses.
 //
-// The defect is upstream's and not ours to correct: neither entry of a
-// pair is obviously the wrong one, and editing data.json by hand would
-// be undone by the next sync. What is ours is to not lose the
-// collisions silently. Both readers keep the first of each pair, so the
-// second is dropped either way, and this pins which clusters that
-// happens to. It fails when the set changes in either direction: when
-// upstream fixes one, so the note here can go, and when upstream adds
-// one, so a root does not vanish unnoticed.
+// Every collision this once carried has been resolved upstream, so the
+// list is empty. The guard is kept rather than deleted: both readers
+// keep the first of a pair and drop the second, so a collision
+// reintroduced upstream would lose a root silently. It fails in either
+// direction, which is the point.
 func TestParse_DuplicateClusters(t *testing.T) {
 	b, err := os.ReadFile(dataPath("data.json"))
 	if err != nil {
@@ -202,7 +198,10 @@ func TestParse_DuplicateClusters(t *testing.T) {
 		seen[r.Cr] = r.Stem1
 	}
 
-	want := []string{"cfw", "lzbḑ", "nļt", "rţnw"}
+	// Upstream has resolved every collision this once pinned: cfw,
+	// lzbḑ, nļt and rţnw. The guard stays and the list is empty, so a
+	// new one cannot appear without a root vanishing noticeably.
+	var want []string
 	var got []string
 	for cr := range collisions {
 		got = append(got, cr)
