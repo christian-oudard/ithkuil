@@ -100,3 +100,40 @@ func TestParse_AccessorIsNotTheAccidentalBias(t *testing.T) {
 		t.Errorf("a lone ACC is the bias:\n%s", out)
 	}
 }
+
+// Three abbreviations are claimed by two things at once, and a degree
+// is what separates two of them: a degree binds to an affix and to
+// nothing else, so a code carrying one is an affix whatever else is
+// spelled the same.
+//
+//	ACC  the Accidental bias   + our case-accessor family
+//	ANT  an affix              + our name for the framed relation
+//	CNT  the Continuative Aspect + an affix
+//
+// CNT is the one that cannot be renamed away: both readings come from
+// the sources. Asked in the wrong order, "ml-CNT/1" was given a
+// Continuative Aspect it does not have beside the Degree of Centrality
+// it does, and "ml-ANT/3" a framed relation it does not have.
+func TestParse_ACodeWithADegreeIsAnAffix(t *testing.T) {
+	for _, tc := range []struct{ expr, want, notWant string }{
+		{"ml-ANT/3", "Degree of Anticipation", "Framed Verbal"},
+		{"ml-CNT/1", "Degree of Centrality", "Continuative"},
+	} {
+		word, _, code := runCLI("-data", dataFile(), "compose", tc.expr)
+		if code != 0 {
+			t.Fatalf("compose %s exit %d", tc.expr, code)
+		}
+		w := strings.TrimSpace(strings.SplitN(word, "\n", 2)[0])
+		out, _, code := runCLI("-data", dataFile(), "parse", w)
+		if code != 0 {
+			t.Fatalf("parse %s exit %d", w, code)
+		}
+		if !strings.Contains(out, tc.want) {
+			t.Errorf("%s (%s) missing %q:\n%s", tc.expr, w, tc.want, out)
+		}
+		if strings.Contains(out, tc.notWant) {
+			t.Errorf("%s (%s) claims %q, which it does not carry:\n%s",
+				tc.expr, w, tc.notWant, out)
+		}
+	}
+}

@@ -889,6 +889,19 @@ func degreeAfter(tokens []gloss.Token, i int) int {
 }
 
 func lookupCode(code string, degree int, lex *lexicon.Lexicon) (GlossaryEntry, bool) {
+	// A degree binds to an affix and to nothing else, so a code
+	// carrying one is an affix whatever else shares its spelling. Three
+	// abbreviations do: ACC is a Bias and our accessor family, ANT is
+	// an affix and our name for the framed relation, and CNT is both an
+	// Aspect and an affix — that last pair comes from the sources and
+	// cannot be renamed away. Asked in the other order, "ml-CNT/1" was
+	// given a Continuative Aspect it does not have, beside the Degree
+	// of Centrality it does.
+	if degree >= 1 {
+		if e, ok := affixEntry(code, degree, lex); ok {
+			return e, true
+		}
+	}
 	if hits := search.LookupGrammar(code); len(hits) > 0 {
 		return GlossaryEntry{
 			Category: categoryForCode(code, ""),
@@ -911,6 +924,11 @@ func lookupCode(code string, degree int, lex *lexicon.Lexicon) (GlossaryEntry, b
 			Meaning:  g.Meaning(code),
 		}, true
 	}
+	return affixEntry(code, degree, lex)
+}
+
+// affixEntry resolves a code against the affix lexicon.
+func affixEntry(code string, degree int, lex *lexicon.Lexicon) (GlossaryEntry, bool) {
 	if lex == nil {
 		return GlossaryEntry{}, false
 	}
