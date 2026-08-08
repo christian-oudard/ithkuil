@@ -319,6 +319,40 @@ Quijada gives none.
 **Status.** `adopted`
 
 **Where.** `gloss/gloss.go:301`, `affixes`.
+### §§9-11 — the lexicon is not bound by the conjunct tables
+
+**Source.** §§9, 10 and 11 of the phonotactics document enumerate the
+tri-, tetra- and penta-consonantal conjuncts that "can be roots", as
+products of per-position consonant sets. The community lexicon does not
+stay inside them:
+
+| table | product rows | roots of that length | outside |
+|---|---|---|---|
+| §9 tri | 129 | 2138 | 133 (6.2%) |
+| §10 tetra | 357 | 2467 | 236 (9.6%) |
+| §11 penta | 140 | 676 | 89 (13.2%) |
+
+These are not exotic entries. `vskw`, `vsky`, `vskl` and the rest of
+that block are ordinary vocabulary, and `lzbḑ` and `lzbv` sit in a
+series whose other members §10 does permit.
+
+**Decision.** Follow the lexicon. The tables describe what §§1-7 allow
+rather than legislating over the vocabulary, and the same documents
+disagree elsewhere in the same direction — see §4.7, where the grammar
+publishes adjuncts the phonotactics forbids. A parser that rejected a
+tenth of the lexicon would be wrong about the language as it is used.
+
+It has a practical consequence for the entries below. Where we move a
+root off a collided C_R we take a §10-permitted slot if one is free,
+and say so where none is. For `-rţnw-` none was: §10's row for that
+shape is `rř` + any + `n` + `wy`, so `rţn` admits only `w` and `y`,
+and both are taken by the series that keeps the slot.
+
+**Status.** `adopted`
+
+**Where.** Nothing enforces the tables, which is the point. `phonology`
+implements §§1-7, and `TestSection8GridMatchesRules` checks §8 against
+them; §§9-11 are transcribed but not consulted.
 
 ---
 
@@ -368,7 +402,9 @@ Vitaceae is two entries, `rţn` and `rţnw`, whose second lands on
 rosoideae's seventh.
 
 **Decision.** Rosoideae 7 keeps `rţnw`; vitaceae 2 takes **`rţnl`**,
-the next free slot in the series after `rţnw` and `rţny`. A ten-member
+the next free slot in the series after `rţnw` and `rţny`. `rţnl` is
+outside §10, which admits only `rţnw` and `rţny` for this shape and
+has nothing free; see §§9-11 above. A ten-member
 run with no gaps has the stronger claim than a two-member one that
 overlaps it. The displacement is determined; the destination is chosen.
 

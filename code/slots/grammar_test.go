@@ -301,3 +301,32 @@ func TestVvGlottalSurvivesElision(t *testing.T) {
 		}
 	}
 }
+
+// §3.8.1.2 moves a Pattern-1 C_N into the Slot VI position, so hl, hr,
+// hm, hn or hň lands where a C_A would be. §3.6.1 would then have to
+// geminate it, and doubling an h is not a thing — hhl is what our own
+// rules produce and nobody has said it is sayable.
+//
+// The question never arises: cnCaShortcutEligible refuses the move
+// whenever Slot V holds an affix, which is exactly when gemination is
+// needed. This pins that the two rules stay out of each other's way,
+// because the alternative is emitting a form we cannot defend.
+func TestMovedCnNeverNeedsGemination(t *testing.T) {
+	for _, m := range []g.Mood{g.SUB, g.ASM, g.SPC, g.COU, g.HYP} {
+		for _, affixes := range [][]g.Affix{
+			nil,
+			{{Consonant: "sk", Type: g.Type1Affix, Degree: 1}},
+			{{Consonant: "sk", Type: g.Type1Affix, Degree: 1},
+				{Consonant: "pt", Type: g.Type1Affix, Degree: 1}},
+		} {
+			f := g.MinimalFormative("čl")
+			f.SlotVIII = g.VnCnValence{Valence: g.MNO, MoodScope: m}
+			f.SlotV = affixes
+			got := Render(FromGrammar(f))
+			if strings.Contains(got, "hh") {
+				t.Errorf("%v with %d Slot V affixes renders %q, geminating a moved C_N",
+					m, len(affixes), got)
+			}
+		}
+	}
+}
