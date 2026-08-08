@@ -174,8 +174,7 @@ func TestCheckProhibitedPair_GeminatesAreAllowed(t *testing.T) {
 	// Nothing bars çç or ļļ. §3.6.1 gemination builds both — its own
 	// worked examples are çkl → ççkl and tçkl → tççkl — and the corpus
 	// attests them (wiapļļalká, hamphelsuirççaité). The "§2.24" that
-	// prohibited them was ours, not Quijada's: see G1 and G37 in
-	// ISSUES.md.
+	// prohibited them was ours, not Quijada's: see ERRATA.md §2.14.
 	for _, r := range []rune{'ç', 'ļ'} {
 		if rule, _ := CheckProhibitedPair(r, r); rule != "" {
 			t.Errorf("%c%c should be allowed, got %s", r, r, rule)
@@ -187,8 +186,8 @@ func TestCheckProhibitedPair_GeminatesAreAllowed(t *testing.T) {
 // of permissible bi-consonantal conjuncts, which marks all five
 // impermissible in v0.5.4. They were prose rules too, §2.6 and the
 // last sentence of §2.15, until the v0.5.0 renumbering dropped them
-// and left the tables carrying the constraint alone (G44 in
-// ISSUES.md).
+// and left the tables carrying the constraint alone (ERRATA.md
+// §2.14).
 func TestCheckProhibitedPair_TableConstraints(t *testing.T) {
 	for _, p := range []struct{ a, b rune }{
 		{'ḑ', 's'}, {'ḑ', 'š'}, {'ḑ', 'z'}, {'ḑ', 'ž'}, {'n', 'ň'},

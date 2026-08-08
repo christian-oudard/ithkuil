@@ -184,7 +184,7 @@ func CheckProhibitedPair(a, b rune) (rule, reason string) {
 	// twenty-two in v0.5.0. The constraints did: §8's matrix of
 	// permissible bi-consonantal conjuncts marks all five impermissible
 	// in v0.5.4, and §3.6 still carries ngn → ňn, an exception whose
-	// only effect is to keep a derivation off nň. See G44 in ISSUES.md.
+	// only effect is to keep a derivation off nň. See ERRATA.md §2.14.
 	//
 	// The number is the part that was ours. v0.3's own 2.23 is the w/y
 	// rule that survives as today's 2.22, so citing "2.23" for these
@@ -200,8 +200,8 @@ func CheckProhibitedPair(a, b rune) (rule, reason string) {
 
 	// Nothing bars çç or ļļ. Our phonotactics markdown carried a
 	// "§2.24" prohibiting them, but no version of the phonotaxis states
-	// it and v0.3's tables list ļļ as a permitted form — see G1 and G44
-	// in ISSUES.md. His own material never behaves as though it exists:
+	// it and v0.3's tables list ļļ as a permitted form — see ERRATA.md
+	// §2.14. His own material never behaves as though it exists:
 	// §3.6.1 rule 4 geminates a sibilant "in any position" and gives
 	// çkl → ççkl as its worked example, rule 6 gives tçkl → tççkl, the
 	// bias-adjunct table holds pļļ (CMD) and kçç (EXA), and 39 corpus

@@ -15,6 +15,9 @@ That covers three cases:
   document now prints something else.
 - **Readings.** The source contradicts itself, or leaves a choice
   unstated, and an implementation cannot proceed without picking one.
+- **Noted.** The source prints something wrong and the reference
+  document reproduces it anyway. The decision is to leave it alone, and
+  a reader needs to know it was a decision.
 - **Proposals.** An amendment we think the language wants, offered to
   Quijada and the community, not yet adopted here.
 
@@ -154,11 +157,106 @@ refute itself.
 geminates; both used to be excused by `UnresolvedCa`, which now returns
 false for everything.
 
+### §2.14 — two prohibitions moved from the prose into the tables
+
+**Source.** Two constraints are enforced by every table in the
+phonotactics document and stated by none of its rules. They were prose
+rules in the two editions before v0.5.4:
+
+> **v0.3 / v0.4 §2.6.** The voiced interdental fricative -**ḑ**- cannot
+> be followed by any of the four sibilant fricatives.
+>
+> **v0.3 / v0.4 §2.15.** The nasal **n**- cannot be followed by the
+> labial stops -**p** and -**b** ... Nor can -**n**- be followed by
+> -**ň**-.
+
+Between v0.4 (June 2019) and v0.5.0 (January 2021) §2 was renumbered
+from twenty-three rules to twenty-two. The **ḑ** rule went entirely;
+the **n** rule survives as v0.5.4's **2.14** word for word, less its
+final sentence.
+
+The constraints did not go with them. §8's matrix marks all five
+impermissible — the **ḑ** row's blue squares are ţ, s, š, z, ž and the
+**n** row's include ň — and the printed row totals confirm the count
+without reading the colour, 25 of 30 for **ḑ** and 23 of 30 for **n**.
+§3.6's substitution table says it from the other side, carrying
+**ngn → ňn** as a named exception to **[C]gn → [C]ň** whose only effect
+is to keep a derivation off **nň**.
+
+**Decision.** Enforce all five, and cite **§8** for them rather than a
+§2 number, because §8 is where the current document states them.
+
+Our transcription previously carried them as a rule "**2.23**". That
+number is not free: v0.3 and v0.4 both end at 2.23, and their 2.23 is
+the **w**/**y** rule that survives as today's **2.22**. So the
+transcription merged two rules under a number belonging to a third.
+It has been removed.
+
+A neighbouring "**2.24**" barring **çç** and **ļļ** has been removed
+too, and that one was invented outright. No edition prohibits them,
+v0.3 and v0.4 list **ļļ** in their tables as permitted, and Quijada's
+own material behaves throughout as though they are: §3.6.1 rule 4
+geminates a sibilant "in any position" with **çkl → ççkl** as its
+worked example, rule 6 gives **tçkl → tççkl**, and the bias-adjunct
+table holds **pļļ** (CMD) and **kçç** (EXA). Identical provenance to
+the rule above and the opposite answer, which is why the two should
+not have been decided together.
+
+The lexicon corroborates both halves: across 5,946 roots and 528
+affixes, **ḑ** heads 152 clusters over at least eight following
+consonants and never a sibilant, and **n** heads 748 and freely takes
+s, z, š and ž but never **ň**.
+
+**Status.** `adopted`
+
+**Where.** `phonology/phonotactics.go:194`, the two checks citing "8".
+
 ---
 
 # Readings
 
 *Where the source cannot be implemented as written, and we chose.*
+
+### §2.3 — a concatenation chain has no parsing adjunct
+
+**Source.** §2.3 makes pitch accent "the means by which word boundaries
+may be parsed", and ¶5 supplies a fallback for when that channel is
+unavailable:
+
+> In unusual situations (e.g., singing a song) when pitch-accent is
+> unavailable or undesirable as a means of parsing word boundaries and
+> the placement of pauses between words is unrealistic, then a special
+> parsing adjunct of the form **'V'** may be placed before any word to
+> be parsed, where **'V'** represents a single vowel between two
+> glottal stops, the particular vowel indicating the syllabic stress of
+> the following word.
+
+One adjunct declares one stress. A §3.1.7 concatenation chain is
+written as a single hyphen-joined word, but each link carries its own
+stress and its own word-initial and word-final positions, so a chain
+has as many stresses as it has links: *hakšiţé-alcialu'a* bears
+ultimate stress on the first link and penultimate on the second.
+
+So an adjunct cannot declare a chain's stress, and the section gives no
+way out. "Any word to be parsed" would have to mean a chain *link*
+rather than the whole chain, which would put an adjunct inside the
+hyphenated word — *'e' hakšiţe-'o' alcialu'a* — and nothing sanctions
+that. The alternatives are no better: that chains cannot be sung, or
+that a chain takes one adjunct naming only the parent's stress and the
+listener recovers the rest from the Cc markers.
+
+**Decision.** Refuse rather than choose. Rendering a chain without
+stress diacritics returns an error naming this entry. Everything else
+round-trips, 554 corpus words among them.
+
+Where the source leaves a construct undetermined we would rather fail
+at the point of use than pick a spelling and have it read back later as
+Quijada's. This is the one construct in the language for which we
+decline to emit anything at all.
+
+**Status.** `adopted`
+
+**Where.** `roman/stressless.go:42`.
 
 ### §2.10 — ç before a voiced sibilant affricate
 
@@ -191,6 +289,21 @@ open a word. Taking §3's word-initial inventory at its word, 34 of the
 **r-** only **-w** or **-y**, which fails ACC **lf** and eleven more;
 §3.2.8 grants nasals a liquid or approximant, which fails ATE **ňj**
 and ten more; **ř-** is granted no word-initial pair at all.
+
+The suppletive adjuncts of §4.5 are the same collision in miniature and
+easier to see. They are **hl**-, **hm**-, **hn**- and **hň**-, and
+§4.5.4 prints worked examples of the last: *hňa, hňei, hňo, hňe'e,
+hňa'u, hňi'a*. Phonotactics §3.2.7 permits word-initial **h**- to be
+followed by "-l or -r, the nasals -m or -n, or by -w", and not -**ň**.
+§3.8.1.2's **hňw**, a C_N that can move into Slot VI, is unlicensed
+twice over: §3.3.5 limits word-initial triconsonantal **h**- conjuncts
+to hlw, hrw, hmw, hnw, hmy, hny and four geminates. The sequence
+**hň** does not occur anywhere in the phonotactics document, in any
+position.
+
+§4.4's registers are the story from the vowel side: their adjuncts are
+a single vowel-form after **h**-, and every one is fine, but only
+because the table stops where it does.
 
 **Decision.** The adjunct tables are authoritative and §3's
 word-initial rules are scoped to words that have a vowel in them. Every
@@ -272,6 +385,75 @@ here would invent an exception the source does not state.
 
 **Where.** `phonology/conjunct.go:198`, `DissimilateGlides`;
 `phonology/inventory.go:201`, `VowelFormAfterGlide`.
+
+### §4.6.1 — Rule 3 governs a referential slot only when the word ends there
+
+**Source.** §4.6.1 lists eleven examples and adds a parenthetical:
+"Note that the last three of these examples illustrate that Sec. 1.7,
+Rule 3, applies to Slot 2 V_C1 and Slot 3 V_C2 for Cases 37 through
+52." The three are *sme'e*, *ka'u* and *fo'we'is*.
+
+The first two bear it out. Both have no Slot 3, so V_C1 ends the word:
+**sme'e** reduplicates *e* around the glottal and **ka'u** takes it
+intervocalically in the diphthong *au*, which is Rule 3 in each of its
+two shapes.
+
+The third does not. **fo'we'is** writes V_C1 as **o'**, the glottal
+after the whole vowel-form, which is Rule 1. Rule 3 would give
+**fo'owe'is**. Its V_C2 *is* Rule 3, as **e'i** for *ei*.
+
+**Decision.** Follow §1.7 and the printed example over the
+parenthetical. Rule 1 is §1.7's default and Rule 3 overrides it only
+where Rule 1 would be phonotactically impermissible or would leave the
+glottal word-final. V_C1 in *fo'we'is* has the Slot 3 **w** behind it
+and so is neither. Read that way the parenthetical is loose rather than
+wrong: it names §1.7 as the reason glottal stops appear in those slots
+at all, not which of its rules applies.
+
+So a V_C1 with a Slot 3 behind it is written by Rule 1, and a
+word-final one by Rule 3. The alternative is to take the sentence at
+its word and call the printed example a slip, which would make three of
+the section's own eleven examples disagree with the sentence describing
+them.
+
+**Status.** `adopted`
+
+**Where.** `roman/referential.go:33`, which offers the Rule 1 spelling
+where one exists; `roman/parse_referential.go:269`,
+`absorbRule1Glottals`, which reads it back.
+
+### §3.9.3.2 — VERIFICATIVE is abbreviated VER, not VRF
+
+**Source.** The morphology document cannot make up its mind. §3.9.3.1's
+table and the illocution/validation matrix both say **VRF**; §3.9.3.2's
+V_K list says **VER**; and the v1.3.2 version history says "The
+3-letter abbreviation for VERIFICATIVE Illocution has beeb changed to
+VER." So the rename was made, announced, and then applied to one of the
+three places.
+
+The collision is presumably what it is for. The affix document gives
+the same three letters to -**ňç** "Verifiability of Info &
+Trustworthiness of its Source", and reprints the illocution matrix with
+VRF in it, so both senses appear on one page.
+
+**Decision.** Write **VER**. This is a choice between two things the
+source says, not a departure from it: the version history instructs the
+rename and one of the three tables has already had it applied.
+
+The reference document prints each of the three places as the source
+does, VRF twice and VER once. Our own transcription had VRF in all
+three until this was worked, having missed the one VER.
+
+A gloss is a sequence of abbreviations with no per-token type, so the
+two senses could not otherwise be told apart in one. Even now they are
+distinguished only by the degree an affix carries — `VRF/3` is the
+affix and a bare `VRF` the illocution — which is why writing the
+illocution VER is worth the inconsistency with two of the three tables.
+The illocution list is otherwise collision-free.
+
+**Status.** `adopted`
+
+**Where.** `grammar/vk.go:43`, `Verificative.Tag`.
 
 ### §1.3.1 — the grave accent is read but not written
 
@@ -406,6 +588,32 @@ These are not exotic entries. `vskw`, `vsky`, `vskl` and the rest of
 that block are ordinary vocabulary, and `lzbḑ` and `lzbv` sit in a
 series whose other members §10 does permit.
 
+The split at two consonants is the first thing worth noticing. §8 is a
+grid derived from the pair rules of §§2-7, so a bi-consonantal root our
+validator accepts is one §8 accepts, and all 670 short roots pass. §§9,
+10 and 11 are independent tables that no rule generates, and the whole
+of the disagreement is there.
+
+The departures are systematic rather than scattered, which is the
+argument that the tables are incomplete rather than the lexicon
+careless. `-pf-` accounts for fourteen tri-consonantal cases on its
+own: §9 gives medial **p** a third consonant **f** only after the
+initials `sšç`, and the spreadsheet also writes `ţpf`, `žpf`, `ḑpf`,
+`ẓpf`, `čpf`, `jpf`, `kpf`, `gpf`, `dpf`, `xpf`, `zpf`, `ňpf`, `ļpf`
+and `cpf`, plus `pfc` and `pfč` with the pair leading.
+`Cml`/`Cmr`/`Cmř` is a second family of the same kind: `cml`, `sml`,
+`vml`, `zml`, `ẓml` and their `r` and `ř` partners. Two affixes depart
+as well, `xḑr` and `čḑr`, sharing a final `-ḑr` that §9 gives no
+initial at all. §§8-11 below is a further reason to hold the tables
+lightly: none of the four agrees with its own arithmetic.
+
+What is not in question is that the check should exist.
+`phonology.RootConjunctLegal` implements §§9-11 and **fbm** is the case
+that motivated it, a conjunct both of whose pairs §8 permits, that
+appears in no §9 row, and that a speaker asked to say reported
+impossible. It is not consulted anywhere, because enforcing it as
+things stand would refuse 8% of the vocabulary.
+
 **Decision.** Follow the lexicon. The tables describe what §§1-7 allow
 rather than legislating over the vocabulary, and the same documents
 disagree elsewhere in the same direction — see §4.7, where the grammar
@@ -423,6 +631,194 @@ and both are taken by the series that keeps the slot.
 **Where.** Nothing enforces the tables, which is the point. `phonology`
 implements §§1-7, and `TestSection8GridMatchesRules` checks §8 against
 them; §§9-11 are transcribed but not consulted.
+
+---
+
+# Noted
+
+*Where the source is wrong and we transcribe it as printed anyway.*
+
+Reproducing a defect is a decision, and one a reader will otherwise
+mistake for a transcription error and try to repair. Nothing in this
+section changes our output.
+
+### §3.9.3.1 — HORTATIVE and POTENTIATIVE are named for categories they are not
+
+**Source.** §3.9.3.1 defines the two illocutions as a matched pair,
+separated by whether the wish can come true:
+
+- **POT** POTENTIATIVE: "a statement of wishing, hoping, or other
+  unreal(ized) provenance"
+- **HOR** HORTATIVE: "a counterfactual statement indicating a desired
+  but impossible state of affairs that cannot be realized (equivalent
+  to English hortative constructions such as *If only..., Were that...,
+  If only it were so that...*)"
+
+Neither name carries that meaning outside this document. A hortative
+exhorts: Allen & Greenough §439, "the Hortatory Subjunctive is used in
+the present tense to express an exhortation or a command", and the
+English instance of it is *let's*. A potential expresses probability,
+that the speaker holds the event likely. What both definitions describe
+is the **optative**, the mood of wishing, and the split between them is
+the one Allen & Greenough §441 draws inside the optative subjunctive by
+tense: "the present tense denotes the wish as possible, the Imperfect
+as unaccomplished in present time". The tradition has one name for the
+category and a tense contrast for the division; V4 needs two labels and
+took two wrong ones.
+
+The naming is deliberate rather than a slip, and it predates the
+category. No HORTATIVE illocution exists in the 2020 drafts. From
+v0.12.0 through v0.17.2 each carries the same sentence: "Hortatives
+('if only.../were it so that...') are expressable by the combination of
+PERFORMATIVE Illocution + EXECUTIVE Expectation + COUNTERFACTUAL Mood."
+The word was already the author's name for the English construction
+while it was still a three-part periphrasis, and when Illocution was
+restructured for the 1.x releases the new value inherited it.
+
+**Decision.** Keep both names. Nothing here is ambiguous and nothing in
+the code is wrong: HOR is counterfactual, and exhortation to act is
+DIR, whose own definition covers "an imperative command to another
+party to do/be something". Renaming a published value to match outside
+usage would cost every existing gloss and text its readability, and buy
+correctness in a vocabulary the language does not otherwise borrow.
+
+What it costs is the reader who knows the term, who reaches for HOR to
+say "let's" and gets "if only". Anything that teaches the illocutions
+should gloss these two rather than list their names, which is why
+`data.json` carries `guidance` on both.
+
+**Status.** `adopted`
+
+**Where.** `grammar/vk.go:43`, in the surrounding illocution list; the
+`guidance` fields for HOR and POT in `data/data.json`.
+
+### §§8-11 — none of the four conjunct tables agrees with its own arithmetic
+
+**Source.** §§8-11 tabulate the permissible consonant conjuncts. Each
+is derived from the rules in §§1-7, and each carries per-row totals and
+a grand total. In all four the rows, the row totals and the grand total
+are three different answers.
+
+| | rows enumerate | printed row totals | stated total | rows disagreeing |
+|---|---|---|---|---|
+| §8 bi-consonantal | 684 | 679 | 679 | 5 of 27 |
+| §9 tri-consonantal | 5021 | 5183 | 5183 | 4 of 129 |
+| §10 tetra-consonantal | 15106 | 14974 | 15034 | 7 of 357 |
+| §11 penta-consonantal | 12089 | 12011 | 12271 | 5 of 140 |
+
+§8 is a grid of coloured cells, and its five short rows — ç, c, č, ẓ
+and j — each hold one more permissible cell than the total printed
+beside them. Nothing marks which cell is meant to be excluded.
+
+§§9-11 are product-of-sets tables: a row gives a permitted consonant
+set per position, and its total should be the product of the set sizes.
+485 of the 497 rows are exactly that. The twelve that are not were each
+checked against the rendered page, so the sets are as printed and the
+arithmetic is the source's:
+
+- **A dropped factor, twice.** §9's `rř` + **ḑ** row prints 24, which
+  is its third-consonant count alone; §10's `rř` + 21-consonant + **n**
+  + `wy` row prints 42, which is 21 x 2. Both omit the leading `r ř`
+  from the product, and in both cases the neighbouring rows with a
+  single-consonant first column are correct.
+- **A digit typo.** §9's `c` + **c** row prints **223** where its
+  contents give 23. On its own that accounts for 200 of §9's 162-form
+  gap; correct it and the printed totals sum to 4983.
+- **Parallel blocks that disagree.** §11 tabulates **z** and **ž** in
+  blocks with identical set structure. The `mn`/`wy` row prints 45 in
+  the z block and 36 in the ž block; 36 is the product.
+- The other eight are off by amounts with no evident cause, the largest
+  being §10's `rřl` + `bgv` + **z** row, printed 64 where its sets give
+  144.
+
+**Decision.** Transcribe the totals as printed and derive nothing from
+them. The rows say which conjuncts exist and the totals are commentary
+on the rows, so nothing about the language turns on this. Repairing
+them in place would be inventing figures Quijada never published.
+
+It does mean no count he prints for these tables can be quoted as
+authoritative, including the widely-cited **679 bi-consonantal
+conjuncts**, which is one of the five-row disagreements rather than a
+figure the grid supports.
+
+**Status.** `adopted`
+
+**Where.** `phonology/section8_test.go:34` regenerates §8 from §§1-7
+and finds 684, not 679. Nothing consults the printed totals.
+
+### §4.5.3 — the naming-adjunct examples hold a form from the adjunct above
+
+**Source.** Each of §4.5's four suppletive adjuncts prints six example
+words built on its own C_P: `hla, hlei, hloa, hle'e, hla'u, hli'a` for
+CAR on **hl**, and the same six vowel-forms on **hm** for QUO, **hn**
+for NAM, **hň** for PHR. Two entries break the pattern:
+
+- NAM's second example is **hmei**, which is QUO's. On the pattern it
+  should be `hnei`, and every other NAM example is `hn`-initial.
+- PHR's third example is **hňo** where the other three rows have the
+  Case-3 form `-oa`. It should be `hňoa`.
+
+**Decision.** Transcribe both as printed. Nothing rests on them: the
+C_P values are stated separately in the same table and are not in
+doubt, and these are single-word slips in an otherwise mechanical list.
+
+Recorded because a reader building a test set from these six-word rows
+would otherwise get one adjunct's form filed under another's, and
+because the two look exactly like the transcription errors this
+document has spent so long removing.
+
+**Status.** `adopted`
+
+**Where.** `morphology.md` §4.5.3, the four example rows.
+
+### -ï- — the phonotactics vowel chart has a tenth vowel
+
+**Source.** The Phonemic Inventory of the phonotactics document prints
+a vowel chart with **ï** in the high central unrounded cell, beside i,
+ü and u. The grammar document's §1.1 chart has the same three and no
+fourth; the vowel-form table of §1.6 is built from nine vowels, not
+ten; and **ï** appears nowhere else in the phonotactics document, in
+any rule, in any conjunct table, or in any root or affix in the
+lexicon.
+
+**Decision.** Transcribe it as printed, in the cell it occupies, and
+implement nine vowels. The cell is the whole of the claim. An
+implementation that added a tenth vowel on this evidence would have no
+vowel-form to put it in, no rule mentioning it and no word using it.
+
+**Status.** `adopted`
+
+**Where.** `phonology/inventory.go`, which holds nine vowels;
+`phonotactics.md`, the Vowels table.
+
+### -žţ- — PIC names two affixes, and only one reached the spreadsheet
+
+**Source.** The chemistry section of the affix document gives four
+Polyatomic Ion affixes on one line — `-cţ` PIA, `-ẓţ` PIB, `-čţ` PIC,
+`-jţ` PID — and then, fourteen lines later, a fifth: **`-žţ` PIC
+Additional Polyatomic Ionic Configurations**, whose nine degrees are
+the oxyanion series (-ate, -ite, hypo-...-ite, per-...-ate, -ide,
+bi-...-ate, dihydrogen...-ate, di-...-ate, di...-ide).
+
+So PIC abbreviates two different affixes, with different C_S forms and
+unrelated meanings. The community spreadsheet carries only `-čţ`, and
+`data.json` and `affixes_reference.md` follow it, so `-žţ` is absent
+from our data entirely; the cluster appears there only as a root.
+
+**Decision.** Leave it absent. The affix rows come from
+`tools/sync_lexicon.py` mirroring the spreadsheet, so a hand-added row
+would be overwritten on the next sync, and the gap belongs upstream.
+The duplicate abbreviation belongs to Quijada either way, and is not
+ours to resolve.
+
+Adding it as a local override, the way the C_R collisions below are
+handled, would be a different thing: those move a root the sheet
+already has, while this would invent a row the sheet has never carried.
+
+**Status.** `adopted`
+
+**Where.** `data/lexicon_overrides.json` does *not* carry it, which is
+the decision.
 
 ---
 

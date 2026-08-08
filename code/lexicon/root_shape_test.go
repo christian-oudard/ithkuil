@@ -25,7 +25,7 @@ import (
 // another family of the same kind. Either the spreadsheet extended a
 // series past what §9 sanctions, or §9's rows are incomplete; deciding
 // that is upstream's call and not something to settle by making the
-// parser refuse 8% of the vocabulary. See docs/reference/ISSUES.md.
+// parser refuse 8% of the vocabulary. See ERRATA.md §§9-11.
 //
 // Enforcement waits on that. What this pins is the size and shape of
 // the gap, so a re-sync that changes it says so.

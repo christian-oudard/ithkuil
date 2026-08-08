@@ -37,8 +37,7 @@ type Verificative struct{}
 // departs from the source's abbreviation. The affix document gives VRF
 // to an affix as well, -ňç "Verifiability of Info & Trustworthiness of
 // its Source", so the source spells two different things the same way
-// and a gloss carrying both would be ambiguous. See G41 in
-// docs/reference/ISSUES.md.
+// and a gloss carrying both would be ambiguous. See ERRATA.md §3.9.3.2.
 func (Verificative) vk()         {}
 func (Verificative) Tag() string { return "VER" }
 

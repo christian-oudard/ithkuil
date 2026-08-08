@@ -180,7 +180,7 @@ func TestMCPParse_Modular(t *testing.T) {
 // TestMCPParse_Violations covers the branch that reports what a word
 // breaks. §4.5.4's carrier adjunct is the case: hňa is Quijada's own
 // worked example and the word-initial cluster table rejects hň, which
-// is filed as G45 in ISSUES.md. The word still classifies, so the
+// is ERRATA.md §4.7. The word still classifies, so the
 // caller gets a reading and the complaint together.
 func TestMCPParse_Violations(t *testing.T) {
 	s := testServer(t)

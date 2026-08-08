@@ -187,7 +187,7 @@ func TestFormative_AbbrevNeedsLexicon(t *testing.T) {
 // them Quijada's roots because morphology.md attests "cskava" and
 // "Adcsuleuha". Neither is a root, and neither word is his: the
 // markdown had lost its diacritics, and the PDF reads "çkava" and
-// "Aḑçulëuhá" on the root "ḑç" 'jumping'. See G41.
+// "Aḑçulëuhá" on the root "ḑç" 'jumping'. See ERRATA.md §3.9.3.2.
 func TestFormative_AwkwardRootsStillCompose(t *testing.T) {
 	lex := mustLex(t)
 	for _, in := range []string{"ňkhw", "řẓňy"} {

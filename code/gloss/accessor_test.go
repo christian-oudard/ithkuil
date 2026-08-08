@@ -84,8 +84,8 @@ func TestAccessor_EveryCaseEncodes(t *testing.T) {
 
 // The fourteen Cs increments must be distinct, and each must decode
 // back to the kind and range it was built from. Three of the seven
-// kinds were missing from our markdown copy of the table (ISSUES.md
-// G34), so this guards the transcription as much as the code.
+// kinds were missing from our markdown copy of the table, so this
+// guards the transcription as much as the code.
 func TestAccessor_CsIncrementsAreDistinct(t *testing.T) {
 	seen := map[string]string{}
 	for _, kind := range g.AllAccessorKinds {

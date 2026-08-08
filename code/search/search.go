@@ -152,7 +152,7 @@ func init() {
 	// found by meaning, and the DESCRIPTION column printed blank for the
 	// other 280-odd entries. A bare "HOR Hortative" with no gloss beside
 	// it invites the reader to supply the standard meaning of the word,
-	// which for that one is wrong (see docs/reference/ISSUES.md).
+	// which for that one is wrong (see ERRATA.md §3.9.3.1).
 	for i := range Table {
 		Table[i].Name = g.Name(Table[i].Abbrev)
 		if Table[i].Description == "" {

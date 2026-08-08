@@ -44,7 +44,8 @@ const ithkuilOnly = "äëöüáéíóúâêôûţḑļçžšẓřň"
 // referenceExtra are the forms in our document that the grammar
 // document does not contain. §3.5's gradient types and affix list come
 // from the affixes document, merged in under our own section numbers
-// (see ISSUES.md), so their C_S forms are legitimately absent upstream.
+// (see the provenance table in ISSUES.md), so their C_S forms are
+// legitimately absent upstream.
 // Our chapter 8 has the same provenance problem on a larger scale and
 // is cut wholesale below rather than listed here.
 var referenceExtra = map[string]bool{

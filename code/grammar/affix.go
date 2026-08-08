@@ -124,7 +124,8 @@ var AllAccessorKinds = []AccessorKind{
 
 // accessorCs holds each kind's two Cs increments, low (cases 1-36)
 // then high (cases 37-68). Transcribed from Quijada's §3.9.2 table;
-// see ISSUES.md G34 for why the markdown copy could not be trusted.
+// three of the seven kinds were missing from our markdown copy of it,
+// so the PDF is the source here and the markdown is not.
 var accessorCs = [...][2]string{
 	CaseAccessor1:    {"sw", "sy"},
 	CaseAccessor2:    {"zw", "zy"},

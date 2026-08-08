@@ -30,11 +30,24 @@ import (
 // citation carries its own meaning and two people adding an entry at
 // once cannot collide on an id. That is a section of Quijada's for the
 // grammar, and the C_R at issue for the lexicon, which has no sections.
+//
+// The id pattern admits a span (§§9-11) as well as a single section,
+// because a defect can belong to a run of them. It did not at first,
+// and the §§9-11 entry sat in the file unchecked: no heading matched,
+// so every check below simply skipped it. Widening the pattern is what
+// found that, which is the argument for a guard naming what it covers
+// rather than counting what it happens to see.
 var (
-	errataEntry  = regexp.MustCompile("(?m)^### (§[0-9.]+[0-9]|-[^ ]+-) — (.+)$")
+	errataEntry  = regexp.MustCompile("(?m)^### (§§?[0-9][0-9.-]*[0-9]|-[^ ]+-) — (.+)$")
 	errataTarget = regexp.MustCompile("`([a-z][a-z0-9_/]*\\.go):(\\d+)`")
 	errataStatus = regexp.MustCompile(`(?m)^\*\*Status\.\*\* ` + "`" + `(adopted|proposed|implemented)` + "`")
 )
+
+// wantEntries is the number of entries the file holds. A pattern that
+// stops matching a heading makes every other check pass vacuously, so
+// the count is pinned rather than inferred: this is the failure the
+// §§9-11 entry actually had.
+const wantEntries = 24
 
 func TestErrataEntriesAreWellFormed(t *testing.T) {
 	repo := filepath.Join("..", "..")
@@ -42,8 +55,10 @@ func TestErrataEntriesAreWellFormed(t *testing.T) {
 
 	// Split on entry headings so each entry is checked on its own.
 	locs := errataEntry.FindAllStringSubmatchIndex(text, -1)
-	if len(locs) == 0 {
-		t.Fatal("ERRATA.md holds no entries")
+	if len(locs) != wantEntries {
+		t.Errorf("ERRATA.md holds %d entries the heading pattern matches, "+
+			"want %d; a heading it stops seeing is checked by nothing",
+			len(locs), wantEntries)
 	}
 	seen := map[string]bool{}
 	for i, loc := range locs {
@@ -86,7 +101,7 @@ func TestErrataCoversTheCodeThatCitesIt(t *testing.T) {
 	}
 
 	cited := map[string][]string{}
-	cite := regexp.MustCompile("ERRATA\\.md (§[0-9.]+[0-9]|-[^ ]+-)")
+	cite := regexp.MustCompile("ERRATA\\.md (§§?[0-9][0-9.-]*[0-9]|-[^ ]+-)")
 	err := filepath.Walk(filepath.Join("..", ""), func(path string, info os.FileInfo, err error) error {
 		if err != nil || info.IsDir() || !strings.HasSuffix(path, ".go") {
 			return err
