@@ -162,6 +162,13 @@ func Transition(a, b Phoneme, across bool) float64 {
 			return syllableCost
 		}
 	}
+	// §1.7 permits geminates and bars only the triple, and the speaker
+	// splits them: alla is easier than alra, while assa and atta are
+	// harder than asta. A repeated sonorant is one long gesture; a
+	// repeated obstruent means holding a constriction, which is work.
+	if ca, ok := a.(Consonant); ok && a == b && isObstruent(ca) {
+		return obstruentGeminateCost
+	}
 	d := Distance(a, b)
 	cost := d*travelWeight + risingSonority(a, b)
 	cost += ocp(d)
@@ -376,6 +383,28 @@ func isPermissibleDiphthong(a, b Vowel) bool {
 // this kind rather than about a junction: l easier than r easier than
 // ř, y easier than w, i easier than u, s easier than ţ and than š,
 // voiceless easier than voiced, dental easier than bilabial.
+// isRhotic is r and ř. The speaker put ř last in every pair it
+// appeared in, arta over ařta, axta over ařta and axla over ařla, and
+// graded x merely "hard-ish". So what is expensive about ř is being a
+// rhotic and not being uvular: pricing the place instead made x dear
+// too, which got axla against aţla backwards.
+func isRhotic(c Consonant) bool {
+	return c.Place == AlveolarRetroflex || (c.Place == Uvular && c.Manner == Approximant)
+}
+
+// isObstruent is a stop, affricate or fricative: a segment made with a
+// real constriction, as against the sonorants. Geminates split on this.
+// The speaker found alla easy and assa and atta not, which is holding
+// the constriction rather than repeating the segment, and is Kirchner's
+// account of why geminates resist lenition.
+func isObstruent(c Consonant) bool {
+	switch c.Manner {
+	case Stop, Affricate, Fricative, LateralFric:
+		return true
+	}
+	return false
+}
+
 func SegmentCost(p Phoneme) float64 {
 	switch v := p.(type) {
 	case Vowel:
@@ -397,6 +426,13 @@ func SegmentCost(p Phoneme) float64 {
 		if v.Secondary == Labialized {
 			c += roundingCost
 		}
+		if isRhotic(v) {
+			c += rhoticCost
+			if v.Place == Uvular {
+				// ř over r, consistently.
+				c += rhoticCost / 2
+			}
+		}
 		return c
 	}
 	return baseSegment
@@ -416,7 +452,7 @@ var placeCost = map[Place]float64{
 	Labial:            0.03, // p b m, dearer than the dentals
 	LabioDental:       0.02, // f v
 	Velar:             0.02, // k g ň w
-	Uvular:            0.05, // x ř, dearest; ř above r
+	Uvular:            0.04, // x ř; the speaker graded x "hard-ish"
 	Glottal:           0.02, // ' h
 }
 
@@ -482,6 +518,14 @@ const (
 	voicingCost        = 0.03
 	roundingCost       = 0.03
 	risingSonorityCost = 0.04
+
+	// rhoticCost is charged on r and again, by half, on ř.
+	rhoticCost = 0.04
+
+	// obstruentGeminateCost is a held constriction. Above the sonorant
+	// geminate, which pays only the vanishing similarity term, and
+	// below anything §2 bars, since §1.7 permits these.
+	obstruentGeminateCost = 0.55
 
 	// ocpWeight is the height of the similarity bump and ocpPeak the
 	// distance at which it sits: near-misses, not identities.

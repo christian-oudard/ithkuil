@@ -47,7 +47,7 @@ import "testing"
 //     Similarity avoidance should peak at small non-zero distance and
 //     vanish at zero, not peak at zero.
 func TestEffortMatchesSpeakerJudgments(t *testing.T) {
-	t.Skip("36 of 48; the model has not caught up with the second batch")
+	t.Skip("40 of 49; vowels have no cost of their own yet, see below")
 
 	// easier, harder
 	judgments := [][2]string{
@@ -122,6 +122,28 @@ func TestEffortMatchesSpeakerJudgments(t *testing.T) {
 	// parameters. Untested predictions: oi should lose to ou, and ei
 	// should beat eu decisively.
 
+	// Standing at 40 of 49. The rhotic term and the geminate split have
+	// landed; what remains is almost all one gap, and one that only the
+	// second batch could show because the first had no vowels in it.
+	//
+	// A vowel costs nothing of its own. SegmentCost adds only
+	// roundingCost for a Vowel, so a, e and ä score identically and ë
+	// comes out cheaper than o for being unrounded, which is backwards.
+	// The judgments give an ordering to fit: e over a, i over u, a over
+	// ä, e over ö, i over ü, and o over ë. Rounding is part of it but
+	// not the whole: ë is the marked vowel, not roundness as such, and
+	// §1.2.1 gives it three realisations, "[ɤ] or [ʌ] or [ə]".
+	//
+	// The diphthong pairs need the account already worked out below: a
+	// diphthong costs travel from its first element to its second plus
+	// that second element's own cost, so au beats ai after a while ëi
+	// beats ëu after ë.
+	//
+	// Two consonant pairs are left over and unexplained: afta over asta,
+	// and anka over anta. The second says a homorganic nasal and stop
+	// cost more than a heterorganic pair, which is the similarity arm's
+	// job, but the travel term more than repays it over that distance.
+	//
 	// The speaker later graded these: x is "hard-ish" and ř "pretty
 	// hard", so the ordering is ţ then x then ř. Uvular is a costly
 	// place and a rhotic costs again on top of it. That makes batch
