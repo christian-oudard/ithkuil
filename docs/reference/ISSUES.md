@@ -163,22 +163,62 @@ drops `-rw`, printing CTC `-ţd` twice in its place. That last part is
 ours and belongs in `BUGS.md`; the ambiguity it is downstream of is
 not.
 
-Whether one name for two forms is an error or a compression cannot be
-decided from the spreadsheet. §3.9.2 splits each of its affix families
-across a `w` increment and a `y` increment by case range, and these two
-carry that same pair of glides, so a range split is the obvious guess.
-Not yet checked against the affix document, which is where the answer
-would be if there is one.
+**The affix document has now been checked, and it names them the
+same.** The entry is printed once, with both forms on the one heading
+and a single nine-degree list under it:
 
-**Options.** Two decisions, and the second only arises if the first
-says the two forms are genuinely distinct.
+```
+-rw/-ry   SPT Specified Points in Calendrical Time (used with Stem 3
+              of the number roots to render, e.g., 'the third day of
+              the week (i.e., Wednesday)' or '20th of May', etc.)
+1  second(s) of the minute        6  week of the month
+2  minute(s) of the hour          7  month of the year
+3  hour of the day                8  year
+4  day of the week                9  century
+5  day of the month
+```
 
-- **Check the affix document first.** If it names them apart, this is
-  a spreadsheet transcription defect and the fix is a sync, not a
-  decision. If it names them the same, the defect is Quijada's and A8
-  is the precedent for what that costs.
+So the spreadsheet did not duplicate anything. It split one affix's two
+C_S forms into two rows, because a row there is keyed by C_S and cannot
+hold two. The duplicate abbreviation is an artifact of that shape, and
+A8 is not the precedent after all: there one of two distinct affixes was
+lost, here one affix acquired a second row.
+
+That leaves the harder question, which is Quijada's. **This is the only
+affix in 141 pages written with two C_S forms** — no other heading in
+the document carries a `/`. Two clusters spell one meaning, and nothing
+anywhere says what chooses between them.
+
+The neighbours make the vacancy conspicuous rather than explaining it.
+The same table splits its other calendrical families across exactly
+this pair of glides, by span:
+
+```
+-rkw CYC Cyclic Recurrence          -rky CYL Cyclic Recurrence [Long-Term]
+-rţw ITE Iterations Per Time-Period -rţy ILT Iterations Per Long-Term
+```
+
+`w` is the short-term member and `y` the long-term one, twice over, and
+SPT's own nine degrees run from seconds to centuries, which is the span
+those pairs divide between them. So `-rw`/`-ry` sits in the one slot
+shaped for a short/long split, and receives one undivided list.
+
+Whether that is a compression Quijada intended or a split he began and
+did not finish is not decidable from the document. What is decidable is
+that the spreadsheet is faithful to it and no sync will repair this.
+
+**Options.** The first bullet is now answered; the rest stand.
+
+- ~~Check the affix document first.~~ Done: it names them the same, so
+  the defect is Quijada's and not the spreadsheet's.
 - **Leave both rows as synced.** `SPT/3` stays ambiguous and `-ry`
   stays unreachable by name. Nothing is invented and nothing is fixed.
+  Defensible in a way it was not before: the two rows now faithfully
+  record that two clusters spell one affix.
+- **Collapse to one row carrying both clusters.** Matches the document
+  exactly, and makes `SPT/3` unambiguous by making it mean both. Needs
+  a lexicon entry to hold two C_S values, which no other affix needs,
+  and the store's C_S key would have to admit it.
 - **Gloss the unnameable one by its cluster,** `ry/3`. The same
   trade-off G51 weighs for the §3.9.2 affixes, and it should be
   decided once for both rather than twice.
@@ -305,6 +345,114 @@ code or onto one of our coinages.
 - A test over `data.json` that fails on any such overlap.
 - A warning from `sync_lexicon.py` at sync time.
 - Nothing, and find out from a gloss.
+
+### G52. No affix's gradient type is stated anywhere
+
+§3.5.0.1 opens: "Each of the V_XC_S affixes falls into one of seven
+gradient types". The type is not decoration. It says how the nine
+degrees relate to each other, which is what a reader needs in order to
+use a degree they have not memorized: Type A1 runs from one extreme to
+the other, Type C oscillates and turns over at degree 5, Type 0 has no
+order at all and its nine degrees are just nine labels.
+
+Three things are supposed to convey it, and none does.
+
+**The document does not print it.** Across 141 pages and 528 affixes,
+the strings "Type 0", "A1", "A2", "B", "C", "D1" and "D2" occur only in
+the changelog and in the four paragraphs of the "Seven Gradient Types"
+section itself. Not one affix heading carries a type.
+
+**The colour coding is absent.** §3.5.0.1 says the types "have been
+color-coded for ease of recognition", which would carry the information
+that the text does not. The published PDF has three text colours — blue,
+black and green — for seven types, and they do not track type. Taking
+the 303 affix headings whose colour can be read off the page against
+the types the community sheet assigns:
+
+| | 0 | A1 | A2 | B | C | D1 | D2 |
+|---|---|---|---|---|---|---|---|
+| black | 46 | 5 | 0 | 2 | 6 | 8 | 3 |
+| blue | 113 | 19 | 0 | 15 | 10 | 47 | 2 |
+| green | 13 | 0 | 1 | 1 | 3 | 4 | 2 |
+
+Every colour holds every type. Whatever the three colours mark, it is
+not this.
+
+**The phonological signature does not determine it.** Each type is
+given a signature — A1 is "a bi- or tri-consonantal form beginning with
+-r or -ř", D2 "ends in -x, or two or more consonants ending in -m", and
+so on — with D1 as the residue, "any consonant-form that does not
+phonologically conform to the other types". Stated that way the
+signature is not a mnemonic, it is a definition, and it fails twice.
+
+It is **not exhaustive of one form**: 27 of the 528 C_S forms satisfy
+two signatures at once, and the source resolves exactly one such
+collision, that -rh and -řh are A1 rather than A2. `çx` begins with ç
+(B) and ends in x (D2); `rm` begins with r (A1) and ends in m (D2);
+`řs` begins with ř (A1) and ends in a sibilant (0). The sheet's Type
+cell for `çx` is the only one of the 528 left blank.
+
+And it **disagrees with the only other determination available**. Six
+of the seven types agree with their signature almost perfectly, 113 of
+115 affixes. Type 0 does not, at 172 of 255. The distributions differ
+in a way that decides which is more likely wrong:
+
+| type | by signature | by the sheet |
+|---|---|---|
+| 0 | 198 | 255 |
+| A1 | 61 | 39 |
+| A2 | 12 | 10 |
+| B | 29 | 26 |
+| C | 28 | 26 |
+| D1 | 174 | 156 |
+| D2 | 26 | 14 |
+
+Quijada writes of D1 that "this is the most common type of affix".
+Under the signature it is, at 174 against Type 0's 198 — near enough
+that the claim reads as loose. Under the sheet it is not: Type 0 leads
+by a hundred. The 29 clearest disagreements are all r-initial forms the
+sheet types 0 (`rb`, `rd`, `rf`, `rg`, `rn`, `rp`, `rt`, `rļ`, `rň`,
+`rţ`, `rḑ` and more), which A1's rule claims without qualification. So
+the sheet's "0" is doing double duty as "unclassified", and the count
+of genuinely non-gradient affixes is unknown.
+
+**Why it matters here.** The type is the one thing about an affix this
+repository carries that it cannot check. Roots, C_S forms, degrees and
+abbreviations all have a source to be held against; the type has two
+that disagree, and 27 forms where the source disagrees with itself.
+
+**Options, on what to record as an affix's type.**
+
+- **Keep the sheet's column.** Present state. It is the only per-affix
+  determination anyone has published, and it is what a community reader
+  will expect to see. Carries 83 values that Quijada's own rule
+  contradicts, and conflates "Type 0" with "nobody classified this".
+- **Derive it from the signature.** Reproducible, checkable, and
+  Quijada's own words. Requires inventing a precedence order for the 27
+  collisions, which he supplies for one, and would overrule a human
+  judgment in 83 places with a rule that may only ever have been a
+  mnemonic.
+- **Carry both, and mark where they differ.** Honest and the most work;
+  makes the disagreement visible to a reader instead of hiding it
+  behind whichever we picked.
+- **Drop the type.** It is not consulted by the parser or the glosser.
+  Loses the one thing that says how to read a degree.
+
+**Options, on the 27 ambiguous forms specifically.** Independent of the
+above, since they need an answer under any of them.
+
+- Take the signatures in the order §3.5.0.1 lists them, which is what
+  the -rh/-řh rule happens to do (A1 is listed before A2).
+- Break each tie on the affix's own degrees, which is how `-çx-` was
+  settled in `ERRATA.md`. Correct per affix, and 27 judgments.
+- Raise it upstream as the missing precedence rule it is.
+
+**Options, on catching it.** Nothing currently notices when a synced
+type contradicts the signature.
+
+- A test over `data.json` listing the disagreements and failing when
+  the set changes, the way the corpus drift guards work.
+- Nothing, and let the two sources disagree unobserved.
 
 ## Lexicon
 

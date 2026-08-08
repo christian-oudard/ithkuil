@@ -1,10 +1,18 @@
 package grammar
 
-// AffixType is the gradient class of an affix: Type 1, 2, or 3, plus
-// CaStackAffix, which is not a gradient class at all but occupies the
-// same position. The class is grammatical; the written vowel that
-// encodes it is a rendering concern handled in the parse/render
-// packages.
+// AffixType is §3.5's scope of an affix: Type 1, 2, or 3, plus
+// CaStackAffix, which is not a scope at all but occupies the same
+// position. Type 1 and Type 2 apply the affix to the formative, the
+// second derivationally, and Type 3 applies it to the adjacent affix
+// instead. The scope is grammatical; the written vowel that encodes it
+// is a rendering concern handled in the parse/render packages.
+//
+// Not to be confused with the *gradient* type of §3.5.0.1, which is
+// one of 0, A1, A2, B, C, D1 and D2 and says how an affix's nine
+// degrees relate to each other. That one is a lexical property of the
+// affix, carried as a string on lexicon.AffixEntry, and the same affix
+// has it at every scope. This comment called Type 1/2/3 "the gradient
+// class" and named a concept the language keeps entirely separate.
 //
 // CaStackAffix is §3.5/§3.7's specialized Vx value -üö-, marking the
 // following Cs as a Ca complex stacked on the Slot VI Ca. It belongs

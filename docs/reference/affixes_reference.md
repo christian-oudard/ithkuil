@@ -2690,6 +2690,7 @@ not on the type, marks an affix with an associated C_R root.
 ### XCL - External Standard for Comparison for Use with Levels
 
 - **Cs**: -çx-
+- **Type**: B
 - **Type**: not stated in the grammar
 
 Applied to either the "X" noun bearing a LEVEL Comparison Operator or the
@@ -7862,11 +7863,11 @@ Sec. 5.6.
 
 | Degree | Meaning |
 |--------|---------|
-| 1 | active at twilight/crepuscular |
-| 2 | active at night/nocturnal |
+| 1 | active at twilight / crepuscular |
+| 2 | active at night / nocturnal |
 | 3 | active around dawn |
 | 4 | active during the morning |
-| 5 | active during the day/diurnal |
+| 5 | active during the day / diurnal |
 | 6 | sessile, not motile -- adhering to a substrate by direct attachment (not via a stalk/stipe/pedicel/connecting medium) |
 | 7 | attached to a substrate via a stalk/stipe/pedicel/connecting medium |
 | 8 | motile in reaction to heat |
@@ -8306,8 +8307,8 @@ Sec. 5.6.
 
 | Degree | Meaning |
 |--------|---------|
-| 1 | thiocyanate, thocyanato-, -thiocyanate |
-| 2 | isothiocyanate,  isothiocyanato-, -isothiocyanate |
+| 1 | thiocyanate, thocyanato-, ...thiocyanate |
+| 2 | isothiocyanate, isothiocyanato-, ...isothiocyanate |
 | 3 | methanethioyl-, -thial |
 | 4 | carbothioic S-acid, mercaptocarbonyl-, -thioic S-acid |
 | 5 | carbothioic O-acid, hydroxythiocarbonyl-, -thioic O-acid |

@@ -44526,7 +44526,7 @@
         "(PCT) Punctual",
         "(ITR) Iterative",
         "(REP) Repetitive",
-        "(IMT) Intermittent",
+        "(ITM) Intermittent",
         "(RCT) Recurrent",
         "(FRE) Frequentative",
         "(FRG) Fragmentative",
@@ -45541,7 +45541,7 @@
       "cs": "dg",
       "abbrev": "ANG",
       "description": "Angular Measurement",
-      "type": "0* 1 arc-seconds 2 arc-minutes 3 mils 4 grads 5 degrees 6 points 7 hour angles 8 radians 9 sextants",
+      "type": "0*",
       "degrees": [
         "(in) points",
         "(in) hour angles",
@@ -50122,7 +50122,7 @@
         "X times per age (10⁶ years)",
         "X times per epoch (10⁷ years)",
         "X times per era (10⁸ years)",
-        "Eight",
+        "X times per eon [5 x 10⁸ years]",
         "X times per billion (10⁹) year period",
         "X times per universe-lifespan"
       ]
@@ -50524,15 +50524,15 @@
       "description": "Functional Group C",
       "type": "0",
       "degrees": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "hydroperoxy-, alkyl hydroperoxide",
+        "peroxy-, alkyl peroxide",
+        "ether, alkoxy-, alkyl ether",
+        "hemiacetal, alkoxy -ol, -al alkyl hemiacetal",
+        "hemiketal, alxoxy -ol, -one alkyl hemiketal",
+        "acetal, dialkoxy-, -al dialkyl acetal",
+        "ketal, dialcoxy-, -one dialkyl ketal",
+        "orthoester, -trialkoxy",
+        "orthocarbonate ester, tetralkoxy-, tetraalkyl orthocarbonate"
       ]
     },
     {
@@ -50694,15 +50694,15 @@
       "description": "Functional Group B",
       "type": "0",
       "degrees": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "hydroxil, hydroxy-, -ol",
+        "carbonyl, oxo-, -oyl-, -one",
+        "aldehyde, -formyl-, -al",
+        "haloformyl, carbono...oyl-, -oyl halide",
+        "carbonate ester, alkoxycarbonyloxy-, alkyl carbonate",
+        "carboxylate, carboxylato-, -oate",
+        "carboxyl, carboxy-, -oic acid",
+        "carboalcoxy, alkanoyloxy-, alkyl alkanoate",
+        "methoxy, methoxy-"
       ]
     },
     {
@@ -50711,15 +50711,15 @@
       "description": "Functional Group D",
       "type": "0",
       "degrees": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "methylenedioxy-, -dioxole",
+        "carboxylic anhydride, anhydride",
+        "carboxamide, carboxamido-, carbamoyl-, -amide",
+        "primary amine, amino-, -amine",
+        "secondary amine, amino-, -amine",
+        "tertiary amine, amino-, -amine",
+        "ammonio-, -ammonium",
+        "imide, imido-, -imide",
+        "azide, azido-, alkyl azide"
       ]
     },
     {
@@ -52462,15 +52462,15 @@
       "description": "Functional Group E",
       "type": "0",
       "degrees": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "primary ketimine, imino-, imine",
+        "secondary ketimine, imino-, -imine",
+        "primary aldimine, imino-, imine",
+        "secondary aldimine, imino-, -imine",
+        "azo diimide, azo-, -diazene",
+        "cyanate, cyanato-, alkyl cyanate",
+        "isocyanate, isocyanato-, alkyl isocyanate",
+        "nitrate, nitrooxy-, nitroxy-, alkyl nitrate",
+        "nitrite, nitrosooxy-, alkyl nitrite"
       ]
     },
     {
@@ -52496,38 +52496,21 @@
       "description": "Functional Group G",
       "type": "0",
       "degrees": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "phosphate, phosphonooxy-, O-phospono-, ... phosphate",
+        "phosphodiester, hydroxyphosphoryloxy-, di...hydrogen phosphate",
+        "boronic acid, borono-, ... boronic acid",
+        "boronate, O-alkylboronyl-, ... boronic acid di... ester",
+        "borinic acid, hydroxyborino-, di... borinic acid",
+        "borinate, O-alkoxydialkylboronyl-, di... borinic acid ... ester",
+        "alkyllithium, -lithium",
+        "alkylmagnesium halide, -magnesium halide",
+        "alkylaluminium, -aluminium / -aluminum"
       ]
     },
     {
       "cs": "ẓd",
       "abbrev": "MET",
       "description": "Metonymic Categories",
-      "type": "0",
-      "degrees": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ]
-    },
-    {
-      "cs": "ẓḑ",
-      "abbrev": "GPJ",
-      "description": "Functional Group J",
       "type": "0",
       "degrees": [
         "part for whole",
@@ -52542,13 +52525,13 @@
       ]
     },
     {
-      "cs": "zf",
-      "abbrev": "ENS",
-      "description": "Environmental Niche",
+      "cs": "ẓḑ",
+      "abbrev": "GPJ",
+      "description": "Functional Group J",
       "type": "0",
       "degrees": [
-        "thiocyanate, thocyanato-, -thiocyanate",
-        "isothiocyanate,  isothiocyanato-, -isothiocyanate",
+        "thiocyanate, thocyanato-, ...thiocyanate",
+        "isothiocyanate, isothiocyanato-, ...isothiocyanate",
         "methanethioyl-, -thial",
         "carbothioic S-acid, mercaptocarbonyl-, -thioic S-acid",
         "carbothioic O-acid, hydroxythiocarbonyl-, -thioic O-acid",
@@ -52556,6 +52539,23 @@
         "thionoester, O-alkyl-alkane-thioate",
         "carbodithioic acid, dithiocarboxy-, -dithioic acid",
         "dithiocarboxylic acid ester, -dithioate"
+      ]
+    },
+    {
+      "cs": "zf",
+      "abbrev": "ENS",
+      "description": "Environmental Niche",
+      "type": "0",
+      "degrees": [
+        "active at twilight / crepuscular",
+        "active at night / nocturnal",
+        "active around dawn",
+        "active during the morning",
+        "active during the day / diurnal",
+        "sessile, not motile -- adhering to a substrate by direct attachment (not via a stalk/stipe/pedicel/connecting medium)",
+        "attached to a substrate via a stalk/stipe/pedicel/connecting medium",
+        "motile in reaction to heat",
+        "motile in reaction to light"
       ]
     },
     {
@@ -52768,15 +52768,15 @@
       "description": "Functional Group F",
       "type": "0",
       "degrees": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "nitrile, cyano-, alkanenitrile, alkyl cyanide",
+        "isonitrile, isocyano-, alkaneisonitrile, alkyl isocyanide",
+        "nitro compound, nitro-",
+        "nitroso compound, nitroso-, nitrosyl-",
+        "oxime",
+        "pyridyl, 4-pyridyl, 3-pyridyl, 2-pyridyl, -pyridine",
+        "carbamate, -carbamoyloxy-, -carbamate",
+        "phosphine, phosphanyl-, -phosphane",
+        "phosphonic acid, phosphono-, -phosphonic acid"
       ]
     },
     {
@@ -53235,7 +53235,8 @@
         "...and where X's degree of M-ness exceeds that of Y, but neither is (still) very M compared to some external standard or expectation of M-ness",
         "...and where X now meets some external standard or expectation of M-ness and Y does not",
         "...and where X now exceeds some external standard or expectation of M-ness and Y does not"
-      ]
+      ],
+      "type": "B"
     }
   ]
 }

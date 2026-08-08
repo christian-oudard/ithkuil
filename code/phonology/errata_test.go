@@ -47,7 +47,7 @@ var (
 // stops matching a heading makes every other check pass vacuously, so
 // the count is pinned rather than inferred: this is the failure the
 // §§9-11 entry actually had.
-const wantEntries = 24
+const wantEntries = 31
 
 func TestErrataEntriesAreWellFormed(t *testing.T) {
 	repo := filepath.Join("..", "..")

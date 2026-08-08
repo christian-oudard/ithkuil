@@ -933,6 +933,178 @@ maintains the sheet should decide this rather than us.
 
 **Where.** `data/lexicon_overrides.json`.
 
+### -ẓd- — MET, GPJ and ENS are each carrying the row above's meanings
+
+**Source.** Three adjacent rows of the affix sheet, 487 to 489, sorted
+by C_S: `ẓd` MET Metonymic Categories, `ẓḑ` GPJ Functional Group J,
+`zf` ENS Environmental Niche. Against the affix document, every one of
+them is wrong, and wrong in the same direction:
+
+| row | affix | the document's nine degrees | the sheet's |
+|---|---|---|---|
+| 487 | MET `ẓd` | part for whole, producer for product, ... | *blank* |
+| 488 | GPJ `ẓḑ` | thiocyanate, isothiocyanate, ... | MET's |
+| 489 | ENS `zf` | active at twilight, active at night, ... | GPJ's |
+
+A block of degree cells was pasted one row low. MET is where the shift
+begins and so is empty, and ENS's own list was overwritten and survives
+only in Quijada's document.
+
+The damage is not visible from inside the sheet, which is why it has
+lasted. Each row holds nine plausible degrees and a name, and only the
+pairing is wrong. Reading GPJ gives a coherent list about metonymy, and
+nothing about it says the affix is a chemical functional group.
+
+**Decision.** Restore all 27 degrees verbatim from *V_XC_S Affixes for
+New Ithkuil v1.1*, which is the document the sheet transcribes. Nothing
+is invented: every string is Quijada's, and the sheet's error is
+mechanical rather than a judgment we would be overruling.
+
+**Status.** `implemented`
+
+All 81 strings across this entry and the next were recovered twice,
+independently: once from `affixes_reference.md`, which predates the
+spreadsheet sync, and once from the affix document itself. The two
+agree on 76 and differ on five only in punctuation, where the document
+writes `active at twilight / crepuscular` and `...thiocyanate` against
+the reference file's `twilight/crepuscular` and `-thiocyanate`. The
+document's spelling is the one kept.
+
+**Where.** `data/lexicon_overrides.json`, the `degrees` section;
+applied by `apply_affix_overrides` in `tools/sync_lexicon.py`.
+`match_degree1` pins the broken state, so an upstream repair stops the
+override rather than overwriting it. Guarded by
+`lexicon.TestAffix_EveryDegreeHasAMeaning` and
+`TestAffix_DegreeListsAreNotShared`.
+
+### -sļ- — six Functional Group affixes have no meanings at all
+
+**Source.** The affix document's chemistry section gives ten Functional
+Group affixes, GPA through GPH and GPJ, each with nine degrees. The
+sheet carries all of their names and C_S forms and six of their degree
+lists are empty:
+
+| | GPA `sḑ` | GPB `sļ` | GPC `šḑ` | GPD `šļ` | GPE `zḑ` | GPF `zļ` | GPG `žḑ` | GPH `žļ` | GPJ `ẓḑ` |
+|---|---|---|---|---|---|---|---|---|---|
+| sheet | ok | blank | blank | blank | blank | blank | blank | ok | wrong |
+
+The two that survive are the first and the eighth, which is what rules
+out a lost page: the gap is not contiguous in the document, where GPA
+and GPB share a heading and GPG and GPH share the next. It is
+contiguous in the *sheet*, whose C_S sort interleaves the pairs.
+
+GPJ's own defect is a different one, above.
+
+**Decision.** Restore all 54 degrees verbatim from the affix document,
+on the same footing as the entry above.
+
+Together the two entries recover 81 degree strings for nine affixes.
+Before this, `-zļ/5` had no meaning our data could give and `-šļ/9`
+returned an empty string rather than "azide, azido-, alkyl azide".
+
+**Status.** `implemented`
+
+**Where.** `data/lexicon_overrides.json`, the `degrees` section.
+
+### -rţy- — one degree of ILT reads "Eight", and one of PHS misspells a Phase
+
+**Source.** Two single-cell defects in the sheet, found the same way as
+each other: `docs/reference/affixes_reference.md` predates the
+spreadsheet sync, and where it disagrees with `data.json` one of the
+two is wrong.
+
+**ILT `rţy`**, Iterations Per Long-Term, is a clean power-of-ten
+series, and the sheet's degree 7 is the bare word **Eight**:
+
+| deg | 6 | 7 | 8 |
+|---|---|---|---|
+| sheet | X times per era (10⁸ years) | **Eight** | X times per billion (10⁹) year period |
+| document | ... | X times per eon [5 x 10⁸ yrs.] | ... |
+
+**PHS `bž`**, Phase, has nine degrees that name the nine Phases, and
+the sheet writes degree 4 as **(IMT) Intermittent**. The abbreviation
+is **ITM**: the affix document prints "ITM INTERMITTENT", §3.8's
+Slot VIII table prints ITM, and `grammar/slot_viii.go` writes ITM. IMT
+is a transposition and appears nowhere else.
+
+PHS is the worse of the two even though it is one letter, because it
+is wrong about a grammar value rather than about an affix. A reader
+looking up the Phase affix is told the Phase has a name it does not
+have, and nothing in a gloss would ever contradict them.
+
+**Decision.** Restore both from the reference file, whose readings the
+affix document confirms.
+
+**Status.** `implemented`
+
+**Where.** `data/lexicon_overrides.json`, the `degrees` section.
+`lexicon.TestAffixReferenceMatchesTheData` now holds the generated
+reference against the data in both directions, which is the check that
+would have caught these and the four above without anyone looking.
+
+### -dg- — ANG's gradient type is a degree list someone drafted in the cell
+
+**Source.** The sheet's Type column for `dg` ANG Angular Measurement
+reads, in full:
+
+    0* 1 arc-seconds 2 arc-minutes 3 mils 4 grads 5 degrees 6 points
+    7 hour angles 8 radians 9 sextants
+
+The type is the leading `0*`. The rest is a nine-item degree list in
+the wrong column, and it is not the list the document prints. The
+document's order is points, hour angles, grads, mils, radians,
+sextants, arc-seconds, arc-minutes, degrees; the cell's is strictly
+increasing by angular magnitude, arc-second through sextant. So
+somebody worked out an ordered version of ANG and wrote it into the
+Type cell.
+
+The reordering is not a repair the document needs. ANG is Type 0, "no
+gradient pattern", and an unordered set of nine units is what that
+type means. Its neighbours that *are* ordered — LDA, LDB and ARM — all
+begin with `r`, which is Type A1, the gradient type.
+
+**Decision.** Set the type to `0*` and drop the note. The draft
+reordering is recorded here rather than in the data, since it is a
+community proposal about the language and not a fact about it.
+
+This had been repaired once in `data.json` by hand, in commit
+`2c8faa1`, and the next sync overwrote it. That is the second time a
+hand-edit to a synced row has been lost this way; `-ḑg-` below is the
+first. Both are overrides now.
+
+**Status.** `implemented`
+
+**Where.** `clean_type` in `tools/sync_lexicon.py`, which takes the
+first token of the cell and refuses one that is not a type. Handling
+it there rather than as an override is deliberate: a cell holding
+something that is not a type is a general hazard of a free-text column,
+and ANG happens to be the row where it has occurred so far.
+
+### -çx- — XCL has no gradient type, and the rules give it two
+
+**Source.** The sheet's Type cell for `çx` XCL, "External Standard for
+Comparison for Use with Levels", is empty. It is the only one of the
+528 that is.
+
+The blank is not arbitrary. §3.5.0.1 assigns a type by phonological
+signature, and `çx` matches two of them at once: Type B is "at least
+two consonants and always begins or ends with -ç-", and Type D2 is
+"end in (or consist of) -x". The source gives a precedence rule for
+exactly one collision of this kind, that -rh and -řh are A1 rather than
+A2, and none for this one.
+
+**Decision.** Type **B**. The signature ties, so the affix's own nine
+degrees break it, and they are B's three-by-three pattern exactly:
+degrees 1-3 are about X against an external standard, 4-6 about X and Y
+both meeting it, and 7-9 about X exceeding Y. Type D2's definition is
+"too little X" and "too much X" at the extremes, which is not what
+degrees 1 and 9 of this affix say.
+
+**Status.** `implemented`
+
+**Where.** `data/lexicon_overrides.json`, the `types` section. The
+general problem this is one instance of is `ISSUES.md` G52.
+
 ### -ḑg- — MDI and S07
 
 **Source.** The affix sheet gives `ḑg` to both **MDI** Modification and

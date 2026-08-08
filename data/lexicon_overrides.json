@@ -1,20 +1,30 @@
 {
   "_comment": [
     "Local repairs to the Collaborative Ithkuil IV spreadsheet, applied by",
-    "tools/sync_lexicon.py after each fetch. Each entry moves one root or",
-    "affix off a form that two unrelated meanings both claim; a C_R names",
-    "one root and a C_S one affix, so carrying both is a defect in the",
-    "sheet rather than a fact about the language.",
+    "tools/sync_lexicon.py after each fetch.",
+    "",
+    "'overrides' and 'affixes' each move one root or affix off a form that two",
+    "unrelated meanings both claim; a C_R names one root and a C_S one affix, so",
+    "carrying both is a defect in the sheet rather than a fact about the language.",
+    "",
+    "'degrees' is the other kind: the row is on the right form and its nine",
+    "meanings are missing or belong to a different affix. These are restored",
+    "'types' supplies a gradient type the sheet leaves empty. A cell holding",
+    "something that is not a type is handled generically by clean_type, not here.",
+    "Quijada prints no affix's type anywhere, so this rests on the phonological",
+    "signature in §3.5.0.1 and on the shape of the affix's own nine degrees.",
+    "",
+    "verbatim from V_XC_S Affixes for New Ithkuil v1.1, which is Quijada's and",
+    "which the sheet is a transcription of, so nothing here is invented.",
     "",
     "The reasoning for each is in docs/reference/ERRATA.md under the form.",
-    "match_stem0 (roots) and match_abbrev (affixes) identify which of the",
-    "two rows moves, so an upstream repair that renames or removes that row",
-    "simply stops matching and the override falls away instead of",
+    "match_stem0, match_abbrev and match_degree1 identify the broken state, so an",
+    "upstream repair simply stops matching and the override falls away instead of",
     "corrupting something.",
     "",
-    "basis: 'recovered' means the sheet's own series determines the new",
-    "value. 'chosen' means it does not, and a later upstream repair may",
-    "pick differently."
+    "basis: 'recovered' means the sheet's own series determines the new value.",
+    "'chosen' means it does not, and a later upstream repair may pick differently.",
+    "A degree override needs no basis: the source states it."
   ],
   "overrides": [
     {
@@ -53,6 +63,204 @@
       "new_cs": "gḑ",
       "basis": "recovered",
       "why": "upstream gives ḑg to both MDI and S07; MDI is a transposition of gḑ, which no affix uses"
+    }
+  ],
+  "degrees": [
+    {
+      "cs": "ẓd",
+      "match_abbrev": "MET",
+      "match_degree1": "",
+      "degrees": [
+        "part for whole",
+        "producer for product",
+        "object used or owned for user/owner",
+        "controller for controlled",
+        "institution for people responsible",
+        "place for inhabitants/occupants",
+        "place for event",
+        "place for institution",
+        "attribute or characteristic for owner"
+      ],
+      "why": "blank upstream; ẓd, ẓḑ and zf are three adjacent sheet rows carrying a two-row paste shift, and MET is where it starts"
+    },
+    {
+      "cs": "ẓḑ",
+      "match_abbrev": "GPJ",
+      "match_degree1": "part for whole",
+      "degrees": [
+        "thiocyanate, thocyanato-, ...thiocyanate",
+        "isothiocyanate, isothiocyanato-, ...isothiocyanate",
+        "methanethioyl-, -thial",
+        "carbothioic S-acid, mercaptocarbonyl-, -thioic S-acid",
+        "carbothioic O-acid, hydroxythiocarbonyl-, -thioic O-acid",
+        "thioester, S-alkyl-alkane-thioate",
+        "thionoester, O-alkyl-alkane-thioate",
+        "carbodithioic acid, dithiocarboxy-, -dithioic acid",
+        "dithiocarboxylic acid ester, -dithioate"
+      ],
+      "why": "carries MET's nine degrees upstream, from the row above"
+    },
+    {
+      "cs": "zf",
+      "match_abbrev": "ENS",
+      "match_degree1": "thiocyanate, thocyanato-, -thiocyanate",
+      "degrees": [
+        "active at twilight / crepuscular",
+        "active at night / nocturnal",
+        "active around dawn",
+        "active during the morning",
+        "active during the day / diurnal",
+        "sessile, not motile -- adhering to a substrate by direct attachment (not via a stalk/stipe/pedicel/connecting medium)",
+        "attached to a substrate via a stalk/stipe/pedicel/connecting medium",
+        "motile in reaction to heat",
+        "motile in reaction to light"
+      ],
+      "why": "carries GPJ's nine degrees upstream, from two rows above; its own list was overwritten and survives only in the affix document"
+    },
+    {
+      "cs": "sļ",
+      "match_abbrev": "GPB",
+      "match_degree1": "",
+      "degrees": [
+        "hydroxil, hydroxy-, -ol",
+        "carbonyl, oxo-, -oyl-, -one",
+        "aldehyde, -formyl-, -al",
+        "haloformyl, carbono...oyl-, -oyl halide",
+        "carbonate ester, alkoxycarbonyloxy-, alkyl carbonate",
+        "carboxylate, carboxylato-, -oate",
+        "carboxyl, carboxy-, -oic acid",
+        "carboalcoxy, alkanoyloxy-, alkyl alkanoate",
+        "methoxy, methoxy-"
+      ],
+      "why": "blank upstream; the affix document prints all nine"
+    },
+    {
+      "cs": "šḑ",
+      "match_abbrev": "GPC",
+      "match_degree1": "",
+      "degrees": [
+        "hydroperoxy-, alkyl hydroperoxide",
+        "peroxy-, alkyl peroxide",
+        "ether, alkoxy-, alkyl ether",
+        "hemiacetal, alkoxy -ol, -al alkyl hemiacetal",
+        "hemiketal, alxoxy -ol, -one alkyl hemiketal",
+        "acetal, dialkoxy-, -al dialkyl acetal",
+        "ketal, dialcoxy-, -one dialkyl ketal",
+        "orthoester, -trialkoxy",
+        "orthocarbonate ester, tetralkoxy-, tetraalkyl orthocarbonate"
+      ],
+      "why": "blank upstream; the affix document prints all nine"
+    },
+    {
+      "cs": "šļ",
+      "match_abbrev": "GPD",
+      "match_degree1": "",
+      "degrees": [
+        "methylenedioxy-, -dioxole",
+        "carboxylic anhydride, anhydride",
+        "carboxamide, carboxamido-, carbamoyl-, -amide",
+        "primary amine, amino-, -amine",
+        "secondary amine, amino-, -amine",
+        "tertiary amine, amino-, -amine",
+        "ammonio-, -ammonium",
+        "imide, imido-, -imide",
+        "azide, azido-, alkyl azide"
+      ],
+      "why": "blank upstream; the affix document prints all nine"
+    },
+    {
+      "cs": "zḑ",
+      "match_abbrev": "GPE",
+      "match_degree1": "",
+      "degrees": [
+        "primary ketimine, imino-, imine",
+        "secondary ketimine, imino-, -imine",
+        "primary aldimine, imino-, imine",
+        "secondary aldimine, imino-, -imine",
+        "azo diimide, azo-, -diazene",
+        "cyanate, cyanato-, alkyl cyanate",
+        "isocyanate, isocyanato-, alkyl isocyanate",
+        "nitrate, nitrooxy-, nitroxy-, alkyl nitrate",
+        "nitrite, nitrosooxy-, alkyl nitrite"
+      ],
+      "why": "blank upstream; the affix document prints all nine"
+    },
+    {
+      "cs": "zļ",
+      "match_abbrev": "GPF",
+      "match_degree1": "",
+      "degrees": [
+        "nitrile, cyano-, alkanenitrile, alkyl cyanide",
+        "isonitrile, isocyano-, alkaneisonitrile, alkyl isocyanide",
+        "nitro compound, nitro-",
+        "nitroso compound, nitroso-, nitrosyl-",
+        "oxime",
+        "pyridyl, 4-pyridyl, 3-pyridyl, 2-pyridyl, -pyridine",
+        "carbamate, -carbamoyloxy-, -carbamate",
+        "phosphine, phosphanyl-, -phosphane",
+        "phosphonic acid, phosphono-, -phosphonic acid"
+      ],
+      "why": "blank upstream; the affix document prints all nine"
+    },
+    {
+      "cs": "žḑ",
+      "match_abbrev": "GPG",
+      "match_degree1": "",
+      "degrees": [
+        "phosphate, phosphonooxy-, O-phospono-, ... phosphate",
+        "phosphodiester, hydroxyphosphoryloxy-, di...hydrogen phosphate",
+        "boronic acid, borono-, ... boronic acid",
+        "boronate, O-alkylboronyl-, ... boronic acid di... ester",
+        "borinic acid, hydroxyborino-, di... borinic acid",
+        "borinate, O-alkoxydialkylboronyl-, di... borinic acid ... ester",
+        "alkyllithium, -lithium",
+        "alkylmagnesium halide, -magnesium halide",
+        "alkylaluminium, -aluminium / -aluminum"
+      ],
+      "why": "blank upstream; the affix document prints all nine"
+    },
+    {
+      "cs": "rţy",
+      "match_abbrev": "ILT",
+      "match_degree1": "X times per millenium",
+      "degrees": [
+        "X times per millenium",
+        "X times per 10000 year period",
+        "X times per 10⁵ year period",
+        "X times per age (10⁶ years)",
+        "X times per epoch (10⁷ years)",
+        "X times per era (10⁸ years)",
+        "X times per eon [5 x 10⁸ years]",
+        "X times per billion (10⁹) year period",
+        "X times per universe-lifespan"
+      ],
+      "why": "degree 7 upstream reads 'Eight', a stray cell; the affix document has 'X times per eon [5 x 10^8 yrs.]' and the other eight degrees are the same 10^n series"
+    },
+    {
+      "cs": "bž",
+      "match_abbrev": "PHS",
+      "match_degree1": "(PCT) Punctual",
+      "degrees": [
+        "(PCT) Punctual",
+        "(ITR) Iterative",
+        "(REP) Repetitive",
+        "(ITM) Intermittent",
+        "(RCT) Recurrent",
+        "(FRE) Frequentative",
+        "(FRG) Fragmentative",
+        "(VAC) Vacillative",
+        "(FLC) Fluctuative"
+      ],
+      "why": "degree 4 upstream reads IMT for the INTERMITTENT Phase; the affix document, morphology.md §3.8 and grammar/slot_viii.go all write ITM"
+    }
+  ],
+  "types": [
+    {
+      "cs": "çx",
+      "match_abbrev": "XCL",
+      "match_type": null,
+      "new_type": "B",
+      "why": "empty upstream; çx begins with ç, which is Type B's signature, and its degrees run 1-3 on X, 4-6 on X and Y together and 7-9 on X against Y, which is B's three-by-three pattern"
     }
   ]
 }

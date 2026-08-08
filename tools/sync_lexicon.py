@@ -151,6 +151,30 @@ def parse_roots(csv_text: str) -> list[dict]:
     return out
 
 
+# §3.5.0.1's seven gradient types, plus the empty cell. The trailing
+# asterisk is that section's separate mark for an affix that also has a
+# C_R root, so it is stripped before the check and kept in the value.
+LEGAL_TYPES = {"", "0", "A1", "A2", "B", "C", "D1", "D2"}
+
+
+def clean_type(cell: str) -> str:
+    """Take the type off a Type cell, and refuse one that is not a type.
+
+    The cell is free text and does not always hold only a type. ANG's
+    reads "0* 1 arc-seconds 2 arc-minutes 3 mils ..." — the type, then
+    a whole nine-item degree list somebody drafted in the wrong column.
+    Taking the first token keeps the type and drops the spill.
+
+    Raising rather than passing the cell through is deliberate. The
+    value reaches consumers through the API, and a type nothing
+    recognizes is worse there than a sync that stops and says so.
+    """
+    head = cell.split(" ", 1)[0]
+    if head.rstrip("*") not in LEGAL_TYPES:
+        raise ValueError(f"unrecognized gradient type {cell!r}")
+    return head
+
+
 def parse_affixes(csv_text: str) -> list[dict]:
     reader = csv.DictReader(csv_text.splitlines())
     out = []
@@ -162,204 +186,10 @@ def parse_affixes(csv_text: str) -> list[dict]:
             "cs": cs,
             "abbrev": normalize(row.get("Abv.", "")),
             "description": normalize(row.get("Description", "")),
-            "type": normalize(row.get("Type", "")),
+            "type": clean_type(normalize(row.get("Type", ""))),
             "degrees": [normalize(row.get(f"Degree {i}", "")) for i in range(1, 10)],
         })
     return out
-
-
-# Three consecutive rows of the upstream Affixes sheet have their degree
-# cells shifted down by one: MET's nine meanings sit on GPJ's row, GPJ's
-# on ENS's, MET's own row is blank, and ENS's fall off the end and are
-# lost. The shape is what "insert cells, shift down" over a three-row
-# selection produces.
-#
-# Which reading is right is not a judgement call. MET is "Metonymic
-# Categories" and "part for whole" is metonymy; GPJ is "Functional Group
-# J" and thiocyanate is a functional group; ENS is "Environmental Niche"
-# and crepuscular/nocturnal is one. Upstream pairs each description with
-# the previous row's meanings.
-#
-# ENS's nine degrees survive only in docs/reference/affixes_reference.md,
-# which predates the spreadsheet sync, so all three are restored from
-# there verbatim. merge_affixes reports when it overrides, so a sync that
-# stops printing these three has had the shift repaired upstream and the
-# table can go.
-SHIFTED_DEGREES = {
-    "MET": [
-        "part for whole",
-        "producer for product",
-        "object used or owned for user/owner",
-        "controller for controlled",
-        "institution for people responsible",
-        "place for inhabitants/occupants",
-        "place for event",
-        "place for institution",
-        "attribute or characteristic for owner",
-    ],
-    "GPJ": [
-        "thiocyanate, thocyanato-, -thiocyanate",
-        "isothiocyanate,  isothiocyanato-, -isothiocyanate",
-        "methanethioyl-, -thial",
-        "carbothioic S-acid, mercaptocarbonyl-, -thioic S-acid",
-        "carbothioic O-acid, hydroxythiocarbonyl-, -thioic O-acid",
-        "thioester, S-alkyl-alkane-thioate",
-        "thionoester, O-alkyl-alkane-thioate",
-        "carbodithioic acid, dithiocarboxy-, -dithioic acid",
-        "dithiocarboxylic acid ester, -dithioate",
-    ],
-    "ENS": [
-        "active at twilight/crepuscular",
-        "active at night/nocturnal",
-        "active around dawn",
-        "active during the morning",
-        "active during the day/diurnal",
-        "sessile, not motile -- adhering to a substrate by direct attachment (not via a stalk/stipe/pedicel/connecting medium)",
-        "attached to a substrate via a stalk/stipe/pedicel/connecting medium",
-        "motile in reaction to heat",
-        "motile in reaction to light",
-    ],
-}
-
-
-# GPB through GPG carry a C_S, an abbreviation and a description upstream
-# and nine empty degree cells apiece. They are not empty in Quijada: his
-# affix document populates all six, and these are extracted from it by
-# column geometry (see docs/reference/ISSUES.md, A5).
-#
-# The extraction was checked against the three groups the sheet does
-# carry. GPJ came back identical in all nine degrees; GPA and GPH differ
-# only in that the sheet's versions are shortened — "alkyl halide" for
-# the PDF's "halo-, alkyl halide" — so the reading is faithful and
-# fuller than what upstream has.
-#
-# The "..." in several entries is Quijada's own placeholder for the
-# elided stem, kept as printed rather than reworded.
-RECOVERED_DEGREES = {
-    "GPB": [
-        "hydroxil, hydroxy-, -ol",
-        "carbonyl, oxo-, -oyl-, -one",
-        "aldehyde, -formyl-, -al",
-        "haloformyl, carbono...oyl-, -oyl halide",
-        "carbonate ester, alkoxycarbonyloxy-, alkyl carbonate",
-        "carboxylate, carboxylato-, -oate",
-        "carboxyl, carboxy-, -oic acid",
-        "carboalcoxy, alkanoyloxy-, alkyl alkanoate",
-        "methoxy, methoxy-",
-    ],
-    "GPC": [
-        "hydroperoxy-, alkyl hydroperoxide",
-        "peroxy-, alkyl peroxide",
-        "ether, alkoxy-, alkyl ether",
-        "hemiacetal, alkoxy -ol, -al alkyl hemiacetal",
-        "hemiketal, alxoxy -ol, -one alkyl hemiketal",
-        "acetal, dialkoxy-, -al dialkyl acetal",
-        "ketal, dialcoxy-, -one dialkyl ketal",
-        "orthoester, -trialkoxy",
-        "orthocarbonate ester, tetralkoxy-, tetraalkyl orthocarbonate",
-    ],
-    "GPD": [
-        "methylenedioxy-, -dioxole",
-        "carboxylic anhydride, anhydride",
-        "carboxamide, carboxamido-, carbamoyl-, -amide",
-        "primary amine, amino-, -amine",
-        "secondary amine, amino-, -amine",
-        "tertiary amine, amino-, -amine",
-        "ammonio-, -ammonium",
-        "imide, imido-, -imide",
-        "azide, azido-, alkyl azide",
-    ],
-    "GPE": [
-        "primary ketimine, imino-, imine",
-        "secondary ketimine, imino-, -imine",
-        "primary aldimine, imino-, imine",
-        "secondary aldimine, imino-, -imine",
-        "azo diimide, azo-, -diazene",
-        "cyanate, cyanato-, alkyl cyanate",
-        "isocyanate, isocyanato-, alkyl isocyanate",
-        "nitrate, nitrooxy-, nitroxy-, alkyl nitrate",
-        "nitrite, nitrosooxy-, alkyl nitrite",
-    ],
-    "GPF": [
-        "nitrile, cyano-, alkanenitrile, alkyl cyanide",
-        "isonitrile, isocyano-, alkaneisonitrile, alkyl isocyanide",
-        "nitro compound, nitro-",
-        "nitroso compound, nitroso-, nitrosyl-",
-        "oxime",
-        "pyridyl, 4-pyridyl, 3-pyridyl, 2-pyridyl, -pyridine",
-        "carbamate, -carbamoyloxy-, -carbamate",
-        "phosphine, phosphanyl-, -phosphane",
-        "phosphonic acid, phosphono-, -phosphonic acid",
-    ],
-    "GPG": [
-        "phosphate, phosphonooxy-, O-phospono-, ... phosphate",
-        "phosphodiester, hydroxyphosphoryloxy-, di...hydrogen phosphate",
-        "boronic acid, borono-, ... boronic acid",
-        "boronate, O-alkylboronyl-, ... boronic acid di... ester",
-        "borinic acid, hydroxyborino-, di... borinic acid",
-        "borinate, O-alkoxydialkylboronyl-, di... borinic acid ... ester",
-        "alkyllithium, -lithium",
-        "alkylmagnesium halide, -magnesium halide",
-        "alkylaluminium, -aluminium / -aluminum",
-    ],
-}
-
-
-# A Type cell holds one of Quijada's seven gradient types, optionally
-# starred to mark that the affix has an associated C_R root. ANG's cell
-# holds its type followed by a second, differently-ordered assignment of
-# its nine degrees, spilled in from somewhere:
-#
-#   0* 1 arc-seconds 2 arc-minutes 3 mils 4 grads 5 degrees 6 points
-#   7 hour angles 8 radians 9 sextants
-#
-# The degree columns of the same row order them points, hour angles,
-# grads, mils, radians, sextants, arc-seconds, arc-minutes, degrees,
-# which is the order the affix document gives, so the spill is the stray
-# text and the degrees stand. Only the type is taken from the cell.
-LEGAL_TYPES = {"", "0", "A1", "A2", "B", "C", "D1", "D2"}
-
-
-def clean_type(cell: str) -> str:
-    head = cell.split(" ", 1)[0]
-    if head.rstrip("*") not in LEGAL_TYPES:
-        raise ValueError(f"unrecognized gradient type {cell!r}")
-    return head
-
-
-def merge_affixes(upstream: list[dict], existing_path: Path) -> list[dict]:
-    """Preserve local description/type when upstream is blank, and undo
-    the three-row degree shift described at SHIFTED_DEGREES, and fill
-    the degree lists upstream leaves blank from RECOVERED_DEGREES.
-
-    Match on (cs, abbrev) since the same Cs cluster can carry two
-    affixes (e.g. ḑg = MDI and ḑg = S07 are both in upstream).
-    """
-    for a in upstream:
-        a["type"] = clean_type(a["type"])
-        blank = RECOVERED_DEGREES.get(a["abbrev"])
-        if blank and not any(d.strip() for d in a["degrees"]):
-            print(f"  filling blank degrees for {a['abbrev']} ({a['cs']}) from the PDF")
-            a["degrees"] = list(blank)
-        fixed = SHIFTED_DEGREES.get(a["abbrev"])
-        if fixed and a["degrees"] != fixed:
-            print(f"  restoring shifted degrees for {a['abbrev']} ({a['cs']})")
-            a["degrees"] = list(fixed)
-
-    if not existing_path.exists():
-        return upstream
-    with open(existing_path, encoding="utf-8") as f:
-        local = json.load(f)
-    local_by_key = {(a["cs"], a["abbrev"]): a for a in local}
-    for a in upstream:
-        prior = local_by_key.get((a["cs"], a["abbrev"]))
-        if not prior:
-            continue
-        if not a["description"] and prior.get("description"):
-            a["description"] = prior["description"]
-        if not a["type"] and prior.get("type"):
-            a["type"] = prior["type"]
-    return upstream
 
 
 def write_roots_tsv(roots: list[dict], path: Path) -> None:
@@ -543,12 +373,23 @@ def apply_root_overrides(roots: list[dict]) -> list[dict]:
 
 
 def apply_affix_overrides(affixes: list[dict]) -> list[dict]:
-    """Move affixes off a C_S that two unrelated ones both claim.
+    """Repair affix rows the sheet gets wrong, in two ways.
 
-    The same repair as apply_root_overrides, on the other half of the
-    sheet. A hand-edit in data.json will not survive a sync, which is
-    how MDI's move off ḑg was lost: it had been corrected in place, the
-    fetch overwrote it, and the store then refused the duplicate key.
+    "affixes" moves an affix off a C_S that two unrelated ones both
+    claim, the same repair as apply_root_overrides on the other half of
+    the sheet. A hand-edit in data.json will not survive a sync, which
+    is how MDI's move off ḑg was lost: it had been corrected in place,
+    the fetch overwrote it, and the store then refused the duplicate
+    key.
+
+    "degrees" restores the nine meanings of a row that is on the right
+    C_S but whose meanings are blank or belong to a different affix.
+    Nine affixes need it: six Functional Groups the sheet never filled
+    in, and MET/GPJ/ENS, three adjacent rows whose content was pasted
+    one row low so that each carries its predecessor's list and the
+    first is empty. Every restored string is Quijada's, from the affix
+    document the sheet transcribes, so this adds nothing the sources do
+    not already say.
     """
     path = DATA_DIR / "lexicon_overrides.json"
     if not path.exists():
@@ -568,6 +409,40 @@ def apply_affix_overrides(affixes: list[dict]) -> list[dict]:
             continue
         hits[0]["cs"] = o["new_cs"]
         print(f"  {o['cs']} -> {o['new_cs']} ({o['basis']}): {o['match_abbrev']}")
+
+    for o in spec.get("degrees", []):
+        hits = [
+            a for a in affixes
+            if a.get("cs") == o["cs"] and a.get("abbrev") == o["match_abbrev"]
+        ]
+        if len(hits) != 1:
+            print(f"  degrees {o['match_abbrev']}: {len(hits)} rows match, skipped")
+            continue
+        # match_degree1 pins the broken state, so an upstream repair
+        # stops the override rather than overwriting the repair. It is
+        # the empty string for the rows the sheet never filled in.
+        got = hits[0]["degrees"][0].strip()
+        if got != o["match_degree1"].strip():
+            print(f"  degrees {o['match_abbrev']}: upstream now reads "
+                  f"{got[:40]!r}, not the state this repairs; skipped")
+            continue
+        hits[0]["degrees"] = list(o["degrees"])
+        print(f"  degrees {o['match_abbrev']} (-{o['cs']}): restored 9 from the affix document")
+
+    for o in spec.get("types", []):
+        hits = [
+            a for a in affixes
+            if a.get("cs") == o["cs"] and a.get("abbrev") == o["match_abbrev"]
+        ]
+        if len(hits) != 1:
+            print(f"  type {o['match_abbrev']}: {len(hits)} rows match, skipped")
+            continue
+        if hits[0].get("type") != o["match_type"]:
+            print(f"  type {o['match_abbrev']}: upstream now reads "
+                  f"{str(hits[0].get('type'))[:40]!r}; skipped")
+            continue
+        hits[0]["type"] = o["new_type"]
+        print(f"  type {o['match_abbrev']} (-{o['cs']}): -> {o['new_type']}")
     return affixes
 
 
