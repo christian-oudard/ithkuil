@@ -49,8 +49,19 @@ above records a v1.3 change to "Sec. 4.2" that is the morphology one:
 two unrelated rules, one label, one directory.
 
 So a bare section number is ambiguous, in prose and in a fault code
-alike. `phonology` currently emits six of them as `fault.Code` values,
-all from the phonotactics document, with nothing saying so.
+alike. The convention the code follows: a `fault.Code` citation names
+its document outright, since it is a bare label with no sentence around
+it to place it (`phonotactics §2.16`, `grammar §1.2.1`); a citation
+inside a `Fix` sentence names the phonotactics document when it means
+that one, and otherwise means the Grammar Design document, which is
+what the sentence around it is already about.
+`code/fault/citation_test.go` holds every shipped message to this, and
+to the stronger claim that the section cited exists at all.
+
+Comments are not held to it, and inside `code/phonology` a bare §2.13
+means the phonotactics rule: that package is a transcription of that
+document and reads as one. What a comment can assume of its reader, a
+sentence printed to someone with neither document open cannot.
 
 The website does not have this problem, being one document in one
 sequence, but it is not a substitute: the site lags the PDFs, so it

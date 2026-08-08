@@ -29,7 +29,7 @@ func Word(w g.Word) (string, error) {
 		// refuses the same value for the same reason; the two arms
 		// should not disagree about what is a word.
 		if v.Concat != g.ConcatNone {
-			return "", fmt.Errorf("lone formative carries concatenation status %v; write it as a chain", v.Concat)
+			return "", fmt.Errorf("lone formative carries concatenation status %v; write it as a chain (§3.1.7)", v.Concat)
 		}
 		return Formative(v), nil
 	case *g.Chain:

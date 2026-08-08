@@ -226,7 +226,7 @@ func ParseWord(word string) (g.Word, error) {
 	return nil, fault.One(word, fault.Fault{
 		Stage: fault.Shape,
 		Code:  "shape",
-		Fix:   "no word class has this shape: not a formative, referential, adjunct, register marker or bias",
+		Fix:   "no word class has this shape: not a formative, referential, adjunct, register marker or bias (§2, §4)",
 	})
 }
 
@@ -360,7 +360,7 @@ func tryConcatenation(word string) (*g.Chain, error) {
 	if len(parts) < 2 {
 		return nil, fault.One(word, fault.Fault{
 			Stage: fault.Shape, Code: "chain", Found: word,
-			Fix: "a hyphen joins two or more formatives, and this has one",
+			Fix: "a hyphen joins two or more formatives, and this has one (§3.1.8)",
 		})
 	}
 	formatives := make([]g.Formative, 0, len(parts))
@@ -392,15 +392,15 @@ func tryConcatenation(word string) (*g.Chain, error) {
 	if formatives[last].Concat != g.ConcatNone {
 		return nil, fault.One(parts[last], fault.Fault{
 			Stage: fault.Value, Code: "Cc", Found: parts[last],
-			Fix: "§3.1.7 puts the parent last and gives it no concatenation marker, and this one carries " +
-				formatives[last].Concat.String(),
+			Fix: "the parent goes last and takes no concatenation marker, and this one carries " +
+				formatives[last].Concat.String() + " (§3.1.7)",
 		})
 	}
 	for i := 0; i < last; i++ {
 		if formatives[i].Concat == g.ConcatNone {
 			return nil, fault.One(parts[i], fault.Fault{
 				Stage: fault.Value, Code: "Cc", Found: parts[i],
-				Fix: "§3.1.7 gives every dependent a concatenation marker, and this one before the parent has none",
+				Fix: "every dependent takes a concatenation marker, and this one before the parent has none (§3.1.7)",
 			})
 		}
 	}

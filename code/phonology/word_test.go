@@ -81,8 +81,8 @@ func TestParseWord_ReadsWhatTheRulesReject(t *testing.T) {
 	if len(vs) == 0 {
 		t.Fatal("akx should break a cluster rule")
 	}
-	if vs[0].Code != "2.3" {
-		t.Errorf("rule = %q, want 2.3", vs[0].Code)
+	if vs[0].Code != "phonotactics §2.3" {
+		t.Errorf("rule = %q, want phonotactics §2.3", vs[0].Code)
 	}
 }
 

@@ -32,19 +32,19 @@ func ParseCarrier(word string) (grammar.CarrierAdjunct, error) {
 	conjs := phonology.SplitConjuncts(word)
 	if len(conjs) < 2 {
 		return grammar.CarrierAdjunct{}, shape(word, "shape", word,
-			"a carrier adjunct is a carrier consonant plus a case vowel, and this has one conjunct")
+			"a carrier adjunct is a carrier consonant plus a case vowel, and this has one conjunct (§4.5)")
 	}
 	cs := conjs[0]
 	ct, ok := ParseCarrierType(cs)
 	if !ok {
 		return grammar.CarrierAdjunct{}, shape(word, "Cp", cs,
-			"a carrier adjunct opens with hl, hm, hn or hň")
+			"a carrier adjunct opens with hl, hm, hn or hň (§4.5)")
 	}
 	vc := strings.Join(conjs[1:], "")
 	c, ok := ParseCase(vc)
 	if !ok {
 		return grammar.CarrierAdjunct{}, value(word, "Vc", vc,
-			"no case is written "+vc+"; a carrier adjunct carries a case and nothing else")
+			"no case is written "+vc+"; a carrier adjunct carries a case and nothing else (§4.5, §3.9.1)")
 	}
 	return grammar.CarrierAdjunct{Type: ct, Case: c}, nil
 }

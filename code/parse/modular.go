@@ -56,7 +56,7 @@ func parseCmPair(vn, cm string) (grammar.SlotVIII, bool) {
 func ParseModular(word string) (grammar.ModularAdjunct, error) {
 	conjs := phonology.SplitConjuncts(word)
 	if len(conjs) == 0 {
-		return grammar.ModularAdjunct{}, shape(word, "shape", word, "a modular adjunct needs at least one conjunct")
+		return grammar.ModularAdjunct{}, shape(word, "shape", word, "a modular adjunct needs at least one conjunct (§4.3)")
 	}
 
 	// Optional w/y scope prefix.
@@ -72,7 +72,7 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 
 	if len(conjs) == 0 {
 		return grammar.ModularAdjunct{}, shape(word, "shape", word,
-			"the w/y scope prefix needs a Vn Cn pair or an aspect vowel after it")
+			"the w/y scope prefix needs a Vn Cn pair or an aspect vowel after it (§4.3)")
 	}
 
 	// Walk the (V_N C) pairs; whatever vowel comes alone at the end is
@@ -93,7 +93,7 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 			}
 			if !ok {
 				return grammar.ModularAdjunct{}, shape(word, fmt.Sprintf("C%d", slot), c,
-					fmt.Sprintf("Slot %d of a modular adjunct takes %s", slot, slotConsonants(slot)))
+					fmt.Sprintf("Slot %d of a modular adjunct takes %s (§4.3)", slot, slotConsonants(slot)))
 			}
 			pairs = append(pairs, rawPair{vn: conjs[i], c: c})
 			i += 2
@@ -105,7 +105,7 @@ func ParseModular(word string) (grammar.ModularAdjunct, error) {
 			continue
 		}
 		return grammar.ModularAdjunct{}, shape(word, "shape", conjs[i],
-			"a modular adjunct alternates Vn and Cn from here, and "+conjs[i]+" fits neither position")
+			"a modular adjunct alternates Vn and Cn from here, and "+conjs[i]+" fits neither position (§4.3)")
 	}
 	if len(pairs) == 0 && final == "" {
 		return grammar.ModularAdjunct{}, shape(word, "shape", word,

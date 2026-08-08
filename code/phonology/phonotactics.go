@@ -305,22 +305,14 @@ func ClusterViolationsAt(p Position, cluster string) []fault.Fault {
 		// under this rule as well. The spec lists both.
 		if isNasal(a) && isStop(b) && isSibilant(c) &&
 			(areHomologous(a, b) || (a == 'n' && (b == 'k' || b == 'g'))) {
-			errs = append(errs, fault.Fault{
-				Stage: fault.Sound,
-				Code:  "2.13",
-				Found: string([]rune{a, b, c}),
-				Fix:   "nasal + homologous stop + sibilant",
-			})
+			errs = append(errs, sound("2.13", string([]rune{a, b, c}),
+				"nasal + homologous stop + sibilant"))
 		}
 		// 2.15: nf or nv followed by any consonant is prohibited —
 		// these clusters must be followed by a vowel.
 		if a == 'n' && (b == 'f' || b == 'v') && !isVowel(c) {
-			errs = append(errs, fault.Fault{
-				Stage: fault.Sound,
-				Code:  "2.15",
-				Found: string([]rune{a, b, c}),
-				Fix:   "nf/nv must be followed by vowel",
-			})
+			errs = append(errs, sound("2.15", string([]rune{a, b, c}),
+				"nf/nv must be followed by vowel"))
 		}
 		// 2.12 triples: m + bilabial stop + bilabial / interdental
 		// fricative or dental stop is prohibited because the medial
@@ -328,12 +320,8 @@ func ClusterViolationsAt(p Position, cluster string) []fault.Fault {
 		if a == 'm' {
 			if (b == 'p' && (c == 'f' || c == 'ţ' || c == 't')) ||
 				(b == 'b' && (c == 'v' || c == 'ḑ' || c == 'd')) {
-				errs = append(errs, fault.Fault{
-					Stage: fault.Sound,
-					Code:  "2.12",
-					Found: string([]rune{a, b, c}),
-					Fix:   "m + bilabial stop + indistinct follower",
-				})
+				errs = append(errs, sound("2.12", string([]rune{a, b, c}),
+					"m + bilabial stop + indistinct follower"))
 			}
 		}
 		// 2.12: ngḑ specifically called out alongside the m-cluster
@@ -472,16 +460,18 @@ func VowelSequenceViolations(seq string) []fault.Fault {
 			return nil
 		}
 		return []fault.Fault{
-			{Stage: fault.Sound, Code: "1.2.1", Found: seq,
-				Fix: "not one of the ten diphthongs the grammar lists at §1.2.1, and not a disyllabic conjunct"},
+			// Not routed through sound(), whose citation names the
+			// phonotactics document. This is the one numbered rule
+			// this package raises that comes from the other one.
+			{Stage: fault.Sound, Code: "grammar §1.2.1", Found: seq,
+				Fix: "not one of the ten permissible diphthongs, and not a disyllabic conjunct"},
 		}
 	default:
 		// Three-vowel sequences may appear as glottalized cases (e.g.
 		// "a'a" with the apostrophe stripped to "aa"), but apostrophe
 		// glottalization isn't normalized here. Treat 3+ as invalid.
 		return []fault.Fault{
-			{Stage: fault.Sound, Code: "1.4", Found: seq,
-				Fix: "a vowel conjunct is at most disyllabic; phonotactics §1.4 bars three or more"},
+			sound("1.4", seq, "a vowel conjunct is at most disyllabic, and this is three syllables or more"),
 		}
 	}
 }
@@ -495,12 +485,7 @@ func ClusterViolations(s string) []fault.Fault {
 	for _, r := range s {
 		if !first {
 			if rule, reason := CheckProhibitedPair(prev, r); rule != "" {
-				errs = append(errs, fault.Fault{
-					Stage: fault.Sound,
-					Code:  rule,
-					Found: string([]rune{prev, r}),
-					Fix:   reason,
-				})
+				errs = append(errs, sound(rule, string([]rune{prev, r}), reason))
 			}
 		}
 		first = false

@@ -152,7 +152,7 @@ func parseCarrierOrReferential(s string, affixes map[string]lexicon.AffixEntry) 
 	}
 	caseChunk, restTail := splitFirstHyphenChunk(tail)
 	if caseChunk == "" {
-		return nil, true, syntax(s, "a referential is a referent list and a case, joined by \"-\"")
+		return nil, true, syntax(s, "a referential is a referent list and a case, joined by \"-\" (§4.6.1)")
 	}
 	parts := []string{caseChunk}
 	if restTail != "" {
@@ -196,7 +196,7 @@ func buildReferential(
 	affixes map[string]lexicon.AffixEntry,
 ) (g.Word, error) {
 	if len(parts) == 0 || parts[0] == "" {
-		return nil, syntax(text, "a referential is a referent list and a case, joined by \"-\"")
+		return nil, syntax(text, "a referential is a referent list and a case, joined by \"-\" (§4.6.1)")
 	}
 	// Reading is permissive here as it is for a formative: a slot that
 	// fails records its fault and the rest are still read. The
@@ -223,7 +223,7 @@ func buildReferential(
 			// "[refs]/CASE": a second referent carrying its own case.
 			end := strings.Index(p, "]")
 			if end < 1 || !strings.HasPrefix(p[end+1:], "/") {
-				fs.add(syntax(p, "a second referent is written [refs]/CASE"))
+				fs.add(syntax(p, "a second referent is written [refs]/CASE (§4.6.1)"))
 				continue
 			}
 			refs, err := parseRefList(p[1:end])
@@ -237,7 +237,7 @@ func buildReferential(
 				continue
 			}
 			if ref.Second != nil {
-				fs.add(syntax(p, "a referential carries one second referent, and one is already set"))
+				fs.add(syntax(p, "a referential carries one second referent, and one is already set (§4.6.1)"))
 				continue
 			}
 			ref.Second = &g.SecondReferent{Case: cv, Refs: refs}
@@ -245,11 +245,11 @@ func buildReferential(
 			// A bare case with no referent of its own stacks onto the head.
 			cv, ok := parseCaseName(p)
 			if !ok {
-				fs.add(syntax(p, "a referential holds a referent list, a case, and at most one [refs]/CASE second referent"))
+				fs.add(syntax(p, "a referential holds a referent list, a case, and at most one [refs]/CASE second referent (§4.6.1)"))
 				continue
 			}
 			if ref.Second != nil {
-				fs.add(syntax(p, "a referential stacks one second case, and one is already set"))
+				fs.add(syntax(p, "a referential stacks one second case, and one is already set (§4.6.2)"))
 				continue
 			}
 			ref.Second = &g.SecondReferent{Case: cv}
@@ -285,11 +285,11 @@ func buildCombinationRef(
 		}
 		cv, ok := parseCaseName(p)
 		if !ok {
-			fs.add(syntax(p, "a combination referential holds a referent list, a case, a specification, affixes, and at most one stacked case"))
+			fs.add(syntax(p, "a combination referential holds a referent list, a case, a specification, affixes, and at most one stacked case (§4.6.2)"))
 			continue
 		}
 		if comb.Case2 != nil {
-			fs.add(syntax(p, "a combination referential stacks one case, and one is already set"))
+			fs.add(syntax(p, "a combination referential stacks one case, and one is already set (§4.6.2)"))
 			continue
 		}
 		comb.Case2 = &cv
@@ -652,7 +652,7 @@ func parseAffixualAdjunct(s string, affixes map[string]lexicon.AffixEntry) (g.Wo
 		}
 		// scope
 		if !firstAffixSeen {
-			return nil, syntax(s, "a scope in an affixual adjunct qualifies the affix in front of it, and there is none yet")
+			return nil, syntax(s, "a scope in an affixual adjunct qualifies the affix in front of it, and there is none yet (§4.1)")
 		}
 		if !scopeSeenAfterFirst && len(rest) == 0 {
 			// First scope position: between first affix and rest affixes.
@@ -664,7 +664,7 @@ func parseAffixualAdjunct(s string, affixes map[string]lexicon.AffixEntry) (g.Wo
 		restScope = e.scope
 	}
 	if !firstAffixSeen {
-		return nil, syntax(s, "an affixual adjunct carries at least one affix")
+		return nil, syntax(s, "an affixual adjunct carries at least one affix (§4.1)")
 	}
 	if !scopeSeenAfterFirst && len(rest) == 0 {
 		// Single-affix form: collapses to SingleAffixAdjunct.
@@ -704,7 +704,7 @@ func parseAffixField(s string, affixes map[string]lexicon.AffixEntry) (g.Affix, 
 		case "3":
 			atype = g.Type3Affix
 		default:
-			return g.Affix{}, syntax(tail[i:], "the affix Type suffix is _2 or _3; Type 1 is unmarked")
+			return g.Affix{}, syntax(tail[i:], "the affix Type suffix is _2 or _3; Type 1 is unmarked (§3.5.0.2)")
 		}
 		tail = tail[:i]
 	}
@@ -737,7 +737,7 @@ func parseScopeName(s string) (g.AffixScope, bool) {
 func parseReferentialToken(s string, affixes map[string]lexicon.AffixEntry) (g.Word, error) {
 	parts := strings.Split(s, "-")
 	if len(parts) < 2 {
-		return nil, syntax(s, "a referential is a referent list and a case, joined by \"-\"")
+		return nil, syntax(s, "a referential is a referent list and a case, joined by \"-\" (§4.6.1)")
 	}
 	category, head := splitCategoryTag(parts[0])
 	ref, eff, err := parseRefSpec(head)

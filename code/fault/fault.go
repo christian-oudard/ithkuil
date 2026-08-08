@@ -53,11 +53,17 @@ func (s Stage) String() string {
 // Fault is one reason a romanization could not be read.
 //
 // Code and Fix are both required and neither substitutes for the
-// other. Code is what a program branches on: a §2 rule number at
-// Sound, a slot name at Value. Fix is the sentence a reader acts on,
-// and says what is admissible rather than guessing at what was meant —
-// a parser that offers "did you mean" is inventing evidence it does
-// not have.
+// other. Code is what a program branches on and where a reader is sent
+// to read more: a cited rule at Sound ("phonotactics §2.1"), a slot
+// name at Value ("Ca"). A cited rule names its document, because the
+// grammar and the phonotactics number independently and collide — see
+// docs/reference/READING.md. Fix is the sentence a reader acts on, and
+// says what is admissible rather than guessing at what was meant — a
+// parser that offers "did you mean" is inventing evidence it does not
+// have. It carries §-citations of its own where the rule it rests on
+// is not the one in Code, and there names the phonotactics document
+// when it means that one: a bare § in a Fix is the Grammar Design
+// document, which is what the sentence around it is already about.
 // In is the enclosing unit a fault sits inside, when the thing being
 // read is made of several: one link of a concatenation chain, one
 // token of a gloss. Without it, a report of several faults is several
@@ -66,7 +72,7 @@ func (s Stage) String() string {
 // is empty when the fault is about the whole of what was read.
 type Fault struct {
 	Stage Stage
-	Code  string // rule identifier ("2.1", "chars") or slot name ("Ca")
+	Code  string // cited rule ("phonotactics §2.1", "chars") or slot name ("Ca")
 	Found string // the offending text; empty when the whole word is the subject
 	In    string // the chain link or gloss token this sits in; empty when the whole
 	Fix   string // what would have to change

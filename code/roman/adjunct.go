@@ -15,7 +15,7 @@ import (
 // form is two conjuncts ("ač"). Inverse of parse.ParseSingleAffix.
 func SingleAffixAdjunct(a g.SingleAffixAdjunct) (string, error) {
 	if a.Affix.Consonant == "" {
-		return "", fmt.Errorf("single-affix adjunct: affix has no Cs cluster")
+		return "", fmt.Errorf("single-affix adjunct: affix has no Cs cluster (§4.1.1)")
 	}
 	// §1.6's footnote depends on what precedes the vowel, so it
 	// applies to the assembled word. See phonology.DissimilateGlides.
@@ -55,10 +55,10 @@ const defaultVs = "a"
 // the class apart. Inverse of parse.ParseMultipleAffix.
 func MultipleAffixAdjunct(a g.MultipleAffixAdjunct) (string, error) {
 	if a.First.Consonant == "" {
-		return "", fmt.Errorf("multiple-affix adjunct: first affix has no Cs cluster")
+		return "", fmt.Errorf("multiple-affix adjunct: first affix has no Cs cluster (§4.1.2)")
 	}
 	if len(a.Rest) == 0 {
-		return "", fmt.Errorf("multiple-affix adjunct: needs a second affix; use a single-affix adjunct for one")
+		return "", fmt.Errorf("multiple-affix adjunct: needs a second affix; use a single-affix adjunct for one (§4.1)")
 	}
 	var b strings.Builder
 	b.WriteString(a.First.Consonant)
@@ -66,7 +66,7 @@ func MultipleAffixAdjunct(a g.MultipleAffixAdjunct) (string, error) {
 	b.WriteString(parse.CzForm(a.FirstScope))
 	for _, af := range a.Rest {
 		if af.Consonant == "" {
-			return "", fmt.Errorf("multiple-affix adjunct: trailing affix has no Cs cluster")
+			return "", fmt.Errorf("multiple-affix adjunct: trailing affix has no Cs cluster (§4.1.2)")
 		}
 		b.WriteString(parse.AffixVowel(af.Type, af.Degree))
 		b.WriteString(af.Consonant)
@@ -141,7 +141,7 @@ func ModularAdjunct(m g.ModularAdjunct) (string, error) {
 		// Aspect, otherwise ň", so it cannot also carry the C_N that
 		// Slot 2 would have written.
 		if g.SlotVIIIMoodScope(s) != g.FAC {
-			return "", fmt.Errorf("modular adjunct: Slot 3 has no C_N, so %v Mood/Case-Scope cannot be written there",
+			return "", fmt.Errorf("modular adjunct: Slot 3 has no C_N, so %v Mood/Case-Scope cannot be written there (§4.3)",
 				g.SlotVIIIMoodScope(s))
 		}
 		if _, isAspect := s.(g.VnCnAspect); isAspect {

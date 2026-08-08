@@ -67,7 +67,7 @@ func clusterFault(kind, cluster string) error {
 			Stage: fault.Sound,
 			Code:  kind,
 			Found: cluster,
-			Fix:   "1.7: no cluster holds three consonants in a row",
+			Fix:   "no cluster repeats the same consonant three times in a row (phonotactics §1.7)",
 		})
 	}
 	return nil
@@ -111,7 +111,7 @@ func inToken(tok string, err error) error {
 // wrote something else needs the range and nothing more.
 func degreeAdmits(found string) string {
 	return "an affix degree is one digit, 1 through 9, and " +
-		strings.TrimSpace(found) + " is not"
+		strings.TrimSpace(found) + " is not (§3.5)"
 }
 
 // assigned is the ledger of which grammatical categories a gloss has

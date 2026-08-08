@@ -164,7 +164,7 @@ func TestInventory_RendersPronounceableWords(t *testing.T) {
 			continue
 		}
 		for _, v := range w.Violations() {
-			if clusterRules[s.Category] && (strings.HasPrefix(v.Code, "2.") || strings.HasPrefix(v.Code, "3.")) {
+			if clusterRules[s.Category] && (strings.HasPrefix(v.Code, "phonotactics §2.") || strings.HasPrefix(v.Code, "phonotactics §3.")) {
 				continue
 			}
 			t.Errorf("%s/%s renders %q, which breaks %v", s.Category, s.Abbrev, out, v)

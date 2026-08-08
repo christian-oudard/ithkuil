@@ -516,7 +516,7 @@ func appendType3Affix(f *g.Formative, tok string, slotV bool) error {
 	} else if m := column4AffixToken.FindStringSubmatch(tok); m != nil {
 		atype, refSpec, value = g.Column4Affix, m[1], m[2]
 	} else {
-		return syntax(tok, "a Type-3 referential affix is written (refs)/degree")
+		return syntax(tok, "a Type-3 referential affix is written (refs)/degree (§4.6.5)")
 	}
 
 	degree, _ := strconv.Atoi(value)

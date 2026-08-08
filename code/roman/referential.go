@@ -130,7 +130,7 @@ func finishReferential(bodies []string, head g.RefHead, suppletivePrefix string,
 		marked := phonology.Apply(word, phonology.Ultimate)
 		if marked == word {
 			return "", fmt.Errorf(
-				"%q is monosyllabic, so it cannot carry the ultimate stress §4.6.1 reads as RPV Essence", word)
+				"%q is monosyllabic, so it cannot carry the ultimate stress that reads as RPV Essence (§4.6.1)", word)
 		}
 		word = marked
 	}

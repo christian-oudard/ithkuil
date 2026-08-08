@@ -257,7 +257,7 @@ func TestValidateClusterAt_Rule212_Triples(t *testing.T) {
 		}
 		found := false
 		for _, e := range r {
-			if e.Code == "2.12" {
+			if e.Code == "phonotactics §2.12" {
 				found = true
 				break
 			}
@@ -273,7 +273,7 @@ func TestValidateClusterAt_Rule212_Triples(t *testing.T) {
 	// nkţ is fine — but our existing pair checks may complain about
 	// other things, so test only that 2.12 doesn't fire.
 	for _, e := range ClusterViolationsAt(Medial, "nkţ") {
-		if e.Code == "2.12" {
+		if e.Code == "phonotactics §2.12" {
 			t.Errorf("nkţ should not trigger 2.12: %v", e)
 		}
 	}
@@ -304,7 +304,7 @@ func TestValidateClusterAt_Rule51_IntervocalicLam(t *testing.T) {
 	}
 	// Same letter in cluster is fine if not alone.
 	for _, e := range ClusterViolationsAt(Medial, "pļ") {
-		if e.Code == "5.1" {
+		if e.Code == "phonotactics §5.1" {
 			t.Errorf("pļ should not trigger 5.1: %v", e)
 		}
 	}
@@ -319,7 +319,7 @@ func TestValidateClusterAt_Final(t *testing.T) {
 	// l word-final is fine.
 	r = ClusterViolationsAt(Final, "ml")
 	for _, e := range r {
-		if e.Code == "4.1" {
+		if e.Code == "phonotactics §4.1" {
 			t.Errorf("final ml should not trigger 4.1, got %v", e)
 		}
 	}
@@ -361,7 +361,7 @@ func TestValidateClusterAt_Rule213(t *testing.T) {
 	}
 	var hit bool
 	for _, e := range r {
-		if e.Code == "2.13" {
+		if e.Code == "phonotactics §2.13" {
 			hit = true
 		}
 	}
@@ -378,7 +378,7 @@ func TestValidateClusterAt_Rule215(t *testing.T) {
 	}
 	var hit bool
 	for _, e := range r {
-		if e.Code == "2.15" {
+		if e.Code == "phonotactics §2.15" {
 			hit = true
 		}
 	}
@@ -429,8 +429,34 @@ func TestSound_IsAlwaysTheSoundStage(t *testing.T) {
 			t.Errorf("%q is stage %v, want sound", f.Code, f.Stage)
 		}
 	}
-	if f := sound("1.2", "xy", "test reason"); f.Code != "1.2" || f.Found != "xy" {
+	if f := sound("1.2", "xy", "test reason"); f.Code != "phonotactics §1.2" || f.Found != "xy" {
 		t.Errorf("sound dropped a field: %+v", f)
+	}
+}
+
+// A rule number alone does not say which document it is in: both
+// number from 1, and §1.5, §1.7, §3.1, §4.1 and §5.1 each name one
+// rule in the phonotactics document and an unrelated one in the
+// grammar. So sound qualifies the number, and leaves alone the codes
+// that are not a rule number at all.
+func TestSound_NamesTheDocumentARuleIsIn(t *testing.T) {
+	for _, c := range []struct{ rule, want string }{
+		{"1.7", "phonotactics §1.7"},
+		{"2.16", "phonotactics §2.16"},
+		{"stress", "stress"},
+		{"length", "length"},
+		{"", ""},
+	} {
+		if got := cite(c.rule); got != c.want {
+			t.Errorf("cite(%q) = %q, want %q", c.rule, got, c.want)
+		}
+	}
+	// The diphthong list is the one numbered rule this package raises
+	// that belongs to the grammar, so it must not be labelled
+	// phonotactics.
+	vs := VowelSequenceViolations("üi")
+	if len(vs) != 1 || vs[0].Code != "grammar §1.2.1" {
+		t.Errorf("üi = %+v, want one fault coded grammar §1.2.1", vs)
 	}
 }
 

@@ -34,7 +34,7 @@ func notAReferentialCase(word, slot, vowel, head string) error {
 		Code:  slot,
 		Found: vowel,
 		Fix: "no case is written " + vowel + ", and " + head +
-			" reads as a referent chain, so this word wants one",
+			" reads as a referent chain, so this word wants one (§4.6.1, §3.9.1)",
 	})
 }
 
@@ -123,8 +123,8 @@ func ParseReferential(word string) (g.Referential, error) {
 					Stage: fault.Value,
 					Code:  "C\u2082",
 					Found: conjs[i],
-					Fix: conjs[i] + " is not a chain of referent forms, and \u00a74.6.1 " +
-						"puts the second referent's own cluster here",
+					Fix: conjs[i] + " is not a chain of referent forms, and the " +
+						"second referent's own cluster goes here (§4.6.1)",
 				})
 			}
 			second.Refs = rs

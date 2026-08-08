@@ -65,8 +65,36 @@ func (w Word) Conjuncts() []string { return append([]string(nil), w.conjs...) }
 // and every vowel sequence in this package fails at that one stage, so
 // naming it at each site would be noise; the exception is CheckChars,
 // which is a stage earlier and says so itself.
+//
+// A numbered rule is named with the document it comes from. The two
+// documents number independently and collide throughout — §1.5, §1.7,
+// §3.1, §4.1 and §5.1 each name one rule here and an unrelated one in
+// the grammar (see docs/reference/READING.md) — so a bare number sends
+// a reader to whichever of the two they opened. Every numbered rule
+// this constructor raises is a phonotactics rule; the one grammar rule
+// the package checks, the §1.2.1 diphthong list, is built by hand in
+// VowelSequenceViolations and says so itself.
+//
+// The citation goes in the Code rather than the Fix because a fault is
+// never shown without it: the CLI, view.SlotDiff and api all print the
+// two together, so a citation in both prints twice.
 func sound(rule, cluster, reason string) fault.Fault {
-	return fault.Fault{Stage: fault.Sound, Code: rule, Found: cluster, Fix: reason}
+	return fault.Fault{Stage: fault.Sound, Code: cite(rule), Found: cluster, Fix: reason}
+}
+
+// cite qualifies a phonotactics rule number with its document, and
+// leaves alone the names this package uses for the faults that are not
+// a numbered rule: "stress", "length", "chars", "empty", "chain".
+func cite(rule string) string {
+	if rule == "" {
+		return rule
+	}
+	for _, r := range rule {
+		if (r < '0' || r > '9') && r != '.' {
+			return rule
+		}
+	}
+	return "phonotactics §" + rule
 }
 
 // CheckChars reports any character in text that isn't part of the V4

@@ -50,7 +50,7 @@ func MarshalWord(t g.Word) ([]byte, error) {
 		// to a chain and never to a lone formative. Writing one here
 		// would make the decoder swallow the next word.
 		if v.Concat != g.ConcatNone {
-			return nil, fmt.Errorf("lone formative carries concatenation status %v; write it as a chain", v.Concat)
+			return nil, fmt.Errorf("lone formative carries concatenation status %v; write it as a chain (§3.1.7)", v.Concat)
 		}
 		return putFormative(nil, v)
 	case *g.Chain:

@@ -79,8 +79,12 @@ export interface GlossToken {
 }
 
 /**
- * One phonotactic fault: the section 2 rule a word breaks. `stage` and
- * `code` are what to branch on, `fix` is the sentence to show a reader.
+ * One reason a word could not be read. `stage` and `code` are what to
+ * branch on, `fix` is the sentence to show a reader. `code` is also
+ * where to send them to read more: a cited rule where one applies
+ * ("phonotactics §2.1"), otherwise the slot that failed ("Ca"). A
+ * cited rule names its document, because the grammar and the
+ * phonotactics number independently and collide.
  */
 export interface Violation {
   stage: string;

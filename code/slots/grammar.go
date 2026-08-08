@@ -43,7 +43,7 @@ func ToGrammar(l Layout) (g.Formative, error) {
 			slotVII = append(slotVII, g.Affix{Type: t, Degree: d, Consonant: l.Cn})
 		} else {
 			fs.add("Vn", l.Vn, fmt.Sprintf(
-				"no Valence, Phase, Effect, Level or Aspect is written %q against Cn %q, and it is not a Vx affix vowel either",
+				"no Valence, Phase, Effect, Level or Aspect is written %q against Cn %q, and it is not a Vx affix vowel either (§3.8, §3.5)",
 				l.Vn, l.Cn))
 		}
 	}
@@ -80,12 +80,12 @@ func rootFromLayout(fs *faults, l Layout, shortcut parse.ShortcutVariant) (g.Roo
 			// §3.6.1 licenses it for is marking where Slot V ends, and
 			// reaching here with one means there was no Slot V to end.
 			if bare, geminated := allomorph.CaUngeminate[l.Ca]; geminated && len(l.SlotV) == 0 {
-				fs.add("Ca", l.Ca, l.Ca+" is the §3.6.1 gemination of the Ca "+bare+
-					", which marks where Slot V ends; this word has no Slot V affix for it to end")
+				fs.add("Ca", l.Ca, l.Ca+" is the gemination of the Ca "+bare+
+					", which marks where Slot V ends; this word has no Slot V affix for it to end (§3.6.1)")
 				return g.DefaultSlotVI
 			}
 			fs.add("Ca", l.Ca, "no Ca complex is written "+l.Ca+
-				"; a Ca spells Configuration, Affiliation, Perspective, Extension and Essence in that order")
+				"; a Ca spells Affiliation, Configuration, Extension, then Perspective and Essence, in that order (§3.6)")
 			return g.DefaultSlotVI
 		}
 		return slotVI
@@ -95,7 +95,7 @@ func rootFromLayout(fs *faults, l Layout, shortcut parse.ShortcutVariant) (g.Roo
 		if shortcut != parse.ShortcutNone {
 			slotII, ok := parse.ParseSlotII(l.Vv)
 			if !ok {
-				fs.add("Vv", l.Vv, "no Stem/Version pair is written "+l.Vv+" in a Slot I shortcut")
+				fs.add("Vv", l.Vv, "no Stem/Version pair is written "+l.Vv+" in a Slot I shortcut (§3.2)")
 				slotII = g.DefaultSlotII
 			}
 			series := parse.VvSeries(l.Vv)
@@ -110,23 +110,23 @@ func rootFromLayout(fs *faults, l Layout, shortcut parse.ShortcutVariant) (g.Roo
 		if l.Vv != "" {
 			parsed, ok := parse.ParseSlotII(l.Vv)
 			if !ok {
-				fs.add("Vv", l.Vv, "no Stem/Version pair is written "+l.Vv)
+				fs.add("Vv", l.Vv, "no Stem/Version pair is written "+l.Vv+" (§3.2)")
 			} else {
 				slotII = parsed
 			}
 		}
-		// §3 (Permissible Consonant Forms): no Cr root and no Cs affix
+		// §3.3, and phonotactics §8: no Cr root and no Cs affix
 		// begins with h-, w- or y-. A segmentation that lands one of
 		// those in the root has gone wrong somewhere upstream, and
 		// saying so beats handing back a root that cannot exist.
 		if strings.HasPrefix(l.Cr, "h") || strings.HasPrefix(l.Cr, "w") || strings.HasPrefix(l.Cr, "y") {
-			fs.add("Cr", l.Cr, "§3 admits no root beginning with h-, w- or y-")
+			fs.add("Cr", l.Cr, "no root begins with h-, w- or y- (§3.3, phonotactics §8)")
 		}
 		slotIV := g.DefaultSlotIV
 		if l.Vr != "" {
 			parsed, ok := parse.ParseSlotIV(l.Vr)
 			if !ok {
-				fs.add("Vr", l.Vr, "no Function/Specification/Context triple is written "+l.Vr)
+				fs.add("Vr", l.Vr, "no Function/Specification/Context triple is written "+l.Vr+" (§3.4)")
 			} else {
 				slotIV = parsed
 			}
@@ -146,7 +146,7 @@ func rootFromLayout(fs *faults, l Layout, shortcut parse.ShortcutVariant) (g.Roo
 		}
 		degree, ctx, ok := parse.ParseAffixVr(l.Vr)
 		if !ok {
-			fs.add("Vr", l.Vr, "no affix degree and Context pair is written "+l.Vr)
+			fs.add("Vr", l.Vr, "no affix degree and Context pair is written "+l.Vr+" (§4.2)")
 		}
 		return g.CsRoot{
 			Cs:       l.Cr,
@@ -167,7 +167,7 @@ func rootFromLayout(fs *faults, l Layout, shortcut parse.ShortcutVariant) (g.Roo
 		}
 		refs, ok := parse.DecomposeRefCluster(l.Cr)
 		if !ok || len(refs) == 0 {
-			fs.add("Cr", l.Cr, l.Cr+" is not a chain of referent forms, so it cannot be a §4.6.4 personal-reference root")
+			fs.add("Cr", l.Cr, l.Cr+" is not a chain of referent forms, so it cannot be a personal-reference root (§4.6.4)")
 		}
 		return g.RefRoot{
 			Refs:    refs,
@@ -198,13 +198,13 @@ func affixesVxCs(fs *faults, name string, chunks []AffixChunk) []g.Affix {
 		// comes back a degree off in a different slot.
 		if strings.Contains(c.Cs, "'") {
 			fs.add(subscriptSlot("Cs", i+1), c.Cs,
-				"§3.5 admits no glottal stop in an affix Cs; the Vx in front of it carries one")
+				"an affix Cs holds no glottal stop; the Vx in front of it carries one (§3.5, §1.7)")
 			continue
 		}
 		t, d, ok := parse.AffixVowelDegree(c.Vx)
 		if !ok {
 			fs.add(slot, c.Vx, "no affix Type and degree is written "+c.Vx+
-				"; a Vx spells one of the nine degrees in one of three Types")
+				"; a Vx spells one of the nine degrees in one of three Types (§3.5)")
 			continue
 		}
 		// A Column-4 vowel is §4.6.5's Transrelative-case shortcut only
@@ -254,7 +254,7 @@ func finalFromVc(fs *faults, vc string, stress phonology.Stress, concat g.Concat
 		cs, ok := parse.ParseCase(vc)
 		if !ok {
 			fs.add("Vc", vc, "no case is written "+vc+", and "+stress.String()+
-				" stress reads Slot IX as a case")
+				" stress reads Slot IX as a case (§3.9.1, §3.10)")
 			return g.THM
 		}
 		return cs
@@ -267,7 +267,7 @@ func finalFromVc(fs *faults, vc string, stress phonology.Stress, concat g.Concat
 		vk, ok := parse.ParseVk(vc)
 		if !ok {
 			fs.add("Vk", vc, "no illocution and validation pair is written "+vc+
-				", and ultimate stress reads Slot IX as a Vk")
+				", and ultimate stress reads Slot IX as a Vk (§3.9.3.3, §3.10)")
 			vk = g.Assertive{Validation: g.OBS}
 		}
 		return g.UnframedVerbal{Vk: vk}
@@ -276,7 +276,7 @@ func finalFromVc(fs *faults, vc string, stress phonology.Stress, concat g.Concat
 	case phonology.Penultimate:
 		return g.UnframedNominal{Case: caseFinal()}
 	}
-	fs.add("Vc", vc, fmt.Sprintf("stress %v has no Slot IX reading", stress))
+	fs.add("Vc", vc, fmt.Sprintf("stress %v has no Slot IX reading (§3.10)", stress))
 	return g.UnframedNominal{Case: g.THM}
 }
 
@@ -306,7 +306,7 @@ func formatFromVf(fs *faults, vc string, stress phonology.Stress) g.Final {
 		c, ok := parse.ParseCase(restoreMovedGlottal(vc))
 		if !ok {
 			fs.add("Vf", vc, "no case 37-68 is written "+vc+
-				"; ultimate stress on a dependent reads Slot IX as one of those")
+				"; ultimate stress on a dependent reads Slot IX as one of those (§3.1.3)")
 			c = g.THM
 		}
 		return g.UnframedNominal{Case: c}
@@ -319,20 +319,20 @@ func formatFromVf(fs *faults, vc string, stress phonology.Stress) g.Final {
 			cs, ok := parse.ParseCase(vc)
 			switch {
 			case !ok:
-				fs.add("Vf", vc, "no case is written "+vc)
+				fs.add("Vf", vc, "no case is written "+vc+" (§3.9.1)")
 			// §3.1.6: cases 37-68 are spelled without their glottal on a
 			// dependent, so a glottal here is not a higher case, it is a
 			// word that does not parse.
 			case cs > g.SIT:
 				fs.add("Vf", vc, "this is case "+cs.String()+
-					"; a dependent writes cases 37-68 without their glottal, under ultimate stress")
+					"; a dependent writes cases 37-68 without their glottal, under ultimate stress (§3.1.6)")
 			default:
 				c = cs
 			}
 		}
 		return g.UnframedNominal{Case: c}
 	}
-	fs.add("Vf", vc, fmt.Sprintf("§3.1.3 gives a dependent only penultimate or ultimate stress, not %v", stress))
+	fs.add("Vf", vc, fmt.Sprintf("a dependent takes only penultimate or ultimate stress, not %v (§3.1.3)", stress))
 	return g.UnframedNominal{Case: g.THM}
 }
 

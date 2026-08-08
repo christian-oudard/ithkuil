@@ -39,7 +39,7 @@ func Stressless(t g.Text) (string, error) {
 		// spelling. See docs/reference/ISSUES.md.
 		if _, isChain := w.(*g.Chain); isChain {
 			return "", fmt.Errorf(
-				"a concatenation chain carries one stress per link, which a single parsing adjunct cannot declare")
+				"a concatenation chain carries one stress per link, which a single parsing adjunct cannot declare (§4.8, §3.1.7)")
 		}
 		rom, err := Word(w)
 		if err != nil {
