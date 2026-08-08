@@ -157,6 +157,38 @@ mirroring the spreadsheet, and a hand-added row would be overwritten on
 the next sync. The gap belongs upstream, and the duplicate abbreviation
 belongs to Quijada either way.
 
+### A9. SPT names two affixes, and both reached the spreadsheet
+
+The spreadsheet gives SPT, "Specified Points in Calendrical Time", to
+two C_S forms, `-rw` and `-ry`, with identical nine-degree lists
+(seconds, minutes, hours, weekday, day, week of month, month, year,
+century). Neither row says what separates them.
+
+A8 is the same defect with the opposite outcome. There the duplicate
+name lost one of its affixes on the way into the spreadsheet; here both
+arrived, which is worse, because both are reachable. A gloss carries an
+abbreviation and a degree and nothing else, so `SPT/3` names two words
+and reads back as one:
+
+```
+mlalerwa  ->  ml-SPT/3  ->  mlalerwa
+mlalerya  ->  ml-SPT/3  ->  mlalerwa
+```
+
+No name reaches `-ry`, and which of the two a form belongs to is not
+recoverable from a gloss. The two artifacts built from this row lose
+opposite halves: the glosser resolves SPT to the alphabetically first
+cluster and drops `-ry`, while `affixes_reference.md` prints `-ry` and
+drops `-rw`, printing CTC `-ţd` twice in its place. That last part is
+ours and belongs in `BUGS.md`; the ambiguity it is downstream of is
+not.
+
+Whether one name for two forms is an error or a compression cannot be
+decided from the spreadsheet. §3.9.2 splits each of its affix families
+across a `w` increment and a `y` increment by case range, and these two
+carry that same pair of glides, so a range split is the obvious guess.
+Not yet checked against the affix document.
+
 ## Grammar
 
 ### G40. HORTATIVE and POTENTIATIVE are both named for categories they are not
@@ -479,6 +511,69 @@ So nothing depends on it and nothing else corroborates it. It is
 transcribed as printed, in the cell it occupies, because the cell is
 the whole of the claim: an implementation that added a tenth vowel on
 this evidence would have no vowel-form to put it in.
+
+### G51. Nothing owns the abbreviation namespace a gloss is written in
+
+A gloss is a sequence of abbreviations with no per-token type, as G41
+observes: which category a token belongs to is recoverable only from
+its shape and its position. Two categories that share three letters are
+therefore indistinguishable wherever their positions coincide as well.
+The abbreviation space is a shared resource, and nobody maintains it as
+one.
+
+Two sources write into it independently, and they do not agree on what
+an abbreviation is. The affix tables name 528 affixes, every one of
+them exactly three letters. The grammar tables carry 308 values, of
+which only 284 are three letters: Perspective is A, G, M and N, the
+referents are 1m, 2m, 2p, ma, mi, Mx, pa and pi, the stems are S0
+through S3, and the Effects are BEN1-3, BSLF, DET1-3 and DSLF. So the
+three-letter convention is the affix spreadsheet's, and the grammar
+document does not follow it. Some of the four-letter forms are not
+Quijada's either: the community writes the Effects as `1:BEN`, and
+BEN1 is this repository's rendering of them.
+
+Across the two sources there is exactly one collision. CNT is both the
+CONTINUATIVE Aspect and the affix `-rft` "Degree of Centrality". VRF
+was a second, and Quijada removed it himself by renaming the
+illocution to VER (G41), which is evidence that he treats a collision
+as a defect rather than as something a reader should live with.
+
+The opposite failure is in §3.9.2, and it is not an oversight. Its
+seven case-bearing affixes, Case-Accessor Types 1 to 3, Inverse
+Case-Accessor Types 1 to 3 and Case-Stacking, have no abbreviations at
+all. Quijada's own examples in that section gloss them without one:
+
+```
+'event'-PLE/7-INS₃            a Type-3 case-accessor
+'event'-PLE/7-Inverse:INS₃    its inverse
+```
+
+The case name carries the affix, the Type is a subscript, and
+"Inverse" is spelled out. The spreadsheet has no rows for the fourteen
+C_S increments either, and could not have: an entry there is a C_S
+with nine degrees, whereas an accessor's V_X holds one of the 68 cases
+instead. So the naming pass that covered all 528 affixes never reached
+these. The community coined CST for the case-stacking affix in its own
+usage, and nothing for the other six.
+
+The two failures are one problem seen from either end. A name that
+addresses two affixes (A8, A9) and a family that no name addresses are
+both what a namespace without a registry produces, and neither is
+repairable by writing better code. A gloss is exactly as ambiguous as
+the tables its tokens come from.
+
+What this costs here: this repository is the third party writing into
+the namespace, and it has not been marking which tokens are its own.
+ACC, IAC, ANT and ULT are coinages rather than transcriptions. ACC
+collides with Quijada's Accidental bias, which is a defect of ours and
+not of the source. ANT and ULT stand where the community writes FRM
+and UNF. How the §3.9.2 affixes should be glossed is open: an invented
+code adds a fourth party to a namespace already unmanaged, the C_S
+cluster puts phonetics in a gloss that is phonetics-free everywhere
+but the root, and spelling the source's own words out is legible but
+abandons the shape every other token has. A guard that failed when a
+synced affix abbreviation landed on a grammar code would at least
+surface the next CNT at sync time rather than in a gloss.
 
 ## Lexicon
 
