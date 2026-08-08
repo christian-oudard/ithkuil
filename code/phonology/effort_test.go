@@ -18,18 +18,32 @@ func ph(t *testing.T, s string) Phoneme {
 	return nil
 }
 
-// A geminate is the cheap case, not the dear one. This test asserted
-// the opposite until a speaker was asked: alla is easier than alra.
-// The sources say so too, since §1.7 permits geminates outright and §6
-// generates them, while what §2.4 and §2.5 bar is the near miss, two
-// homologous consonants disagreeing in voicing. Similarity avoidance
-// applies to similar-but-distinct.
-func TestGeminateIsCheaperThanANearMiss(t *testing.T) {
-	pp := Transition(ph(t, "p"), ph(t, "p"), false)
-	pb := Transition(ph(t, "p"), ph(t, "b"), false)
-	if pp >= pb {
-		t.Errorf("pp costs %.3f and pb %.3f; the geminate should be the "+
-			"cheaper, and pb is the homologous voicing mismatch §2.4 bars", pp, pb)
+// Geminates split by sonorancy, which two earlier passes at this got
+// wrong in opposite directions. A repeated sonorant is one long
+// gesture and is cheap: the speaker found alla easier than both alra
+// and anna. A repeated obstruent means holding a constriction and is
+// not: asta beats assa and atta. That is Kirchner's account of why
+// geminates resist lenition.
+//
+// Neither is prohibitive. §1.7 permits geminates outright and §6
+// generates them; what §2.4 and §2.5 bar is the near miss, two
+// homologous consonants disagreeing in voicing.
+func TestGeminatesSplitBySonorancy(t *testing.T) {
+	mm := Transition(ph(t, "m"), ph(t, "m"), false)
+	mn := Transition(ph(t, "m"), ph(t, "n"), false)
+	if mm >= mn {
+		t.Errorf("mm costs %.3f and mn %.3f; a sonorant geminate should be "+
+			"cheaper than two near-identical nasals", mm, mn)
+	}
+	ss := Transition(ph(t, "s"), ph(t, "s"), false)
+	if ss <= mm {
+		t.Errorf("ss costs %.3f and mm %.3f; holding a fricative should cost "+
+			"more than holding a nasal", ss, mm)
+	}
+	// And still finite: §1.7 permits it, and only the triple is barred.
+	if math.IsInf(ss, 0) || ss > 4*mn {
+		t.Errorf("ss costs %.3f against mn %.3f; §1.7 permits obstruent "+
+			"geminates, so this is too steep", ss, mn)
 	}
 }
 
