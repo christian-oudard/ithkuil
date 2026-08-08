@@ -5,6 +5,8 @@
 package allomorph
 
 import (
+	"fmt"
+
 	g "github.com/christian-oudard/ithkuil/grammar"
 )
 
@@ -95,8 +97,19 @@ type ca4Key struct {
 	Essence     g.Essence
 }
 
+// ca4 returns the Perspective+Essence forms, and panics on a pair the
+// §3.6 table does not hold. A missing entry used to yield the zero
+// ca4Entry, which is two empty strings, so the Ca lost its Perspective
+// and composed to the cluster of a different SlotVI — the same silent
+// collapse the UNIPLEX branch below caused for Affiliation, and
+// invisible for the same reason: the surviving member of the collided
+// pair round-trips, and only sweeping all 3840 names the other one.
 func ca4(p g.Perspective, e g.Essence) ca4Entry {
-	return ca4Table[ca4Key{p, e}]
+	entry, ok := ca4Table[ca4Key{p, e}]
+	if !ok {
+		panic(fmt.Sprintf("allomorph.ca4: no §3.6 form for %s/%s", p, e))
+	}
+	return entry
 }
 
 // ConstructCaRaw builds the raw Ca consonant cluster from a SlotVI by

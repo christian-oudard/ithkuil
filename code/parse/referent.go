@@ -1,6 +1,7 @@
 package parse
 
 import (
+	"fmt"
 	"strings"
 
 	g "github.com/christian-oudard/ithkuil/grammar"
@@ -63,13 +64,29 @@ var refAffixAlternates = map[string]g.PersonalRef{
 func RefCluster(refs []g.PersonalRef) string {
 	var b strings.Builder
 	for _, r := range refs {
-		b.WriteString(c1Table[r])
+		b.WriteString(RefC1(r))
 	}
 	return b.String()
 }
 
 // RefC1 returns the consonant form spelling a PersonalRef.
-func RefC1(p g.PersonalRef) string { return c1Table[p] }
+//
+// Panics on a pair outside §4.6's table, which is keyed by a struct and
+// so cannot be an array the way the tables in forms.go are. Returning
+// "" instead spelled the referent as nothing: a referential's whole
+// content is its referent, so a chain quietly lost a member and came
+// back as a shorter chain that reads perfectly well and means something
+// else. Nothing a reader writes reaches this — a parsed PersonalRef
+// comes from LookupRefC1, which only ever answers with a pair the table
+// holds — so a miss means a value built in code that no romanization
+// can express.
+func RefC1(p g.PersonalRef) string {
+	form, ok := c1Table[p]
+	if !ok {
+		panic(fmt.Sprintf("parse.RefC1: no §4.6 form for %s/%s", p.Referent, p.Effect))
+	}
+	return form
+}
 
 // c1Reverse is the decode direction of c1Table, built once at init.
 var c1Reverse = func() map[string]g.PersonalRef {

@@ -49,6 +49,19 @@ func TestRefC1_MatchesSourceTable(t *testing.T) {
 	}
 }
 
+// TestRefC1_Panic pins the stop. RefC1 answered "" for a pair outside
+// the table, so a chain spelled one member as nothing and came back a
+// member short — a shorter chain that reads perfectly well and refers
+// to someone else.
+func TestRefC1_Panic(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("RefC1 with a bogus referent should have panicked")
+		}
+	}()
+	RefC1(g.PersonalRef{Referent: g.Referent(len(g.AllReferents)), Effect: g.NEU})
+}
+
 // The §4.6 footnote confines the Obv/PVS alternates to §4.6.5
 // referential affixes, "to avoid ambiguity with geminated C_A forms".
 // Outside that position they must not decode as referents, because

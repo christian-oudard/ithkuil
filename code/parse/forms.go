@@ -16,7 +16,15 @@ import (
 // canonicalCaseVowel is the canonical Vc form for each case (the one
 // produced by the encoder). Series-3 alternates and other parse-only
 // variants live in parse.casePatterns.
-var canonicalCaseVowel = map[g.Case]string{
+//
+// An array rather than a map, like every other table in this file, so
+// that a Case outside the enum indexes out of range and stops. A map
+// answered "" instead, and an empty Vc does not fail: Slot IX simply
+// goes unwritten and the word comes back a different, well-formed word
+// carrying THM. That is the AffixVowel defect one table over, and the
+// reason enum_name.go leaves the form functions to panic while the
+// naming methods bound-check.
+var canonicalCaseVowel = [...]string{
 	// Transrelative (Series 1)
 	g.THM: "a", g.INS: "ä", g.ABS: "e", g.AFF: "i", g.STM: "ëi",
 	g.EFF: "ö", g.ERG: "o", g.DAT: "ü", g.IND: "u",
@@ -43,7 +51,9 @@ var canonicalCaseVowel = map[g.Case]string{
 	g.PCV: "o'ë", g.PCR: "ö'e", g.ELP: "o'e", g.PLM: "o'a",
 }
 
-// CaseToVc returns the canonical Vc form for a case.
+// CaseToVc returns the canonical Vc form for a case. Panics on a Case
+// outside the §3.7 tables; see canonicalCaseVowel for why that is not
+// defensive habit.
 func CaseToVc(c g.Case) string {
 	return canonicalCaseVowel[c]
 }

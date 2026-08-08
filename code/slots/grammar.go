@@ -792,7 +792,11 @@ func slotIXFromFinal(f g.Formative) (string, phonology.Stress) {
 	case g.UnframedVerbal:
 		return vkVowel(v.Vk), phonology.Ultimate
 	}
-	return "", phonology.Penultimate
+	// Final is sealed over three variants, all of them above, so this
+	// is a nil Final or a fourth variant added without coming here.
+	// Both used to write an empty Slot IX at penultimate stress, which
+	// is a well-formed THM nominal rather than a complaint.
+	panic(fmt.Sprintf("slots: no Slot IX for %T final", f.Final))
 }
 
 // stripVfGlottal is the inverse of restoreMovedGlottal: it takes the

@@ -6,6 +6,20 @@ import (
 	g "github.com/christian-oudard/ithkuil/grammar"
 )
 
+// TestCa4_Panic pins the stop. ca4 answered the zero entry — two empty
+// strings — for a pair outside §3.6's table, so the Ca lost its
+// Perspective and composed to the cluster of a different SlotVI. That
+// is the shape of the UNIPLEX Affiliation collapse, and a round trip
+// cannot see it: the surviving member of the pair reads back fine.
+func TestCa4_Panic(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("ca4 with a bogus perspective should have panicked")
+		}
+	}()
+	ca4(g.Perspective(len(g.AllPerspectives)), g.NRM)
+}
+
 func TestConstructCaRaw_Defaults(t *testing.T) {
 	if got := ConstructCaRaw(g.DefaultSlotVI); got != "l" {
 		t.Errorf("default Ca = %q, want %q", got, "l")

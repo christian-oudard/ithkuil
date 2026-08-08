@@ -165,14 +165,21 @@ func ModularAdjunct(m g.ModularAdjunct) (string, error) {
 
 // ModularScopePrefix returns the §4.3 Slot 1 consonant for a scope, or
 // "" for the default, which writes nothing.
+//
+// The default is a case rather than the catch-all, so a scope outside
+// the enum stops instead of writing the default's spelling. The two
+// answers are the same string and mean opposite things: one says §4.3
+// puts no consonant here, the other says we do not know what to put.
 func ModularScopePrefix(s g.ModularScope) string {
 	switch s {
+	case g.ModularScopeDefault:
+		return ""
 	case g.ModularScopeParent:
 		return "w"
 	case g.ModularScopeConcat:
 		return "y"
 	}
-	return ""
+	panic(fmt.Sprintf("roman.ModularScopePrefix: unknown scope %s", s))
 }
 
 // ModularPart is one §4.3 slot of a modular adjunct as written.
@@ -277,9 +284,13 @@ func fitsSlot4(s g.SlotVIII) bool {
 }
 
 // reachVH writes a §4.3 Slot 4 V_H vowel. "i" and "u" both read as the
-// formative reach; "i" is the one written back.
+// formative reach; "i" is the one written back. ModularReachNone writes
+// no vowel, and is a case rather than the catch-all for the same reason
+// ModularScopePrefix's default is.
 func reachVH(r g.ModularReach) string {
 	switch r {
+	case g.ModularReachNone:
+		return ""
 	case g.ModularReachCaseMoodIll:
 		return "a"
 	case g.ModularReachCaseMood:
@@ -289,5 +300,5 @@ func reachVH(r g.ModularReach) string {
 	case g.ModularReachAdjacent:
 		return "o"
 	}
-	return ""
+	panic(fmt.Sprintf("roman.reachVH: unknown reach %s", r))
 }

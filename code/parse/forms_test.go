@@ -167,6 +167,18 @@ func TestCaseToVcExhaustive(t *testing.T) {
 	}
 }
 
+// TestCaseToVc_Panic pins the stop. The table was a map, which answered
+// "" for a Case outside the enum, and an empty Vc is not a failure: the
+// word renders without Slot IX and reads back as THM.
+func TestCaseToVc_Panic(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("CaseToVc with a bogus case should have panicked")
+		}
+	}()
+	CaseToVc(g.Case(len(g.AllCases)))
+}
+
 func TestCaseToVcSpotChecks(t *testing.T) {
 	cases := []struct {
 		c    g.Case
