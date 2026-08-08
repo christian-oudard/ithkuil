@@ -195,5 +195,38 @@ func (c *collected) err(subject string) error {
 	if len(c.list) == 0 {
 		return nil
 	}
+	// In names a part of what was read, so a fault about the whole of
+	// it carries none. Faults about the whole arrive here having
+	// stamped the subject on themselves — they were raised against it
+	// — and leaving that would tell a caller to mark a token that is
+	// the entire expression.
+	for i := range c.list {
+		if c.list[i].In == subject {
+			c.list[i].In = ""
+		}
+	}
 	return fault.Faults{Word: subject, List: c.list}
+}
+
+// whole strips In from faults that name the entire subject rather
+// than a part of it.
+//
+// Which faults those are is only knowable at the outermost boundary.
+// "DEV/99" is a part of "ml-DEV/99" and a whole on its own, and the
+// wrappers in between cannot tell the two apart — each sees only its
+// own token. So the rule is applied once, where the subject is
+// finally known, rather than at every layer that stamps.
+func whole(subject string, err error) error {
+	var fs fault.Faults
+	if !errors.As(err, &fs) {
+		return err
+	}
+	out := make([]fault.Fault, len(fs.List))
+	for i, f := range fs.List {
+		if f.In == subject {
+			f.In = ""
+		}
+		out[i] = f
+	}
+	return fault.Faults{Word: fs.Word, List: out}
 }

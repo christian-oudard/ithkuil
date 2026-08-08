@@ -112,3 +112,57 @@ func testLexicon(t *testing.T) *lexicon.Lexicon {
 	}
 	return lex
 }
+
+// A fault's In names a part of what was read, so it is empty when the
+// fault is about the whole of it. Which faults those are is only
+// knowable at the outermost boundary: "DEV/99" is a part of
+// "ml-DEV/99" and a whole on its own, and the wrappers in between see
+// only their own token.
+//
+// A caller marks the failing part with this field, so a fault about
+// the whole expression carrying the whole expression would have it
+// highlight everything and say nothing.
+func TestParseWord_InNamesAPartOrNothing(t *testing.T) {
+	lex := testLexicon(t)
+	for _, c := range []struct {
+		expr string
+		want string // In on the first fault
+	}{
+		{"Ml", ""},              // the whole expression
+		{"1m", ""},              // the whole expression
+		{"ml-DEV/99", "DEV/99"}, // one slot of several
+		{"ml ZZZ", "ZZZ"},       // one word of a span
+	} {
+		t.Run(c.expr, func(t *testing.T) {
+			_, err := gloss.ParseText(c.expr, lex)
+			if err == nil {
+				t.Fatalf("ParseText(%q) succeeded", c.expr)
+			}
+			var fs fault.Faults
+			if !errors.As(err, &fs) {
+				t.Fatalf("%v is not fault.Faults", err)
+			}
+			if got := fs.List[0].In; got != c.want {
+				t.Errorf("In = %q, want %q", got, c.want)
+			}
+		})
+	}
+}
+
+// The subject is named once. A lone fault about the whole thing names
+// it inside itself; anything else leads with it and drops it from the
+// faults that would repeat it.
+func TestFaults_NameTheSubjectOnce(t *testing.T) {
+	lex := testLexicon(t)
+	for _, expr := range []string{"Ml", "S9-ZZZ-QQQ"} {
+		t.Run(expr, func(t *testing.T) {
+			_, err := gloss.ParseText(expr, lex)
+			if err == nil {
+				t.Fatalf("ParseText(%q) succeeded", expr)
+			}
+			if n := strings.Count(err.Error(), expr); n != 1 {
+				t.Errorf("names %q %d times: %s", expr, n, err)
+			}
+		})
+	}
+}

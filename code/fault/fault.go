@@ -93,16 +93,25 @@ type Faults struct {
 // subject of the only fault in it. A one-token failure otherwise
 // prints its token twice in one line — "S3: stem \"S3\": …" — which
 // reads as though the two mentions were different things.
+// Error names the subject exactly once.
+//
+// A lone fault whose Found is the whole subject already names it, so
+// it stands alone: "shape \"hlç\": …". Anything else leads with the
+// subject and drops it from the individual faults that repeat it,
+// since a line naming one word twice reads as though the two
+// mentions were different things.
 func (e Faults) Error() string {
+	if len(e.List) == 1 && e.List[0].Found == e.Word {
+		return e.List[0].Error()
+	}
 	parts := make([]string, len(e.List))
 	for i, f := range e.List {
+		if f.Found == e.Word {
+			f.Found = ""
+		}
 		parts[i] = f.Error()
 	}
-	body := strings.Join(parts, "; ")
-	if len(e.List) == 1 && e.List[0].Found == e.Word {
-		return body
-	}
-	return e.Word + ": " + body
+	return e.Word + ": " + strings.Join(parts, "; ")
 }
 
 // Stage reports the latest stage any of the faults reached, which is

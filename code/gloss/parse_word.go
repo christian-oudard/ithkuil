@@ -18,6 +18,11 @@ import (
 // is what the one-job-per-mark rule in SPEC.md buys. No lookup is
 // needed to decide which kind of word a token is.
 func ParseWord(s string, lex *lexicon.Lexicon) (g.Word, error) {
+	w, err := parseWord(s, lex)
+	return w, whole(strings.TrimSpace(s), err)
+}
+
+func parseWord(s string, lex *lexicon.Lexicon) (g.Word, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
 		return nil, syntax("", "a word needs at least a root cluster or a referent list")
@@ -510,6 +515,16 @@ func looksLikeAffixual(s string) bool {
 // arrives as a single word: the corpus writes Spanish as "espanya",
 // not as two words of Spanish.
 func ParseText(s string, lex *lexicon.Lexicon) (g.Text, error) {
+	t, err := parseText(s, lex)
+	// The span is the outermost subject, so this is where a fault
+	// naming the whole of it stops naming a part. A one-word span
+	// makes the word and the span the same thing, which is why
+	// ParseWord's own pass is not enough: this wrapper stamps the
+	// word back on afterwards.
+	return t, whole(strings.TrimSpace(s), err)
+}
+
+func parseText(s string, lex *lexicon.Lexicon) (g.Text, error) {
 	fields := strings.Fields(s)
 	out := make(g.Text, 0, len(fields))
 	for _, f := range fields {
