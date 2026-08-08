@@ -371,17 +371,26 @@ func spanEnergy(words []string) float64 {
 // word, and eliding a Slot IX default that leaves -h is a bad trade
 // however the next word starts.
 func wordShapeCost(w string) float64 {
-	r := []rune(w)
+	if EndsInBareH(w) {
+		return bareFinalHCost
+	}
+	return 0
+}
+
+// EndsInBareH reports whether w ends in a word-final [h] of its own,
+// rather than in one of §1.2.2's aspirated stops. See wordShapeCost for
+// why the shape is worth avoiding; roman.Text avoids it by choosing a
+// different spelling, which is the only remedy that costs nothing.
+func EndsInBareH(w string) bool {
+	bare, _ := Strip(Normalize(w))
+	r := []rune(bare)
 	n := len(r)
 	if n < 2 || r[n-1] != 'h' {
-		return 0
+		return false
 	}
 	// -ph, -th, -kh, -ch, -čh are aspirated stops per §1.2.2, one
 	// segment rather than a final [h], and unaffected.
-	if strings.ContainsRune("ptkcč", r[n-2]) {
-		return 0
-	}
-	return bareFinalHCost
+	return !strings.ContainsRune("ptkcč", r[n-2])
 }
 
 func isGlottalStop(p Phoneme) bool {

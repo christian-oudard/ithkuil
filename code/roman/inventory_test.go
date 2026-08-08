@@ -180,8 +180,15 @@ func TestInventory_RendersPronounceableWords(t *testing.T) {
 // the CLI and the MCP server both want the per-word report Tokenize
 // gives instead. An arm that is documented as a pair and used by nobody
 // is the arm that rots, and Text had no test at all.
+//
+// A span does not round-trip to its own letters, and should not. Text
+// applies §1.5 across each junction, so malëuţřait gains back the Slot
+// IX default it elided: another word follows it, and a word before
+// another word ends in a vowel. What round-trips is the reading, which
+// is what the pair is for.
 func TestText_RoundTripsASpan(t *testing.T) {
 	const sentence = "hi malëuţřait a mala"
+	const inRunningText = "hi malëuţřaita a mala"
 	span, err := roman.ParseText(sentence)
 	if err != nil {
 		t.Fatalf("ParseText(%q): %v", sentence, err)
@@ -193,8 +200,15 @@ func TestText_RoundTripsASpan(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Text: %v", err)
 	}
-	if out != sentence {
-		t.Errorf("span round-tripped to %q, want %q", out, sentence)
+	if out != inRunningText {
+		t.Errorf("span written as %q, want %q", out, inRunningText)
+	}
+	again, err := roman.ParseText(out)
+	if err != nil {
+		t.Fatalf("ParseText(%q): %v", out, err)
+	}
+	if !reflect.DeepEqual(span, again) {
+		t.Errorf("%q and %q do not read the same", sentence, out)
 	}
 }
 

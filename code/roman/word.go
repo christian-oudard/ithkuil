@@ -62,16 +62,3 @@ func Word(w g.Word) (string, error) {
 	}
 	return "", fmt.Errorf("no renderer for %T", w)
 }
-
-// Text writes a whole span back out, one word after another.
-func Text(t g.Text) (string, error) {
-	parts := make([]string, 0, len(t))
-	for _, w := range t {
-		s, err := Word(w)
-		if err != nil {
-			return "", err
-		}
-		parts = append(parts, s)
-	}
-	return strings.Join(parts, " "), nil
-}

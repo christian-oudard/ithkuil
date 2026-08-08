@@ -24,8 +24,13 @@ import (
 //	romanization ─roman.ParseText→ g.Text ─gloss.Text→ gloss
 //	  ─gloss.ParseText→ g.Text ─roman.Text→ romanization
 //
-// Each span is given in its canonical romanization, so the trip is an
-// identity rather than a canonicalization.
+// The fixed point is roman.Text's own output, not the span as written
+// here. Each span below is given word by word in canonical form, and
+// running text is not that: roman.Text applies §1.5 across every
+// junction, so "hamlal-mlala" is written "hlamla-mlala" once the first
+// link has a second one after it. What the trip has to preserve is the
+// reading, and comparing the two writings is how that is checked
+// without a second romanization hand-written here to drift.
 func TestText_RoundTripsThroughGloss(t *testing.T) {
 	lex := loadTextLex(t)
 	gl := &gloss.Glosser{Lex: lex}
@@ -62,8 +67,14 @@ func TestText_RoundTripsThroughGloss(t *testing.T) {
 			t.Errorf("%q glossed to %q, which does not write back: %v", span, text, err)
 			continue
 		}
-		if got != span {
-			t.Errorf("%q glossed to %q, which writes back as %q", span, text, got)
+		want, err := roman.Text(words)
+		if err != nil {
+			t.Errorf("%q does not write back: %v", span, err)
+			continue
+		}
+		if got != want {
+			t.Errorf("%q glossed to %q, which writes back as %q, want %q",
+				span, text, got, want)
 		}
 	}
 }
