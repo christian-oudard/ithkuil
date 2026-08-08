@@ -21,6 +21,16 @@ import (
 func Word(w g.Word) (string, error) {
 	switch v := w.(type) {
 	case g.Formative:
+		// A Cc marker says "another formative follows", so it belongs to
+		// a chain and never to a formative standing alone. Writing one
+		// anyway produced a string no reader accepts: "hafçal" comes
+		// back as an affixual adjunct whose scope consonant is missing,
+		// because a lone h- is not how any word starts. serialize
+		// refuses the same value for the same reason; the two arms
+		// should not disagree about what is a word.
+		if v.Concat != g.ConcatNone {
+			return "", fmt.Errorf("lone formative carries concatenation status %v; write it as a chain", v.Concat)
+		}
 		return Formative(v), nil
 	case *g.Chain:
 		parts := make([]string, 0, v.Length())

@@ -174,3 +174,59 @@ func TestText_ReportsTheWordThatFailed(t *testing.T) {
 		t.Fatal("a span holding an unwritable word should not render")
 	}
 }
+
+// TestConcat_IsNotAWordAlone crosses concatenation with the slots the
+// inventory sweep varies one at a time, which is where this hid: every
+// value round-tripped on its own, and no sample carried a Cc marker.
+//
+// §3.1.7 writes a chain as its members joined by hyphens, so a Cc
+// marker says "another formative follows" and a formative carrying one
+// is half a word. Rendering it anyway produced a string no reader
+// takes: "hafçal" comes back as an affixual adjunct missing its scope
+// consonant, because a lone h- is not how any word begins.
+func TestConcat_IsNotAWordAlone(t *testing.T) {
+	for _, concat := range []g.ConcatenationStatus{g.Type1, g.Type2} {
+		for _, withSlotV := range []bool{false, true} {
+			f := g.MinimalFormative("fç")
+			f.Concat = concat
+			if withSlotV {
+				f.SlotV = []g.Affix{{Consonant: "x", Type: g.Type1Affix, Degree: 4}}
+			}
+			out, err := roman.Word(f)
+			if err == nil {
+				t.Errorf("%v with slotV=%v wrote %q, which no reader accepts",
+					concat, withSlotV, out)
+			}
+		}
+	}
+}
+
+// TestChain_RoundTrips is the other half: the same members inside a
+// chain are a word, and must survive the trip.
+func TestChain_RoundTrips(t *testing.T) {
+	dep := g.MinimalFormative("fç")
+	dep.SlotV = []g.Affix{{Consonant: "x", Type: g.Type1Affix, Degree: 4}}
+	for _, add := range []func(*g.Chain, g.Formative) *g.Chain{
+		(*g.Chain).AddType1, (*g.Chain).AddType2,
+	} {
+		chain := add(g.NewChain(g.MinimalFormative("ml")), dep)
+		out, err := roman.Word(chain)
+		if err != nil {
+			t.Errorf("chain: render: %v", err)
+			continue
+		}
+		back, err := roman.ParseWord(out)
+		if err != nil {
+			t.Errorf("chain -> %q: parse: %v", out, err)
+			continue
+		}
+		got, ok := back.(*g.Chain)
+		if !ok {
+			t.Errorf("%q came back as %T, want a chain", out, back)
+			continue
+		}
+		if len(got.Formatives()) != 2 {
+			t.Errorf("%q came back with %d members, want 2", out, len(got.Formatives()))
+		}
+	}
+}
