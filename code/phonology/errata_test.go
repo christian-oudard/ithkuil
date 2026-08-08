@@ -32,7 +32,6 @@ import (
 // grammar, and the C_R at issue for the lexicon, which has no sections.
 var (
 	errataEntry  = regexp.MustCompile("(?m)^### (§[0-9.]+[0-9]|-[^ ]+-) — (.+)$")
-	errataField  = regexp.MustCompile(`(?m)^\*\*(Source|Decision|Status|Where)\.\*\*`)
 	errataTarget = regexp.MustCompile("`([a-z][a-z0-9_/]*\\.go):(\\d+)`")
 	errataStatus = regexp.MustCompile(`(?m)^\*\*Status\.\*\* ` + "`" + `(adopted|proposed|implemented)` + "`")
 )
