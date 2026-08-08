@@ -452,10 +452,16 @@ var validDisyllabicConjuncts = map[string]bool{
 	"üa": true,
 }
 
-// ValidateVowelSequence checks a vowel sequence against rules 1.1-1.2.
-// Single vowels are always valid; two-vowel sequences must be a
-// permissible diphthong or a valid disyllabic conjunct; longer
-// sequences are flagged.
+// VowelSequenceViolations checks a vowel sequence. Single vowels are
+// always valid; two-vowel sequences must be a permissible diphthong or
+// a valid disyllabic conjunct; longer sequences are flagged.
+//
+// The two rules live in different documents, which is why each fault
+// names its own. The ten permissible diphthongs are listed in the
+// grammar at §1.2.1; the bar on tri-syllabic conjuncts is phonotactics
+// §1.4. Both faults used to cite "1.2", which is neither: phonotactics
+// §1.2 bars a word-initial vowel and the grammar's §1.2 is the
+// pronunciation notes above the list.
 func VowelSequenceViolations(seq string) []fault.Fault {
 	n := runeLen(seq)
 	switch n {
@@ -466,14 +472,16 @@ func VowelSequenceViolations(seq string) []fault.Fault {
 			return nil
 		}
 		return []fault.Fault{
-			{Stage: fault.Sound, Code: "1.2", Found: seq, Fix: "not a permissible diphthong or disyllabic conjunct"},
+			{Stage: fault.Sound, Code: "1.2.1", Found: seq,
+				Fix: "not one of the ten diphthongs the grammar lists at §1.2.1, and not a disyllabic conjunct"},
 		}
 	default:
 		// Three-vowel sequences may appear as glottalized cases (e.g.
 		// "a'a" with the apostrophe stripped to "aa"), but apostrophe
 		// glottalization isn't normalized here. Treat 3+ as invalid.
 		return []fault.Fault{
-			{Stage: fault.Sound, Code: "1.2", Found: seq, Fix: "vowel sequence too long"},
+			{Stage: fault.Sound, Code: "1.4", Found: seq,
+				Fix: "a vowel conjunct is at most disyllabic; phonotactics §1.4 bars three or more"},
 		}
 	}
 }
