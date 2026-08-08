@@ -43,25 +43,35 @@ are the live list rather than anything written here:
   marks one we disagree with.
 
 - Nothing enforces that a C_R root or C_S affix is a permissible root
-  or affix form. §8 tabulates the bi-consonantal ones and §9 the
-  tri-consonantal ones, and both are read by tests
-  (`phonology/section8_test.go`, `section9_test.go`) but by no
-  production code. A cluster is judged only by its adjacent pairs, so
-  `ClusterLegal("fbm")` is true: `fb` and `bm` are each permissible
+  or affix form. The check now exists — `phonology.RootConjunctLegal`,
+  §§9-11 embedded as rows and held against the reference document by
+  `TestRootConjunctRows_MatchTheDocument` — but no production code
+  calls it. `ClusterLegal("fbm")` is still true, since a cluster is
+  judged only by its adjacent pairs: `fb` and `bm` are each permissible
   per §8, while §9's row for medial **b** whose initials include **f**
   permits only `vlrwyř` third, which excludes **m**. A speaker reported
   `fbm` impossible to say.
+
+  What stops enforcement is what the check found. 453 of the community
+  lexicon's 5,895 roots are shapes §§9-11 do not admit, in families
+  rather than scattered — `-pf-` after fourteen initials §9 does not
+  give it, `Cml`/`Cmr`/`Cmř`, and two affixes ending `-ḑr`. Refusing 8%
+  of the vocabulary is not a call to make here; the finding is filed as
+  `ISSUES.md` L1 and the counts are pinned by
+  `lexicon/root_shape_test.go`, so the shape of the gap cannot change
+  unnoticed. Every root of one or two consonants passes, which is the
+  split that makes it a real finding: §8 is derived from the pair rules
+  and §§9-11 are not derived from anything.
 
   Scope matters and the first diagnosis of this got it wrong. §9 is
   titled "Permissible Tri-Consonantal Conjuncts Which Can Be Roots or
   Affixes", so it does not govern every triple in a word: a Slot VI C_A
   complex is tri-consonantal and answers to §4.3 and §4.4 instead.
-  Applying §9 inside `ClusterLegal` would therefore reject legitimate
-  C_A forms and break round-tripping, which is the failure mode CLAUDE.md
-  already warns about for §2. The check belongs where a root or affix is
-  built or read, and needs the §9 table embedded rather than parsed from
-  the reference document at runtime.
+  That is why `RootConjunctLegal` is a separate predicate rather than
+  part of `ClusterLegal`, which would reject legitimate C_A forms and
+  break round-tripping.
 
-  Neither table can currently fail in the direction that matters:
-  `section9_test.go` expands the whitelist and asserts each entry is
-  legal, which tests what it admits and never what it excludes.
+  The one-directional test is fixed. `section9_test.go` expands the
+  whitelist and asserts each entry is legal, which tests what the table
+  admits and never what it excludes;
+  `TestRootConjunctLegal_Excludes` covers the other direction.

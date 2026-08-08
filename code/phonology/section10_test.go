@@ -83,7 +83,7 @@ func readConjunctRows(t *testing.T, heading, next string, positions int) [][]str
 			continue
 		}
 		cells := splitRow(line)
-		if len(cells) < positions+1 || cells[0] == "1st" || strings.HasPrefix(cells[0], "-") {
+		if len(cells) < positions+1 || cells[0] == "1st" || cells[0] == "Initial" || strings.HasPrefix(cells[0], "-") {
 			continue
 		}
 		rows = append(rows, cells[:positions])

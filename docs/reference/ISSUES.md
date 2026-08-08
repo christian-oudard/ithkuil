@@ -479,3 +479,51 @@ So nothing depends on it and nothing else corroborates it. It is
 transcribed as printed, in the cell it occupies, because the cell is
 the whole of the claim: an implementation that added a tenth vowel on
 this evidence would have no vowel-form to put it in.
+
+## Lexicon
+
+### L1. 453 spreadsheet roots are shapes §§9-11 do not admit
+
+§§8-11 enumerate the consonant conjuncts that can be a root or an
+affix. Putting the 5,895 roots of the community spreadsheet through
+them, 453 are shapes no row admits.
+
+| root length | outside §§9-11 | of |
+|---|---|---|
+| 1-2 | 0 | 670 |
+| 3 | 128 | 2093 |
+| 4 | 236 | 2456 |
+| 5 | 89 | 676 |
+
+The split at two consonants is the first thing worth noticing. §8 is a
+grid derived from the pair rules of §§2-7, so a bi-consonantal root
+that our validator accepts is one §8 accepts, and every short root
+passes. §§9-11 are independent tables that no rule generates, and the
+whole of the disagreement is there.
+
+The departures are systematic, not scattered. `-pf-` accounts for
+fourteen of the tri-consonantal cases: §9 gives medial **p** a third
+consonant **f** only after the initials `sšç`, and the spreadsheet also
+writes `ţpf`, `žpf`, `ḑpf`, `ẓpf`, `čpf`, `jpf`, `kpf`, `gpf`, `dpf`,
+`xpf`, `zpf`, `ňpf`, `ļpf` and `cpf`, plus `pfc` and `pfč` with the
+pair leading. `Cml`/`Cmr`/`Cmř` is a second family of the same kind:
+`cml`, `sml`, `vml`, `zml`, `ẓml` and their `r` and `ř` partners. Two
+affixes depart as well, `xḑr` and `čḑr`, sharing a final `-ḑr` that §9
+gives no initial at all.
+
+A family that large is not a run of typos. Either the spreadsheet
+extended a series past what §9 sanctions — which is how the biological
+sections are built, per the Lexicon entries in `ERRATA.md`, one taxon
+per suffix in a fixed series — or §9's rows are incomplete in a
+patterned way. G48 is a reason to hold the tables lightly: none of the
+four agrees with its own arithmetic.
+
+Deciding this is upstream's call. What is not in question is that the
+check should exist: `phonology.RootConjunctLegal` implements §§8-11 and
+`fbm` is the case that motivated it, a conjunct both of whose pairs §8
+permits, that appears in no §9 row, and that a speaker asked to say
+reported impossible. It is not yet enforced anywhere, because enforcing
+it as things stand would refuse 8% of the vocabulary.
+
+`lexicon/root_shape_test.go` pins the counts, so a re-sync that changes
+them says so.
