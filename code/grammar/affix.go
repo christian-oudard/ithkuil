@@ -264,9 +264,11 @@ func AccessorVx(c Case) (series, degree int, high, ok bool) {
 func AccessorFamily(family string) (name, meaning string, ok bool) {
 	switch family {
 	case "ACC":
-		return "Case-Accessor", "the affix names a case the stem stands in", true
+		return "Case-Accessor",
+			"the entity filling this case role in the stem: ACC/INS on \"cut\" is \"the instrument by which cutting occurs\"", true
 	case "IAC":
-		return "Inverse Case-Accessor", "the inverse: the stem is what stands in that case", true
+		return "Inverse Case-Accessor",
+			"the converse: that for which the stem fills the role — IAC/INS on \"knife\" is \"what the knife is the instrument of\"", true
 	case "CST":
 		return "Case-Stacking", "stacks a second case onto the formative", true
 	}
