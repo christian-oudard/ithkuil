@@ -558,6 +558,14 @@ func maybeShortenVcGlottal(l *Layout, f g.Formative) {
 // minimum would render the formative ambiguous against the
 // monosyllabic-default rule.
 func maybeMoveCnToCa(l *Layout, f g.Formative) {
+	// Slot V bars the shortcut, and that is the whole answer to a
+	// question §3.8.1.2 looks like it leaves open. The shortcut puts an
+	// h-initial cluster in the Slot VI position, and no §3.6.1 rule
+	// fires on one, so a word taking it has no way to geminate and
+	// therefore no way to say where Slot V ended. Declining it costs a
+	// syllable; taking it would cost the affix. The shortcut is a
+	// spelling the grammar offers, not one it requires.
+	// TestMovedCn_YieldsToASlotVAffix holds this.
 	if len(f.SlotV) > 0 || l.Ca != "l" || f.SlotVI != g.DefaultSlotVI {
 		return
 	}

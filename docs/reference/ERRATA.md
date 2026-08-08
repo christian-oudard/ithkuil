@@ -300,6 +300,76 @@ reading.
 `TestApply_GraveOnUnstressedI`. Indexed in `BUGS.md` as an open
 question about our output rather than about the language.
 
+### §3.6.1 — the nine gemination rules are a default plus exceptions
+
+**Source.** §3.6.1 marks the end of Slot V by geminating the Slot VI
+C_A form, and gives nine numbered rules for how. Taken as a dispatch
+table that every C_A must match, they reach 3725 of the 3840 forms and
+115 match nothing: rule 4 names seven of the nine sibilants, rule 6
+five of the eleven fricatives, rule 7 six stop pairs and misses **kb**,
+**pg**, **tb** and **tg**, rule 8 leaves **pň** and **tň**, and rule 3
+reaches only forms beginning stop + liquid, leaving the 99 of shape
+stop + stop + liquid.
+
+**Decision.** Read them as a default plus exceptions. §3.6.1 says the
+boundary is shown "by gemination of the C_A form", and geminating a
+cluster means doubling its initial consonant; the numbered rules say
+where that does not hold. Four of the nine restate the default and five
+are genuine exceptions, and the shape of those five is a phonetic fact
+rather than an accident: you cannot geminate mid-cluster except on a
+fricative. Rules 4 and 6 are exactly the cases that double a medial
+consonant and both double a fricative (**ksst**, **pff** are sayable);
+rules 7 and 8 substitute rather than double because their inputs end in
+a stop, and *akbbla* is not sayable where *akkbla* is.
+
+Read this way the whole space comes out. All 3840 forms geminate, to
+3840 distinct clusters, none of them equal to a bare C_A, and every one
+of them survives being written into a word beside a Slot V affix,
+pronounced, and read back to the grammar it was built from.
+
+This repository made the dispatch-table mistake twice, and filed the
+115 as a hole in the language both times, which is why the reading is
+recorded rather than left in the code.
+
+**Status.** `adopted`
+
+**Where.** `allomorph/geminate.go`, `GeminateCa`, whose comment
+tabulates which rules are default and which exception.
+`allomorph/geminate_test.go` holds the cluster claims —
+`TestGeminate_EveryFormIsCoveredAndDistinct` — and
+`roman/ca_gemination_test.go` the whole-word ones, over all 3840 forms
+with one and with two Slot V affixes.
+
+### §3.8.1.2 — a moved C_N yields to a Slot V affix
+
+**Source.** §3.8.1.2 lets a Pattern-1 Mood/Case-Scope C_N take the Slot
+VI C_A position when C_A is the default -**l**-, putting **hl**, **hr**,
+**hm**, **hn** or **hň** there. No §3.6.1 rule fires on an h-initial
+cluster — **h** is not a stop, not a sibilant, not on rule 5's list of
+non-sibilant fricatives, not a nasal or liquid, and none of the five is
+a single consonant — so a word taking the shortcut has no way to mark
+where Slot V ended. §3.6.2's glottal fallback does not reach it either,
+being scoped to a C_A elided by the Slot I shortcut, and a formative
+with that shortcut has no Slot VI C_A for §3.8.1.2 to replace.
+
+**Decision.** The shortcut is unavailable when Slot V is filled. It is
+optional throughout — §3.8.1.2 says such a C_N "may" take the position
+— and taking it is what would cost the marker, so the case where it
+cannot be paid for is the case where it is not offered. The long form
+is always available: the default C_A geminated to -**ll**- with the C_N
+back in its own slot, one syllable longer and carrying everything.
+
+So there is no construct with no expressible form here, and the earlier
+reading that found one had assumed the shortcut was obligatory once
+legal. Nothing in the section says so, and the renderer already treated
+every other optional shortcut the same way, by cost.
+
+**Status.** `adopted`
+
+**Where.** `slots/grammar.go`, `maybeMoveCnToCa`, whose first condition
+is this rule; `roman/ca_gemination_test.go`,
+`TestMovedCn_YieldsToASlotVAffix`.
+
 ### §4.6.5 — a referential used as a lone Type-3 affix is glossed (refs/degree)
 
 **Source.** §4.6.5 makes a lone Type-3 V_X C_S affix whose C_S is a
@@ -492,20 +562,24 @@ it survives.
 
 *Amendments we think the language wants. Not in force.*
 
-None written up yet. The candidates are the three places no reading
-can rescue, because the source leaves a construct with no expressible
-form at all:
+None. Three candidates stood here, each described as a place no
+reading could rescue because the source left a construct with no
+expressible form at all. All three turned out otherwise, and what they
+needed was a reading or a correction rather than an amendment:
 
-- **§3.6.1**, whose gemination rules reach only some of the 3840 Ca
-  forms, so the rest cannot mark where Slot V ends.
-- **§3.8.1.2**, where a C_N moved into the Slot VI position meets no
-  gemination rule either, with the same consequence.
-- **§3.6**, whose **bn**-substitution names one configuration on its
-  input side and a different one in its intermediate, stranding
-  whichever is left out.
+- **§3.6** was a correction, and is one now: see the entry above.
+- **§3.6.1** is a reading, below. Its rules are a default plus
+  exceptions, not a dispatch table, and read that way they reach every
+  form.
+- **§3.8.1.2** is the same reading one slot over, also below. The
+  construct is not unwritable; the optional shortcut that would make it
+  so is simply not available.
 
-Each needs an amendment rather than a reading, and each lands here as a
-proposal once drafted.
+The lesson is worth keeping, since the list was wrong three times for
+one reason. Each entry read a table as exhaustive and concluded the
+language had a hole where the table ran out. Quijada writes rules that
+say where a general case does not hold, and a rule that names no case
+is not thereby a rule that forbids it.
 
 ### §6.2.2 — *Étkwö'e* is missing the Slot I marker its own gloss needs
 
